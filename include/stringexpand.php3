@@ -2460,11 +2460,14 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
      * @param $slices
      * @param $seo_string
      */
-    function expand($slices, $seo_string) {
+    function expand($slices, $seo_string, $bins='') {
         if ($seo_string=='') {
             return '';
         }
-        $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+
+        $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED;
+
+        $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
         $zids = $set->query();
         return join($zids->longids(), '-');
         // added expiry date in order we can get ids also for expired items
@@ -2509,7 +2512,7 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
             $i = 1;
             // we do not want to create infinitive loop for wrong parameters
             for ($i=2; $i < 100000; $i++) {
-                $ids = AA_Stringexpand_Seo2ids::expand($unique_slices, $base.$add);
+                $ids = AA_Stringexpand_Seo2ids::expand($unique_slices, $base.$add, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
                 if (empty($ids)) {
                     // we found unique seo-name
                     break;
@@ -5133,28 +5136,28 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
         $file_name  = Files::getTmpFilename(FILE_PREFIX);
         if (preg_match('/.doc$/i',$url)) {
             if ( defined('CONV_TEXTFILTERS_DOC')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOC),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.docx$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_DOCX')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOCX),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.odt$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_ODT')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_ODT),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.pdf$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_PDF')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_PDF),$out);
                 unlink($dest_file);

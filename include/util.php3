@@ -681,13 +681,12 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
     }
 
     /* create SQL query for different types of numeric constants */
-    if ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
-        return ' 1=1 ';
-    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
-        return " $table.status_code=1 ";
-    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
-        return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
-    } else {
+    switch ($numeric_bin) {
+    case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH : return ' 1=1 ';
+    case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING:                                  return " $table.status_code=1 ";
+    case AA_BIN_ACTIVE | AA_BIN_EXPIRED:                                                   return " $table.status_code=1 AND ($table.publish_date <= '$now') ";
+    case AA_BIN_ACTIVE | AA_BIN_PENDING:                                                   return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
+    default:
         $or_conds = array();
         if ($numeric_bin & AA_BIN_ACTIVE) {
             $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
@@ -716,7 +715,6 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
             default: return ' (('. join(') OR (', $or_conds) .')) ';
         }
     }
-
     return ' 1=1 ';
 }
 
