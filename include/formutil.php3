@@ -1288,15 +1288,19 @@ class AA_Inputfield {
     *                  to include /misc/htmlarea/aafunc.js script to the page
     * @param $showhtmlarea
     */
-    function textarea( $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false) {
+    function textarea( $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false, $maxlength=0) {
 
         global $sess;
 
         list($name,$val,$add) = $this->prepareVars();
         // make the textarea bigger, if already filled with long text
-        $rows    = max($rows, min(substr_count($val,"\n")+1, 30));
-        $val     = htmlspecialchars($val);
-        $colspan = $single ? 2 : 1;
+        $rows     = max($rows, min(substr_count($val,"\n")+1, 30));
+        $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
+
+        $val      = htmlspecialchars($val);
+        $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
+        $colsy    = ($cols = (int)$cols) ? " cols=$cols" : '';
+        $colspan  = $single ? 2 : 1;
         $this->echoo("<tr class=\"fieldstart formrow{formpart}\">");
         $this->field_name(false, $colspan);
         if ($single) {
@@ -1310,7 +1314,7 @@ class AA_Inputfield {
         if ($showhtmlarea) {
             $rows += 8;
         }
-        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']." cols=\"$cols\" style=\"width:100%\" ".getTriggers("textarea",$name).">$val</textarea>\n";
+        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$val</textarea>\n";
         if ($showhtmlarea) {
             $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
         } elseif ( $showrich_href ) {
@@ -2125,10 +2129,10 @@ function FrmHidden($name, $val, $safing=true ) {
  * @param $morehlp
  * @param $single
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="", $showrich_href=false) {
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="", $showrich_href=false, $maxlength=0) {
     $html=false;  // it was in parameter, but was never used in the code /honzam 05/15/2004
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->textarea($rows, $cols, $single, $showrich_href);
+    $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
     $input->print_result();
 }
 

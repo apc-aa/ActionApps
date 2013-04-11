@@ -498,7 +498,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     FrmInputText($alias_name, _m("Alias")." $iAlias", $alias_value, 10, 20, false, _m("_# + 8 UPPERCASE letters or _"));
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
     FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 4, 60, false, AA_View::getViewJumpLinks('view.php3?'.$$alias_func)); // added for f_v parameters
-    FrmInputText($alias_help, _m("Description"), $$alias_help, 254, 60);
+    FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0, false, '', '', '', false, 255);
     if ($iAlias != 3) {
         echo "\n    <tr><td colspan=2><hr></td></tr>";
     }
