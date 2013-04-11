@@ -92,11 +92,12 @@ class AA_Hitcounter {
         $varset->add('time', 'number', now());
         $varset->add('agent', 'text', $_SERVER["HTTP_USER_AGENT"]);
         $varset->add('info', 'text', $_SERVER["REQUEST_URI"]);
+
         if ($zids->use_short_ids()) {
             $varset->add('id', 'number', $zids->id(0));
             $varset->doInsert('hit_short_id');
         } else {
-            $varset->add('id', 'unpacked', $zids->id(0));
+            $varset->add('id', 'unpacked', $zids->longids(0));
             $varset->doInsert('hit_long_id');
         }
 
@@ -116,7 +117,7 @@ class AA_Hitcounter {
 
             $computedfields_updater = new AA_Computedfields_Updater;
             $computedfields_updater->plan();
-           
+
 //            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 3000);  // run it once in 50 minutes
         }
         return;
@@ -182,7 +183,7 @@ class AA_Hitcounter_Update {
         // times it is not so big problem - we can plan(0) sometime in the future
         $grouper = new AA_Hitcounter_Group;
         $grouper->plan(3);
-        
+
         $this->updateDisplayStatistics();
     }
 
@@ -313,7 +314,7 @@ class AA_Computedfields_Updater {
     function plan() {
 
         $fields2count = GetTable2Array("SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'", '');
-        
+
         $intervals = array('minute'=>5,'hour'=>4,'day'=>3,'week'=>2,'month'=>1);
         $updaters = array();
 
@@ -327,12 +328,12 @@ class AA_Computedfields_Updater {
                 }
             }
 
-            if (count($updaters)) { 
+            if (count($updaters)) {
                 $toexecute = new AA_Toexecute;
                 foreach ($updaters as $sid => $interval) {
                     switch ($interval) {
                         case 1: $time = mktime(rand(0,5),   rand(0,59),  rand(0,59), date("m")+1, 1,           date("Y")); break;
-                        case 2: $time = strtotime("next Monday")+rand(0,(5*60*60)); // Monday - 0-5 in the morning 
+                        case 2: $time = strtotime("next Monday")+rand(0,(5*60*60)); // Monday - 0-5 in the morning
                         case 3: $time = mktime(rand(0,4),   rand(0,59),  rand(0,59), date("m"),   date("d")+1, date("Y")); break;
                         case 4: $time = mktime(date("G")+1, rand(0,4),   rand(0,59), date("m"),   date("d"),   date("Y")); break;
                         case 5: $time = mktime(date("G"),   date("i")+1, rand(0,10), date("m"),   date("d"),   date("Y")); break;
@@ -343,17 +344,38 @@ class AA_Computedfields_Updater {
         }
     }
 
+    // just plan item updates in chunks
     function toexecutelater($sid) {
-        $aa_set = new AA_Set();
+        $aa_set       = new AA_Set();
         $aa_set->setModules($sid);
-        $zids = $aa_set->query();
-       
-        $long_ids = $zids->longids(); 
-        foreach ($long_ids as $item_id) {
-            $ret = UpdateField($item_id, 'last_edit.......', date(), false);   // fake update - just cont computed fields
+        $zids         = $aa_set->query();
+
+        $long_ids     = $zids->longids();
+
+        // randomize the order
+        shuffle($long_ids);
+
+        // create chunks - we will work with 20 items in one shot
+        // we can later estimate better the count of items based on speed of the operation
+        $chunks       = array_chunk($long_ids, 20);
+
+        $item_updater = new AA_ComputedfieldsItem_Updater();
+        $toexecute    = new AA_Toexecute;
+        foreach ($chunks as $k => $ids) {
+            $toexecute->laterOnce($item_updater, array($sid, $ids), "AA_ComputedfieldsItem_Updater_". $sid.'_'.$k, 40, now()+10);
+        }
+    }
+}
+
+class AA_ComputedfieldsItem_Updater {
+    function toexecutelater($sid, $ids) {
+        foreach ($ids as $item_id) {
+            $item = new ItemContent($item_id);
+            $item->updateComputedFields($item_id);
         }
         $GLOBALS['pagecache']->invalidateFor("slice_id=$sid");
     }
 }
+
 
 ?>

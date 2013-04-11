@@ -154,30 +154,67 @@ class AA_Toexecute {
         $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
     }
 
-    /** execute function
-     * @param $allowed_time
+    /** execute function - function called periodically from /misc/toexecute.php3
      */
-    function execute($allowed_time = 0) {  // standard run is 16 s
+    function execute() {
 
+        // set_time_limit( 360 );   // try to set 360 seconds to run
+        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
+
+
+        /** there we store the the time needed for last task of given type
+         *  (selector) - this value we use in next round to determine, if we can
+         *  run one more such task or if we left it for next time */
+        $execute_times = array();
+
+        $this->clear_report();
+        $execute_start = microtime(true);
+
+        $count = 0;
         // get just ids - the task itself we will grab later, since the objects
         // in the database could be pretty big, so we want to grab it one by one
         // If the priority is 0, we consider this task as unpossible to execute,
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
-        $tasks = GetTable2Array("SELECT id FROM toexecute WHERE execute_after < ".now()." AND priority > 0 ORDER by priority DESC", '', 'id');
-        return $this->executeTask($tasks, $allowed_time);
+        while ($task = DB_AA::select1("SELECT * FROM `toexecute` WHERE execute_after < ".now()." AND priority > 0 ORDER by priority DESC")) {
+            $task_type     = get_if($task['selector'],'aa_unspecified');
+            $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
+            $task_start    = microtime(true);
+
+            // can we run next task? Does it (most probably) fit in allowed_time?
+            if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
+                break;
+            }
+            $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
+            $varset->addkey('id', 'number', $task['id']);
+            // We lower the priority for this task before the execution, so
+            // if the task is not able to finish, then other tasks with the same
+            // priority is called before this one (next time)
+            $varset->doUpdate('toexecute');
+
+            $object  = unserialize($task['object']);
+            if ( $GLOBALS['debug'] ) {
+                huhl($task, $object);
+            }
+            $retcode = $this->execute_one($object, unserialize($task['params']));
+            $this->message($retcode);
+
+            // Task is done - remove it from queue
+            $varset->doDelete('toexecute');
+            $execute_times[$task_type] = microtime(true) - $task_start;
+            ++$count;
+            AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:$count:".$task['params'], get_class($object));
+        }
+        AA_Log::write('TOEXECUTE', "finished ".(microtime(true) - $execute_start));
     }
 
     /** Executes as many tasks from the $tasks array as time allows
      * @param $tasks - array of ids of tasks to execute
-     * @param $allowed_time
      */
-    function executeTask($tasks, $allowed_time = 0) {  // standard run is (max_execution_time - 9) seconds.
+    function executeTask($tasks) {
 
-        if ( !$allowed_time ) {
-            set_time_limit( 360 );   // try to set 360 seconds to run
-            $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
-        }
+        set_time_limit( 360 );   // try to set 360 seconds to run
+        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
 
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
@@ -234,5 +271,6 @@ class AA_Toexecute {
         return call_user_func_array(array($object, 'toexecutelater'), (array)$params);
     }
 } // end of toexecute class
+
 
 ?>
