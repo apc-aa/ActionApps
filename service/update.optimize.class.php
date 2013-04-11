@@ -1842,6 +1842,63 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     }
 }
 
+/** Restore Data from Backup Tables
+ *  This script DELETES all the current tables (slice, item, ...) where we have
+ *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right
+ *  names (slice, item, ...).
+ **/
+class AA_Optimize_Backup_Tables extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+        */
+    function name() {
+        return _m("Backup tables");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("[experimental] "). _m("Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...).");
+    }
+
+    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type)  { return in_array($type, array()); }
+
+    function actions()      { return array('repair'); }
+
+    /** Main update function
+     *  @return bool
+     */
+    function repair() {
+        $metabase   = AA_Metabase::singleton();
+        $tablenames = $metabase->getTableNames();
+
+        foreach($tablenames as $tablename) {
+            if (substr($tablename,0,4) == 'bck_') {
+                continue;
+            }
+
+            // create backup table
+            $this->message(_m('Deleting old backup table bck_%1, if exist.', array($tablename)));
+            $this->query("DROP TABLE IF EXISTS `bck_$tablename`");
+
+            $this->message(_m('Creating empty backup table bck_%1.', array($tablename)));
+            $this->query("CREATE TABLE `bck_$tablename` LIKE `$tablename`");
+
+            // create new tables that do not exist in database
+            // (we need it for next data copy, else if ends up with db error)
+            $this->message(_m('Copy data from %1 to bck_%1.', array($tablename)));
+            $this->query("INSERT INTO `bck_$tablename` SELECT * FROM `$tablename`");
+
+            $this->message(_m('%1 done.', array($tablename)));
+
+        }
+        return true;
+    }
+}
+
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
