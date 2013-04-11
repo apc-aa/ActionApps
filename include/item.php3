@@ -148,7 +148,7 @@ function GetAliases4Type( $type, $additional="" ) {
             $aliases["_#COUNTER_"] = GetAliasDef( "f_1", "const_counter",     _m("Constant number"));
             $aliases["_#CONST_ID"] = GetAliasDef( "f_1", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
             $aliases["_#SHORT_ID"] = GetAliasDef( "f_1", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
-            $aliases["_#DESCRIPT"] = GetAliasDef( "f_t", "const_description", _m("Constant description"));
+            $aliases["_#DESCRIPT"] = GetAliasDef( "f_1", "const_description", _m("Constant description"));
             $aliases["_#LEVEL##_"] = GetAliasDef( "f_1", "const_level",       _m("Constant level (used for hierachical constants)"));
             break;
         case 'links':

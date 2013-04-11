@@ -458,10 +458,8 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
-
         list ($aa_const, $password) = ParamExplode($value['value']);
         if ($aa_const == 'AA_PASSWD') {
-
             list($pfield, $pcrypt) = ParamExplode($param);
 
             if ($pfield AND ($f = $field[$pfield])) {  // wrong - $field[$pfield] is nonsence - the if is never executed, Honza 9.12.2012

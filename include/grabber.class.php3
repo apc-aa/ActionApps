@@ -1130,6 +1130,7 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
 class AA_Grabber_Slice extends AA_Grabber {
 
     var $set;                 /** AA_Set specifies the slice, conds and sort */
+    var $zids;                 /** AA_Set specifies the slice, conds and sort */
     var $_longids;            /** list if files to grab - internal array */
     var $_content_cache;      /**  */
     var $_index;              /**  */

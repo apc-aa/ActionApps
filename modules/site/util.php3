@@ -157,7 +157,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
                 echo "$v ($match->op) <strong>$match->val</strong> <span align=right><a href=\"". SiteAdminPage($spot_id, 'delcond='. urlencode($v)) ."\">"._m("Delete")."</a></span>$warning<br>";
             } else {
                 echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
-                         $k 
+                         $k
                          <select name=addcondop>
                            <option>=</option>
                            <option value=contains>"._m('contains')."</option>

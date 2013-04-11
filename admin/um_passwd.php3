@@ -58,7 +58,7 @@ if ( $update ) {
     $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
 
     if ( count($err) <= 1) {
-        ChangeUserData(&$err, $auth->auth["uid"], &$userrecord, 'AA_NO_CHANGE', &$perms_roles);
+        ChangeUserData($err, $auth->auth["uid"], $userrecord, 'AA_NO_CHANGE', $perms_roles);
     }
 
     if ( count($err) <= 1 ) {

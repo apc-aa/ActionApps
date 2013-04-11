@@ -129,9 +129,9 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
         }
 
         if ( $add_submit ) {      // -------------------- new user ------------------
-            NewUserData(&$err, $user_login, &$userrecord, $user_super, &$perms_roles, $um_uedit_no_go_url);
+            NewUserData($err, $user_login, $userrecord, $user_super, $perms_roles, $um_uedit_no_go_url);
         } else {                 // ----------------- update user ------------------
-            ChangeUserData(&$err, $selected_user, &$userrecord, $user_super, &$perms_roles);
+            ChangeUserData($err, $selected_user, $userrecord, $user_super, $perms_roles);
         }
 
         // Procces group data ------------------------------------------------------

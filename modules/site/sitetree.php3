@@ -47,30 +47,31 @@ $SPOT_VAR_NAMES = array ('id'         => 'id',      // translation from long var
 class AA_Site_Spot_Match {
     public $op;
     public $val;
-    
+
     function __construct($op='', $val='') {
             $this->op  = $op;
             $this->val = $val;
     }
-        
+
     public static function factoryByString($string, $var=null) {
         if ( strpos($string,'=:') === 0 ) { // begins with =: - special identification of new matches
             $arr = ParamExplode($string);
             return new AA_Site_Spot_Match($arr[1], $arr[2]);
         }
-        // special case - for {aa_expresions} we used "=" in history 
+        // special case - for {aa_expresions} we used "=" in history
         return new AA_Site_Spot_Match(($var AND $var[0]=='{') ? '=' : 'REGEXP', $string);
     }
-    
+
     function implode() {
         return ParamImplode(array('=',$this->op, $this->val));
     }
-    
+
     public function match($value) {
         switch ( $this->op ) {
             case '=':        return ($value ==  $this->val);
             case 'REGEXP':   return preg_match('/'. str_replace('/', '\/', $this->val) .'/', $value);
             case 'contains': return (strpos($this->val, $value) !== false);
+           // case 'empty':    return !strlen(trim($value));
         }
         return false;
     }

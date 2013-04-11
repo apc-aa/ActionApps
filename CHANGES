@@ -1,6 +1,53 @@
-04/10/13 - fix - the seo sitemodule now displays only item active and expired 
+04/11/13 - new Module Settings -> Aliases page, where you can create site-module
+(honzam)   specific alias functions. It is replacement of STRINGEXPAND_SHORTCUTS
+           global variable, which was could be defined in custom stringexpand 
+           file and now is not recommended (but still work). 
+           This is quite powerfull feature, since now you can define also 
+           parameters for the aliases - so you get some kind of "functions". 
+           The aliases could be called as 
+             {_:Alias_name:parameters} 
+           parameters inside the alias code are in order _#P1, _#P2, ... 
+           For example 
+             {_:Message_box:Update successfull:green}
+           could be deffined like as 
+             <div class=mybox style="color:_#P2">_#P1</div> 
+         - new possibility to write {xseo:1} {xseo:2} instead of {xseo1} 
+           and {xseo2}. It is for compatibility with {xid:1}, {xid:2}. 
+           The new way is {xseo:1} preffered, but the old one works as well
+         - {xseo} gives you just the first id, if more than one matches
+         - new {index:<field-id>[:<index>]} - which returns the value 
+           at position <index> for multivalue fields, 
+             {index:category........}  - return first value
+         - {ajax:...} widgets now reacts on Enter and Esc with jQuery version 
+           of scripts; AA_Refresh javascript function now refreshes the id using
+           the data-aa-url attribute - if that attribute is not present, finds 
+           the first up in the DOM 
+         - new experimental {form:<formid>} which displays the form defined 
+           in AA Admin interface - first version - will be improved
+         - you can switch off grouping in the view by the parameter 
+             {view:45::group_by-}
+         - you can specify restict the slices, from which you want to see item 
+           ids in tree
+         - new "Convert database engine to InnoDB" optimize action which 
+           converts older MyISAM database storage engine to InnoDB for all tables
+         - new Optimize task "Backup tables" which deletes all the current
+           backup tables (bck_slice, bck_item, ...) and copies there live tables
+           (slice, item, ...)
+         - links to views in AA Admin interface under the textareas now 
+           recognizes also {view:xy} syntax
+         - fixed internal ussage of floating points/commas in AA - we use point 
+           inside AA for all internal function, even in Czech lang, where we 
+           would normaly use comma 
+         - improved Planed tasks and toexecute functionality - better prevention
+           for not running the same task twice - even for long running tasks 
+         - fixed html mail sending - the images linked through <a href=""> 
+           is not included in the mail, which is correct
+         - you can specify the max length of textarea
+         - optimized database access  
+         - removed unused Console and PhpQuickProfiler
+04/10/13 - fix - the seo sitemodule now displays only item active and expired
 (honzam) - fix - convert filters from pdf, odt, doc, docx works, if configured
-04/06/13 - new manager action - duplicate item in the slice 
+04/06/13 - new manager action - duplicate item in the slice
 (honzam) - other fixes
 01/07/13 - new {file2text:{file............}} - reads the content of the DOC,
 (honzam)   DOCX, PDF or ODT file in the string. You can use it for searching

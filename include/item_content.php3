@@ -125,7 +125,7 @@ class AA_Value {
         } elseif ( !is_null($value) ) {
             $this->val[] = $value;
         }
-        return $this;
+        return $this->removeDuplicates();
     }
 
     /** Set $value - value is normal (numeric) array or string value */
@@ -953,13 +953,13 @@ class ItemContent extends AA_Content {
         $itemvarset   = new CVarset();
         $field_writer = new AA_Field_Writer;
 
-        $update     = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
+        $update       = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
         $computed_field_exist = false;
 
         // could be called also from outside to recompute fields
+        $slice        = AA_Slices::getSlice($this->getSliceID());
         if (!$fields) {
-            $slice  = AA_Slices::getSlice($this->getSliceID());
-            $fields = $slice->fields('record');
+            $fields   = $slice->fields('record');
         }
 
         foreach ($fields as $fid => $f) {
@@ -996,23 +996,37 @@ class ItemContent extends AA_Content {
             if ($computed_field_exist === false) {
                 $computed_field_exist = true;
                 // prepare item for computing
-                $slice = AA_Slices::getSlice($this->getSliceID());
                 $item  = new AA_Item($this->getContent(),$slice->aliases());
             }
 
             // delete content just for this computed field
+
+            // $this->_clean_updated_fields($id, $fields);
+
+
             $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
 
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);
 
-            $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value);
+
+            $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value, $f['html_default']>0 ? FLAG_HTML : 0);
+
+
 
             // set this value also to $item in order we can count with it
             // in next computed field
             $item->setAaValue($fid, $aa_val);
 
             $values = $item->getValues($fid);
+
+            if ($GLOBALS['debug']) {
+                huhl($id, $fid, $new_computed_value, $aa_val, $values, '-----');
+            }
+
+
+            //AA_Log::write('DEBUG', "$id - $fid:".serialize($values), 'debug');
+
             foreach($values as $varr) {
                 //  store the computed value for this field to database
                 $field_writer->insert_fnc_qte($id, $f, $varr, '');
