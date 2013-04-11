@@ -39,6 +39,44 @@ require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 require_once AA_INC_PATH."tree.class.php3";   // for {tree:...};
 
+class AA_Aliasfunc extends AA_Object {
+
+    var $alias;
+    var $code;
+    var $desc;
+    var $ussage;
+    // var $params;
+
+    /** AA_Aliasfunc function
+     * @param $alias;
+     * @param $code;
+     * @param $desc;
+     * @param $ussage;
+     */
+    function AA_Aliasfunc($alias, $code, $desc, $ussage) {
+        $this->alias  = $alias;
+        $this->code   = $code;
+        $this->desc   = $desc;
+        $this->ussage = $ussage;
+    }
+
+    /** allows storing form in database
+     *  AA_Object's method
+     */
+    function getClassProperties() {
+        return array (          //           id       name       type        multi  persist validator, required, help, morehelp, example
+            'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
+            'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', true,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
+            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   false, true, '', false),
+            'ussage' => new AA_Property( 'ussage', _m("Ussage example"), 'string', true,  true, '', false, '', '', '{_:Message_box:Update successfull:green}')
+            );
+    }
+
+    // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
+    // static function getForm($oid=null, $owner=null, $otype=null) ... could be redefined here, but we use the standard one from AA_Object
+}
+
+
 if (defined('AA_CUSTOM_DIR')) {
     include_once(AA_INC_PATH. 'custom/'. AA_CUSTOM_DIR. '/stringexpand.php');
 }
@@ -1783,6 +1821,7 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 /** Ussage:
  *    {view:57::page-{xpage}}
  *    {view:57:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}}
+ *    {view:45::group_by-}   // switches off grouping in the view
  */
 class AA_Stringexpand_View extends AA_Stringexpand {
     /** expand function
@@ -2363,7 +2402,7 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
 /** @return string representation of the tree (with long ids) under specifield
  *          item based on the relation field
  *  @see {itree: } for more info about the stringtree syntax
- *  {treestring:<item_id>[:<relation_field>]}
+ *  {treestring:<item_id>[:<relation_field>[:<reverse>[:<sort_string>[:<slices>]]]]}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:sort[0][headline........]=a&sort[1][publish_date....]=d}
@@ -2375,6 +2414,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
      * @param $relation_field   - tree relation field (default relation........)
      * @param $reverse          - 1 for reverse trees (= child->parent relations)
      * @param $sort_string      - order of tree leaves (currently works only for reverse trees. @todo)
+     * @param $slices           - traverse only listed slices (some times usefull if your tree contain more than on slice and you want to count only with a subtree)
      */
     function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
         return AA_Stringexpand_Treestring::treefunc('getTreeString', $item_id, $relation_field, $reverse, $sort_string, $slices);
@@ -3731,6 +3771,7 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
  *  {ajax:{_#ITEM_ID_}:category........}
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
+ *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
  **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4493,7 +4534,8 @@ class AA_Stringexpand__ extends AA_Stringexpand {
      *
      */
     function additionalCacheParam() {
-        return serialize(array($GLOBALS['STRINGEXPAND_SHORTCUTS'], !is_object($this->item) ? '' : $this->item->getId()));
+        // is it necessary to have $this->item here?
+        return serialize(array(!is_object($this->item) ? '' : $this->item->getId()));
     }
 
     /** Do not qoute results - it is just shortcut, so we need to expand
@@ -4504,12 +4546,27 @@ class AA_Stringexpand__ extends AA_Stringexpand {
     }
 
     function expand() {
+        static $sc = null;
 
         $arg_list = func_get_args();   // must be asssigned to the variable
         $name     = array_shift($arg_list);
 
-        // @todo - use db lookup for shortcuts
-        $text     = $GLOBALS['STRINGEXPAND_SHORTCUTS'][$name];
+        if ( isset($GLOBALS['STRINGEXPAND_SHORTCUTS'][$name]) ) {
+            $text = $GLOBALS['STRINGEXPAND_SHORTCUTS'][$name];
+        } else {
+            // read the shortcuts from the database
+            if (is_null($sc) OR is_null($sc[AA::$site_id])) {
+                $sc[AA::$site_id] = array();
+            }
+            if (is_null($sc[AA::$site_id][$name])) {
+                $zids = AA_Object::querySet('AA_Aliasfunc', new AA_Set(array(AA::$site_id), new AA_Condition('alias', '=', '"'.quote($name).'"')));
+                $sc[AA::$site_id][$name] = AA_Object::loadProperty($zids->longids(0),'code');
+
+                // another approach read all at once - not used
+                // huhl( AA_Object::loadProperties($zids->longids(), 'aa_name'));
+            }
+            $text = $sc[AA::$site_id][$name];
+        }
 
         return AA_Stringexpand::replaceParams($text, $arg_list);
     }
@@ -4697,6 +4754,7 @@ class AA_Stringexpand_Redirect extends AA_Stringexpand {
  *  You can also use this feature if you want to send e-mail notification only if specific fields are changed:
  *    {ifset:{intersect:{changed:{_#ITEM_ID_}}:category.......2-expiry_date.....}: email text...}
  *  (we use the feature, that no mail is send, when the body of the mail is empty)
+ *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
  */
 class AA_Stringexpand_Changed extends AA_Stringexpand {
     function expand($item_id=null) {
@@ -4896,6 +4954,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *  Use as:
  *    {foreach:val1-val2:<p>_#1</p>:-:<br>}
  *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
+ *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
 
@@ -4917,7 +4976,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
         if (!strlen($valdelimiter)) {
            $valdelimiter = '-';
         }
-        $arr = explode($valdelimiter, trim($values));
+        $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, trim($values));
         $ret= array();
         foreach($arr as $str) {
             if (trim($str)) {
@@ -5166,4 +5225,50 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
         return join("\n",$out);
     }
 }
+
+/** Returns the value at position <index> for multivalue fields
+ *    {index:<field-id>[:<index>]}
+ *    {index:category........}  - return first value
+ *
+ * @param field_id - id of the field in item
+ * @param index    - integer index in multivalue array - default 0 (the first one)
+ *
+ */
+class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getId();
+    }
+
+    /** expand function
+     * @param $text
+     */
+    function expand($field_id='', $index=0) {
+        $item   = $this ? $this->item : null;
+        return (is_object($item) AND $item->isField($field_id)) ? $item->getval($field_id, (int)$index) : '';
+    }
+}
+
+class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function
+     * @param $text
+     */
+    function expand($form_id='') {
+        if (!$form_id OR !($form = AA_Object::load($form_id, 'AA_Form'))) {
+            return '';
+        }
+        //return $form->getAjaxHtml($ret_code);
+        return $form->getAjaxHtml();
+    }
+}
+
+
+
 ?>
