@@ -394,8 +394,8 @@ class AA_Set extends AA_Object {
         $this->bins = $bins;
     }
 
-    /** set the bins - like Holding Bin, Approved, Trash, ...
-     *  @param $bins bitfield
+    /** set the slices/modules
+     *  @param $slices array of slice ids
      */
     function setModules($slices) {
         if (is_array($slices)) {
@@ -1212,9 +1212,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
         AA::$debug && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
 
         if (!$group_limit) {
-            while ($db->next_record()) {
-                $arr[] = $db->f($col);
-            }
+            $arr = $db->fetch_column($col);
         } else {                     // we have to remove the ids above the limit for group
                                      // and also we have to add extended attributes to zids, because
                                      // of group_by

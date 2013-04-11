@@ -28,6 +28,9 @@
 // Miscellaneous utility functions
 //
 
+// supress PHP notices
+error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
+
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."constants.php3";
 require_once AA_INC_PATH."mgettext.php3";
@@ -395,11 +398,6 @@ function string2id($str) {
  * Note that pack_id is used in many places where it is NOT 128 bit ids.
  */
 function pack_id($unpacked_id) {
-    /*
-    global $errcheck;
-    if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) // Note was + instead {32}
-         huhe("Warning: trying to pack $unpacked_id.<br>\n");
-    */
     return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
 }
 
@@ -408,7 +406,7 @@ function pack_id($unpacked_id) {
  * @return unpacked md5 id
  */
 function unpack_id($packed_id=''){
-    return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';   // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
+    return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
 }
 
 /** now function
@@ -875,7 +873,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     // do we want any content field?
     if ( $restrict_cond != '1=0' ) {
 
-        $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY content.number"; // usable just for constants
+        $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY item_id, number"; // usable just for multivalues
 
         $db->tquery($SQL);
 
@@ -1620,7 +1618,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  */
 function aa_version($format='full') {
     $version = '2.51.0';
-    $full    = 'ActionApps '.$version.' ($Date$, $Revision$)';
+    $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.phpversion();
     switch ($format) {
         case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);
         case 'aa':  return $version;

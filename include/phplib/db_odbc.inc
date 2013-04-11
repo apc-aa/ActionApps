@@ -17,7 +17,6 @@ class DB_ODBC {
   var $Password = "";
 
   /* public: configuration parameters */
-  var $Auto_Free     = 0;     ## Set to 1 to automatically free results
   var $PConnect      = 0;     ## Set to 1 to use persistent database connections
   var $Debug         = 0;     ## Set to 1 for debugging messages
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
@@ -158,11 +157,9 @@ class DB_ODBC {
     $stat = odbc_fetch_row($this->Query_ID, $this->Row);
     $this->Errno = 0;
     $this->Error = "";
-
+    
     if (!$stat) {
-      if ($this->Auto_Free) {
-        $this->free();
-      }
+      $this->free();
     } else {
       $count = odbc_num_fields($this->Query_ID);
       for ($i=1; $i<=$count; $i++) {

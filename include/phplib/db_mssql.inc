@@ -25,7 +25,6 @@ class DB_MSSQL {
   var $Error    = "";
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
-  var $Auto_Free = 0;     ## set this to 1 to automatically free results
   var $PConnect  = 0;     ## Set to 1 to persistent database connections
   
   
@@ -99,9 +98,7 @@ class DB_MSSQL {
       $this->Row += 1;
       $stat = 1;
     } else {
-      if ($this->Auto_Free) {
-	    	$this->free_result();
-	  	}
+  	$this->free_result();
       $stat = 0;
     }
     return $stat;

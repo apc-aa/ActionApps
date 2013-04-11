@@ -69,7 +69,7 @@ class Cvariable {
                 // grrr: if $var=0 then $var=""!!!
                 return ($this->value == "") ? "0" : $this->value;
             case "unpacked":
-                return "'" . q_pack_id($this->value) ."'";
+                return '0x' . quote($this->value);
             case "quoted":
                 return "'" . $this->value ."'";
             case "null":
@@ -92,9 +92,9 @@ class Cvarset {
      *  constructor - also good for filling the varset
      * @param $arr
      */
-    function Cvarset( $arr=null ) {
+    function __construct( $arr=array(), $db = null) {
         $this->vars       = array();
-        $this->db         = null;
+        $this->db         = $db;
         $this->just_print = false;
 
         foreach ( (array)$arr as $varname => $value ) {

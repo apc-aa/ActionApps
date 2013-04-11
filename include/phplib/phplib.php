@@ -163,6 +163,21 @@ class CT_Sql {
   function ac_halt($s) {
       $this->db->halt($s);
   }
+
+  /** begin transaction */
+  function start_transaction() {
+      $this->db->query('START TRANSACTION;');
+  }
+
+  /** commit transaction */
+  function commit() {
+      $this->db->query('COMMIT;');
+  }
+
+  /** rollback transaction */
+  function rollback() {
+      $this->db->query('ROLLBACK;');
+  }
 }
 
 

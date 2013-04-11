@@ -28,8 +28,6 @@ class DB_Pgsql {
   var $Debug    = 0;
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
-  var $Auto_Free = 0; # Set this to 1 for automatic pg_freeresult on
-                      # last record.
   var $PConnect  = 0; ## Set to 1 to use persistent database connections
 
   function ifadd($add, $me) {
@@ -98,12 +96,12 @@ class DB_Pgsql {
     $this->Error = pg_ErrorMessage($this->Link_ID);
     $this->Errno = ($this->Error == "")?0:1;
 
-    $stat = is_array($this->Record);
-    if (!$stat && $this->Auto_Free) {
-      pg_freeresult($this->Query_ID);
-      $this->Query_ID = 0;
+    if (is_array($this->Record)) {
+        return true;
     }
-    return $stat;
+    pg_freeresult($this->Query_ID);
+    $this->Query_ID = 0;
+    return false;
   }
 
   function seek($pos) {

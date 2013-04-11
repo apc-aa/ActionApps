@@ -23,7 +23,6 @@ class DB_msql {
   var $Error    = "";
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
   
-  var $Auto_Free = 0;     ## Set this to 1 for automatic msql_free_result()
   var $PConnect  = 0;     ## Set to 1 to use persistent database connections
 
   /* public: constructor */
@@ -93,12 +92,12 @@ class DB_msql {
     $this->Row   += 1;
     $this->Error = msql_error();
 
-    $stat = is_array($this->Record);
-    if (!$stat && $this->Auto_Free) {
-      msql_free_result($this->Query_ID);
-      $this->Query_ID = 0;
+    if (is_array($this->Record)) {
+        return true;
     }
-    return $stat;
+    msql_free_result($this->Query_ID);
+    $this->Query_ID = 0;
+    return false;
   }
 
   function seek($pos) {
