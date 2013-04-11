@@ -10,7 +10,10 @@
 
 $mgettext_lang = "cz";
 setlocale(LC_ALL, 'cs_CZ');
-
+setlocale(LC_NUMERIC, 'en_US');  // use numeric with dot - there is problem, when
+                                 // used Czech numeric comma for example in AA_Stringexpand_If:
+                                 //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
+                                 // float!! value $etalon is then with comma which leads to syntax error
 # Unused messages
 # End of unused messages
 // modules/site/moddelete.php3, row 34
