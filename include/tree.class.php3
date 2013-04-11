@@ -33,7 +33,7 @@ class AA_Supertree {
                           // Currently wors only for Reverse trees. @todo
     protected $_modules;  // Array of modules
 
-    protected $_restrict_slices;  // Array of allowed slices - just for reverse tree
+    protected $_restrict_slices;  // Array of allowed slices
 
     function __construct($relation_field, $sort=null, $slices=null) {
         $this->_relation_field  = $relation_field;
@@ -63,8 +63,13 @@ class AA_Supertree {
             $new = array();
             if (is_array($content4ids) ) {
                 foreach ($content4ids as $item_id => $columns) {
+                    $sid = $columns['u_slice_id......'][0]['value'];
+                    if (count($this->_restrict_slices) AND !in_array($sid, $this->_restrict_slices)) {
+                        $invalid = array_merge($invalid, array($item_id));
+                        continue;
+                    }
                     // mark module_id
-                    $this->_modules[$columns['u_slice_id......'][0]['value']] = true;
+                    $this->_modules[$sid] = true;
                     $next  = $this->_compactValue($columns[$this->_relation_field]);
                     $new   = array_merge($new,$next);
                     $this->_i[$item_id] = $next;
