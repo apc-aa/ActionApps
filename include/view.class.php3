@@ -171,13 +171,21 @@ class AA_View {
     function getViewJumpLinks($text) {
         $ret = '';
         $matches = array();
-        if ($text AND (preg_match_all("/view\.php3?\?vid=(\d+)/",$text, $matches)>0)) {
-            $ret = _m('Jump to view:');
-            $view_ids = array_unique((array)$matches[1]);
-            foreach($view_ids as $vid) {
-                $view = AA_Views::getView($vid);
-                if ($view) {                  // probably will be set
-                    $ret .= ' '. $view->jumpLink();
+        if ($text) {
+            $view_ids = array();
+            if (preg_match_all("/view\.php3?\?vid=(\d+)/",$text, $matches) > 0) {
+                $view_ids = (array)$matches[1];
+            }
+            if (preg_match_all("/{view:(\d+)/",$text, $matches) > 0) {
+                $view_ids = array_merge($view_ids, (array)$matches[1]);
+            }
+            if ($view_ids = array_unique($view_ids)) {
+                $ret = _m('Jump to view:');
+                foreach($view_ids as $vid) {
+                    $view = AA_Views::getView($vid);
+                    if ($view) {                  // probably will be set
+                        $ret .= ' '. $view->jumpLink();
+                    }
                 }
             }
         }
