@@ -1268,4 +1268,65 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
         return true;
     }
 }
+
+/**
+ *
+ */
+class AA_Optimize_Convert2innodb extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Convert database engine to InnoDB");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Converts older MyISAM database storage engine to InnoDB for all tables");
+    }
+
+    /** Test function
+    * @return bool
+    */
+    function test() {
+        $metabase = AA_Metabase::singleton();
+        $tables   = $metabase->getTableNames();
+        $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
+        $count    = 0;
+        foreach ($engines as $tablename => $engine) {
+            if (substr($tablename,0,4) == 'bck_') {
+                continue;
+            }
+            $this->message(_m('engine for %1 slice is %2', array($tablename, $engine)));
+            $count++;
+        }
+        $this->message(_m('We found %1 tables which needs to be converted', array($count)));
+        return true;
+    }
+
+    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
+     *  than easy DELETE FROM ...
+     * @return bool
+     */
+    function repair() {
+        $metabase = AA_Metabase::singleton();
+        $tables   = $metabase->getTableNames();
+        $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
+        $converted = 0;
+        foreach ($engines as $tablename => $engine) {
+            if (substr($tablename,0,4) == 'bck_') {
+                continue;
+            }
+            $this->message(_m('Convert table %1 (%2) to InnoDB', array($tablename, $engine)));
+            $this->query("ALTER TABLE `$tablename` ENGINE=InnoDB");
+            $converted++;
+        }
+        $this->message(_m('Converted %1 tables', array($converted)));
+        return true;
+    }
+}
+
 ?>
