@@ -443,7 +443,7 @@ class AA_Router_Seo extends AA_Router {
 
     function _xseo2id($seo_string) {
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = AA_Stringexpand_Seo2ids::expand(join('-', $this->slices), $seo_string);
+            $this->_seocache[$seo_string] = substr(AA_Stringexpand_Seo2ids::expand(join('-', $this->slices), $seo_string),0,32);
         }
         return $this->_seocache[$seo_string];
     }
@@ -519,6 +519,21 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
         }
         $router = AA_Router::singleton($router_class);
         return $router->xid($param, $url);
+    }
+}
+
+
+/** {xseo}     - returns last "directory" name in AA_Router_Seo
+ *  {xseo:1}   - returns {xseo1} - first directory level in url
+ *               for /cz/project/about-us returns "project"
+ *  {xseo:3}   - returns {xseo1} - third directory level in url
+ *  @param $level specifies, which information you want to get (see above)
+ **/
+class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    /** expand function */
+    function expand($level='') {
+        return $GLOBALS['apc_state']['xseo'.(is_numeric($level) ? (int)$level : '' )];
     }
 }
 ?>
