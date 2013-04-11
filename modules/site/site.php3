@@ -52,7 +52,8 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
-$site_info = GetModuleInfo($site_id,'W');   // W is identifier of "site" module
+AA::$site_id = $_REQUEST['site_id'];
+$site_info = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
 
 //    - see /include/constants.php3
 if ( !is_array($site_info) ) {
@@ -78,8 +79,8 @@ if ( !is_array($site_info) ) {
 
 $hit_zid = null;
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
-    $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
-    $lang_file    = AA_Modules::getModuleProperty($site_id, 'lang_file');
+    $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id(AA::$site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+    $lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
     $home         = trim($site_info['state_file']) ? trim($site_info['state_file']) : '/' .substr($lang_file,0,2). '/';
     $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
 
@@ -121,7 +122,7 @@ if ( !isset($apc_state) )  {
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeystring(), "$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
+$cache_key = get_hash('site', PageCache::globalKeystring(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
@@ -150,7 +151,7 @@ if ($lang_file) {
     bind_mgettext_domain(AA_INC_PATH.'lang/'.$lang_file);
 }
 
-$res = ModW_GetSite( $apc_state, $site_id, $site_info );
+$res = ModW_GetSite( $apc_state, AA::$site_id, $site_info );
 echo $res;
 
 if ($hit_zid) {
@@ -167,8 +168,8 @@ if ($hit_zid) {
 if ( $GLOBALS['debug'] ) huhl("<br>Site.php3 is_array(slices4cache):". is_array($slices4cache), '<br>Site.php3 nocache:'.$nocache);
 
 // the cache should be always cleared, if the site is changed
-if (!in_array($site_id, (array)$slices4cache)) {
-    $slices4cache[] = $site_id;
+if (!in_array(AA::$site_id, (array)$slices4cache)) {
+    $slices4cache[] = AA::$site_id;
 }
 
 if (is_array($slices4cache) && !$site_nocache) {
@@ -268,11 +269,6 @@ function ModW_arr2str($varnames, $arr) {
     }
     return $strout;
 }
-
-if ($_GET['pqp']) {
-   $profiler->display();
-}
-
 
 // do not remove this exit - we do not want to allow users
 // to include this script (honzam)

@@ -464,6 +464,11 @@ class AA_Object extends AA_Storable {
         return GetTable2Array("SELECT value FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'value');
     }
 
+    /** static called as AA_Object::loadProperties($ids, 'name') */
+    function loadProperties($ids, $property) {
+        return DB_AA::select( array('object_id'=> 'value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids, 's'), array('property', $property, 's')));
+    }
+
     /** getObjectType
      * @param $id
      */
@@ -629,7 +634,7 @@ class AA_Object extends AA_Storable {
 
                 // fill arrays to be able construct select command
                 $tables[$tbl]['cond'] = GetWhereExp( "$tbl.value", $cond['operator'], $cond['value'] );
-                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". sqlin("$tbl.property", $cond_flds); // OR $tbl.property is NULL))"; - like in content
+                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". sqlin("$tbl.property", $cond_flds).')'; // OR $tbl.property is NULL))"; - like in content
                 if (count($cond_flds) == 1) {
                     // mark this field as sortable (store without apostrofs)
                     $sortable[ reset($cond_flds) ] = $tbl;

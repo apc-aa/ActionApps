@@ -60,7 +60,8 @@ function get_aamenus_sites() {
         "title" => _m("Module Settings"),
         "href"  => "modules/site/modedit.php3",
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
-        "level" => "main");
+        "level" => "main",
+        "submenu"=>"modadmin_submenu");
 
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu
@@ -76,9 +77,20 @@ function get_aamenus_sites() {
             show_always don't include slice_id in cond
     */
 
+
+    $aamenus["modadmin_submenu"] = array(
+        "bottom_td"=>200,
+        "level"=>"submenu",
+        "items"=> array(
+        "header1"=>_m("Main settings"),
+        "main"   =>array ("cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/modedit.php3", "label"=>_m("Site")),
+        "aliases"=>array ("cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/aliases.php3", "label"=>_m("Aliases")),
+    ));
+    
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));
 }
+
 ?>
