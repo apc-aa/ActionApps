@@ -357,7 +357,8 @@ class htmlMimeMail {
             $extensions[] = $key;
         }
 
-        preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', $this->html, $images);
+        // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
+        preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', str_ireplace(array('href="', "href='"), array('', ''), $this->html), $images);
 
         $img_content = array();
         $img_name    = array();
