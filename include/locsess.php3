@@ -42,8 +42,6 @@ function __autoload ($class_name) {
         'ConvertCharset'     => 'include/convert_charset.class.php3',
         'AA_Slices'          => 'include/slice.class.php3',
         'AA_Items'           => 'include/item.php3',
-        'PhpQuickProfiler'   => 'misc/pqp/classes/PhpQuickProfiler.php',
-        'Console'            => 'misc/pqp/classes/Console.php',
         'AA_Form_Array'      => 'include/widget.class.php3',
         'AA_Mysqlauth'       => 'include/auth.php3',
         'AA_Scroller'        => 'include/scroller.php3',
@@ -96,10 +94,6 @@ function __autoload ($class_name) {
             }
         }
     }
-}
-
-if ($_GET['pqp']) {
-   $profiler = new PhpQuickProfiler(microtime(true));
 }
 
 class AA_Debug {
@@ -164,6 +158,7 @@ class AA {
     public static $dbg;
     public static $debug;
     public static $perm;
+    public static $site_id;
 }
 AA::$debug = $_GET['debug'];
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug());
@@ -173,7 +168,6 @@ class DB_AA extends DB_Sql {
     var $Database  = DB_NAME;
     var $User      = DB_USER;
     var $Password  = DB_PASSWORD;
-    var $Auto_Free = 'yes';
 
     public static $queries = array();
 
@@ -181,7 +175,8 @@ class DB_AA extends DB_Sql {
     private static $_db    = null;
 
     /** static
-     *  used as: $chid = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
+     *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
+     *  used as: $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
      **/
     function select1($query, $column=false, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
@@ -199,27 +194,69 @@ class DB_AA extends DB_Sql {
     }
 
     /** static
-     *  used as: $chid = DB_AA::select1('id', "SELECT id FROM `change` WHERE ...");
+     *  first parameter describes the desired output
+     *  written with speed in mind - so all the loops are condition free
+     *  used as: $chid = DB_AA::select('id', 'SELECT id FROM `change` WHERE ...');         -> [id1, id2, ...]
+     *                   DB_AA::select('',   'SELECT id, other FROM `change` WHERE ...');  -> [id1, id2, ...]
+     *                   DB_AA::select(array(), 'SELECT id FROM `change`');                -> [[id=>id1], [id=>id2], ...]
+     *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');          -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
+     *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');  -> [[id1=>other1], [id2=>other2], ...]
+     *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');  -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
+     *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
+     *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
      **/
     function select($column, $query, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
 
         $db->query("$query $sqlwhere");
+
         $ret = array();
-        if (is_array($column)) {
-            $key      = key($column);
-            $col_keys = array_flip($column);
-        }
-        while ($db->next_record()) {
-            if (!is_array($column)) {
-                $ret[] = empty($column) ? reset($db->Record) : $db->Record[$column];
-            }
-            $val = empty($column) ? $db->Record : array_intersect_key($db->Record, $col_keys);
-            if (is_numeric($key) OR empty($key)) {
-                $ret[] = $val;
+        if (!is_array($column)) {
+            if (empty($column)) {
+                while ($db->next_record()) {
+                    $ret[] = reset($db->Record);
+                }
             } else {
-                $ret[$db->Record[$key]] = $val;
+                while ($db->next_record()) {
+                    $ret[] = $db->Record[$column];
+                }
+            }
+        } else {
+            if (empty($column)) {
+                while ($db->next_record()) {
+                    $ret[] = $db->Record;
+                }
+            } else {
+                $key      = key($column);
+                $values   = reset($column);
+                if (is_numeric($key) OR empty($key)) {
+                    if (!is_array($values)) {
+                        while ($db->next_record()) {
+                             $ret[] = $db->Record[$values];
+                        }
+                    } else {
+                        $col_keys = array_flip($values);
+                        while ($db->next_record()) {
+                            $ret[] = array_intersect_key($db->Record, $col_keys);
+                        }
+                    }
+                } else {
+                    if (empty($values)) {
+                        while ($db->next_record()) {
+                             $ret[$db->Record[$key]] = $db->Record;
+                        }
+                    } elseif (!is_array($values)) {
+                        while ($db->next_record()) {
+                             $ret[$db->Record[$key]] = $db->Record[$values];
+                        }
+                    } else {
+                        $col_keys = array_flip($values);
+                        while ($db->next_record()) {
+                            $ret[$db->Record[$key]] = array_intersect_key($db->Record, $col_keys);
+                        }
+                    }
+                }
             }
         }
         return $ret;
@@ -240,6 +277,9 @@ class DB_AA extends DB_Sql {
 
 
     /** makeWHERE function
+     *  [[field_name, value, type], ...]   type:  i - integer, l - longid, q - quoted, s - string
+     *                                     value: singlevalue or array
+     *  array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))
      * @param $tablename
      */
     function makeWHERE($varlist) {
@@ -248,24 +288,35 @@ class DB_AA extends DB_Sql {
         foreach ( $varlist as $vardef) {
             // $vardef is array(varname, type, value)
             list($name, $value, $type) = $vardef;
-            $part = '';
-            switch ( $type ) {
-                case "i": $part = (int)$value; break;
-                case "l": $part = q_pack_id($value); break;
-                case "q": $part = $value; break;
-                default:  $part = addslashes($value);
+
+            //huhl($vardef);
+
+            if (!is_array($value)) {
+                switch ( $type ) {
+                    case "i": $part = (int)$value; break;
+                    case "l": $part = q_pack_id($value); break;
+                    case "q": $part = $value; break;
+                    //default:  $part = DB_AA::quote($value);
+                    default:  $part = addslashes($value);
+                }
+                $where .= "$delim $name = '$part'";
+            } else {
+                switch ( $type ) {
+                    case "i": $arr = array_map('intval', $value); break;
+                    case "l": $arr = array_map('q_pack_id', $value); break;
+                    case "q": $arr = $value; break;
+                    default:  $arr = array_map('addslashes', $value);
+                }
+                switch (count($arr)) {
+                case 0:  $where .= "$delim 2=1"; break;
+                case 1:  $where .= "$delim $name = ". reset($arr); break;
+                default: $where .= "$delim $name IN ('". join("','", $arr) ."')";
+                }
             }
-            $where .= "$delim $name = '$part'";
             $delim = " AND";
         }
+        //huhl($where);
         return $where ? "WHERE $where" : '';
-    }
-
-    /** query function
-     * @param $SQL
-     */
-    function query($SQL) {
-        return ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL));
     }
 
     /** tquery function
@@ -274,6 +325,7 @@ class DB_AA extends DB_Sql {
     function tquery($SQL) {
         return ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL));
     }
+
     /** dquery function
      * @param $SQL
      */
@@ -282,8 +334,6 @@ class DB_AA extends DB_Sql {
         $starttime = microtime(true);
 
         $retval    = parent::query($SQL);
-
-        Console::log("$SQL<br> $type-". $this->num_rows());
 
         // log it
         self::$queries[] = array(
