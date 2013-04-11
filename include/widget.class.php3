@@ -420,7 +420,7 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>$widget_add2";
+            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add autofocus>$widget_add2";
             $selected  = $content->getAaValue($aa_property->getId());
             // empty select option for not required fields and also for live selectbox,
             // because people thinks, that the first value is filled in the database (which is not)
@@ -442,18 +442,20 @@ class AA_Widget extends AA_Components {
                 $input_type     = 'type=text';
             }
 
+            $autofocus = ($type == 'ajax') ? 'autofocus' : '';
             for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
-                $widget      .= "$delim\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add>$widget_add2";
+                $widget      .= "$delim\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$widget_add2";
                 $delim        = '<br />';
+                $autofocus    = '';
             }
             // no input was printed, we need to print one
             if ( !$widget ) {
                 $input_name   = $base_name ."[0]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget       = "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\" $required $widget_add>$widget_add2";
+                $widget       = "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\" $required $widget_add $autofocus>$widget_add2";
             }
         }
 
@@ -500,7 +502,7 @@ class AA_Widget extends AA_Components {
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
         $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
-        $widget_html .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id')\">"; //ULOŽIT ZMÌNU
+        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //ULOŽIT ZMÌNU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
         return $widget_html;
     }
@@ -1068,7 +1070,7 @@ class AA_Widget_Dte extends AA_Widget {
             if ($datectrl->isTimeDisplayed()) {
                 $input_name   = $base_name_add. "[t][$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget      .= "$delim\n<input type=\"text\" size=\"8\" maxlength=\"8\" value=\"". $datectrl->getTimeString(). "\"name=\"$input_name\" id=\"$input_id\"$widget_add>";
+                $widget      .= "$delim\n<input type=\"text\" size=\"8\" maxlength=\"8\" value=\"". $datectrl->getTimeString(). "\" name=\"$input_name\" id=\"$input_id\"$widget_add>";
             }
             $delim        = '<br />';
         }
@@ -2248,7 +2250,7 @@ class AA_Property extends AA_Storable {
     }
 
     /** @return the table, where the property would be stored */
-    static private function _storageType($type) {
+    static function storageType($type) {  // AA_Object needs to access the method
         switch ($type) {
         case 'string':
         case 'text':   return 'object_text';
@@ -2351,7 +2353,7 @@ class AA_Property extends AA_Storable {
         $varset->add('priority',  'number', $priority);
         $varset->add('property',  'text',   $property_id);
         $varset->add('value',      $type,   $value);        // Property type - text | int | bool | float | <class_name>
-        $varset->doInsert(AA_Property::_storageType($type));
+        $varset->doInsert(AA_Property::storageType($type));
     }
 }
 

@@ -216,8 +216,17 @@ function displayInput(valdivid, item_id, fid) {
     AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(responseText) {
             $(valdivid).update(responseText);  // new value
             $(valdivid).setAttribute('data-aa-edited', '1');
-        }
-    );
+            var firstElement = $(valdivid).select('input','select', 'textarea')[0];
+            if(firstElement != null) {
+                firstElement.activate();
+                $(firstElement).on('keydown', function(event) {
+                  switch (event.keyCode) {
+                     // done by type submit case 13: $(this).nextAll('input.save-button').click();   break; // Enter
+                     case Event.KEY_ESC: $(valdivid).select('input.cancel-button')[0].simulate('click'); break; // Esc
+                  }
+               });
+            }
+    });
 }
 
 /** return back old value - CANCEL pressed on AJAX widget */
@@ -322,14 +331,24 @@ function AA_AjaxSendForm(form_id, url) {
     });
 }
 
+/** Refreshes the id using the data-aa-url attribute.
+ *  If that attribute is not present, finds the first up in the DOM
+ */
 function AA_Refresh(id,inside,ok_func) {
-    $(id).update(AA_Config.loader);
-    new Ajax.Request($(id).readAttribute('data-aa-url'), {
+    var refresh_id  = id || this;
+    var refresh_url = $(id).readAttribute('data-aa-url');
+    if (!refresh_url) {
+        refresh_id  = $(id).up('*[data-aa-url]');
+        refresh_url = $(refresh_id).readAttribute('data-aa-url');
+    }
+    $(refresh_id).update(AA_Config.loader);
+
+    new Ajax.Request(refresh_url, {
         onSuccess: function(transport) {
             if (inside) {
-                $(id).update(transport.responseText);
+                $(refresh_id).update(transport.responseText);
             } else {
-                $(id).replace(transport.responseText);
+                $(refresh_id).replace(transport.responseText);
             }
             if (typeof ok_func != "undefined") {
                 ok_func();
@@ -405,7 +424,9 @@ function AA_ReloadAjaxResponse(id, responseText) {
     $(valdivid).setAttribute("data-aa-edited", "0");
     var succes_function = $(valdivid).getAttribute('data-aa-onsuccess');
     if (succes_function) {
-        eval(succes_function);
+        var func = function() { eval(succes_function) };
+        // we use call just to make right this object in called function
+        func.call($(valdivid));
     }
 }
 
