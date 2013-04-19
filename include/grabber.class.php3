@@ -1130,19 +1130,15 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
 class AA_Grabber_Slice extends AA_Grabber {
 
     var $set;                 /** AA_Set specifies the slice, conds and sort */
-    var $zids;                 /** AA_Set specifies the slice, conds and sort */
+    var $restrict_zids;       /** possible subset of ids grabbed */
     var $_longids;            /** list if files to grab - internal array */
     var $_content_cache;      /**  */
     var $_index;              /**  */
 
-    function __construct($set, $zids=null) {
-        if ($zids) {
-            $this->_longids = $zids->longids();
-            $this->set = null;
-        } else {
-            $this->set        = $set;
-            $this->_longids   = array();
-        }
+    function AA_Grabber_Slice($set, $restrict_zids=null) {
+        $this->set            = $set;
+        $this->restrict_zids  = $restrict_zids;
+        $this->_longids       = array();
         $this->_content_cache = array();
         $this->_index         = 0;
     }
@@ -1159,11 +1155,8 @@ class AA_Grabber_Slice extends AA_Grabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        // if the items are defined by $set, then compute. Else it is already filled from constructor $zids
-        if ($this->set) {
-            $zids             = $this->set->query();
-            $this->_longids   = $zids->longids();
-        }
+        $zids                 = $this->set->query($this->restrict_zids);
+        $this->_longids       = $zids->longids();
         $this->_content_cache = array();
         $this->_index         = 0;
         reset($this->_longids);   // go to first long id

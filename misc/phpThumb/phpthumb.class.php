@@ -31,7 +31,7 @@ class phpthumb {
     var $ws   = null;     // Width  (Square Images Only)
     var $hs   = null;     // Height (Square Images Only)
     var $f    = null;     // output image Format
-    var $q    = 75;       // jpeg output Quality
+    var $q    = 90;       // jpeg output Quality
     var $sx   = null;     // Source crop top-left X position
     var $sy   = null;     // Source crop top-left Y position
     var $sw   = null;     // Source crop Width
@@ -163,7 +163,7 @@ class phpthumb {
 
 
     // private: (should not be modified directly)
-    var $thumbnailQuality = 75;
+    var $thumbnailQuality = 90;
     var $thumbnailFormat  = null;
 
     var $sourceFilename   = null;

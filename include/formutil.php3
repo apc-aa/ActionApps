@@ -1178,7 +1178,7 @@ class AA_Inputfield {
     function inputChBox($changeorder=false, $colspan=1){
         list($name,$val,$add) = $this->prepareVars();
 
-        $this->echoo("\n<tr class=\"formrow{formpart}\">");
+        $this->echoo("\n<tr class=\"formrow{formpart} fieldstart\">");
         if ( !$changeorder ) {
             $this->field_name(false, $colspan);
         }

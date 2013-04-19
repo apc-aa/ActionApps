@@ -686,20 +686,24 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
     case AA_BIN_ACTIVE | AA_BIN_PENDING:                                                   return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
     default:
         $or_conds = array();
-        if ($numeric_bin & AA_BIN_ACTIVE) {
-            $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
-            /* condition can specify expiry date (good for archives) */
-            if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
-                //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
-                $SQL .= " AND $table.expiry_date > '$now' ";
+        if (($numeric_bin & (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
+            $or_conds[] = " $table.status_code=1 ";
+        } else {
+            if ($numeric_bin & AA_BIN_ACTIVE) {
+                $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
+                /* condition can specify expiry date (good for archives) */
+                if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+                    //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
+                    $SQL .= " AND $table.expiry_date > '$now' ";
+                }
+                $or_conds[] = $SQL;
             }
-            $or_conds[] = $SQL;
-        }
-        if ($numeric_bin & AA_BIN_EXPIRED) {
-            $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
-        }
-        if ($numeric_bin & AA_BIN_PENDING) {
-            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
+            if ($numeric_bin & AA_BIN_EXPIRED) {
+               $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
+            }
+            if ($numeric_bin & AA_BIN_PENDING) {
+               $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
+            }
         }
         if ($numeric_bin & AA_BIN_HOLDING) {
             $or_conds[] = " $table.status_code=2 ";

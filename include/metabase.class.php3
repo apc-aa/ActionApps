@@ -660,6 +660,7 @@ class AA_Metabase {
         foreach ($tables as $table) {
             $this->tables[$table['table_name']] = AA_Metabase_Table::factoryFromDb($table['table_name']);
         }
+        freeDb($db);
     }
 
     function getCreateSql($tablename='', $prefix='') {

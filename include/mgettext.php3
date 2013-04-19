@@ -69,7 +69,6 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
 
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
-//        exit;
     } else {
         if ($lang != get_mgettext_lang()) {
             $_m = "";

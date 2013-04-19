@@ -48,7 +48,6 @@ $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
 list($fields,) = GetSliceFields($slice_id);
-
 if ( $update )
 {
     do
@@ -192,6 +191,7 @@ function EnableClick(cond,what) {
 ?>
 <form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
+
   FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
 
   // lookup slice fields

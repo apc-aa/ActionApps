@@ -195,7 +195,10 @@ class AA_Object extends AA_Storable {
     function AA_Object($params=array()) {
         // ask class, which parameters uses and fill it
         // call AA_Widget_Txt::getClassProperties()), for example
+        $this->setProperties($params);
+    }
 
+    function setProperties($params=array()) {
         $class = get_class($this);
         foreach (call_user_func(array($class, 'getClassProperties')) as $name =>$property) {
             if (isset($params[$name])) {
