@@ -214,7 +214,7 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
 
     /** Name of this Manager's action */
     function getName() {
-        return _m('Export');
+        return _m('Export to slice');
     }
 
     /** main executive function
@@ -497,6 +497,42 @@ class AA_Manageraction_Item_Email extends AA_Manageraction {
         // $slice = AA_Slices::getSlice($manager->getModuleId());
         // return ($slice->type() == 'ReaderManagement');
         return true; // allow in all slices
+    }
+}
+
+
+/** AA_Manageraction_Export - Exports selected items to Excel file */
+class AA_Manageraction_Item_Export extends AA_Manageraction {
+
+    function AA_Manageraction_Item_Export($id) {
+        parent::AA_Manageraction($id);
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Export to file');
+    }
+
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        $zids = new zids;
+        $zids->setFromItemArr($item_arr);
+
+        if ($zids->count() > 0) {
+            $exportset = AA_Object::factory('AA_Exportsetings', array('grabber_type'=>'AA_Grabber_Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human'));     
+            $exportset->setOwnerId($manager->getModuleId());
+            $exportset->export($zids);
+        }
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }
 

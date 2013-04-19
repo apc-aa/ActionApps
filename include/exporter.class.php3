@@ -498,7 +498,7 @@ class AA_Exportsetings extends AA_Object {
             );
     }
 
-    function export() {
+    function export($restict_zids=null) {
 
         $slice_id = $this->aa_owner;
 
@@ -518,7 +518,7 @@ class AA_Exportsetings extends AA_Object {
         } else {
             $fields          = $slice->getFields();
             $possible_fields = $fields->getPriorityArray();
-            $grabber         = new AA_Grabber_Slice($set);
+            $grabber         = new AA_Grabber_Slice($set, $restict_zids);
         }
 
         if (is_array($this->fields) AND count($this->fields) ) {
@@ -537,7 +537,6 @@ class AA_Exportsetings extends AA_Object {
                 }
             } else {
                 foreach ($possible_fields as $field_id) {
-
                     // skip packed fields
                     if ( in_array($field_id, array('id..............', 'slice_id........'))) {
                         continue;

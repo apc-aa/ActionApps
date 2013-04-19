@@ -115,6 +115,7 @@ $actions->addAction(new AA_Manageraction_Item_Email(        'Email',         $se
 $actions->addAction(new AA_Manageraction_Item_DeleteTrash(  'DeleteTrashAction',true));
 $actions->addAction(new AA_Manageraction_Item_Duplicate(    'Duplicate'));
 $actions->addAction(new AA_Manageraction_Item_Move2slice(   'Move2slice',    $module_id));
+$actions->addAction(new AA_Manageraction_Item_Export(       'Export2File'));
 
 
 $switches  = new AA_Manageractions;
