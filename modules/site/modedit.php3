@@ -239,8 +239,8 @@ FrmJavascript('
         FrmInputChBox("deleted", _m("Deleted"), $deleted);
     }
     FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file, false);
-    FrmInputText("state_file", _m("State file"), $state_file, 99, 25, false, _m("Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php.<br>It is not necessary to use control file, if you choose to use some standard Router (see below). However, you can use the control file even if you use the Router."));
     FrmInputSelect("router",   _m("Router"), array(1 => 'AA_Router_Seo'), $router, false);
+    FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."));
 
     foreach ($g_modules as  $k => $v) {
         if (strpos('SP', $v['type']) !== false) {
