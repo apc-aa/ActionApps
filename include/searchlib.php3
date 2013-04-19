@@ -830,6 +830,13 @@ function getSortFromUrl( $sort ) {
 function GetWhereExp( $field, $operator, $querystring ) {
     AA::$debug && AA::$dbg->log('GetWhereExp', $field, $operator, $querystring );
 
+    $field = trim($field);
+
+    // check for illegal characters in filed_id
+    if (strlen($field) != strspn($field,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
+        return '1=0';
+    }
+
     if ($operator == '==') {
         return " ($field = '$querystring') ";            // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
     }
@@ -895,6 +902,8 @@ function GetWhereExp( $field, $operator, $querystring ) {
         case '=':
             // it is not possible to use wildcard characers with '='
             $syntax      = new Syntax($field, $operator, lex( trim($querystring) ) );
+
+            // ret will be quoted
             $ret         = $syntax->S();
             if ( $ret == "_SYNTAX_ERROR" ) {
                 if ( $GLOBALS['debug'] ) {
@@ -904,7 +913,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
             }
             return ( $ret ? " ($ret) " : "1=1" );
         case 'BETWEEN':
-            $arr = explode( ",", $querystring );
+            $arr = explode( ",", quote($querystring) );
             return  " (($field >= $arr[0]) AND ($field <= $arr[1])) ";
         case 'ISNULL':   return " (($field IS NULL) OR ($field='')) ";
         case 'NOTNULL':  return " (($field IS NOT NULL) AND ($field<>'')) ";
@@ -915,7 +924,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
         case '<'  :
         case '>=' :
         case '>'  :
-            $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? substr( $querystring, 1, -1 ) : $querystring ;
+            $str = quote( (($querystring[0] == '"') OR ($querystring[0] == "'")) ? substr( $querystring, 1, -1 ) : $querystring);
             return " ($field $operator '$str') ";
     }
     return "1=1";
@@ -1121,8 +1130,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                                 continue;
                             }
                         }
-                        $onecond[] = GetWhereExp( $finfo['field'],
-                                            $cond['operator'], $cond['value'] );
+                        $onecond[] = GetWhereExp( $finfo['field'], $cond['operator'], $cond['value'] );
                         if ( $finfo['table'] ) {
                             $join_tables[$finfo['table']] = true;
                         }

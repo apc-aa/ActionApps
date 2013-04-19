@@ -246,7 +246,7 @@ function getToken($input, $i, $length) {
 function preProcess($toks) {
     if ( isset($toks) AND is_array($toks) ) {
         foreach ( $toks as $ind => $val) {
-            
+
             // UNKNOWN will be set for strings not delimeted by apostrofs,
             // we can't say: "it is string" (see "and", ...)
             if ( $val["type"] == TOKEN_TYPE_UNKNOWN ) {
@@ -288,7 +288,7 @@ function preProcess($toks) {
     $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"end of input", "i"=>65536, "type"=>TOKEN_TYPE_EOF);
     return $newtoks2;
 }
- 
+
 /** lex function
  * @param $input
  */
@@ -341,7 +341,7 @@ class TokenList {
      */
     function getStringValue() {
         if ( $this->tList[$this->index]["type"] == TOKEN_TYPE_STRING ) {
-            return $this->tList[$this->index]['value'];
+            return quote($this->tList[$this->index]['value']);
         } else {
             return "";
         }
