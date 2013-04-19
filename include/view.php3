@@ -599,7 +599,11 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
     // Use right language (from slice settings) - languages are used for
     // 'No item found', Next, ... messages
-    mgettext_bind($view->getLang(), 'output');
+    // Do not load new language if we are in sitemodule - languages are handled
+    // there
+    if (!isset($GLOBALS['apc_state']['router'])) {
+        mgettext_bind($view->getLang(), 'output');
+    }
 
     $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( ((strlen($view->f('noitem_msg')) > 0) ) ?
