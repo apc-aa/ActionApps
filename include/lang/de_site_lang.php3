@@ -183,10 +183,10 @@ $_m["Site control file - will be placed in /modules/site/sites/ directory. The n
 
 // modules/site/router.class.php, row 95
 $_m["Next"]
- = "";
+ = "Weiter";
 
 // modules/site/router.class.php, row 96
 $_m["Previous"]
- = "";
+ = "Zurück";
 
 ?>
