@@ -1266,7 +1266,7 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
 /** Evaluates the expression
  *    {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>]]}
  *    {math:1+1-(2*6)}
- *    {math:478778:0:,: }
+ *    {math:478778:1:,: }
  */
 class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1277,7 +1277,7 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
 
     /** expand function  */
     function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '') {
-        $ret      = calculate($expression);
+        $ret      = (double)calculate($expression);
         if ( !empty($dec_point) OR !empty($thousands_sep) ) {
             $decimals      = get_if($decimals,0);
             $dec_point     = get_if($dec_point, ',');
@@ -1417,20 +1417,6 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
         return $ret;
     }
 }
-
-
-class AA_Stringexpand_Rand extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $min
-     * @param $max
-     */
-    function expand($min,$max) {
-        return rand($min, $max);
-    }
-}
-
 
 class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2601,6 +2587,7 @@ class AA_Stringexpand_Finduniq extends AA_Stringexpand {
  *  Example: {constant:AA Core Bins:1:name}
  *           {constant:biom__categories:{@category........:|}:name:|:, }  // for multiple constants
  *           {constant:ekolist-category:{@category.......1:|}:<a href="http#://ekolist.cz/zpravodajstvi/zpravy?kategorie=_#VALUE##_">_#NAME###_</a>:|:, }  // you can use also constant aliases and expressions
+ *           {constant:molcz-rubriky:{constants:molcz-rubriky::-}:{(<label><input type='checkbox' name='type[]' value='_#VALUE##_' {ifin:{qs:type:-}:{_#VALUE##_}: checked}>_#NAME###_</label>)}:-: }
  */
 class AA_Stringexpand_Constant extends AA_Stringexpand {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
@@ -2632,31 +2619,35 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
     }
 }
 
-/** Sequence - returns sequence of values in JSON Array (could be used with {options}, for example)
- *    {seqence:num:min:limit:step}
+/** {constants:<group_id>:<format>:<delimiter>}
+ *  {constants:ekolist-category}
+ *  @return prints all constants delimited by <delimiter>. Only _#NAME###_ and _#VALUE##_ aliases could be used
  */
-class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Constants extends AA_Stringexpand {
+    /** Do not trim all parameters (the $selected parameter could contain space) */
+    function doTrimParams() { return false; }
+
     /** expand function
-     * @param $group_id
+     * @param $group  - group id or JSON list of values
      */
-    function expand($type, $min='', $max='', $step='') {
-        $arr = array();
-        switch ($type) {
-        case 'num':
-            if (is_numeric($min) AND is_numeric($max)) {
-                $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
+    function expand($group, $format='', $delimiter='') {
+        $ret      = array();
+        $constants = GetConstants(trim($group));
+        if (is_array($constants)) {
+            switch (trim($format)) {
+               case 'name':  $format = '_#NAME###_'; break;
+               case '':
+               case 'value': $format = '_#VALUE##_';
             }
-            break;
-        case 'string':
-            if (strlen($min) AND strlen($max)) {
-                $arr = range($min, $max);
+            foreach ($constants as $k => $v) {
+                if (strlen($res = str_replace(array('_#VALUE##_','_#NAME###_'), array($k, $v), $format))) {
+                    $ret[] = $res;
+                }
             }
-            break;
         }
-        return empty($arr) ? '' : json_encode($arr);
+        return join($delimiter, $ret);
     }
 }
-
 
 /** {options:<group_id>:<selected>}
  *  {options:[1,2,5,7]:7}
@@ -2694,6 +2685,30 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
     }
 }
 
+/** Sequence - returns sequence of values in JSON Array (could be used with {options}, for example)
+ *    {seqence:num:min:limit:step}
+ */
+class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $group_id
+     */
+    function expand($type, $min='', $max='', $step='') {
+        $arr = array();
+        switch ($type) {
+        case 'num':
+            if (is_numeric($min) AND is_numeric($max)) {
+                $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
+            }
+            break;
+        case 'string':
+            if (strlen($min) AND strlen($max)) {
+                $arr = range($min, $max);
+            }
+            break;
+        }
+        return empty($arr) ? '' : json_encode($arr);
+    }
+}
 
 /** If $condition is filled by some text, then print $text. $text could contain
  *  _#1 alias for the condition, but you can use any {} AA expression.
