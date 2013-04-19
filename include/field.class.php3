@@ -96,9 +96,12 @@ class AA_Field {
     }
 
     /** getWidget function
-     *
+     * @param $widget_type - wi2|sel|...
+     *                       used, when we want to use another widget, than the default one
+     *                       usualy not used - right now we use it just for constants_sel.php3
+     * @param $properties  - array of properties to redefine for $widget_type
      */
-    function & getWidget() {
+    function & getWidget($widget_type=null, $properties=array()) {
         if ( is_null($this->widget) ) {
    //        function setFromField(&$field) {
    //            if (isset($field) AND is_array($field)) {
@@ -119,7 +122,17 @@ class AA_Field {
    //            }
    //        }
             //huhl($this->data);
-            $this->widget = AA_Widget::factoryByString('AA_Widget_', $this->data['input_show_func']);
+
+            // $this->widget = AA_Widget::factoryByString('AA_Widget_', $widget_type ? $widget_type : $this->data['input_show_func']);
+            $params       = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
+            $widget_class = $widget_type ? AA_Object::constructClassName('AA_Widget_', $widget_type) : $params['class'];
+            if (!class_exists($widget_class)) {
+                $widget_class = $params['class'];
+            }
+            $this->widget = AA_Object::factory($widget_class, $params);
+            if ($properties) {
+                $this->widget->setProperties($properties);
+            }
         }
         return $this->widget;
     }
@@ -240,13 +253,22 @@ class AA_Field {
     }
 
     /** getWidgetNewHtml function
-    * @param $item_id
-    * @param $required  // redefine default settings of required
-    */
-    function getWidgetNewHtml($required=null) {
-        $widget  = $this->getWidget();
+     * @param $item_id
+     * @param $required  // redefine default settings of required
+     * @param $widget_type - wi2|sel|...
+     *                       used, when we want to use another widget, than the default one
+     *                       usualy not used - right now we use it just for constants_sel.php3
+     * @param $properties  - array of properties to redefine for $widget_type
+     *
+     * Ussage: $field->getWidgetNewHtml(false, 'mch', array('columns' => 1));
+     */
+    function getWidgetNewHtml($required=null, $widget_type=null, $properties=array(), $preset_value=null) {
+        $widget  = $this->getWidget($widget_type, $properties);
         $content = new AA_Content();
         $content->setOwnerId($this->getSliceId());
+        if (is_object($preset_value)) {
+            $content->setAaValue($this->getId(), $preset_value);
+        }
         $aa_property = $this->getAaProperty($widget->multiple(), $required);
 
         return $widget->getHtml($aa_property, $content);

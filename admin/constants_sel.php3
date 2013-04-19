@@ -51,23 +51,11 @@ HtmlPageBegin('default', true);
 <script type="text/javascript">
 <!--
 
-    var listboxes=Array();
-
-    // select all in select box, needed for submiting all items in wi2 input field
-    function SelectAllInBox(myform, listbox) {
-          for (var i = 0; i < myform.elements[listbox].length; i++)
-              // select all rows without the wIdThTor one, which is only for <select> size setting
-             myform.elements[listbox].options[i].selected =
-               ( myform.elements[listbox].options[i].value != "wIdThTor" );
-    }
-
     // update changes in parent window
-    function updateChanges(myform,varfield, type) {
+    function updateChanges(myform) {
       window.opener.document.filterform.elements["<?php echo $var_id ?>"].value = "";
-      if (type == "wi2") { SelectAllInBox(myform, varfield); }
-      if (type == "mch") {
-        for (var i = 0; i < myform.elements.length-1; i++) {
-            if ((myform.elements[i].name == varfield) && (myform.elements[i].checked == true)) {
+      for (var i = 0; i < myform.elements.length-1; i++) {
+            if ((myform.elements[i].type == "checkbox") && (myform.elements[i].checked == true)) {
                 t_val = window.opener.document.filterform.elements["<?php echo $var_id ?>"].value;
                 if (t_val == "") {
                     t_val = '"' + myform.elements[i].value + '"';
@@ -76,20 +64,6 @@ HtmlPageBegin('default', true);
                 }
                 window.opener.document.filterform.elements["<?php echo $var_id ?>"].value = t_val;
             }
-        }
-      } else {
-          for (var i = 0; i < myform.elements[varfield].length; i++) {
-              if (myform.elements[varfield].options[i].selected) {
-                t_val = window.opener.document.filterform.elements["<?php echo $var_id ?>"].value;
-                if (t_val == "") {
-                    t_val = '"' + myform.elements[varfield].options[i].value + '"';
-                } else {
-                    t_val = t_val + ' OR "' + myform.elements[varfield].options[i].value + '"';
-                }
-                window.opener.document.filterform.elements["<?php echo $var_id ?>"].value = t_val;
-                window.opener.document.filterform.elements["<?php echo $var_id ?>"].value
-              }
-          }
       }
       window.close();
     }
@@ -97,26 +71,18 @@ HtmlPageBegin('default', true);
 </script>
 </head> <?php
 
+$preset_value = new AA_Value();
 // parse selected values
 if ($sel_text) {
     $content_tmp = explode(" OR ", $sel_text);
     if (is_array($content_tmp)) {
         for ( $i=0, $ino=count($content_tmp); $i<$ino; ++$i) {
-            $content[]['value'] = str_replace("\\\"", "", $content_tmp[$i]);
+            $preset_value->addValue(str_replace("\\\"", "", $content_tmp[$i]));
         }
     }
 }
 
-// Display the field
-$aainput = new AA_Inputfield($content);
-$aainput->setFromField($fields[$field_name]);
-switch ( $aainput->get_inputtype() ) {
-    case "sel" :
-    case "pre" :
-    case "rio" : $aainput->set_inputtype('wi2');
-}
-
-
+$field = $slice->getField($field_name);
 
 echo "<center>";
 echo "$Msg <br>";
@@ -125,19 +91,19 @@ echo "$Msg <br>";
 
 echo '<form name="inputform" method=post action="'. $sess->url($_SERVER['PHP_SELF']) .'">';
 FrmTabCaption(_m("Select constants"), '','', '', $sess, $slice_id);
-echo $aainput->get();
+
+echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, 'mch', array('columns' => 1), $preset_value) : '') .'</td></tr>';
 
 // following definition MUST be after $aainput->get() - this method modifies
 // $aainput->varname() !!!
 $form_buttons = array("var_id" => array("type"=>"hidden", "value"=>$var_id),
                       "btn_ok" => array("type"=>"button",
                                         "value"=> _m("OK"),
-                                        "add"=> 'onclick=\'updateChanges(this.form,"'.$aainput->varname().'","'.$aainput->get_inputtype().'")\''),
+                                        "add"=> 'onclick=\'updateChanges(this.form)\''),
                       "cancel");
 
 FrmTabEnd($form_buttons,$sess, $slice_id);
-echo "</form>";
-
-HtmlPageEnd();
-page_close()
+echo "</form>
+</body></html>";
+page_close();
 ?>

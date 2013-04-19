@@ -258,7 +258,7 @@ function OpenConstantsWindow(varname, field_name, design, sel_text, admin_url) {
     }
     constantswindow = open(admin_url +
         "&field_name=" + field_name + "&var_id=" + varname + "&design=" + design +
-        "&sel_text=" + encodeURIComponent(sel_text) , "popup", "scrollbars=1,resizable=1,width=640,height=200");
+        "&sel_text=" + encodeURIComponent(sel_text) , "popup", "scrollbars=1,resizable=1,width=640,height=500");
 }
 
 
