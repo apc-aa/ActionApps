@@ -1,49 +1,66 @@
+04/19/13 - new possibility to create email templates for (Bulk) emails sended
+(honzam)   to Readers manualy - just create the 'user template' email template
+           in the Reader slice and you will be able to select it
+         - new possibility to predefine homepage in seo sitemodule settings
+           (the url, which will be displayed, if user do not specify any page)" modules/site/modedit.php3
+         - new 'Export to file' itemmanager action for selected fields, which
+           will export the items to XLS format (human formated)
+         - constant selection in searchbar now uses the values as defined in the
+           field, so you can use also related items there.
+         - multiple checkboxes widget is scrollable automaticaly, for long list
+           of options
+         - update database structure Optimize action now highlights
+           the differences in the output after you click on Test button
+         - added Slovak and German language files with UTF-8 encoding
+         - fix {math} - better decimals handling
+         - fix laguage handling in views called from sitemodule
+         - fixes in searching - better look for unexisting fields
 04/11/13 - new Module Settings -> Aliases page, where you can create site-module
 (honzam)   specific alias functions. It is replacement of STRINGEXPAND_SHORTCUTS
-           global variable, which was could be defined in custom stringexpand 
-           file and now is not recommended (but still work). 
-           This is quite powerfull feature, since now you can define also 
-           parameters for the aliases - so you get some kind of "functions". 
-           The aliases could be called as 
-             {_:Alias_name:parameters} 
-           parameters inside the alias code are in order _#P1, _#P2, ... 
-           For example 
+           global variable, which was could be defined in custom stringexpand
+           file and now is not recommended (but still work).
+           This is quite powerfull feature, since now you can define also
+           parameters for the aliases - so you get some kind of "functions".
+           The aliases could be called as
+             {_:Alias_name:parameters}
+           parameters inside the alias code are in order _#P1, _#P2, ...
+           For example
              {_:Message_box:Update successfull:green}
-           could be deffined like as 
-             <div class=mybox style="color:_#P2">_#P1</div> 
-         - new possibility to write {xseo:1} {xseo:2} instead of {xseo1} 
-           and {xseo2}. It is for compatibility with {xid:1}, {xid:2}. 
+           could be deffined like as
+             <div class=mybox style="color:_#P2">_#P1</div>
+         - new possibility to write {xseo:1} {xseo:2} instead of {xseo1}
+           and {xseo2}. It is for compatibility with {xid:1}, {xid:2}.
            The new way is {xseo:1} preffered, but the old one works as well
          - {xseo} gives you just the first id, if more than one matches
-         - new {index:<field-id>[:<index>]} - which returns the value 
-           at position <index> for multivalue fields, 
+         - new {index:<field-id>[:<index>]} - which returns the value
+           at position <index> for multivalue fields,
              {index:category........}  - return first value
-         - {ajax:...} widgets now reacts on Enter and Esc with jQuery version 
+         - {ajax:...} widgets now reacts on Enter and Esc with jQuery version
            of scripts; AA_Refresh javascript function now refreshes the id using
-           the data-aa-url attribute - if that attribute is not present, finds 
-           the first up in the DOM 
-         - new experimental {form:<formid>} which displays the form defined 
+           the data-aa-url attribute - if that attribute is not present, finds
+           the first up in the DOM
+         - new experimental {form:<formid>} which displays the form defined
            in AA Admin interface - first version - will be improved
-         - you can switch off grouping in the view by the parameter 
+         - you can switch off grouping in the view by the parameter
              {view:45::group_by-}
-         - you can specify restict the slices, from which you want to see item 
+         - you can specify restict the slices, from which you want to see item
            ids in tree
-         - new "Convert database engine to InnoDB" optimize action which 
+         - new "Convert database engine to InnoDB" optimize action which
            converts older MyISAM database storage engine to InnoDB for all tables
          - new Optimize task "Backup tables" which deletes all the current
            backup tables (bck_slice, bck_item, ...) and copies there live tables
            (slice, item, ...)
-         - links to views in AA Admin interface under the textareas now 
+         - links to views in AA Admin interface under the textareas now
            recognizes also {view:xy} syntax
-         - fixed internal ussage of floating points/commas in AA - we use point 
-           inside AA for all internal function, even in Czech lang, where we 
-           would normaly use comma 
+         - fixed internal ussage of floating points/commas in AA - we use point
+           inside AA for all internal function, even in Czech lang, where we
+           would normaly use comma
          - improved Planed tasks and toexecute functionality - better prevention
-           for not running the same task twice - even for long running tasks 
-         - fixed html mail sending - the images linked through <a href=""> 
+           for not running the same task twice - even for long running tasks
+         - fixed html mail sending - the images linked through <a href="">
            is not included in the mail, which is correct
          - you can specify the max length of textarea
-         - optimized database access  
+         - optimized database access
          - removed unused Console and PhpQuickProfiler
 04/10/13 - fix - the seo sitemodule now displays only item active and expired
 (honzam) - fix - convert filters from pdf, odt, doc, docx works, if configured
