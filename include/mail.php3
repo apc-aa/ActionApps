@@ -39,6 +39,11 @@ require_once AA_INC_PATH."toexecute.class.php3";
 
 class AA_Mail extends htmlMimeMail  {
 
+    /** static getTemplate */
+    function getTemplate($mail_id) {
+        return GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+    }
+
     /** setFromTemplate function
      *  Prepares the mail for sending
      *  The e-mail template is taken from database and all aliases
@@ -49,8 +54,7 @@ class AA_Mail extends htmlMimeMail  {
     function setFromTemplate($mail_id, $item=null) {
         global  $LANGUAGE_CHARSETS;
         // email has the templates in it
-        $record = GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
-        if (!$record) {
+        if (! ( $record = AA_Mail::getTemplate($mail_id))) {
             return false;
         }
         // unalias all the template fields including errors_to ...
@@ -58,13 +62,16 @@ class AA_Mail extends htmlMimeMail  {
             $record[$key] = AA_Stringexpand::unalias($value, "", $item);
         }
         $record["lang"] = $LANGUAGE_CHARSETS[$record["lang"]];
-
-        $this->setFromArray($record);
+        return $this->setFromArray($record);
     }
 
     /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html')  */
     function setFromArray($record) {
-        // email has the templates in it
+        // do not send empty emails
+        if ( !strlen(trim($record["body"]))) {
+            return false;
+        }
+
         if ($record["html"]) {
             $this->setHtml( $record["body"], html2text($record["body"]));
         } else {
@@ -83,6 +90,7 @@ class AA_Mail extends htmlMimeMail  {
                 $this->addAttachment($att_data, basename(parse_url($attachment, PHP_URL_PATH)));
             }
         }
+        return true;
     }
 
     /** sendLater function
@@ -191,7 +199,9 @@ class AA_Mail extends htmlMimeMail  {
      function sendTemplate($mail_id, $to, $item=null, $later=true) {
         // email has the templates in it
         $mail = new AA_Mail;
-        $mail->setFromTemplate($mail_id, $item);
+        if (!$mail->setFromTemplate($mail_id, $item)) {
+            return false;
+        }
 
         if ($later) {
             return $mail->sendLater($to);

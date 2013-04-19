@@ -72,6 +72,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             ValidateInput("sender",      _m("Sender (email)"),     $sender,      $err, false, "text");
             ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
             ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
+            ValidateInput("template_id", _m("Email template"),     $template_id, $err, false, "number");
 
             foreach (array('attachment1', 'attachment2', 'attachment3') as $attach) {
                 $uploadvar = $attach.'x';
@@ -95,10 +96,16 @@ if ( !$send ) {               // for the first time - directly from item manager
                 break;
             }
 
-            $varset->addglobals( array('description', 'subject', 'body',
+            $varset->addglobals( array('description', 'subject',
                                        'header_from', 'reply_to', 'errors_to', 'sender',
                                        'lang', 'owner_module_id', 'type', 'attachments'),
                                  'quoted');
+
+            if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
+                $varset->add('body', 'text', str_replace(array('_#BODYTEXT','_#SUBJECT_'),array($_POST['body'], $_POST['subject']),$mailtemplate['body']));
+            } else {
+                $varset->add('body', 'quoted', $body);
+            }
             $varset->add('html', 'number', $html);
 
             $varset->doINSERT('email');
@@ -171,18 +178,26 @@ $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');
 $additional[]               = array( 'text'    => '<input type="text" name="testemail" value="'.$testemail.'" size="80"> '._m('Test email address(es)'),
                                      'varname' => 'testuser');
+
+$user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
+
 FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
 
 FrmTabSeparator( _m('Write the email') );
 
 FrmInputText(  'subject',     _m('Subject'),           $_POST['subject'],     254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
+
+if ($user_templates) {
+    FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id'], false);
+}
+
 FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true);
 FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true);
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false);
 FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false);
 FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false);
-FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),  $_POST['lang'] ? $_POST['lang'] : $slice->getCharset(), true);
+FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),  $_POST['lang'] ? $_POST['lang'] : $slice->getLang(), true);
 FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
 FrmInputFile(  'attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
 FrmInputFile(  'attachment2',   _m('Attachement 2'), $attachment2, false, "*/*");

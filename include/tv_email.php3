@@ -40,6 +40,7 @@ function get_email_types() {
         "alerts alert"         => _m("alerts alert"),
         "alerts welcome"       => _m("alerts welcome"),
         "slice wizard welcome" => _m("slice wizard welcome"),
+        "user template"        => _m("user template"),
         "other"                => _m("other"),
     );
 }
@@ -82,6 +83,13 @@ function ShowEmailAliases() {
             "_#ROLE____" => _m("New user role (editor / admin)"),
             "_#ME_NAME_" => _m("My name"),
             "_#ME_MAIL_" => _m("My email"),
+         ));
+
+    $ali[] = array (
+        "group" => _m("Aliases for User Templates (you can use also all aliases of the user)"),
+        "aliases" => array (
+            "_#BODYTEXT" => _m("Slice name"),
+            "_#SUBJECT_" => _m("New user name")
          ));
 
     echo "<br><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
