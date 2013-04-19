@@ -65,6 +65,7 @@ function __autoload ($class_name) {
         case 'debug':
         case 'transformation':
         case 'grabber':
+        case 'difftext':
         //  case 'widget':
         //  case 'field':
             require AA_INC_PATH. $core. '.class.php3';

@@ -243,7 +243,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
                 //huhl($diff);
                 $this->message(_m('Tables %1 are identical.', array($tablename)));
             } else {
-                $this->message(_m('Tables %1 are different: <br>Template:<br>%2<br>Current:<br>%3', array($tablename, $diff['table1'], $diff['table2'])));
+                $this->message(_m('Tables %1 are different: <br>%2', array($tablename, AA_Difftext::renderHtml($diff['table2'], $diff['table1']))));
                 $different = true;
             }
         }
