@@ -1300,6 +1300,7 @@ class AA_Widget_Mch extends AA_Widget {
         $input_name   = $base_name_add ."[def]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
         $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
+        $widget       = '<div style="max-height:400px; overflow:auto;">'.$widget.'</div>';
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
