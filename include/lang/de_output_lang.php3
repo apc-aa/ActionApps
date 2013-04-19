@@ -319,11 +319,11 @@ $_m["All"]
 
 // include/easy_scroller.php3, row 146, 272
 $_m["Previous"]
- = "";
+ = "Zurück";
 
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "";
+ = "Weiter";
 
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
