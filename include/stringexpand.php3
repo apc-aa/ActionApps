@@ -2491,7 +2491,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
             return '';
         }
 
-        $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED;
+        $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
 
         $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
         $zids = $set->query();

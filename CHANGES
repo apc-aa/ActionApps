@@ -1,3 +1,8 @@
+04/23/13 - fixed problem with the change of packed ids representation in queries
+(honzam)   (we are starting to use 0x15784a4b4e... instead of packed ids in SQL)
+         - fixed problem with required FileUpload field, where text was required
+         - the sitemodule displays content of item in active, expired and pending
+           bins, if you know the exact url (pending was re-added, now)
 04/19/13 - new possibility to create email templates for (Bulk) emails sended
 (honzam)   to Readers manualy - just create the 'user template' email template
            in the Reader slice and you will be able to select it
