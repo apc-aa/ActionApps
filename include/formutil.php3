@@ -1777,11 +1777,15 @@ class AA_Inputfield {
     */
     function inputFile($accepts="*/*", $text="", $hlp="") {
         list($name,$val,$add) = $this->prepareVars();
-        $size=60;
         if ( !$accepts ) {
             $accepts = '*/*';
         }
-        $this->inputText(255,$size);
+        $val     = htmlspecialchars($val);
+
+        $this->field_name('plus');
+        $this->echovar( "<input type=url name=\"$name\" size=60". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">" );
+        $this->helps('plus');
+
         $this->name       = $text;
         $this->input_help = $hlp;
         $this->field_name('secrow');
