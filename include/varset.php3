@@ -69,7 +69,7 @@ class Cvariable {
                 // grrr: if $var=0 then $var=""!!!
                 return ($this->value == "") ? "0" : $this->value;
             case "unpacked":
-                return '0x' . quote($this->value);
+                return strlen($this->value) ? '0x' . quote($this->value) : "''";
             case "quoted":
                 return "'" . $this->value ."'";
             case "null":
@@ -290,6 +290,7 @@ class Cvarset {
             $foo .= $predznak . $variable->getSQLValue();
             $predznak = ", ";
         }
+
         return $foo . " ) " ;
     }
 
