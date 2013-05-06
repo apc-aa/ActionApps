@@ -149,7 +149,7 @@ require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
 
 if ($lang_file) {
-    bind_mgettext_domain(AA_INC_PATH.'lang/'.$lang_file);
+    mgettext_bind(GetLang($lang_file), 'output');
 }
 
 $res = ModW_GetSite( $apc_state, AA::$site_id, $site_info );

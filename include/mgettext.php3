@@ -131,4 +131,12 @@ function _m($id, $params = 0) {
 function _mdelayed($id, $params = 0) {
     return _m($id, $params);
 }
+
+/** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $lang_file or from default
+ */
+function GetLang($lang_file) {
+    $lang_code = substr($lang_file, 0, strpos($lang_file,'_'));
+    return isset($GLOBALS['LANGUAGE_NAMES'][$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
+}
+
 ?>

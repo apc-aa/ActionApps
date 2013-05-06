@@ -215,8 +215,7 @@ class AA_Slice {
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
     function getLang()     {
-        $lang_file = substr($this->getProperty('lang_file'), 0, strpos($this->getProperty('lang_file'), '_news_lang'));
-        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
+        return GetLang($this->getProperty('lang_file'));
     }
 
     /** getCharset function
@@ -364,7 +363,7 @@ class AA_Slice {
         return $this->show_func_used;
     }
 
-    function allowed_bin_4_user($user='') {
+    function allowed_bin_4_user() {
         // put the item into the right bin
         $bin2fill = (int) $this->getProperty("permit_anonymous_post");
         return ($bin2fill < 1) ? 4 : $bin2fill;
