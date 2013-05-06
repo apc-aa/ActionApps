@@ -397,14 +397,14 @@ class AA_Csv_Importer {
                  echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. (!$set_default ? $this->itemIdMappedParams : '').'"></input>';
                ?></td>
             </tr>
-
         <?php
         FrmTabSeparator(_m("Select, how to store the items"));
         $storage_mode = array('insert_if_new' => _m('Do not store the item'),
                               'insert_new'    => _m('Store the item with new id'),
                               'overwrite'     => _m('Update the item (overwrite)'),
                               'add'           => _m('Add the values in paralel to current values (the multivalues are stored, where possible)'),
-                              'update'        => _m('Rewrite only the fields, for which the action is defined')
+                              'update'        => _m('Rewrite only the fields, for which the action is defined and compute all computed fileds, ...'),
+                              'update_silent' => _m('Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)')
                               );
         FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, !$set_default ? $this->actionIfItemExists : "insert_if_new", true, '', '', 1);
         FrmTabSeparator(_m("Data source"));
