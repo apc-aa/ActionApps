@@ -34,6 +34,8 @@ if (!IsSuperadmin()) {
     exit;
 }
 
+set_time_limit(max(300,ini_get('max_execution_time')));   // 300 seconds (at least)
+
 $Msg = '';
 
 // php4 returns class names in lower case, so we need itin lower case
