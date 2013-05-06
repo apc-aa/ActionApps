@@ -1502,9 +1502,10 @@ class AA_Inputfield {
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
-        while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
-            $ret .= AA_WIDTHTOR;
-        }
+        // removed - since it was never used and it just works - $minrows is not filled here
+        // while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+        //     $ret .= AA_WIDTHTOR;
+        // }
         $ret .= "</select>";
         $this->echovar( $ret );
         $this->helps('plus');
@@ -1780,17 +1781,18 @@ class AA_Inputfield {
         if ( !$accepts ) {
             $accepts = '*/*';
         }
-        $val     = htmlspecialchars($val);
+        $val  = htmlspecialchars($val);
+        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
 
         $this->field_name('plus');
-        $this->echovar( "<input type=url name=\"$name\" size=60". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">" );
+        $this->echovar( "<input type=text name=\"$name\" size=60". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">&nbsp;$link" );
         $this->helps('plus');
 
         $this->name       = $text;
         $this->input_help = $hlp;
         $this->field_name('secrow');
         $file_field_name = $name.'x';
-        $this->echovar( "<input type=\"file\" name=\"$file_field_name\" size=\"$size\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
+        $this->echovar( "<input type=\"file\" name=\"$file_field_name\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
         $this->helps('plus');
     }
 
@@ -1959,7 +1961,7 @@ class AA_Inputfield {
             $this->field_name('secrow',1,$delete_pwd_label);
             $ch_name = $name."d";
             $this->echovar("<input type=\"checkbox\" name=\"$ch_name\"". getTriggers("input",$ch_name).">", 'delete');
-            $this->helps('plus',$delete_pwd_help );
+            $this->helps('plus');
         }
 
         // change pwd
@@ -2067,6 +2069,7 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
  *                      any usage) - added by Jakub, 28.1.2003
  */
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text") {
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, $type);
     $input->print_result();
@@ -2086,6 +2089,7 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, 
  * @param $type
  */
 function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="password") {
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, $type);
     $input->print_result();
@@ -2134,7 +2138,8 @@ function FrmHidden($name, $val, $safing=true ) {
  * @param $single
  */
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="", $showrich_href=false, $maxlength=0) {
-    $html=false;  // it was in parameter, but was never used in the code /honzam 05/15/2004
+    $html  = false;   // it was in parameter, but was never used in the code /honzam 05/15/2004
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
     $input->print_result();
@@ -2157,6 +2162,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
  * @param $html
  */
 function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class", $needed=false, $hlp="", $morehlp="", $single="", $html=false) {
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->richEditTextarea($rows, $cols, $type, $single);
     $input->print_result();
@@ -2175,6 +2181,8 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
  *                         3 - hour:minutes
  */
 function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=0) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->dateSelect(7, 1, true, $display_time);
     $input->print_result();
@@ -2196,6 +2204,7 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
  * @param $add
  */
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add='') {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRadio($ncols, $move_right);
     $input->print_result();
@@ -2218,6 +2227,8 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
  * @param $design
  */
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     if ( $relation ) {
         $input->inputRelation($rows, $relation, $minrows, $mode, $design);
@@ -2243,6 +2254,8 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation
  * @param $actions
  */
 function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="", $actions='MDAC') {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
     $input->print_result();
@@ -2265,6 +2278,8 @@ function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=fal
  * @param $levelNames
  */
 function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal, $firstSelect, $levelNames);
     $input->print_result();
@@ -2283,6 +2298,8 @@ function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $b
  * @param $usevalue
  */
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $usevalue=false) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputSelect($usevalue);
     $input->print_result();
@@ -2302,6 +2319,8 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="",
  * @param $move_right
  */
 function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     // selected array we need to be in form array( 0 => array('value'=>val))
     // so we need to prepare it
     $sel = array();
@@ -2327,6 +2346,8 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp
  * @param $morehlp
  */
 function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputFile($accepts);
     $input->print_result();
@@ -2349,6 +2370,8 @@ function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp
  * @param $usevalue
  */
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $adding=0, $secondfield="", $usevalue=false) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputPreSelect($maxsize,$size,$adding,$secondfield,$usevalue);
     $input->print_result();
@@ -2365,6 +2388,8 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $nee
  * @param $cols
  */
 function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehlp="",  $rows=4, $cols=60) {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->textareaPreSelect($rows,$cols);
     $input->print_result();
@@ -2382,8 +2407,10 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
  * @param $morehlp
  */
 function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield('', $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputRelation($rows, $relation, $minrows, $mode, $design);
+    $input->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design);
     $input->print_result();
 }
 
@@ -2401,6 +2428,8 @@ function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=fals
  * @param $morehlp
  */
 function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $sel = array();
     if (is_array($selected)) {
         foreach($selected as $val) {
@@ -2450,7 +2479,7 @@ function PrintMoreHelp( $txt ) {
  * @param $value
  */
 function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id='') {
-  echo FrmChBoxEasyCode($name, $checked, $add, $value);
+    echo FrmChBoxEasyCode($name, $checked, $add, $value, $id);
 }
 /** FrmChBoxEasyCode function
  * @param $name

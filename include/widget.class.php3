@@ -447,7 +447,7 @@ class AA_Widget extends AA_Components {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
-                $widget      .= "$delim\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$widget_add2";
+                $widget      .= $delim. "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$widget_add2";
                 $delim        = '<br />';
                 $autofocus    = '';
             }
@@ -621,7 +621,7 @@ class AA_Widget_Txt extends AA_Widget {
             $input_name   = $base_name ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $widget      .= "$delim\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
+            $widget      .= $delim. "\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
             $delim        = '<br />';
         }
 
@@ -1060,17 +1060,17 @@ class AA_Widget_Dte extends AA_Widget {
             $datectrl->setdate_int($value->getValue($i));
             $input_name   = $base_name_add. "[d][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getDayOptions()."</select>";
+            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getDayOptions()."</select>";
             $input_name   = $base_name_add. "[m][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
+            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
             $input_name   = $base_name_add. "[y][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions($aa_property->isRequired())."</select>";
+            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions($aa_property->isRequired())."</select>";
             if ($datectrl->isTimeDisplayed()) {
                 $input_name   = $base_name_add. "[t][$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget      .= "$delim\n<input type=\"text\" size=\"8\" maxlength=\"8\" value=\"". $datectrl->getTimeString(). "\" name=\"$input_name\" id=\"$input_id\"$widget_add>";
+                $widget      .= $delim. "\n<input type=\"text\" size=\"8\" maxlength=\"8\" value=\"". $datectrl->getTimeString(). "\" name=\"$input_name\" id=\"$input_id\"$widget_add>";
             }
             $delim        = '<br />';
         }
@@ -1517,8 +1517,9 @@ class AA_Widget_Fil extends AA_Widget {
             $input_name   = $base_name ."[fil][url][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
+            $link         = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
             if ($display_url < 2) {
-                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
+                $widget      .= $delim. "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>&nbsp;$link";
             } else {
                 $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$input_value";
             }
@@ -1618,6 +1619,8 @@ class AA_Widget_Tag extends AA_Widget {
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id      = AA_Form_Array::formName2Id($base_name);
+
         $input_name   = $base_name.'[tag][]';
         $input_id     = AA_Form_Array::formName2Id($input_name);
 
