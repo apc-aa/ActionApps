@@ -41,7 +41,8 @@ function get_email_types() {
         "alerts welcome"       => _m("alerts welcome"),
         "slice wizard welcome" => _m("slice wizard welcome"),
         "user template"        => _m("user template"),
-        "other"                => _m("other"),
+        "password change"      => _m("password change"),
+        "other"                => _m("other")
     );
 }
 
@@ -82,7 +83,7 @@ function ShowEmailAliases() {
             "_#LOGIN___" => _m("New user login name"),
             "_#ROLE____" => _m("New user role (editor / admin)"),
             "_#ME_NAME_" => _m("My name"),
-            "_#ME_MAIL_" => _m("My email"),
+            "_#ME_MAIL_" => _m("My email")
          ));
 
     $ali[] = array (
@@ -92,14 +93,19 @@ function ShowEmailAliases() {
             "_#SUBJECT_" => _m("New user name")
          ));
 
+    $ali[] = array (
+        "group" => _m("Aliases for Password Change email (you can use also all aliases of the user)"),
+        "aliases" => array (
+            "_#PWD_LINK" => _m("HTML link to the password change page for current user")
+         ));
+
+
     echo "<br><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
-    reset ($ali);
-    while (list (, $aligroup) = each ($ali)) {
+    foreach ($ali as $aligroup) {
         echo "<tr><td class=\"tabtit\" colspan=\"2\"><b>&nbsp;".$aligroup['group']."&nbsp;</b></td></tr>";
-        reset ($aligroup["aliases"]);
-        while (list ($alias, $desc) = each ($aligroup["aliases"]))
-            echo "<tr><td class=\"tabtxt\">&nbsp;$alias&nbsp;</TD>
-                <td class=\"tabtxt\">&nbsp;$desc&nbsp;</td></tr>";
+        foreach ($aligroup["aliases"] as $alias => $desc) {
+            echo "<tr><td class=\"tabtxt\">&nbsp;$alias&nbsp;</td><td class=\"tabtxt\">&nbsp;$desc&nbsp;</td></tr>";
+        }
     }
     echo "</table>";
 }
@@ -108,11 +114,9 @@ function ShowEmailAliases() {
 /** GetEmailTableView function
  *  see class tabledit :: var $getTableViewsFn for an explanation of the parameters
  * @param $viewID
- * @param $processForm
  */
-function GetEmailTableView($viewID, $processForm = false)
-{
-    global $auth, $slice_id, $db;
+function GetEmailTableView($viewID) {
+    global $slice_id;
     global $attrs_edit, $attrs_browse, $format, $langs;
 
     if ($viewID == "email_edit") {
@@ -217,27 +221,22 @@ function GetEmailTableView($viewID, $processForm = false)
  *
  */
 function GetEmailWhere() {
-    global $auth, $db;
     if (IsSuperadmin()) {
         return "(1=1)";
     }
-    else {
-        $myslices = GetUserSlices();
-        if (is_array($myslices)) {
-            reset ($myslices);
-            while (list ($my_slice_id, $perms) = each ($myslices)) {
-                if (strchr ($perms, PS_FULLTEXT)) {
-                        $restrict_slices[] = q_pack_id($my_slice_id);
-                }
+    $myslices = GetUserSlices();
+    if (is_array($myslices)) {
+        reset ($myslices);
+        while (list ($my_slice_id, $perms) = each ($myslices)) {
+            if (strchr ($perms, PS_FULLTEXT)) {
+                $restrict_slices[] = q_pack_id($my_slice_id);
             }
-            return "owner_module_id IN ('".join("','",$restrict_slices)."')";
         }
-        else {
-            return "(1=0)";
-        }
+        return "owner_module_id IN ('".join("','",$restrict_slices)."')";
     }
-    return $retval;
+    return "(1=0)";
 }
+
 /** EmailAfterInsert function
  * @param $varset
  */

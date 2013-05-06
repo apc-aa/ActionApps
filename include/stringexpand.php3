@@ -983,7 +983,7 @@ function parseMath($text) {
     return $ret;
 }
 
-/** parseLoop function
+/** parseLoop function - like AA_Stringexpand_List / AA_Stringexpand_@
  *  - in loop writes out values from field
  * @param $out
  * @param $item
@@ -3435,7 +3435,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
             case "site":
                 if ($type == "site") {
                     if (!($fileman_dir = $GLOBALS['site_fileman_dir'])) {
-                        if ($errcheck) huhl("No site_fileman_dir defined in site file");
+                        // if ($errcheck) huhl("No site_fileman_dir defined in site file");
                         return "";
                     }
                 }
@@ -3451,7 +3451,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
                 $fileout = $file->contents();
                 break;
             default:
-                if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");
+                // if ($errcheck) huhl("Trying to expand include, but no valid type: $type");
                 return("");
         }
         return $fileout;
@@ -4830,16 +4830,33 @@ class AA_Password_Manager_Reader {
         $pwdkey   = md5($user_id.$email.AA_ID.round(now()/60));
 
         // send it via email
-        $mail     = new AA_Mail;
-        $mail->setSubject(_m("Password change"));
-        $url  = shtml_url()."?aapwd2=$pwdkey-$user_id";
-        $body = _m("To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one.",array("<a href=\"$url\">$url</a>"));
-        $mail->setHtml($body, html2text($body));
-        $mail->setHeader("From", $from_email);
-        $mail->setHeader("Reply-To", $from_email);
-        $mail->setHeader("Errors-To", $from_email);
-        //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
-        $mail->send(array($email));
+        $url      = shtml_url()."?aapwd2=$pwdkey-$user_id";
+        $pwd_link = "<a href=\"$url\">$url</a>";
+
+        //$GLOBALS['debug']=1;
+        //AA::$debug = true;
+
+        if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', array(array('owner_module_id',$slice_id, 'l'), array('type','password change')))) {
+            $slice     = AA_Slices::getSlice($slice_id);
+            $user_item = new AA_Item($user_info, $slice->aliases( array("_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link", "", _m('Password link')))));
+            
+            //huhl($user_item);
+            
+            AA_Mail::sendTemplate($template_id, array($email), $user_item, false);
+        } else {
+            $mail     = new AA_Mail;
+            $mail->setSubject(_m("Password change"));
+            $body = _m("To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one.",array("<a href=\"$url\">$url</a>"));
+            $mail->setHtml($body, html2text($body));
+            $mail->setHeader("From", $from_email);
+            $mail->setHeader("Reply-To", $from_email);
+            $mail->setHeader("Errors-To", $from_email);
+            //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
+            $mail->send(array($email));
+        }
+
+        //huhl($template_id, ',', $slice_id );
+
         return self::_ok(_m('E-mail with a key to change the password has just been sent to the e-mail address: %1', array($email)));
     }
 
@@ -4970,6 +4987,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *    {foreach:val1-val2:<p>_#1</p>:-:<br>}
  *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
  *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
+      {foreach:2011-2012:<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>}
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
 
@@ -5116,7 +5134,7 @@ class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
             $item = new ItemContent($iid);
             $item->updateComputedFields($iid, null, 'update', $field_arr);
         }
-        return $ret;
+        return '';
     }
 }
 
