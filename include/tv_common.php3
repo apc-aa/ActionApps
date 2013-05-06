@@ -104,7 +104,7 @@ function SelectModule($all = false) {
     }
 
     $SQL = "SELECT id, name FROM module
-             WHERE ($where AND type = 'Alerts')
+             WHERE $where
                    OR id = '".q_pack_id($GLOBALS['slice_id'])."'
              ORDER BY name";
     return GetTable2Array($SQL, $key="unpack:id", 'name');
