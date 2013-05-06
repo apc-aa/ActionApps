@@ -1,3 +1,14 @@
+05/06/13 - new possibility to customize Password change e-mail. You need just
+(honzam)   to define the "password change" type of email template for the Reader
+           Slice
+         - new posibility to use "Silent" CSV import - without recomputing the
+           computed firld and lastedit field rewriting - it is quicker, than
+           non-Silent import of course
+         - sitemodule uses better language detection and also uses
+           *_lang_output.php3 files, which is better
+         - File Upload widget now contains link to filled external url
+         - e-mail templates could belong to any slice - not only Alerts' include/tv_common.php3
+         - new PDO database access added (not used, not tested, yet)
 04/23/13 - fixed problem with the change of packed ids representation in queries
 (honzam)   (we are starting to use 0x15784a4b4e... instead of packed ids in SQL)
          - fixed problem with required FileUpload field, where text was required

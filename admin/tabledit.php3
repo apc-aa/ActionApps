@@ -71,7 +71,7 @@ echo "<title>".$tableview["title"]."</title></head>";
 showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<h1><b>" . $tableview["caption"] . "</b></h1>";
 
-ProcessFormData ($func, $val, $cmd);
+ProcessFormData($func, $val, $cmd);
 
 PrintArray($Err);
 echo $Msg;
@@ -79,7 +79,7 @@ echo $Msg;
 $script = $sess->url("tabledit.php3");
 
 $tabledit = new tabledit($tview, $script, $cmd, $tableview, AA_INSTAL_PATH."images/", $sess, $func);
-$err      = $tabledit->view ($where);
+$err      = $tabledit->view($where);
 if ($err) {
     echo "<b>$err</b>";
 }

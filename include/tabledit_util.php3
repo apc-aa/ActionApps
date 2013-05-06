@@ -39,8 +39,7 @@ require_once AA_INC_PATH."varset.php3";
  * @param $val
  * @param $cmd
  */
-function ProcessFormData($getTableViewsFn, $val, &$cmd)
-{
+function ProcessFormData($getTableViewsFn, $val, &$cmd) {
     global $err, $debug, $tabledit_formdata_processed;
 
     if ($tabledit_formdata_processed) {
@@ -58,10 +57,8 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd)
     reset ($cmd);
     while (list ($myviewid, $com) = each ($cmd)) {
         $myview = $getTableViewsFn ($myviewid, "form");
-        SetColumnTypes($myview["fields"], $primary_aliases, $myview["table"],
-            $myview["join"], false, $myview['primary']);
-        reset ($com);
-        while (list ($command, $par) = each ($com)) {
+        SetColumnTypes($myview["fields"], $primary_aliases, $myview["table"], $myview["join"], false, $myview['primary']);
+        foreach ($com as $command => $par) {
             switch ($command) {
             case "update":
                 if (current ($par)) {
@@ -72,10 +69,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd)
                         if ($ok) $GLOBALS["Msg"] = _m("Insert was successfull.");
                     }
                     else {
-                        $ok = TableUpdate(
-                            $myview["table"], $val[key($par)],
-                            $myview["fields"], $primary_aliases, $myview["primary"],
-                            $myview["messages"]["error_update"], $myview["triggers"]);
+                        $ok = TableUpdate( $myview["table"], $val[key($par)], $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_update"], $myview["triggers"]);
                         if ($ok) {
                             $GLOBALS["Msg"] = _m("Update was successfull.");
                         }
@@ -93,10 +87,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd)
                     while (list ($key, $vals) = each ($val)) {
                         RunColumnFunctions($vals, $myview["fields"], $myview["table"], $myview["join"]);
                         if ($key != $GLOBALS['new_key']) {
-                            $ok = $ok && TableUpdate (
-                                $myview["table"], $vals,
-                                $myview["fields"], $primary_aliases, $myview["primary"],
-                                $myview["messages"]["error_update"], $myview["triggers"]);
+                            $ok = $ok && TableUpdate ( $myview["table"], $vals, $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_update"], $myview["triggers"]);
                         }
                     }
                     if (!$ok) {
@@ -113,9 +104,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd)
                     reset ($par);
                     $ok = true;
                     while ($ok && list ($key, $checked) = each ($par)) {
-                        $ok = TableDelete($myview["table"], $key,
-                                     $myview["fields"], $primary_aliases,
-                                     $myview["messages"]["error_delete"], $myview["triggers"]);
+                        $ok = TableDelete($myview["table"], $key, $myview["fields"], $primary_aliases, $myview["messages"]["error_delete"], $myview["triggers"]);
                     }
                 }
                 if ($ok) {
@@ -123,9 +112,9 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd)
                 }
                 break;
             case "delete":
-                if (TableDelete($myview["table"], key($par), $myview["fields"], $primary_aliases,
-                    $myview["messages"]["error_delete"], $myview["triggers"]))
+                if (TableDelete($myview["table"], key($par), $myview["fields"], $primary_aliases, $myview["messages"]["error_delete"], $myview["triggers"])) {
                     $GLOBALS["Msg"] = _m("Delete was successfull.");
+                }
                 break;
             default:
                 break;
@@ -152,22 +141,17 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd)
  * @param $join
  * @param $default_readonly
  */
-function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="",
-    $default_readonly=false, $primary="") {
+function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", $default_readonly=false, $primary="") {
     global $db;
-    $primary_aliases = array ();
+    $primary_aliases = array();
 
     // set column defaults and find all tables used in $columns
-    reset ($columns);
-    while (list ($colname) = each ($columns)) {
+    foreach ($columns as $colname => $foo) {
         $column = &$columns[$colname];
         setDefault($column["table"], $default_table);
         setDefault($column["field"], $colname);
         setDefault($column["caption"], $colname);
-        setDefault($column["view"]["readonly"],
-            $default_readonly
-            || $column["view"]["type"] == "userdef"
-            || $column["view"]["type"] == "calculated");
+        setDefault($column["view"]["readonly"], $default_readonly || $column["view"]["type"] == "userdef" || $column["view"]["type"] == "calculated");
         if ($column["view"]["type"] == "date") {
             $cols = strlen (date ($column["view"]["format"], "31.12.1970"));
         }
@@ -181,41 +165,40 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="",
         $tables [$column["table"]] = 1;
     }
 
-    reset ($tables);
-    while (list ($table) = each ($tables)) {
+    foreach ($tables as $table => $foo) {
         // Special table name - not real name - used for not database columns
         if ( $table == 'aa_notable' ) {
             continue;    // This is not database column
         }
+
         $cols = $db->metadata($table);
-        reset ($cols);
-        while (list (,$col) = each ($cols)) {
+
+        foreach ($cols as $col) {
             // find the column
-            reset ($columns);
             unset ($cprop);
-            while (list ($alias) = each ($columns))
-                if ($columns[$alias]["field"] == $col["name"]
-                    && $columns[$alias]["table"] == $table) {
+            foreach ($columns as $alias => $foo) {
+                if ($columns[$alias]["field"] == $col["name"] && $columns[$alias]["table"] == $table) {
                     $cprop = &$columns[$alias];
                     break;
                 }
+            }
 
             // is this column a part of join condition? if yes, it must be created
             $is_join_part = false;
             if ($join[$table]) {
-                reset ($join[$table]["joinfields"]);
-                while (list (, $join_childf) = each ($join[$table]["joinfields"]))
+                foreach ($join[$table]["joinfields"] as $join_childf) {
                     if ($join_childf == $col["name"]) {
                         $is_join_part = true;
                         break;
                     }
+                }
             }
 
             // is it a part of the primary key?
             if ($primary && $primary[$table]) {
-                 $is_primary = in_array($col["name"], $primary[$table]);
+                $is_primary = in_array($col["name"], $primary[$table]);
             } else {
-                $is_primary = strstr ($col["flags"], "primary_key");
+                $is_primary = (strpos($col["flags"], "primary_key")!==false);
             }
             if ($is_primary || $is_join_part) {
                 // create the column if not exists

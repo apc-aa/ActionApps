@@ -690,7 +690,7 @@ class ItemContent extends AA_Content {
             $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
         }
 
-        $status = max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user($auth));
+        $status = max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user());
         $new_content->setValue('status_code.....', $status);
 
         if ( $new_content->getPublishDate() <= 0 ) {
@@ -1416,11 +1416,13 @@ class AA_ChangesMonitor {
 
         $ids4sql = sqlin("`change`.resource_id", $resource_ids);
 
-        $changes = GetTable2Array("SELECT `change`.resource_id, `change_record`.*
+        $sql = "SELECT `change`.resource_id, `change_record`.*
                                 FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
                                 WHERE $ids4sql
                                 AND   `change`.type='$type'
-                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority";
+
+        $changes = GetTable2Array($sql, '', 'aa_fields');
 
         if ( is_array($changes) ) {
             foreach($changes as $change) {

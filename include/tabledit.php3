@@ -95,21 +95,19 @@ class tabledit {
      * @param $is_child
      */
     function tabledit($viewID, $action, $cmd, $view, $imagepath, &$sess, $getTableViewsFn, $is_child=false) {
-        $this->viewID = $viewID;
-        $this->all_cmd = $cmd;
-        $this->cmd = $cmd[$viewID];
-        $this->view = $view;
-        $this->cols = $this->view["fields"];
+        $this->viewID          = $viewID;
+        $this->all_cmd         = $cmd;
+        $this->cmd             = $cmd[$viewID];
+        $this->view            = $view;
+        $this->cols            = $this->view["fields"];
         // complete the column info
-        SetColumnTypes($this->cols, $this->primary_aliases,
-            $this->view["table"], $this->view["join"],
-            $this->view["readonly"], $this->view["primary"]);
-        $this->is_child = $is_child;
-        $this->action = $action;
-        $this->sess = &$sess;
-        $this->imagepath = $imagepath;
+        SetColumnTypes($this->cols, $this->primary_aliases, $this->view["table"], $this->view["join"], $this->view["readonly"], $this->view["primary"]);
+        $this->is_child        = $is_child;
+        $this->action          = $action;
+        $this->sess            = &$sess;
+        $this->imagepath       = $imagepath;
         $this->getTableViewsFn = $getTableViewsFn;
-        $this->type = $this->view["type"];
+        $this->type            = $this->view["type"];
 
         $this->UpdateCmd();
     }
@@ -234,7 +232,7 @@ class tabledit {
                 $col .= " ".$cname;
             $collist[] = $col;
         }
-        
+
 
         $db->query(
              " SELECT ".join(",",$collist)
@@ -522,7 +520,7 @@ class tabledit {
             // value of $this->cmd["insert"] was changed in TableInsert to the SQL WHERE clause
             $this->view["where"] = "(".$this->view["where"].") OR ".$this->cmd["insert"];
         }
-        
+
         // apply edit command only in Edit view
         if ($this->cmd["edit"] && $this->type == "edit") {
             $where = CreateWhereCondition(key($this->cmd["edit"]),
@@ -962,8 +960,7 @@ class tabledit {
             $fn = $this->getTableViewsFn;
             $chtv = $fn($chview);
 
-            SetColumnTypes($chtv["fields"], $primary_aliases, $chtv["table"],
-                $chtv["join"], $chtv["readonly"], $chtv["primary"]);
+            SetColumnTypes($chtv["fields"], $primary_aliases, $chtv["table"], $chtv["join"], $chtv["readonly"], $chtv["primary"]);
 
             $varset = new CVarset;
 

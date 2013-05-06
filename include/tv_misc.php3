@@ -35,8 +35,8 @@ require_once AA_INC_PATH."tv_email.php3";
  * @param $viewID
  * @param $processForm
  */
-function GetMiscTableView($viewID, $processForm = false) {
-    global $auth, $slice_id, $db;
+function GetMiscTableView($viewID) {
+    global $slice_id;
     global $attrs_edit, $attrs_browse, $format, $langs;
 
     $p_slice_id = q_pack_id($slice_id);
