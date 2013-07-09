@@ -104,7 +104,7 @@ class AA_Router {
                    $arr[] = "<a href=\"$v\" $add>$k</a>";
                 }
             } else {
-                $arr[] = $k;
+                $arr[] = is_numeric($k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
             }
         }
 
@@ -114,13 +114,13 @@ class AA_Router {
     function getParam($param) {
         $params = array(
                          'page_variable'      => 'xpage',
-                         'scroller_delimiter' => ' | ',
+                         'scroller_delimiter' => '<span class="delimiter"> | </span>',
                          'scroller_begin'     => '',
                          'scroller_end'       => '',
                          'scroller_add'       => '',
                          'scroller_nopage'    => '',
-                         'scroller_next'      => _m('Next'),
-                         'scroller_previous'  => _m('Previous'),
+                         'scroller_next'      => _m('&raquo;'),
+                         'scroller_previous'  => _m('&laquo;'),
                          'scroller_length'    => SCROLLER_LENGTH
                        );
         if (!isset($params[$param])) {
