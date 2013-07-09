@@ -35,7 +35,7 @@ class AA_Supertree {
 
     protected $_restrict_slices;  // Array of allowed slices
 
-    function __construct($relation_field, $sort=null, $slices=null) {
+    function __construct($relation_field, $sort=null, $slices=array()) {
         $this->_relation_field  = $relation_field;
         $this->_sort            = $sort;
         $this->_i               = array();
@@ -265,7 +265,7 @@ class AA_Trees {
         return $supertree->getIds($id);
     }
 
-    function getSupertree($relation_field, $reverse, $sort, $slices=null) {
+    function getSupertree($relation_field, $reverse, $sort, $slices=array()) {
         $trees = AA_Trees::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
         if (!isset($trees->a[$key])) {

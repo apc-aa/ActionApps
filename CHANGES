@@ -1,3 +1,29 @@
+07/08/13 - new mode "3" for {shorten}, which shorten the text in the middle
+(honzam)   with ... (good for file-paths, ...)
+         - {options} now accepts key-value pairs in JSON form for the options,
+           where value and text is different - like
+             {options:[[1,"January"],[2,"Feb"],[3,"March"]]:7}
+         - new "required" parameter for {input:slice-id:field-id:required}
+           displaying the new input widget
+         - better HTML code for password change widget
+         - fixed images included in the email, when recoded with img.php - now
+           it is added correctly in the mail
+         - better html code for {pager}s (could be better styled with CSS)
+           The example of good style for the <div id="pager">{pager}</div> is:
+             #pager            { clear: both; text-align: right; }
+             #pager a, #pager span.active { background-color: #545454;
+                color: #000000; font-size: 1.1em; font-weight: 700;
+                margin: 0 3px; padding: 1px 5px;}
+            #pager span.active { background-color: #FFFFFF; }
+            #pager a:hover     { background-color: #999999; }
+            #pager .delimiter  { display: none; }
+         - Multiple Checkboxes widget now allows specify the maximum height
+           of the widget - if it if bigger, the inner scroller is displayed
+         - the conditions for {ids:...} and other places uses heuristics
+           to destinguish if the conditions are url encoded or not. It allows
+           you to omit the second parameter "1"
+           in the {conds:category........:1} expression
+         - test emails are sent immediately - not stored in the cache
 05/06/13 - new possibility to customize Password change e-mail. You need just
 (honzam)   to define the "password change" type of email template for the Reader
            Slice

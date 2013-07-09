@@ -364,25 +364,23 @@ class Session {
   // session $id.
 
   function url($url) {
+
+     // huhl($url);
     // Remove existing session info from url
     // We clean any(also bogus) sess in url
     $url = preg_replace("/([&?])".preg_quote(urlencode($this->name), '/')."=(.)*(&|$)/", "\\1", $url);
 
     // Remove trailing ?/& if needed
-    $url = preg_replace("/[&?]+$/", "", $url);
+    $url = rtrim($url, "&?");
 
-    switch ($this->mode) {
-      case "get":
-          $url .= ( strpos($url, "?") !== false ?  "&" : "?" ). urlencode($this->name)."=".$this->id;
-      break;
-      default:
-        ;
-      break;
+    if ($this->mode == 'get') {
+        $url .= ( strpos($url, "?") !== false ?  "&" : "?" ). urlencode($this->name)."=".$this->id;
     }
 
     // Encode naughty characters in the URL
-    $url = str_replace(array("<", ">", " ", "\"", "'"),
-                       array("%3C", "%3E", "+", "%22", "%27"), $url);
+    $url = str_replace(array("<", ">", " ", "\"", "'"), array("%3C", "%3E", "+", "%22", "%27"), $url);
+
+    //huhl($url);
     return $url;
   }
 

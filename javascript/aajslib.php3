@@ -120,7 +120,7 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
         // not loaded from remote url, yet?
         if ( $(div_id_2).readAttribute('aa_loaded') != '1') {
             $(div_id_2).setAttribute('aa_loaded', '1');
-            AA_Ajax(div_id_2, url);
+            AA_Ajax(div_id_2, url, {evalScripts: true });
         }
         $(link_id).update(link_text_2);
     } else {
@@ -479,7 +479,7 @@ function AA_StateChange(id, state) {
         elems.invoke('removeClassName', 'dirty');
         elems.invoke('removeClassName', 'updating');
         outstyle = {'outline': 'none'};
-        icoimg   = 'images/px.gix';
+        icoimg   = 'images/px.gif';
         break;
     }
     elems.invoke('addClassName', state);

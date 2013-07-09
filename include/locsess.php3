@@ -182,6 +182,9 @@ class DB_AA extends DB_Sql {
     function select1($query, $column=false, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
+        
+        AA::$debug && AA::$dbg->log("$query $sqlwhere LIMIT 1");
+
         $db->query("$query $sqlwhere LIMIT 1");
         if (!$db->next_record()) {
             return false;
