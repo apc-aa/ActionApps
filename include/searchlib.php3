@@ -686,6 +686,13 @@ class AA_Set extends AA_Object {
              if ( AA_Set::check($command_params[$i], $command_params[$i+2]) ) {
                  $field_arr = explode(',',$command_params[$i]);
                  $cond_str  = $command_params[$i+2];
+
+                 // d- conds in {item:....:d-..} could be url encoded (as produced by {conds:...})
+                 // so if the first and last characetr is encoded quotes, let's decode it
+                 if ( (substr($cond_str,0,3) == '%22') AND (substr($cond_str,-3) == '%22')) {
+                     $cond_str = rawurldecode($cond_str);
+                 }
+
                  // well stripsplashes if bad - we never want the slashed text
                  // here, but we do not know, if the command is not from url
                  // so we will rather stripslash the string in most cases
