@@ -796,8 +796,10 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
  *  of sentence. In all cases it strips HTML tags
  *  @param $text           - the shortened text
  *  @param $length         - max length
- *  @param $mode           - 1 - try cut whole paragraph
- *                         - 0 - just cut on length
+ *  @param $mode           - 0 - just cut on length
+ *                         - 1 - try cut whole paragraph
+ *                         - 2 - smart - use 0 for length < 50, 1 otherwise
+ *                         - 3 - shorten in the middle with ...
  *  @param $add            - text added in case the text shorten
  *                           (so the resulting text will be at maximum length+add long)
  */
@@ -823,6 +825,12 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
 
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>');
+        if ($mode == 3) {
+            $text = strip_tags($text);
+            $ret  = substr($text, 0, $length/2-1).'...';
+            return $ret. substr($text, strlen($ret)-$length). $text_add;
+        }
+
         if ($mode == 1) {
             foreach ( $PARAGRAPH_ENDS as $end_str ) {
                 $paraend = strpos(strtolower($shorted_text), $end_str, min($shorted_len,10));  // we do not want to
@@ -1859,7 +1867,9 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
  *    {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}
  *  or
  *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
- *    see the third parameter (1) in the last example!
+ *  see the third parameter (1) in the last example!
+ *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:{qs:type}:1}}
+ *  works also for multivalue variable (type[] $_GET variable in the last example)
  *
  *  The syntax is:
  *     {conds:<field or text>[:<do not url encode>]}
@@ -2651,6 +2661,7 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
 
 /** {options:<group_id>:<selected>}
  *  {options:[1,2,5,7]:7}
+ *  {options:[[1,"January"],[2,"Feb"],[3,"March"]]:7}
  *  {options:{sequence:num:1998:2012}:{date:Y}}
  *  @return html <option>s for given constant group with selected option
  */
@@ -2668,8 +2679,16 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
             $constants = json_decode($group, true);
             if (is_array($constants)) {
                 foreach ($constants as $v) {
-                    $sel  = ((string)$v == $selected) ? ' selected' : '';
-                    $ret .= "\n  <option $sel>".safe($v)."</option>";
+                    if (is_array($v)) {
+                        $k     = $v[0];
+                        $khtml = "value=\"$k\"";
+                        $v     = $v[1];
+                    } else {
+                        $k     = $v;
+                    }
+
+                    $sel  = ((string)$k == $selected) ? ' selected' : '';
+                    $ret .= "\n  <option $khtml $sel>".safe($v)."</option>";
                 }
             }
         } else {
@@ -2999,18 +3018,19 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
      * @param $slice_id
      */
     function expand($field_id, $property='name', $slice_id=null) {
-        $field = $this->_getField($slice_id, $field_id);
-        if (!$field) {
-            return '';
-        }
-
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
         $property = self::$ALLOWED_PROPERTIES[$property];
         if ($property == 'widget_new') {
-            return $field->getWidgetNewHtml();
+            return AA_Stringexpand_Input::expand($slice_id, $field_id);
         }
+
+        $field = $this->_getField($slice_id, $field_id);
+        if (!$field) {
+            return '';
+        }
+
         return (string) $field->getProperty($property ? $property : 'name');
     }
 
@@ -3024,7 +3044,6 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
         return AA_Slices::getField($slice_id, $field_id);
     }
 }
-
 
 /** {fieldoptions:<slice_id>:<field_id>:<values>}
  *  displys html <options> as defined for the field. You can specify current
@@ -3050,6 +3069,111 @@ class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
     }
 }
 
+/** Allows on-line editing of field content */
+class AA_Stringexpand_Input extends AA_Stringexpand_Field {
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     */
+     function expand($slice_id, $field_id, $required=null) {
+         if ( !($field = $this->_getField($slice_id, $field_id))) {
+             return '';
+         }
+         return $field->getWidgetNewHtml($required==1);
+     }
+}
+
+/** Allows on-line editing of field content
+ *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
+ *  {ajax:{_#ITEM_ID_}:category........}
+ *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
+ *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
+ *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
+ **/
+class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getID();
+    }
+
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     * @param $show_alias
+     * @param $onsuccess
+     */
+    function expand($item_id, $field_id, $show_alias='', $onsuccess='') {
+        $ret = '';
+        if ( $field_id) {
+            $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
+            if (!empty($item)) {
+                $alias_name  = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
+                $repre_value = ($show_alias == '') ? $item->f_h($field_id, ', ') : $item->subst_alias($show_alias);
+                $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
+                $iid         = $item->getItemID();
+                $input_name  = AA_Form_Array::getName4Form($field_id, $item);
+                $input_id    = AA_Form_Array::formName2Id($input_name);
+                $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">";
+                $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.htmlspecialchars($onsuccess).'"' : '';
+                $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
+                $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
+                $ret .= "</div>";
+            }
+        }
+        return $ret;
+    }
+}
+
+
+/** Allows on-line editing of field content
+ *    {live:<item_id>:<field_id>:<required>:<function>}
+ *
+ *   <required>  explicitly mark the live field as required
+ *   <function>  specify javascript function, which is executed after the widget
+ *                is sumbitted
+ */
+class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getID();
+    }
+
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     */
+    function expand($item_id, $field_id, $required=null, $function=null) {
+        $ret = '';
+
+        if (!$field_id) {
+            return '';
+        }
+
+        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
+        if (!empty($item)) {
+
+            $iid   = $item->getItemID();
+            $slice = AA_Slices::getSlice($item->getSliceId());
+
+            // Use right language (from slice settings) - languages are used for button texts, ...
+            $lang  = $slice->getLang();
+            //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
+            mgettext_bind($lang, 'output');
+
+            $field = $slice->getField($field_id);
+            $ret   = $field ? $field->getWidgetLiveHtml($iid, ($required==1) ? true : null, $function) : '';
+        }
+        return $ret;
+    }
+}
 
 /** Get module (slice, ...) property (currently only "module fileds"
  *  (beggining with underscore) and 'name' is supported
@@ -3189,7 +3313,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         if (!isset($apc_state['router'])) {
             // used for AJAX scroller in the SEO sitemodule, for example
             $viewScr = new AA_View_Scroller($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
-            return $viewScr->get( $begin, $end, $add, $nopage, $target);
+            return $viewScr->get( '', '', '', '', $target);
         }
 
         $class_name = $apc_state['router'];
@@ -3781,100 +3905,6 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Allows on-line editing of field content
- *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
- *  {ajax:{_#ITEM_ID_}:category........}
- *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
- *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
- *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
- **/
-class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
-    /** expand function
-     * @param $item_id
-     * @param $field_id
-     * @param $show_alias
-     * @param $onsuccess
-     */
-    function expand($item_id, $field_id, $show_alias='', $onsuccess='') {
-        $ret = '';
-        $alias_name = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
-        if ( $item_id AND $field_id) {
-            $item        = AA_Items::getItem(new zids($item_id));
-            $repre_value = ($show_alias == '') ? $item->f_h($field_id, ', ') : $item->subst_alias($show_alias);
-            $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
-            $iid         = $item->getItemID();
-            $input_name  = AA_Form_Array::getName4Form($field_id, $item);
-            $input_id    = AA_Form_Array::formName2Id($input_name);
-            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">";
-            $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.htmlspecialchars($onsuccess).'"' : '';
-            $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
-            $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
-            $ret .= "</div>";
-        }
-        return $ret;
-    }
-}
-
-
-/** Allows on-line editing of field content
- *    {live:<item_id>:<field_id>:<required>:<function>}
- *
- *   <required>  explicitly mark the live field as required
- *   <function>  specify javascript function, which is executed after the widget
- *                is sumbitted
- */
-class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
-
-    // not needed right now for Nevercached functions, but who knows in the future
-    function additionalCacheParam() {
-        /** output is different for different items - place item id into cache search */
-        return !is_object($this->item) ? '' : $this->item->getID();
-    }
-
-    /** expand function
-     * @param $item_id
-     * @param $field_id
-     */
-    function expand($item_id, $field_id, $required=null, $function=null) {
-        $ret = '';
-
-        if (!$field_id) {
-            return '';
-        }
-
-        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-        if (!empty($item)) {
-
-            $iid   = $item->getItemID();
-            $slice = AA_Slices::getSlice($item->getSliceId());
-
-            // Use right language (from slice settings) - languages are used for button texts, ...
-            $lang  = $slice->getLang();
-            //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
-            mgettext_bind($lang, 'output');
-
-            $field = $slice->getField($field_id);
-            $ret   = $field ? $field->getWidgetLiveHtml($iid, ($required==1) ? true : null, $function) : '';
-        }
-        return $ret;
-    }
-}
-
-/** Allows on-line editing of field content */
-class AA_Stringexpand_Input extends AA_Stringexpand_Nevercache {
-    /** expand function
-     * @param $item_id
-     * @param $field_id
-     */
-     function expand($slice_id, $field_id) {
-         return AA_Stringexpand_Field::expand($field_id, $slice_id, 'widget_new');
-     }
-}
-
 class AA_Stringexpand {
 
     /** item, for which we are stringexpanding
@@ -4072,13 +4102,19 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
     /** Do not trim all parameters (maybe we can?) */
     function doTrimParams() { return false; }
 
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getId();
+    }
+
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     /** expand function
      * @param $number
      */
     function expand($string='') {
-        return AA_Stringexpand::unalias($string);
+        $item   = $this ? $this->item : null;
+        return AA_Stringexpand::unalias($string,'',$item);
     }
 }
 
@@ -4735,6 +4771,10 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
         case 'addset':
             $arr->addset($par1, $par2);
             break;
+        case 'joinset':
+            // $i, $value, $delimiter
+            $arr->joinset($par1, $par2, $par3);
+            break;
         case 'getall':
             // $expr with _#1, $delimiter, $sort (key|)
             $ret = $arr->getAll(strlen($par1) ? $par1 : '_#1', $par2, $par3);
@@ -4839,9 +4879,9 @@ class AA_Password_Manager_Reader {
         if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', array(array('owner_module_id',$slice_id, 'l'), array('type','password change')))) {
             $slice     = AA_Slices::getSlice($slice_id);
             $user_item = new AA_Item($user_info, $slice->aliases( array("_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link", "", _m('Password link')))));
-            
+
             //huhl($user_item);
-            
+
             AA_Mail::sendTemplate($template_id, array($email), $user_item, false);
         } else {
             $mail     = new AA_Mail;
@@ -4864,14 +4904,19 @@ class AA_Password_Manager_Reader {
         if (!self::isValidKey($key, $user)) {
             return self::_bad(_m("La clave ha caducado."));  // @todo get messages from somewhere
         }
-        return _m("Fill in the new password:"). '<br>
-        <form name="pwdmanagerchangeform" method="post" action="">
-        '._m('New password').': <input type="password" name="aapwd3"><br>
-        '._m('Retype New Password').': <input type="password" name="aapwd3b"><br>
-        <input type="hidden" name="aauser"  value="'. $user .'">
-        <input type="hidden" name="aakey"   value="'. $key .'">
-        <input type="hidden" name="nocache" value="1">
-        <input type="submit"  value="'. _m('Send').'">
+        return '
+        <form name="pwdmanagerchangeform" method="post" action="" class="aapwdmanagerchangeform">
+          <fieldset>
+            <legend>'. _m("Fill in the new password") .'</legend>
+            <div style="display:inline-block; text-align:right;">
+              <label>'._m('New password').': <input type="password" name="aapwd3"></label><br>
+              <label>'._m('Retype New Password').': <input type="password" name="aapwd3b"></label><br>
+              <input type="hidden" name="aauser"  value="'. $user .'">
+              <input type="hidden" name="aakey"   value="'. $key .'">
+              <input type="hidden" name="nocache" value="1">
+              <input type="submit"  value="'. _m('Send').'">
+            </div>
+          </fieldset>
         </form>';
     }
 
@@ -5294,6 +5339,12 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($form_id='') {
+
+        //if ($form_id == '13042a048a584c3043f997f6f607d47c') {
+        //    huhl('sss');
+        //    exit;
+        //}
+
         if (!$form_id OR !($form = AA_Object::load($form_id, 'AA_Form'))) {
             return '';
         }
