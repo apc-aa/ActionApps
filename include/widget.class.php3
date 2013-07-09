@@ -1260,6 +1260,7 @@ class AA_Widget_Mch extends AA_Widget {
             'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
             'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
+            'height'                 => new AA_Property( 'height',                 _m("Height"),               'int',    false, true, 'int',    false, _m("Max height of the widget in pixels"))
             );
     }
 
@@ -1284,6 +1285,10 @@ class AA_Widget_Mch extends AA_Widget {
         $ret           = '';
 
         $use_name     = $this->getProperty('use_name', false);
+        $height       = (int)$this->getProperty('height');
+        if ($height < 1) {
+            $height = 400;
+        }
 
         $selected     = $content->getAaValue($aa_property->getId());
         $options      = $this->getOptions($selected, $content, $use_name);
@@ -1300,7 +1305,7 @@ class AA_Widget_Mch extends AA_Widget {
         $input_name   = $base_name_add ."[def]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
         $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
-        $widget       = '<div style="max-height:400px; overflow:auto;">'.$widget.'</div>';
+        $widget       = '<div style="max-height:'.$height.'px; overflow:auto;">'.$widget.'</div>';
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }

@@ -600,7 +600,15 @@ array("name"=>_m("Multiple Checkboxes"),
     array("name"=>_m("Slice password"),
     "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
     "type"=>"STR",
-    "example"=>"")
+    "example"=>""),
+    array("name"=>_m("Constants array"),
+    "desc"=>_m("not used"),
+    "type"=>"STR",
+    "example"=>""),
+    array("name"=>_m("Height"),
+    "desc"=>_m("Max height of the widget in pixels"),
+    "type"=>"INT",
+    "example"=>"100")
     ));
 
 $INPUT_TYPES["items"]["mse"]=

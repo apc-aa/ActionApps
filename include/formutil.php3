@@ -897,12 +897,12 @@ class AA_Inputfield {
                                $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
                                break;
             case 'anonym_mch':
-            case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+            case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
                                if ( !is_null($item) ) {
                                    $conds_str = $item->unalias($conds_str);
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);  // move_right
+                               $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
                                break;
             case 'anonym_mse':
             case 'normal_mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
@@ -1372,7 +1372,7 @@ class AA_Inputfield {
     * @param $conds_str
     * @param $sort_str
     */
-    function inputMultiChBox($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false) {
+    function inputMultiChBox($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false, $arrconst_unused=false, $height=null) {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
@@ -1381,7 +1381,7 @@ class AA_Inputfield {
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getOneChBoxTag($k, $v, $add);
         }
-        $this->printInMatrix_Frm($records, $ncols, $move_right);
+        $this->printInMatrix_Frm($records, $ncols, $move_right, $height);
     }
 
     /** printInMatrix_Frm function
@@ -1391,7 +1391,7 @@ class AA_Inputfield {
     * @param $ncols
     * @param $move_right
     */
-    function printInMatrix_Frm($records, $ncols, $move_right) {
+    function printInMatrix_Frm($records, $ncols, $move_right, $height=null) {
         list($name,$val,$add) = $this->prepareVars('multi');
         $this->field_name('plus');
 
@@ -1400,6 +1400,9 @@ class AA_Inputfield {
                 $this->echovar( implode('', $records) );
             } else {
                 $nrows     = ceil( count($records) / $ncols);
+                if ($height > 0) {
+                    $this->echoo("<div style=\"max-height:${height}px; overflow:auto;\">");
+                }
                 $this->echoo('<table border="0" cellspacing="0">');
                 for ($irow = 0; $irow < $nrows; ++$irow) {
                     $ret  .= '<tr>';
@@ -1411,6 +1414,9 @@ class AA_Inputfield {
                 }
                 $this->echovar($ret);
                 $this->echoo('</table>');
+                if ($height > 0) {
+                    $this->echoo('</div>');
+                }
             }
         }
         $this->helps('plus');
