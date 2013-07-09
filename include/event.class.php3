@@ -653,7 +653,7 @@ function SendFilledItem(&$ret_params, $email_template) {
 
     if ($email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1'))) {
         $item = AA_Items::getItem(new zids($short_id, 's'));
-        return AA_Mail::sendTemplate($email_template, $email, $item) > 0;
+        return AA_Mail::sendTemplate($email_template, array($email), $item, false) > 0;
     }
     return false;
 }
@@ -744,8 +744,10 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
     $item_akce = AA_Items::getItem(new zids($akce_id, 'l'));
     $text      = trim($item_akce->getval('text...........7'));
 
+    $item      = AA_Items::getItem(new zids($short_id, 's'));
+
     if ($email AND $text) {
-        return AA_Mail::sendTemplate(60, $email, $item_akce) > 0;
+        return AA_Mail::sendTemplate(60, array($email), $item, false) > 0;
     }
     return false;
 }
@@ -766,7 +768,7 @@ function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1 OR $email2) {
-        return AA_Mail::sendTemplate(63, array($email1, $email2), $item) > 0;
+        return AA_Mail::sendTemplate(63, array($email1, $email2), $item, false) > 0;
     }
     return false;
 }
@@ -792,7 +794,7 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return AA_Mail::sendTemplate(5, array($email1), $item) > 0;
+        return AA_Mail::sendTemplate(5, array($email1), $item, false) > 0;
     }
     return false;
 }
@@ -815,7 +817,7 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return AA_Mail::sendTemplate(4, array($email1), $item) > 0;
+        return AA_Mail::sendTemplate(4, array($email1), $item, false) > 0;
     }
     return false;
 }
