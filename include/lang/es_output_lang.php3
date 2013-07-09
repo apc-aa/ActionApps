@@ -434,8 +434,8 @@ $_m["Upload"]
  $_m["Bad or expired key."]
  = "Clave caducada.";
 
- $_m["Fill in the new password:"]
- = "Introduzca la nueva contraseña:";
+ $_m["Fill in the new password"]
+ = "Introduzca la nueva contraseña";
 
  $_m["New password"]
  = "Nueva contraseña";

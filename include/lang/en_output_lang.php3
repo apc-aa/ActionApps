@@ -370,7 +370,7 @@ $_m["E-mail with a key to change the password has just been sent to the e-mail a
 $_m["Bad or expired key."]
  = "";
 
-$_m["Fill in the new password:"]
+$_m["Fill in the new password"]
  = "";
 
 $_m["New password"]

@@ -460,8 +460,8 @@ $_m["E-mail with a key to change the password has just been sent to the e-mail a
 $_m["Bad or expired key."]
  = "Špatný, èi expirovaný klíè.";
 
-$_m["Fill in the new password:"]
- = "Vyplòte nové heslo:";
+$_m["Fill in the new password"]
+ = "Vyplòte nové heslo";
 
 $_m["New password"]
  = "Nové heslo";

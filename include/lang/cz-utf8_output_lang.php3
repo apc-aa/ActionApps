@@ -407,8 +407,8 @@ $_m["To save changes click here or outside the field."]
  $_m["Bad or expired key."]
  = "Špatný, či expirovaný klíč.";
 
- $_m["Fill in the new password:"]
- = "Vyplňte nové heslo:";
+ $_m["Fill in the new password"]
+ = "Vyplňte nové heslo";
 
  $_m["New password"]
  = "Nové heslo";
