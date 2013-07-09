@@ -350,33 +350,39 @@ class htmlMimeMail {
 *
 * @author Dan Allen
 */
-    function _findHtmlImages($images_dir)
-    {
+    function _findHtmlImages($images_dir) {
+
         // Build the list of image extensions
-        while (list($key,) = each($this->image_types)) {
-            $extensions[] = $key;
-        }
+        $extensions = array_keys($this->image_types);
 
         // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
-        preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', str_ireplace(array('href="', "href='"), array('', ''), $this->html), $images);
+        $sanit_text = str_ireplace(array('href="', "href='"), array('', ''), $this->html);
+        preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', $sanit_text, $images);
+        preg_match_all('~(?:"|\')([^"\']+/img\.php\?src\=[^"\']+)(?:"|\')~Ui', $sanit_text, $images2);
+
+        $images      = array_unique(array_merge($images[1], $images2[1]));
 
         $img_content = array();
         $img_name    = array();
         $html_images = array();
 
-        $images      = array_unique($images[1]);
-
         foreach ($images as $img) {
 
             if (strtolower(substr($img,0,4))=='http') {
-                $image_path            = $img;
-                $img_name[$image_path] = basename( parse_url($image_path, PHP_URL_PATH) );
+                if ($pos = strpos($img,'/img.php?src=')) {
+                    $image_path            = $img;
+                    $img_name[$image_path] = basename( parse_url( substr($image_path, $pos+13, strpos($img,'&')-$pos-13), PHP_URL_PATH) );
+                } else {
+                    $image_path            = $img;
+                    $img_name[$image_path] = basename( parse_url($image_path, PHP_URL_PATH) );
+                }
             } else {
                 $image_path            = $images_dir . $img;
                 $img_name[$image_path] = basename( $image_path );
             }
+
             if (!isset($img_content[$image_path])) {
-                $img_content[$image_path] = $this->getFile($image_path);
+                $img_content[$image_path] = $this->getFile(str_replace('&amp;', '&', $image_path));
             }
             if ($img_content[$image_path]) {
                 $html_images[] = $image_path;
@@ -391,7 +397,7 @@ class htmlMimeMail {
 
             for ( $i=0, $ino=count($html_images); $i<$ino; ++$i) {
                 $image        = $img_content[$html_images[$i]];
-                $ext          = substr($html_images[$i], strrpos($html_images[$i], '.') + 1);
+                $ext          = strpos($html_images[$i],'/img.php?src=') ? 'jpg' : substr($html_images[$i], strrpos($html_images[$i], '.') + 1);
                 $content_type = $this->image_types[strtolower($ext)];
                 $this->addHtmlImage($image, $img_name[$html_images[$i]], $content_type);
             }
@@ -810,15 +816,15 @@ class htmlMimeMail {
         }
     }
 
-/**
-* Use this method to return the email
-* in message/rfc822 format. Useful for
-* adding an email to another email as
-* an attachment. there's a commented
-* out example in example.php.
-*/
-    function getRFC822($recipients)
-    {
+    /**
+    * Use this method to return the email
+    * in message/rfc822 format. Useful for
+    * adding an email to another email as
+    * an attachment. there's a commented
+    * out example in example.php.
+    */
+    function getRFC822($recipients, $type = 'mail') {
+
         // Make up the date header as according to RFC822
         $this->setHeader('Date', date('D, d M y H:i:s O'));
 

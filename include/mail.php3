@@ -207,7 +207,8 @@ class AA_Mail extends htmlMimeMail  {
             return $mail->sendLater($to);
         }
 
-        return $mail->send($to);
+        $tos  = array_unique(array_map('trim', is_array($to) ? $to : array($to)));
+        return $mail->send($tos);
     }
 
     /** sendToReader function
