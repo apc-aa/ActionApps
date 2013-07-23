@@ -408,7 +408,9 @@ class AA_Widget extends AA_Components {
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $aa_property->isRequired() ? 'required' : '';
         $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        $widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-left:16px;\"" : '';
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+        $widget_add2s= ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; left:0; top:0;">' : '';
         $widget      = '';
         //huhl("---", $aa_property->validator);
 
@@ -420,7 +422,7 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add autofocus>$widget_add2";
+            $widget    = "$widget_add2s<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds autofocus>";
             $selected  = $content->getAaValue($aa_property->getId());
             // empty select option for not required fields and also for live selectbox,
             // because people thinks, that the first value is filled in the database (which is not)
