@@ -365,11 +365,11 @@ class AA_View_Scroller extends AA_Sitemodule_Scroller {
 
         while (list($k, $v) = each($arr)) {
             if ($i++) {
-                $out .= " | ";
+                $out .= '<span class="delimiter"> | </span>';
             }
 
             if (!$v) {
-                $out .= $k;
+                $out .= is_numeric($k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
             } else {
                 $v = safe($v);
                 if ($target) {
