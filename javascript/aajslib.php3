@@ -236,9 +236,12 @@ function DisplayInputBack(input_id) {
     $(valdivid).setAttribute('data-aa-edited', '2');
 }
 
-function AA_Ajax(div, url, param) {
+function AA_Ajax(div, url, param, onload) {
     $(div).update(AA_Config.loader);
     new Ajax.Updater(div, url, param);
+    if( onload && typeof onload === "function" ) {
+        onload();
+    }
 }
 
 function AA_AjaxCss(selector, url, param) {
