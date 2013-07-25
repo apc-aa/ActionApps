@@ -2128,7 +2128,7 @@ class AA_Treecache {
                 }
             }
         }
-        return join($this->delim,$results);
+        return ($this->delim == 'json') ? json_encode($results) : join($this->delim,$results);
     }
 
     function _get_item($item_id, $expression) {
