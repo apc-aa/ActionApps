@@ -279,7 +279,7 @@ do {
 
 ?>
 <br />
-<form name="fx" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="fx" method="post" autocomplete="off" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 
 // User data ---------------------------------------------------
