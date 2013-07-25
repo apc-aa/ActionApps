@@ -198,6 +198,8 @@ function GetEmailTableView($viewID) {
         "fields" => array (
             "description" => array (
                 "caption" => _m("Description")),
+            "type" => array (
+                "caption" => _m("Email type")),
             "subject" => array (
                 "caption" => _m("Subject"), "view"=>array("maxlen"=>50)),
             "body" => array (
