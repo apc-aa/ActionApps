@@ -1,3 +1,14 @@
+07/25/13 - search bar phrase in Item Manager is no longer restricted to 255
+(honza)    characters only
+         - AA_Ajax() javascript function in prototypejs version obtain the same
+           fourth parameter - onload function - as in jQuery version of the library
+         - {item} now allows to get results in JSON if the "json" keyword is
+           used as delimiter parameter
+         - Email template TYPE is displayed on the Email templates page
+         - fixed problem with slice creation when Register Globals PHP directive
+           is set to Off
+         - the passwords and usernames are not wrongly autocompleted on tha User
+           Edit page
 07/23/13 - better html code also for {scroller} - see {pager} css styling below
 (honzam) - fixed {live} widget for <select>s - update status on better place
 07/08/13 - new mode "3" for {shorten}, which shorten the text in the middle
@@ -16,9 +27,9 @@
              #pager a, #pager span.active { background-color: #545454;
                 color: #000000; font-size: 1.1em; font-weight: 700;
                 margin: 0 3px; padding: 1px 5px;}
-            #pager span.active { background-color: #FFFFFF; }
-            #pager a:hover     { background-color: #999999; }
-            #pager .delimiter  { display: none; }
+             #pager span.active { background-color: #FFFFFF; }
+             #pager a:hover     { background-color: #999999; }
+             #pager .delimiter  { display: none; }
          - Multiple Checkboxes widget now allows specify the maximum height
            of the widget - if it if bigger, the inner scroller is displayed
          - the conditions for {ids:...} and other places uses heuristics
