@@ -28,7 +28,8 @@
 // set template id (changes language file => must be here):
 require_once "../include/slicedit2.php3";
 
-list($set_template_id, $change_lang_file) = get_template_and_lang($template_slice_sel["slice"] ? $template_id2 : $template_id);
+$template_slice_sel = $_REQUEST['template_slice_sel'];
+list($set_template_id, $change_lang_file) = get_template_and_lang($template_slice_sel["slice"] ? $_REQUEST['template_id2'] : $_REQUEST['template_id']);
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
