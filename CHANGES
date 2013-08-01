@@ -1,3 +1,13 @@
+08/01/13 - {header} could be used as {header:404} and now also {header:xml}
+(honza)    which returns right http header for xml - Content-Type: text/xml
+         - recursion detection on AA expressions - now the execution is stoped,
+           when the script reaches 5000 step in deep during evaluation
+           (cycles in relation........ fields, ...) and displays the message:
+             Error: recursion detected
+           However - the webserver do not give you 500 Internal server error
+         - fixed {str_replace} when replacing by empty values:
+               {str_replace:[";-)",";-("]:["",""]:we do not like smiles ;-(}
+         - fixed {javascript...} escapes also end of lines
 07/25/13 - search bar phrase in Item Manager is no longer restricted to 255
 (honza)    characters only
          - AA_Ajax() javascript function in prototypejs version obtain the same

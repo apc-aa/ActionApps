@@ -87,11 +87,11 @@ if (ini_get('pcre.backtrack_limit') < 1000000) {
 }
 
 /** creates array form JSON array or returns single value array if not valid json */
-function json2arr($string) {
+function json2arr($string, $do_not_filter=false) {
     if (($string[0] != '[') OR (( $values = json_decode($string)) == null)) {
         $values = ($string=='[]') ? array() : array($string);
     }
-    return array_filter($values);
+    return $do_not_filter ? $values : array_filter($values);
 }
 
 /** include file, first parameter is filename, second is hints on where to find it **/
@@ -1573,7 +1573,7 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
         if (empty($delimiter)) {
             $delimiter = '-';
         }
-        return join($delimiter, array_unique(explode($delimiter, $ids)));
+        return join($delimiter, array_unique(array_filter(explode($delimiter, $ids),'trim')));
     }
 }
 
@@ -1604,7 +1604,7 @@ class AA_Stringexpand_Count extends AA_Stringexpand_Nevercache {
         if (empty($delimiter)) {
             $delimiter = '-';
         }
-        return count(array_filter(explode($delimiter, $ids),'strlen'));  // count only not empty members
+        return count(array_filter(explode($delimiter, $ids),'trim'));  // count only not empty members
     }
 }
 
@@ -1702,7 +1702,7 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='') {
-        return str_replace("'", "\'", safe($text));
+        return str_replace(array("'","\r\n", "\r", "\n"), array("\'", " ", " ", " "), safe($text));
     }
 }
 
@@ -3907,6 +3907,8 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
 
 class AA_Stringexpand {
 
+    public static $recursion_count = 0;
+
     /** item, for which we are stringexpanding
      *  Not used in many expand functions
      */
@@ -4012,6 +4014,11 @@ class AA_Stringexpand {
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
         global $debug;
 
+        if (++AA_Stringexpand::$recursion_count > 5000) {
+            --AA_Stringexpand::$recursion_count;
+            return "Error: recursion detected";
+        }
+
         $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
 
         // make sure, that $contentcache is defined - we will use it in expand_bracketed()
@@ -4052,6 +4059,8 @@ class AA_Stringexpand {
 
         // if ( !$dequote ) { }
         // there is no need to substitute on level 1
+
+        --AA_Stringexpand::$recursion_count;
 
         // return from unalias - change all back to ':'
         if ( $dequote AND $quotecolons_partly ) {
@@ -4146,8 +4155,8 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     function expand($search='', $replace='', $text='') {
-        $search  = json2arr($search);
-        $replace = json2arr($replace);
+        $search  = json2arr($search,true);
+        $replace = json2arr($replace,true);
         return str_replace($search, $replace, $text);
     }
 }
@@ -4827,9 +4836,12 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
 /**
  */
 class AA_Stringexpand_Header extends AA_Stringexpand {
-    function expand($code=null) {
-        if ($code==404) {
-            header("HTTP/1.0 404 Not Found");
+    function expand($header=null) {
+        switch ($header) {
+        case '404': header('HTTP/1.0 404 Not Found');
+                    break;
+        case 'xml': header('Content-Type: text/xml');
+                    break;
         }
         return '';
     }
@@ -5339,12 +5351,6 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($form_id='') {
-
-        //if ($form_id == '13042a048a584c3043f997f6f607d47c') {
-        //    huhl('sss');
-        //    exit;
-        //}
-
         if (!$form_id OR !($form = AA_Object::load($form_id, 'AA_Form'))) {
             return '';
         }
