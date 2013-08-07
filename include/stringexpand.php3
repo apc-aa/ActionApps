@@ -1706,6 +1706,22 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Used for sending text e-mails by {mail...} function */
+class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** Do not trim all parameters (maybe we can?) */
+    function doTrimParams() { return false; }
+
+    /** expand function
+     * @param $text
+     */
+    function expand($text='') {
+        return  nl2br(str_replace(' ', '&ensp;', $text));
+    }
+}
+
 /** Just escape apostrophs ' => \' */
 class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3118,8 +3134,8 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                 $input_name  = AA_Form_Array::getName4Form($field_id, $item);
                 $input_id    = AA_Form_Array::formName2Id($input_name);
                 $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">";
-                $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.htmlspecialchars($onsuccess).'"' : '';
-                $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
+                $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
+                $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                 $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
                 $ret .= "</div>";
             }
@@ -3927,8 +3943,8 @@ class AA_Stringexpand {
         'strtoupper'       => 'strtoupper',         //     AA_Stringexpand_Strtoupper
         'strtolower'       => 'strtolower',         //     AA_Stringexpand_Strtolower
         'striptags'        => 'strip_tags',         // old AA_Stringexpand_Striptags
-        'safe'             => 'htmlspecialchars',   // old AA_Stringexpand_Safe
-        'htmlspecialchars' => 'htmlspecialchars',   // old AA_Stringexpand_Htmlspecialchars
+        'safe'             => 'myspecialchars',   // old AA_Stringexpand_Safe
+        'htmlspecialchars' => 'myspecialchars',   // old AA_Stringexpand_Htmlspecialchars
         'urlencode'        => 'urlencode',          // old AA_Stringexpand_Urlencode
         'ord'              => 'ord',                // old AA_Stringexpand_Ord
         'rand'             => 'rand',               // old AA_Stringexpand_Rand
@@ -5085,17 +5101,20 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
 
-    function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='') {
+    function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='', $cc='', $bcc='') {
 
-        $condition = trim($condition);
-        if (!strlen($condition) OR !strlen(trim($body)) OR ((string)$condition==='0')) {
+        if (!strlen($condition) OR !strlen($body) OR ((string)$condition==='0')) {
             return '';
         }
 
-        $to = json2arr(trim($to)); // can't be inside empty()  - Honza, php 5.2
+        $to = json2arr($to); // can't be inside empty()  - Honza, php 5.2
         if (empty($to)) {
             return '';
         }
+
+        $cc  = join(',',AA_Validate::filter(json2arr($cc), 'email'));
+        $bcc = join(',',AA_Validate::filter(json2arr($bcc), 'email'));
+
         $mail_arr = array( 'subject'     => $subject,
                            'body'        => $body,
                            'header_from' => $from,
@@ -5103,7 +5122,10 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
                            'errors_to'   => $errors_to,
                            'sender'      => $sender,
                            'lang'        => $lang,
-                           'html'        => 1);
+                           'html'        => 1,
+                           'cc'          => $cc,
+                           'bcc'         => $bcc
+                           );
 
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
