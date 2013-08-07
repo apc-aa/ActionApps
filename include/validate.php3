@@ -61,8 +61,7 @@ define('VALIDATE_ERROR_NOT_IN_LIST',      409);
 /** AA user input validation class
  *  Ussage (for standard validators):
  *      if ( AA_Validate::validate($variable, 'int') ) {...};
- *      if ( AA_Validate::validate($variable, 'int', array('min'=>0, 'max'=>10)) ) {...};
- *  Ussage (for standard validators): AA_Validate::validate($variable, 'int');
+ *      if ( AA_Validate::validate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
  */
 class AA_Validate {
 
@@ -112,8 +111,11 @@ class AA_Validate {
 
         return $standard_validators[$sv_key];
     }
+
     /** validate function
-     *  static class function - called as AA_Validate::validate('email');
+     *  static class function
+     *      if ( AA_Validate::validate($variable, 'email') ) {...};
+     *      if ( AA_Validate::validate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
      * @param $var
      * @param $type
      * @param $default
@@ -124,6 +126,17 @@ class AA_Validate {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', array($type)), $default);
         }
         return $validator->validate($var);
+    }
+
+    /** filter function - returns array of values matching the criteria
+     *  static class function
+     *      AA_Validate::filter(array('my@mail.cz','your@mail.cz'), 'email')
+     *      AA_Validate::filter($vararray, array('int', array('min'=>0, 'max'=>10))
+     * @param $var
+     * @param $type
+     */
+    function filter($vararray, $type) {
+        return array_filter((array)$vararray, array(AA_Validate::factory($type),'validate'));
     }
 
     /** checks if the variable is empty */

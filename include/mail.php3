@@ -65,7 +65,7 @@ class AA_Mail extends htmlMimeMail  {
         return $this->setFromArray($record);
     }
 
-    /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html')  */
+    /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html','cc','bcc')  */
     function setFromArray($record) {
         // do not send empty emails
         if ( !strlen(trim($record["body"]))) {
@@ -80,6 +80,13 @@ class AA_Mail extends htmlMimeMail  {
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
         $this->setCharset(strlen($record["lang"]) ? $record["lang"] : 'utf-8');
+
+        if ($record["cc"]) {
+            $this->setCc($record["cc"]);
+        }
+        if ($record["bcc"]) {
+            $this->setBcc($record["bcc"]);
+        }
 
         if ($record['attachments']) {
             $attachs = ParamExplode($record['attachments']);
@@ -99,24 +106,29 @@ class AA_Mail extends htmlMimeMail  {
      * @param $to
      */
     function sendLater($to) {
+        static $send_mails_total = 0;
+
         $toexecute = new AA_Toexecute;
 
-        $tos  = array_unique(array_map('trim', is_array($to) ? $to : array($to)));
+        $tos  = array_unique(AA_Validate::filter((array)$to, 'email'));
         $sent = 0;
         foreach ($tos as $to) {
-            if (!$to OR !AA_Validate::validate($to, 'email')) {
-                continue;
-            }
 
             // 2 minutes for each 20 e-mails
             if ( ($sent % 20) == 0 ) {
                 @set_time_limit( 120 );
             }
 
-            // Yes, two nested arrays - mail->send() accepts array($to) and
-            // all parameters to later must be in another only one array
-            if ( $toexecute->later($this, array(array($to)), 'send_mail') ) {
-                $sent++;
+            // first two mails in the script send directly (for better UX)
+            if (++$send_mails_total < 3) {
+                $this->send(array($to));
+                ++$sent;
+            } else {
+                // Yes, two nested arrays - mail->send() accepts array($to) and
+                // all parameters to later must be in another only one array
+                if ( $toexecute->later($this, array(array($to)), 'send_mail') ) {
+                    ++$sent;
+                }
             }
         }
         return $sent;
@@ -237,7 +249,7 @@ class AA_Mail extends htmlMimeMail  {
  */
 function html2text($html) {
 
-    $html = html_entity_decode(str_ireplace('&nbsp;', ' ', $html));
+    $html = html_entity_decode(str_ireplace(array('&nbsp;','&ensp;','&emsp;','&thinsp;'), array(' ',' ',' ',' '), $html));
 
     // Strip diacritics
     // $html = strtr( $html, "áäèïéìíåòóöø¹»úùüı¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜİ®",

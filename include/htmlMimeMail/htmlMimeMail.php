@@ -712,108 +712,46 @@ class htmlMimeMail {
 * Sends the mail.
 *
 * @param  array  $recipients
-* @param  string $type OPTIONAL
 * @return mixed
 */
-    function send($recipients, $type = 'mail')
-    {
+    function send($recipients) {
         if ( !(isset($recipients) AND is_array($recipients)) ) {
             return false;
         }
 
         if (!defined('CRLF')) {
-            $this->setCrlf($type == 'mail' ? "\n" : "\r\n");
+            $this->setCrlf("\n");
         }
 
         if (!$this->is_built) {
             $this->buildMessage();
         }
 
-        switch ($type) {
-            case 'mail':
-                $subject = '';
-                if (!empty($this->headers['Subject'])) {
-                    $subject = $this->_encodeHeader($this->headers['Subject'], $this->build_params['head_charset']);
-                    unset($this->headers['Subject']);
-                }
-
-                // Get flat representation of headers
-                foreach ($this->headers as $name => $value) {
-                    $headers[] = $name . ': ' . $this->_encodeHeader($value, $this->build_params['head_charset']);
-                }
-
-                $to = $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
-
-                if ( !empty($this->return_path) AND !ini_get('safe_mode')) {
-                    $result = mail($to, $subject, $this->output, implode(CRLF, $headers), '-f' . $this->return_path);
-                } else {
-                    $result = mail($to, $subject, $this->output, implode(CRLF, $headers));
-                }
-
-                // Reset the subject in case mail is resent
-                if ($subject !== '') {
-                    $this->headers['Subject'] = $subject;
-                }
-
-                // Return
-                return $result;
-                break;
-
-            case 'smtp':
-                require_once(dirname(__FILE__) . '/smtp.php');
-                require_once(dirname(__FILE__) . '/RFC822.php');
-                $smtp = &smtp::connect($this->smtp_params);
-
-                // Parse recipients argument for internet addresses
-                foreach ($recipients as $recipient) {
-                    $addresses = Mail_RFC822::parseAddressList($recipient, $this->smtp_params['helo'], null, false);
-                    foreach ($addresses as $address) {
-                        $smtp_recipients[] = sprintf('%s@%s', $address->mailbox, $address->host);
-                    }
-                }
-                unset($addresses); // These are reused
-                unset($address);   // These are reused
-
-                // Get flat representation of headers, parsing
-                // Cc and Bcc as we go
-                foreach ($this->headers as $name => $value) {
-                    if ($name == 'Cc' OR $name == 'Bcc') {
-                        $addresses = Mail_RFC822::parseAddressList($value, $this->smtp_params['helo'], null, false);
-                        foreach ($addresses as $address) {
-                            $smtp_recipients[] = sprintf('%s@%s', $address->mailbox, $address->host);
-                        }
-                    }
-                    if ($name == 'Bcc') {
-                        continue;
-                    }
-                    $headers[] = $name . ': ' . $this->_encodeHeader($value, $this->build_params['head_charset']);
-                }
-                // Add To header based on $recipients argument
-                $headers[] = 'To: ' . $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
-
-                // Add headers to send_params
-                $send_params['headers']    = $headers;
-                $send_params['recipients'] = array_values(array_unique($smtp_recipients));
-                $send_params['body']       = $this->output;
-
-                // Setup return path
-                if (isset($this->return_path)) {
-                    $send_params['from'] = $this->return_path;
-                } elseif (!empty($this->headers['From'])) {
-                    $from = Mail_RFC822::parseAddressList($this->headers['From']);
-                    $send_params['from'] = sprintf('%s@%s', $from[0]->mailbox, $from[0]->host);
-                } else {
-                    $send_params['from'] = 'postmaster@' . $this->smtp_params['helo'];
-                }
-
-                // Send it
-                if (!$smtp->send($send_params)) {
-                    $this->errors = $smtp->errors;
-                    return false;
-                }
-                return true;
-                break;
+        $subject = '';
+        if (!empty($this->headers['Subject'])) {
+            $subject = $this->_encodeHeader($this->headers['Subject'], $this->build_params['head_charset']);
+            unset($this->headers['Subject']);
         }
+
+        // Get flat representation of headers
+        foreach ($this->headers as $name => $value) {
+            $headers[] = $name . ': ' . $this->_encodeHeader($value, $this->build_params['head_charset']);
+        }
+
+        $to = $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
+
+        if ( !empty($this->return_path) AND !ini_get('safe_mode')) {
+            $result = mail($to, $subject, $this->output, implode(CRLF, $headers), '-f' . $this->return_path);
+        } else {
+            $result = mail($to, $subject, $this->output, implode(CRLF, $headers));
+        }
+
+        // Reset the subject in case mail is resent
+        if ($subject !== '') {
+            $this->headers['Subject'] = $subject;
+        }
+
+        return $result;
     }
 
     /**
