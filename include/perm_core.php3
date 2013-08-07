@@ -645,7 +645,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      */
     function isUsernameFree($username) {
         // search not only Active bin, but also Holding bin, Pending, ...
-        return AA_Reader::name2Id($username, AA_BIN_ALL) ? false : true;
+        return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
     }
 }
 
@@ -837,7 +837,7 @@ class AA_Reader {
             $slices  = getReaderSlices();
         }
         $aa_set = new AA_Set($slices, new AA_Condition($field, '=', $value), null, $bin);
-
+        
         // get item id of current user
         $zid = $aa_set->query();
         return $zid->longids(0);
