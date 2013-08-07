@@ -9,6 +9,8 @@
            to the file
          - Planed tasks are now rescheduled, when the task is changed
          - the UI for Planed Task list is improved
+         - fixed problem with unique user validation - now works
+         - fixed problem http / https image links which was reported as unsecure
 08/01/13 - {header} could be used as {header:404} and now also {header:xml}
 (honzam)   which returns right http header for xml - Content-Type: text/xml
          - recursion detection on AA expressions - now the execution is stoped,

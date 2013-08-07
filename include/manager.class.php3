@@ -579,8 +579,8 @@ class AA_Manager extends AA_Storable {
 
                 foreach( $action_arr as $action_id => $action ) {
                     if ( $action->isPerm($this)) {
-                        $options .= '<option value="'. htmlspecialchars($action->getId()).'"> '.
-                                                       htmlspecialchars($action->getName() . ($action->getOpenUrl() ? '...' : ''));
+                        $options .= '<option value="'. myspecialchars($action->getId()).'"> '.
+                                                       myspecialchars($action->getName() . ($action->getOpenUrl() ? '...' : ''));
                         // we have to open window?
                         if ( $action->getOpenUrl() )  {
                             $javascr .= "\n markedactionurl[$i] = '". $action->getOpenUrl() ."';";
@@ -605,8 +605,8 @@ class AA_Manager extends AA_Storable {
                     while ( list( $action, $param ) = each ($this->actions) ) {
                         $actions_perm_function = $this->actions_perm_function;
                         if ( $actions_perm_function( $action ) ) {
-                            $options .= '<option value="'. htmlspecialchars($action).'"> '.
-                                                           htmlspecialchars($param['name'] . ($param['open_url'] ? '...' : ''));
+                            $options .= '<option value="'. myspecialchars($action).'"> '.
+                                                           myspecialchars($param['name'] . ($param['open_url'] ? '...' : ''));
                             if ( $param['open_url'] )  { // we have to open window
                                 $javascr .= "\n markedactionurl[$i] = '". $param['open_url'] ."';";
                                 if ( $param['open_url_add'] )  { // we have to open window
