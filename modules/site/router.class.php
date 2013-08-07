@@ -490,7 +490,7 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
         }
         $router = AA_Router::singleton($router_class);
         $url = $router->go2url($query_string);
-        return ($html_encode=='1') ? htmlspecialchars($url) : $url;
+        return ($html_encode=='1') ? myspecialchars($url) : $url;
     }
 }
 

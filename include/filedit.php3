@@ -142,7 +142,7 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
             echo formatAction(_m("File content").":")."<br>";
             while (!feof ($filedes)) {
                 $row = fgets($filedes, 4096);
-                echo str_replace("\t","    ",nl2br(htmlspecialchars ($row)));
+                echo str_replace("\t","    ",nl2br(myspecialchars ($row)));
             }
             fclose ($filedes);
         }

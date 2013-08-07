@@ -47,7 +47,7 @@ require_once AA_INC_PATH."field.class.php3";
  * @param $txt
  */
 function a_href($url, $txt) {
-    return '<a href="'.htmlspecialchars($url) ."\">$txt</a>";
+    return '<a href="'.myspecialchars($url) ."\">$txt</a>";
 }
 
 /** expand_return_url function
@@ -1070,11 +1070,18 @@ function ParseFnc($s) {
     return $arr;
 }
 
+/** replaces htmlspecialchars because of changes in php 5.4
+ */
+function myspecialchars( $var ) {
+    return htmlspecialchars( $var, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
+}
+
+
 /** safe function
  * @return html safe code (used for preparing variable to print in form)
  */
 function safe( $var ) {
-    return htmlspecialchars( magic_strip($var) );  // stripslashes function added because of quote varibles sended to form before
+    return htmlspecialchars( magic_strip($var), ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
 }
 
 /** HtmlPageBegin function

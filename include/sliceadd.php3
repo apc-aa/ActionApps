@@ -65,8 +65,8 @@ if ( isset( $templates ) AND is_array( $templates )) {
     echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>". _m("Template") ."</b>";
     echo "</td><td width=\"60%\"><select name=\"template_id\">";
     foreach ($templates as $v) {
-        echo "<option value=\"". htmlspecialchars($v['value'])."\"";
-        echo "> ". htmlspecialchars($v['name']) ." </option>";
+        echo "<option value=\"". myspecialchars($v['value'])."\"";
+        echo "> ". myspecialchars($v['name']) ." </option>";
     }
     echo '</select></td><td width=\"20%\">';
     if ($wizard) {
@@ -87,8 +87,8 @@ if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
         if ( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' ) {
             continue;    // 'Action Aplication Core' slice - do not use as template
         }
-        $slice_sb .= "<option value=\"". htmlspecialchars($v['value'])."\"";
-        $slice_sb .= "> ". htmlspecialchars($v['name']) ." </option>";
+        $slice_sb .= "<option value=\"". myspecialchars($v['value'])."\"";
+        $slice_sb .= "> ". myspecialchars($v['name']) ." </option>";
     }
     if ( $slice_sb ) {
         echo $out . $slice_sb . '</select></td><td>';

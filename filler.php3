@@ -63,18 +63,30 @@ http://www.apc.org/
 
 $debugfill=$_REQUEST['debugfill'];
 
-/**
- * Handle with PHP magic quotes - quote the variables if quoting is set off
- * @param mixed $value the variable or array to quote (add slashes)
- * @return mixed the quoted variables (with added slashes)
- */
-function AddslashesDeep($value) {
-    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+// ----- input variables normalization - start --------------------------------
+
+// This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
+// It make us sure, taht
+//  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
+//  2) the variables are imported in global scope and is quoted
+// We are trying to remove any dependecy on the point 2) and use only $_* superglobals
+function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function StripslashesDeep($value) { return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value); }
+
+if ( get_magic_quotes_gpc() ) {
+    $_POST    = StripslashesDeep($_POST);
+    $_GET     = StripslashesDeep($_GET);
+    $_COOKIE  = StripslashesDeep($_COOKIE);
+    $_REQUEST = StripslashesDeep($_REQUEST);
 }
 
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
+if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
+    foreach ($_REQUEST as $k => $v) {
+        $$k = AddslashesDeep($v);
+    }
 }
+// ----- input variables normalization - end ----------------------------------
+
 
 /** APC-AA configuration file */
 require_once "include/config.php3";
@@ -82,13 +94,6 @@ require_once "include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
 require_once AA_INC_PATH."util.php3";
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
 
 // not sure if the line bellow works...
 $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);

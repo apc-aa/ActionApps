@@ -237,7 +237,7 @@ class AA_Slice_Exporter {
 
             fwrite($temp_file, "<slice id=\"");
             fwrite($temp_file, ($this->type != _m("Export to Backup") ? $new_slice_idunpack : $slobj->unpacked_id()));
-            fwrite($temp_file, "\" name=\"".htmlspecialchars($slobj->name())."\">\n");
+            fwrite($temp_file, "\" name=\"".myspecialchars($slobj->name())."\">\n");
 
             if ($this->struct) {
                 // export of slice structure
@@ -340,7 +340,7 @@ class AA_Slice_Exporter {
             if ($this->gzip) {
                 $content = gzcompress($content);
             }
-            $content = htmlspecialchars(base64_encode($content));
+            $content = myspecialchars(base64_encode($content));
         } else {
             $content = xml_serialize($type, $content, "\n", "    ", $add);
         }

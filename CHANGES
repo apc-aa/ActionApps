@@ -1,5 +1,12 @@
+08/07/13 - AA works on PHP 5.5 now
+(honzam) - {mail:...} now allows to send also CC and BCC
+         - better mail handling - first two mails in the script are sent
+           directly - not through toexecute queue - better UX
+         - new {text2html:<text>} which converts plain text to the html.
+           Usasable mainly with {mail:...} function, which accepts only HTML
+           formated mails as message body
 08/01/13 - {header} could be used as {header:404} and now also {header:xml}
-(honza)    which returns right http header for xml - Content-Type: text/xml
+(honzam)   which returns right http header for xml - Content-Type: text/xml
          - recursion detection on AA expressions - now the execution is stoped,
            when the script reaches 5000 step in deep during evaluation
            (cycles in relation........ fields, ...) and displays the message:
@@ -9,7 +16,7 @@
                {str_replace:[";-)",";-("]:["",""]:we do not like smiles ;-(}
          - fixed {javascript...} escapes also end of lines
 07/25/13 - search bar phrase in Item Manager is no longer restricted to 255
-(honza)    characters only
+(honzam)   characters only
          - AA_Ajax() javascript function in prototypejs version obtain the same
            fourth parameter - onload function - as in jQuery version of the library
          - {item} now allows to get results in JSON if the "json" keyword is

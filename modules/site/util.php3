@@ -34,7 +34,7 @@ function SiteAdminPage($spot_id, $add = null) {
         $url = get_url($url, $add);
     }
     // Don't add AA_CP_Session if already there (it isn't in PHP_SELF)
-    return htmlspecialchars((strpos($url, 'AA_CP_Session') === false) ? $sess->url($url) : $url);
+    return myspecialchars((strpos($url, 'AA_CP_Session') === false) ? $sess->url($url) : $url);
 }
 
 function ModW_HiddenRSpotId() {

@@ -185,7 +185,7 @@ function PrintModuleSelection() {
             }
             //        asort ($mods);
             foreach ($mods as $id => $name) {
-                $js .= $option_begin . htmlspecialchars(unpack_id($id))."\"";
+                $js .= $option_begin . myspecialchars(unpack_id($id))."\"";
                 if ($slice_id == unpack_id($id)) {
                     $js .= " selected";
                 }

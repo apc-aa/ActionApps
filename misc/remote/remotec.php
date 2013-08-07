@@ -44,7 +44,7 @@ $useSnoopy = 0; // set to either 0 or 'true'. it is on sourceforge
 // if not called correctly, echo a usage statement
 if ( ! $PATH_INFO ) {
 
-echo '<PRE>' . htmlspecialchars ('
+echo '<PRE>' . htmlspecialchars('
 
 =================================================
 scriptname: remotec.php

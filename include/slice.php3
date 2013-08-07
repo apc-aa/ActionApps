@@ -80,7 +80,7 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
         echo '<option value="all" $seloption>'._m("All categories").'</option>';
         while (list($id,$name)= each($cats)) {
             $seloption=(($selected==$id)?"selected":"");
-            echo "<option value=\"$id\" $seloption>".htmlspecialchars($name)."</option>";
+            echo "<option value=\"$id\" $seloption>".myspecialchars($name)."</option>";
         }
         echo "<input type=\"hidden\" name=\"scr_".$scr_name."_Go\" value=\"1\">";
         echo "<input type=\"submit\" name=\"Go\" value=\"Go\">";

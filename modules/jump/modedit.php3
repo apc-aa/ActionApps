@@ -107,7 +107,7 @@ if ($jump_id) {
                 while (list ($id,$name) = each ($jumps))
                     echo "<option value=\"$id\""
                     .($id == $jump_id ? " selected" : "")
-                    .">".htmlspecialchars($name);
+                    .">".myspecialchars($name);
 
                 echo '</select>&nbsp;</td><td>
                 <input type=submit name="edit" value="'._m("Edit").'">
@@ -134,9 +134,9 @@ echo '
      if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
         reset($g_modules);
         while (list($k, $v) = each($g_modules)) {
-            echo "<option value=\"". htmlspecialchars($k)."\"";
+            echo "<option value=\"". myspecialchars($k)."\"";
             if ( $dest_id == $k ) echo " selected";
-            echo ">". htmlspecialchars($v['name']);
+            echo ">". myspecialchars($v['name']);
         }
      }
      else echo "<option>No module exists";

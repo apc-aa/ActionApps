@@ -42,7 +42,7 @@ if ( !is_object($contentcache) ) {
 function txt2html($txt) {
     // preg allows text to be pasted from Word
     // displays qoutes instead of &8221;
-    return (strpos($txt, '&')===false) ? nl2br(htmlspecialchars($txt)) : nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
+    return (strpos($txt, '&')===false) ? nl2br(myspecialchars($txt)) : nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",myspecialchars($txt)));
 }
 
 /** DeHtml function
@@ -829,7 +829,7 @@ class AA_Item {
             $out = ERegI_Replace( "height[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete height = x
             return false;
         }
-        return htmlspecialchars($this->getval($col));
+        return myspecialchars($this->getval($col));
     }
 
     /** f_w function
@@ -844,7 +844,7 @@ class AA_Item {
             $out = ERegI_Replace( "width[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete width = x
             return false;
         }
-        return htmlspecialchars($this->getval($col));
+        return myspecialchars($this->getval($col));
     }
 
     /** f_a function
@@ -1022,8 +1022,8 @@ class AA_Item {
      * @param $len
      */
     function RSS_restrict($txt, $len) {
-        //    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
-        return htmlspecialchars(substr($txt,0,$len));
+        //    return utf8_encode(myspecialchars(substr($txt,0,$len)));
+        return myspecialchars(substr($txt,0,$len));
     }
 
     /** f_r function

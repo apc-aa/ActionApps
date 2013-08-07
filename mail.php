@@ -39,6 +39,7 @@ function StripslashesDeep($value) {
 if ( get_magic_quotes_gpc() ) {
     $_POST    = StripslashesDeep($_POST);
     $_GET     = StripslashesDeep($_GET);
+    $_REQUEST = StripslashesDeep($_REQUEST);
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 

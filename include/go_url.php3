@@ -37,7 +37,7 @@
  * @param $params
  */
 function con_url($url, $params) {
-    return htmlspecialchars(get_url($url, $params));
+    return htmlspecialchars(get_url($url, $params), ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
 }
 
 /** makes url parameters to use with GET request from given parameters */

@@ -61,8 +61,8 @@ function firstBig($s) {
  *          e.g. <A ....> is written \<A ...\>
  */
 function processSlashes($s) {
-    $s = str_replace("\\<", htmlspecialchars("<"), $s);
-    $s = str_replace("\\>", htmlspecialchars(">"), $s);
+    $s = str_replace("\\<", myspecialchars("<"), $s);
+    $s = str_replace("\\>", myspecialchars(">"), $s);
     return $s;
 }
 

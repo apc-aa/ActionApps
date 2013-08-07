@@ -48,11 +48,11 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
         foreach ($arr as $k => $v) {
             if ( ($v['name'] != "") AND ($substract[$k] == "") ) {
                 $option_exist = true;
-                echo "<option value=\"". htmlspecialchars($k)."\"";
+                echo "<option value=\"". myspecialchars($k)."\"";
                 if ((string)$selected == (string)$k) {
                     echo " selected";
                 }
-                echo "> ". htmlspecialchars($v['name']. " (".perm_username($k).")") ." </option>";
+                echo "> ". myspecialchars($v['name']. " (".perm_username($k).")") ." </option>";
             }
         }
         if ( !$option_exist ) { // if no options, we must set width of <select> box

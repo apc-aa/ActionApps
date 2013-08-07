@@ -89,7 +89,7 @@ echo $Msg;
 $form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m("Choose slice")),
                       "cancel"           => array('url'=>'se_inter_import.php3'),
                       "remote_node_name" => array( 'type' => 'hidden', 'value' => $rem_nodes),
-                      "aa"               => array( 'type' => 'hidden', 'value' => htmlspecialchars(serialize($aa_rss)))
+                      "aa"               => array( 'type' => 'hidden', 'value' => myspecialchars(serialize($aa_rss)))
                      );
 
 ?>

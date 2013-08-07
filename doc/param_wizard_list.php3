@@ -130,8 +130,8 @@ function nl($s) {
 }
 
 function processSlashes($s) {
-    $s = str_replace("\\<", htmlspecialchars("<"), $s);
-    $s = str_replace("\\>", htmlspecialchars(">"), $s);
+    $s = str_replace("\\<", myspecialchars("<"), $s);
+    $s = str_replace("\\>", myspecialchars(">"), $s);
     return $s;
 }
 

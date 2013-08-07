@@ -533,7 +533,7 @@ function GetKey($primary, $columns, $varset) {
     reset ($primary);
     while (list ($alias) = each ($primary)) {
         $val   = $varset->get($columns[$alias]["field"]);
-        $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : htmlspecialchars($val);
+        $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : myspecialchars($val);
     }
     return join_escaped(":",$key,"#:");
 }
@@ -550,7 +550,7 @@ function GetKeyFromRecord($primary, $columns, $record) {
     }
     foreach ($primary as $alias => $v) {
         $val   = $record[$alias];
-        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : htmlspecialchars($val));
+        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : myspecialchars($val));
     }
     return join_escaped(":",$key,"#:");
 }

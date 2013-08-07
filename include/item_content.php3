@@ -1183,7 +1183,7 @@ class ItemContent extends AA_Content {
                 unset($s);
                 while (list (,$v2) = each ($v)) {
                     $v2['value'] = stripslashes($v2['value']);
-                    $s[] = $v2['html'] ? $v2['value'] : htmlspecialchars($v2['value']);
+                    $s[] = $v2['html'] ? $v2['value'] : myspecialchars($v2['value']);
                 }
                 if (count($s) == 1) {
                     echo $s[0];

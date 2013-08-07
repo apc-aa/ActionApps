@@ -15,7 +15,7 @@
 
 require_once('config.inc.php');
 require_once('Classes/ExtendedFileManager.php');
-$backend_url_enc = htmlspecialchars( $IMConfig['backend_url'] );
+$backend_url_enc = htmlspecialchars( $IMConfig['backend_url'] , ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
 //default path is /
 $relative = '/';
 $manager = new ExtendedFileManager($IMConfig, $insertMode);

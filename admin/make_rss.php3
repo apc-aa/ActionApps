@@ -40,7 +40,7 @@ require_once AA_INC_PATH."searchlib.php3";
  * @return $len in UTF-8, substringed to $len
  */
 function RSS_restrict($txt, $len) {
-  return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
+  return utf8_encode(myspecialchars(substr($txt,0,$len)));
 }
 
 $db = new DB_AA;

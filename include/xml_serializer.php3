@@ -61,7 +61,7 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
         if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v)) {
             return "$i<$start coding=\"bin2hex\">".bin2hex($v)."</$end>";
         } else {
-            return "$i<$start>".htmlspecialchars($v)."</$end>";
+            return "$i<$start>".myspecialchars($v)."</$end>";
         }
     }
     elseif (is_array($v)) {

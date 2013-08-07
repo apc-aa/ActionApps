@@ -164,7 +164,7 @@ $editor = new ImageEditor($manager);
 		<?php
 		$iframe_src = $IMConfig['backend_url'].'__function=editorFrame&img='.((isset($_GET['img'])) ? rawurlencode($_GET['img']) : '').'&mode='. $insertMode;
 		?>
-		<iframe src="<?php print htmlspecialchars($iframe_src) ?>" name="editor" id="editor"  scrolling="auto" title="Image Editor" frameborder="0"></iframe>
+		<iframe src="<?php print htmlspecialchars($iframe_src, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1') ?>" name="editor" id="editor"  scrolling="auto" title="Image Editor" frameborder="0"></iframe>
 	</td>
 </tr>
 </table>

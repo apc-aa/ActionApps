@@ -115,7 +115,7 @@
 </head>
 <body class="dialog" >
 <div class="title">Insert <?php echo ($insertMode == 'image' ? 'Image' : 'File Link') ?></div>
-<form action="<?php print htmlspecialchars($IMConfig['backend_url']); ?>" id="uploadForm" method="post" enctype="multipart/form-data">
+<form action="<?php print htmlspecialchars($IMConfig['backend_url'], ENT_COMPAT | ENT_HTML401, 'ISO-8859-1'); ?>" id="uploadForm" method="post" enctype="multipart/form-data">
 <input type="hidden" name="__plugin" value="ExtendedFileManager" />
 <input type="hidden" name="__function" value="images" />
 <input type="hidden" name="mode" value="<?php echo $insertMode; ?>" />

@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 // anonymous authentication - locauth calls extauthnobody
-if ($free) {
+if ($_POST['free']) {
     $nobody = true;
 }
 
@@ -229,7 +229,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
         $current_types  = GetTable2Array($SQL);
         $ret            = "\n <select name=\"ftype\">";
         foreach ( $current_types as $k => $v) {
-            $ret .=  "\n  <option value=\"". $this->slice_id .'-'. htmlspecialchars($k).'"> '. htmlspecialchars($v['name']) ." </option>";
+            $ret .=  "\n  <option value=\"". $this->slice_id .'-'. myspecialchars($k).'"> '. myspecialchars($v['name']) ." </option>";
         }
         $ret           .= "\n </select>";
         $slice          = AA_Slices::getSlice($this->slice_id);
@@ -287,8 +287,8 @@ class AA_Responder_Tags extends AA_Responder {
 page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 if ($nobody) {
-    $_POST['username'] = $free;
-    $_POST['password'] = $freepwd;
+    $_POST['username'] = $_POST['free'];
+    $_POST['password'] = $_POST['freepwd'];
     $auth->auth["uid"] = $auth->auth_validatelogin();
 
 // anonymous login

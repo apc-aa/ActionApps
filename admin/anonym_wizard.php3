@@ -240,7 +240,7 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 if ($show_form) {
     echo '<tr><td><a id="form_content"></a><textarea cols="70" rows="40" style="width:100%" >';
     $form_content = GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show_result, $show_result);
-    echo htmlspecialchars($form_content);
+    echo myspecialchars($form_content);
     echo "\n</textarea></td></tr>\n";
 }
 

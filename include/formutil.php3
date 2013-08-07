@@ -1145,9 +1145,9 @@ class AA_Inputfield {
      */
     function getRadioButtonTag(&$k, &$v, $add='') {
         $name = $this->varname();
-        $ret  = "<input type='radio' name='$name' value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret  = "<input type='radio' name='$name' value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
-        $ret .= ">".htmlspecialchars($v);
+        $ret .= ">".myspecialchars($v);
         return $ret;
     }
 
@@ -1160,9 +1160,9 @@ class AA_Inputfield {
     function getOneChBoxTag(&$k, &$v, $add='', $id = '') {
         $id_attr = empty($id) ? '' : " id='$id'";
         $name    = $this->varname();
-        $ret = "\n<input type='checkbox' name='$name'$id_attr value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret = "\n<input type='checkbox' name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
-        $ret .= ">".htmlspecialchars($v);
+        $ret .= ">".myspecialchars($v);
         return $ret;
     }
 
@@ -1224,7 +1224,7 @@ class AA_Inputfield {
     */
     function inputText($maxsize=255, $size=25, $type="text") {
         list($name,$val,$add) = $this->prepareVars();
-        $val     = htmlspecialchars($val);
+        $val     = myspecialchars($val);
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
 
@@ -1256,7 +1256,7 @@ class AA_Inputfield {
     */
     function staticText($safing=true, $type='first') {
         list($name,$val,$add) = $this->prepareVars($type);
-        if ( $safing ) $val   = htmlspecialchars($val);
+        if ( $safing ) $val   = myspecialchars($val);
         $this->field_name('plus');
         $this->echovar( $val );
         $this->helps('plus');
@@ -1270,7 +1270,7 @@ class AA_Inputfield {
     function hidden($safing=true) {
         list($name,$val,$add) = $this->prepareVars();
         if ( $safing ) {
-            $val=htmlspecialchars($val);
+            $val=myspecialchars($val);
         }
         $this->echoo('<tr height="1" colspan="2"><td height="1">');
         $this->echovar( "<input type=\"hidden\" name=\"$name\" value=\"$val\">" );
@@ -1297,7 +1297,7 @@ class AA_Inputfield {
         $rows     = max($rows, min(substr_count($val,"\n")+1, 30));
         $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-        $val      = htmlspecialchars($val);
+        $val      = myspecialchars($val);
         $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
         $colsy    = ($cols = (int)$cols) ? " cols=$cols" : '';
         $colspan  = $single ? 2 : 1;
@@ -1462,7 +1462,7 @@ class AA_Inputfield {
                 if ( ($restrict == 'unselected') AND $selected  ){
                     continue;  // do not print this option
                 }
-                $ret .= "\n  <option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
+                $ret .= "\n  <option value=\"". myspecialchars($k) ."\" $selected>".myspecialchars($v)."</option>";
             }
         }
         // now add all values, which is not in the array, but field has this value
@@ -1470,7 +1470,7 @@ class AA_Inputfield {
         if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
-                    $ret .= "\n  <option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
+                    $ret .= "\n  <option value=\"". myspecialchars($k) ."\" selected class=\"sel_missing\">".myspecialchars($k)."</option>";
                     $selectedused = true;
                 }
             }
@@ -1640,7 +1640,7 @@ class AA_Inputfield {
             foreach ( (array)$this->const_arr as $id => $text) {
                 $tr_id     = 'rel'.$varname.'old'.($i++);
                 $var_code .= '<tr id="'.$tr_id.'">
-                <td>'.htmlspecialchars($text).'<input type="hidden" name="'.$name.'" value="'.htmlspecialchars($id).'"></td>
+                <td>'.myspecialchars($text).'<input type="hidden" name="'.$name.'" value="'.myspecialchars($id).'"></td>
                 <td>'.
                   GetAAImage("edit.gif", _m('Edit'), 16, 16).
                   GetAAImage("delete.gif", _m('Delete'), 16, 16).
@@ -1741,7 +1741,7 @@ class AA_Inputfield {
                 $constants_names = GetConstants($group_id);
                 foreach ( $val as $v) {
                     if ($v['value']) {
-                        $out .= "\n  <option value=\"".htmlspecialchars($v['value'])."\">".htmlspecialchars($constants_names[$v['value']])."\n";
+                        $out .= "\n  <option value=\"".myspecialchars($v['value'])."\">".myspecialchars($constants_names[$v['value']])."\n";
                     }
                 }
             }
@@ -1787,7 +1787,7 @@ class AA_Inputfield {
         if ( !$accepts ) {
             $accepts = '*/*';
         }
-        $val  = htmlspecialchars($val);
+        $val  = myspecialchars($val);
         $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
 
         $this->field_name('plus');
@@ -1991,7 +1991,7 @@ class AA_Inputfield {
     function inputLocalURLPick($url) {
         list($name,$val) = $this->prepareVars();
         $this->field_name('plus');
-        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".htmlspecialchars($val)."\"".getTriggers("input",$name).">";
+        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\"".getTriggers("input",$name).">";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
         $this->echoo("\n <td>");
@@ -2018,21 +2018,21 @@ class AA_Inputfield {
  */
 function FrmMoreHelp($hlp, $text="", $hint="", $image=false) {
     if ($image) {
-        $img = GetAAImage('help50.gif', htmlspecialchars($hint), 16, 12);
+        $img = GetAAImage('help50.gif', myspecialchars($hint), 16, 12);
     }
     if ( $hlp ) {
         if (is_array($text) || ($image)) {
           return "&nbsp;".($image ? "&nbsp;&nbsp;" : $text["before"])."<a href=".safe($hlp)." target='_blank' ".
-            (($hint != "") ? "title=\"".htmlspecialchars($hint)."\"" : "") .">".($image ? $img : $text["text"])."</a>".($image ? "" : $text["after"]);
+            (($hint != "") ? "title=\"".myspecialchars($hint)."\"" : "") .">".($image ? $img : $text["text"])."</a>".($image ? "" : $text["after"]);
         } elseif (is_string($text) && ($text != "")) {
             return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank'>".($image ? $img : $text)."</a>";
         } else {
-            return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank' ".(($hint != "") ? "title=\"".htmlspecialchars($hint)."\"" : "").
+            return "&nbsp;<a href=\"".safe($hlp)."\" target='_blank' ".(($hint != "") ? "title=\"".myspecialchars($hint)."\"" : "").
                ">".($image ? $img : "?")."</a>";
         }
     } else {
         if (($text == "") && ($image)) {
-          return "&nbsp;<abbr title=\"".htmlspecialchars($hint)."\">".$img."</abbr>";
+          return "&nbsp;<abbr title=\"".myspecialchars($hint)."\">".$img."</abbr>";
         }
     }
 
@@ -2512,11 +2512,11 @@ function FrmChBoxEasyCode($name, $checked=true, $add="", $value='', $id='') {
  */
 function getRadioButtonTag(&$k, &$v, &$name, &$selected) {
     $ret = "<input type=\"radio\" name=\"$name\"
-                 value=\"". htmlspecialchars($k) ."\"".getTriggers("input",$name);
+                 value=\"". myspecialchars($k) ."\"".getTriggers("input",$name);
     if ((string)$selected == (string)$k) {
      $ret .= " checked";
     }
-    $ret .= ">".htmlspecialchars($v);
+    $ret .= ">".myspecialchars($v);
     return $ret;
 }
 
@@ -2545,17 +2545,17 @@ function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
     $retval       = "\n<select name=\"$name\" $add>\n";
     $selectedused = false;
     foreach ((array)$arr as $k => $v) {
-        $retval .= "\n  <option value=\"". htmlspecialchars($k)."\"";
+        $retval .= "\n  <option value=\"". myspecialchars($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
             $selectedused = true;
         }
-        $retval .= ">". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
+        $retval .= ">". myspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
     }
 
     // now add all values, which is not in the array, but field has this value
     if ($selected AND !$selectedused) {
-        $retval .= "\n  <option value=\"". htmlspecialchars($selected) ."\" selected class=\"sel_missing\">".htmlspecialchars($selected)."</option>";
+        $retval .= "\n  <option value=\"". myspecialchars($selected) ."\" selected class=\"sel_missing\">".myspecialchars($selected)."</option>";
     }
 
     $retval .= "</select>\n";
@@ -2571,14 +2571,14 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
     foreach ($arr as $k => $v) {
-        $retval .= "<input type=\"radio\" name=\"$name\" value=\"". htmlspecialchars($k)."\"";
+        $retval .= "<input type=\"radio\" name=\"$name\" value=\"". myspecialchars($k)."\"";
         if (!$selected) {
             $selected = $k;
         }
         if ((string)$selected == (string)$k) {
             $retval .= " selected";
         }
-        $retval .= "> ". htmlspecialchars( is_array($v) ? $v['name'] : $v );
+        $retval .= "> ". myspecialchars( is_array($v) ? $v['name'] : $v );
         if ($new_line) {
             $retval .= "<br>";
         }
@@ -2872,7 +2872,7 @@ function GetHtmlTable( $content ) {
  * @param $src
  */
 function getFrmJavascriptFile( $src ) {
-    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". htmlspecialchars(get_aa_url($src, '', false)) . "\"></script>";
+    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
 }
 /** getFrmJavascript function
  * @param $code

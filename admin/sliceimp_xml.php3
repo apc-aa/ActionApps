@@ -117,7 +117,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
     set_time_limit(600); // This can take a while
     $xu = new xml_unserializer();
     if ($debugimport) {
-        huhl("Importing data=",htmlspecialchars($xml_data));
+        huhl("Importing data=",myspecialchars($xml_data));
     }
 
     /** Create array strusture from XML data */

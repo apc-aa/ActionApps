@@ -373,7 +373,7 @@ class AA_Widget extends AA_Components {
             }
             $selected = $option['selected'] ? $select_string : '';
             $missing  = $option['mis']      ? 'class="sel_missing"' : '';
-            $ret     .= "<option value=\"". htmlspecialchars($option['k']) ."\" $selected $missing>".htmlspecialchars($option['v'])."</option>";
+            $ret     .= "<option value=\"". myspecialchars($option['k']) ."\" $selected $missing>".myspecialchars($option['v'])."</option>";
         }
         return $ret;
     }
@@ -448,7 +448,7 @@ class AA_Widget extends AA_Components {
             for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $input_value  = htmlspecialchars($value->getValue($i));
+                $input_value  = myspecialchars($value->getValue($i));
                 $widget      .= $delim. "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$widget_add2";
                 $delim        = '<br />';
                 $autofocus    = '';
@@ -622,7 +622,7 @@ class AA_Widget_Txt extends AA_Widget {
         for ( $i = 0; $i < $count; ++$i ) {
             $input_name   = $base_name ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $input_value  = htmlspecialchars($value->getValue($i));
+            $input_value  = myspecialchars($value->getValue($i));
             $widget      .= $delim. "\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
             $delim        = '<br />';
         }
@@ -792,7 +792,7 @@ class AA_Widget_Mfl extends AA_Widget {
         for ( $i=0, $ino=max(1,$row_count,$value->valuesCount()); $i<$ino; ++$i) {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $input_value  = htmlspecialchars($value->getValue($i));
+            $input_value  = myspecialchars($value->getValue($i));
             $required     = ($aa_property->isRequired() AND ($i==0)) ? 'required' : '';
             $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
         }
@@ -963,11 +963,11 @@ class AA_Widget_Rio extends AA_Widget {
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
     function getRadioButtonTag($option, $input_name, $input_id, $add='') {
-        $ret  = "\n<input type=radio name=\"$input_name\" id=\"$input_id\" value='". htmlspecialchars($option['k']) ."' $add";
+        $ret  = "\n<input type=radio name=\"$input_name\" id=\"$input_id\" value='". myspecialchars($option['k']) ."' $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
-        $ret .= ">".htmlspecialchars($option['v']);
+        $ret .= ">".myspecialchars($option['v']);
         return $ret;
     }
 
@@ -1154,7 +1154,7 @@ class AA_Widget_Chb extends AA_Widget {
         for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $input_value  = htmlspecialchars($value->getValue($i));
+            $input_value  = myspecialchars($value->getValue($i));
             $widget      .= "$delim<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             $delim        = '<br />';
         }
@@ -1268,11 +1268,11 @@ class AA_Widget_Mch extends AA_Widget {
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
     function getOneChBoxTag($option, $input_name, $input_id, $add='') {
-        $ret      = "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". htmlspecialchars($option['k']) ."\" $add";
+        $ret      = "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". myspecialchars($option['k']) ."\" $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
-        $ret .= ">".htmlspecialchars($option['v']);
+        $ret .= ">".myspecialchars($option['v']);
         return $ret;
     }
 
@@ -1523,7 +1523,7 @@ class AA_Widget_Fil extends AA_Widget {
         for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
             $input_name   = $base_name ."[fil][url][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $input_value  = htmlspecialchars($value->getValue($i));
+            $input_value  = myspecialchars($value->getValue($i));
             $link         = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
             if ($display_url < 2) {
                 $widget      .= $delim. "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>&nbsp;$link";
@@ -1547,7 +1547,7 @@ class AA_Widget_Fil extends AA_Widget {
                                 'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', AA_ITEM_JSON)'
                                );
             $widget .= '
-                <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.htmlspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
+                <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.myspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
                 <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" required onchange="document.getElementById(\''.$base_id.'upload\').style.visibility = ((this.value == \'\') ? \'hidden\' : \'visible\');">
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
                 <input type="submit" name="'.$base_id.'upload" id="'.$base_id.'upload" value="'._m('Upload').'" style="visibility:hidden;">
@@ -1967,7 +1967,7 @@ class AA_Widget_Hid extends AA_Widget {
         $property_id  = $aa_property->getId();
         $input_name   = AA_Form_Array::getName4Form($property_id, $content)."[0]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
-        $input_value  = htmlspecialchars($content->getValue($property_id));
+        $input_value  = myspecialchars($content->getValue($property_id));
         return        "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
     }
 }
@@ -2006,7 +2006,7 @@ class AA_Widget_Inf extends AA_Widget {
 
     function _getRawHtml($aa_property, $content, $type='normal') {
         $property_id  = $aa_property->getId();
-        $widget       = htmlspecialchars($content->getValue($property_id));
+        $widget       = myspecialchars($content->getValue($property_id));
         $base_name    = AA_Form_Array::getName4Form($property_id, $content);
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $input_name   = $base_name."[0]";

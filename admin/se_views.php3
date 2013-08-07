@@ -148,7 +148,7 @@ echo "
         <td align=\"right\"><select name=\"view_type\">";
 
 foreach ( getViewTypes() as $k => $v) {
-    echo "<option value=\"$k\"> ". htmlspecialchars($v["name"]) ." </option>";
+    echo "<option value=\"$k\"> ". myspecialchars($v["name"]) ." </option>";
 }
 echo "</select></td>
         <td><input type=\"submit\" name=\"new\" value=\"". _m("New") ."\"></td>

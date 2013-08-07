@@ -252,7 +252,7 @@ class datectrl {
 
         // now add all values, which is not in the array, but field has this value
         if ($this->year AND !$selectedused) {
-            $ret .= "<option value=\"". htmlspecialchars($this->year) ."\" selected class=\"sel_missing\">".htmlspecialchars($this->year)."</option>";
+            $ret .= "<option value=\"". myspecialchars($this->year) ."\" selected class=\"sel_missing\">".myspecialchars($this->year)."</option>";
         }
         return $ret;
     }
