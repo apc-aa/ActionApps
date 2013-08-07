@@ -1548,7 +1548,7 @@ class AA_Widget_Fil extends AA_Widget {
                                );
             $widget .= '
                 <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.myspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
-                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" required onchange="document.getElementById(\''.$base_id.'upload\').style.visibility = ((this.value == \'\') ? \'hidden\' : \'visible\');">
+                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" onchange="document.getElementById(\''.$base_id.'upload\').style.visibility = ((this.value == \'\') ? \'hidden\' : \'visible\');">
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
                 <input type="submit" name="'.$base_id.'upload" id="'.$base_id.'upload" value="'._m('Upload').'" style="visibility:hidden;">
                 </form>
@@ -1573,15 +1573,15 @@ class AA_Widget_Fil extends AA_Widget {
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
 
-    function _finalizeAjaxHtml($winfo, $aa_property) {
-        // not standard - we do not show save button (the upload input works the same way here)
-        $base_name    = $winfo['base_name'];
-        $base_id      = AA_Form_Array::formName2Id($base_name);
-        $help         = $aa_property->getHelp();
-        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
-        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
-        return $widget_html;
-    }
+    //function _finalizeAjaxHtml($winfo, $aa_property) {
+    //    // not standard - we do not show save button (the upload input works the same way here)
+    //    $base_name    = $winfo['base_name'];
+    //    $base_id      = AA_Form_Array::formName2Id($base_name);
+    //    $help         = $aa_property->getHelp();
+    //    $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+    //    $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+    //    return $widget_html;
+    //}
 }
 
 
