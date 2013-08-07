@@ -40,6 +40,15 @@ class AA_Formrow extends AA_Storable {
     }
 }
 
+class AA_Formrow_Text extends AA_Formrow {
+    protected $text;        // protected - we need the data visible for AA_Statestore
+    function __construct($text=null) { // default values are needed for AA_Storable's construction
+        $this->text = $text;
+    }
+    function getHtml($content) {
+        return '<div>'.$this->text.'</div>';
+    }
+}
 
 /** Fully qualified form row */
 class AA_Formrow_Full extends AA_Formrow {

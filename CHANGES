@@ -5,6 +5,10 @@
          - new {text2html:<text>} which converts plain text to the html.
            Usasable mainly with {mail:...} function, which accepts only HTML
            formated mails as message body
+         - file upload ajax and live widgets now allows to delete (remove link)
+           to the file
+         - Planed tasks are now rescheduled, when the task is changed
+         - the UI for Planed Task list is improved
 08/01/13 - {header} could be used as {header:404} and now also {header:xml}
 (honzam)   which returns right http header for xml - Content-Type: text/xml
          - recursion detection on AA expressions - now the execution is stoped,

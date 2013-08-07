@@ -50,6 +50,32 @@ class AA_Plannedtask extends AA_Object {
     // static function getForm($oid=null, $owner=null, $otype=null) ... could be redefined here, but we use the standard one from AA_Object
 
 
+    /** Manager top HTML  */
+    protected static function getManagerTopHtml($fields) {
+        return  _m('Current time on server'). ' '. date('Y-m-d H:i').
+         '
+          <table>
+            <tr>
+              <th width="30">&nbsp;</th>
+              <th>'.join("</th>\n<th>", array( _m('Name'), _m('Time'), _m('Task'), _m('ID'))).'</th>
+            </tr>
+            ';
+    }
+
+    /** Manager row HTML  */
+   protected static function getManagerRowHtml($fields, $aliases, $links) {
+      // huhl($aliases);exit;
+       return '
+           <tr>
+             <td><input type="checkbox" name="chb[x_#AA_ID___]" value=""></td>
+             <td>'. a_href($links['Edit'], '_#AA_NAME_'). '</td>
+             <td>_#TIME____</td>
+             <td>_#TASK____</td>
+             <td>_#AA_ID___</td>
+           </tr>
+           ';
+   }
+
     function nexttime() {
         // every 5 min
         return strtotime($this->getProperty('time'));
@@ -58,21 +84,42 @@ class AA_Plannedtask extends AA_Object {
     function toexecutelater() {
         AA_Stringexpand::unalias($this->task);
     }
+
+    /** method called after save */
+    function aftersave() {
+        $toexecute = new AA_Toexecute;
+        $toexecute->cancel_all('Plannedtask_'. $this->getId());
+        $this->schedule();
+    }
+
+    /** check if the task is scheduled and if not - schedule it for future execution */
+    function schedule() {
+        $time = $this->nexttime();
+        if ($time >= time()) {
+            $toexecute = new AA_Toexecute;
+            $toexecute->laterOnce($this, array(), 'Plannedtask_'. $this->getId(), 100, $time);
+        }
+    }
+    
+    static function getForm($oid=null, $owner=null, $otype=null) {
+        $form  = parent::getForm($oid, $owner, $otype);
+        $next_time      = DB_AA::select1("SELECT execute_after FROM `toexecute`", 'execute_after', array(array('selector',"Plannedtask_$oid")));
+        $next_time      = $next_time ? date('Y-m-d H:i',$next_time) : _m('not scheduled, yet');
+        // $last_execution = DB_AA::select1("SELECT time FROM `log`", 'time', array(array('type','TOEXECUTE'),array('selector',"Plannedtask_$oid")));
+        // $last_execution = $last_execution ? date('Y-m-d H:i',$last_execution) : _m('no log entry, yet');
+            
+        $form->addRow(new AA_Formrow_Text(_m('next run'). ": $next_time" ));
+        // $form->addRow(new AA_Formrow_Text(_m('last execution'). ": $last_execution" ));
+        return $form;
+    }        
 }
 
 
 
-/** Used as object for toexecute - updates item.display_count and hit_archive
- *  based on hit log in hit_short_id and hit_long_id tables
- *  It also plans the the hit_x..... field counting into toexecute queue
+/** Check all AA_Planedtask and schedule it for execution, if not scheduled
  */
 class AA_Plannedtask_Schedule {
 
-    /** updateDisplayCount - updates item.display_count and hit_archive based
-     *  on hit log in hit_short_id and hit_long_id tables
-     *                     - it also plans the the hit_x..... field counting
-     *                       into toexecute queue
-     */
     function toexecutelater() {
 
         $aa_set = new AA_Set();
@@ -80,14 +127,10 @@ class AA_Plannedtask_Schedule {
         //$aa_set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
 
         $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
-        $toexecute = new AA_Toexecute;
 
         foreach ($zids as $id) {
             $task = AA_Object::load($id, 'AA_Plannedtask');
-            $time = $task->nexttime();
-            if ($time >= time()) {
-                $toexecute->laterOnce($task, array(), "Plannedtask_$id", 100, $task->nexttime());
-            }
+            $task->schedule();
         }
     }
 }

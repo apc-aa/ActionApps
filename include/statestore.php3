@@ -289,8 +289,14 @@ class AA_Object extends AA_Storable {
         $prop = AA_Object::getPropertyObject('aa_subobjects');
         $prop->save($this->_getSubObjects(), $object_id);
 
+        $this->aftersave();
         return $this->aa_id;
     }
+
+    /** will be called after saving of the object
+     *  could do some clenup work in child classes (like AA_Planedtask)
+     **/
+    function aftersave() {}
 
     static public function getPropertyObject($property_id) {
         switch ($property_id) {
@@ -804,15 +810,42 @@ class AA_Object extends AA_Storable {
         return $ret;
     }
 
+    /** Manager top HTML
+     *  could be changed in child classes
+     */
+    protected static function getManagerTopHtml($fields) {
+        return '
+          <table>
+            <tr>
+              <th width="30">&nbsp;</th>
+              <th>'.join("</th>\n<th>", array_merge(array_keys($fields),array( _m('Name'), _m('ID'), _m('Owner'), _m('Action')))).'</th>
+            </tr>
+            ';
+    }
+
+    /** Manager row HTML
+     *  could be changed in child classes
+     */
+    protected static function getManagerRowHtml($fields, $aliases, $links) {
+        return '
+            <tr>
+              <td><input type="checkbox" name="chb[x_#AA_ID___]" value=""></td>
+              <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
+              <td>'. a_href($links['Edit'], _m('Edit')). '</td>
+            </tr>
+            ';
+    }
+
     /** generate manager from object structure
      * @param $classname
      * @param $params
      * @static
      */
-    function getManagerConf($object_class, $manager_url, $actions=null, $switches=null) {
+    static function getManagerConf($object_class, $manager_url, $actions=null, $switches=null) {
         $properties    = call_user_func(array($object_class, 'getClassProperties'));
 
         $aliases       = AA_Object::_generateAliases($properties);
+
         $search_fields = AA_Object::_getSearchArray($properties);
         $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
@@ -831,25 +864,14 @@ class AA_Object extends AA_Storable {
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                  'format'               => array(    // optionaly to manager_vid you can set format array
-                     'compact_top'      => '<table>
-                                            <tr>
-                                              <th width="30">&nbsp;</th>
-                                              <th>'.join("</th>\n<th>", array_merge(array_keys($search_fields),array( _m('Name'), _m('ID'), _m('Owner'), _m('Action')))).'</th>
-                                            </tr>
-                                            ',
+                     'compact_top'      => call_user_func_array(array($object_class, 'getManagerTopHtml'), array($search_fields)),
                      'category_sort'    => false,
                      'category_format'  => "",
                      'category_top'     => "",
                      'category_bottom'  => "",
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
-                     'odd_row_format'   => '
-                                            <tr>
-                                              <td><input type="checkbox" name="chb[x_#AA_ID___]" value=""></td>
-                                              <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
-                                              <td>'. a_href(get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)), _m('Edit')). '</td></td>
-                                            </tr>
-                                           ',
+                     'odd_row_format'   => call_user_func_array(array($object_class, 'getManagerRowHtml'), array($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url))))),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
