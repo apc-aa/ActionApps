@@ -1,3 +1,8 @@
+09/02/13 - Planed Task interface now have "extra time offset" for planning - now
+(honzam)   it is possible to plan events also on 20th of the month, which was
+           hard or impossible without this new paramater
+         - fix for images transformed by {img:} command when sended by e-mail
+         - aditional fixes for PHP 5.5
 08/07/13 - AA works on PHP 5.5 now
 (honzam) - {mail:...} now allows to send also CC and BCC
          - better mail handling - first two mails in the script are sent

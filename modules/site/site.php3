@@ -128,8 +128,8 @@ $cache_key = get_hash('site', PageCache::globalKeystring(), AA::$site_id.":$post
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = $nocache;
-if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($cache_key,$nocache))) {
+$site_nocache = $_REQUEST['nocache'];
+if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($cache_key,$site_nocache))) {
     echo $res;
     if ( $debug ) {
         echo '<br><br>Site cache hit!!! Page generation time: '. (microtime(true) - $timestart);
@@ -166,7 +166,7 @@ if ($hit_zid) {
 // UPDATE: there is no need to add alse site module itself, since it
 // is added automaticaly - Honza 2005-06-16
 
-if ( $GLOBALS['debug'] ) huhl("<br>Site.php3 is_array(slices4cache):". is_array($slices4cache), '<br>Site.php3 nocache:'.$nocache);
+if ( $GLOBALS['debug'] ) huhl("<br>Site.php3 is_array(slices4cache):". is_array($slices4cache), '<br>Site.php3 nocache:'.$site_nocache);
 
 // the cache should be always cleared, if the site is changed
 if (!in_array(AA::$site_id, (array)$slices4cache)) {
