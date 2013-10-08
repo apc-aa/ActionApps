@@ -449,12 +449,11 @@ function AA_LoadCss(url) {
 
 
 /* Cookies */
-function SetCookie(name, value) {
+function SetCookie(name, value, plustime) {
+   plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
    var expires = new Date();
-   expires.setTime (expires.getTime() + (1000 * 60 * 60 * 24 * 1)); // a day
-   document.cookie = name + "=" + escape(value) +
-                      "; expires=" + expires.toGMTString() +
-                      "; path=/";
+   expires.setTime(expires.getTime() + plustime);
+   document.cookie = name + "=" + escape(value) + "; expires=" + expires.toGMTString() + "; path=/";
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))
     // + ((domain == null)  ? "" : ("; domain=" + domain))
