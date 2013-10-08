@@ -246,7 +246,8 @@ if ( $update ) {
         }
         if ( $view_id ) {
             $varset->addkey('id','number', $view_id);
-            if ( !$varset->doUpdate('view') ) {
+            $varset->saveHistory('view', unpack_id(substr($view_id.'_'.$slice_id, 0, 16)));
+            if ( !$varset->doUpdate('view',null,true) ) {  // track history
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
                 break;   // not necessary - we have set the halt_on_error
             }
