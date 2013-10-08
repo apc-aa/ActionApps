@@ -153,6 +153,7 @@ class datectrl {
         }
         $t = explode( ':', $this->time ?  $this->time : "0:0:0");
         return mktime($t[0],$t[1],$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
+
     }
 
     /** get_datestring function
@@ -171,7 +172,8 @@ class datectrl {
      * @param $default = '0'
      */
     function ValidateDate($inputName, &$err, $required=true, $default='0')  {
-        if (( $this->get_date() > 0  ) OR ($this->get_date()==-3600)) {
+        $date = $this->get_date();
+        if ( $this->isTimestamp($date) AND ($date != 0)) {
             return true;
         }
         if ($required) {
