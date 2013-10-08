@@ -45,6 +45,7 @@ function StripslashesDeep($value) {
 if ( get_magic_quotes_gpc() ) {
     $_POST    = StripslashesDeep($_POST);
     $_GET     = StripslashesDeep($_GET);
+    $_REQUEST = StripslashesDeep($_REQUEST);
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
@@ -313,6 +314,7 @@ elseif ( $_GET['restore']) {
     }
 }
 elseif ( $_GET['dotest']) {
+
     $status = $updater->test();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();
 }

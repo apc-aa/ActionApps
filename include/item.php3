@@ -65,10 +65,10 @@ function DefineBaseAliases(&$aliases, $module_id) {
         $aliases["_#SITEM_ID"] = GetAliasDef( "f_1", "short_id........");
     }
     if ( !isset($aliases["_#HEADLINE"]) ) {
-        $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
+        $aliases["_#HEADLINE"] = GetAliasDef( "f_t::safe",             GetHeadlineFieldID($module_id));
     }
     if ( !isset($aliases["_#JS_HEAD_"]) ) {
-        $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($module_id));
+        $aliases["_#JS_HEAD_"] = GetAliasDef( "f_t::javascript",       GetHeadlineFieldID($module_id));
     }
 }
 

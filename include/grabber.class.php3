@@ -263,11 +263,7 @@ class AA_Grabber {
     }
 }
 
-/** AA_Grabber_Csv - CSV (Comma Separated Values) format grabber
- *  From this class we derive concrete data grabbers, like RSS, AARSS, CSV, ...
- *
- *  @todo this class should be abstract after we switch to PHP5
- */
+/** AA_Grabber_Csv - CSV (Comma Separated Values) format grabber */
 class AA_Grabber_Csv {
 
     /** name function

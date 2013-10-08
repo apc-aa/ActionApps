@@ -548,7 +548,7 @@ class AA_Validate_Unique extends AA_Validate {
      */
     function validate(&$var, $default='AA_noDefault') {
         global $slice_id;
-        
+
         if ( $this->scope == 'username') {
             if ( !AA::$perm->isUsernameFree($var) AND ( !$this->item_id OR (AA_Reader::name2Id($var) != $this->item_id))) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $default);
@@ -645,7 +645,7 @@ class AA_Validate_Text extends AA_Validate {
 *  You can add parameters to $type divided by ":".
 */
 function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $type) {
-    
+
     $validate_definition = ParamExplode($type);
     $type                = $validate_definition[0];
 
@@ -655,7 +655,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
                          $validator = new AA_Validate_Regexp($regexp, null, $err_text);
                          break;
         case 'e-unique':
-        case 'unique':   
+        case 'unique':
                          $UNIQUE_SCOPES               = array ( 0 => 'username',
                                                                 1 => 'slice',
                                                                 2 => 'allslices'
@@ -664,7 +664,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
                          $val_param['field_id'] = $validate_definition[1];
                          $val_param['scope']    = $UNIQUE_SCOPES[(int)$validate_definition[2]];
                          $val_param['item_id']  = $validate_definition[3];
-                         
+
                          if ( $type == 'unique' ) {
                              $validator = new AA_Validate_Unique( $val_param );
                          } else {

@@ -659,9 +659,10 @@ function AuthenticateReaderUsername($username, $password) {
     if ( !$username ) {
         return false;
     }
+    
     $user_id   = AA_Reader::name2Id($username);
     $user_info = GetAuthData( $user_id );
-
+    
     if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
         // user id is the id of the item in the Reader Management slice
         return $user_id;

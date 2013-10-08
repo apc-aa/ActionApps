@@ -1,3 +1,12 @@
+10/08/13 - date widget now alows set the date older than 1970
+(honzam) - view definition is now stored to history, so it will be possible
+           to return to older state of view.
+           At this moment is there no admin interface for the go back in history
+         - update database structure in metabase (small changes - indexes...)
+         - {safe:text} prevents double double_encode already encoded entities
+           (like &amp;quote;) - as oposite to {htmlspecialchars}
+         - SetCookie() javascript function now accepts also the time
+           SetCookie(name, value, plustime)
 09/02/13 - Planed Task interface now have "extra time offset" for planning - now
 (honzam)   it is possible to plan events also on 20th of the month, which was
            hard or impossible without this new paramater
