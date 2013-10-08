@@ -88,8 +88,19 @@ if (ini_get('pcre.backtrack_limit') < 1000000) {
 
 /** creates array form JSON array or returns single value array if not valid json */
 function json2arr($string, $do_not_filter=false) {
-    if (($string[0] != '[') OR (( $values = json_decode($string)) == null)) {
-        $values = ($string=='[]') ? array() : array($string);
+    if ($string[0] == '[') {
+        if ( ($values = json_decode($string)) == null) {
+            if (substr($string, -1)==']' AND (json_last_error() == JSON_ERROR_UTF8)) {
+                // kind of hack - decode JSON for non UTF-8 charsets
+                // the JSON must be in this exact form: ["val1","val2",...]
+                // could be solved also by iconv...
+                $values = explode('","', trim($string,'"[]'));
+            } else {
+                return $values = ($string=='[]') ? array() : array($string);
+            }
+        }
+    } else {
+        return array($string);
     }
     return $do_not_filter ? $values : array_filter($values);
 }
@@ -1645,6 +1656,21 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
      */
     function expand($text='') {
         return Csv_escape($text);
+    }
+}
+
+
+/** Escapes the HTML special chars (>,<,&,...) and also prevents to double_encode
+*  already encoded entities (like &amp;quote;) - as oposite to {htmlspecialchars}
+*/
+class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text to escape
+     */
+    function expand($text='') {
+        return myspecialchars($text,false);
     }
 }
 
@@ -3943,8 +3969,7 @@ class AA_Stringexpand {
         'strtoupper'       => 'strtoupper',         //     AA_Stringexpand_Strtoupper
         'strtolower'       => 'strtolower',         //     AA_Stringexpand_Strtolower
         'striptags'        => 'strip_tags',         // old AA_Stringexpand_Striptags
-        'safe'             => 'myspecialchars',   // old AA_Stringexpand_Safe
-        'htmlspecialchars' => 'myspecialchars',   // old AA_Stringexpand_Htmlspecialchars
+        'htmlspecialchars' => 'myspecialchars',     // old AA_Stringexpand_Htmlspecialchars - similar to {safe}, but without double_escape
         'urlencode'        => 'urlencode',          // old AA_Stringexpand_Urlencode
         'ord'              => 'ord',                // old AA_Stringexpand_Ord
         'rand'             => 'rand',               // old AA_Stringexpand_Rand
