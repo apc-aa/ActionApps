@@ -89,38 +89,6 @@ class AA_Optimize_Category_Sort2group_By extends AA_Optimize {
 }
 
 
-/** Generate metabase definition row */
-class AA_Optimize_Generate_Metabase extends AA_Optimize {
-
-    /** Name function
-    * @return a message
-    */
-    function name() {
-        return _m("Generate metabase definition row");
-    }
-
-    /** Description function
-    * @return a message
-    */
-    function description() {
-        return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php3 and /include/metabase.class.php3 scripts");
-    }
-
-    /** implemented actions within this class */
-    function actions()      { return array('repair'); }
-
-    /** Name function
-    * @return bool
-    */
-    function repair() {
-        $metabase  = new AA_Metabase;
-        $metabase->loadFromDb();
-        echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
-        exit;
-    }
-}
-
-
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */

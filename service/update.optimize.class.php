@@ -1994,4 +1994,36 @@ class AA_Optimize_Add_Mandatory_Short_Id extends AA_Optimize_Add_Mandatory_Statu
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('short_id........', '', '". quote($sid) ."', 'Short ID', 5090, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 100, '', '', '', '', 1, 1, 1, '_#SITEM_ID', 'f_t:', 'alias for Short Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'short_id', '', 'nul', 0, 0)";    }
 }
 
+
+/** Generate metabase definition row */
+class AA_Optimize_Generate_Metabase extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Generate metabase definition row");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php3 and /include/metabase.class.php3 scripts");
+    }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
+
+    /** Name function
+    * @return bool
+    */
+    function repair() {
+        $metabase  = new AA_Metabase;
+        $metabase->loadFromDb();
+        echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
+        exit;
+    }
+}
+
 ?>
