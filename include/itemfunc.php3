@@ -516,7 +516,7 @@ class AA_Field_Writer {
 
     protected function _clear_field($item_id, $field_id) {
         // delete content just for displayed fields
-        DB_AA::sql("DELETE FROM content WHERE item_id='". q_pack_id($item_id). "' AND field_id = '".quote($fid)."'");
+        DB_AA::sql("DELETE FROM content WHERE item_id='". q_pack_id($item_id). "' AND field_id = '".quote($field_id)."'");
     }
 
     protected function _store($item_id, $field, $value, $param, $additional='') {
