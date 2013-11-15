@@ -425,4 +425,8 @@ $_m["To save changes click here or outside the field."]
  $_m["An error occurred during password change - please contact: %1."]
  = "Došlo k chybě během změny hesla - prosím kontaktujte %1.";
 
+ $_m["Delete"]
+ = " Odstranit ";
+ 
+ 
 ?>
