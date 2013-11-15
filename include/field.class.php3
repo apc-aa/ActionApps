@@ -243,8 +243,8 @@ class AA_Field {
     * @param $required  // redefine default settings of required
     * @param $function  // js function to call after the update
     */
-    function getWidgetLiveHtml($item_id, $required, $function) {
-        $widget      = $this->getWidget();
+    function getWidgetLiveHtml($item_id, $required, $function, $widget_type=null) {
+        $widget      = $this->getWidget($widget_type);
         $item        = AA_Items::getItem($item_id);
         $aa_property = $this->getAaProperty($widget->multiple(), $required);
 
