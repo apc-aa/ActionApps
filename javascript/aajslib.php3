@@ -417,7 +417,7 @@ function AA_SendWidgetAjax(id) {
  */
 function AA_ReloadAjaxResponse(id, responseText) {
     var valdivid   = 'ajaxv_' + id;
-    var items = responseText.evalJSON(true);  // maybe we can remove "true"
+    var items  = (typeof responseText === 'string') ? responseText.evalJSON(true) : responseText;  // maybe we can remove "true"
     var res;
     for (var i in items) {
         res = items[i];

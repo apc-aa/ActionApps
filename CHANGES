@@ -1,3 +1,31 @@
+11/15/13 - multiple Checkboxes widget is much improved (it lists the selected
+(honzam)   values on top an you can also uncheck it from there)
+         - file upload widget used in {ajax} and {live} works better - there is
+           no editable uploaded url, but there is button for delete
+           of the value, ...
+         - you can specify the widget_type in {live} command and redefine
+           the default widget for the field
+         - Text Field widget containing URL now shows the icon for jump
+           to this URL
+         - new f_1 alias function now could be selected in alias definition.
+           It prints always the only first value of field (even if it is
+           multivalue).
+         - site module slices used for caching could be selected in sitemodule
+           configuration field also for older type of sitemodule (the one which
+           use state file). The $slices4cache is no longer necessary there.
+           It has no impact for new type of sitemodule (SEO), where it is used
+           as default.
+         - {seo.............} field is always displayed as single value, even if
+           it is stored as multivalue in the database (which is probably mistake)
+           {qs} now allows abstract also the array variables posted to the script
+             - just like
+             {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
+           The variable must be written exactly as it is in QUERY_STRING
+           in the URL
+         - fix for {recompute} which may lead to doubling the values (create multivalue)
+         - small fix for select widget - empty options is not selected
+         - AA search now searches also email notify fields during slice search
+         - better texts for password recovery in Czech
 10/08/13 - date widget now alows set the date older than 1970
 (honzam) - view definition is now stored to history, so it will be possible
            to return to older state of view.
