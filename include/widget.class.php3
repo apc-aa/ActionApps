@@ -283,7 +283,7 @@ class AA_Widget extends AA_Components {
      *  This method is rewritten if_selected() method form formutil.php3
      */
     function ifSelected($option, $ret_val) {
-        return $this->_selected[(string)$option] ? $ret_val : '';
+        return (strlen($option) AND $this->_selected[(string)$option]) ? $ret_val : '';
     }
 
     /**
@@ -295,7 +295,7 @@ class AA_Widget extends AA_Components {
         if (is_object($aa_value)) {
             for ( $i=0, $ino=$aa_value->valuesCount(); $i<$ino; ++$i) {
                 $val = $aa_value->getValue($i);
-                if ( $val ) {
+                if ( strlen($val) ) {
                     $this->_selected[(string)$val] = true;
                 }
             }
@@ -412,6 +412,7 @@ class AA_Widget extends AA_Components {
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
         $widget_add2s= ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; left:0; top:0;">' : '';
         $widget      = '';
+        $autofocus = ($type == 'ajax') ? 'autofocus' : '';
         //huhl("---", $aa_property->validator);
 
         // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
@@ -422,7 +423,7 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "$widget_add2s<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds autofocus>";
+            $widget    = "$widget_add2s<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
             $selected  = $content->getAaValue($aa_property->getId());
             // empty select option for not required fields and also for live selectbox,
             // because people thinks, that the first value is filled in the database (which is not)
@@ -444,7 +445,6 @@ class AA_Widget extends AA_Components {
                 $input_type     = 'type=text';
             }
 
-            $autofocus = ($type == 'ajax') ? 'autofocus' : '';
             for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
@@ -1268,11 +1268,11 @@ class AA_Widget_Mch extends AA_Widget {
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
     function getOneChBoxTag($option, $input_name, $input_id, $add='') {
-        $ret      = "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". myspecialchars($option['k']) ."\" $add";
+        $ret      = "\n<label class=\"aa-chb\"><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". myspecialchars($option['k']) ."\" $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
-        $ret .= ">".myspecialchars($option['v']);
+        $ret .= ">".myspecialchars($option['v']).'</label>';
         return $ret;
     }
 
@@ -1301,13 +1301,22 @@ class AA_Widget_Mch extends AA_Widget {
             $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
         }
 
-        $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');
+        $selection = array();
+        foreach ($options as $o) {
+            if ($o['selected']) {
+                $selection[] = '<span data-aa-mchval="'.myspecialchars($o['k']).'" onclick="AA_MchUnsel(this, \''.$base_name_add.'\')">'. $o['v'] .'</span>';
+            }
+        }
+
 
         // default value - in order something is send when no chbox is checked
         $input_name   = $base_name_add ."[def]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
+        $widget       = count($selection) ? ('<div class="aa-mch-selected"><strong>'._m('Selected') .':</strong><div class="aa-mch-tags">'. join(' ', $selection)) .'</div></div>' : '';
+        $widget      .= '<div class="aa-mch-list" style="max-height:'.$height.'px; overflow:auto;">';
         $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
-        $widget       = '<div style="max-height:'.$height.'px; overflow:auto;">'.$widget.'</div>';
+        $widget      .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');
+        $widget      .= '</div>';
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
@@ -1525,7 +1534,7 @@ class AA_Widget_Fil extends AA_Widget {
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
             $link         = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-            if ($display_url < 2) {
+            if ( ($display_url < 2) AND ($type=='normal')) {
                 $widget      .= $delim. "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>&nbsp;$link";
             } else {
                 $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$input_value";
@@ -1547,15 +1556,19 @@ class AA_Widget_Fil extends AA_Widget {
                                 'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', AA_ITEM_JSON)'
                                );
             $widget .= '
-                <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.myspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
-                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" onchange="document.getElementById(\''.$base_id.'upload\').style.visibility = ((this.value == \'\') ? \'hidden\' : \'visible\');">
+                <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.myspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">';
+            if ($link) {
+                $widget .= '
+                    <input type="button" value="'._m('Delete').'" onclick="document.getElementById(\'fuf'.$base_id.'\').submit()"><br>';
+            }
+            $widget .= '
+                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" onchange="document.getElementById(\''.$base_id.'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
-                <input type="submit" name="'.$base_id.'upload" id="'.$base_id.'upload" value="'._m('Upload').'" style="visibility:hidden;">
+                <input type="submit" name="'.$base_id.'upload" id="'.$base_id.'upload" value="'._m('Upload').'" style="display:none;">
                 </form>
                 <iframe id="iframe'.$base_id.'" name="iframe'.$base_id.'" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
-                <script language="JavaScript" type="text/javascript"> <!--
+                <script language="JavaScript" type="text/javascript">
                   document.getElementById("ret_code_enc'.$base_id.'").value = document.getElementById("ajaxv_'.$base_id.'").getAttribute(\'data-aa-alias\');
-                //-->
                 </script>
             ';
         }
@@ -1567,21 +1580,22 @@ class AA_Widget_Fil extends AA_Widget {
      *  @param  $content        - contain the value of propertyu to display
      */
     function getLiveHtml($aa_property, $content, $function) {
+        //return $this->getAjaxHtml($aa_property, $content);
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
-        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':<small>{item:'.$content->getId().':'.$aa_property->getId().'}</small><br><input type=button value='. _m('Upload') .'>}');
+        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':{({item:'.$content->getId().':'.$aa_property->getId().'})}<br><input type=button value='. _m('Upload') .'>}');
         // add JS OK Function
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
 
-    //function _finalizeAjaxHtml($winfo, $aa_property) {
-    //    // not standard - we do not show save button (the upload input works the same way here)
-    //    $base_name    = $winfo['base_name'];
-    //    $base_id      = AA_Form_Array::formName2Id($base_name);
-    //    $help         = $aa_property->getHelp();
-    //    $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
-    //    $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
-    //    return $widget_html;
-    //}
+    function _finalizeAjaxHtml($winfo, $aa_property) {
+        // not standard - we do not show save button (the upload input works the same way here)
+        $base_name    = $winfo['base_name'];
+        $base_id      = AA_Form_Array::formName2Id($base_name);
+        $help         = $aa_property->getHelp();
+        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+        return $widget_html;
+    }
 }
 
 
