@@ -102,7 +102,7 @@ function json2arr($string, $do_not_filter=false) {
     } else {
         return array($string);
     }
-    return $do_not_filter ? $values : array_filter($values);
+    return $do_not_filter ? $values : array_filter($values, 'strlen');  // strlen in order we do not remove "0"
 }
 
 /** include file, first parameter is filename, second is hints on where to find it **/
@@ -3116,12 +3116,14 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
     /** expand function
      * @param $item_id
      * @param $field_id
+     * @param $required
+     * @param $widget_type
      */
-     function expand($slice_id, $field_id, $required=null) {
+     function expand($slice_id, $field_id, $required=null, $widget_type=null) {
          if ( !($field = $this->_getField($slice_id, $field_id))) {
              return '';
          }
-         return $field->getWidgetNewHtml($required==1);
+         return $field->getWidgetNewHtml($required==1, $widget_type);
      }
 }
 
@@ -3172,11 +3174,12 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
 
 
 /** Allows on-line editing of field content
- *    {live:<item_id>:<field_id>:<required>:<function>}
+ *    {live:<item_id>:<field_id>:<required>:<function>:<widget_type>}
  *
- *   <required>  explicitly mark the live field as required
- *   <function>  specify javascript function, which is executed after the widget
- *                is sumbitted
+ *   <required>    explicitly mark the live field as required (0|1)
+ *   <function>    specify javascript function, which is executed after the widget
+ *                  is sumbitted
+ *   <widget_type> which widget to show
  */
 class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3191,8 +3194,11 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $item_id
      * @param $field_id
+     * @param $required
+     * @param $function
+     * @param $widget_type
      */
-    function expand($item_id, $field_id, $required=null, $function=null) {
+    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
         $ret = '';
 
         if (!$field_id) {
@@ -3211,7 +3217,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
             mgettext_bind($lang, 'output');
 
             $field = $slice->getField($field_id);
-            $ret   = $field ? $field->getWidgetLiveHtml($iid, ($required==1) ? true : null, $function) : '';
+            $ret   = $field ? $field->getWidgetLiveHtml($iid, ($required==1) ? true : null, $function, $widget_type) : '';
         }
         return $ret;
     }
@@ -3751,11 +3757,24 @@ class AA_Unalias_Callback {
 
         if (($outlen == 16) AND isset($this->item)) {
             switch ($out) {
-                case "unpacked_id.....":
-                case "id..............":
+                case 'unpacked_id.....':
+                case 'id..............':
                     return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
-                case "slice_id........":
+                case 'slice_id........':
                     return $this->item->getSliceID();
+                case 'short_id........':
+                case 'status_code.....':
+                case 'post_date.......':
+                case 'publish_date....':
+                case 'expiry_date.....':
+                case 'highlight.......':
+                case 'posted_by.......':
+                case 'edited_by.......':
+                case 'last_edit.......':
+                case 'display_count...':
+                    return $this->item->f_1($out);               // for speedup - we know it is not multivalue and not needed quoting
+                case 'seo.............':
+                    return QuoteColons($this->item->f_1($out));  // for speedup and safety - ignore, if it is multivalue
                 default:
                     if ( $this->item->isField($out) ) {
                         return QuoteColons($this->item->f_h($out,"-"));
@@ -4551,10 +4570,11 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
 }
 
 /** @return url GET parameter - {qs[:<varname>[:delimiter]]}
- *  Ussage: {qs:surname}
- *             - returns Havel for http://example.org/cz/page?surname=Havel
- *  Ussage: {qs}
- *             - returns whole querystring (including GET and POST variables)
+ *  Ussage:
+ *   {qs:surname}    - returns Havel for http://example.org/cz/page?surname=Havel
+ *   {qs}            - returns whole querystring (including GET and POST variables)
+ *   {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
+ *                   - returns the value of the variable - exactly as posted
  */
 class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4571,7 +4591,20 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
         if (empty($variable_name)) {
             return shtml_query_string();
         }
-        if (isset($_REQUEST[$variable_name])) {
+        $ret = '';
+        if (strpos($variable_name,'[')!==false) {
+            $qstring = urldecode(shtml_query_string());
+            if (strpos($qstring, $variable_name) !== false) {
+                $qarr = explode('&', $qstring);
+                foreach ($qarr as $vardef) {
+                    list($var,$val) = explode('=',$vardef);
+                    if ($var == $variable_name) {
+                        $ret = urldecode($val);
+                        break;
+                    }
+                }
+            }
+        } elseif (isset($_REQUEST[$variable_name])) {
             $ret = $_REQUEST[$variable_name];
         } else {
             $shtml_get = add_vars('', 'return');
@@ -4873,6 +4906,7 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
 }
 
 /**
+ * {header}
  */
 class AA_Stringexpand_Header extends AA_Stringexpand {
     function expand($header=null) {
@@ -4895,11 +4929,10 @@ class AA_Password_Manager_Reader {
         return '<form id="pwdmanager-firstform" action="" method="post"><div class="aa-widget">
         <label for="pwdmanager-user">' ._m('Forgot your password? Fill in your email.'). '</label>
         <div class="aa-input">
-           <input size="30" maxlength="128" name="aapwd1" id="aapwd1" value="" placeholder="'._m('e-mail').'" required type="text">
+           <input size="30" maxlength="128" name="aapwd1" id="aapwd1" value="" placeholder="'._m('e-mail').'" required type="email">
         </div>
         <input type="hidden" name="nocache" value="1">
         <input type="submit" id="pwdmanager-send" name="pwdmanager-send" value="'. _m('Send').'">
-
         </div>
         </form>
         ';
@@ -5083,7 +5116,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *    {foreach:val1-val2:<p>_#1</p>:-:<br>}
  *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
  *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
-      {foreach:2011-2012:<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>}
+ *    {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>)}}
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
 
@@ -5105,10 +5138,10 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
         if (!strlen($valdelimiter)) {
            $valdelimiter = '-';
         }
-        $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, trim($values));
+        $arr = ($valdelimiter == 'json') ? json2arr(trim($values),false) : explode($valdelimiter, trim($values));
         $ret= array();
         foreach($arr as $str) {
-            if (trim($str)) {
+            if (strlen(trim($str))) {
                 $ret[] = AA_Stringexpand::unalias(str_replace('_#1',$str,$text),'',$item);
             }
         }
