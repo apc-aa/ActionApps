@@ -1227,14 +1227,16 @@ class AA_Inputfield {
         $val     = myspecialchars($val);
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
+        $link    = '';
 
         if ($type == "password") {
             $input_type = 'type="password"';
         } else {
-           $input_type = 'type="text"';
-           if (is_object($validator = AA_Validate::factoryByString('AA_Validate_', $this->valid))) {
-              $input_type = $validator->getHtmlInputAttr();
-           }
+            $link = ((substr($val,0,7)==='http://') OR (substr($val,0,8)==='https://')) ? '&nbsp;'.a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+            $input_type = 'type="text"';
+            if (is_object($validator = AA_Validate::factoryByString('AA_Validate_', $this->valid))) {
+                $input_type = $validator->getHtmlInputAttr();
+            }
         }
         if (!$input_type) {
             $input_type     = 'type="text"';
@@ -1244,7 +1246,7 @@ class AA_Inputfield {
         $this->html_radio();
         $this->echovar( "<input $input_type name=\"$name\" size=\"$size\"". ($this->required ? " required": '').
                         $GLOBALS['mlxFormControlExtra'].
-                        " maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">" );
+                        " maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">$link" );
         $this->helps('plus');
     }
 
