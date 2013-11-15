@@ -105,6 +105,11 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
 } elseif ( $site_info['state_file'] ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
+    if (!is_array($slices4cache)) {
+        $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id(AA::$site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+    }
+    $apc_state['4cacheQS'] = shtml_query_string();
+    $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
 }
 
 if ( !isset($apc_state) )  {
