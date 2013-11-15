@@ -888,6 +888,8 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
        "example"=>"size"))),
 "f_0"=>array("name"=>_m("null function"),
     "desc"=>_m("prints nothing")),
+"f_1"=>array("name"=>_m("first value"),
+    "desc"=>_m("prints first value, even if the field is multivalue")),
 "f_a"=>array("name"=>_m("abstract"),
     "desc"=>_m("prints abstract (if exists) or the beginning of the <b>fulltext</b>"),
     "params"=>array(
