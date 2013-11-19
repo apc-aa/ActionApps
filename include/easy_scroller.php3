@@ -315,7 +315,7 @@ class AA_Sitemodule_Scroller {
             }
 
             if (!$v) {
-                $out .= $k;
+                $out .= "<a class=\"nolink\" href=\"#\">$k</a>";
             } else {
                 if ($target) {
                    $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
