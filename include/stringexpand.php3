@@ -105,6 +105,7 @@ function json2arr($string, $do_not_filter=false) {
     return $do_not_filter ? $values : array_filter($values, 'strlen');  // strlen in order we do not remove "0"
 }
 
+
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
@@ -3678,13 +3679,29 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
 class AA_Unalias_Callback {
     var $item;
     var $itemview;
+
+    // We use different AA_Unalias_Callback object for each item, so this cache
+    // is usefull just in case we are using the same expresion inside the same
+    // spot or view field
+    // We use it just for easy expressions - like field, aliases, where we do not use $contentcache
+    var $_localcache;
+
     /** AA_Unalias_Callback function
      * @param $item
      * @param $itemview
      */
     function AA_Unalias_Callback( $item, $itemview ) {
-        $this->item     = is_object($item) ? $item : null;
-        $this->itemview = $itemview;
+        $this->item        = is_object($item) ? $item : null;
+        $this->itemview    = $itemview;
+        $this->_localcache = array();
+    }
+
+    function expand_bracketed_timedebug($match) {
+        $func = current(explode(':',substr($match[1],0,16),2));
+        $time = microtime(true);
+        $ret  = $this->expand_bracketed($match);
+        AA::$dbg->duration($func, microtime(true)-$time);
+        return $ret;
     }
 
     /** expand_bracketed function
@@ -3746,11 +3763,14 @@ class AA_Unalias_Callback {
             case '-': return QuoteColons(substr($out,1));
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                       if ($out[1] == "#") {
+                          if (isset($this->_localcache[$out])) {
+                              return $this->_localcache[$out];
+                          }
                           if (isset($als[substr($out,2)])) {
-                              return QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
+                              return ($this->_localcache[$out] = QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
                           } elseif (isset($this->item)) {
                               // just alias or not so common: {_#SOME_ALSand maybe some text}
-                              return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
+                              return ($this->_localcache[$out] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
                           }
                       }
         }
@@ -4072,7 +4092,7 @@ class AA_Stringexpand {
      * @param $itemview
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
-        global $debug;
+        global $debug, $debugtime;
 
         if (++AA_Stringexpand::$recursion_count > 5000) {
             --AA_Stringexpand::$recursion_count;
@@ -4108,7 +4128,7 @@ class AA_Stringexpand {
         while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
             // it just means, we need to unquote colons
             $quotecolons_partly = true;
-            if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed'), $text))) {  //s for newlines, U for nongreedy
+            if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback, $debugtime ? 'expand_bracketed_timedebug' : 'expand_bracketed'), $text))) {  //s for newlines, U for nongreedy
                 echo "Error: preg_replace_callback";
             }
         }
@@ -5415,8 +5435,8 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $text
      */
-    function expand($field_id='', $index=0) {
-        $item   = $this ? $this->item : null;
+    function expand($field_id='', $index=0, $item_id='') {
+        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
         return (is_object($item) AND $item->isField($field_id)) ? $item->getval($field_id, (int)$index) : '';
     }
 }
@@ -5436,7 +5456,5 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
         return $form->getAjaxHtml();
     }
 }
-
-
 
 ?>
