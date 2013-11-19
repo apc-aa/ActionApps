@@ -94,7 +94,7 @@ if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
-if ($debug) huhl("Starting view");
+(AA::$debug OR $debugtime) && AA::$dbg->group("view", "Start");
 
 // Need to be able to set content-type for RSS, cannot do it in the view
 // because the cache wont reflect this
@@ -122,7 +122,11 @@ if ($convertto) {
 
 echo GetView($view_param);
 
-if ($debug) huhl("Completed view");
+(AA::$debug OR $debugtime) && AA::$dbg->groupend("view", "Completed view");
+
+if ($debugtime) {
+    AA::$dbg->duration_stat();
+}
 
 exit;
 

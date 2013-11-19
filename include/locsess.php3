@@ -99,6 +99,7 @@ function __autoload ($class_name) {
 
 class AA_Debug {
     protected $_starttime;
+    protected $_duration = array();
 
     function __construct() {
         $this->_starttime = array('main' => microtime(true));
@@ -128,6 +129,26 @@ class AA_Debug {
         $this->_groupend($group);
         return true;
     }
+
+    function duration($func, $time) {
+        if (!is_array($this->_duration[$func])) {
+            $this->_duration[$func] = array();
+        }
+        $this->_duration[$func][] = $time;
+    }
+
+    function duration_stat() {
+        $row    = array();
+        $sumsum = 0; 
+        foreach($this->_duration as $func => $times) {
+            $sumsum += ($sum = array_sum($times));
+            $row['a'.sprintf('%f',$sum).'-'.$func] .= '<tr><td>'.$func.'</td><td>'.count($times).'</td><td>'.sprintf('%f',$sum/count($times)).'</td><td>'.sprintf('%f',$sum).'</td><td>'.sprintf('%f',max($times)).'</td><td>'.sprintf('%f',min($times)).'</td></tr>';
+        }
+        krsort($row);
+        echo '<table><tr><th>function</th><th>called</th><th>avg</th><th>sum</th><th>max</th><th>min</th></tr>'.join('',$row).'<tr><th>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></table>';
+        //phpinfo();
+    }
+
 
     function _do($func, $params) {
         foreach ($params as $a) {
@@ -182,7 +203,7 @@ class DB_AA extends DB_Sql {
     function select1($query, $column=false, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
-        
+
         AA::$debug && AA::$dbg->log("$query $sqlwhere LIMIT 1");
 
         $db->query("$query $sqlwhere LIMIT 1");
@@ -327,7 +348,10 @@ class DB_AA extends DB_Sql {
      * @param $SQL
      */
     function tquery($SQL) {
-        return ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL));
+        $time = microtime(true);
+        $ret  = ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL)); 
+        $GLOBALS['debugtime'] && AA::$dbg->duration('Query', microtime(true)-$time);
+        return $ret;
     }
 
     /** dquery function

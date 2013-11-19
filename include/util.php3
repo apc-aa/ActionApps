@@ -735,6 +735,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
  */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
+    $time = microtime(true);
 
     // construct WHERE clause
     if ( !is_object($zids) ) {
@@ -912,6 +913,9 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     freeDB($db);
+    
+    $GLOBALS['debugtime'] && AA::$dbg->duration('GetItemContent-'.$zids->count().'-'.count($content), microtime(true)-$time);
+    
     return $content;   // Note null returned above if no items found
 }
 

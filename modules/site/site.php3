@@ -188,7 +188,7 @@ if ($debugtime) {
     $timeend = microtime(true);
     $time    = $timeend - $timestart;
     echo "<br><br>Page generation time: $time";
-    print_r($GLOBALS['d_times']);
+    print_r(AA::$times);
 }
 
 // ----------------- process status end ---------------------------------------
