@@ -447,8 +447,8 @@ class AA_Item {
      * @param $field_id
      * @param $what
      */
-    function getval($field_id, $indx=0) {
-        return $this->content4id->getValue($field_id, $indx);
+    function getval($field_id, $index=0) {
+        return $this->content4id->getValue($field_id, $index);
     }
 
     /** getFlag function

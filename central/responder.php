@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 // anonymous authentication - locauth calls extauthnobody
-if ($_POST['free']) {
+if ($_REQUEST['free']) {   // can't be just POST - we use it in live Tags, which sends GET request
     $nobody = true;
 }
 

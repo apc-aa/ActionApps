@@ -169,7 +169,7 @@ class AA_Array {
     }
 
     function addset($i, $value) {
-        $this->arr[(string)$i] = ((float)str_replace(',', '.',$this->get($i))) + ((float) str_replace(',', '.', $value));
+        $this->arr[(string)$i] = ((float)str_replace(',', '.',$this->arr[(string)$i])) + ((float) str_replace(',', '.', $value));
     }
     
     function joinset($i, $value, $delimiter) {
