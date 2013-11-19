@@ -281,10 +281,10 @@ class AA_Validate_Number extends AA_Validate {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value'), $default);
         }
         $var = (int)$var;
-        if ( !is_null($this->max) AND ($var > $this->max) ) {
+        if ( is_numeric($this->max) AND ($var > $this->max) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
         }
-        if ( !is_null($this->min) AND ($var < $this->min) ) {
+        if ( is_numeric($this->min) AND ($var < $this->min) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
