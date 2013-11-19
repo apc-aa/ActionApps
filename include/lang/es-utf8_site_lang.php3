@@ -211,4 +211,40 @@ $_m["Previous"]
 $_m["change password"]
  = "Cambiar Clave";
 
+$_m["January"]
+ = "Enero";
+
+$_m["February"]
+ = "Febrero";
+
+$_m["March"]
+ = "Marzo";
+
+$_m["April"]
+ = "Abril";
+
+$_m["May"]
+ = "Mayo";
+
+$_m["June"]
+ = "Junio";
+
+$_m["July"]
+ = "Julio";
+
+$_m["August"]
+ = "Agosto";
+
+$_m["September"]
+ = "Septiembre";
+
+$_m["October"]
+ = "Octubre";
+
+$_m["November"]
+ = "Noviembre";
+
+$_m["December"]
+ = "Diciembre";
+
 ?>

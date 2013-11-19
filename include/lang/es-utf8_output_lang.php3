@@ -449,7 +449,7 @@ $_m["Upload"]
  = "No se encuentra el usuario que introdujo, por favor compru&eacute;belo e intente nuevamente.";
 
  $_m["Password change"]
- = "Cambio de contraseña";
+ = utf8_decode("Cambio de contraseña");
 
  $_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
  = "Para cambiar la contrase&ntilde;a, por favor visite la siguiente direcci&oacute;n:<br>%1<br>El cambio debe realizarse dentro de las siguientes dos horas, de lo contrario la clave caducar&aacute; y tendr&aacute; que solicitar una nueva.";
