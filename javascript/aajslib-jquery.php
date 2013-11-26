@@ -231,19 +231,28 @@ function displayInput(valdivid, item_id, fid) {
             $(valdiv).html(data);
             var aa_input = $(valdiv).children('select,textarea,input').first();
             $(aa_input).focus();  // select the input field (<select> or <input>)
-            $(aa_input).keydown( function(event) {
-                switch (event.which) {
-                case 13: $(this).nextAll('input.save-button').click();   break; // Enter
-                case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
-//                case 9:  $(this).nextAll('input.save-button').click(); $(this).closest('div.ajax_container').nextAll('div.ajax_container').click(); break; // Tab
-                case 9:  // Tab
+            if ((aa_input).is("textarea")) {
+                // do not react on enter in textarea
+                $(aa_input).keydown( function(event) {
+                    switch (event.which) {
+                    case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
+                    }
+                });
+            } else {
+                $(aa_input).keydown( function(event) {
+                    switch (event.which) {
+                    case 13: $(this).nextAll('input.save-button').click();   break; // Enter
+                    case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
+//                  case 9:  $(this).nextAll('input.save-button').click(); $(this).closest('div.ajax_container').nextAll('div.ajax_container').click(); break; // Tab
+                    case 9:  // Tab
                          // we must grab the next input right now - after save-button click we have no current div
                          var next_input = $('div.ajax_container').eq($('div.ajax_container').index($(this).parents('div.ajax_container'))+1);
                          $(this).nextAll('input.save-button').click();
                          $(next_input).click();
                          break;
-                }
-            });
+                    }
+                });
+            }
         }
     );
 }
@@ -417,7 +426,7 @@ function AA_LoadJs(condition, callback, url) {
     } else {
         var script = document.createElement("script")
         script.type = "text/javascript";
-        
+
         if (script.readyState) { //IE
             script.onreadystatechange = function () {
                 if (script.readyState == "loaded" || script.readyState == "complete") {
@@ -430,7 +439,7 @@ function AA_LoadJs(condition, callback, url) {
                 callback();
             };
         }
-        
+
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
     }
@@ -443,7 +452,7 @@ function AA_LoadCss(url) {
    link.href = url;
    document.getElementsByTagName('head')[0].appendChild(link);
    return link;
- }    
+ }
 
 
 
