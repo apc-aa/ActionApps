@@ -52,8 +52,11 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
-AA::$site_id = $_REQUEST['site_id'];
-$site_info = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
+AA::$site_id  = $_REQUEST['site_id'];
+$site_info    = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
+$module       = AA_Modules::getModule($site_id);
+$lang_file    = $module->getProperty('lang_file');
+AA::$encoding = $module->getCharset();
 
 //    - see /include/constants.php3
 if ( !is_array($site_info) ) {
@@ -80,7 +83,7 @@ if ( !is_array($site_info) ) {
 $hit_zid = null;
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id(AA::$site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
-    $lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
+    //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
     $home         = trim($site_info['state_file']) ? trim($site_info['state_file']) : '/' .substr($lang_file,0,2). '/';
     $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
 
@@ -211,7 +214,7 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
         exit;
     }
 
-    $in_ids = implode( $show_ids, ',' );
+    $in_ids = implode( ',', $show_ids );
 
     $db = getDB();
     // get contents to show
@@ -231,9 +234,6 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 }
 
 function ModW_StoreIDs($spot_id, $depth) {
-    if ($GLOBALS['errcheck'] && ! $spot_id) {      // There is a bug causes this
-        huhl("Warning adding empty spot_id");
-    }
     $GLOBALS['show_ids'][] = $spot_id;
 }
 

@@ -181,7 +181,9 @@ class AA {
     public static $debug;
     public static $perm;
     public static $site_id;
+    public static $encoding;
 }
+
 AA::$debug = $_GET['debug'];
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug());
 

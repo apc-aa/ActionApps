@@ -1452,9 +1452,16 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
      * @param $add
      */
     function expand($string,$start,$length=999999999,$add='') {
-        $ret = substr($string,$start,$length);
-        if ( $add AND (strlen($ret) < strlen($string)) ) {
-            $ret .= $add;
+        if (AA::$encoding == 'utf-8') {
+            $ret = mb_substr($string,$start,$length,'utf-8');
+            if ( $add AND (mb_strlen($ret) < mb_strlen($string)) ) {
+                $ret .= $add;
+            }
+        } else {
+            $ret = substr($string,$start,$length);
+            if ( $add AND (strlen($ret) < strlen($string)) ) {
+                $ret .= $add;
+            }
         }
         return $ret;
     }
