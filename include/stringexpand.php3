@@ -1590,6 +1590,9 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
             return '';
         }
         if (empty($delimiter)) {
+            if ($ids[0] == '[') {
+                return json_encode(array_values(array_unique(json2arr($ids))));
+            }
             $delimiter = '-';
         }
         return join($delimiter, array_unique(array_filter(explode($delimiter, $ids),'trim')));
@@ -5165,7 +5168,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
         if (!strlen($valdelimiter)) {
            $valdelimiter = '-';
         }
-        $arr = ($valdelimiter == 'json') ? json2arr(trim($values),false) : explode($valdelimiter, trim($values));
+        $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, trim($values));
         $ret= array();
         foreach($arr as $str) {
             if (strlen(trim($str))) {
