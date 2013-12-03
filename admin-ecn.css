@@ -1,14 +1,14 @@
 td.scroller {background: #a0a0a0;}
 
 .scrhead {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
 }
 
 body { margin-left: 4px;
        background: #F5F0E7;
-       font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+       font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 10px;
 }
 
@@ -19,7 +19,7 @@ table.mgr_table th {
 }
 
 .tabtxt, TD, .tabtxteven, .tabtitlight {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 10pt;
  }
 
@@ -34,31 +34,31 @@ table.mgr_table th {
 }
 
 .tabtxt_field_alerts {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 10pt;
   background-color : #ADD8E6;
  }
 
 TEXTAREA {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   width: 100%;
  }
 
 INPUT, SELECT {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
  }
 
 
 H1, .tablename {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
   margin-left: 20px;
 }
 
 .navbar {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 8pt;
         background: #EBDABE;
     color: #584011;
@@ -66,14 +66,14 @@ H1, .tablename {
 }
 
 .nbviewlp {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 10pt;
         background: #584011;
     color: #F5F0E7;
 }
 
 .nblogo {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 10pt;
     font-weight : bold;
         background: #FFFFFF;
@@ -82,21 +82,21 @@ H1, .tablename {
 }
 
 .nbmenu {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 8pt;
         background: #F5F0E7;
     color: #584011;
 }
 
 .nbenable {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 8pt;
   /*  background: #EBDABE;  don't change the background colour*/
     color: #4A4A4A;
 }
 
 .nbactive {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 8pt;
   /*  background: #EBDABE;  don't change the background colour*/
     color: black;
@@ -104,7 +104,7 @@ H1, .tablename {
 }
 
 .nbdisable {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 8pt;
 /*  background: #EBDABE;  */
     color: #4A4A4A;
@@ -121,7 +121,7 @@ H1, .tablename {
 }
 
 .slicesubhead {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size : 8pt;
     color: #EEEEEE;
     font-weight : bold;
@@ -129,7 +129,7 @@ H1, .tablename {
 }
 
 .slicehead {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size : 13pt;
     color: #584011;
     font-weight : bold;
@@ -138,7 +138,7 @@ H1, .tablename {
 }
 
 .leftmenu  {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
 }
@@ -148,7 +148,7 @@ TD.leftmenu {
 }
 
 .leftmenuy, .leftmenua, .leftmenun  {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   font-weight: normal;
   color: #000000;
@@ -163,7 +163,7 @@ TD.leftmenu {
 }
 
 .subwindow  {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: x-small;
     font-weight : bold;
     background: #A8C8B0;
@@ -171,7 +171,7 @@ TD.leftmenu {
 }
 
 .windowtitle {
-    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: x-small;
     font-weight : bold;
     background: #589868;
@@ -179,24 +179,24 @@ TD.leftmenu {
 }
 
 .ipreview, .iid, .ipostdate, .icategory, .ifeedtit, .ifeed, .navbar, .headline {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
 }
 
 .iheadline {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
 }
 
 .inoutertd {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: #FFFFFF;
 }
 
 .tabtit {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
     background: #584011;
   color: #FFFFFF;
@@ -212,7 +212,7 @@ TD.leftmenu {
 
 
 .tabhlp, .tabsmall, .smalltext {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
 }
 
@@ -221,7 +221,7 @@ TD.leftmenu {
 }
 
 .tablename {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 12pt;
   font-weight: bold;
     color: #584011;
@@ -233,20 +233,20 @@ TD.leftmenu {
 }
 
 .err {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: red;
 }
 
 .okmsg {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: green;
 }
 
 .copymsg {
   background: #F5F0E7;
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #999999;
 }
