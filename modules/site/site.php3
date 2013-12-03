@@ -54,7 +54,7 @@ if ( get_magic_quotes_gpc() ) {
 
 AA::$site_id  = $_REQUEST['site_id'];
 $site_info    = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
-$module       = AA_Modules::getModule($site_id);
+$module       = AA_Modules::getModule(AA::$site_id);
 $lang_file    = $module->getProperty('lang_file');
 AA::$encoding = $module->getCharset();
 
