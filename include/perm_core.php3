@@ -209,6 +209,19 @@ class AA_Perm {
         return true;
     }
 
+    public function findUsernames($pattern) {
+        $users = array();
+        foreach ($this->perm_systems as $perm_sys) {
+            $new_users = $perm_sys->findUsernames($pattern);
+            if (is_array($new_users) AND count($new_users)) {
+                $users = array_merge($users, $new_users);
+            }
+        }
+        return $users;
+    }
+
+
+
     public static function comparePwds($password, $hash) {
         // looks ugly for the first_child look, but it is really how the crypt
         // with salt works - see php documentation
@@ -309,6 +322,7 @@ AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
 
 class AA_Permsystem {
     function isUsernameFree($username) {}
+    function findUsernames($pattern)   {}
 }
 
 /** IsPerm function
@@ -562,16 +576,16 @@ function GetUserEmails($type = "", $user_id = "current") {
 }
 
 /** Grabs User name from LDAP/SQL/AA
- *  @param $username (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
+ *  @param $user_id (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
  *  @return name of the user ('Peter Fiala' in our example)
  *  @todo   we should propaply provide realy the username (like peterf) here
  */
-function perm_username( $username ) {
-    if ( $username == '9999999999' ) {
+function perm_username( $user_id ) {
+    if ( $user_id == '9999999999' ) {
         return "anonym";
     }
-    $userinfo = GetIDsInfo($username);
-    return empty($userinfo) ? $username : $userinfo['name'];
+    $userinfo = GetIDsInfo($user_id);
+    return empty($userinfo) ? $user_id : $userinfo['name'];
 }
 
 /** AuthenticateUsername function
@@ -647,6 +661,25 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         // search not only Active bin, but also Holding bin, Pending, ...
         return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
     }
+
+    /** findUsernames function
+     *  return list of RM users which matches the pattern
+     * @param $pattern
+     */
+    public function findUsernames($pattern) {
+        global $db;
+        $db->tquery("SELECT content.text AS name, content.item_id AS id
+                       FROM slice
+                 INNER JOIN item ON slice.id = item.slice_id
+                 INNER JOIN content ON item.id=content.item_id
+                      WHERE slice.type = 'ReaderManagement'
+                        AND content.field_id = '".FIELDID_USERNAME."'
+                        AND content.text LIKE '%". quote($pattern) ."%'");
+        while ($db->next_record()) {
+            $users[unpack_id($db->f('id'))] = array('name' => $db->f('name'));
+        }
+        return $users;
+    }
 }
 
 /** AuthenticateReaderUsername function
@@ -659,10 +692,10 @@ function AuthenticateReaderUsername($username, $password) {
     if ( !$username ) {
         return false;
     }
-    
+
     $user_id   = AA_Reader::name2Id($username);
     $user_info = GetAuthData( $user_id );
-    
+
     if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
         // user id is the id of the item in the Reader Management slice
         return $user_id;
@@ -705,25 +738,6 @@ function FindReaderGroups($pattern) {
     return $groups;
 
 
-}
-
-/** FindReaderUsers function
- *  return list of RM users which matches the pattern
- * @param $pattern
- */
-function FindReaderUsers($pattern) {
-    global $db;
-    $db->tquery("SELECT content.text AS name, content.item_id AS id
-                   FROM slice
-             INNER JOIN item ON slice.id = item.slice_id
-             INNER JOIN content ON item.id=content.item_id
-                  WHERE slice.type = 'ReaderManagement'
-                    AND content.field_id = '".FIELDID_USERNAME."'
-                    AND content.text LIKE '%". quote($pattern) ."%'");
-    while ($db->next_record()) {
-        $users[unpack_id($db->f('id'))] = array('name' => $db->f('name'));
-    }
-    return $users;
 }
 
 /** GetAuthData function
@@ -838,7 +852,7 @@ class AA_Reader {
             $slices  = getReaderSlices();
         }
         $aa_set = new AA_Set($slices, new AA_Condition($field, '=', $value), null, $bin);
-        
+
         // get item id of current user
         $zid = $aa_set->query();
         return $zid->longids(0);

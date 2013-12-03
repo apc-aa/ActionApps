@@ -535,7 +535,8 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
         $ret = true;  // which means OK
 
         // get all readers in array: id => arrary( name => ...)
-        $readers         = FindReaderUsers('');
+        $perm_reader     = new AA_Permsystem_Reader();
+        $readers         = $perm_reader->findUsernames('');
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         if (count($posted_by_found) > 0) {
             $this->message(_m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', array(count($posted_by_found))));
@@ -573,7 +574,8 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
         $this->clear_report();
 
         // get all readers in array: id => arrary( name => ...)
-        $readers = FindReaderUsers('');
+        $perm_reader     = new AA_Permsystem_Reader();
+        $readers         = $perm_reader->findUsernames('');
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         $edited_by_found = $this->_test_field($readers, 'edited_by');
         $db = getDb();
@@ -637,29 +639,7 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
     /** Repair function
     * @return bool
     */
-    function repair() {
-        $this->clear_report();
-
-        // get all readers in array: id => arrary( name => ...)
-        $readers         = FindReaderUsers('');
-        $posted_by_found = $this->_test_field($readers, 'posted_by');
-        $db              = getDb();
-        if (count($posted_by_found) > 0) {
-            foreach ($posted_by_found as $r_id => $r_login ) {
-                $SQL = "UPDATE item SET posted_by = '$r_id' WHERE posted_by = '$r_login'";
-                $db->query($SQL);
-                $this->message(_m('Column item.posted_by updated for %1 (id: %2).', array($r_login, $r_id)));
-            }
-        }
-        if (count($edited_by_found) > 0) {
-            foreach ($edited_by_found as $r_id => $r_login ) {
-                $SQL = "UPDATE item SET edited_by = '$r_id' WHERE edited_by = '$r_login'";
-                $db->query($SQL);
-                $this->message(_m('Column item.edited_by updated for %1 (id: %2).', array($r_login, $r_id)));
-            }
-        }
-        return true;
-    }
+    function repair() {}
 }
 
 

@@ -58,13 +58,6 @@ function DelUser($user_id, $flags = 0) {
 function ChangeUser($user_id, $flags = 0) {
   return true;
 }
-/** FindUsers function
- * @param $pattern
- * @param $flags
- */
-function FindUsers($pattern, $flags = 0) {
-  return array("");
-}
 /** GetMembership function
  * @param $id
  * @param $flags

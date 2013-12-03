@@ -296,46 +296,13 @@ function FindGroups($pattern, $flags = 0) {
 /** find_user_by_login function
  * @param $login
  */
-function find_user_by_login($login) {
-    $users = FindUsers($login);
-    if (is_array($users)) {
-        foreach ($users as $userid => $user) {
-            list ($user_login)  = explode(",", $userid);
-            list (,$user_login) = explode("=", $user_login);
-            if ($user_login == $login) {
-                return array($userid=>$user);
-            }
-        }
-    }
-    return false;
-}
-
-/** FindUsers function
- * @param $pattern
- * @param $flags
- *  @return list of users which corresponds to mask $pattern
- */
-function FindUsers($pattern, $flags = 0) {
+function find_user_by_login($username) {
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if ( !($ds=InitLDAP()) ) {
-        return false;
-    }
-
-    $filter = "(&(objectclass=inetOrgPerson)(|(uid=$pattern*)(cn=$pattern*)(mail=$pattern*)))";
-    $res    = @ldap_search($ds,$aa_default_ldap['people'],$filter,array("mail","cn"));
-    if (!$res) {
-        // LDAP sizelimit exceed
-        return ((ldap_errno($ds)==4) ? "too much" : false);
-    }
-    $arr = LDAP_get_entries($ds,$res);
-
-    for ($i=0; $i<$arr['count']; ++$i) {
-        $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0], "mail"=>$arr[$i]['mail'][0]);
-    }
-
-    ldap_close($ds);
-    return $result;
+    $user_id         = "uid=$username,".$aa_default_ldap['people'];
+    $user            = GetIDsInfoCurrent($user_id);
+    return $user ? array($user_id=>$user) : false;
 }
+
 /** AddGroupMember function
  * @param $group_id
  * @param $id
@@ -796,6 +763,33 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         // search not only Active bin, but also Holding bin, Pending, ...
         return ! GetIDsInfoCurrent("uid=$username,".$aa_default_ldap['people']);
+    }
+
+    /** findUsers function
+     *  @param $pattern
+     *  @return list of users which corresponds to mask $pattern
+     */
+    function findUsernames($pattern) {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if ( !($ds=InitLDAP()) ) {
+            return array();
+        }
+        $result = array();
+
+        $filter = "(&(objectclass=inetOrgPerson)(|(uid=$pattern*)(cn=$pattern*)(mail=$pattern*)))";
+        $res    = @ldap_search($ds,$aa_default_ldap['people'],$filter,array("mail","cn"));
+        if (!$res) {
+            // LDAP sizelimit exceed
+            return ((ldap_errno($ds)==4) ? "too much" : array());
+        }
+        $arr = LDAP_get_entries($ds,$res);
+
+        for ($i=0; $i<$arr['count']; ++$i) {
+            $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0], "mail"=>$arr[$i]['mail'][0]);
+        }
+
+        ldap_close($ds);
+        return $result;
     }
 }
 

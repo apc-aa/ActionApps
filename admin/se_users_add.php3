@@ -77,7 +77,7 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 <?php
 $continue=false;
 if ($GrpSrch || $UsrSrch) {
-    $addable = $GrpSrch ? FindGroups($grp) : FindUsers($usr);
+    $addable = $GrpSrch ? FindGroups($grp) : AA::$perm->findUsernames($usr);
 
     FrmTabSeparator(_m("Assign new permissions"));
     // determine role of this user

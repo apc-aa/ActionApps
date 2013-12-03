@@ -129,33 +129,6 @@ function find_user_by_login($login) {
     return $by_id;
 }
 
-/** FindUsers function
- * @param $pattern
- * @param $flags
- * @return list of users which corresponds to mask $pattern
- */
-function FindUsers($pattern, $flags = 0) {
-
-    $db  = new DB_AA;
-    $by_id = FindReaderUsers($pattern);
-    $pattern = addslashes($pattern);
-
-    $SQL = sprintf( "
-       SELECT id, mail, givenname, sn
-         FROM users
-        WHERE ( name  LIKE '%s%%' OR mail LIKE '%s%%' OR uid LIKE '%s%%') AND
-              ( type = '%s' OR type = '%s')",
-              $pattern, $pattern, $pattern, _m("User"), "User");
-    $db->query( $SQL );
-    // TODO: something about a sizelimit??
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
-                                     "mail"=>$db->f("mail"));
-    }
-    return $by_id;
-};
-
 // TODO : make this recursive friendly?
 /** GetGroupMembers function
  * @param $group_id
@@ -669,6 +642,31 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         $free = ! $db->next_record();
         freeDB($db);
         return $free;
+    }
+
+    /** findUsernames function
+     * @param $pattern
+     * @return list of users which corresponds to mask $pattern
+     */
+    function findUsernames($pattern) {
+        $db      = new DB_AA;
+        $by_id   = array();
+        $pattern = addslashes($pattern);
+
+        $SQL = sprintf( "
+           SELECT id, mail, givenname, sn
+             FROM users
+            WHERE ( name  LIKE '%s%%' OR mail LIKE '%s%%' OR uid LIKE '%s%%') AND
+                  ( type = '%s' OR type = '%s')",
+                  $pattern, $pattern, $pattern, _m("User"), "User");
+        $db->query( $SQL );
+        // TODO: something about a sizelimit??
+        $db->query($SQL);
+        while ($db->next_record()) {
+            $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
+                                         "mail"=>$db->f("mail"));
+        }
+        return $by_id;
     }
 }
 

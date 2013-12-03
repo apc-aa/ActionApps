@@ -69,8 +69,8 @@
 
   $user_id3 = AddUser($array);
 
-  $found_users = FindUsers ("chris");
-  ptest( (count($found_users) == 2) , "FindUsers()" );
+// $found_users = FindUsers ("chris");
+//  ptest( (count($found_users) == 2) , "FindUsers()" );
 
 // DelUser
 
