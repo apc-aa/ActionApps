@@ -1,7 +1,14 @@
-11/19/13 - new profiler code, which measure the time spent on each of the AA 
-(honzam)   expression type - just add &debugtime=1 to your url (works 
-           in sitemodule as well as in view) 
-         - fixed number and date validation - the negative numbers and dates 
+12/13/13 - generalized handling of users in different premission systems
+(honzam)     - Reader slice, SQL, LDAP and its combination - users are searched
+               in both systems - Reader and SQL, ... for user management
+         - {substr:} now works well for UTF websites
+         - fixed handling of corrupted items in database (duplicated values)
+             - we read it as not duplicated, now
+         - fixed font definition in admin-ecn.css
+11/19/13 - new profiler code, which measure the time spent on each of the AA
+(honzam)   expression type - just add &debugtime=1 to your url (works
+           in sitemodule as well as in view)
+         - fixed number and date validation - the negative numbers and dates
            older than 1970 are accepted
          - improved cache for AA expressions so the pages shoud be a bit faster
          - slightly improved html code for page scroller

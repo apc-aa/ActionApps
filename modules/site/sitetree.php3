@@ -588,7 +588,6 @@ class sitetree {
      *
      */
     function walkTree(&$state, $id, $functions, $method='cond', $depth=0) {
-        global $debugsite;
         // $functions could be array which defines the callback functions,
         // or nonarray - just main - spot -  function
         if (!is_array($functions)) {
@@ -598,7 +597,6 @@ class sitetree {
         }
         $function_spot = $functions['spot'];
 
-        if ($debugsite) huhl("state=",$state,"id=",$id,"function=$function method=$method depth=$depth");
         $current =& $this->tree[$id];
         $positions = $current->get("positions");
         if (!$positions) {
@@ -606,7 +604,6 @@ class sitetree {
             exit;
         }
         foreach ($positions as $poskey => $pos) {
-            if ($debugsite) huhl("Position",$pos);
             if ($pos) {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
@@ -631,7 +628,6 @@ class sitetree {
                     $choices_count = count($choices);
                     $choices_index = 0;
                     foreach ($choices as $k => $cho) {
-                        if ($debugsite) huhl("Choice: $cho");
                         if ($cho) { // skip buggy empty choices
                             if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, MODW_FLAG_DISABLE))) {
 
