@@ -894,7 +894,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
             $flag     = $db->f("flag");
             if ( (strlen($db->f("text"))>0) OR ($flag & FLAG_TEXT_STORED) ) {
-                $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f('text'), "flag"  => $flag);
+                $content[$fooid][$db->f("field_id")][(int)$db->f('number')] = array( "value" => $db->f('text'), "flag"  => $flag);
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
                 // if speeds the item->f_h() function a bit
