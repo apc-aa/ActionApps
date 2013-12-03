@@ -120,7 +120,7 @@ class linkcheck
                 $urlArray["path"] = "/";
             }
             $return["url"] = $url;
-            $sock = @fsockopen($urlArray["host"], $urlArray["port"], &$errnum, &$errstr, 10);
+            $sock = @fsockopen($urlArray["host"], $urlArray["port"], $errnum, $errstr, 10);
             if (!$sock) {
                 $return["code"] = "999";
             } else {
