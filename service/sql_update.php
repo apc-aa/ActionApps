@@ -163,6 +163,13 @@ if (!is_callable('quote')) {
     }
 }
 
+if (!is_callable('myspecialchars')) {
+    function myspecialchars( $var, $double_encode=true) {
+        return htmlspecialchars( $var, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1', $double_encode);
+    }
+}
+
+
 
 // do not reorder those requires because of metabase and varset dependency
 require_once dirname(__FILE__)."/metabase.class.php3";
