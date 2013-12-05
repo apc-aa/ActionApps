@@ -19,7 +19,6 @@
          - improved cache for AA expressions so the pages shoud be a bit faster
          - slightly improved html code for page scroller
          - updated spanish translation
->>>>>>> .r3288
 11/15/13 - multiple Checkboxes widget is much improved (it lists the selected
 (honzam)   values on top an you can also uncheck it from there)
          - file upload widget used in {ajax} and {live} works better - there is
