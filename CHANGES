@@ -1,4 +1,6 @@
-12/13/13 - generalized handling of users in different premission systems
+12/05/13 - fixed User edit - there was bug from 12/03/13
+(honzam)
+12/03/13 - generalized handling of users in different premission systems
 (honzam)     - Reader slice, SQL, LDAP and its combination - users are searched
                in both systems - Reader and SQL, ... for user management
          - {substr:} now works well for UTF websites

@@ -214,13 +214,12 @@ class AA_Perm {
         foreach ($this->perm_systems as $perm_sys) {
             $new_users = $perm_sys->findUsernames($pattern);
             if (is_array($new_users) AND count($new_users)) {
-                $users = array_merge($users, $new_users);
+                // + operator preserves the numeric keys (used in SQL perm), which is crucial
+                $users = $users + $new_users;
             }
         }
         return $users;
     }
-
-
 
     public static function comparePwds($password, $hash) {
         // looks ugly for the first_child look, but it is really how the crypt
