@@ -1,3 +1,6 @@
+12/27/13 - fixed problem, when the first slice listed in "Used slices"
+(honzam)   in sitemodule setting do not have seo......... field. Now it is order
+           independent
 12/05/13 - fixed User edit - there was bug from 12/03/13
 (honzam)
 12/03/13 - generalized handling of users in different premission systems

@@ -442,10 +442,18 @@ class AA_Router_Seo extends AA_Router {
     }
 
     function _xseo2id($seo_string) {
+        static $_seoslices = null;  // stores only slices with 'seo' field
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = substr(AA_Stringexpand_Seo2ids::expand(join('-', $this->slices), $seo_string),0,32);
+            if (is_null($_seoslices)) {
+                $_seoslices = join('-',$this->_getSeoSlices());
+            }
+            $this->_seocache[$seo_string] = substr(AA_Stringexpand_Seo2ids::expand($_seoslices, $seo_string),0,32);
         }
         return $this->_seocache[$seo_string];
+    }
+
+    function _getSeoSlices() {
+        return array_map('unpack_id', DB_AA::select('slice_id', 'SELECT slice_id FROM field', array(array('slice_id', $this->slices, 'l'), array('id', 'seo.............'))));
     }
 
     /** $varnames - array()! of varnames */
