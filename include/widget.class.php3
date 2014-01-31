@@ -403,17 +403,18 @@ class AA_Widget extends AA_Components {
         return $ret;
     }
 
+    static function _saveIcon($base_id, $cond=true,  $pos='right', $offset=0) {
+        return !$cond ? '' : '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH."images/px.gif\" style=\"position:absolute; $pos:$offset"."px; top:0;\">";
+    }
+
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $aa_property->isRequired() ? 'required' : '';
         $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
         $widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-left:16px;\"" : '';
-        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
-        $widget_add2s= ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; left:0; top:0;">' : '';
         $widget      = '';
-        $autofocus = ($type == 'ajax') ? 'autofocus' : '';
-        //huhl("---", $aa_property->validator);
+        $autofocus = ($type=='ajax') ? 'autofocus' : '';
 
         // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
         if (($this->getProperty('const') OR $this->getProperty('const_arr')) AND (get_class($this) != 'AA_Widget_Pre')) {  // todo - make preselect with real preselecting (maybe using AJAX)
@@ -423,11 +424,11 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "$widget_add2s<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+            $widget    = AA_Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
             $selected  = $content->getAaValue($aa_property->getId());
             // empty select option for not required fields and also for live selectbox,
             // because people thinks, that the first value is filled in the database (which is not)
-            $add_empty = !$required OR ($type == 'live' AND $selected->isEmpty());
+            $add_empty = !$required OR ($type=='live' AND $selected->isEmpty());
             $options   = $this->getOptions($selected, $content, $use_name, false, $add_empty);
             $widget   .= $this->getSelectOptions( $options );
             $widget   .= "</select>";
@@ -449,15 +450,17 @@ class AA_Widget extends AA_Components {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = myspecialchars($value->getValue($i));
-                $widget      .= $delim. "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$widget_add2";
+                $link         = ((substr($input_value,0,7)==='http://') OR (substr($input_value,0,8)==='https://')) ? '&nbsp;'.a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+                $widget      .= $delim. "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live', 'right', $link ? 16 : 0);
                 $delim        = '<br />';
                 $autofocus    = '';
             }
+
             // no input was printed, we need to print one
             if ( !$widget ) {
                 $input_name   = $base_name ."[0]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget       = "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\" $required $widget_add $autofocus>$widget_add2";
+                $widget       = "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\" $required $widget_add $autofocus>".AA_Widget::_saveIcon($base_id, $type=='live');
             }
         }
 
@@ -470,7 +473,7 @@ class AA_Widget extends AA_Components {
      *                       - never empty - it contain at least aa_owner for
      *                         new objects
      */
-    function getHtml($aa_property, $content) {
+    function getHtml($aa_property, $content, $function=null) {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
@@ -494,7 +497,7 @@ class AA_Widget extends AA_Components {
      *  @param  $aa_property - the variable
      *  @param  $content        - contain the value of propertyu to display
      */
-    function getAjaxHtml($aa_property, $content) {
+    function getAjaxHtml($aa_property, $content, $function=null) {
         return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content, 'ajax'), $aa_property);
     }
 
@@ -513,7 +516,7 @@ class AA_Widget extends AA_Components {
      *  @param  $aa_property - the variable
      *  @param  $content        - contain the value of propertyu to display
      */
-    function getLiveHtml($aa_property, $content, $function) {
+    function getLiveHtml($aa_property, $content, $function=null) {
         // add JS OK Function
         return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
     }
@@ -1051,7 +1054,7 @@ class AA_Widget_Dte extends AA_Widget {
         $y_range_minus = $this->getProperty('start_year', 1);
         $y_range_plus  = $this->getProperty('end_year',  10);
         $from_now      = $this->getProperty('relative',   1);
-        $display_time  = $this->getProperty('show_time',  1);
+        $display_time  = $this->getProperty('show_time',  0);
 
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time);
 
@@ -1579,10 +1582,16 @@ class AA_Widget_Fil extends AA_Widget {
      *  @param  $aa_property - the variable
      *  @param  $content        - contain the value of propertyu to display
      */
-    function getLiveHtml($aa_property, $content, $function) {
+    function getLiveHtml($aa_property, $content, $function=null) {
         //return $this->getAjaxHtml($aa_property, $content);
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
-        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':{({item:'.$content->getId().':'.$aa_property->getId().'})}<br><input type=button value='. _m('Upload') .'>}');
+        $url = $content->getval($aa_property->getId());
+
+        if ( $url AND AA_Validate::validate($url, 'url') ) {
+            $link = '&nbsp;'.a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));
+        };
+
+        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':{({item:'.$content->getId().':'.$aa_property->getId().'})}'.$link.'<br><input type=button value='. _m('Upload') .'>}');
         // add JS OK Function
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
@@ -1977,7 +1986,7 @@ class AA_Widget_Hid extends AA_Widget {
         return array ();
     }
 
-    function getHtml($aa_property, $content) {
+    function getHtml($aa_property, $content, $function=null) {
         $property_id  = $aa_property->getId();
         $input_name   = AA_Form_Array::getName4Form($property_id, $content)."[0]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
