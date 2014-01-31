@@ -2795,7 +2795,7 @@ $_m["Retyped password is not the same as the first one"]
 // admin/setup.php3, row 273
 // include/um_util.php3, row 352
 $_m["It is impossible to add user to permission system"]
- = "Nepodaøilo se pøidat uživatele do systému - chyba LDAP";
+ = "Nepodaøilo se pøidat uživatele do systému";
 
 // admin/se_newuser.php3, row 101
 $_m["New user in permission system"]
@@ -6218,7 +6218,7 @@ $_m["EDITOR"]
 
 // include/um_util.php3, row 374
 $_m["Can't change user"]
- = "Nelze zmìnit data uživatele - LDAP Error";
+ = "Nelze zmìnit data uživatele";
 
 // include/tabledit_util.php3, row 72, 453
 $_m["Insert was successfull."]

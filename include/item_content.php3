@@ -222,6 +222,11 @@ class AA_Content {
         $this->setAaValue($this->owner_field, new AA_Value( $id ));
     }
 
+    /** set object id based on id_field setting for this content */
+    function addValue($field_id, $value) {
+        $this->content[$field_id][] = array('value'=>$value, 'flag'=>0);
+    }
+
     /** get object id based on id_field setting for this content */
     function getId() {
         return $this->getValue($this->id_field);
