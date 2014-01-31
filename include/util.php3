@@ -46,8 +46,9 @@ require_once AA_INC_PATH."field.class.php3";
  * @param $url
  * @param $txt
  */
-function a_href($url, $txt) {
-    return '<a href="'.myspecialchars($url) ."\">$txt</a>";
+function a_href($url, $txt, $class='') {
+    $class = $class ? " class=\"$class\"" : '';
+    return '<a href="'.myspecialchars($url) ."\"$class>$txt</a>";
 }
 
 /** expand_return_url function
@@ -805,17 +806,18 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     $ids         = array();
     while ( $db->next_record() ) {
 
+        $row = $db->Record;
+
         // proove permissions for password-read-protected slices
-        $reading_permitted = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id($db->f("slice_id")), $crypted_additional_slice_pwd);
-        $item_permitted[$db->f("id")] = $reading_permitted;
+        $unpack_id                  = unpack_id($row['id']);
+        $reading_permitted          = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id($row['slice_id']), $crypted_additional_slice_pwd);
+        $item_permitted[$row['id']] = $reading_permitted;
 
-        $unpack_id = unpack_id($db->f("id"));
-        $ids[]     = $db->f("id");
-        $n_items = $n_items+1;
+        $ids[]                      = $row['id'];
+        $n_items                    = $n_items+1;
 
-        // reset( $db->Record );
         if ( $use_short_ids ) {
-            $foo_id = $db->f("short_id");
+            $foo_id = $row['short_id'];
             $translate[$unpack_id] = $foo_id; // id -> short_id
         } else {
             $foo_id = $unpack_id;
@@ -827,7 +829,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             foreach ($real_item_fields2get as $item_fid) {
                 // FLAG_HTML do not means in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
                 // we do not need to call txt2html() to any of the item table fields
-                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $db->f($item_fid), "flag"  => FLAG_HTML);
+                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $row[$item_fid], "flag"  => FLAG_HTML);
             }
         } else {
             $error_msg = _m("Error: Missing Reading Password");
@@ -835,8 +837,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
                 $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $error_msg, "flag"  => FLAG_HTML);
             }
             // fill at least following fields with correct values - we need id.............. for AA_Items::getItems()
-            $content[$foo_id]['id..............'][0]['value'] =  $db->f('id');
-            $content[$foo_id]['slice_id........'][0]['value'] =  $db->f('slice_id');
+            $content[$foo_id]['id..............'][0]['value'] =  $row['id'];
+            $content[$foo_id]['slice_id........'][0]['value'] =  $row['slice_id'];
         }
     }
 
@@ -883,22 +885,29 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         $db->tquery($SQL);
 
         while ( $db->next_record() ) {
-            $item_id = $db->f("item_id");
+
+            $row = $db->Record;
+
+            $item_id = $row['item_id'];
             $fooid   = ($use_short_ids ? $translate[unpack_id($item_id)] : unpack_id($item_id) );
 
             if ( !$item_permitted[$item_id] ) {
-                $content[$fooid][$db->f("field_id")][0] = array( "value" => _m("Error: Missing Reading Password"));
+                $content[$fooid][$row['field_id']][0] = array( "value" => _m("Error: Missing Reading Password"));
                 continue;
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            $flag     = $db->f("flag");
-            if ( (strlen($db->f("text"))>0) OR ($flag & FLAG_TEXT_STORED) ) {
-                $content[$fooid][$db->f("field_id")][(int)$db->f('number')] = array( "value" => $db->f('text'), "flag"  => $flag);
+            if ( ($row['flag'] & FLAG_TEXT_STORED) OR (strlen($row['text'])>0)) {
+                if (is_array($content[$fooid][$row['field_id']][0]) AND ($content[$fooid][$row['field_id']][0]['value'] == $row['text'])) {
+                    // ignore content duplicates (there could be more that two values for field
+                    // with the same number (=NULL) - the ones which cames from "add value to field" operation)
+                    continue;
+                }
+                $content[$fooid][$row['field_id']][] = array( "value" => $row['text'], "flag"  => $row['flag']);
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
                 // if speeds the item->f_h() function a bit
-                $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f('number'), "flag"  => ($flag|FLAG_HTML));
+                $content[$fooid][$row['field_id']][] = array( "value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML));
             }
         }
     }
@@ -913,9 +922,9 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     freeDB($db);
-    
-    $GLOBALS['debugtime'] && AA::$dbg->duration('GetItemContent-'.$zids->count().'-'.count($content), microtime(true)-$time);
-    
+
+    ($GLOBALS['debugtime'] > 2) && AA::$dbg->duration('GetItemContent-'.$zids->count().'-'.count($content), microtime(true)-$time);
+
     return $content;   // Note null returned above if no items found
 }
 
