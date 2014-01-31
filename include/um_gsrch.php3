@@ -24,7 +24,7 @@
  * @link      http://www.apc.org/ APC
  *
 */
-  $groups = FindGroups($grp);
+  $groups = AA::$perm->findGroups($grp);
   if ( !is_array($groups) ) {
     if ( $groups == "too much" ) {
       unset($groups);

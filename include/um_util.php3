@@ -70,7 +70,7 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
 function GetFiltered($type, $filter, $to_much, $none) {
     switch( $type ) {
         case "U": $list = AA::$perm->findUsernames($filter);  break;
-        case "G": $list = FindGroups($filter); break;
+        case "G": $list = AA::$perm->findGroups($filter); break;
     }
     if ( !is_array($list) OR !count($list)) {
         unset($list);

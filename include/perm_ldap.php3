@@ -234,65 +234,6 @@ function ChangeGroup($group, $flags = 0) {
     return $r;
 }
 
-/** GetGroup function
- * @param $user_id
- * @param $flags
- *  @return array(uid, name, description)
- */
-function GetGroup($user_id, $flags = 0) {
-    if ( !($ds=InitLDAP()) ) {
-        return false;
-    }
-
-    $filter = "objectclass=groupofnames";
-    $result = @ldap_read($ds, $user_id, $filter, array("cn","description"));
-    if (!$result) {
-        return false;
-    }
-    $entry  = ldap_first_entry ($ds, $result);
-    $arr    = ldap_get_attributes($ds, $entry);
-
-    $res["uid"] = $user_id;
-    if ( is_array($arr["cn"]) ) {
-        $res["name"] = $arr["cn"][0];
-    }
-    if ( is_array($arr["description"]) ) {
-        $res["description"] = $arr["description"][0];
-    }
-
-    ldap_close($ds);
-    return $res;
-}
-
-/** FindGroups function
- * @param $pattern
- * @param $flags
- *  @return list of groups which corresponds to mask $pattern
- */
-function FindGroups($pattern, $flags = 0) {
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-
-    $result = FindReaderGroups($pattern);
-
-    if ( !($ds=InitLDAP()) ) {
-        return false;
-    }
-
-    $filter = "(&(objectclass=groupofnames)(cn=$pattern*))";
-    $res    = @ldap_search($ds,$aa_default_ldap['groups'],$filter,array("cn"));
-    if (!$res) {
-        // LDAP sizelimit exceed
-        return ((ldap_errno($ds)==4) ? "too much" : false);
-    }
-    $arr = LDAP_get_entries($ds,$res);
-
-    for ($i=0; $i<$arr['count']; ++$i) {
-        $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0]);
-    }
-
-    ldap_close($ds);
-    return $result;
-}
 /** find_user_by_login function
  * @param $login
  */
@@ -753,6 +694,51 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
                       "port"   => LDAP_PORT);
     }
 
+    /** authenticateUsername function
+     *  Try to authenticate user from LDAP
+     *  @param $username
+     *  @param $password
+     *  @return uid if user is authentificied, else false.
+     */
+    function authenticateUsername($username, $password) {
+        if (!$username or !$password) {         // no password => anonymous in LDAP
+            return false;
+        }
+
+        $return_val=false;
+        if ($org = strstr($username, "@")) {      // user tries to auth. via e-mail
+            $LDAPserver = AA_Permsystem_Ldap::getLdap(substr($org,1)); // get ldap server for this address
+        } else {
+            $LDAPserver = AA_Permsystem_Ldap::getLdap();
+        }
+
+        $ds = LDAP_Connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
+        if (!$ds) {                 			// not connected
+            return false;
+        }
+
+        if ($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
+            $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
+            if (@LDAP_Bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'] )) {
+                $r = LDAP_search($ds, $LDAPserver['people'], $search, array(""));
+                $arr = LDAP_get_entries($ds,$r);
+                if ( $arr["count"] > 0 ) {
+                    $userdn = $arr[0]["dn"];
+                } else {
+                    @LDAP_Close($ds);
+                    return false;
+                }
+            }
+        } else {                                    // build DN
+            $userdn = "uid=$username,".$LDAPserver['people'];
+        }
+
+        if (@LDAP_Bind($ds, $userdn, $password)) {  // try to authenticate
+            $return_val = $userdn;
+        }
+        @LDAP_Close($ds);
+        return $return_val;
+    }
 
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.
@@ -791,53 +777,64 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         ldap_close($ds);
         return $result;
     }
-}
 
-/** AuthenticateLDAPUsername function
- *  Try to authenticate user from LDAP
- * @param $username
- * @param $password
- *  @return uid if user is authentificied, else false.
- */
-function AuthenticateUsernameCurrent($username, $password) {
-    if (!$username or !$password) {         // no password => anonymous in LDAP
-        return false;
-    }
+    /** findGroups function
+     *  @param $pattern
+     *  @return list of groups which corresponds to mask $pattern
+     */
+    function findGroups($pattern) {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
 
-    $return_val=false;
-    if ($org = strstr($username, "@")) {      // user tries to auth. via e-mail
-        $LDAPserver = AA_Permsystem_Ldap::getLdap(substr($org,1)); // get ldap server for this address
-    } else {
-        $LDAPserver = AA_Permsystem_Ldap::getLdap();
-    }
+        $result = array();
 
-    $ds = LDAP_Connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
-    if (!$ds) {                 			// not connected
-        return false;
-    }
-
-    if ($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
-        $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
-        if (@LDAP_Bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'] )) {
-            $r = LDAP_search($ds, $LDAPserver['people'], $search, array(""));
-            $arr = LDAP_get_entries($ds,$r);
-            if ( $arr["count"] > 0 ) {
-                $userdn = $arr[0]["dn"];
-            } else {
-                @LDAP_Close($ds);
-                return false;
-            }
+        if ( !($ds=InitLDAP()) ) {
+            return false;
         }
-    } else {                                    // build DN
-        $userdn = "uid=$username,".$LDAPserver['people'];
+
+        $filter = "(&(objectclass=groupofnames)(cn=$pattern*))";
+        $res    = @ldap_search($ds,$aa_default_ldap['groups'],$filter,array("cn"));
+        if (!$res) {
+            // LDAP sizelimit exceed
+            return ((ldap_errno($ds)==4) ? "too much" : false);
+        }
+        $arr = LDAP_get_entries($ds,$res);
+
+        for ($i=0; $i<$arr['count']; ++$i) {
+            $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0]);
+        }
+
+        ldap_close($ds);
+        return $result;
     }
 
-    if (@LDAP_Bind($ds, $userdn, $password)) {  // try to authenticate
-        $return_val = $userdn;
+
+    /** GetGroup function
+     *  @param $group_id
+     *  @return array(uid, name, description)
+     */
+    function getGroup($group_id) {
+        if ( !($ds=InitLDAP()) ) {
+            return false;
+        }
+
+        $filter = "objectclass=groupofnames";
+        $result = @ldap_read($ds, $group_id, $filter, array("cn","description"));
+        if (!$result) {
+            return false;
+        }
+        $entry  = ldap_first_entry ($ds, $result);
+        $arr    = ldap_get_attributes($ds, $entry);
+
+        $res["uid"] = $group_id;
+        if ( is_array($arr["cn"]) ) {
+            $res["name"] = $arr["cn"][0];
+        }
+        if ( is_array($arr["description"]) ) {
+            $res["description"] = $arr["description"][0];
+        }
+
+        ldap_close($ds);
+        return $res;
     }
-    @LDAP_Close($ds);
-    return $return_val;
 }
-
-
 ?>

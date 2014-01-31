@@ -197,7 +197,7 @@ FrmTabEnd();
 do {
     if ( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
         if ($grp_edit AND !($submit_action == "update_submit")) {
-            if ( !is_array($group_data = GetGroup($selected_group))) {
+            if ( !is_array($group_data = AA::$perm->getGroup($selected_group))) {
                 break;
             }
             $group_name        = $group_data['name'];

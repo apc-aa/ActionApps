@@ -194,12 +194,23 @@ class AA_Perm {
         }
     }
 
-    public static function cryptPwd($password) {
-        $seed = '$2y$14$'.gensalt(22);
-        $ret  = crypt($password, $seed);
-        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
+
+    /**
+     * ussage: AA::$perm->isUsernameFree($var)
+     */
+    public function authenticateUsername($username, $password) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($user_id = $perm_sys->authenticateUsername($username, $password)) {
+                return $user_id;
+            }
+        }
+        return false;
     }
 
+
+    /**
+     * ussage: AA::$perm->isUsernameFree($var)
+     */
     public function isUsernameFree($username) {
         foreach ($this->perm_systems as $perm_sys) {
             if (!$perm_sys->isUsernameFree($username)) {
@@ -219,6 +230,38 @@ class AA_Perm {
             }
         }
         return $users;
+    }
+
+    public function findGroups($pattern) {
+        $groups = array();
+        foreach ($this->perm_systems as $perm_sys) {
+            $new_groups = $perm_sys->findGroups($pattern);
+            if (is_array($new_groups) AND count($new_groups)) {
+                // + operator preserves the numeric keys (used in SQL perm), which is crucial
+                $groups = $groups + $new_groups;
+            }
+        }
+        return $groups;
+    }
+
+    /**
+     *  @param $group_id
+     *  @return array(uid, name, description) - info about the group
+     *  ussage: AA::$perm->getGroup($var)
+     */
+    public function getGroup($group_id) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($groupinfo = $perm_sys->getGroup($group_id)) {
+                return $groupinfo;
+            }
+        }
+        return false;
+    }
+
+    public static function cryptPwd($password) {
+        $seed = '$2y$14$'.gensalt(22);
+        $ret  = crypt($password, $seed);
+        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
     }
 
     public static function comparePwds($password, $hash) {
@@ -322,6 +365,8 @@ AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
 class AA_Permsystem {
     function isUsernameFree($username) {}
     function findUsernames($pattern)   {}
+    function findGroups($pattern)      {}
+    function getGroup($group_id)       {}
 }
 
 /** IsPerm function
@@ -587,17 +632,6 @@ function perm_username( $user_id ) {
     return empty($userinfo) ? $user_id : $userinfo['name'];
 }
 
-/** AuthenticateUsername function
- * @param $username
- * @param $password
- * @return uid if user is authentificied, else false.
- */
-function AuthenticateUsername($username, $password) {
-    // try to authenticate user in current permission system
-    $sqluseruid = AuthenticateUsernameCurrent($username, $password);
-    return  $sqluseruid ? $sqluseruid : AuthenticateReaderUsername($username, $password);
-}
-
 /** GetIDsInfo function
  * @param $id
  * @param $ds
@@ -651,6 +685,28 @@ require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 
 class AA_Permsystem_Reader extends AA_Permsystem {
 
+    /** AuthenticateReaderUsername function
+     *  Search all Reader slices for $username and check if tha password is correct
+     *  Returns ID of the user (item ID of the user in Reader slice, in this case)
+     * @param $username
+     * @param $password
+     */
+    function authenticateUsername($username, $password) {
+        if ( !$username ) {
+            return false;
+        }
+
+        $user_id   = AA_Reader::name2Id($username);
+        $user_info = GetAuthData( $user_id );
+
+        if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
+            // user id is the id of the item in the Reader Management slice
+            return $user_id;
+        }
+        return false;
+    }
+
+
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.
      *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
@@ -679,27 +735,27 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         }
         return $users;
     }
-}
 
-/** AuthenticateReaderUsername function
- *  Search all Reader slices for $username and check if tha password is correct
- *  Returns ID of the user (item ID of the user in Reader slice, in this case)
- * @param $username
- * @param $password
- */
-function AuthenticateReaderUsername($username, $password) {
-    if ( !$username ) {
-        return false;
+    public function findGroups($pattern) {
+        global $db;
+        $db->tquery("SELECT module.id,module.name FROM slice,module
+                      WHERE slice.type = 'ReaderManagement'
+                        AND slice.id   = module.id
+                        AND module.deleted < '1'
+                        AND module.name LIKE '%". quote($pattern) ."%'");
+        $prefix = _m('Reader Slice');
+        $groups = array();
+        while ($db->next_record()) {
+            $groups[unpack_id($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
+        }
+
+        // get all ReaderSets
+        $prefix = _m('Reader Set');
+        foreach ( AA_Object::getNameArray('AA_Set', array_keys($groups)) as $set_id => $name ) {
+            $groups[$set_id] = array('name' => "$prefix: $name");
+        }
+        return $groups;
     }
-
-    $user_id   = AA_Reader::name2Id($username);
-    $user_info = GetAuthData( $user_id );
-
-    if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
-        // user id is the id of the item in the Reader Management slice
-        return $user_id;
-    }
-    return false;
 }
 
 /** getReaderSlices function
@@ -713,31 +769,6 @@ function getReaderSlices() {
     return GetTable2Array($SQL, '', 'unpack:id');
 }
 
-/** FindReaderGroupsn function
- *  return list of RM slices which matches the pattern
- */
-function FindReaderGroups($pattern) {
-    global $db;
-    $db->tquery("SELECT module.id,module.name FROM slice,module
-                  WHERE slice.type = 'ReaderManagement'
-                    AND slice.id   = module.id
-                    AND module.deleted < '1'
-                    AND module.name LIKE '". quote($pattern) ."%'");
-    $prefix = _m('Reader Slice');
-    $groups = array();
-    while ($db->next_record()) {
-        $groups[unpack_id($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
-    }
-
-    // get all ReaderSets
-    $prefix = _m('Reader Set');
-    foreach ( AA_Object::getNameArray('AA_Set', array_keys($groups)) as $set_id => $name ) {
-        $groups[$set_id] = array('name' => "$prefix: $name");
-    }
-    return $groups;
-
-
-}
 
 /** GetAuthData function
  *  Fills content array for current loged user or specified user

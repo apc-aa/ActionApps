@@ -139,7 +139,7 @@ class AA_Debug {
 
     function duration_stat() {
         $row    = array();
-        $sumsum = 0; 
+        $sumsum = 0;
         foreach($this->_duration as $func => $times) {
             $sumsum += ($sum = array_sum($times));
             $row['a'.sprintf('%f',$sum).'-'.$func] .= '<tr><td>'.$func.'</td><td>'.count($times).'</td><td>'.sprintf('%f',$sum/count($times)).'</td><td>'.sprintf('%f',$sum).'</td><td>'.sprintf('%f',max($times)).'</td><td>'.sprintf('%f',min($times)).'</td></tr>';
@@ -304,7 +304,7 @@ class DB_AA extends DB_Sql {
 
 
     /** makeWHERE function
-     *  [[field_name, value, type], ...]   type:  i - integer, l - longid, q - quoted, s - string
+     *  [[field_name, value, type], ...]   type:  i - integer, l - longid, q - quoted, s - string (default)
      *                                     value: singlevalue or array
      *  array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))
      * @param $tablename
@@ -351,8 +351,8 @@ class DB_AA extends DB_Sql {
      */
     function tquery($SQL) {
         $time = microtime(true);
-        $ret  = ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL)); 
-        $GLOBALS['debugtime'] && AA::$dbg->duration('Query', microtime(true)-$time);
+        $ret  = ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL));
+        ($GLOBALS['debugtime']>2) && AA::$dbg->duration('Query', microtime(true)-$time);
         return $ret;
     }
 

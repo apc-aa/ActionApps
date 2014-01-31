@@ -27,6 +27,13 @@
 */
 
 
+!! crash
+
+old unmaintained API code not updated to newes AA_Perm approach
+now we use AA_Permsystem, so use it as API reference
+Honza, 30.1.2014
+
+
 
 //## API functions //##
 /** AuthenticateUsername function
@@ -168,12 +175,12 @@ function DelPerm($id, $objectID, $objectType, $flags = 0) {
 function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
   return true;
 }
-/** GetObjectPerms function
+/** GetObjectsPerms function
  * @param $objectID
  * @param $objectType
  * @param $flags
  */
-function GetObjectPerms($objectID, $objectType, $flags = 0) {
+function GetObjectsPerms($objectID, $objectType, $flags = 0) {
   return array("");
 }
 /** GetIDPerms function

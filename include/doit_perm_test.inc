@@ -39,17 +39,17 @@
 
   $user_id = AddUser($array);
 
-// AuthenticateUsername
+// authenticateUsername
 
-   $auth_result = AuthenticateUsername($username, $password);
-   ptest( ($auth_result == $user_id), "AuthenticateUsername (good passwd)");
+   $auth_result = AA::$perm->authenticateUsername($username, $password);
+   ptest( ($auth_result == $user_id), "authenticateUsername (good passwd)");
 //  This may fail, if AddUser added a user without a unique email address
 #   echo "auth_result = $auth_result\n";
 #   echo "user_id = $user_id\n";
 
-   $auth_result = AuthenticateUsername($username, 'notpassword');
+   $auth_result = AA::$perm->authenticateUsername($username, 'notpassword');
 #   echo "second auth_result $auth_result\n";
-   ptest( (! $auth_result) , "AuthenticateUsername (bad passwd)" );
+   ptest( (! $auth_result) , "authenticateUsername (bad passwd)" );
 
 // FindUsers
 
@@ -75,7 +75,7 @@
 // DelUser
 
   DelUser($user_id);
-  $auth_result = AuthenticateUsername($username, $password);
+  $auth_result = AA::$perm->authenticateUsername($username, $password);
   ptest( (! $auth_result) , "DelUser()" );
 
   $array['mail']         = $username;
@@ -94,30 +94,30 @@
    $org_info = GetIDsInfo($org_id);
    ptest( ( $org_info[name] == $group[name]), "AddGroup/GetIDsInfo");
 
-// FindGroups
+// findGroups
 
    $group['name']      = "Test Org the second";
-   $group['description'] = "should be found with FindGroups Too";
+   $group['description'] = "should be found with findGroups Too";
    $org_id2 = AddGroup($group);
 
    $group['name']        = "Third Org";
-   $group['description'] = "should not be found with FindGroups";
+   $group['description'] = "should not be found with findGroups";
    $org_id3 = AddGroup($group);
 
-   $found_groups = FindGroups("Test");
+   $found_groups = AA::$perm->findGroups("Test");
 
    while (list($key, $val) = each($found_groups)) {
       echo "$key => $val[name]\n";
    }
 
-   ptest( (count($found_groups) == 2) , "FindGroups()" );
+   ptest( (count($found_groups) == 2) , "findGroups()" );
    ptest( ($found_groups[$org_id][name] == "Test Org") ,
-          "FindGroups(detail)" );
+          "findGroups(detail)" );
 
 // DelGroup
 
    DelGroup($org_id);
-   $found_groups = FindGroups("Test");
+   $found_groups = AA::$perm->findGroups("Test");
    ptest( (count($found_groups) == 1) , "DelGroup()" );
 
    $org_id = AddGroup($group);

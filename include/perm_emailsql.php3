@@ -26,6 +26,13 @@
  *
 */
 
+
+!! crash
+
+it is old unmaintained code not updated to newes AA_Perm approach with some security problems
+(unescaped variables in AuthenticateUsernameCurrent() and other functions)
+Honza, 30.1.2014
+
 //php_sqlemail - functions for working with permissions with SQL - with e-mail hook
 
 /* INSTALL notes

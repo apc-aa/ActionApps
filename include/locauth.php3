@@ -76,7 +76,7 @@ class AA_CP_Auth extends Auth {
         }
 
         $user=$username;
-        $uid = AuthenticateUsername($user, $password);
+        $uid = AA::$perm->authenticateUsername($user, $password);
 
         AA_Log::write('LOGIN', $uid, $username);
 

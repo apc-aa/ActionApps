@@ -46,76 +46,6 @@ users        membership     perms
 
 // ----------------------------- QUERY -----------------------------------
 
-/** AuthenticateSqlUsername function
- * @param $username
- * @param $password
- * @param $flags
- * @return uid if user is authenticated, else false.
- */
-function AuthenticateUsernameCurrent($username, $password) {
-    $db = new DB_AA;
-    $id = false; $i = 0;
-    // build and execute a query for $username
-
-    // match by uid if it is like 'toolkit' , by email if like 'madebeer@igc.org'
-    // in the future, if it is like @igc.org, it should query an external
-    // authentication source, like an LDAP server for @igc.org
-    if ( $num = strstr($username, "@") ){
-        $SQL = sprintf("SELECT id, password FROM users WHERE mail ='%s'", $username);
-    } else {
-        $SQL = sprintf("SELECT id, password FROM users WHERE uid ='%s'", $username);
-    }
-    $db->query( $SQL );
-    $db->next_record();
-    $db_id  = $db->f('id');
-    $db_pwd = $db->f('password');
-
-    return AA_Perm::comparePwds($password, $db_pwd) ? $db_id : false;
-}
-
-/** GetGroup function
- * @param $user_id
- * @param $flags
- *  @return array(uid, name, description, owner)
- */
-function GetGroup($user_id, $flags = 0) {
-    $db  = new DB_AA;
-    $SQL = sprintf( "SELECT id, name, description FROM users WHERE id = '%s'", $user_id);
-    $db->query( $SQL );
-
-    // TODO: something about a sizelimit??
-    if ($db->next_record()) {
-        $res['uid']         = $user_id;
-        $res['name']        = $db->f("name");
-        $res['description'] = $db->f("description");
-    }
-    return $res;
-}
-
-/** FindGroups function
- * @param $pattern
- * @param $flags
- * @return list of groups which corresponds to mask $pattern
- */
-function FindGroups($pattern, $flags = 0) {
-
-    $db    = new DB_AA;
-    $by_id = FindReaderGroups($pattern);
-
-    // older code uses _m("Group"), the new one uses 'Group' or 'User' as keyword
-    $SQL = sprintf( "SELECT id, name
-                       FROM users
-                      WHERE name LIKE '%s%%' AND (type = '%s' OR type = '%s')",
-                    addslashes($pattern), _m("Group"), "Group");
-
-    $db->query( $SQL );
-    // TODO: something about a sizelimit??
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $by_id[$db->f("id")] = array("name"=>$db->f("name"));
-    }
-    return $by_id;
-}
 /** find_user_by_login function
  * @param $login
  */
@@ -631,17 +561,24 @@ function A2sql_update($table, $keyField, $aData) {
 
 class AA_Permsystem_Sql extends AA_Permsystem {
 
-    /** isUsernameFree function
-     *  Looks into reader management slices whether the reader name is not yet used.
-     *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+    /** authenticateUsername function
      * @param $username
+     * @param $password
+     * @return uid if user is authenticated, else false.
+     */
+    function authenticateUsername($username, $password) {
+        if ($user = DB_AA::select1('SELECT id, password FROM `users`', '', array(array(strpos($username, "@") ? 'mail' : 'uid', $username)))) {
+            return AA_Perm::comparePwds($password, $user['password']) ? $user['id'] : false;
+        }
+        return false;
+    }
+
+    /** isUsernameFree function
+     *  Looks whether the username name is not yet used.
+     *  @param $username
      */
     function isUsernameFree($username) {
-        $db = getDB();
-        $db->query("SELECT uid FROM users WHERE uid='".addslashes($username)."'");
-        $free = ! $db->next_record();
-        freeDB($db);
-        return $free;
+        return !(DB_AA::select1('SELECT uid FROM `users`', '', array(array('uid', $username))));
     }
 
     /** findUsernames function
@@ -649,25 +586,27 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return list of users which corresponds to mask $pattern
      */
     function findUsernames($pattern) {
-        $db      = new DB_AA;
-        $by_id   = array();
-        $pattern = addslashes($pattern);
-
-        $SQL = sprintf( "
-           SELECT id, mail, givenname, sn
-             FROM users
-            WHERE ( name  LIKE '%s%%' OR mail LIKE '%s%%' OR uid LIKE '%s%%') AND
-                  ( type = '%s' OR type = '%s')",
-                  $pattern, $pattern, $pattern, _m("User"), "User");
-        $db->query( $SQL );
-        // TODO: something about a sizelimit??
-        $db->query($SQL);
-        while ($db->next_record()) {
-            $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
-                                         "mail"=>$db->f("mail"));
-        }
-        return $by_id;
+        $pattern = quote($pattern);
+        return DB_AA::select(array('id'=>array('name','mail')), "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users` WHERE ( name  LIKE '%$pattern%' OR mail LIKE '%$pattern%' OR uid LIKE '%$pattern%') AND ( type = '".quote(_m("User"))."' OR type = 'User')");
     }
+
+    /** findGroups function
+     * @param $pattern
+     * @return list of groups which corresponds to mask $pattern
+     */
+    function findGroups($pattern) {
+        return DB_AA::select(array('id'=>array('name')), "SELECT id, name FROM `users` WHERE name LIKE '%".quote($pattern)."%' AND (type = '".quote(_m("Group"))."' OR type = 'Group')");
+    }
+
+    /** getGroup function
+     *  @param $user_id
+     *  @return array(uid, name, description) or false if not found
+     */
+    function getGroup($group_id) {
+        return DB_AA::select1('SELECT id AS uid, name, description FROM `users`', '', array(array('id', $group_id, 'i')));
+    }
+
+
 }
 
 

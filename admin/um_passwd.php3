@@ -52,7 +52,7 @@ $user_data = GetIDsInfo($auth->auth["uid"]);
 if ( $update ) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
-    if ( !AuthenticateUsername($auth->auth["uname"], $user_password_old) ) {
+    if ( !AA::$perm->authenticateUsername($auth->auth["uname"], $user_password_old) ) {
         $err['Password'] = MsgErr(_m("Error in current password - pasword is not changed"));
     }
     $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);

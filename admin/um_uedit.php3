@@ -96,7 +96,7 @@ if ( $selected_user ) {
         $sel_groups["n"]['name'] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
     } else {
         foreach ($user_groups as $foo_gid) {
-            $sel_groups[$foo_gid] = GetGroup($foo_gid);
+            $sel_groups[$foo_gid] = AA::$perm->getGroup($foo_gid);
         }
     }
 }
