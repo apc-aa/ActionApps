@@ -230,21 +230,30 @@ class AA_Field {
 
     /** getWidgetAjaxHtml function
     * @param $item_id
+    * @param $required    - redefine default settings of required
+    * @param $function    - js function to call after the update
+    *                     - not implemented yet (it is here for (optical) parameter compatibility with getWidgetLiveHtml)
+    * @param $widget_type - wi2|sel|...
+    *                       used, when we want to use another widget, than the default one
+    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1)
     */
-    function getWidgetAjaxHtml($item_id, $required=null) {
-        $widget      = $this->getWidget();
+    function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
+        $widget      = $this->getWidget($widget_type, $widget_properties);
         $item        = AA_Items::getItem($item_id);
         $aa_property = $this->getAaProperty($widget->multiple(), $required);
-        return $widget->getAjaxHtml($aa_property, $item);
+        return $widget->getAjaxHtml($aa_property, $item, $function);
     }
 
     /** getWidgetLiveHtml function
     * @param $item_id
-    * @param $required  // redefine default settings of required
-    * @param $function  // js function to call after the update
+    * @param $required    - redefine default settings of required
+    * @param $function    - js function to call after the update
+    * @param $widget_type - wi2|sel|...
+    *                       used, when we want to use another widget, than the default one
+    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1)
     */
-    function getWidgetLiveHtml($item_id, $required, $function, $widget_type=null) {
-        $widget      = $this->getWidget($widget_type);
+    function getWidgetLiveHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
+        $widget      = $this->getWidget($widget_type, $widget_properties);
         $item        = AA_Items::getItem($item_id);
         $aa_property = $this->getAaProperty($widget->multiple(), $required);
 
@@ -255,15 +264,16 @@ class AA_Field {
     /** getWidgetNewHtml function
      * @param $item_id
      * @param $required  // redefine default settings of required
+     * @param $function - not implemented yet (it is here for (optical) parameter compatibility with getWidgetLiveHtml)
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
-     * @param $properties  - array of properties to redefine for $widget_type
+     * @param $widget_properties  - array of properties to redefine for $widget_type
      *
-     * Ussage: $field->getWidgetNewHtml(false, 'mch', array('columns' => 1));
+     * Ussage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
      */
-    function getWidgetNewHtml($required=null, $widget_type=null, $properties=array(), $preset_value=null) {
-        $widget  = $this->getWidget($widget_type, $properties);
+    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null) {
+        $widget  = $this->getWidget($widget_type, $widget_properties);
         $content = new AA_Content();
         $content->setOwnerId($this->getSliceId());
         if (is_object($preset_value)) {
@@ -271,7 +281,7 @@ class AA_Field {
         }
         $aa_property = $this->getAaProperty($widget->multiple(), $required);
 
-        return $widget->getHtml($aa_property, $content);
+        return $widget->getHtml($aa_property, $content, $function);
     }
 
     /** getRelation function
