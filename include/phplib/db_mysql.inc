@@ -9,7 +9,7 @@
 *
 */
 
-class DB_MySQL {
+class DB_Sql {
 
     /* public: connection parameters */
     var $Host     = "";
@@ -29,14 +29,13 @@ class DB_MySQL {
     var $Error    = "";
 
     /* public: this is an api revision, not a CVS revision. */
-    var $type     = "mysql";
-    var $revision = "1.2";
+    var $type     = "mysqli";
+    var $revision = "0.1";
 
     /* private: link and query handles */
     var $Link_ID  = 0;
     var $Query_ID = 0;
 
-    var $locked   = false;      // set to true while we have a lock
 
     /* public: constructor */
     function __construct($query = "") {
@@ -51,7 +50,7 @@ class DB_MySQL {
     }
 
     function quote($string) {
-        return mysql_real_escape_string($string, $this->Link_ID);
+        return mysqli_real_escape_string($this->Link_ID, $string);
     }
 
     function query_id() {
@@ -69,33 +68,26 @@ class DB_MySQL {
             if ("" == $User)     { $User     = $this->User;     }
             if ("" == $Password) { $Password = $this->Password; }
 
-            $method = ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) ? 'mysql_connect' : 'mysql_pconnect';
-            $this->Link_ID = @$method($Host, $User, $Password);
+            $method = ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) ? '' : 'p:';
+            $this->Link_ID = mysqli_connect($method.$Host, $User, $Password, $Database);
 
-            if (!$this->Link_ID) {
-                $this->connect_failed("connect ($Host, $User, \$Password) failed");
+            /* Vérification de la connexion */
+            if (@mysqli_connect_errno()) {
+                $this->connect_failed("connect ($method$Host, $User, \$Password, $Database) failed - ". mysqli_connect_errno(). ' - ' . mysqli_connect_error());
                 return 0;
             }
 
             // Jirkare hack
             if ( defined('DB_CHARACTER_SET') ) {
                 /* change character set to utf8 */
-                if (!mysql_set_charset(DB_CHARACTER_SET, $this->Link_ID)) {
-                    $this->connect_failed('Error loading character set '. DB_CHARACTER_SET);
+                if (!mysqli_set_charset($this->Link_ID, DB_CHARACTER_SET)) {
+                    $this->connect_failed('Error loading character set '. DB_CHARACTER_SET.': '.mysqli_error($this->Link_ID));
                 }
             }
             if ( defined('DB_COLLATION_CONNECTION') ) {
-                mysql_query('SET COLLATION_CONNECTION=\''. DB_COLLATION_CONNECTION.'\'', $this->Link_ID);
-            }
-
-            if (!mysql_select_db($Database,$this->Link_ID)) {
-                $this->Errno  = mysql_errno();
-                $this->Error  = mysql_error();
-                $this->connect_failed("cannot use database ".$Database. ", ". DB_CHARACTER_SET. ", ". DB_COLLATION_CONNECTION. ", ". AA_USE_NON_PERSISTENT_CONNECT);
-                return 0;
+                @mysqli_query($this->Link_ID, 'SET COLLATION_CONNECTION=\''. DB_COLLATION_CONNECTION.'\'');
             }
         }
-
         return $this->Link_ID;
     }
 
@@ -106,18 +98,19 @@ class DB_MySQL {
 
     /* public: discard the query result */
     function free() {
-        @mysql_free_result($this->Query_ID);
+        if ($this->Query_ID) {
+            @mysqli_free_result($this->Query_ID);
+        }
         $this->Query_ID = 0;
     }
 
     /* public: perform a query */
     function query($Query_String) {
-
         /* No empty queries, please, since PHP4 chokes on them. */
         if ($Query_String == "") {
             /* The empty query string is passed on from the constructor,
             * when calling the class without a query, e.g. in situations
-            * like these: '$db = new DB_Sql_Subclass;'
+            * like these: '$db_install = new DB_MySQLi_Subclass;'
             */
             return 0;
         }
@@ -131,10 +124,11 @@ class DB_MySQL {
             $this->free();
         }
 
-        $this->Query_ID = @mysql_query($Query_String,$this->Link_ID);
-        $this->Row      = 0;
-        $this->Errno    = mysql_errno();
-        $this->Error    = mysql_error();
+        //$this->Query_ID = @mysqli_query($this->Link_ID,$Query_String, MYSQLI_USE_RESULT);
+        $this->Query_ID = @mysqli_query($this->Link_ID,$Query_String);
+        $this->Row   = 0;
+        $this->Errno = @mysqli_errno($this->Link_ID);
+        $this->Error = @mysqli_error($this->Link_ID);
         if (!$this->Query_ID) {
             $this->halt("Invalid SQL: ".$Query_String);
         }
@@ -151,10 +145,10 @@ class DB_MySQL {
         }
 
         $this->Row   += 1;
-        if (!is_array($this->Record = @mysql_fetch_assoc($this->Query_ID))) {
-            $this->Errno  = mysql_errno();
-            $this->Error  = mysql_error();
-            mysql_free_result($this->Query_ID);
+        if (is_null($this->Record = @mysqli_fetch_assoc($this->Query_ID))) {
+            $this->Errno  = mysqli_errno($this->Link_ID);
+            $this->Error  = mysqli_error($this->Link_ID);
+            mysqli_free_result($this->Query_ID);
             $this->Query_ID = 0;
             return false;
         }
@@ -169,12 +163,18 @@ class DB_MySQL {
             $this->halt("next_record called with no query pending.");
             return array();
         }
-        $ret = array();
-        while (is_array($r = @mysql_fetch_assoc($this->Query_ID))) {
-            $ret[] = $r;
-        }
-        return $ret;
+        return mysqli_fetch_all($this->Query_ID, MYSQLI_ASSOC);
     }
+
+    /* public: return all the results */
+//    function fetch_column($col) {
+//        $res = $this->fetch_table();
+//        $ret = array();
+//        foreach ($res as $v) {
+//            $ret[] = $v[$col];
+//        }
+//        return $ret;
+//    }
 
     /* public: return all the results */
     function fetch_column($col) {
@@ -183,7 +183,7 @@ class DB_MySQL {
             return array();
         }
         $ret = array();
-        while (is_array($r = @mysql_fetch_assoc($this->Query_ID))) {
+        while (is_array($r = @mysqli_fetch_assoc($this->Query_ID))) {
             $ret[] = $r[$col];
         }
         return $ret;
@@ -192,8 +192,7 @@ class DB_MySQL {
 
     /* public: position in result set */
     function seek($pos = 0) {
-        $status = @mysql_data_seek($this->Query_ID, $pos);
-
+        $status = @mysqli_data_seek($this->Query_ID, $pos);
         if ($status) {
             $this->Row = $pos;
         } else {
@@ -203,7 +202,7 @@ class DB_MySQL {
             * but do not consider this documented or even
             * desireable behaviour.
             */
-            @mysql_data_seek($this->Query_ID, $this->num_rows());
+            @mysqli_data_seek($this->Query_ID, $this->num_rows());
             $this->Row = $this->num_rows();
             return 0;
         }
@@ -212,61 +211,57 @@ class DB_MySQL {
     }
 
     /* public: table locking */
-    function lock($table, $mode = "write") {
-        $query = "lock tables ";
-        if (is_array($table)) {
-            while (list($key,$value) = each($table)) {
-                // text keys are "read", "read local", "write", "low priority write"
-                if (is_int($key)) {
-                    $key = $mode;
-                }
+    function lock($table, $mode="write") {
+        $this->connect();
 
-                if (strpos($value, ",")) {
-                    $query .= str_replace(",", " $key, ", $value) . " $key, ";
+        $query="lock tables ";
+        if (is_array($table)) {
+            while (list($key,$value)=each($table)) {
+                if ($key=="read" && $key!=0) {
+                    $query.="$value read, ";
                 } else {
-                    $query .= "$value $key, ";
+                    $query.="$value $mode, ";
                 }
             }
-            $query = substr($query, 0, -2);
-        } elseif (strpos($table, ",")) {
-            $query .= str_replace(",", " $mode, ", $table) . " $mode";
+            $query=substr($query,0,-2);
         } else {
-            $query .= "$table $mode";
+            $query.="$table $mode";
         }
-        if (!$this->query($query)) {
-            $this->halt("lock() failed.");
-            return false;
+        $res = @mysqli_query($this->Link_ID, $query);
+        if (!$res) {
+            $this->halt("lock($table, $mode) failed.");
+            return 0;
         }
-        $this->locked = true;
-        return true;
+        return $res;
     }
 
     function unlock() {
-        // set before unlock to avoid potential loop
-        $this->locked = false;
+        $this->connect();
 
-        if(!$this->query("unlock tables")) {
+        $res = @mysqli_query($this->Link_ID, "unlock tables");
+        if (!$res) {
             $this->halt("unlock() failed.");
-            return false;
+            return 0;
         }
-        return true;
+        return $res;
     }
+
 
     /* public: evaluate the result (size, width) */
     function affected_rows() {
-        return @mysql_affected_rows($this->Link_ID);
+        return @mysqli_affected_rows($this->Link_ID);
     }
 
     function num_rows() {
-        return @mysql_num_rows($this->Query_ID);
+        return @mysqli_num_rows($this->Query_ID);
     }
 
     function num_fields() {
-        return @mysql_num_fields($this->Query_ID);
+        return @mysqli_num_fields($this->Query_ID);
     }
 
     function last_insert_id() {
-        return @mysql_insert_id();
+        return @mysqli_insert_id($this->Link_ID);
     }
 
     /* public: shorthand notation */
@@ -285,9 +280,7 @@ class DB_MySQL {
     }
 
     function p($Name) {
-        if (isset($this->Record[$Name])) {
-            print $this->Record[$Name];
-        }
+        print $this->Record[$Name];
     }
 
     /* public: return table metadata */
@@ -318,84 +311,98 @@ class DB_MySQL {
         *   [0]["len"]    field length
         *   [0]["flags"]  field flags
         *   ["meta"][field name]  index of field named "field name"
-        *   This last one could be used if you have a field name, but no index.
+     *   This last one could be used if you have a field name, but no index.
         *   Test:  if (isset($result['meta']['myfield'])) { ...
         */
 
         // if no $table specified, assume that we are working with a query
         // result
         if ($table) {
-            $this->connect();
-            $id = @mysql_list_fields($this->Database, $table);
+            $id = $this->query("SHOW FIELDS FROM $table");
             if (!$id) {
-                $this->halt("Metadata query failed.");
+                $this->halt("Metadata query failed (table $table).".$this->LinkID);
                 return false;
             }
         } else {
-            $id = $this->Query_ID;
-            if (!$id) {
-                $this->halt("No query specified.");
-                return false;
-            }
+            $this->halt("No table specified.");
+            return false;
         }
 
-        $count = @mysql_num_fields($id);
+        $count = @mysqli_num_fields($id);
 
-        // made this IF due to performance (one if is faster than $count if's)
-        if (!$full) {
-            for ($i=0; $i<$count; $i++) {
-                $res[$i]["table"] = @mysql_field_table ($id, $i);
-                $res[$i]["name"]  = @mysql_field_name  ($id, $i);
-                $res[$i]["type"]  = @mysql_field_type  ($id, $i);
-                $res[$i]["len"]   = @mysql_field_len   ($id, $i);
-                $res[$i]["flags"] = @mysql_field_flags ($id, $i);
-            }
-        } else { // full
-            $res["num_fields"]= $count;
+        for ($i=0; $i<$count; $i++) {
+            $row = @mysqli_fetch_array($id);
+            $res[$i]["table"] = $table;
+            $res[$i]["name"]  = $row["Field"];
+            $res[$i]["type"]  = $row["Type"];
+            // $res[$i]["len"]   = @mysql_field_len   ($id, $i);
+            // $res[$i]["flags"] = @mysql_field_flags ($id, $i);
+        }
 
+        if ($full) {
+            $res["num_fields"] = $count;
             for ($i=0; $i<$count; $i++) {
-                $res[$i]["table"] = @mysql_field_table ($id, $i);
-                $res[$i]["name"]  = @mysql_field_name  ($id, $i);
-                $res[$i]["type"]  = @mysql_field_type  ($id, $i);
-                $res[$i]["len"]   = @mysql_field_len   ($id, $i);
-                $res[$i]["flags"] = @mysql_field_flags ($id, $i);
                 $res["meta"][$res[$i]["name"]] = $i;
             }
         }
 
-        // free the result only if we were called on a table
-        if ($table) {
-            @mysql_free_result($id);
+        for ($i=0; $i<$count; $i++) {
+            $res[$i]["group"] = $res[$i]["type"];
+            $h     = $this->query("SHOW FIELDS FROM $table WHERE Field='".$res[$i]["name"]."'");
+            $row   = @mysqli_fetch_array($h);
+            $fattr = "";
+            $pos   = strpos ( $row["Type"], "(" );
+            if ( $pos > 0 ) {
+                $ftype = substr ( $row["Type"], 0, $pos );
+                $fsize = substr ( $row["Type"], $pos +1 );
+                $pos = strpos ( $fsize, ") " );
+                if ( $pos > 0 ) {
+                    $fattr = substr ( $fsize, $pos +2, strlen ($fsize) -2 -$pos );
+                    $fsize = substr ( $fsize, 0, $pos );
+                } else {
+                    $fsize = substr ( $fsize, 0, $pos -1 );
+                }
+            } else {
+                $fsize = "";
+                $ftype = $row["Type"];
+            }
+
+            $res[$i]["key"]     = $row["Key"];
+            if ($row["Key"] == 'PRI') {
+                $res[$i]["flags"] = 'primary_key';  // to be compatible with db_mysql
+            }
+            $res[$i]["chars"]   = $fsize;
+            $res[$i]["type"]    = $ftype;
+            $res[$i]["attr"]    = $fattr;   /* eg unsigned */
+            $res[$i]["null"]    = $row["Null"];
+            $res[$i]["extra"]   = $row["Extra"];
+            $res[$i]["default"] = $row["Default"];
+
         }
+
+        // free the result only if we were called on a table
+        @mysqli_free_result($id);
+
         return $res;
     }
 
-    /* public: find available table names */
     function table_names() {
+        $this->query("SHOW TABLES");
+        $i=0;
         $return = array();
-        $this->connect();
-        $h = @mysql_query("show tables", $this->Link_ID);
-        $i = 0;
-        while ($info = @mysql_fetch_row($h)) {
-            $return[$i]["table_name"]      = $info[0];
-            $return[$i]["tablespace_name"] = $this->Database;
-            $return[$i]["database"]        = $this->Database;
+        while ($info=@mysqli_fetch_row($this->Query_ID)) {
+            $return[$i]["table_name"]= $info[0];
+            $return[$i]["tablespace_name"]=$this->Database;
+            $return[$i]["database"]=$this->Database;
             $i++;
         }
-
-        @mysql_free_result($h);
         return $return;
     }
 
     /* private: error handling */
     function halt($msg) {
-        $this->Error = @mysql_error($this->Link_ID);
-        $this->Errno = @mysql_errno($this->Link_ID);
-
-        if ($this->locked) {
-            $this->unlock();
-        }
-
+        $this->Error = @mysqli_error($this->Link_ID);
+        $this->Errno = @mysqli_errno($this->Link_ID);
         if ($this->Halt_On_Error == "no") {
             return;
         }
@@ -409,10 +416,8 @@ class DB_MySQL {
 
     function haltmsg($msg) {
         printf("<p><b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>MySQL Error</b>: %s (%s)</p>\n", $this->Errno, $this->Error);
+        printf("<b>MySQL Error</b>: %s (%s)</p>\n",  $this->Errno, $this->Error);
     }
 }
-
-class DB_Sql extends DB_MySQL {}
 
 ?>
