@@ -817,8 +817,7 @@ class AA_Object extends AA_Storable {
         return '
           <table>
             <tr>
-              <th width="30">&nbsp;</th>
-              <th>'.join("</th>\n<th>", array_merge(array_keys($fields),array( _m('Name'), _m('ID'), _m('Owner'), _m('Action')))).'</th>
+              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')),array_keys($fields),array( _m('Name'), _m('ID'), _m('Owner')))).'</th>
             </tr>
             ';
     }
@@ -829,9 +828,8 @@ class AA_Object extends AA_Storable {
     protected static function getManagerRowHtml($fields, $aliases, $links) {
         return '
             <tr>
-              <td><input type="checkbox" name="chb[x_#AA_ID___]" value=""></td>
+              <td>'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
-              <td>'. a_href($links['Edit'], _m('Edit')). '</td>
             </tr>
             ';
     }
@@ -864,7 +862,7 @@ class AA_Object extends AA_Storable {
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                  'format'               => array(    // optionaly to manager_vid you can set format array
-                     'compact_top'      => call_user_func_array(array($object_class, 'getManagerTopHtml'), array($search_fields)),
+                     'compact_top'      => '<div class="aa-items-manager">'. call_user_func_array(array($object_class, 'getManagerTopHtml'), array($search_fields)),
                      'category_sort'    => false,
                      'category_format'  => "",
                      'category_top'     => "",
@@ -873,7 +871,7 @@ class AA_Object extends AA_Storable {
                      'even_row_format'  => "",
                      'odd_row_format'   => call_user_func_array(array($object_class, 'getManagerRowHtml'), array($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url))))),
                      'compact_remove'   => "",
-                     'compact_bottom'   => "</table><br>". $new_link,
+                     'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
                      ),
                  'fields'               => $search_fields,

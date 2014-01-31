@@ -59,8 +59,7 @@ class AA_Plannedtask extends AA_Object {
          '
           <table>
             <tr>
-              <th width="30">&nbsp;</th>
-              <th>'.join("</th>\n<th>", array( _m('Name'), _m('Time'), _m('+ seconds'), _m('Task'), _m('ID'))).'</th>
+              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Time'), _m('+ seconds'), _m('Task'), _m('ID'))).'</th>
             </tr>
             ';
     }
@@ -70,8 +69,8 @@ class AA_Plannedtask extends AA_Object {
       // huhl($aliases);exit;
        return '
            <tr>
-             <td><input type="checkbox" name="chb[x_#AA_ID___]" value=""></td>
-             <td>'. a_href($links['Edit'], '_#AA_NAME_'). '</td>
+             <td>'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
+             <td>_#AA_NAME_</td>
              <td>_#TIME____</td>
              <td>_#SHIFT___</td>
              <td>_#TASK____</td>
