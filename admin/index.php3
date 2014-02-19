@@ -46,8 +46,8 @@ function CountItemsInBins() {
     global $p_slice_id;
     $db = getDB();
     $now = now('step');
+    $ret = array('folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0);
 
-    $ret['folder1'] = $ret['folder2'] = $ret['folder3'] = $ret['expired'] = $ret['pending'] = 0;
     $db->tquery("SELECT status_code, count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                  GROUP BY status_code");

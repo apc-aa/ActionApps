@@ -1,9 +1,16 @@
-01/31/14 - security fix - update recommended 
-(honzam)   (thanks for report to Gert Steenssens) 
+02/19/14 - rewritten permission system to be more secure and allows easier
+(honzam)   addition of another authentication - not only SQL, LDAP and Reader
+           Slice
+         - nicer up and down arrows in widgets
+         - better DB_AA::sql database monipulation functions
+         - some queries rewritten to newer DB_AA::select(), approach
+         - removed old and unmaintained permission files
+01/31/14 - security fix - update recommended
+(honzam)   (thanks for report to Gert Steenssens)
          - better design of ObjectManager in AA - Planed Tasks... '
          - all widgets which holds URL now shows clickable link icon [/]
-         - with {ajax} and {live} you are now able to select another widget 
-           instead of the predefined one 
+         - with {ajax} and {live} you are now able to select another widget
+           instead of the predefined one
          - MySQL database handler switched from MySQL to MySQLi
          - fixed problem with multivalues
 12/27/13 - fixed problem, when the first slice listed in "Used slices"

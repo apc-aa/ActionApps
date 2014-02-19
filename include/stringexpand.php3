@@ -2369,7 +2369,7 @@ class AA_Stringexpand_Set extends AA_Stringexpand {
  *  {backlinks:{id..............}:6a435236626262738348478463536272:category.......1-,headline........}
  *    returns all active backlinks from specified slice sorted by category and headline
  *  {backlinks:{id..............}::-}
- *    All active backlinks without ordering - the quickest way toget ids
+ *    All active backlinks without ordering - the quickest way to get ids
  */
 class AA_Stringexpand_Backlinks extends AA_Stringexpand {
     /** expand function
@@ -4138,7 +4138,7 @@ class AA_Stringexpand {
         while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
             // it just means, we need to unquote colons
             $quotecolons_partly = true;
-            if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback, $debugtime ? 'expand_bracketed_timedebug' : 'expand_bracketed'), $text))) {  //s for newlines, U for nongreedy
+            if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback, ($debugtime>2) ? 'expand_bracketed_timedebug' : 'expand_bracketed'), $text))) {  //s for newlines, U for nongreedy
                 echo "Error: preg_replace_callback";
             }
         }
@@ -5108,6 +5108,7 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
  *      {xpath:{include:http#://example.cz/photos/displayimage.php?pos=-47}:/html/body//div[@id="picinfo"]//td[text()="Datum"]/following-sibling#:#:*}
  *      {xpath:{include:http#://example.cz/list.html}://img[@id="bigpict"]:width}
  *      {xpath:{include:http#://example.cz/list.html}://h2[2]}  - second <h2>
+ *      {xpath:{item:784557:full_text.......}://data/udaj[uze=//uzemi/element[kod="3026"]/@id][uka="u1"]/hod}  - xpath subqueries used for data from CSU (czso.cz)
  */
 class AA_Stringexpand_Xpath extends AA_Stringexpand {
     /** Do not trim all parameters ($delimiter could contain spaces at the begin) */
@@ -5123,10 +5124,9 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
      */
     function expand($string="", $query='', $attr='', $delimiter='AA_PrintJustFirst') {
         $doc = new DOMDocument();
-        if (!@$doc->loadHTML($string) OR !$query) {
-            return '';
+        if (!$doc->loadHTML($string) OR !$query) {
+            return 'Error parsing';
         }
-
         $xpath = new DOMXPath($doc);
 
         $entries = $xpath->query($query);

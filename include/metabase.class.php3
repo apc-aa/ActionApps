@@ -704,6 +704,8 @@ class AA_Metabase {
         $i = 0;
         $table         = $this->tables[$tablename];
         $table_columns = $table->getColumnNames();
+        $ret = array();
+        
         foreach ($table_columns as $column_name) { // in priority order
             $field_type = 'text';    // @todo - get the type from field type
             // we can hide the field, if we put in fields.search_pri=0

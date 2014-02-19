@@ -105,15 +105,14 @@ class AA_Toexecute {
      */
     function later( &$object, $params=array(), $selector='', $priority=100, $time=null ) {
         global $auth;
-        $varset = new Cvarset(
-            array( 'created'       => time(),
-                   'execute_after' => ((int)$time < time() ? time() : $time),  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-                   'aa_user'       => $auth->auth['uid'],
-                   'priority'      => $priority,
-                   'selector'      => ($selector ? $selector : get_class($object)),
-                   'object'        => serialize($object),
-                   'params'        => serialize($params)
-                  ));
+        $varset = new Cvarset(array( array('created'       , time()),
+                                     array('execute_after' , ((int)$time < time() ? time() : $time)),  // task for user queue uses TOEXECUTE_USER_TASK_TIME
+                                     array('aa_user'       , $auth->auth['uid']),
+                                     array('priority'      , $priority),
+                                     array('selector'      , ($selector ? $selector : get_class($object))),
+                                     array('object'        , serialize($object)),
+                                     array('params'        , serialize($params))
+                              ));
 
          // store the task in the queue (toexecute table)
          if ( !$varset->doInsert('toexecute') ) {
@@ -185,7 +184,7 @@ class AA_Toexecute {
             if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
                 break;
             }
-            $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
+            $varset = new Cvarset( array( array('priority', max( $task['priority']-1, 0 ))));
             $varset->addkey('id', 'number', $task['id']);
             // We lower the priority for this task before the execution, so
             // if the task is not able to finish, then other tasks with the same
@@ -236,7 +235,7 @@ class AA_Toexecute {
                 if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
                     break;
                 }
-                $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
+                $varset = new Cvarset( array( array('priority', max( $task['priority']-1, 0 ))));
                 $varset->addkey('id', 'number', $task['id']);
                 // We lower the priority for this task before the execution, so
                 // if the task is not able to finish, then other tasks with the same

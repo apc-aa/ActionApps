@@ -148,6 +148,7 @@ if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_d
     unset( $r_hidden );
 }
 
+
 $after_login = !$no_slice_id && !$slice_id;
 $perm_slices = GetUserSlices();
 

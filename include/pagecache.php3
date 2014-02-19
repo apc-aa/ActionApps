@@ -205,8 +205,7 @@ class PageCache  {
             if ( $GLOBALS['debug'] ) {
                 huhl("<br>Pagecache->store(): - storing");
             }
-            $varset = new Cvarset( array( 'content' => $content,
-                                          'stored'  => time()));
+            $varset = new Cvarset( array( array('content', $content), array('stored', time())));
             $varset->addkey('id', 'text', $key);
             $str2find->store($key);
 
@@ -354,8 +353,7 @@ class CacheStr2find {
      * @param $keyid
      */
     function store($keyid) {
-        $varset = new Cvarset( array( 'pagecache_id' => $keyid,
-                                      'str2find'  => ''));
+        $varset = new Cvarset( array( array('pagecache_id', $keyid), array('str2find','')));
         $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
         foreach ((array)$this->ids as $id => $v) {
             $varset->set('str2find', $id);
