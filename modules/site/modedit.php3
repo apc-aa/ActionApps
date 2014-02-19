@@ -24,9 +24,7 @@ http://www.apc.org/
     $update=1 .. write changes to database
 */
 
-if ($template['W']) {
-    $no_slice_id = true;       // message for init_page.php3
-}
+$no_slice_id   = $template['W'] ? true : false;       // message for init_page.php3
 
 require_once "../../include/init_page.php3";
 //require_once AA_INC_PATH."en_site_lang.php3";
@@ -36,6 +34,8 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."modutils.php3";
 require_once AA_BASE_PATH."modules/site/util.php3";
+
+$template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -47,7 +47,7 @@ $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
 
-if ($template['W']) {        // add module
+if ($template_id) {        // add module
     if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
         MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
         exit;
@@ -116,37 +116,28 @@ if ($add || $update) {
             // prepare varset variables for setFromArray() function
             $varset->addArray(array('id','structure','state_file'), array('flag'));
 
-            $p_template_id = ( $template['W'] ? q_pack_id(substr($template['W'],1)) : 'SiteTemplate....' );
-
-            $SQL = "SELECT * FROM site WHERE id='$p_template_id'";
-            $db->query($SQL);
-            if (!$db->next_record()) {
+            if (!($site = DB_AA::select1('SELECT * FROM `site`', '', array(array('id', $template_id, 'l'))))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($db->Record);
-            $varset->set("id",           $module_id,        "unpacked");
-            $varset->set("state_file",   $state_file,       "quoted");
-            $varset->set("flag",         $router,           "number");
+            $varset->setFromArray($site);
+            $varset->set("id",         $module_id,        "unpacked");
+            $varset->set("state_file", $state_file,       "quoted");
+            $varset->set("flag",       $router,           "number");
 
             // create new site
             $varset->doInsert('site');
 
             // copy spots
-            $db2 = new DB_AA;
-            $SQL = "SELECT * FROM site_spot WHERE site_id='$p_template_id'";
-            $db->query($SQL);
-            while ($db->next_record()) {
+            DB_AA::select(array(),'SELECT * FROM `site`', '', array(array('id', $template_id, 'l')));
+            $sitespots = DB_AA::select(array(), 'SELECT spot_id, content FROM `site_spot`', array(array('site_id', $template_id, 'l')));
+            foreach ($sitespots as $spot) {
                 $varset->clear();
                 $varset->set("site_id", $module_id, "unpacked" );
-                $varset->set("spot_id", $db->f('spot_id'), "number" );
-                $varset->set("content", $db->f('content'), "text" );
+                $varset->set("spot_id", $spot['spot_id'], "number" );
+                $varset->set("content", $spot['content'], "text" );
                 $varset->set("flag", "", "number" );
-                $SQL = "INSERT INTO site_spot " . $varset->makeINSERT();
-                if ( !$db2->query($SQL)) {
-                    $err["DB"] .= MsgErr("Can't copy site_spots");
-                    break;
-                }
+                $varset->doInsert('site_spot');
             }
         }
         $GLOBALS['pagecache']->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
@@ -160,7 +151,7 @@ if ($add || $update) {
 
 // And the form -----------------------------------------------------
 
-$source_id   = ($template['W'] ? substr($template['W'],1) : $module_id );
+$source_id   = ($template['W'] ? $template_id : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
