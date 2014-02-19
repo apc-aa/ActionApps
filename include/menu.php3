@@ -60,7 +60,8 @@ function get_aamenus() {
            $bookmarks;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
-
+    $aamenus = array();
+    
     $aamenus["view"] = array (
         "label"       => GetLabel($profile,'ui_manager','top_view', _m("View site")),
         "exact_href"  => $r_slice_view_url,
@@ -150,7 +151,7 @@ function get_aamenus() {
         "header5"       => _m("Misc"),
         "field_ids"     => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fieldid.php3",               "label"=>_m("Change field IDs")),
         "javascript"    => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_javascript.php3",            "label"=>_m("Field Triggers")),
-        "fileman"       => array("cond"=>FilemanPerms($auth, $slice_id), "href"=>"admin/fileman.php3",         "label"=>_m("File Manager")),
+        "fileman"       => array("cond"=>FilemanPerms($slice_id), "href"=>"admin/fileman.php3",                "label"=>_m("File Manager")),
         "anonym_wizard" => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/anonym_wizard.php3",            "label"=>_m("Anonymous Form Wizard")),
         "email"         => array("cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
         "taskmanager"   => array("cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_taskmanager.php3",           "label"=>_m("Task Manager")),
@@ -172,8 +173,8 @@ function get_aamenus() {
             "header1"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header1', _m("Folders")),
             "additem"     => array("cond"=> $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), 'hide' => !$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),         "label" => $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), "href"  => "admin/itemedit.php3?add=1$input_view"),
             "app"         => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   === ''),                           "href"=>"admin/index.php3?Tab1a=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_app'  , "<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['app'] .")")),
-            "appb"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''),                           "href"=>"admin/index.php3?Tab1b=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." (". $r_state['bin_cnt']['pending'] .")"), "show"=>!$apple_design),
-            "appc"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''),                           "href"=>"admin/index.php3?Tab1c=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." (". $r_state['bin_cnt']['expired'] .")"), "show"=>!$apple_design),
+            "appb"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''),                           "href"=>"admin/index.php3?Tab1b=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." (". $r_state['bin_cnt']['pending'] .")"), "show"=>true),
+            "appc"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''),                           "href"=>"admin/index.php3?Tab1c=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." (". $r_state['bin_cnt']['expired'] .")"), "show"=>true),
             "hold"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  === ''),                           "href"=>"admin/index.php3?Tab2=1",                                 "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_hold' , "<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")")),
             "trash"       => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') === ''),                           "href"=>"admin/index.php3?Tab3=1",                                 "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_trash', "<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"))));
 

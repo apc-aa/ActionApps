@@ -77,7 +77,7 @@ $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), 
 if ( $selected_group ) {
     if ( $selected_group != "n" ) { // none group selected
         // get list of users and groups right under $selected_group
-        $group_users = GetGroupMembers($selected_group);
+        $group_users = AA::$perm->getGroupMembers($selected_group);
     }
     if ( !is_array($group_users) ) {
         $sel_users["n"]['name'] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
@@ -202,8 +202,8 @@ do {
             }
             $group_name        = $group_data['name'];
             $group_description = $group_data['description'];
-            $aa_users          = GetObjectsPerms(AA_ID, "aa");
-            if (strstr($aa_users[$selected_group]["perm"], $perms_roles["SUPER"]['id'])) {
+            $aa_users          = AA::$perm->getObjectsPerms(AA_ID, "aa");
+            if (strstr($aa_users[$selected_group], $perms_roles["SUPER"]['id'])) {
                 $group_super   = true;
             }
         }
@@ -284,9 +284,9 @@ if ( !$add_submit AND !$grp_new) {
         </tr></table></td></tr>
         ';
 
-  // User - permissions -----------------------------------------
+    // User - permissions -----------------------------------------
 
-  $mod_types = PrintModulePermModificator($selected_group, $form_buttons, $sess, $slice_id);   // shared with um_gedit.php3
+    $mod_types = PrintModulePermModificator($selected_group, $form_buttons);   // shared with um_gedit.php3
 }
 
 FrmTabEnd($form_buttons, $sess, $slice_id);

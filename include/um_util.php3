@@ -84,7 +84,7 @@ function GetFiltered($type, $filter, $to_much, $none) {
  * @param $sess
  * @param $slice_id
  */
-function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', $slice_id='') {
+function PrintModulePermModificator($selected_user, $form_buttons='') {
     global $db;
 
     FrmTabSeparatorNoHidden( _m("Permissions"), $form_buttons );
@@ -99,7 +99,7 @@ function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', 
             <td><b>'. _m("Permissions") .'</b></td>
             <td><b>'. _m("Revoke") .'</b></td></tr>';
 
-    $perm_slices = GetIDPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
+    $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
     $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
     $db->query($SQL);
     $i=0;
@@ -190,13 +190,8 @@ function PrintModuleAddRow($mod_options, $no) {
  * @param $perms_roles
  */
 function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
-    if ($debug) {
-        echo "<br>function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles )";
-        print_r($perm_mod);
-        print_r($perms_roles);
-    }
     if ( isset($perm_mod) AND is_array($perm_mod) ) {
-        $perm_slices = GetIDPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
+        $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
         foreach ($perm_mod as $xmid => $role) {
             $mid = substr($xmid,1);   // removes first 'x' character (makes index string)
             if ( $role == 'REVOKE' ) {
@@ -253,7 +248,7 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
     foreach ($MODULES as $k => $v) {
         $letter = GetModuleLetter($k);             // get 'letter' or first letter of MODULE type
         if ( isset($perms_roles_modules[$k]) AND is_array($perms_roles_modules[$k]) ) {
-            echo " mod[".ord($letter)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');  // module type $k\n";
+            echo " mod[".ord($letter)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');  // module type $k \n";
             echo " mod_names[".ord($letter)."] = new Array('". join("','", array_map( '_mdelayed', $perms_roles_modules[$k])) ."');\n";
         }
     }
@@ -358,7 +353,7 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um
         }
         $Msg = MsgOK(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url) {
-            go_url( get_url($sess->url($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
+            go_url( get_url($sess->url($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);
         }
     }
 }

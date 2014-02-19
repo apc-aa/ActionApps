@@ -55,7 +55,7 @@ function IfLink( $cond, $url, $txt ) {
  * @param $usr_id
  * @param $editor_perm
  */
-function PrintUser($usr, $usr_id, $editor_perm) {
+function PrintUser($perm, $usr_id, $editor_perm) {
     global $perms_roles, $sess, $auth;
 
     $username = perm_username($usr_id);
@@ -66,8 +66,8 @@ function PrintUser($usr, $usr_id, $editor_perm) {
                          2 => "role2.gif",
                          3 => "role3.gif",
                          4 => "role4.gif");
-    $perm = $usr["perm"];
     $role = 0;
+    
 
     if (      IsPerm($perm,$perms_roles["SUPER"]['id']) ) {
         $role = 4;
@@ -79,21 +79,22 @@ function PrintUser($usr, $usr_id, $editor_perm) {
         $role = 1;
     }
 
-    echo "<tr><td><img src=\"../images/". $role_images[$role] .
-         "\" width=\"50\" height=\"25\" border=\"0\"></td>\n";
+    echo "<tr><td><img src=\"../images/". $role_images[$role] ."\" width=50 height=25 border=0></td>\n";
 
     $go_url_arr = array( 'User'        => "um_uedit.php3?usr_edit=1&selected_user=$usr_id",
                          'Group'       => "um_gedit.php3?grp_edit=1&selected_group=$usr_id",
                          'Reader'      => "#",
                          'ReaderGroup' => "index.php3?change_id=$usr_id" );
+    $usrinfo = AA::$perm->getIDsInfo($usr_id);
+    
     // add link to user settings for superadmins
-    $usr_code = ( !IsSuperadmin() ? $usr['name'] :
-        '<a href="'. get_admin_url(  $go_url_arr[$usr['type']] ) .'">'. $usr['name'] .'</a>' );
+    $usr_code = ( !IsSuperadmin() ? $usrinfo['name'] :
+        '<a href="'. get_admin_url(  $go_url_arr[$usrinfo['type']] ) .'">'. $usrinfo['name'] .'</a>' );
 
     echo "<td class=\"tabtxt\">". $usr_code ."</td>\n";
     echo "<td class=\"tabtxt\">". $username ."</td>\n";
-    echo "<td class=\"tabtxt\">". (($usr['mail']) ? $usr['mail'] : "&nbsp;") ."</td>\n";
-    echo "<td class=\"tabtxt\">". _mdelayed($usr['type']) ."</td>\n";
+    echo "<td class=\"tabtxt\">". (($usrinfo['mail']) ? $usrinfo['mail'] : "&nbsp;") ."</td>\n";
+    echo "<td class=\"tabtxt\">". _mdelayed($usrinfo['type']) ."</td>\n";
 
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=AUTHOR"), _m("Author"));
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=EDITOR"), _m("Editor"));
@@ -131,36 +132,25 @@ if ( $continue ) {
 
     FrmTabCaption(_m("Change current permisions"));
 
-    $slice_users = GetObjectsPerms($slice_id, "slice");
-    $aa_users    = GetObjectsPerms(AA_ID, "aa");   // higher than slice
+    $slice_users = AA::$perm->getObjectsPerms($slice_id, "slice");
+    $aa_users    = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
 
-    if ( isset($slice_users) AND !is_array($slice_users) ) {
-        unset($slice_users);
+    // if conflicts slice perms and aa perms - solve it
+    foreach ( $slice_users as $usr_id => $foo ) {
+        if ( $aa_users[$usr_id] ) {
+            $slice_users[$usr_id] = AA_Perm::joinSliceAndAAPerm($slice_users[$usr_id], $aa_users[$usr_id]);
+        }
     }
-    if ( isset($aa_users) AND !is_array($aa_users) ) {
-        unset($aa_users);
-    }
-
-    if (isset($slice_users) AND is_array($slice_users)) {
-        // if conflicts slice perms and aa perms - solve it
-        foreach ( $slice_users as $usr_id => $usr ) {
-            if ( $aa_users[$usr_id] ) {
-                $slice_users[$usr_id]['perm'] = AA_Perm::joinSliceAndAAPerm($slice_users[$usr_id]['perm'], $aa_users[$usr_id]['perm']);
-            }
+    
+    // no slice permission set, but aa perms yes
+    foreach ($aa_users as $usr_id => $prm ) {
+        if ( !$slice_users[$usr_id] ) {
+            $slice_users[$usr_id] = $prm;
         }
     }
 
-    if (isset($aa_users) AND is_array($aa_users)) {
-        // no slice permission set, but aa perms yes
-        foreach ($aa_users as $usr_id => $usr ) {
-            if ( !isset($slice_users) OR !is_array($slice_users) OR !$slice_users[$usr_id] ) {
-              $slice_users[$usr_id] = $usr;
-            }
-        }
-    }
-
-    foreach ($slice_users as $usr_id => $usr) {
-        PrintUser($usr,$usr_id,$editor_perms);
+    foreach ($slice_users as $usr_id => $prm) {
+        PrintUser($prm, $usr_id, $editor_perms);
     }
 
     echo "<tr><td class=\"tabtxt\">&nbsp;</td>

@@ -30,7 +30,7 @@
  *
 */
 
-require_once AA_INC_PATH. "locauth.php3";  // for GetMembership()
+require_once AA_INC_PATH. "locauth.php3";  // for getMembership()
 
 /** AA_Profile class - used for storing specific custom settings of loged user
  *  in one specific slice
@@ -91,7 +91,7 @@ class AA_Profile {
         $this->properties = array();
 
         // get also profiles from user's group(s)
-        $groups = GetMembership($this->user_id);
+        $groups = AA::$perm->getMembership($this->user_id);
         $usr_groups = "";
         foreach ( $groups as $v ) {
             $usr_groups .= sprintf(" OR uid='%s'", $v);

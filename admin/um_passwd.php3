@@ -48,7 +48,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-$user_data = GetIDsInfo($auth->auth["uid"]);
+$user_data = AA::$perm->getIDsInfo($auth->auth["uid"]);
 if ( $update ) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");

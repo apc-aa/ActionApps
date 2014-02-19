@@ -90,7 +90,7 @@ if ( $usr1_flt ) {  // group editation - list of all users
 
 if ( $selected_user ) {
     if ( $selected_user != "n" ) { // none user selected
-        $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
+        $user_groups = AA::$perm->getMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
     }
     if ( !isset($user_groups) OR !is_array($user_groups) ) {
         $sel_groups["n"]['name'] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
@@ -103,7 +103,7 @@ if ( $selected_user ) {
 
 if ( $selected_group ) {
     if ( $selected_group != "n" ) { // none group selected
-        $groups_user = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
+        $groups_user = AA::$perm->getGroupMembers($selected_group);   // get list of users and groups right under $selected_group
     }
     if ( !isset($group_users) OR !is_array($group_users) ) {
         $sel_users["n"]['name'] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
@@ -254,7 +254,7 @@ if ( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
 
 do {
     if ($usr_edit ) {
-        if ( !is_array($user_data = GetIDsInfo($selected_user))) {
+        if ( !is_array($user_data = AA::$perm->getIDsInfo($selected_user))) {
             break;
         }
         $user_login     = $user_data['login'];
@@ -268,8 +268,8 @@ do {
                 $user_mail2 = $user_data['mails'][1];
                 $user_mail3 = $user_data['mails'][2];
             }
-            $aa_users = GetObjectsPerms(AA_ID, "aa");
-            if (IsPerm($aa_users[$selected_user]["perm"], $perms_roles["SUPER"]['id'])) {
+            $aa_users = AA::$perm->getObjectsPerms(AA_ID, "aa");
+            if (IsPerm($aa_users[$selected_user], $perms_roles["SUPER"]['id'])) {
                 $user_super = true;
             }
         }

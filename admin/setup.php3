@@ -82,7 +82,7 @@ function NoAction() {
  * @return prints every value in $err
  */
 function PrintErr($err) {
-    while (list(,$value) = each($err)) {
+    foreach($err as $value) {
         echo $value;
     }
 }
@@ -160,32 +160,36 @@ if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
 }
 $db->Halt_On_Error = $store_halt;
 
+$notusers    = array();
+$others      = array();
+$supergroups = array();
+$superusers  = array();
+
 // Discover current state in AA object perms
-if ($perms = GetObjectsPerms(AA_ID, "aa")) {
-    while (list($key, $value) = each ($perms)) {
-        if (!$value["type"]) {
-            $notusers[$key] = $value;      // non-existent user/group
-        } elseif ($value["perm"] != $perms_roles["SUPER"]['id']) {
-            $others[$key] = $value;        // other than super privilege
-        } elseif (($value["type"] == 'Group') OR ($value["type"] == _m('Group'))) {
-            $supergroups[$key] = $value;   // groups with super privileges
+if ($perms = AA::$perm->getObjectsPerms(AA_ID, "aa")) {
+    foreach ($perms as $uid => $perm) {
+        $uinfo = AA::$perm->getIDsInfo($uid);
+        if (!$uinfo) {
+            $notusers[]    = $uid;      // non-existent user/group
+        } elseif ($perm != $perms_roles["SUPER"]['id']) {
+            $others[]      = $uid;        // other than super privilege
+        } elseif ($uinfo["type"] == 'Group') {
+            $supergroups[] = $uid;   // groups with super privileges
         } else {
-            $superusers[$key] = $value;    // users with super privileges
+            $superusers[]  = $uid;    // users with super privileges
         }
     }
 }
 
 // Consider only non-empty superadmin groups
-
-if (isset($supergroups)) {
-    while (list($key,$value) = each ($supergroups)) {
-        $members = GetGroupMembers($key);
-        if (count($members)) {
-            $nonemptysupergroups[] = $value;
-        }
+$nonemptysupergroups = array();
+foreach ($supergroups as $uid) {
+    $members = AA::$perm->getGroupMembers($uid);
+    if (count($members)) {
+        $nonemptysupergroups[] = $uid;
     }
-    $supergroups = $nonemptysupergroups;
 }
+$supergroups = $nonemptysupergroups;
 
 HtmlStart();
 
@@ -212,12 +216,12 @@ switch ($phase) {
          break;
       }
 
-      if (isset($notusers)) {                 // Delete orphan permissions
-         while (list($key,$value) = each ($notusers)) {
-            if (!DelPerm ($key, AA_ID, "aa")) {
-               echo _m("Can't delete invalid permission."), "$key<br>";
+      if ($notusers) {                 // Delete orphan permissions
+         foreach ($notusers as $uid) {
+            if (!DelPerm ($uid, AA_ID, "aa")) {
+               echo _m("Can't delete invalid permission."), "$uid<br>";
             } else {
-               echo _m("Invalid permission deleted (no such user/group): "), "$key<br>";
+               echo _m("Invalid permission deleted (no such user/group): "), "$uid<br>";
             }
          }
       }
@@ -283,7 +287,7 @@ switch ($phase) {
 
       // Check whether succefful
 
-      $perms = GetObjectsPerms(AA_ID, "aa");
+      $perms = AA::$perm->getObjectsPerms(AA_ID, "aa");
 
       if ($perms[$superid]) {
          echo _m("Congratulations! The account was created.");

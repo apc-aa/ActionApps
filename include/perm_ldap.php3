@@ -49,6 +49,7 @@ function AddUser($user, $flags = 0) {
         return false;
     }
 
+    $record = array();
     $record["objectclass"][0]   = "top";
     $record["objectclass"][1]   = "person";
     $record["objectclass"][2]   = "organizationalperson";
@@ -123,6 +124,7 @@ function ChangeUser($user, $flags = 0) {
         return false;
     }
 
+    $record = array();
     $record["cn"]        = $user["givenname"]." ".$user["sn"];
     $record["sn"]        = $user["sn"];
     $record["givenname"] = $user["givenname"];
@@ -153,6 +155,7 @@ function AddGroup($group, $flags = 0) {
         return false;
     }
 
+    $record = array();
     $record["objectclass"][0] = "top";
     $record["objectclass"][1] = "groupOfNames";
     $record["cn"]             = $group["name"];
@@ -223,6 +226,7 @@ function ChangeGroup($group, $flags = 0) {
         return false;
     }
 
+    $record = array();
     $record["description"] = $group["description"];
     if ($group["name"]) {
         $record["cn"] = $group["name"];
@@ -232,16 +236,6 @@ function ChangeGroup($group, $flags = 0) {
     $r = @ldap_mod_replace($ds, $group['uid'], $record);
     ldap_close($ds);
     return $r;
-}
-
-/** find_user_by_login function
- * @param $login
- */
-function find_user_by_login($username) {
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    $user_id         = "uid=$username,".$aa_default_ldap['people'];
-    $user            = GetIDsInfoCurrent($user_id);
-    return $user ? array($user_id=>$user) : false;
 }
 
 /** AddGroupMember function
@@ -277,6 +271,7 @@ function DelGroupMember($group_id, $id, $flags = 0) {
     $entry  = ldap_first_entry ($ds, $result);
     $arr    = ldap_get_attributes($ds, $entry);
 
+    $new    = array();
     for ($i=0; $i < $arr["member"]["count"]; ++$i) {
         if (!stristr($arr["member"][$i], $id)) {
             $new["member"][] = $arr["member"][$i];
@@ -291,80 +286,7 @@ function DelGroupMember($group_id, $id, $flags = 0) {
     ldap_close($ds);
     return $r;
 }
-/** GetGroupMembers function
- * @param $group_id
- * @param $flags
- */
-function GetGroupMembers($group_id, $flags = 0) {
-    if ( !($ds=InitLDAP()) ) {
-        return false;
-    }
 
-    $filter = "objectclass=groupOfNames";
-    $result = @ldap_read($ds, $group_id, $filter, array("member"));
-    if (!$result) {
-        return false;
-    }
-    $entry  = ldap_first_entry ($ds, $result);
-    $arr    = ldap_get_attributes($ds, $entry);
-
-    for ($i=0; $i < $arr["member"]["count"]; ++$i) {
-        if ($info = GetIDsInfo($arr["member"][$i])) {
-            $res[$arr["member"][$i]] = $info;
-        }
-    }
-
-    ldap_close($ds);
-    return $res;
-}
-
-/** GetMembership function
- * @param $id
- * @param $flags - use to obey group in groups?
- * @return list of group_ids, where id (group or user) is a member
- */
-function GetMembership($id, $flags = 0) {
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-
-    $result = IsUserReader($id) ? GetReaderMembership($id) : array();
-
-    if ( !($ds=InitLDAP()) ) {
-        return false;
-    }
-    $last_groups[] = $id;
-    $deep_counter = 0;
-    do {
-        if ($deep_counter++ > MAX_GROUPS_DEEP) {
-            break;
-        }
-        $search = "(&(objectclass=groupofnames)(|";
-        // make search string
-        foreach ($last_groups as $member) {
-            $search .= "(member=$member)";
-        }
-        $search .= "))";
-        $res = @ldap_search($ds,$aa_default_ldap['groups'],$search,array('member'));
-        if (!$res) {
-            // LDAP sizelimit exceed ?
-            return (ldap_errno($ds)==4) ? "too much" : false;
-        }
-        $array = ldap_get_entries($ds,$res);
-        unset($last_groups);  //get deeper groups to last_groups and groups
-        for ($i=0; $i<$array["count"]; ++$i) {
-            $last_groups[] = $array[$i]["dn"];
-            $groups[$array[$i]["dn"]] = true;
-        }
-    } while ( is_array($last_groups) AND ($flags==0) );
-
-    ldap_close($ds);
-    if (is_array($groups)) {
-        while (list($key,) = each($groups)) {
-            $result[] = $key;                   // transform to a numbered array
-        }
-    }
-
-    return $result;
-}
 
 //############### Permission functions //#######################################
 
@@ -381,6 +303,7 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
         return false;
     }
 
+    $record = array();
     $record["objectclass"][0] = "top";
     $record["objectclass"][1] = "apcacl";
     $record["apcobjectid"]    = $objectID;
@@ -442,6 +365,8 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
 
     // some older AAs could have mixed case atributes :-( (apcAci)
     $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
+    $new = array();
+    $old = array();
 
     for ($i=0; $i < $aci['count']; ++$i) { // copy old apcAci values
         if (!stristr($aci[$i], $id)) {   // except the modified/deleted one
@@ -484,93 +409,6 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
     return AddPerm($id, $objectID, $objectType, $perm);
 }
 
-/** GetObjectsPerms function
- * @param $objectID
- * @param $ojectType
- * @param $flags
- * @return an array of user/group identities and their permissions
- *  granted on specified object $objectID
- */
-function GetObjectsPerms($objectID, $objectType, $flags = 0) {
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds=InitLDAP())) {
-        return false;
-    }
-
-    $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType))";
-    $basedn = "apcobjectid=$objectID,".$aa_default_ldap['acls'];
-
-    $result = @ldap_read($ds,$basedn,$filter,array("apcaci"));
-    if (!$result) {
-        return false;
-    }
-
-    $entry = ldap_first_entry ($ds, $result);
-    $arr   = ldap_get_attributes($ds, $entry);
-
-    // some older AAs could have mixed case atributes :-( (apcAci)
-    $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
-
-    for ($i=0; $i < $aci["count"]; ++$i) {
-        $apcaci = ParseApcAci( $aci[$i] );
-        if ($apcaci) {
-            $info[$apcaci["dn"]]         = GetIDsInfo($apcaci["dn"]);
-            $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
-        }
-    }
-    return $info;
- }
-
-/** GetIDPerms function
- * @param $id
- * @param $objectType
- * @param flags & 1 -> do not involve membership in groups
- * @return an array of user/group identities and their permissions
- *  granted on all objects of type $objectType
- */
-function GetIDPerms($id, $objectType, $flags = 0) {
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds=InitLDAP())) {
-        return false;
-    }
-
-    $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType)(|(apcaci=$id:*)";
-
-    if (!($flags & 1)) {
-        $groups = GetMembership($id);
-        for ( $i=0, $ino=sizeof($groups); $i<$ino; ++$i) {
-            $filter .= "(apcaci=$groups[$i]:*)";
-        }
-    }
-    $filter .= "))";
-
-    $basedn = $aa_default_ldap['acls'];
-
-    $result = ldap_search($ds,$basedn,$filter,array("apcaci","apcobjectid"));
-    if (!$result) {
-        return false;
-    }
-
-    $arr = ldap_get_entries($ds,$result);
-
-    for ($i=0; $i < $arr["count"]; ++$i) {
-        // some older AAs could have mixed case atributes :-( (apcAci)
-        $aci = (is_array($arr[$i]["apcaci"]) ? $arr[$i]["apcaci"] : $arr[$i]["apcAci"]);
-        for ($j=0; $j < $aci["count"]; ++$j) {
-            for ( $k=0, $kno=sizeof($groups); $k<$kno; ++$k) {
-                if (stristr($aci[$j],$groups[$k])) {
-                    $perms[$arr[$i]["apcobjectid"][0]] .= GetApcAciPerm($aci[$j]);
-                }
-            }
-            if (stristr($aci[$j],$id)) {
-                $perms[$arr[$i]["apcobjectid"][0]]     = GetApcAciPerm($aci[$j]);
-                break;           // specific ID's perm is stronger
-            }
-        }
-    }
-    return $perms;
-}
-
 //#############################################################################
 // Internal functions
 //#############################################################################
@@ -608,64 +446,6 @@ function GetApcAciPerm($str) {
     return $foo[1];         // permission string
 }
 
-/** GetIDsInfoCurrent function
- * @param $id
- * @param $ds
- * @return an array containing basic information on $id (user DN or group DN)
- * or false if ID does not exist
- * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
- */
-function GetIDsInfoCurrent($id, $ds = "") {
-    if ( $ds=="" ) {
-        if ( !($ds=InitLDAP()) ) {
-            return false;
-        }
-    } else {
-        $no_ldap_close = true;
-    }
-
-    $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
-    $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn","sn","givenname"));
-    if (!$result) {
-        return false;
-    }
-    $entry = ldap_first_entry($ds, $result);
-    $arr   = $entry ? ldap_get_attributes($ds, $entry) : array();
-
-    if ( !is_array($arr["objectclass"]) ) {  // new LDAP is case sensitive (v3)
-        $arr["objectclass"] = $arr["objectClass"];
-    }
-
-    $res['id'] = $id;
-    for ($i=0; $i < $arr["objectclass"]["count"]; ++$i) {
-        if (stristr($arr["objectclass"][$i], "groupofnames")) {
-            $res["type"] = "Group";
-        }
-    }
-
-    if (!$res["type"]) {
-        $res["type"] = "User";
-    }
-
-    $res["login"] = $arr["uid"][0];
-    $res["name"]  = $arr["cn"][0];
-    $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
-    if ( is_array($gname) ) {
-        $res["givenname"] = $gname[0];
-    }
-
-    if ( is_array($arr["sn"]) ) {
-        $res["sn"] = $arr["sn"][0];
-    }
-    $res["mail"]  = $arr["mail"][0];
-    $res["mails"] = $arr["mail"];
-
-    if ( !$no_ldap_close ) {
-        ldap_close($ds);
-    }
-    return $res;
-}
-
 /* Not used right now. This would be used if we allow groups in groups
 function GetUserType( $user_id ) {
     if (substr($user_id,0,4)      == 'uid=') return 'User';
@@ -692,6 +472,21 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
                       "groups" => LDAP_GROUPS,
                       "acls"   => LDAP_ACLS,
                       "port"   => LDAP_PORT);
+    }
+
+    /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
+     *  SQL and LDAP is able to store it, Reader not. */
+    function storesGeneralPerms() {
+        return true;
+    }
+
+    /** userIdFromatMatches - is user id in correct format?
+     *  we MUST use specific UIDs for every single Permission Type
+     *  (it MUST be clear, which perm system is used just from the format of UID)
+     */
+    function userIdFromatMatches($uid) {
+        // LDAP perms - starting with uid (Users) od cn (Groups)
+        return  ((substr($uid,0,4) == 'uid=') OR (substr($uid,0,3) == 'cn='));
     }
 
     /** authenticateUsername function
@@ -741,14 +536,13 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     }
 
     /** isUsernameFree function
-     *  Looks into reader management slices whether the reader name is not yet used.
-     *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+     *  is this username free in LDAP system?
      * @param $username
      */
     function isUsernameFree($username) {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         // search not only Active bin, but also Holding bin, Pending, ...
-        return ! GetIDsInfoCurrent("uid=$username,".$aa_default_ldap['people']);
+        return ! $this->getIDsInfo("uid=$username,".$aa_default_ldap['people']);
     }
 
     /** findUsers function
@@ -778,15 +572,22 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         return $result;
     }
 
+    /** find_user_by_login function
+     * @param $login
+     */
+    function findUserByLogin($user_login) {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        $user_id         = "uid=$user_login,".$aa_default_ldap['people'];
+        $user            = $this->getIDsInfo($user_id);
+        return $user ? array($user_id=>$user) : false;
+    }
+
     /** findGroups function
      *  @param $pattern
      *  @return list of groups which corresponds to mask $pattern
      */
     function findGroups($pattern) {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-
-        $result = array();
-
         if ( !($ds=InitLDAP()) ) {
             return false;
         }
@@ -799,6 +600,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         }
         $arr = LDAP_get_entries($ds,$res);
 
+        $result = array();
         for ($i=0; $i<$arr['count']; ++$i) {
             $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0]);
         }
@@ -808,7 +610,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     }
 
 
-    /** GetGroup function
+    /** getGroup function
      *  @param $group_id
      *  @return array(uid, name, description)
      */
@@ -825,6 +627,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         $entry  = ldap_first_entry ($ds, $result);
         $arr    = ldap_get_attributes($ds, $entry);
 
+        $res = array();
         $res["uid"] = $group_id;
         if ( is_array($arr["cn"]) ) {
             $res["name"] = $arr["cn"][0];
@@ -836,5 +639,218 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         ldap_close($ds);
         return $res;
     }
+
+    /** getIDsInfo function
+     * @param $id
+     * @return an array containing basic information on $id (user DN or group DN)
+     * or false if ID does not exist
+     * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
+     */
+    function getIDsInfo($id) {
+        if ( !($ds=InitLDAP()) ) {
+            return false;
+        }
+
+        $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
+        $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn","sn","givenname"));
+        if (!$result) {
+            return false;
+        }
+        $entry = ldap_first_entry($ds, $result);
+        $arr   = $entry ? ldap_get_attributes($ds, $entry) : array();
+
+        if ( !is_array($arr["objectclass"]) ) {  // new LDAP is case sensitive (v3)
+            $arr["objectclass"] = $arr["objectClass"];
+        }
+
+        $res = array();
+        $res['id'] = $id;
+        for ($i=0; $i < $arr["objectclass"]["count"]; ++$i) {
+            if (stristr($arr["objectclass"][$i], "groupofnames")) {
+                $res["type"] = "Group";
+            }
+        }
+
+        if (!$res["type"]) {
+            $res["type"] = "User";
+        }
+
+        $res["login"] = $arr["uid"][0];
+        $res["name"]  = $arr["cn"][0];
+        $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
+        if ( is_array($gname) ) {
+            $res["givenname"] = $gname[0];
+        }
+
+        if ( is_array($arr["sn"]) ) {
+            $res["sn"] = $arr["sn"][0];
+        }
+        $res["mail"]  = $arr["mail"][0];
+        $res["mails"] = $arr["mail"];
+
+        ldap_close($ds);
+        return $res;
+    }
+
+
+ //-----------------------------------
+    /** getGroupMembers function
+     * @param $group_id
+     */
+    function getGroupMembers($group_id) {
+        if ( !($ds=InitLDAP()) ) {
+            return false;
+        }
+
+        $filter = "objectclass=groupOfNames";
+        $result = @ldap_read($ds, $group_id, $filter, array("member"));
+        if (!$result) {
+            return false;
+        }
+        $entry  = ldap_first_entry ($ds, $result);
+        $arr    = ldap_get_attributes($ds, $entry);
+
+        $res    = array();
+        for ($i=0; $i < $arr["member"]["count"]; ++$i) {
+            if ($info = $this->getIDsInfo($arr["member"][$i])) {
+                $res[$arr["member"][$i]] = $info;
+            }
+        }
+
+        ldap_close($ds);
+        return $res;
+    }
+
+    /** getMembership function
+     * @param $id
+     * @param $flags - use to obey group in groups?
+     * @return array of group_ids, where id (group or user) is a member
+     */
+    function getMembership($id, $flags = 0) {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+
+        if ( !($ds=InitLDAP()) ) {
+            return array();
+        }
+        $result       = array();
+        $groups       = array();
+        $last_groups  = array($id);
+        $deep_counter = 0;
+        do {
+            if ($deep_counter++ > MAX_GROUPS_DEEP) {
+                break;
+            }
+            $search = "(&(objectclass=groupofnames)(|";
+            // make search string
+            foreach ($last_groups as $member) {
+                $search .= "(member=$member)";
+            }
+            $search .= "))";
+            $res = @ldap_search($ds,$aa_default_ldap['groups'],$search,array('member'));
+            if (!$res) {
+                // LDAP sizelimit exceed ?
+                return (ldap_errno($ds)==4) ? "too much" : false;
+            }
+            $array = ldap_get_entries($ds,$res);
+            unset($last_groups);  //get deeper groups to last_groups and groups
+            for ($i=0; $i<$array["count"]; ++$i) {
+                $last_groups[] = $array[$i]["dn"];
+                $groups[$array[$i]["dn"]] = true;
+            }
+        } while ( is_array($last_groups) AND ($flags==0) );
+
+        ldap_close($ds);
+        if (is_array($groups)) {
+            while (list($key,) = each($groups)) {
+                $result[] = $key;                   // transform to a numbered array
+            }
+        }
+
+        return $result;
+    }
+
+    /** getJoinedPerms function
+     * @param $uid
+     * @param $objectType
+     * @param $groups
+     * @return an array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
+     * (the gorups could be also foreign - like from Reader Set, but permissions for such groups are stored here)
+     */
+    function getJoinedPerms($uid, $objectType, $groups=array()) {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds=InitLDAP())) {
+            return array();
+        }
+
+        $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType)(|(apcaci=$uid:*)";
+
+        foreach ($groups as $group) {
+            $filter .= "(apcaci=$group:*)";
+        }
+        $filter .= "))";
+
+        $basedn = $aa_default_ldap['acls'];
+
+        $result = ldap_search($ds,$basedn,$filter,array("apcaci","apcobjectid"));
+        if (!$result) {
+            return array();
+        }
+
+        $perms = array();
+        $arr   = ldap_get_entries($ds,$result);
+        for ($i=0; $i < $arr["count"]; ++$i) {
+            // some older AAs could have mixed case atributes :-( (apcAci)
+            $aci = (is_array($arr[$i]["apcaci"]) ? $arr[$i]["apcaci"] : $arr[$i]["apcAci"]);
+            for ($j=0; $j < $aci["count"]; ++$j) {
+                for ( $k=0, $kno=sizeof($groups); $k<$kno; ++$k) {
+                    if (stristr($aci[$j],$groups[$k])) {
+                        $perms[$arr[$i]["apcobjectid"][0]] .= GetApcAciPerm($aci[$j]);
+                    }
+                }
+                if (stristr($aci[$j],$uid)) {
+                    $perms[$arr[$i]["apcobjectid"][0]]     = GetApcAciPerm($aci[$j]);
+                    break;           // specific ID's perm is stronger
+                }
+            }
+        }
+        return $perms;
+    }
+
+    /** getObjectsPerms function
+     * @param $objectID
+     * @param $ojectType
+     * @return an array of user/group identities and their permissions
+     *  granted on specified object $objectID
+     */
+    function getObjectsPerms($objectID, $objectType) {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds=InitLDAP())) {
+            return false;
+        }
+
+        $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType))";
+        $basedn = "apcobjectid=$objectID,".$aa_default_ldap['acls'];
+
+        $result = @ldap_read($ds,$basedn,$filter,array("apcaci"));
+        if (!$result) {
+            return false;
+        }
+
+        $entry = ldap_first_entry ($ds, $result);
+        $arr   = ldap_get_attributes($ds, $entry);
+
+        // some older AAs could have mixed case atributes :-( (apcAci)
+        $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
+
+        $info = array();
+        for ($i=0; $i < $aci["count"]; ++$i) {
+            $apcaci = ParseApcAci( $aci[$i] );
+            if ($apcaci) {
+                $info[$apcaci["dn"]]         = $this->getIDsInfo($apcaci["dn"]);
+                $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
+            }
+        }
+        return $info;
+     }
 }
 ?>

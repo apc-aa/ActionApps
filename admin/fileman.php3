@@ -52,7 +52,7 @@ require_once AA_INC_PATH."fileman.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
-if (!FilemanPerms($auth, $slice_id)) {
+if (!FilemanPerms($slice_id)) {
     MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin:fileman");
 }
 
@@ -165,8 +165,7 @@ function uilr($inp,$act) {
 */
 function inputplusaction($name,$value) {
     $argname = ($argname ? $argname : "arg[$name]");
-    return uilr("<input type=\"$inputtype\" name=\"arg[$name]\">",
-        fileAction($name,$value));
+    return uilr("<input name=\"arg[$name]\">", fileAction($name,$value));
 }
 
 

@@ -43,7 +43,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     global $auth;
 
     // 1. Assign user privileges
-    $userinfo = find_user_by_login($user_login);
+    $userinfo = AA::$perm->findUserByLogin($user_login);
     if (!is_array($userinfo) || count ($userinfo) != 1) {
         return _m("User not found");
     }
@@ -65,7 +65,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
         return _m("Slice not found.");
     }
     $slice_name = $db->f("name");
-    $me         = GetIDsInfo($auth->auth["uid"]);
+    $me         = AA::$perm->getIDsInfo($auth->auth["uid"]);
 
     $aliases               = array();
     $aliases["_#SLICNAME"] = GetAliasDef( "f_t:$slice_name",      "id..............");

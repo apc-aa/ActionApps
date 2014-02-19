@@ -33,7 +33,7 @@
  * @param $new_usr=true
  */
 function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
-// $usr_id is DN in LDAP
+    // $usr_id is DN in LDAP
     global $sess, $perms_roles;
     $username = perm_username($usr_id);
     $usr_id   = rawurlencode($usr_id);
@@ -55,9 +55,9 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     echo "</tr>\n";
 }
 
-    $form_buttons = array("back" => array("type" => "submit",
-                                          "name" => "back",
-                                          "value" => _m("Back")));
+$form_buttons = array("back" => array("type" => "submit",
+                                      "name" => "back",
+                                      "value" => _m("Back")));
 
 ?>
 <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
@@ -94,22 +94,13 @@ if ($GrpSrch || $UsrSrch) {
         $curr_role=0;
     }
 
-    $slice_users = GetObjectsPerms($slice_id, "slice");
-    $aa_users    = GetObjectsPerms(AA_ID, "aa");   // higher than slice
+    $slice_users = AA::$perm->getObjectsPerms($slice_id, "slice");
+    $aa_users    = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice
 
-    if ( isset($slice_users) AND !is_array($slice_users) ) {
-        unset($slice_users);
-    }
-    if ( isset($aa_users) AND !is_array($aa_users) ) {
-        unset($aa_users);
-    }
-
-    if ( is_array($aa_users)) {
-        // add aa users too
-        foreach ($aa_users as $usr_id => $usr) {
-            if ( !$slice_users[$usr_id] ) {
-                $slice_users[$usr_id] = $aa_users[$usr_id];
-            }
+    // add aa users too
+    foreach ($aa_users as $usr_id => $foo) {
+        if ( !$slice_users[$usr_id] ) {
+            $slice_users[$usr_id] = $aa_users[$usr_id];
         }
     }
 
@@ -139,4 +130,3 @@ FrmTabEnd($form_buttons, false, $slice_id);
 ?>
 <br><br><small><?php echo _m("List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query", array(MAX_ENTRIES_SHOWN)) ?></small>
 </form>
-

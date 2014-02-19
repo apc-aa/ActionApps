@@ -30,7 +30,7 @@
 // optionaly $Msg to show under <h1>Headline</h1>
 // (typicaly: Category update successful)
 
-$editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
+$editor_perms = AA::$perm->getModulePerms($auth->auth["uid"], $slice_id);
 
 /** CanChangeRole function
  *  decides whether current user can change role
@@ -51,12 +51,12 @@ function ChangeRole() {
     global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;
 
     if ( $UsrAdd ) {
-        if ( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false), $editor_perms, $perms_roles[$role]['perm']) ) {
+        if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, $perms_roles[$role]['perm']) ) {
             AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
             $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
         }
     } elseif( $UsrDel ) {
-        if ( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false), $editor_perms, $perms_roles["AUTHOR"]['perm']) ) { // smallest permission
+        if ( CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, $perms_roles["AUTHOR"]['perm']) ) { // smallest permission
             DelPerm($UsrDel, $slice_id, "slice");
         }
 

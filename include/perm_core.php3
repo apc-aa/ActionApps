@@ -176,197 +176,7 @@ class AA_Perm_Resource {
 
     // permstring - something like 'item-63353633636373737/slice-62525525/62524234233232/[default aa]'
     function AA_Perm_Resource($perm_string) {
-
     }
-
-}
-
-/** main AA permissions */
-class AA_Perm {
-
-    var $perm_systems;
-
-    function __construct($systems) {
-        $this->perm_systems = array();
-        foreach ($systems as $system_name) {
-            $system_name = 'AA_Permsystem_' . ucfirst($system_name);
-            $this->perm_systems[] = new $system_name;
-        }
-    }
-
-
-    /**
-     * ussage: AA::$perm->isUsernameFree($var)
-     */
-    public function authenticateUsername($username, $password) {
-        foreach ($this->perm_systems as $perm_sys) {
-            if ($user_id = $perm_sys->authenticateUsername($username, $password)) {
-                return $user_id;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * ussage: AA::$perm->isUsernameFree($var)
-     */
-    public function isUsernameFree($username) {
-        foreach ($this->perm_systems as $perm_sys) {
-            if (!$perm_sys->isUsernameFree($username)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public function findUsernames($pattern) {
-        $users = array();
-        foreach ($this->perm_systems as $perm_sys) {
-            $new_users = $perm_sys->findUsernames($pattern);
-            if (is_array($new_users) AND count($new_users)) {
-                // + operator preserves the numeric keys (used in SQL perm), which is crucial
-                $users = $users + $new_users;
-            }
-        }
-        return $users;
-    }
-
-    public function findGroups($pattern) {
-        $groups = array();
-        foreach ($this->perm_systems as $perm_sys) {
-            $new_groups = $perm_sys->findGroups($pattern);
-            if (is_array($new_groups) AND count($new_groups)) {
-                // + operator preserves the numeric keys (used in SQL perm), which is crucial
-                $groups = $groups + $new_groups;
-            }
-        }
-        return $groups;
-    }
-
-    /**
-     *  @param $group_id
-     *  @return array(uid, name, description) - info about the group
-     *  ussage: AA::$perm->getGroup($var)
-     */
-    public function getGroup($group_id) {
-        foreach ($this->perm_systems as $perm_sys) {
-            if ($groupinfo = $perm_sys->getGroup($group_id)) {
-                return $groupinfo;
-            }
-        }
-        return false;
-    }
-
-    public static function cryptPwd($password) {
-        $seed = '$2y$14$'.gensalt(22);
-        $ret  = crypt($password, $seed);
-        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
-    }
-
-    public static function comparePwds($password, $hash) {
-        // looks ugly for the first_child look, but it is really how the crypt
-        // with salt works - see php documentation
-
-        $crypted = crypt($password, $hash);
-
-        // passwords in SQL perms in AA 2.x are 30 characers long (in user table),
-        // so we have to compare it with shortened hash
-        return $hash == ((strlen($hash) == 30) ?  substr($crypted,0,30) : $crypted);
-    }
-
-    /** AA::$perm->cache function
-     *  Save all permissions for specified user to session variable
-     * @param $user_id
-     */
-    function cache($user_id) {
-        global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
-
-        if (is_object($sess)) {
-            $sess->register('permission_uid');
-            $sess->register('permission_to');
-            $sess->register('r_superuser');
-        }
-
-        $permission_uid         = $user_id;
-        $permission_to["slice"] = GetIDPerms($permission_uid, "slice");
-        $permission_to["aa"]    = GetIDPerms($permission_uid, "aa");     // aa is parent of all slices
-
-        if (!is_array($permission_to["slice"])) { // convert to arrays
-            $permission_to["slice"] = array();
-        }
-        if (!is_array($permission_to["aa"])) {
-            $permission_to["aa"] = array();
-        }
-
-        // Resolve all permission (convert roles into perms)
-        foreach ($permission_to["slice"] as $key => $val) {
-            $permission_to["slice"][$key] = AA_Perm::_resolve($val);
-        }
-
-        foreach ($permission_to["aa"] as $key => $val) {
-            if ( IsPerm($val, $perms_roles['SUPER']['id']) ) {
-                $r_superuser[$key] = true;
-            }
-            $permission_to["aa"][$key] = AA_Perm::_resolve($val);
-        }
-    }
-
-    /** AA_Perm::compare() function
-     *  Returns "E" if both permission are equal, "G" if perms1
-     *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
-     * @param $perms1
-     * @param $perms2
-     */
-    public static function compare($perms1, $perms2) {
-        $perms1 = AA_Perm::_resolve($perms1);
-        $perms2 = AA_Perm::_resolve($perms2);
-
-        if (strlen($perms1) == strspn($perms1, $perms2)) {
-            // perms are equal ?
-            return (strlen($perms2) == strspn($perms2, $perms1)) ? 'E' : 'L';
-        }
-        return 'G';
-    }
-
-    /** AA_Perm::joinSliceAndAAPerm function
-     * Resolves precedence issues between slice-specific permissions
-     * and global access rigths (rights to object aa).
-     * Slice-specific perms take precedence except the SUPER access level
-     * @param $slice_perm
-     * @param $aa_perm
-     */
-    public static function joinSliceAndAAPerm($slice_perm, $aa_perm) {
-        global $perms_roles;
-        if (AA_Perm::compare($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
-            return $aa_perm;
-        } else {
-            return ($slice_perm ? $slice_perm : $aa_perm);
-        }
-    }
-
-    /** AA_Perm::_resolve($perms) function
-     *  Replaces roles with apropriate perms
-     *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
-     *  @param $perms
-     */
-    private static function _resolve($perms) {
-        global $perms_roles;
-
-        foreach ($perms_roles as $arr) {
-            $perms = str_replace($arr['id'], $arr['perm'], $perms);
-        }
-        return $perms;
-    }
-}
-
-AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
-
-class AA_Permsystem {
-    function isUsernameFree($username) {}
-    function findUsernames($pattern)   {}
-    function findGroups($pattern)      {}
-    function getGroup($group_id)       {}
 }
 
 /** IsPerm function
@@ -402,36 +212,17 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
     }
 }
 
-/** GetSlicePerms function
- *  Returns users's permissions to specified slice
- *  if $whole is true, then consider membership in groups
- * @param $user_id
- * @param $objID
- * @param $whole
- */
-function GetSlicePerms( $user_id, $objID, $whole=true) {
-    $slice_perms = GetIDPerms($user_id, "slice", ($whole ? 0 : 1));
-    $aa_perms    = GetIDPerms($user_id, "aa",    ($whole ? 0 : 1));
-    return AA_Perm::joinSliceAndAAPerm($slice_perms[$objID], $aa_perms[AA_ID]);
-}
-
 /** GetUserSlices function
  * @param $user_id
  */
 function GetUserSlices( $user_id = "current") {
     global $permission_uid, $permission_to, $auth;
-    if ($GLOBALS['debugpermissions']) {
-        huhl("GetUserSlices:pu=",$permission_uid," pt=",$permission_to);
-    }
     if ($user_id == "current") {
         $user_id = $auth->auth["uid"];
     }
 
     if ($permission_uid != $user_id) {
         AA::$perm->cache($user_id);
-    }
-    if ($GLOBALS['debugpermissions'] && !$permission_to["aa"][AA_ID]) {
-        huhe("Warning: No global permission on this system",AA_ID);
     }
     if (IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) ) {
         return "all";
@@ -527,20 +318,20 @@ function ChangeCatPermAsIn($category, $template) {
 
     // returns an array of user/group identities and their permissions
     // granted on specified object $objectID
-    $newPerms = GetObjectsPerms($template_perm_id, 'slice');
-    $oldPerms = GetObjectsPerms($category_perm_id, 'slice');
+    $newPerms = AA::$perm->getObjectsPerms($template_perm_id, 'slice');
+    $oldPerms = AA::$perm->getObjectsPerms($category_perm_id, 'slice');
 
     // Delete all old perms
     if ( isset($oldPerms) AND is_array($oldPerms)) {
-        foreach ($oldPerms as  $uid => $foo ) {
+        foreach ($oldPerms as  $uid => $perm ) {
             DelPerm($uid, $category_perm_id, 'slice');
         }
     }
 
     // Copy template's permissions
     if ( isset($newPerms) AND is_array($newPerms)) {
-        foreach ($newPerms as  $uid => $arr) {
-            AddPerm($uid, $category_perm_id, 'slice', $arr['perm']);
+        foreach ($newPerms as  $uid => $perm) {
+            AddPerm($uid, $category_perm_id, 'slice', $perm);
         }
     }
 }
@@ -551,7 +342,7 @@ function ChangeCatPermAsIn($category, $template) {
  * @param $auth
  * @param $slice_id
  */
-function FilemanPerms($auth, $slice_id) {
+function FilemanPerms($slice_id) {
     global $sess, $errcheck;
     // Sets the fileman_dir var:
     global $fileman_dir;
@@ -607,10 +398,10 @@ function GetUserEmails($type = "", $user_id = "current") {
         $where .= " AND type='$type'";
     }
     if ($slices == "all") {
-        ;
     } elseif (!is_array($slices) || count ($slices) == 0) {
         return array();
     } else {
+        $slice_ids = array();
         foreach ($slices as $slice => $foo) {
             $slice_ids[] = q_pack_id($slice);
         }
@@ -628,62 +419,340 @@ function perm_username( $user_id ) {
     if ( $user_id == '9999999999' ) {
         return "anonym";
     }
-    $userinfo = GetIDsInfo($user_id);
+    $userinfo = AA::$perm->getIDsInfo($user_id);
     return empty($userinfo) ? $user_id : $userinfo['name'];
 }
-
-/** GetIDsInfo function
- * @param $id
- * @param $ds
- * @return an array containing basic information on $id
- * or false if ID does not exist
- * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
- */
-function GetIDsInfo($id) {
-
-    if ( !$id ) {
-        return false;
-    }
-    if ( IsGroupReader($id) ) {
-        return GetReaderGroupIDsInfo($id);
-    }
-    if ( IsGroupReaderSet($id) ) {
-        return GetReaderSetIDsInfo($id);
-    }
-    if ( IsUserReader($id) ) {
-        return GetReaderIDsInfo($id);
-    }
-
-    return GetIDsInfoCurrent($id);
-}
-
-/** IsUserReader function
- * @param $user_id
- */
-function IsUserReader($user_id) {
-    return (guesstype($user_id) == 'l');
-}
-/** IsGroupReader function
- * @param $group_id
- */
-function IsGroupReader($group_id) {
-    return ((guesstype($group_id) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
-}
-/** IsGroupReaderSet function
- * @param $group_id
- */
-function IsGroupReaderSet($group_id) {
-    return is_marked_by($group_id, 1);
-}
-
-
 
 require_once AA_INC_PATH ."util.php3";          // for getDB()
 require_once AA_INC_PATH ."searchlib.php3";     // for queryzids()
 require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 
 
+/** main AA permissions */
+class AA_Perm {
+
+    var $perm_systems;
+
+    function __construct($systems) {
+        $this->perm_systems = array();
+        foreach ($systems as $system_name) {
+            $system_name = 'AA_Permsystem_' . ucfirst($system_name);
+            $this->perm_systems[] = new $system_name;
+        }
+    }
+
+
+    /**
+     * ussage: AA::$perm->isUsernameFree($var)
+     */
+    public function authenticateUsername($username, $password) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($user_id = $perm_sys->authenticateUsername($username, $password)) {
+                return $user_id;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * ussage: AA::$perm->isUsernameFree($var)
+     */
+    public function isUsernameFree($username) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if (!$perm_sys->isUsernameFree($username)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function findUsernames($pattern) {
+        $users = array();
+        foreach ($this->perm_systems as $perm_sys) {
+            $new_users = $perm_sys->findUsernames($pattern);
+            if (is_array($new_users) AND count($new_users)) {
+                // + operator preserves the numeric keys (used in SQL perm), which is crucial
+                $users = $users + $new_users;
+            }
+        }
+        return $users;
+    }
+
+    public function findUserByLogin($user_login) {
+        $users = array();
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($user = $perm_sys->findUserByLogin($user_login)) {
+                return $user;
+            }
+        }
+        return false;
+    }
+
+    public function findGroups($pattern) {
+        $groups = array();
+        foreach ($this->perm_systems as $perm_sys) {
+            $new_groups = $perm_sys->findGroups($pattern);
+            if (is_array($new_groups) AND count($new_groups)) {
+                // + operator preserves the numeric keys (used in SQL perm), which is crucial
+                $groups = $groups + $new_groups;
+            }
+        }
+        return $groups;
+    }
+
+    /**
+     *  @param $group_id
+     *  @return array(uid, name, description) - info about the group
+     *  ussage: AA::$perm->getGroup($var)
+     */
+    public function getGroup($group_id) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($groupinfo = $perm_sys->getGroup($group_id)) {
+                return $groupinfo;
+            }
+        }
+        return false;
+    }
+
+    /** getIDsInfo function
+     * @param $uid
+     * @return an array containing basic information on $uid
+     * or false if ID does not exist
+     * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+     */
+    public function getIDsInfo($uid) {
+        if ( $uid AND ($ps = $this->_whichUsersystem($uid))) {
+            return $ps->getIDsInfo($uid);
+        }
+        return false;
+    }
+
+    function getGroupMembers($group_id) {
+        if ( $group_id AND ($ps = $this->_whichUsersystem($group_id))) {
+            return $ps->getGroupMembers($group_id);
+        }
+        return array();
+    }
+
+    /** getMembership function
+     * @param $uid
+     * @param $flags - use to obey group in groups?
+     * @return return array of group_ids, where id (group or user) is a member
+     */
+    function getMembership($uid, $flags = 0) {
+        $groups = array();
+        foreach ($this->perm_systems as $perm_sys) {
+            $groups = array_merge($groups, $perm_sys->getMembership($uid, $flags));
+        }
+        return $groups;
+    }
+
+    /** getUserPerms function
+     * @param $uid
+     * @param $objectType
+     * @param $flags
+     * @return an array of sliceids and their permissions (for user $userid).
+     * granted on all objects of type $objectType
+     * flags & 1 -> do not involve membership in groups
+     */
+    function getUserPerms($uid, $objectType, $flags = 0) {
+        if ( $ps = $this->_whichPermstorage()) {
+            return $ps->getJoinedPerms($uid, $objectType, ($flags & 1) ? array() : $this->getMembership($uid));
+        }
+        return array();
+    }
+
+    function getObjectsPerms($objectID, $objectType) {
+        if ( $ps = $this->_whichPermstorage()) {
+            return $ps->getObjectsPerms($objectID, $objectType);
+        }
+        return array();
+    }
+
+    /** $this->_whichUsersystem($uid) function
+     *  returns the permission system for the user id
+     *  @param $uid
+     */
+    private function _whichUsersystem($uid) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($perm_sys->userIdFromatMatches($uid)) {
+                return $perm_sys;
+            }
+        }
+        return false;
+    }
+
+    /** $this->_whichUsersystem($uid) function
+     *  returns the permission system for the user id
+     *  @param $uid
+     */
+    private function _whichPermstorage() {
+        foreach ($this->perm_systems as $perm_sys) {
+            if ($perm_sys->storesGeneralPerms()) {
+                return $perm_sys;
+            }
+        }
+        return false;
+    }
+
+    public static function cryptPwd($password) {
+        $seed = '$2y$14$'.gensalt(22);
+        $ret  = crypt($password, $seed);
+        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
+    }
+
+    public static function comparePwds($password, $hash) {
+        // looks ugly for the first_child look, but it is really how the crypt
+        // with salt works - see php documentation
+
+        $crypted = crypt($password, $hash);
+
+        // passwords in SQL perms in AA 2.x are 30 characers long (in user table),
+        // so we have to compare it with shortened hash
+        return $hash == ((strlen($hash) == 30) ?  substr($crypted,0,30) : $crypted);
+    }
+
+    /** AA::$perm->cache function
+     *  Save all permissions for specified user to session variable
+     * @param $user_id
+     */
+    function cache($user_id) {
+        global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
+
+        if (is_object($sess)) {
+            $sess->register('permission_uid');
+            $sess->register('permission_to');
+            $sess->register('r_superuser');
+        }
+
+        $permission_uid         = $user_id;
+        $permission_to["slice"] = $this->getUserPerms($permission_uid, "slice");
+        $permission_to["aa"]    = $this->getUserPerms($permission_uid, "aa");     // aa is parent of all slices
+
+        // Resolve all permission (convert roles into perms)
+        foreach ($permission_to["slice"] as $key => $val) {
+            $permission_to["slice"][$key] = AA_Perm::_resolve($val);
+        }
+
+        foreach ($permission_to["aa"] as $key => $val) {
+            if ( IsPerm($val, $perms_roles['SUPER']['id']) ) {
+                $r_superuser[$key] = true;
+            }
+            $permission_to["aa"][$key] = AA_Perm::_resolve($val);
+        }
+    }
+
+    /** AA_Perm::compare() function
+     *  Returns "E" if both permission are equal, "G" if perms1
+     *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
+     * @param $perms1
+     * @param $perms2
+     */
+    public static function compare($perms1, $perms2) {
+        $perms1 = AA_Perm::_resolve($perms1);
+        $perms2 = AA_Perm::_resolve($perms2);
+
+        if (strlen($perms1) == strspn($perms1, $perms2)) {
+            // perms are equal ?
+            return (strlen($perms2) == strspn($perms2, $perms1)) ? 'E' : 'L';
+        }
+        return 'G';
+    }
+
+
+    /** getModulePerms function
+     *  Returns users's permissions to specified slice
+     *  if $whole is true, then consider membership in groups
+     * @param $user_id
+     * @param $objID
+     * @param $whole
+     */
+    function getModulePerms( $user_id, $objID, $whole=true) {
+        $slice_perms = $this->getUserPerms($user_id, "slice", ($whole ? 0 : 1));
+        $aa_perms    = $this->getUserPerms($user_id, "aa",    ($whole ? 0 : 1));
+        return AA_Perm::joinSliceAndAAPerm($slice_perms[$objID], $aa_perms[AA_ID]);
+    }
+
+    /** AA_Perm::joinSliceAndAAPerm function
+     * Resolves precedence issues between slice-specific permissions
+     * and global access rigths (rights to object aa).
+     * Slice-specific perms take precedence except the SUPER access level
+     * @param $slice_perm
+     * @param $aa_perm
+     */
+    public static function joinSliceAndAAPerm($slice_perm, $aa_perm) {
+        global $perms_roles;
+        if (AA_Perm::compare($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
+            return $aa_perm;
+        } else {
+            return ($slice_perm ? $slice_perm : $aa_perm);
+        }
+    }
+
+    /** AA_Perm::_resolve($perms) function
+     *  Replaces roles with apropriate perms
+     *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
+     *  @param $perms
+     */
+    private static function _resolve($perms) {
+        global $perms_roles;
+
+        foreach ($perms_roles as $arr) {
+            $perms = str_replace($arr['id'], $arr['perm'], $perms);
+        }
+        return $perms;
+    }
+}
+
+AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
+
+class AA_Permsystem {
+    /** userIdFromatMatches - is user id in correct format?
+     *  we MUST use specific UIDs for every single Permission Type
+     *  (it MUST be clear, which perm system is used just from the format of UID)
+     */
+    function userIdFromatMatches($uid)                          {}
+    function authenticateUsername($username, $password)         {}
+    function isUsernameFree($username)                          {}
+    function findUsernames($pattern)                            {}
+    function findUserByLogin($user_login)                       {}
+    function findGroups($pattern)                               {}
+    function getGroup($group_id)                                {}
+    function getIDsInfo($uid)                                   {}
+    function getGroupMembers($group_id)                         {}
+    function getMembership($id, $flags=0)                       { return array(); }
+    function getObjectsPerms()                                  { return array(); }
+    function getJoinedPerms($uid, $objectType, $groups=array()) { return array(); }
+
+    /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
+     *  SQL and LDAP is able to store it, Reader not. */
+    function storesGeneralPerms()                               { return false; }
+
+    /** getUserPerms function
+     * @param $uid
+     * @param $objectType
+     * @param $flags
+     * @return an array of sliceids and their permissions (for user $userid).
+     * granted on all objects of type $objectType
+     * flags & 1 -> do not involve membership in groups
+     */
+    function getUserPerms($uid, $objectType, $flags = 0) {
+        return $this->getJoinedPerms($uid, $objectType, ($flags & 1) ? array() : $this->getMembership($uid));
+    }
+}
+
+
 class AA_Permsystem_Reader extends AA_Permsystem {
+
+    /** userIdFromatMatches - is user id in correct format?
+     *  we MUST use specific UIDs for every single Permission Type
+     *  (it MUST be clear, which perm system is used just from the format of UID)
+     */
+    function userIdFromatMatches($uid) {
+        // Reader perms - long ID (32 hexa)
+        return (guesstype($uid) == 'l');
+    }
 
     /** AuthenticateReaderUsername function
      *  Search all Reader slices for $username and check if tha password is correct
@@ -717,11 +786,20 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
     }
 
+
+    public function findUsernames($pattern) {
+        return $this->_findUserPattern('%'. quote($pattern) .'%');
+    }
+
+    public function findUserByLogin($user_login) {
+        return $this->_findUserPattern(quote($user_login));
+    }
+
     /** findUsernames function
      *  return list of RM users which matches the pattern
-     * @param $pattern
+     * @param $pattern - already quoted!!!
      */
-    public function findUsernames($pattern) {
+    private function _findUserPattern($pattern) {
         global $db;
         $db->tquery("SELECT content.text AS name, content.item_id AS id
                        FROM slice
@@ -730,6 +808,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
                       WHERE slice.type = 'ReaderManagement'
                         AND content.field_id = '".FIELDID_USERNAME."'
                         AND content.text LIKE '%". quote($pattern) ."%'");
+        $users = array();
         while ($db->next_record()) {
             $users[unpack_id($db->f('id'))] = array('name' => $db->f('name'));
         }
@@ -756,6 +835,115 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         }
         return $groups;
     }
+
+    /** getIDsInfo function
+     * @param $uid
+     * @return an array containing basic information on $id
+     * or false if ID does not exist
+     * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+     */
+    public function getIDsInfo($uid) {
+        if ( !$uid )                          { return false;  }
+        if ( $this->_isGroupReader($uid) )    { return $this->_readerGroupIDsInfo($uid); }
+        if ( $this->_isGroupReaderSet($uid) ) { return $this->_readerSetIDsInfo($uid); }
+        if ( $this->_isUserReader($uid) )     { return $this->_readerIDsInfo($uid);  }
+        return false;
+    }
+
+    /** _isUserReader, _isGroupReader, _isGroupReaderSetfunction
+     * @param $user_id
+     */
+    private function _isUserReader($user_id)      { return (guesstype($user_id) == 'l');  }
+    private function _isGroupReader($group_id)    { return ((guesstype($group_id) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement')); }
+    private function _isGroupReaderSet($group_id) { return is_marked_by($group_id, 1); }
+
+    /** GetReaderIDsInfo function
+     *  returns basic information on user grabed from any Reader Management slice
+     * @param $user_id
+     */
+    private function _readerIDsInfo($user_id) {
+        $user_info = GetAuthData($user_id);
+        if ($user_info->is_empty()) {
+            return false;
+        }
+        $res              = array();
+        $res['id']        = $user_id;
+        $res['name']      = $user_info->getValue(FIELDID_USERNAME);
+        $res['mail']      = $user_info->getValue(FIELDID_EMAIL);
+        $res['mails']     = array($res['mail']);
+        $res['login']     = $user_info->getValue(FIELDID_USERNAME);
+        $res['sn']        = '';
+        $res['givenname'] = '';
+        $res['type']      = 'Reader';
+        return $res;
+    }
+
+    /** GetReaderGroupIDsInfo function
+     *  returns basic information on user grabed from any Reader Management slice
+     * @param $rm_id
+     */
+    private function _readerGroupIDsInfo($rm_id) {
+        $slice       = AA_Slices::getSlice($rm_id);
+        $res         = array();
+        $res['type'] = 'ReaderGroup';
+        $res['name'] = $slice->getProperty('name');
+        return $res;
+    }
+
+    /** GetReaderSetIDsInfo function
+     * @param $set_id
+     */
+    private function _readerSetIDsInfo($set_id) {
+        $set  = AA_Object::load($set_id, 'AA_Set');
+        if ( empty($set) ) {
+            return false;
+        }
+        $res         = array();
+        $res['type'] = 'ReaderSet';
+        $res['name'] = $set->getName();
+        return $res;
+    }
+
+    function getGroupMembers($group_id) {
+        // @todo implement it
+        return array();
+    }
+
+    /** getMembership function
+     *  return array of group_ids, where id (group or user) is a member (=Reader Management slice) in which is the user member
+     * @param $user_id
+     */
+    function getMembership($user_id, $flags=0) {
+        if (!$user_id) {
+            return array();
+        }
+        $user_info = GetAuthData( $user_id );
+
+        if ($user_info->is_empty()) {
+            return array();
+        }
+
+        $reader_slice_id = $user_info->getSliceID();
+        $ret             = array($reader_slice_id);
+
+        $restrict_zids   = new zids($user_id, 'l');
+        // groups could be definned also by subset of readers - defined by AA_Set
+        $set_ids         = AA_Object::query('AA_Set', array($reader_slice_id));
+        foreach( $set_ids as $set_id ) {
+            $set  = AA_Object::load($set_id, 'AA_Set');
+            $zids = QueryZids(array($reader_slice_id), $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
+
+            // reader is in this reader set
+            if ($zids->count() > 0) {
+                $ret[] = $set->getId();
+            }
+        }
+
+        // we use unpacked slice id as id of group for RM slices
+        return $ret;
+    }
+
+
 }
 
 /** getReaderSlices function
@@ -790,91 +978,6 @@ function GetAuthData( $user_id = false ) {
     return new ItemContent($user_id);
 }
 
-/** GetReaderIDsInfo function
- *  returns basic information on user grabed from any Reader Management slice
- * @param $user_id
- */
-function GetReaderIDsInfo($user_id) {
-    if ( !$user_id ) {
-        return false;
-    }
-    $user_info = GetAuthData($user_id);
-    if ($user_info->is_empty()) {
-        return false;
-    }
-    $res['id']        = $user_id;
-    $res['name']      = $user_info->getValue(FIELDID_USERNAME);
-    $res['mail']      = $user_info->getValue(FIELDID_EMAIL);
-    $res['mails']     = array($res['mail']);
-    $res['login']     = $user_info->getValue(FIELDID_USERNAME);
-    $res['sn']        = '';
-    $res['givenname'] = '';
-    $res['type']      = 'Reader';
-    return $res;
-}
-
-/** GetReaderGroupIDsInfo function
- *  returns basic information on user grabed from any Reader Management slice
- * @param $rm_id
- */
-function GetReaderGroupIDsInfo($rm_id) {
-    if ( !$rm_id ) {
-        return false;
-    }
-    $slice       = AA_Slices::getSlice($rm_id);
-    $res['type'] = 'ReaderGroup';
-    $res['name'] = $slice->getProperty('name');
-    return $res;
-}
-/** GetReaderSetIDsInfo function
- * @param $set_id
- */
-function GetReaderSetIDsInfo($set_id) {
-    if ( !$set_id ) {
-        return false;
-    }
-    $set  = AA_Object::load($set_id, 'AA_Set');
-    if ( empty($set) ) {
-        return false;
-    }
-    $res['type'] = 'ReaderSet';
-    $res['name'] = $set->getName();
-    return $res;
-}
-
-/** GetReaderMembership function
- *  return id of group (=Reader Management slice) in which is the user member
- * @param $user_id
- */
-function GetReaderMembership($user_id) {
-    if (!$user_id) {
-        return false;
-    }
-    $user_info = GetAuthData( $user_id );
-
-    if ($user_info->is_empty()) {
-        return false;
-    }
-
-    $reader_slice_id = $user_info->getSliceID();
-    $ret             = array($reader_slice_id);
-
-    $restrict_zids   = new zids($user_id, 'l');
-    // groups could be definned also by subset of readers - defined by AA_Set
-    $set_ids         = AA_Object::query('AA_Set', array($reader_slice_id));
-    foreach( $set_ids as $set_id ) {
-        $set  = AA_Object::load($set_id, 'AA_Set');
-        $zids = QueryZids(array($reader_slice_id), $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
-
-        // reader is in this reader set
-        if ($zids->count() > 0) {
-            $ret[] = $set->getId();
-        }
-    }
-
-    // we use unpacked slice id as id of group for RM slices
-    return $ret;
-}
 
 class AA_Reader {
     function _find($field, $value, $slices, $bin ) {
