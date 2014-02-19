@@ -297,11 +297,15 @@ class DB_AA extends DB_Sql {
     /** static
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
      **/
-    function sql($query) {
+    function sql($query, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
-        return $db->query($query);
+        $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
+        return $db->query("$query $sqlwhere");
     }
 
+    function delete($table, $where=null) {
+        return DB_AA::sql("DELETE FROM `$table`", $where);
+    }
 
     /** makeWHERE function
      *  [[field_name, value, type], ...]   type:  i - integer, l - longid, q - quoted, s - string (default)
@@ -336,7 +340,7 @@ class DB_AA extends DB_Sql {
                 }
                 switch (count($arr)) {
                 case 0:  $where .= "$delim 2=1"; break;
-                case 1:  $where .= "$delim $name = ". reset($arr); break;
+                case 1:  $where .= "$delim $name = '". reset($arr) ."'"; break;
                 default: $where .= "$delim $name IN ('". join("','", $arr) ."')";
                 }
             }

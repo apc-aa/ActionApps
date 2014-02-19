@@ -93,14 +93,13 @@ class Cvarset {
      * @param $arr
      */
     function __construct( $arr=array(), $db = null) {
+        $TRANS            = array('i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked');
         $this->vars       = array();
         $this->db         = $db;
         $this->just_print = false;
 
-        foreach ( (array)$arr as $varname => $value ) {
-            if ( $varname ) {
-                $this->add($varname, 'text', $value);
-            }
+        foreach ( $arr as $def ) {
+            $this->add($def[0], isset($def[2]) ? $TRANS[$def[2]] : 'text', $def[1]);
         }
     }
 
@@ -251,12 +250,12 @@ class Cvarset {
      * @param $num_fields
      */
     function addArray($text_fields, $num_fields="") {
-        if ( isset($text_fields) AND is_array($text_fields)) {
+        if (is_array($text_fields)) {
             foreach ($text_fields as $name) {
                 $this->add($name, "text");
             }
         }
-        if ( isset($num_fields) AND is_array($num_fields)) {
+        if (is_array($num_fields)) {
             foreach ( $num_fields as $name) {
                 $this->add($name, "number");
             }
@@ -324,6 +323,7 @@ class Cvarset {
      * @param $tablename
      */
     function makeUPDATE($tablename = "") {
+        $updates = array();
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
                 $updates[] = "`$varname`" ."=". $variable->getSQLValue();
