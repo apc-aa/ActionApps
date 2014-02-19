@@ -1572,11 +1572,11 @@ class AA_Inputfield {
         $this->echoo("</td>\n");
         if ($movebuttons) {
              $this->echoo("<td valign=\"top\">");
-             $this->echoo("<input type=\"button\" value=\" /\ \" ".
+             $this->echoo("<input type=\"button\" value=\" 	&#9650; \" ".
              " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
              $this->echoo('</td></tr>');
              $this->echoo('<tr><td valign="bottom">');
-             $this->echoo("<input type=\"button\" value=\" \/ \" ".
+             $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
              " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
              $this->echoo("</td>");
         }
@@ -1679,11 +1679,11 @@ class AA_Inputfield {
             $this->echoo("</td>\n");
             if ($movebuttons) {
                  $this->echoo("<td valign=\"top\">");
-                 $this->echoo("<input type=\"button\" value=\" /\ \" ".
+                 $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
                  " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
                  $this->echoo('</td></tr>');
                  $this->echoo('<tr><td valign="bottom">');
-                 $this->echoo("<input type=\"button\" value=\" \/ \" ".
+                 $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
                  " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
                  $this->echoo("</td>");
             }
@@ -1922,9 +1922,9 @@ class AA_Inputfield {
 
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("\n      </td>");
-        $this->echoo("\n      <td valign=\"top\"><input type=\"button\" value=\" /\ \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
+        $this->echoo("\n      <td valign=\"top\"><input type=\"button\" value=\" &#9650; \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
         $this->echoo("\n      </tr>");
-        $this->echoo("<tr><td valign=\"bottom\"><input type=\"button\" value=\" \/ \" onClick=\"moveItem(document.inputform['".$name."'], 'down');\"></td></tr>");
+        $this->echoo("<tr><td valign=\"bottom\"><input type=\"button\" value=\" &#9660; \" onClick=\"moveItem(document.inputform['".$name."'], 'down');\"></td></tr>");
 
         if (!empty($addform) AND !empty($sid)) {
             $this->echoo("\n<tr><td colspan=\"4\">");
