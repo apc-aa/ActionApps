@@ -1,8 +1,10 @@
+02/20/14 - fixed Admin -> Item Manager setting - profiles problem fixed
+(honzam)
 02/19/14 - rewritten permission system to be more secure and allows easier
 (honzam)   addition of another authentication - not only SQL, LDAP and Reader
            Slice
          - nicer up and down arrows in widgets
-         - better DB_AA::sql database monipulation functions
+         - better DB_AA::sql database manipulation functions
          - some queries rewritten to newer DB_AA::select(), approach
          - removed old and unmaintained permission files
 01/31/14 - security fix - update recommended

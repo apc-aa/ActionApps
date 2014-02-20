@@ -972,10 +972,10 @@ function GetAuthData( $user_id = false ) {
            $user_id = AA_Reader::name2Id($_SERVER['REMOTE_USER']);
         }
         else {
-           $user_id = (guesstype($auth->auth["uid"]) == 'l') ? $auth->auth["uid"] : false;
+           $user_id = $auth->auth["uid"];
         }
     }
-    return new ItemContent($user_id);
+    return new ItemContent((guesstype($user_id) == 'l') ? $user_id : false);
 }
 
 

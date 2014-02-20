@@ -743,7 +743,9 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         $zids = new zids( $zids, $use_short_ids ? 's' : 'l' );
     }
 
-    if (!($sel_in = $zids->sqlin(''))) {
+    if ($zids->count()) {
+        $sel_in = $zids->sqlin('');
+    } else {
         return null;
     }
 

@@ -1649,9 +1649,14 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // good for preservation of sortorder (now works also with grouping in views)
     if (is_object($restrict_zids)) {
         if ($restrict_zids->use_short_ids()) {
-            $select_order .= "$delim field(item.short_id,". implode(",",array_map("qquote", $restrict_zids->shortids())). ')';
+            $ord_field = 'short_id';
+            $ord_ids   = $restrict_zids->shortids();
         } else {
-            $select_order .= "$delim field(item.id,". implode(",", $restrict_zids->qq_packedids()). ')';
+            $ord_field = 'id';
+            $ord_ids   = $restrict_zids->packedids();
+        }
+        if ($ord_ids) { // not false, null, empty array
+            $select_order .= "$delim field(item.$ord_field,". implode(",",array_map("qquote", $ord_ids)). ')';
         }
     }
 

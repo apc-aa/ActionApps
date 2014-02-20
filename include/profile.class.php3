@@ -87,28 +87,22 @@ class AA_Profile {
         if ( !$this->module_id OR (isset($this->properties) AND is_array($this->properties)) ) {
             return;
         }
-        $db = getDB();
         $this->properties = array();
 
         // get also profiles from user's group(s)
-        $groups = AA::$perm->getMembership($this->user_id);
-        $usr_groups = "";
-        foreach ( $groups as $v ) {
-            $usr_groups .= sprintf(" OR uid='%s'", $v);
-        }
+        $groups     = AA::$perm->getMembership($this->user_id);
+        $usr_groups = array_merge(array($this->user_id, '*'), $groups);
 
         // default setting for the slice is stored as user with uid = *
-        $SQL= " SELECT * FROM profile
-                WHERE slice_id='". q_pack_id($this->module_id) ."'
-                AND (uid='". $this->user_id ."' OR uid='*'".$usr_groups.")";
-        $db->tquery($SQL);
-        while ( $db->next_record() ) {
-            if ( $db->f('uid') == $this->user_id ) {
-                $this->set($db->f('property'), $db->f('selector'), $db->f('value'), 'u', $db->f('id'), $db->f('uid'));
-            } elseif ( in_array($db->f('uid'),$groups) ) {
-                $group_profile[] = $db->Record;  // store for later use
+        $profiles = DB_AA::select(array(), 'SELECT * FROM profile', array(array('slice_id',$this->module_id,'l'), array('uid',$usr_groups)));
+
+        foreach ($profiles as $pi) {
+            if ( $pi['uid'] == $this->user_id ) {
+                $this->set($pi['property'], $pi['selector'], $pi['value'], 'u', $pi['id'], $pi['uid']);
+            } elseif ( in_array($pi['uid'], $groups) ) {
+                $group_profile[] = $pi;  // store for later use
             } else {
-                $general_profile[] = $db->Record;  // store for later use
+                $general_profile[] = $pi;  // store for later use
             }
         }
         // now add properties from group profile(s), if it is not already set
@@ -128,7 +122,6 @@ class AA_Profile {
                 }
             }
         }
-        freeDB($db);
     }
 
     /** set function

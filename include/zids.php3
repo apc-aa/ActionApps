@@ -57,8 +57,6 @@
  * Supported functions, and which types work with
  * longids       p l   e.g. 0112233445566778899aabbccddeeff0
  * packedids     p l   e.g. A!D\s'qwertyuio
- * q_packedids   p l   e.g. A!D\\ss\'qwertyuio
- * qq_packedids  p l   e.g. 'A!D\\ss\'qwertyuio'
  * shortids      s     e.g. 1234
  *
  */
@@ -287,46 +285,6 @@ class zids implements Iterator, ArrayAccess, Countable {
         }
     }
 
-    /** q_packedids function
-     *  Return quoted ids, i.e. with slashes doubled and apostrophes slashed
-     *   appropriate for putting in SQL (inside "")
-     *   note, contrary to its name, this does NOT put quotes or double quotes
-     *   around the ids
-     * @param $i
-     */
-    function q_packedids($i=null) {
-        if ($this->warnid($i,"q_packedids")) return null;
-        switch ($this->type) {
-            case "p": return (isset($i) ? quote($this->a[$i]) : array_map("quote",$this->a));
-            case "l": return (isset($i) ? q_pack_id($this->a[$i]) : array_map("q_pack_id",$this->a));
-            case "t": return (isset($i) ? q_pack_id(id_t2l($this->a[$i]))
-                                        : array_map("q_pack_id", $this->longids()));
-            default:
-                      print("ERROR - zids:q_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
-                      return false;
-        }
-    }
-
-    /** qq_packedids function
-     * As above, but inside single quotes
-     * @param $i
-     */
-    function qq_packedids($i=null) {
-        if ($this->warnid($i,"qq_packedids")) {
-            return null;
-        }
-        switch ($this->type) {
-            case "p": return (isset($i) ? qquote($this->a[$i]) : array_map("qquote",$this->a));
-            case "l": return (isset($i) ? qq_pack_id($this->a[$i])
-                                        : array_map("qq_pack_id",$this->a));
-            case "t": return (isset($i) ? qq_pack_id(id_t2l($this->a[$i]))
-                                        : array_map("qq_pack_id", $this->longids()));
-            default:
-                      print("ERROR - zids:qq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
-                      huhl($this);
-                      return false;
-        }
-    }
     /** shortids function
      * @param $i
      */
@@ -456,33 +414,28 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $asis - returns the ids in long form (not packed even for 'l' type)
      */
     function sqlin( $column = 'short_or_long', $asis = false ) {
-        if ($this->count() == 0) {
+        $id_arr = array();
+        if ($this->count()) {
+            if ( $column == 'short_or_long' ) {
+                $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
+            }
+            if ( $asis ) {
+                $id_arr = $this->a;
+            } elseif ($this->use_short_ids()) {
+                $id_arr = $this->shortids();
+            } else {
+                $id_arr = $this->packedids();
+            }
+        }
+        if (!$id_arr) {  // false, null empty arr
             return $column ? '0' : ' = "" ';
         }
-        if ( $column == 'short_or_long' ) {
-            $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
-        }
-        if ( $asis ) {
-            $id_list = implode(",",array_map("qquote", $this->a));
-        } elseif ($this->use_short_ids()) {
-            $id_list = implode(",",array_map("qquote",  $this->shortids()));
-        } else {
-            $id_list = implode(",", $this->qq_packedids());
-        }
+
+        $id_list = implode(",",array_map("qquote", $id_arr));
 
         // '=' is much quicker than 'IN ()' in MySQL 4.0.x
         // - don't ask me why, please. Honza
-        return (($this->count() == 1) ? " $column = $id_list " : " $column IN ($id_list) ");
-    }
-
-    /** itemWhere function
-     * @param $i
-     */
-    function itemWhere($i) {
-        if ( $this->use_short_ids() ) {
-            return "item.short_id='". $this->a[$i]."'";
-        }
-        return "item.id=". $this->qq_packedids($i);
+        return ((count($id_arr) == 1) ? " $column = $id_list " : " $column IN ($id_list) ");
     }
 
     /** getFirstSlice function
@@ -494,7 +447,8 @@ class zids implements Iterator, ArrayAccess, Countable {
             return false;
         }
         foreach ( $this->a as $i => $id ) {
-            $SQL        = "SELECT slice_id FROM item WHERE ". $this->itemWhere($i);
+            $zid = $this->zid($i);
+            $SQL        = "SELECT slice_id FROM item WHERE ". $zid->sqlin();
             $p_slice_id = GetTable2Array($SQL, 'aa_first', 'slice_id');
             if ( !empty($p_slice_id) ) {
                 return unpack_id($p_slice_id);
