@@ -130,13 +130,14 @@ FrmInputText("sort",   _m("Sort"),       $sort, 255,  60, false, _m('like: publi
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </form>
+<br>
 <?php
 
 
 $module_id  = $slice_id;
 $manager_id = 'exportsetings'.$module_id;
 
-$manager_settings = AA_Object::getManagerConf('AA_Exportsetings', get_admin_url('se_export.php'));
+$manager_settings = AA_Exportsetings::getManagerConf(get_admin_url('se_export.php'));
 
 $manager = new AA_Manager($manager_id, $manager_settings);
 $manager->performActions();

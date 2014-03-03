@@ -402,7 +402,7 @@ class AA_Metabase {
     }
 
     /** Static function called like $metabase = AA_Metabase::singleton() */
-    function singleton() {
+    public static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
             // Now create the metabase object

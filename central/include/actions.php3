@@ -53,16 +53,17 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
 
         if (count($item_ids)<1) {
             return false;                                     // OK - no error
         }
-
         $db  = getDB();
         $SQL = "SELECT * FROM central_conf WHERE id IN ('".join_and_quote("','",$item_ids)."')";
         $db->tquery($SQL);
+
+        $results   = array();
         $results[] = array('<b>'._m('AA (Organization)').'</b>', '<b>'._m('URL').'</b>', '<b>'._m('Status code').'</b>', '<b>'._m('Description').'</b>');
         $linkcheck = new linkcheck();
 
@@ -77,7 +78,7 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return  IsSuperadmin();
     }
 }
@@ -106,7 +107,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
 
         if (count($item_ids)<1) {
@@ -131,7 +132,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IsSuperadmin();
     }
 }
@@ -165,7 +166,7 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
 
         if ($item_ids) {
@@ -177,7 +178,7 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         $current_bin     =  $manager->getBin();
 
         /** for acces to Central you have to be superadmin */
@@ -226,7 +227,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
      *  @param $item_arr    Items to delete (if 'selected' is $param)
      *  @param $akce_param  Not used
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         if ( !isSuperadmin() ) {    // permission to delete items?
             return _m("You have not permissions to remove items");
         }
@@ -235,7 +236,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
 
         // restrict the deletion only to selected items
         if ($this->selected) {
-            if (!is_array($item_ids)) {
+            if (!is_array($item_arr)) {
                 return false;
             }
 
@@ -270,7 +271,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return (IsSuperadmin() AND (!$this->selected OR ($manager->getBin() == 'trash')));
     }
@@ -290,13 +291,13 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
     }
 
     /** main executive function - Handler for Tab switch - switch between bins */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IsSuperadmin();
     }
 }
@@ -323,7 +324,8 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
 
     /** Name of this Manager's action */
     function getName() {
-        return call_user_func(array($this->optimize_class, 'name')). ' - '.  $this->optimize_method;
+        $class = $this->optimize_class;
+        return $class::name(). ' - '.  $this->optimize_method;
     }
 
     /** main executive function
@@ -331,7 +333,7 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $ret    = array();
         $aa_ids = array_keys($item_arr);
 
@@ -343,7 +345,7 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IsSuperadmin();
     }
 }

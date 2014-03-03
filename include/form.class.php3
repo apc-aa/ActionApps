@@ -38,6 +38,18 @@ class AA_Formrow extends AA_Storable {
         $widget = $this->getWidget();
         return $widget->getHtml($this->getRowProperty(), $content);
     }
+    
+    // in order we can dispaly row widget (used for editing forms)
+    function addFormrows($form) {
+        $slice  = AA_Slices::getSlice($form->object_owner);
+        $fields = $slice->getFields();
+        $f_arr  = $fields->getNameArray();
+              // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
+        $p = new AA_Property('rows', _m("Fields to show"),  'AA_Formrow_Field', true, false);
+        $w = new AA_Widget_Formrow(array('const_arr' => $f_arr));
+        //$w = new AA_Widget_Mch(array('columns'=>1,'const_arr' => $f_arr));
+        $form->addRow(new AA_Formrow_Full($p, $w));  // use default widget for the field
+    }        
 }
 
 class AA_Formrow_Text extends AA_Formrow {
@@ -66,29 +78,10 @@ class AA_Formrow_Full extends AA_Formrow {
     function getWidget()      { return $this->widget; }
 
     /**      */
-    function getClassProperties() {
+    static function getClassProperties() {
         return array (                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
             'property'       => new AA_Property( 'property',       _m("Property"),          'AA_Property', false, true),
             'widget'         => new AA_Property( 'widget',         _m("Widget"),            'AA_Widget',   false, true)
-            );
-    }
-}
-
-class AA_Formrow_Defaultwidget extends AA_Formrow {
-    protected $property;        // protected - we need the data visible for AA_Statestore
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($property=null) { // default values are needed for AA_Storable's construction
-        $this->property       = $property;
-    }
-
-    function getRowProperty() {  return $this->property; }
-    function getWidget()      {  return AA_Widget::factoryFromProperty($this->property); }
-
-    /**      */
-    function getClassProperties() {
-        return array (                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
-            'property'       => new AA_Property( 'property',       _m("Property"),          'AA_Property', false, true)
             );
     }
 }
@@ -121,7 +114,7 @@ class AA_Formrow_Field extends AA_Formrow {
     }
 
     /**      */
-    function getClassProperties() {
+    static function getClassProperties() {
         return array (                   //       id                   name               type        multi  persist validator, required, help, morehelp, example
             'field_id'       => new AA_Property( 'field_id',       _m("Field"),          'string', false, true),
             'slice_id'       => new AA_Property( 'slice_id',       _m("Slice ID"),       'string', false, true)
@@ -154,10 +147,10 @@ class AA_Widget_Formrow extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)"))
             );
@@ -206,9 +199,9 @@ class AA_Form extends AA_Object {
 
     protected $rows = array();
 
-    private   $object_type  = '';  // for which object class is current form
-    private   $object_id    = '';  // for which object is current form
-    private   $object_owner = '';  // to whom the form belongs
+    public   $object_type  = '';  // for which object class is current form
+    public   $object_id    = '';  // for which object is current form
+    public   $object_owner = '';  // to whom the form belongs
 
     const PREPARED = 1;
     const SAVED    = 2;
@@ -216,7 +209,7 @@ class AA_Form extends AA_Object {
     /** allows storing form in database
      *  AA_Object's method
      */
-    function getClassProperties() {
+    static function getClassProperties() {
         return array (          //           id       name       type        multi  persist validator, required, help, morehelp, example
             'rows'     => new AA_Property( 'rows', _m("Rows"),  'AA_Formrow', true, true)
             );
@@ -224,6 +217,9 @@ class AA_Form extends AA_Object {
 
     function addRow($row) {
         $this->rows[] = $row;
+    }
+    function addRows($rows) {
+        $this->rows = array_merge($this->rows,$rows);
     }
 
     function setObject($otype, $oid, $oowner) {
@@ -233,8 +229,9 @@ class AA_Form extends AA_Object {
     }
 
     static public function factoryForm($otype, $oid, $oowner) {
-        $form = call_user_func_array(array($otype, 'getForm'), array($oid, $oowner, $otype));
+        $form = new AA_Form();
         $form->setObject($otype, $oid, $oowner);
+        $otype::addFormrows($form);
         return $form;
     }
 
@@ -348,20 +345,7 @@ class AA_Form extends AA_Object {
     }
 
     /**  AA_Object's method */
-    static function getForm($oid=null, $owner=null, $otype=null) {
-        $form = new AA_Form();
-
-        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));   // use default widget for the field
-
-        $slice  = AA_Slices::getSlice($owner);
-        $fields = $slice->getFields();
-        $f_arr  = $fields->getNameArray();
-              // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
-        $p = new AA_Property('rows', _m("Fields to show"),  'AA_Formrow_Field', true, false);
-        $w = new AA_Widget_Formrow(array('const_arr' => $f_arr));
-        $form->addRow(new AA_Formrow_Full($p, $w));   // use default widget for the field
-        return $form;
-    }
+    // static function arrFormrows($form) {
 }
 
 ?>

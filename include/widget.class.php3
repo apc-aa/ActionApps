@@ -159,41 +159,6 @@ class AA_Widget extends AA_Components {
     function name()         {}
     //    function description()  {}
 
-
-    /** returns default widget for given property - it tries to identify,
-     *  if it is multiple, uses constants, is bool, ...
-     */
-    static public function factoryFromProperty($aa_property) {
-        if ($aa_property->isObject()) {
-            throw new Exception('Can\'t generate widget for object property');
-            return null;
-        }
-
-        $values = $aa_property->getConstants();
-        if ($aa_property->isMulti()) {
-            if (empty($values)) {
-                return new AA_Widget_Mfl();
-            }
-            if (count($values) < 5) {
-                return new AA_Widget_Mch(array('const_arr' => $values));
-            }
-            return new AA_Widget_Mse(array('const_arr' => $values));
-        }
-
-        if (!empty($values)) {
-           return new AA_Widget_Sel(array('const_arr' => $values));
-        }
-
-        if ($aa_property->getType() == 'bool') {
-            return new AA_Widget_Chb();
-        }
-
-        if ($aa_property->getType() == 'text') {
-            return new AA_Widget_Txt();
-        }
-        return new AA_Widget_Fld();
-    }
-
     // not used, yet
     //function assignConstants($arr) {
     //    $this->_const_arr = (array)$arr;
@@ -555,11 +520,11 @@ class AA_Widget extends AA_Components {
             if (is_numeric($key)) {
                 $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
             }
-            elseif (($key != 'flag') AND class_exists($class = AA_Object::constructClassName('AA_Widget_', $key))) {
+            elseif (($key != 'flag') AND class_exists($class = AA_Widget::constructClassName($key))) {
                 // call function like AA_Widget_Dte::getValue($data)
                 // where $data depends on the widget - for example for
                 // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())
-                $aa_value = call_user_func_array(array($class, 'getValue'), array($value));
+                $aa_value = $class::getValue($value);
                 $aa_value->setFlag($flag);
 
                 // there is no need to go through array - we do not expect more widgets for one variable
@@ -572,12 +537,6 @@ class AA_Widget extends AA_Components {
 
 /** Textarea widget */
 class AA_Widget_Txt extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -595,10 +554,10 @@ class AA_Widget_Txt extends AA_Widget {
         return false;// returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties() {
+    static function getClassProperties() {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int', false, '', '', 20)
             );
@@ -637,13 +596,6 @@ class AA_Widget_Txt extends AA_Widget {
 /** Textarea with Presets widget */
 class AA_Widget_Tpr extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -657,10 +609,10 @@ class AA_Widget_Tpr extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
             'column_count'           => new AA_Property( 'column_count',           _m("Column count"),         'int',  false, true, 'int',  false, '', '', 70),
@@ -672,12 +624,6 @@ class AA_Widget_Tpr extends AA_Widget {
 
 /** Rich Edit Text Area widget */
 class AA_Widget_Edt extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -692,10 +638,10 @@ class AA_Widget_Edt extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
             'column_count'           => new AA_Property( 'column_count',           _m("Column count"),         'int',  false, true, 'int',  false, '', '', 70),
@@ -706,12 +652,6 @@ class AA_Widget_Edt extends AA_Widget {
 
 /** Text Field widget */
 class AA_Widget_Fld extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -729,10 +669,10 @@ class AA_Widget_Fld extends AA_Widget {
         return false;    // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
             'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  30)
@@ -742,12 +682,6 @@ class AA_Widget_Fld extends AA_Widget {
 
 /** Multiple Text Field widget */
 class AA_Widget_Mfl extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -765,10 +699,10 @@ class AA_Widget_Mfl extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'),
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10)
@@ -836,12 +770,6 @@ class AA_Widget_Mfl extends AA_Widget {
 /** Text Field with Presets widget */
 class AA_Widget_Pre extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -858,10 +786,10 @@ class AA_Widget_Pre extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'max_characters'         => new AA_Property( 'max_characters',         _m("max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
@@ -883,12 +811,6 @@ class AA_Widget_Pre extends AA_Widget {
 /** Select Box widget */
 class AA_Widget_Sel extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -905,10 +827,10 @@ class AA_Widget_Sel extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
@@ -924,12 +846,6 @@ class AA_Widget_Sel extends AA_Widget {
 
 /** Radio Button widget */
 class AA_Widget_Rio extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -947,10 +863,10 @@ class AA_Widget_Rio extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'columns'                => new AA_Property( 'columns',                _m("Columns"),              'int',  false, true, 'int',  false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3),
@@ -1005,12 +921,6 @@ class AA_Widget_Rio extends AA_Widget {
 /** Date widget */
 class AA_Widget_Dte extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1027,10 +937,10 @@ class AA_Widget_Dte extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'start_year'             => new AA_Property( 'start_year',             _m("Starting Year"),        'int',  false, true, 'int',  false, _m("The (relative) start of the year interval"), '', "1"),
             'end_year'               => new AA_Property( 'end_year',               _m("Ending Year"),          'int',  false, true, 'int',  false, _m("The (relative) end of the year interval"), '', "10"),
@@ -1116,7 +1026,7 @@ class AA_Widget_Dte extends AA_Widget {
                 continue;
             }
             // check if anything is filled
-            if ( !(int)$years[$i] AND !(int)$months[$i] AND !(int)$days[$i] AND !$time[$i]) {
+            if ( !(int)$years[$i] AND !(int)$months[$i] AND !(int)$days[$i] AND !$times[$i]) {
                 continue;
             }
             $year  = $years[$i]  ? $years[$i]  : date('Y'); // specified year or current
@@ -1133,12 +1043,6 @@ class AA_Widget_Dte extends AA_Widget {
 
 /** Check Box widget */
 class AA_Widget_Chb extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
@@ -1193,10 +1097,10 @@ class AA_Widget_Chb extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array ();
     }
 
@@ -1229,12 +1133,6 @@ class AA_Widget_Chb extends AA_Widget {
 /** Multiple Checkboxes widget */
 class AA_Widget_Mch extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1251,10 +1149,10 @@ class AA_Widget_Mch extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'columns'                => new AA_Property( 'columns',                _m("Columns"),              'int',  false, true, 'int',  false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3),
@@ -1353,12 +1251,6 @@ class AA_Widget_Mch extends AA_Widget {
 /** Multiple Selectbox widget */
 class AA_Widget_Mse extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1375,10 +1267,10 @@ class AA_Widget_Mse extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
@@ -1394,12 +1286,6 @@ class AA_Widget_Mse extends AA_Widget {
 
 /** Two Boxes widget */
 class AA_Widget_Wi2 extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1417,10 +1303,10 @@ class AA_Widget_Wi2 extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
@@ -1440,12 +1326,6 @@ class AA_Widget_Wi2 extends AA_Widget {
 /** File Upload widget */
 class AA_Widget_Fil extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1462,10 +1342,10 @@ class AA_Widget_Fil extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'allowed_ftypes'         => new AA_Property( 'allowed_ftypes',         _m("Allowed file types"),   'string', false, true, 'string', false, '', '', "image/*"),
             'label'                  => new AA_Property( 'label',                  _m("Label"),                'string', false, true, 'string', false, _m("To be printed before the file upload field"), '', _m("File: ")),
@@ -1611,12 +1491,6 @@ class AA_Widget_Fil extends AA_Widget {
 /** Tag input - in fact the result is wery similar to related item window - it adds related items */
 class AA_Widget_Tag extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1630,10 +1504,10 @@ class AA_Widget_Tag extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
@@ -1714,12 +1588,6 @@ class AA_Widget_Tag extends AA_Widget {
 /** Related Item Window widget */
 class AA_Widget_Iso extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1733,10 +1601,10 @@ class AA_Widget_Iso extends AA_Widget {
         return true;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'row_count'              => new AA_Property( 'row_count',              _m("Row count in the list"),'int',  false, true, 'int',  false, '', '', 15),
@@ -1758,12 +1626,6 @@ class AA_Widget_Iso extends AA_Widget {
 /** Do not show widget */
 class AA_Widget_Nul extends AA_Widget {
 
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1777,22 +1639,16 @@ class AA_Widget_Nul extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array ();
     }
 }
 
 /** Hierachical constants widget */
 class AA_Widget_Hco extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1810,10 +1666,10 @@ class AA_Widget_Hco extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-     function getClassProperties()  {
+     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'level_count'            => new AA_Property( 'level_count',            _m("Level count"),          'int',  false, true, 'int',  false, _m("Count of level boxes"), '', "3"),
@@ -1872,12 +1728,6 @@ class AA_Widget_Hco extends AA_Widget {
 
 /** Password and Change password widget */
 class AA_Widget_Pwd extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1939,10 +1789,10 @@ class AA_Widget_Pwd extends AA_Widget {
         return new AA_Value(ParamImplode(array('AA_PASSWD',reset($data4field))), $flag);
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-     function getClassProperties()  {
+     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'width'                  => new AA_Property( 'width',                  _m("Width"),                         'int',  false, true, 'int',  false, _m("width of the three fields in characters (size parameter)"),     '',  60),
             'change_label'           => new AA_Property( 'change_label',           _m("Label for Change Password"),     'string', false, true, 'string', false, _m("Replaces the default 'Change Password'"), '', _m("Change your password")),
@@ -1956,12 +1806,6 @@ class AA_Widget_Pwd extends AA_Widget {
 
 /** Hidden field widget */
 class AA_Widget_Hid extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1979,10 +1823,10 @@ class AA_Widget_Hid extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-     function getClassProperties()  {
+     static function getClassProperties()  {
         return array ();
     }
 
@@ -1997,12 +1841,6 @@ class AA_Widget_Hid extends AA_Widget {
 
 /** Info text - just Output */
 class AA_Widget_Inf extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -2020,10 +1858,10 @@ class AA_Widget_Inf extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-     function getClassProperties()  {
+     static function getClassProperties()  {
         return array ();
     }
 
@@ -2039,12 +1877,6 @@ class AA_Widget_Inf extends AA_Widget {
 
 /** Local URL Picker widget */
 class AA_Widget_Lup extends AA_Widget {
-
-    /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -2062,10 +1894,10 @@ class AA_Widget_Lup extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-     function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'url'                    => new AA_Property( 'url',                    _m("URL"),                  'string', false, true, 'string', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml"))
             );
@@ -2171,7 +2003,7 @@ class AA_Property extends AA_Storable {
         $this->type                        = $type;
         $this->multi                       = $multi;
         $this->persistent                  = $persistent;
-        $this->validator                   = is_object($validator) ? $validator : AA_Validate::factory($validator ? $validator : $type);
+        $this->validator                   = is_object($validator) ? $validator : AA_Validate::factoryCached($validator ? $validator : $type);
         $this->required                    = $required;
         $this->input_help                  = $input_help;
         $this->input_morehlp               = $input_morehlp;
@@ -2183,10 +2015,10 @@ class AA_Property extends AA_Storable {
         $this->default                     = $default;
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (
             //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'id'                          => new AA_Property( 'id'                         , _m('id'                         ), 'string',   false),
@@ -2267,6 +2099,48 @@ class AA_Property extends AA_Storable {
         return $val;
     }
 
+    /** returns default widget for given property - it tries to identify,
+     *  if it is multiple, uses constants, is bool, ...
+     */
+    function addPropertyFormrows($form) { 
+        if ($this->isObject()) {
+            if (is_callable(array($this->type, 'addFormrows'))) {
+                return call_user_func_array(array($this->type, 'addFormrows'), array($form));
+            }
+            throw new Exception('Can\'t generate widget for '.$this->type.' object property');
+            return null;
+        }
+
+        $values = $this->getConstants();
+        $widget = ''; 
+        if ($this->isMulti()) {
+            if (empty($values)) {
+                $widget = new AA_Widget_Mfl();
+            } 
+            elseif (count($values) < 5) {
+                $widget = new AA_Widget_Mch(array('const_arr' => $values));
+            } else {
+                $widget = new AA_Widget_Mse(array('const_arr' => $values));
+            }
+        } 
+        elseif (!empty($values)) {
+            $widget = new AA_Widget_Sel(array('const_arr' => $values));
+        }
+        elseif ($this->type == 'bool') {
+            $widget = new AA_Widget_Chb();
+        } 
+        elseif ($this->type == 'text') {
+            $widget = new AA_Widget_Txt();
+        }
+        else {
+            $widget = new AA_Widget_Fld();
+        }
+        
+        return $form->addRow(new AA_Formrow_Full($this, $widget));
+    }
+
+   
+
     function validate($value_arr) {
         $valid  = true;
         foreach ( $value_arr as $v) {
@@ -2326,7 +2200,7 @@ class AA_Property extends AA_Storable {
 //            } elseif (!empty($value)) {
 //                throw new Exception('Property marked as multi but do not contain array value');
 //            not necessary - we must call validate before object saving,
-//            so this king of thing is already spotted
+//            so this kind of thing is already spotted
             }
         } else {
             $ret = $this->_saveSingle($value, $object_id, 0, $owner_id);
@@ -2341,8 +2215,8 @@ class AA_Property extends AA_Storable {
      * @param $priority
      */
     private function _saveSingle($value, $object_id, $priority=0, $owner_id) {
-//      not necessary - we must call validate before objest saving,
-//      so this king of thig is already spotted
+//      not necessary - we must call validate before object saving,
+//      so this kind of thig is already spotted
 //      if ( is_array($value) ) {
 //          throw new Exception('Property marked as scalar (not multi) but contain array value');
 //      }

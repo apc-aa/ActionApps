@@ -63,7 +63,7 @@ class AA_Aliasfunc extends AA_Object {
     /** allows storing form in database
      *  AA_Object's method
      */
-    function getClassProperties() {
+    static function getClassProperties() {
         return array (          //           id       name       type        multi  persist validator, required, help, morehelp, example
             'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', true,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
@@ -2480,7 +2480,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
         }
         $s_arr = (strlen($slices)==0) ? array() : explode('-', $slices);
 
-        return call_user_func_array(array('AA_Trees', $func), array($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort, $s_arr));
+        return AA_Trees::$func($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort, $s_arr);
     }
 }
 
@@ -3879,12 +3879,12 @@ class AA_Unalias_Callback {
             // main stringexpand functions.
             // @todo switch most of above constructs to standard AA_Stringexpand...
             // class
-            if ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $outcmd, array('item'=>$this->item, 'itemview'=> $this->itemview)))) {
+            if ( !is_null($stringexpand = AA_Serializable::factoryByName($outcmd, array('item'=>$this->item, 'itemview'=> $this->itemview), 'AA_Stringexpand_'))) {
                 if ( $stringexpand->doCache() ) {
                     $key = hash('md5',$out.$stringexpand->additionalCacheParam());
                     $res = $contentcache->get_result_by_id($key, array($stringexpand, 'parsexpand'), $outparam);
                 } else {
-                    $res = call_user_func_array( array($stringexpand,'parsexpand'), array($outparam));
+                    $res = $stringexpand->parsexpand($outparam);
                 }
                 return $stringexpand->doQuoteColons() ? QuoteColons($res) : $res;
             }

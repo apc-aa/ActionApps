@@ -152,8 +152,8 @@ if ($update) {
         // mark as multiple
         // Mark field as multiple is not necessary - we can remove this
         // property in the future. Honza, 17.10.2006
-        $widget_class = AA_Object::constructClassName('AA_Widget_', $input_show_func_f);
-        Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (call_user_func(array($widget_class,'multiple')) ? 1 : 0)));
+        $widget_class = AA_Widget::constructClassName($input_show_func_f);
+        Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : ($widget_class::multiple() ? 1 : 0)));
 
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
             Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
@@ -168,7 +168,7 @@ if ($update) {
         // the constants are packed in order it could be easily passed
         // to another script
         $input_show_func_c_real = ($input_show_func_c{0} == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
-        $isf_parameters = call_user_func(array($widget_class,'getClassProperties'));
+        $isf_parameters = $widget_class::getClassProperties();
         $isf            = $input_show_func_f;
         if (isset($isf_parameters['const'])) {
             $isf .= ':'.$input_show_func_c_real;
@@ -280,8 +280,8 @@ if ( !$update ) {      // load defaults
     get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
 
     // which parameters uses this widget?
-    $widget_class   = AA_Object::constructClassName('AA_Widget_', $input_show_func_f);
-    $isf_parameters = call_user_func(array($widget_class,'getClassProperties'));
+    $widget_class   = AA_Widget::constructClassName($input_show_func_f);
+    $isf_parameters = $widget_class::getClassProperties();
 
     if ( isset($isf_parameters['const'])) {
         get_params($input_show_func_p, $input_show_func_c_real, $input_show_func_p);
@@ -348,7 +348,7 @@ FrmTabCaption(_m("Field properties"). ': '. myspecialchars($fld['name']. ' ('.$f
 
 $input_show_classes = AA_Components::getClassNames('AA_Widget_');
 foreach ($input_show_classes as $class) {
-    $isc_arr[strtolower(substr($class, 10))] = call_user_func(array($class, 'name'));
+    $isc_arr[strtolower(substr($class, 10))] = $class::name();
 }
 
 echo "

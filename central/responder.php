@@ -320,7 +320,7 @@ if ( !is_object($request)) {
     exit;
 }
 
-$responder = AA_Object::factoryByName('AA_Responder_', $request->getCommand(), $request->getParameters());
+$responder = AA_Responder::factoryByName($request->getCommand(), $request->getParameters());
 if ( empty($responder) ) {
     AA_Response::error(_m("Bad request sent for responder.php - %1", array($request->getCommand())), 103);  // error code > 0
     exit;

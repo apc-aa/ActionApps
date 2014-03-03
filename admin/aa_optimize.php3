@@ -56,9 +56,9 @@ $optimize_descriptions = array();
 
 foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     // call static class methods
-    $optimize_names[]        = call_user_func(array($optimize_class, 'name'));
-    $description             = call_user_func(array($optimize_class, 'description'));
-    $actions                 = call_user_func(array($optimize_class, 'actions'));
+    $optimize_names[]        = $optimize_class::name();
+    $description             = $optimize_class::description();
+    $actions                 = $optimize_class::actions();
 
     $row = "
     <div>

@@ -76,10 +76,10 @@ class AA_Manager extends AA_Storable {
     //             - we want to have it fresh (from constructor and $settings))
     var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin', 'module_id', '_manager_id');
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'searchbar'   => new AA_Property( 'searchbar',   _m("Searchbar"),  'AA_Searchbar', false, true),
             'scroller'    => new AA_Property( 'scroller',    _m("Scroller"),   'AA_Scroller',  false, true),
@@ -99,10 +99,7 @@ class AA_Manager extends AA_Storable {
     function AA_Manager($manager_id, $settings) {
         global $r_state, $sess, $auth;
 
-        $this->show = isset($settings['show']) ?
-                      $settings['show'] :
-                      ( MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS );
-
+        $this->show        = isset($settings['show']) ? $settings['show'] : ( MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS );
         $this->module_id   = $settings['module_id'];
         $this->_manager_id = $manager_id;
 
@@ -689,14 +686,14 @@ class AA_Manageraction extends AA_Storable {
         }
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      *
      *  We extending AA_Storable, because we want to get the state form some
      *  actions. Action selectbox is able to display settings by AJAX call, where
      *  we need to pass all parameters of the object
      */
-    function getClassProperties() {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties() {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
         return array (
             'id'            => new AA_Property( 'id',           _m('Action ID'),                  'text', false, true),
             'open_url'      => new AA_Property( 'open_url',     _m('URL to open' ),               'text', false, true),

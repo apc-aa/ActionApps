@@ -48,7 +48,7 @@ if (!IfSlPerm(PS_MODW_SETTINGS)) {
 
 $module_id = $slice_id;
 
-$manager_settings = AA_Object::getManagerConf('AA_Aliasfunc', get_aa_url('modules/site/aliases.php3'));
+$manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php3'));
 
 $manager = new AA_Manager('aliases'.$module_id, $manager_settings);
 $manager->performActions();

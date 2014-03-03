@@ -47,7 +47,7 @@ if (!IfSlPerm(PS_FORMS)) {
 
 $module_id = $slice_id;
 
-$manager_settings = AA_Object::getManagerConf('AA_Plannedtask', get_admin_url('se_tasks.php3'));
+$manager_settings = AA_Plannedtask::getManagerConf(get_admin_url('se_tasks.php3'));
 $manager = new AA_Manager('task'.$module_id, $manager_settings);
 $manager->performActions();
 

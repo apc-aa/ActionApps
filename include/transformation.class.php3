@@ -33,11 +33,9 @@
  *  some fields, the return item should has some fields, so we call
  *  Transformations for all fields of destination item and construct it this way
  *
- *  Main method is transform, which do the all work.
- *
- *  @todo this class should be abstract after we switch to PHP5
+ *  Main method is transform(), which do the all work.
  */
-class AA_Transformation {
+abstract class AA_Transformation {
     var $messages   = array();
     var $parameters = array();
 
@@ -847,7 +845,8 @@ class AA_Transformator {
     */
     function transform($zids, $field_id, $transformation, $silent=true) {
 
-        $updated_items  = 0;  // number of updated items
+        $updated_items     = 0;         // number of updated items
+        $slices2invalidate = array();
 
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
 

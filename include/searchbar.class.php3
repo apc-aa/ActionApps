@@ -74,10 +74,10 @@ class AA_Searchbar_Row extends AA_Storable {
     var $classname        = "AA_Searchbar_Row";
     var $persistent_slots = array('condition', 'readonly');
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      * @param $class
      */
-    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'condition' => new AA_Property( 'condition'  , _m('Condition'), 'AA_Condition', false, true),
             'readonly'  => new AA_Property( 'readonly'   , _m('Readonly' ), 'bool',         false, true)
@@ -168,10 +168,10 @@ class AA_Searchbar extends AA_Storable {
             // save only small or dynamicaly changed values - not base setting
             array("search_row", "order_row");
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'search_row' => new AA_Property( 'search_row'  , _m('Search row'), 'AA_Searchbar_Row', true, true),
             'order_row'  => new AA_Property( 'order_row'   , _m('Order row' ), 'text',             true, true)   // @todo probably it should be done better, since it is in fact array of arrays
@@ -421,7 +421,7 @@ class AA_Searchbar extends AA_Storable {
      *  (through stored seaches feature), which do not use AA_Searchbar_Row
      * @return 2
      */
-    function version() {
+    static function version() {
         return 2;
     }
 

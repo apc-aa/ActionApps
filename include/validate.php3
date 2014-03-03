@@ -63,13 +63,13 @@ define('VALIDATE_ERROR_NOT_IN_LIST',      409);
  *      if ( AA_Validate::validate($variable, 'int') ) {...};
  *      if ( AA_Validate::validate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
  */
-class AA_Validate {
+class AA_Validate extends AA_Serializable {
 
-    /** factory function
+    /** factoryCached function
      *  Returns validators for standard data types
      *   @param $v_type is string, or array($type,$parameter)
      */
-    function &factory($v_type) {
+    function factoryCached($v_type) {
         static $standard_validators = array();
 
         list ($type, $parameters) = is_array($v_type) ? $v_type : array($v_type, array());
@@ -121,9 +121,9 @@ class AA_Validate {
      * @param $default
      */
     function validate(&$var, $type, $default='AA_noDefault') {
-        $validator = AA_Validate::factory($type);
+        $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', array($type)), $default);
+            return self::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', array($type)), $default);
         }
         return $validator->validate($var);
     }
@@ -136,7 +136,7 @@ class AA_Validate {
      * @param $type
      */
     function filter($vararray, $type) {
-        return array_filter((array)$vararray, array(AA_Validate::factory($type),'validate'));
+        return array_filter((array)$vararray, array(self::factoryCached($type),'validate'));
     }
 
     /** checks if the variable is empty */
@@ -165,7 +165,7 @@ class AA_Validate {
      * @return last error message - it is grabbed from static variable
      *  of lastErr() method */
     function lastErrMsg() {
-        return AA_Validate::lastErr(null, null, true);
+        return self::lastErr(null, null, true);
     }
 
     /** bad function
@@ -176,71 +176,18 @@ class AA_Validate {
      * @param $default
      */
     function bad(&$var, $err_id, $err_msg, $default) {
-        AA_Validate::lastErr($err_id, $err_msg);
+        self::lastErr($err_id, $err_msg);
         if ( $default != 'AA_noDefault' ) {
             $var = $default;
         }
         return false;
     }
 
-
-        /** parseClassProperties function
-     *  Parses class parameters from the string, which is stored in the database
-     *  Typical use is for fields.input_show_func, where parameters are stored
-     *  as string in the form: fnc:const:param
-     *  @param $class_mask
-     *  @param $param
-     *  @return asociative array of parameters, the name of parameters is given
-     *  by the class itself ($class_mask . fnc).
-     */
-    function parseClassProperties($class_mask, $string) {
-        // we do not use ParamExplode() - I  do not like the http:// replacement there
-        $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
-
-        // first parameter is the class identifier - the parameters starts then
-        $i      = 1;
-        $class  = AA_Object::constructClassName($class_mask, str_replace('-','',$splited[0]));
-        $params = array('class' => $class);
-
-        if ( class_exists($class) ) {
-            // ask class, which parameters uses
-            // call AA_Widget_Txt::getClassProperties()), for example
-            foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name => $property) {
-                if (isset($splited[$i])) {
-                    $params[$name] = $splited[$i++];
-                }
-            }
-        }
-        return $params;
-    }
-
-
-    /** ask class, which parameters uses and fill it
-     *  copied from AA_Object
-     */
-    function __construct($params=array()) {
-        $class = get_class($this);
-        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name =>$property) {
-            if (isset($params[$name])) {
-                $this->$name = $params[$name];
-            }
-        }
-    }
-
-    function getClassProperties()  {
-        return array ();
-    }
-
-    function &factoryByString($class_mask, $string) {
-        $params = self::parseClassProperties($class_mask, $string);
-        $classname = $params['class'];
-        return class_exists($classname) ? new $classname($params) : null;
-    }
-
     /** returns the type attribute for the HTML 5 <input> tag with possible some more attributtes (like min, max, step, pattern, ...) */
     function getHtmlInputAttr() {
         return '';
     }
+   
 }
 
 /** Test for integer value
@@ -258,11 +205,11 @@ class AA_Validate_Number extends AA_Validate {
     /** Step */
     var $step;
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_validate table)
      *  copied from $VALIDATE_TYPES
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (
                  // we use array instead of "new AA_Property", because then it makes infinite loop - AA_Property contains validator...
                  //           id                        name                        type    multi  persist validator, required, help, morehelp, example
@@ -380,7 +327,7 @@ class AA_Validate_Float extends AA_Validate {
     /** Maximum number */
     var $f_max;
 
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'f_min'  => array( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
             'f_max'  => array( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
@@ -416,7 +363,7 @@ class AA_Validate_Regexp extends AA_Validate {
     var $pattern;
     var $empty_expression = '/^\s*$/';
 
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
             'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/')
@@ -448,7 +395,7 @@ class AA_Validate_Enum extends AA_Validate {
     /** Enumeration array (array of possible values). Values are stored as keys. */
     var $possible_values;
 
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'possible_values' => array( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
             );
@@ -530,11 +477,11 @@ class AA_Validate_Unique extends AA_Validate {
     /** Item, which we do not count (current item) */
     var $item_id;
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_validate table)
      *  copied from $VALIDATE_TYPES
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
@@ -594,11 +541,11 @@ class AA_Validate_Eunique extends AA_Validate {
     /** Item, which we do not count (current item) */
     var $item_id;
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_validate table)
      *  copied from $VALIDATE_TYPES
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
@@ -671,7 +618,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
                              $validator = new AA_Validate_Eunique( $val_param );
                          }
                          break;
-        default:         $validator = AA_Validate::factory($type);
+        default:         $validator = AA_Validate::factoryCached($type);
     }
 
     $ret = true;

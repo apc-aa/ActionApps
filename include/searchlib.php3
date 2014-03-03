@@ -113,11 +113,11 @@ class AA_Condition extends AA_Object {
 
     /// Static ///
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
             /** Array of compared fields */
             'fields'   => new AA_Property( 'fields',   _m("Fields"),   'text',  true,  true, 'field' ),
@@ -256,11 +256,11 @@ class AA_Sortorder extends AA_Object {
 
     /// Static ///
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
             'field' => new AA_Property( 'field', _m("Field"),      'text',  false,  true, 'field' ),
             'desc'  => new AA_Property( 'desc',  _m("Descending"), 'text',  false,  true, 'bool' ),
@@ -797,10 +797,10 @@ class AA_Set extends AA_Object {
 
     /// Static ///
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties()  {
+    static function getClassProperties()  {
         return array (                //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
             /** Array of AA_Condition */
             'conds'  => new AA_Property( 'conds',  _m("Conditions"), 'AA_Condition',  true, true ),
@@ -808,9 +808,12 @@ class AA_Set extends AA_Object {
             'sort'   => new AA_Property( 'sort',   _m("Sort"),       'AA_Sortorder',  true, true ),
             /** array of slice_ids */
             'slices' => new AA_Property( 'slices', _m("Slices"),     'text',          true, true )
+     //     'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             );
     }
 
+    // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
+    // static function getForm($oid=null, $owner=null, $otype=null) ... could be redefined here, but we use the standard one from AA_Object
 }
 
 /** getSortFromUrl function

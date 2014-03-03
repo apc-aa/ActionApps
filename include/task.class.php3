@@ -41,7 +41,7 @@ class AA_Plannedtask extends AA_Object {
     /** allows storing form in database
      *  AA_Object's method
      */
-    function getClassProperties() {
+    static function getClassProperties() {
         return array (          //           id        name       type        multi  persist validator, required, help, morehelp, example
             'task'    => new AA_Property( 'task',  _m("Task"),         'text',    false, true, '', true),
             'time'    => new AA_Property( 'time',  _m("Time to run"),  'string',  false, true, '', true, _m('Specify the time, when the task shoud be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="http://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>"Monday 10:00" - runs every Monday at 16:00<br>"first day of this month 10:00"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.')),

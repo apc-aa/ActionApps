@@ -52,10 +52,10 @@ class AA_Scroller extends AA_Storable {
     var $classname        = "AA_Scroller";
     var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir", "sortcol", "filters", "itmcnt", "metapage", "urldefault");
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+    static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'pgcnt'      => new AA_Property( 'pgcnt'     , _m('Pgcnt'     ), 'int',  false, true),
             'current'    => new AA_Property( 'current'   , _m('Current'   ), 'int',  false, true),

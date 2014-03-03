@@ -25,7 +25,7 @@
  *
 */
 
-/** for default_fnc_*()   */
+/** for AA_Generator_*   */
 require_once AA_INC_PATH."itemfunc.php3";
 
 class AA_Field {
@@ -123,9 +123,9 @@ class AA_Field {
    //        }
             //huhl($this->data);
 
-            // $this->widget = AA_Widget::factoryByString('AA_Widget_', $widget_type ? $widget_type : $this->data['input_show_func']);
-            $params       = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
-            $widget_class = $widget_type ? AA_Object::constructClassName('AA_Widget_', $widget_type) : $params['class'];
+            // $this->widget = AA_Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
+            $params       = AA_Widget::parseClassProperties($this->data['input_show_func']);
+            $widget_class = $widget_type ? AA_Widget::constructClassName($widget_type) : $params['class'];
             if (!class_exists($widget_class)) {
                 $widget_class = $params['class'];
             }
@@ -139,16 +139,13 @@ class AA_Field {
 
 
     /** getDefault function
-     * @param $f
      */
     function getDefault() {
         // all default should have fnc:param format
-        $fnc = ParseFnc($this->data['input_default']);
-        if ($fnc) {                     // call function
-            $fncname = 'default_fnc_' . $fnc["fnc"];
-            return new AA_Value($fncname($fnc["param"]), (($this->data['html_default']>0) ? FLAG_HTML : 0));
+        if (!($generator = AA_Generator::factoryByString($this->data['input_default']))) {
+            return null;
         }
-        return null;
+        return $generator->generate()->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
     }
 
     /** getAliases function
@@ -216,7 +213,7 @@ class AA_Field {
                                 $this->getProperty('text_stored') ? 'text' : 'int',
                                 $multiple,
                                 false,                   // persistent @todo
-                                AA_Validate::factoryByString('AA_Validate_', $this->data['input_validate']), // null,              // $validator - @todo create validator
+                                AA_Validate::factoryByString($this->data['input_validate']), // null,              // $validator - @todo create validator
                                 $required ? true : $this->required(),
                                 $this->getProperty('input_help'),
                                 $this->getProperty('input_morehlp'),
@@ -288,7 +285,7 @@ class AA_Field {
      *  @return slice_id if constants are from slice, empty string otherwise
      */
     function getRelation() {
-        $showfunc = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
+        $showfunc = AA_Widget::parseClassProperties($this->data['input_show_func']);
         if (!$showfunc['const']) {
             return array();
         }

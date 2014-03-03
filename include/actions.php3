@@ -272,14 +272,14 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
         return _m('Move to another slice');
     }
 
-    /** getClassProperties function
+    /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      *
      *  We extending AA_Storable, because we want to get the state form some
      *  actions. Action selectbox is able to display settings by AJAX call, where
      *  we need to pass all parameters of the object
      */
-    function getClassProperties() {
+    static function getClassProperties() {
         $properties = parent::getClassProperties();
         //                                          id             name                              type    multi  persistent - validator, required, help, morehelp, example
         $properties['slice_id'] = new AA_Property( 'slice_id',  _m('Slice ID'),                    'text', false, true);

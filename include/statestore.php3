@@ -29,6 +29,114 @@
  * @link      http://www.apc.org/ APC
 */
 
+/** allows serialize objects */
+abstract class AA_Serializable {
+    
+    /** factory function
+     * @param $classname
+     * @param $params
+     */
+    static function factory($classname, $params=null) {
+        return class_exists($classname) ? new $classname($params) : null;
+    }
+
+    /** factoryByName function - creates any object based on mask and name:
+     *   AA_Stingexpand::factoryByName('', $params);
+     * @param $name
+     * @param $params
+     */
+    static function factoryByName($name, $params=null, $class_mask=null) {
+        return self::factory(static::constructClassName($name, $class_mask), $params);
+    }
+    
+    /** factoryByString function
+     *  Creates object from the string, which is used for storing setting in
+     *  the database (older approach). The string looks like:
+     *    dte:1:10:1
+     *  which means, that it is instance of AA_Widget_Dte (when $class_mask == 'AA_Widget')
+     *  and the properties are filled with values 1, 10 and 1 (in this order)
+     *
+     * @param $string     like dte:1:10:1 in field.input_show_func
+     * @param $class_mask like 'AA_Widget' or empty if it is the same class
+     */
+    static function factoryByString($string) {
+        $params = static::parseClassProperties($string);
+        return static::factory($params['class'], $params);
+    }    
+
+    /** Constructor
+     *  @param $params array of parameters in form 'property_name' => 'value'
+     */
+    function __construct($params=array()) {
+        // ask class, which parameters uses and fill it
+        // call AA_Widget_Txt::getClassProperties()), for example
+        $this->setProperties($params);
+    }
+
+    function setProperties($params=array()) {
+        $props = static::getClassProperties();
+        foreach ($props as $name =>$property) {
+            if (isset($params[$name])) {
+                $this->$name = $params[$name];
+            }
+        }
+    }    
+
+    /** getClassProperties function of AA_Serializable
+     *   - abstract method defining the class properties
+     *   - properties are used for two reasons
+     *      - it could be stored in the database object storage when the object
+     *        is stored (save()) (when persistent is set to true)
+     *      - the object could be edited on html page - the form is automaticaly
+     *        created using the properties (@see AA_Components)
+     *  static
+     */
+    static function getClassProperties()  {
+        // array of AA parameters (can't be object's data, since we need
+        // to call it staticaly (as class method)
+        return array();
+    }
+
+    /** create the name of class from the type and name
+     *  static class method
+     **/
+    function constructClassName($name, $class_mask=null) {
+        return ($class_mask ?: get_called_class().'_'). ucwords(strtolower(str_replace('-','',$name)));   // str_replace probably for validator e-mail, but maybe not neccessary
+    }
+
+    /** parseClassProperties function
+     *  Parses class parameters from the string, which is stored in the database
+     *  Typical use is for fields.input_show_func, where parameters are stored
+     *  as string in the form: fnc:const:param
+     *  @param $param
+     *  @return asociative array of parameters, the name of parameters is given
+     *  by the class itself ($class_mask . fnc).
+     */
+    static function parseClassProperties($string) {
+        // we do not use ParamExplode() - I  do not like the http:// replacement there
+        $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
+
+        // first parameter is the class identifier - the parameters starts then
+        $i      = 1;
+        $class  = self::constructClassName($splited[0], get_called_class().'_');
+        $params = array('class' => $class);
+
+        if ( class_exists($class) ) {
+            // ask class, which parameters uses
+            // call AA_Widget_Txt::getClassProperties()), for example
+            $props = $class::getClassProperties();
+            foreach ($props as $name =>$property) {
+                if (isset($splited[$i])) {
+                    $params[$name] = $splited[$i++];
+                }
+            }
+        }
+        return $params;
+    }
+}    
+    
+
+
 /**
  * AA_Storable - abstract class which implements methods for storing and
  * restoring class data (used in searchbar class, manager class, ...).
@@ -38,7 +146,25 @@
  * where you specify all the variables you want to store. Then you just call
  * getState() and setFromState() methods for storing and restoring object's data
  */
-class AA_Storable {
+class AA_Storable extends AA_Serializable {
+
+
+    /** getPersistentProperties function
+     *  Returns array of persistent slots (AA_property)
+     *  Uses getClassProperties() method of the classes from which it grabs all
+     *  all persistent properties
+     * @param $class
+     */
+    static function getPersistentProperties() {
+        $ret        = array();
+        $properties = static::getClassProperties();
+        foreach ( $properties as $id => $property) {
+            if ( $property->isPersistent() ) {
+                $ret[$id] = $property;
+            }
+        }
+        return $ret;
+    }
 
     /** setFromState function
      * Restores the object's data from $state
@@ -47,21 +173,17 @@ class AA_Storable {
      *                      you will get by getState() method.
      */
     function setFromState(&$state) {
-        // we need to call getPersistentProperties() with $class parameter
-        // because generic static class method (@see below)
-        // in AA_Storable is not able to detect, what type of class it is in
-        // Grrr! PHP (5.2.0)
-
         // first - deal with versioning
         // convert state to last version
         $object_version = max($state['aa_version'], 1);
-        if ( call_user_func(array(get_class($this), 'version')) > $object_version) {
+        if ( static::version() > $object_version) {
             // if some object uses version > 1,then method convertState()
             // should be defined
             $state = $this->convertState($object_version, $state);
         }
 
-        foreach (call_user_func_array(array(get_class($this), 'getPersistentProperties'), array(get_class($this))) as $property) {
+        $props = static::getPersistentProperties();
+        foreach ($props as $property) {
             $property_id   = $property->getId();
             $propery_value = $this->$property_id;
             if ($property->isMulti()) {
@@ -115,8 +237,9 @@ class AA_Storable {
      * restoring (by setFromState() method)
      */
     function getState() {
-        $class = get_class($this);
-        foreach (call_user_func_array(array($class, 'getPersistentProperties'), array($class)) as $property) {
+        $ret   = array();
+        $props = static::getPersistentProperties();
+        foreach ($props as $property) {
             $property_id   = $property->getId();
             if ($property->isMulti()) {
                 if ( is_array($this->$property_id) ) {
@@ -129,11 +252,11 @@ class AA_Storable {
             }
         }
         // add version if it is not 1
-        if ( ($version = call_user_func(array($class, 'version'))) > 1) {
+        if ( ($version = static::version()) > 1) {
             $ret['aa_version'] = $version;
         }
         // we need the exact class in order we can factory the object from state
-        $ret['aa_class']   = $class;
+        $ret['aa_class']   = get_called_class();
         return $ret;
     }
 
@@ -144,31 +267,8 @@ class AA_Storable {
      *  Used for getting state from data, which was stored sometimes in
      *  the history, so the inner structure of the class was changed
      */
-    function version() {
+    static function version() {
         return 1;
-    }
-
-    /** getPersistentProperties function
-     *  Returns array of persistent slots (AA_property)
-     *  Uses getClassProperties() method of the classes from which it grabs all
-     *  all persistent properties
-     * @param $class
-     */
-    function getPersistentProperties($class=null) {
-        // we need to call getPersistentProperties() with $class parameter
-        // because this generic static classs method is not able to detect, what
-        // type of class it is in. Grrr! PHP (5.2.0)
-        $ret = array();
-
-        if (is_callable(array($class, 'getClassProperties'))) {
-            $properties = call_user_func(array($class, 'getClassProperties'));
-            foreach ( $properties as $id => $property) {
-                if ( $property->isPersistent() ) {
-                    $ret[$id] = $property;
-                }
-            }
-        }
-        return $ret;
     }
 }
 
@@ -188,24 +288,6 @@ class AA_Object extends AA_Storable {
      *   aa_version    - version of the object class (if it is not 1)
      *   aa_subobjects - helper field used for quicker load of object
      */
-
-    /** Constructor
-     *  @param $params array of parameters in form 'property_name' => 'value'
-     */
-    function AA_Object($params=array()) {
-        // ask class, which parameters uses and fill it
-        // call AA_Widget_Txt::getClassProperties()), for example
-        $this->setProperties($params);
-    }
-
-    function setProperties($params=array()) {
-        $class = get_class($this);
-        foreach (call_user_func(array($class, 'getClassProperties')) as $name =>$property) {
-            if (isset($params[$name])) {
-                $this->$name = $params[$name];
-            }
-        }
-    }
 
     /** setOwnerId function
      * @param $owner_id
@@ -262,31 +344,30 @@ class AA_Object extends AA_Storable {
         $this->delete();
         $object_id = $this->getId();
 
-        $class = get_class($this);
-        foreach (call_user_func(array($class, 'getClassProperties')) as $property) {
+        $props = static::getClassProperties();
+        foreach ($props as $property) {
             $property_id   = $property->getId();
             $property->save($this->$property_id, $object_id, $this->getOwnerId());
         }
-
                         //        id                        name                        type    multi  persist validator, required, help, morehelp, example
-        $prop = AA_Object::getPropertyObject('aa_type');
+        $prop = self::getPropertyObject('aa_type');
         $prop->save(get_class($this), $object_id);
 
-        $ver = call_user_func(array($class, 'version'));
+        $ver = static::version();
         if ($ver < 1) {
-            $prop = AA_Object::getPropertyObject('aa_version');
-            $prop->save(call_user_func(array($class, 'version')), $object_id);
+            $prop = self::getPropertyObject('aa_version');
+            $prop->save($ver, $object_id);
         }
 
-        $prop = AA_Object::getPropertyObject('aa_owner');
+        $prop = self::getPropertyObject('aa_owner');
         $prop->save($this->aa_owner, $object_id);
 
         if ( $this->aa_name ) {
-            $prop = AA_Object::getPropertyObject('aa_name');
+            $prop = self::getPropertyObject('aa_name');
             $prop->save($this->aa_name, $object_id);
         }
         // helper field aa_subobjects used for quicker load of object
-        $prop = AA_Object::getPropertyObject('aa_subobjects');
+        $prop = self::getPropertyObject('aa_subobjects');
         $prop->save($this->_getSubObjects(), $object_id);
 
         $this->aftersave();
@@ -328,8 +409,6 @@ class AA_Object extends AA_Storable {
         $varset    = new CVarset;
 
         $sqlin     = Cvarset::sqlin('object_id', $to_delete);
-//        $varset->doDeleteWhere('object_text', Cvarset::sqlin('object_id', AA_Object::query('AA_Set', array('cde50ab466e2211b97ff8f93e7add44f', 'cd8499c809cdbb3b51d026e1e07520c5'))));
-//        exit;
         $varset->doDeleteWhere('object_text',    $sqlin);
         $varset->doDeleteWhere('object_integer', $sqlin);
         $varset->doDeleteWhere('object_float',   $sqlin);
@@ -340,8 +419,8 @@ class AA_Object extends AA_Storable {
      */
     function _getSubObjects() {
         $ret   = array();
-        $class = get_class($this);
-        foreach (call_user_func(array($class, 'getClassProperties')) as $property) {
+        $props = static::getClassProperties();
+        foreach ($props as $property) {
             if (!$property->isObject()) {
                 continue;
             }
@@ -365,21 +444,6 @@ class AA_Object extends AA_Storable {
 
     /// Static ///
 
-    /** getClassProperties function
-     *   - abstract method defining the class properties
-     *   - properties are used for two reasons
-     *      - it could be stored in the database object storage when the object
-     *        is stored (save()) (when persistent is set to true)
-     *      - the object could be edited on html page - the form is automaticaly
-     *        created using the properties (@see AA_Components)
-     *  static
-     */
-    function getClassProperties()  {
-        // array of AA parameters (can't be object's data, since we need
-        // to call it staticaly (as class method)
-        return array();
-    }
-
     /** getNameArray function
      * @param $obj_type
      * @param $owner
@@ -397,78 +461,6 @@ class AA_Object extends AA_Storable {
         return is_array($ret) ? $ret : array();
     }
 
-    /** factory function
-     * @param $classname
-     * @param $params
-     */
-    function &factory($classname, $params=null) {
-        return class_exists($classname) ? new $classname($params) : null;
-    }
-
-    /** factoryByName function - creates any object based on mask and name:
-     *   AA_Object::factoryByName('AA_Responder_', $name);
-     * @param $mask
-     * @param $name
-     * @param $params
-     */
-    function &factoryByName($class_mask, $name, $params=null) {
-        return AA_Object::factory(AA_Object::constructClassName($class_mask, $name), $params);
-    }
-
-    /** create the name of class from the type and name
-     *  static class method
-     **/
-    function constructClassName($class_mask, $name) {
-        return $class_mask. ucwords(strtolower($name));
-    }
-
-
-    /** parseClassProperties function
-     *  Parses class parameters from the string, which is stored in the database
-     *  Typical use is for fields.input_show_func, where parameters are stored
-     *  as string in the form: fnc:const:param
-     *  @param $class_mask
-     *  @param $param
-     *  @return asociative array of parameters, the name of parameters is given
-     *  by the class itself ($class_mask . fnc).
-     */
-    function parseClassProperties($class_mask, $string) {
-        // we do not use ParamExplode() - I  do not like the http:// replacement there
-        $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
-
-        // first parameter is the class identifier - the parameters starts then
-        $i      = 1;
-        $class  = AA_Object::constructClassName($class_mask, $splited[0]);
-        $params = array('class' => $class);
-
-        if ( class_exists($class) ) {
-            // ask class, which parameters uses
-            // call AA_Widget_Txt::getClassProperties()), for example
-            foreach (call_user_func(array($class, 'getClassProperties')) as $name => $property) {
-                if (isset($splited[$i])) {
-                    $params[$name] = $splited[$i++];
-                }
-            }
-        }
-
-        return $params;
-    }
-
-    /** factoryByString function
-     *  Creates object from the string, which is used for storing setting in
-     *  the database (older approach). The string looks like:
-     *    dte:1:10:1
-     *  which means, that it is instance of AA_Widget_Dte (when $class_mask == 'AA_Widget')
-     *  and the properties are filled with values 1, 10 and 1 (in this order)
-     *
-     * @param $class_mask like 'AA_Widget'
-     * @param $string     like dte:1:10:1 in field.input_show_func
-     */
-    function &factoryByString($class_mask, $string) {
-        $params = AA_Object::parseClassProperties($class_mask, $string);
-        return AA_Object::factory($params['class'], $params);
-    }
-
     function loadProperty($id, $property) {
         return GetTable2Array("SELECT value FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'value');
     }
@@ -482,7 +474,7 @@ class AA_Object extends AA_Storable {
      * @param $id
      */
     function getObjectType($id) {
-        return AA_Object::loadProperty($id, 'aa_type');
+        return self::loadProperty($id, 'aa_type');
     }
 
     /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
@@ -496,7 +488,7 @@ class AA_Object extends AA_Storable {
         //    - load object from database in one step using aa_subobjects property of the objects
 
         if ( !$type ) {
-            $type = AA_Object::getObjectType($id);
+            $type = self::getObjectType($id);
         }
 
         if ( !$type ) {
@@ -505,7 +497,7 @@ class AA_Object extends AA_Storable {
 
         $obj = new $type;
         $obj->setId($id);
-        $properties = call_user_func(array($type, 'getClassProperties'));
+        $properties = $type::getClassProperties();
 
         $tab = GetTable2Array("SELECT `property`, `value` FROM object_text WHERE object_id = '$id' ORDER by property, priority", '');
         $props_from_db = is_array($tab) ? $tab : array();
@@ -520,6 +512,7 @@ class AA_Object extends AA_Storable {
         }
 
         // first prepare value array
+        $prop_arr = array();
         foreach ( $props_from_db as $v ) {
             $prop_arr[$v['property']][] = $v['value'];
         }
@@ -557,34 +550,34 @@ class AA_Object extends AA_Storable {
     }
 
 
-    /** query function
-     * Finds object IDs for objects given by conditions
-     *
-     *   @param string        $type   - object type
-     *   @param AA_Slices     $owners - search only objects owned by those slices
-     *   @param $set
-     *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
-     *   @return A zids object with a list of the ids that match the query.
-     *
-     *   @global  bool $debug (in) many debug messages
-     *   @global  bool $nocache (in) do not use cache, even if use_cache is set
-     */
-    function query($type, $owners=null, $set=null, $restrict_zids=null) {
-        // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND
-        // c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
-        global $debug;                 // displays debug messages
-        global $nocache;               // do not use cache, if set
-
-        $SQL = "SELECT o1.object_id FROM object_text as o1, object_text as o2 WHERE o1.object_id=o2.object_id
-                AND o1.property='aa_type'  AND o1.value='".quote($type)."'
-                AND o2.property='aa_owner' AND o2.value='".quote(reset($owners))."'";
-
-        $ids = GetTable2Array($SQL, '', 'object_id');
-        return $ids ? $ids : array();
-
-        // @todo !!! - rewrite it.
-        // do the same as in quryZids for any object
-    }
+   ///** query function
+   // * Finds object IDs for objects given by conditions
+   // *
+   // *   @param string        $type   - object type
+   // *   @param AA_Slices     $owners - search only objects owned by those slices
+   // *   @param $set
+   // *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
+   // *   @return A zids object with a list of the ids that match the query.
+   // *
+   // *   @global  bool $debug (in) many debug messages
+   // *   @global  bool $nocache (in) do not use cache, even if use_cache is set
+   // */
+   //function query($type, $owners=null, $set=null, $restrict_zids=null) {
+   //    // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND
+   //    // c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
+   //    global $debug;                 // displays debug messages
+   //    global $nocache;               // do not use cache, if set
+   //
+   //    $SQL = "SELECT o1.object_id FROM object_text as o1, object_text as o2 WHERE o1.object_id=o2.object_id
+   //            AND o1.property='aa_type'  AND o1.value='".quote($type)."'
+   //            AND o2.property='aa_owner' AND o2.value='".quote(reset($owners))."'";
+   //
+   //    $ids = GetTable2Array($SQL, '', 'object_id');
+   //    return $ids ? $ids : array();
+   //
+   //    // @todo !!! - rewrite it.
+   //    // do the same as in quryZids for any object
+   //}
 
     function querySet($type, $set, $restrict_zids=null) {
 
@@ -596,8 +589,7 @@ class AA_Object extends AA_Storable {
             return new zids(); // restrict_zids defined but empty - no result
         }
 
-        $properties = call_user_func(array($type, 'getClassProperties'));
-
+        $properties = $type::getClassProperties();
 
         // parse conditions ----------------------------------
         $tables_counter = array('object_text'=>1, 'object_integer'=>0, 'object_float'=>0);
@@ -612,6 +604,8 @@ class AA_Object extends AA_Storable {
             $tables_counter['object_text']++;
         }
 
+        $sortable = array();
+        
         // Conditions
         foreach ($conds as $cond) {
             // fill arrays according to this condition
@@ -735,7 +729,7 @@ class AA_Object extends AA_Storable {
         }
 
         if ( count($select_order) ) {                                // order ----------
-            $SQL .= " ORDER BY ". implode(', '. $select_order);
+            $SQL .= " ORDER BY ". implode(', ', $select_order);
         }
 
         // not cached result
@@ -784,15 +778,14 @@ class AA_Object extends AA_Storable {
      *  @static
      */
     function getContent($settings, $zids) {
-        $ret = array();
-
+        $ret        = array();
         $class      = $settings['class'];
-        $properties = call_user_func(array($class, 'getClassProperties'));
+        $properties = $class::getClassProperties();
 
         foreach ($zids as $id) {
             $content = new AA_Content;
 
-            $obj     = call_user_func_array(array($class, 'load'), array($id));
+            $obj     = $class::load($id);
             if (is_null($obj)) {
                 throw new Exception('object not loaded: '. $id);
                 continue;
@@ -839,8 +832,9 @@ class AA_Object extends AA_Storable {
      * @param $params
      * @static
      */
-    static function getManagerConf($object_class, $manager_url, $actions=null, $switches=null) {
-        $properties    = call_user_func(array($object_class, 'getClassProperties'));
+    static function getManagerConf($manager_url, $actions=null, $switches=null) {
+        $object_class  = get_called_class();
+        $properties    = static::getClassProperties();
 
         $aliases       = AA_Object::_generateAliases($properties);
 
@@ -848,7 +842,7 @@ class AA_Object extends AA_Storable {
         $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
         $manager_settings = array(
-             'show'      =>  0, //MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+             'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
              'searchbar' => array(
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,
@@ -862,14 +856,14 @@ class AA_Object extends AA_Storable {
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                  'format'               => array(    // optionaly to manager_vid you can set format array
-                     'compact_top'      => '<div class="aa-items-manager">'. call_user_func_array(array($object_class, 'getManagerTopHtml'), array($search_fields)),
+                     'compact_top'      => '<div class="aa-items-manager">'. static::getManagerTopHtml($search_fields),
                      'category_sort'    => false,
                      'category_format'  => "",
                      'category_top'     => "",
                      'category_bottom'  => "",
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
-                     'odd_row_format'   => call_user_func_array(array($object_class, 'getManagerRowHtml'), array($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url))))),
+                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)))),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
@@ -909,7 +903,7 @@ class AA_Object extends AA_Storable {
         $object->setName($content->getName());
 
         // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3
-        $props = is_null($otype) ? self::getClassProperties() : call_user_func(array($otype, 'getClassProperties'));
+        $props = is_null($otype) ? static::getClassProperties() : $otype::getClassProperties();
 
         foreach ($props as $name => $property) {
             $object->$name = $property->toValue($content->getAaValue($name));
@@ -919,14 +913,15 @@ class AA_Object extends AA_Storable {
     }
 
     /**  AA_Object's method */
-    static function getForm($oid=null, $owner=null, $otype=null) {
-        $form = new AA_Form();
-        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));   // use default widget for the field
+    static function addFormrows($form) {
+        
+//        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
+        AA_Object::getPropertyObject('aa_name')->addPropertyFormrows($form);  // use default widget for the field
 
-        // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3
-        $props = is_null($otype) ? self::getClassProperties() : call_user_func(array($otype, 'getClassProperties'));
+        // self didn't give us the calling class and we do not have late static bindings in PHP < 5.3
+        $props = static::getClassProperties();
         foreach ($props as $name => $property) {
-            $form->addRow(new AA_Formrow_Defaultwidget($property));   // use default widget for the field
+            $property->addPropertyFormrows($form); 
         }
         return $form;
     }
@@ -973,8 +968,8 @@ class AA_Components extends AA_Object {
         $html_options = array('AA_Empty' => '');
         foreach (AA_Components::getClassNames($mask) as $selection_class) {
             // call static class methods
-            $options[$selection_class]      = call_user_func(array($selection_class, 'name'));
-            $html_options[$selection_class] = call_user_func_array(array($selection_class, 'htmlSetting'), array($input_id, &$params));
+            $options[$selection_class]      = $selection_class::name();
+            $html_options[$selection_class] = $selection_class::htmlSetting($input_id, $params);
         }
         return getSelectWithParam($input_id, $options, "", $html_options);
     }

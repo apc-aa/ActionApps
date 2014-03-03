@@ -276,7 +276,7 @@ class inputform {
         }
 
         if (is_array($this->hidden)) {
-            foreach ( (array)$this->hidden as $name => $value) {
+            foreach ( $this->hidden as $name => $value) {
                 $buttons[$name]         = array('value' => $value);
             }
         }
@@ -1234,7 +1234,7 @@ class AA_Inputfield {
         } else {
             $link = ((substr($val,0,7)==='http://') OR (substr($val,0,8)==='https://')) ? '&nbsp;'.a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
             $input_type = 'type="text"';
-            if (is_object($validator = AA_Validate::factoryByString('AA_Validate_', $this->valid))) {
+            if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
                 $input_type = $validator->getHtmlInputAttr();
             }
         }
@@ -1380,6 +1380,7 @@ class AA_Inputfield {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
+        $records = array();
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getOneChBoxTag($k, $v, $add);
         }
@@ -1572,7 +1573,7 @@ class AA_Inputfield {
         $this->echoo("</td>\n");
         if ($movebuttons) {
              $this->echoo("<td valign=\"top\">");
-             $this->echoo("<input type=\"button\" value=\" 	&#9650; \" ".
+             $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
              " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
              $this->echoo('</td></tr>');
              $this->echoo('<tr><td valign="bottom">');
