@@ -2443,10 +2443,24 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
      * @param $relation_field   - tree relation field (default relation........)
      */
     function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
-        return join(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices), '-');
+        return join('-', AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices));
     }
 }
 
+/** returns long ids of subitems items based on the relations between items
+ *  {path:<item_id>[:<relation_field>]}
+ *  {path:2a4352366262227383484784635362ab:relation.......1}
+ *  @return dash separated long ids of items from root to the item
+ */
+class AA_Stringexpand_Path extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id          - item id of the tree root (short or long)
+     * @param $relation_field   - tree relation field (default relation........)
+     */
+    function expand($item_id, $relation_field=null) {
+        return join('-', array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field)));
+    }
+}
 
 /** @return string representation of the tree (with long ids) under specifield
  *          item based on the relation field
