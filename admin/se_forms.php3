@@ -53,7 +53,7 @@ $module_id = $slice_id;
 
 //$switches  = new AA_Manageractions;  // we do not need switches here
 
-$manager_settings = AA_Object::getManagerConf('AA_Form', get_admin_url('se_forms.php3'));
+$manager_settings = AA_Form::getManagerConf(get_admin_url('se_forms.php3'));
 //$manager_settings['itemview']['aliases'] = GetPollsAliases();
 
 //$manager_settings['itemview']['format']['compact_top'] =

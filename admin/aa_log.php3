@@ -43,25 +43,6 @@ if ( !IsSuperadmin() ) {
 $metabase         = AA_Metabase::singleton();
 $manager_settings = $metabase->getManagerConf('log');
 
-$manager_settings['itemview']['format']['compact_top'] = '
-                                          <table>
-                                            <tbody><tr>
-                                              <th width="30">&nbsp;</th>
-                                              <th>time</th>
-                                              <th>type</th>
-                                              <th>selector</th>
-                                              <th>params</th>
-                                              <th>id</th>
-                                            </tr>';
-$manager_settings['itemview']['format']['odd_row_format'] = '
-                                      <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
-                                        <td>{date:y-m-d H\#:i:{_#TIME____}}</td>
-                                        <td>_#TYPE____</td>
-                                        <td>_#SELECTOR</td>
-                                        <td>_#PARAMS__</td>
-                                        <td>_#ID______</td>
-                                    </tr>';
-
 $manager = new AA_Manager('log', $manager_settings);
 $manager->performActions();
 
