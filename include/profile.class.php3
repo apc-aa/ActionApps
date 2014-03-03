@@ -182,15 +182,10 @@ class AA_Profile {
      * @param $value
      */
     function parseContentProperty($value) {
-        // profile value format:
-        $fnc = ParseFnc(substr($value,2));  // all default should have fnc:param format
-        if ( $fnc ) {                       // call function
-            $fncname = 'default_fnc_' . $fnc["fnc"];
-            if (is_callable($fncname)) {
-                return new AA_Value($fncname($fnc["param"]), ($value[0] == '1'));
-            }
+        if (!($generator = AA_Generator::factoryByString(substr($value,2)))) {  // see format described above
+            return array();
         }
-        return array();
+        return $generator->generate()->setFlag(($value[0] == '1') ? FLAG_HTML : 0);
     }
 
     /** delUserProfile function

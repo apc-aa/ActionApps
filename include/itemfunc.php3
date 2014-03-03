@@ -40,95 +40,175 @@ if ( !is_object($event) ) {
     $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
 }
 
-/** ---------------- functions for default item values ----------------------*/
-/** default_fnc_now function
- * @param $param
- */
-function default_fnc_now($param) {
-    return now();
-}
-/** default_fnc_uid function
- * @param $param
- */
-function default_fnc_uid($param) {
-    global $auth;                                  // 9999999999 for anonymous
-    return (isset($auth) ? $auth->auth["uid"] : "9999999999");
-}
-/** default_fnc_log function
- * @param $param
- */
-function default_fnc_log($param) {
-    global $auth;                                  // "anonymous" for anonymous
-    return (isset($auth) ? $auth->auth["uname"] : "anonymous");
-}
-/** default_fnc_dte function
- * @param $param
- */
-function default_fnc_dte($param) {
-    return mktime(0,0,0,date("m"),date("d")+$param,date("Y"));
-}
-/** default_fnc_qte function
- * @param $param
- */
-function default_fnc_qte($param) {
-    return $param;
-}
-/** default_fnc_txt function
- * @param $param
- */
-function default_fnc_txt($param) {
-    return $param;
-}
-/** default_fnc_rnd function
- * @param $param
- */
-function default_fnc_rnd($param) {
-    global $slice_id;
 
-    $params = explode (":", $param);
-    list($len, $field_id) = $params;
-    if (!$len) {
-        $len = 5;
+/** classes for default values of the fields
+ *  derived from  AA_Serializable in order to be able to factory from string
+ *  
+ *  Ussage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
+*/
+abstract class AA_Generator extends AA_Serializable {
+    abstract function generate();
+}
+
+/** AA_Generator_Now - current timestamp */
+class AA_Generator_Now extends AA_Generator {
+    
+    /** Name of the component for selection */    
+    static function name() { return _m("Now, i.e. current date");  }
+
+    /** generate() - main function for generating the value */
+    function generate()    { return new AA_Value(now()); }
+}
+        
+/** AA_Generator_Uid - User ID */
+class AA_Generator_Uid extends AA_Generator {
+
+    /** Name of the component for selection */    
+    static function name() { return _m("User ID");  }
+
+    /** generate() - main function for generating the value */
+    function generate() {
+        global $auth;                                  // 9999999999 for anonymous
+        return new AA_Value(isset($auth) ? $auth->auth["uid"] : "9999999999");
     }
-    $slice_only = (count($params) < 3) ? true : $params[2];
+}
+        
+/** AA_Generator_Log - Login name */
+class AA_Generator_Log extends AA_Generator {
 
-    $db = getDB();
-    do {
-        $salt = gensalt($len);
+    /** Name of the component for selection */    
+    static function name() { return _m("Login name");  }
 
+    /** generate() - main function for generating the value */
+    function generate() {
+        global $auth;                                  // "anonymous" for anonymous
+        return new AA_Value(isset($auth) ? $auth->auth["uname"] : "anonymous");
+    }
+}
+        
+/** AA_Generator_Dte - Date + 'Parameter' days */
+class AA_Generator_Dte extends AA_Generator {
+
+    /** Name of the component for selection */    
+    static function name() {  return _m("Date + 'Parameter' days");  }
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                        type    multi  persist validator, required, help, morehelp, example
+            'plusdays' => new AA_Property( 'plusdays',  _m("Number of days"), 'int', false, true, 'int', false, '', '', '365')
+            );
+    }
+    
+    /** generate() velue of currrent timestamp */
+    function generate()    {  return new AA_Value(mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y")));  }
+}
+        
+/** AA_Generator_Qte - only for backward complatibility. The same as Txt */
+class AA_Generator_Qte extends AA_Generator_Txt {}
+
+/** AA_Generator_Txt - Text from 'Parameter' */
+class AA_Generator_Txt extends AA_Generator {
+
+    /** Name of the component for selection */    
+    static function name() {  return _m("Text from 'Parameter'");  }
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (      //           id         name     type    multi  persist validator, required, help, morehelp, example
+            'text' => new AA_Property( 'text',  _m("Text"), 'text' )
+            );
+    }
+    
+    /** generate() velue of currrent timestamp */
+    function generate() {
+        return new AA_Value($this->text);
+    }
+}
+        
+/** AA_Generator_Rnd - Random string */
+class AA_Generator_Rnd extends AA_Generator {
+
+    /** Name of the component for selection */    
+    static function name()        {  return _m("Random string");  }
+    /** Decription  of the component for selection */    
+    static function description() {  return _m("Random alphanumeric [A-Z0-9] string.");  }
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+            'length'       => new AA_Property( 'length      ',  _m("String length"),  'int',    false, true, 'int', false, '', '', '5'),
+            'checkfield'   => new AA_Property( 'checkfield  ',  _m("Field to check"), 'string', false, true, 'field', false, _m("If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness."), '', 'unspecified.....'),
+            'wheretocheck' => new AA_Property( 'wheretocheck',  _m("Slice only"),     'bool',   false, true, 'bool', false, _m("Do you want to check for uniqueness this slice only or all slices?"))
+            );
+    }
+    
+    /** generate() velue of currrent timestamp */
+    function generate() {
+        global $slice_id;
+    
+        $len        = $this->length ?: 5;   // default is 5
+        $field_id   = $this->checkfield;
+        $slice_only = is_numeric($this->wheretocheck) ? $this->wheretocheck : true;
+        
         if (strlen($field_id) != 16) {
-            break;
+            return new AA_Value(gensalt($len));
         }
-        if ($slice_only) {
-            $SQL = "SELECT * FROM content INNER JOIN item ON content.item_id = item.id
-                     WHERE item.slice_id='".q_pack_id($slice_id)."'
-                       AND field_id='".quote($field_id)."'
-                       AND text='$salt'";
-        } else {
-            $SQL = "SELECT * FROM content WHERE field_id='".quote($field_id)
-                    ."' AND text='$salt'";
-        }
-        $db->query ($SQL);
-    } while ($db->next_record());
-    freeDB($db);
-
-    return $salt;
+        
+        $rec = false;
+        do {
+            $randstring = gensalt($len);
+            if ($slice_only) {
+                $rec = DB_AA::select1('SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id','', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$field_id),array('text',$randstring)));
+            } else {
+                $rec = DB_AA::select1('SELECT item_id FROM content','', array(array('field_id',$field_id),array('text',$randstring)));
+            }
+        } while ($rec);
+        return new AA_Value($randstring);
+    }
 }
-/** default_fnc_ function
- * @param $param
- */
-function default_fnc_($param) {
-    global $err;
-    $err["default_fnc"] = "No default function defined for parameter '$param'- default_fnc_()";
-    return "";
-}
+        
+/** AA_Generator_Variable - AA Expression */
+class AA_Generator_Variable extends AA_Generator {
 
-/** default_fnc_variable function
- *  Expands parameter string (e.g. {user})
- * @param $param
- */
-function default_fnc_variable($param) {
-    return AA_Stringexpand::unalias($param);
+    /** Name of the component for selection */    
+    static function name()        {  return _m("AA Expression");  }
+    /** Decription  of the component for selection */    
+    static function description() {  return _m("any text with possible {AA expressions} like: {date:Y}");  }
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (      //           id         name     type    multi  persist validator, required, help, morehelp, example
+            'text' => new AA_Property( 'text',  _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}')
+            );
+    }
+    
+    /** getClassProperties function of AA_Serializable  */
+    function generate() {
+        return new AA_Value(AA_Stringexpand::unalias($this->text));
+    }
+}
+        
+/** AA_Generator_Mul - Multivalues */
+class AA_Generator_Mul extends AA_Generator {
+    
+    protected $text; 
+    protected $delimiter; 
+
+    /** Name of the component for selection */    
+    static function name()        {  return _m("Multivalue");  }
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (      //           id         name     type                  multi  persist validator, required, help, morehelp, example
+            'text'      => new AA_Property( 'text',       _m("Text"),      'text',   false, true, 'text', false, '', '', 'red|green|blue'),
+            'delimiter' => new AA_Property( 'delimiter',  _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|')
+            );
+    }
+    
+    /** getClassProperties function of AA_Serializable  */
+    function generate() {
+        return new AA_Value(explode(($this->delimiter ?: '|'), $this->text));
+    }
 }
 
 // ----------------------- insert functions ------------------------------------
@@ -787,7 +867,7 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
             $default = $field->getDefault();
             // modify the value to be compatible with $_GET[] array - we use
             // slashed variables (this will be changed in future) - TODO
-            $$varname     = addslashes($default->getValue());
+            $$varname     = ($default->valuesCount() > 1) ? array_map('addslashes',$default->getValues()) : addslashes($default->getValue());
             $$htmlvarname = $default->getFlag();
         } elseif ($validate=='date') {
             $default = $field->getDefault();

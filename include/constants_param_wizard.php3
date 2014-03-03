@@ -171,6 +171,11 @@ $DEFAULT_VALUE_TYPES["name"] = _m("Default Value Type");
 $DEFAULT_VALUE_TYPES["items"]["txt"] =
 array ("name" => _m("Text from 'Parameter'"),
        "params" => array (array ("name" => _m("Text"))));
+$DEFAULT_VALUE_TYPES["items"]["mul"] =
+array ("name" => _m("Multivalue"),
+       "params" => array (array ("name" => _m("Text")),
+                          array ("name" => _m("Delimiter"))
+       ));
 $DEFAULT_VALUE_TYPES["items"]["dte"] =
 array ("name" => _m("Date + 'Parameter' days"),
        "params" => array (array ("name" => _m("Number of days"))));

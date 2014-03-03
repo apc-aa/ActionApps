@@ -295,7 +295,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
             'aa_url'          => AA_INSTAL_URL,
             'cookie_lifetime' => 60*60*24*365  // one year
         );
-        // $client_auth - global - used in default_fnc_uid
+        // $client_auth - global - used in AA_Generator_Uid
         $client_auth = new AA_Client_Auth($options);
         if ($client_auth->checkAuth()) {
             $auth = $client_auth->getRemoteAuth();

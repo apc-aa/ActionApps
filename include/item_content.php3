@@ -131,11 +131,13 @@ class AA_Value {
     /** Set $value - value is normal (numeric) array or string value */
     function setValues($value) {
         $this->val = is_array($value) ? $value : (is_null($value) ? array() : array($value));
+        return $this;
     }
 
     /** Set the flag (for al the values the flag is common at this time) */
     function setFlag($flag) {
         $this->flag = $flag;
+        return $this;
     }
 
     /** Returns number of values */
@@ -877,8 +879,8 @@ class ItemContent extends AA_Content {
             case 'update':
             case 'add':
                 if (!$silent) {
-                    $itemvarset->add("last_edit", "quoted", default_fnc_now(""));
-                    $itemvarset->add("edited_by", "quoted", default_fnc_uid(""));
+                    $itemvarset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
+                    $itemvarset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
                 }
                 $itemvarset->doUpdate('item');
                 break;
@@ -887,8 +889,8 @@ class ItemContent extends AA_Content {
                     $itemvarset->set('status_code', 1);
                 }
                 $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
-                $itemvarset->add("last_edit", "quoted",   default_fnc_now(""));
-                $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
+                $itemvarset->add("last_edit", "quoted",   AA_Generator::factoryByString('now')->generate()->getValue());
+                $itemvarset->add("edited_by", "quoted",   AA_Generator::factoryByString('uid')->generate()->getValue());
                 $itemvarset->doReplace('item');
                 break;
             case 'insert':
@@ -903,8 +905,8 @@ class ItemContent extends AA_Content {
                     $itemvarset->set('expiry_date', 1861916400);   // sometimes in 2029
                 }
                 $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
-                $itemvarset->add('post_date', "quoted", default_fnc_now(""));
-                $itemvarset->add('posted_by', "quoted", default_fnc_uid(""));
+                $itemvarset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
+                $itemvarset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
                 $itemvarset->doInsert('item');
         }
         if ($invalidatecache) {
@@ -1099,6 +1101,8 @@ class ItemContent extends AA_Content {
      */
     function _store_fields($id, &$fields, $context='direct') {
         $field_writer = new AA_Field_Writer;
+        $parameters   = array();
+        $thumbnails   = array();
 
         foreach ($this->content as $fid => $cont) {
             $f = $fields[$fid];
