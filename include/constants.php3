@@ -366,7 +366,7 @@ function GetConstantFields() {  // function - we need translate _m() on use (not
         'const_group'       => GetFieldDef( _m('Group'),       'constant.group',      'text'),
         'const_class'       => GetFieldDef( _m('Class'),       'constant.class',      'text'),
     //  'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
-        'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'id'),
+        'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'text'),   // 'id'
         'const_description' => GetFieldDef( _m('Description'), 'constant.description','text'),
         'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
 }

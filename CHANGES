@@ -1,3 +1,7 @@
+03/02/14 - default malues could be Multivalue. 
+(honzam)   All default value code was moved to AA_Generator code
+         - PHP code simplified using PHP 5.3 features (late static binding, ...)
+         - better design of managers' include/metabase.class.php3 admin/aa_log.php3 admin/se_forms.p
 02/20/14 - fixed Admin -> Item Manager setting - profiles problem fixed
 (honzam)
 02/19/14 - rewritten permission system to be more secure and allows easier

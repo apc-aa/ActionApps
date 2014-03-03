@@ -242,10 +242,11 @@ class cattree {
     //   whole - if set, make links to all categories
     function getNamePath($cid, $skip=0, $separator = " > ", $url=false, $whole=false, $target="") {
         $this->updateIfNeeded();
-        $path = $this->getPath($cid);
+        $path         = $this->getPath($cid);
         $target_atrib = (($target != "") ? " target=\"$target\" " : "");
-        $ids = explode(",",$path);
-        $last=end($ids);
+        $ids          = explode(",",$path);
+        $last         = end($ids);
+        $delimiter    = '';
         if ( isset($ids) AND is_array($ids)) {
             if ( $url ) {
                 foreach ( $ids as $catid ) {
@@ -253,7 +254,7 @@ class cattree {
                         continue;
                     }
                     if ( ($catid != $last) OR $whole ) { // do not make link for last category
-                        $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$this->getName($catid)."</a>";
+                        $name .= "$delimiter<a href=\"$url$catid\" $target_atrib>".$this->getName($catid)."</a>";
                     } else {
                         $name .= $delimiter.$this->getName($catid);
                     }
@@ -289,6 +290,7 @@ class cattree {
         }
 
         // generate strings for javascript
+        $delim = '';
         foreach ((array)$this->assignments as $assig) {
             $to = $assig->getTo();
             if (!$print_general AND $this->isGeneral($to)) {
@@ -339,6 +341,7 @@ class cattree {
         // the asignments to group of max 100 categories
         $names_count = array();
         define('MAX_JS_NODES_AT_LINE',100);
+        $js_arr = array();
         foreach ( $this->catnames as $allId => $allName) {
             if (!$names_count[$allName]) {
                 $names_count[$allName] =1;
@@ -474,9 +477,7 @@ class cattree {
 
         foreach( $this->ancesors_idx[$start_id] as $idx ) {
             $assig = $this->assignments[$idx];
-            call_user_func_array($function, array( $assig->getTo(),
-                        $this->catnames[$assig->getTo()], $assig->getBase(),
-                        $assig->getState(), $assig->getFrom(), $level));
+            $function($assig->getTo(), $this->catnames[$assig->getTo()], $assig->getBase(), $assig->getState(), $assig->getFrom(), $level);
 
             // not crossreferenced and never ending cycles protection
             if (($assig->getBase() != '@') AND ($level <= 100)) {

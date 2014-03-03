@@ -928,7 +928,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
         $restrict_zids   = new zids($user_id, 'l');
         // groups could be definned also by subset of readers - defined by AA_Set
-        $set_ids         = AA_Object::query('AA_Set', array($reader_slice_id));
+        $set_ids         = AA_Object::querySet('AA_Set', new AA_Set(array($reader_slice_id)));
         foreach( $set_ids as $set_id ) {
             $set  = AA_Object::load($set_id, 'AA_Set');
             $zids = QueryZids(array($reader_slice_id), $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);

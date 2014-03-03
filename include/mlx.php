@@ -922,8 +922,7 @@ class MLXGetText
     function command(&$args,$slice_id=0) {
 //		__mlx_dbg($args,"command args");
 //		__mlx_dbg($slice_id,"command slice");
-        call_user_func_array(array(&$this,
-                    $args[0]),array(&$args,&$slice_id));
+        call_user_func_array(array(&$this, $args[0]),array(&$args,&$slice_id));
         return "";
     }
     ///\param slice_id 	unpacked id of slice containing translations
