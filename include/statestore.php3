@@ -31,7 +31,7 @@
 
 /** allows serialize objects */
 abstract class AA_Serializable {
-    
+
     /** factory function
      * @param $classname
      * @param $params
@@ -48,7 +48,7 @@ abstract class AA_Serializable {
     static function factoryByName($name, $params=null, $class_mask=null) {
         return self::factory(static::constructClassName($name, $class_mask), $params);
     }
-    
+
     /** factoryByString function
      *  Creates object from the string, which is used for storing setting in
      *  the database (older approach). The string looks like:
@@ -62,7 +62,7 @@ abstract class AA_Serializable {
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);
         return static::factory($params['class'], $params);
-    }    
+    }
 
     /** Constructor
      *  @param $params array of parameters in form 'property_name' => 'value'
@@ -74,13 +74,14 @@ abstract class AA_Serializable {
     }
 
     function setProperties($params=array()) {
-        $props = static::getClassProperties();
+        $class = get_class($this);
+        $props = $class::getClassProperties();
         foreach ($props as $name =>$property) {
             if (isset($params[$name])) {
                 $this->$name = $params[$name];
             }
         }
-    }    
+    }
 
     /** getClassProperties function of AA_Serializable
      *   - abstract method defining the class properties
@@ -100,7 +101,7 @@ abstract class AA_Serializable {
     /** create the name of class from the type and name
      *  static class method
      **/
-    function constructClassName($name, $class_mask=null) {
+    static function constructClassName($name, $class_mask=null) {
         return ($class_mask ?: get_called_class().'_'). ucwords(strtolower(str_replace('-','',$name)));   // str_replace probably for validator e-mail, but maybe not neccessary
     }
 
@@ -133,8 +134,8 @@ abstract class AA_Serializable {
         }
         return $params;
     }
-}    
-    
+}
+
 
 
 /**
@@ -605,7 +606,7 @@ class AA_Object extends AA_Storable {
         }
 
         $sortable = array();
-        
+
         // Conditions
         foreach ($conds as $cond) {
             // fill arrays according to this condition
@@ -914,14 +915,14 @@ class AA_Object extends AA_Storable {
 
     /**  AA_Object's method */
     static function addFormrows($form) {
-        
+
 //        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
         AA_Object::getPropertyObject('aa_name')->addPropertyFormrows($form);  // use default widget for the field
 
         // self didn't give us the calling class and we do not have late static bindings in PHP < 5.3
         $props = static::getClassProperties();
         foreach ($props as $name => $property) {
-            $property->addPropertyFormrows($form); 
+            $property->addPropertyFormrows($form);
         }
         return $form;
     }

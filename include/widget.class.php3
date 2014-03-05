@@ -2102,7 +2102,7 @@ class AA_Property extends AA_Storable {
     /** returns default widget for given property - it tries to identify,
      *  if it is multiple, uses constants, is bool, ...
      */
-    function addPropertyFormrows($form) { 
+    function addPropertyFormrows($form) {
         if ($this->isObject()) {
             if (is_callable(array($this->type, 'addFormrows'))) {
                 return call_user_func_array(array($this->type, 'addFormrows'), array($form));
@@ -2112,34 +2112,34 @@ class AA_Property extends AA_Storable {
         }
 
         $values = $this->getConstants();
-        $widget = ''; 
+        $widget = '';
         if ($this->isMulti()) {
             if (empty($values)) {
                 $widget = new AA_Widget_Mfl();
-            } 
+            }
             elseif (count($values) < 5) {
                 $widget = new AA_Widget_Mch(array('const_arr' => $values));
             } else {
                 $widget = new AA_Widget_Mse(array('const_arr' => $values));
             }
-        } 
+        }
         elseif (!empty($values)) {
             $widget = new AA_Widget_Sel(array('const_arr' => $values));
         }
         elseif ($this->type == 'bool') {
             $widget = new AA_Widget_Chb();
-        } 
+        }
         elseif ($this->type == 'text') {
             $widget = new AA_Widget_Txt();
         }
         else {
             $widget = new AA_Widget_Fld();
         }
-        
+
         return $form->addRow(new AA_Formrow_Full($this, $widget));
     }
 
-   
+
 
     function validate($value_arr) {
         $valid  = true;

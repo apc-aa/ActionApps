@@ -99,11 +99,11 @@ function DefineBaseAliases(&$aliases, $module_id) {
      $aliases["_#IGRPINDX"] = GetAliasDef( "f_e:itemgroupindex",   "id..............", _m("index of item within a group on page (it begins from 0 on each group)"));
      $aliases["_#ITEM_ID_"] = GetAliasDef( "f_1",                  "unpacked_id.....", _m("alias for Item ID"));
      $aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
-     
+
      if ( $type == 'justids') {  // it is enough for view of urls
          return $aliases;
      }
-     
+
      $aliases["_#EDITITEM"] = GetAliasDef(  "f_e",            "id..............",      _m("alias used on admin page index.php3 for itemedit url"));
      $aliases["_#ADD_ITEM"] = GetAliasDef(  "f_e:add",        "id..............",      _m("alias used on admin page index.php3 for itemedit url"));
      $aliases["_#EDITDISC"] = GetAliasDef(  "f_e:disc",       "id..............",      _m("Alias used on admin page index.php3 for edit discussion url"));
@@ -112,10 +112,10 @@ function DefineBaseAliases(&$aliases, $module_id) {
      $aliases["_#RSS_DESC"] = GetAliasDef(  "f_r",            "SLICEdesc",             _m("Short description (owner and name) of slice for RSS"));
      $aliases["_#RSS_DATE"] = GetAliasDef(  "f_r",            "SLICEdate",             _m("Date RSS information is generated, in RSS date format"));
      $aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",                  _m("Slice name"));
-     
+
      $aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,         _m("Current MLX language"));
      $aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",    MLX_CTRLIDFIELD,         _m("HTML markup direction tag (e.g. DIR=RTL)"));
-     
+
      // database stored aliases
      foreach ($fields as $k => $val) {
          if ($val['alias1']) {
@@ -262,7 +262,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     // domain and protocol (https...)
     $admin_path = "itemedit.php3";
     $param      = array();
-    
+
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
     $url2go = isset($sess) ?
                      $sess->url($admin_path)	:
@@ -270,7 +270,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     // return_url is used for non AA Admin interface filling - writen by Settu
     // Not sure, if it is functional. Honza 2006-01-07
     $return_url = make_return_url($ret_url);
-    
+
     if ($iid) {
         $param[] = "id=$iid";
     }
@@ -361,7 +361,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     $content = GetConstantContent($zids);
     $item    = new AA_Item();
     $format  = $format ? $format : 'const_name';
-    $ret     = array();    
+    $ret     = array();
     for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
         $iid = $zids->short_or_longids($i);
         $item->set_data($content[$iid]);
@@ -1119,7 +1119,7 @@ class AA_Item {
                     // special php functions aliases
                     return $fnc($text);
                 }
-                return AA_Stringexpand::factoryByName($modif)->expand($text);
+                return AA_Serializable::factoryByName($modif, null, 'AA_Stringexpand_')->expand($text);
 //                return call_user_func( array( AA_Stringexpand::constructClassName($modif), 'expand'), $text);
             }
             if ($p[1]=='') {

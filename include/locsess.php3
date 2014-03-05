@@ -68,13 +68,13 @@ function __autoload ($class_name) {
         case 'difftext':
         //  case 'widget':
         //  case 'field':
-            require AA_INC_PATH. $core. '.class.php3';
+            require_once AA_INC_PATH. $core. '.class.php3';
             return;
         case 'plannedtask':
-            require AA_INC_PATH. 'task.class.php3';
+            require_once AA_INC_PATH. 'task.class.php3';
             return;
         case 'objectgrabber':
-            require AA_INC_PATH. 'grabber.class.php3';
+            require_once AA_INC_PATH. 'grabber.class.php3';
             return;
         case 'validate':
             require_once AA_INC_PATH. 'validate.php3';
