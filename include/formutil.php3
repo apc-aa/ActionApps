@@ -1227,12 +1227,11 @@ class AA_Inputfield {
         $val     = myspecialchars($val);
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
-        $link    = '';
+        $link    = ((substr($val,0,7)==='http://') OR (substr($val,0,8)==='https://')) ? '&nbsp;'.a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
 
-        if ($type == "password") {
-            $input_type = 'type="password"';
+        if (in_array($type, array('password','search', 'email', 'url', 'tel', 'number', 'range', 'date', 'month', 'week', 'time', 'datetime', 'datetime-local', 'color'))) {
+            $input_type = "type=$type";
         } else {
-            $link = ((substr($val,0,7)==='http://') OR (substr($val,0,8)==='https://')) ? '&nbsp;'.a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
             $input_type = 'type="text"';
             if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
                 $input_type = $validator->getHtmlInputAttr();
