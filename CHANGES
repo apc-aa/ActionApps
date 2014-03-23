@@ -1,3 +1,8 @@
+14-03-23 - {cookie} without any parameter gives you list of all cookies
+(honzam) - added (in more cases) external url link to input widget, when 
+           the value contains url
+         - use email input in write e-mail instead of input text
+         - fixed rewritten code for php 5.3
 14-03-05 - fix problem with wrong static class
 (honzam)
 14-03-03 - new {path:<item_id>[:<relation_field>]} 

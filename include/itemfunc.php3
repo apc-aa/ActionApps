@@ -102,9 +102,6 @@ class AA_Generator_Dte extends AA_Generator {
     /** generate() velue of currrent timestamp */
     function generate()    {  return new AA_Value(mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y")));  }
 }
-        
-/** AA_Generator_Qte - only for backward complatibility. The same as Txt */
-class AA_Generator_Qte extends AA_Generator_Txt {}
 
 /** AA_Generator_Txt - Text from 'Parameter' */
 class AA_Generator_Txt extends AA_Generator {
@@ -124,6 +121,9 @@ class AA_Generator_Txt extends AA_Generator {
         return new AA_Value($this->text);
     }
 }
+
+/** AA_Generator_Qte - only for backward complatibility. The same as Txt */
+class AA_Generator_Qte extends AA_Generator_Txt {}
         
 /** AA_Generator_Rnd - Random string */
 class AA_Generator_Rnd extends AA_Generator {

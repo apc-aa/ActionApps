@@ -187,7 +187,7 @@ class AA_Validate extends AA_Serializable {
     function getHtmlInputAttr() {
         return '';
     }
-   
+
 }
 
 /** Test for integer value
@@ -262,6 +262,44 @@ class AA_Validate_Bool extends AA_Validate_Number {
 /** Test for bool value
  */
 class AA_Validate_Date extends AA_Validate_Number {
+}
+
+/** Test for Regular Expression
+ *  @param   $regular_expression
+ *  @param   $default_error_id
+ *  @param   $default_error_msg
+ */
+class AA_Validate_Regexp extends AA_Validate {
+    /** Regular Expression */
+    var $pattern;
+    var $empty_expression = '/^\s*$/';
+
+    static function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
+            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/')
+            );
+    }
+
+    /** validate function
+     * @param $var
+     * @param $default
+     */
+    function validate(&$var, $default='AA_noDefault') {
+        return preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
+    }
+
+    function varempty($var) {
+        //huhl($this->empty_expression, $var, preg_match($this->empty_expression, $var));
+        return preg_match($this->empty_expression, $var);
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"' : '';  // we need to convert /^[a-z]*$/ to ^[a-z]*$
+    }
 }
 
 /** Test for bool value
@@ -350,44 +388,6 @@ class AA_Validate_Float extends AA_Validate {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
-    }
-}
-
-/** Test for Regular Expression
- *  @param   $regular_expression
- *  @param   $default_error_id
- *  @param   $default_error_msg
- */
-class AA_Validate_Regexp extends AA_Validate {
-    /** Regular Expression */
-    var $pattern;
-    var $empty_expression = '/^\s*$/';
-
-    static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
-            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/')
-            );
-    }
-
-    /** validate function
-     * @param $var
-     * @param $default
-     */
-    function validate(&$var, $default='AA_noDefault') {
-        return preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
-    }
-
-    function varempty($var) {
-        //huhl($this->empty_expression, $var, preg_match($this->empty_expression, $var));
-        return preg_match($this->empty_expression, $var);
-    }
-
-    /** returns the type attribute for the HTML 5 <input> tag with possible some
-     *  more attributtes (like min, max, step, pattern, ...)
-     */
-    function getHtmlInputAttr() {
-        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"' : '';  // we need to convert /^[a-z]*$/ to ^[a-z]*$
     }
 }
 
