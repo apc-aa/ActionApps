@@ -1278,8 +1278,8 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $name
      */
-    function expand($name) {
-        return $_COOKIE[$name];
+    function expand($name='') {
+        return $name ? $_COOKIE[$name] : json_encode($_COOKIE);
     }
 }
 
