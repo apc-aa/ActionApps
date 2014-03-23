@@ -192,11 +192,11 @@ if ($user_templates) {
     FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id'], false);
 }
 
-FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true);
-FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true);
-FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false);
-FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false);
-FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false);
+FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true );
+FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true , '', '', false, 'email');
+FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false, '', '', false, 'email');
+FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false, '', '', false, 'email');
+FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false, '', '', false, 'email');
 FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),  $_POST['lang'] ? $_POST['lang'] : $slice->getLang(), true);
 FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
 FrmInputFile(  'attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
