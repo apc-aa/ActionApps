@@ -447,7 +447,7 @@ class AA_Exportsetings extends AA_Object {
     /** allows storing form in database
      *  AA_Object's method
      */
-    function getClassProperties() {
+    static function getClassProperties() {
         $props = array();
 
         $bins_arr = array(
