@@ -96,11 +96,11 @@ function json2arr($string, $do_not_filter=false) {
                 // could be solved also by iconv...
                 $values = explode('","', trim($string,'"[]'));
             } else {
-                return $values = ($string=='[]') ? array() : array($string);
+                $values = ($string=='[]') ? array() : array($string);
             }
         }
     } else {
-        return array($string);
+        $values = array($string);
     }
     return $do_not_filter ? $values : array_filter($values, 'strlen');  // strlen in order we do not remove "0"
 }
@@ -907,7 +907,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
-        if (strlen($text)<=$length) {
+        if (strlen(strip_tags($text))<=$length) {
             $ret = "<div class=\"expandableclass\" id=\"expandable_1_$uniqid\">$text</div>\n";
         } else {
             $text_2 = AA_Stringexpand_Shorten::expand($text, $length);
@@ -1755,7 +1755,90 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='') {
-        return  nl2br(str_replace(' ', '&ensp;', $text));
+        return nl2br(str_replace('  ', ' &ensp;', $this->htmlEscapeAndLinkUrls($text)));
+    }
+
+    /**
+     *  UrlLinker - facilitates turning plain text URLs into HTML links.
+     *  Author: Søren Løvborg (https://bitbucket.org/kwi/urllinker)
+     *  http://creativecommons.org/publicdomain/zero/1.0/
+     */
+    function htmlEscapeAndLinkUrls($text) {
+        /* Regular expression bits used by htmlEscapeAndLinkUrls() to match URLs.   */
+        $rexScheme    = 'https?://';
+        // $rexScheme    = "$rexScheme|ftp://"; // Uncomment this line to allow FTP addresses.
+        $rexDomain    = '(?:[-a-zA-Z0-9\x7f-\xff]{1,63}\.)+[a-zA-Z\x7f-\xff][-a-zA-Z0-9\x7f-\xff]{1,62}';
+        $rexIp        = '(?:[1-9][0-9]{0,2}\.|0\.){3}(?:[1-9][0-9]{0,2}|0)';
+        $rexPort      = '(:[0-9]{1,5})?';
+        $rexPath      = '(/[!$-/0-9:;=@_\':;!a-zA-Z\x7f-\xff]*?)?';
+        $rexQuery     = '(\?[!$-/0-9:;=@_\':;!a-zA-Z\x7f-\xff]+?)?';
+        $rexFragment  = '(#[!$-/0-9?:;=@_\':;!a-zA-Z\x7f-\xff]+?)?';
+        $rexUsername  = '[^]\\\\\x00-\x20\"(),:-<>[\x7f-\xff]{1,64}';
+        $rexPassword  = $rexUsername; // allow the same characters as in the username
+        $rexUrl       = "($rexScheme)?(?:($rexUsername)(:$rexPassword)?@)?($rexDomain|$rexIp)($rexPort$rexPath$rexQuery$rexFragment)";
+        $rexTrailPunct= "[)'?.!,;:]"; // valid URL characters which are not part of the URL if they appear at the very end
+        $rexNonUrl    = "[^-_#$+.!*'(),;/?:@=&a-zA-Z0-9\x7f-\xff]"; // characters that should never appear in a URL
+        $rexUrlLinker = "{\\b$rexUrl(?=$rexTrailPunct*($rexNonUrl|$))}";
+        $rexUrlLinker .= 'i'; // Uncomment this line to allow uppercase URL schemes (e.g. "HTTP://google.com").
+
+        /** $validTlds is an associative array mapping valid TLDs to the value true.
+         *  List source:  http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+         *  Last updated: 2014-03-19
+         */
+        $validTlds = array_fill_keys(explode(" ", ".ac .academy .actor .ad .ae .aero .af .ag .agency .ai .al .am .an .ao .aq .ar .arpa .as .asia .at .au .aw .ax .axa .az .ba .bar .bargains .bb .bd .be .berlin .best .bf .bg .bh .bi .bid .bike .biz .bj .blue .bm .bn .bo .boutique .br .bs .bt .build .builders .buzz .bv .bw .by .bz .ca .cab .camera .camp .cards .careers .cat .catering .cc .cd .center .ceo .cf .cg .ch .cheap .christmas .ci .ck .cl .cleaning .clothing .club .cm .cn .co .codes .coffee .cologne .com .community .company .computer .condos .construction .contractors .cool .coop .cr .cruises .cu .cv .cw .cx .cy .cz .dance .dating .de .democrat .diamonds .directory .dj .dk .dm .dnp .do .domains .dz .ec .edu .education .ee .eg .email .enterprises .equipment .er .es .estate .et .eu .events .expert .exposed .farm .fi .fish .fj .fk .flights .florist .fm .fo .foundation .fr .futbol .ga .gallery .gb .gd .ge .gf .gg .gh .gi .gift .gl .glass .gm .gn .gov .gp .gq .gr .graphics .gs .gt .gu .guitars .guru .gw .gy .hk .hm .hn .holdings .holiday .house .hr .ht .hu .id .ie .il .im .immobilien .in .industries .info .ink .institute .int .international .io .iq .ir .is .it .je .jetzt .jm .jo .jobs .jp .kaufen .ke .kg .kh .ki .kim .kitchen .kiwi .km .kn .koeln .kp .kr .kred .kw .ky .kz .la .land .lb .lc .li .lighting .limo .link .lk .lr .ls .lt .lu .luxury .lv .ly .ma .maison .management .mango .marketing .mc .md .me .menu .mg .mh .mil .mk .ml .mm .mn .mo .mobi .moda .monash .mp .mq .mr .ms .mt .mu .museum .mv .mw .mx .my .mz .na .nagoya .name .nc .ne .net .neustar .nf .ng .ni .ninja .nl .no .np .nr .nu .nz .okinawa .om .onl .org .pa .partners .parts .pe .pf .pg .ph .photo .photography .photos .pics .pink .pk .pl .plumbing .pm .pn .post .pr .pro .productions .properties .ps .pt .pub .pw .py .qa .qpon .re .recipes .red .rentals .repair .report .reviews .rich .ro .rs .ru .ruhr .rw .sa .sb .sc .sd .se .sexy .sg .sh .shiksha .shoes .si .singles .sj .sk .sl .sm .sn .so .social .solar .solutions .sr .st .su .supplies .supply .support .sv .sx .sy .systems .sz .tattoo .tc .td .technology .tel .tf .tg .th .tienda .tips .tj .tk .tl .tm .tn .to .today .tokyo .tools .tp .tr .trade .training .travel .tt .tv .tw .tz .ua .ug .uk .uno .us .uy .uz .va .vacations .vc .ve .ventures .vg .vi .viajes .villas .vision .vn .vote .voting .voto .voyage .vu .wang .watch .webcam .wed .wf .wien .wiki .works .ws .xn--3bst00m .xn--3ds443g .xn--3e0b707e .xn--45brj9c .xn--55qw42g .xn--55qx5d .xn--6frz82g .xn--6qq986b3xl .xn--80ao21a .xn--80asehdb .xn--80aswg .xn--90a3ac .xn--c1avg .xn--cg4bki .xn--clchc0ea0b2g2a9gcd .xn--d1acj3b .xn--fiq228c5hs .xn--fiq64b .xn--fiqs8s .xn--fiqz9s .xn--fpcrj9c3d .xn--fzc2c9e2c .xn--gecrj9c .xn--h2brj9c .xn--i1b6b1a6a2e .xn--io0a7i .xn--j1amh .xn--j6w193g .xn--kprw13d .xn--kpry57d .xn--l1acc .xn--lgbbat1ad8j .xn--mgb9awbf .xn--mgba3a4f16a .xn--mgbaam7a8h .xn--mgbab2bd .xn--mgbayh7gpa .xn--mgbbh1a71e .xn--mgbc0a9azcg .xn--mgberp4a5d4ar .xn--mgbx4cd0ab .xn--ngbc5azd .xn--nqv7f .xn--nqv7fs00ema .xn--o3cw4h .xn--ogbpf8fl .xn--p1ai .xn--pgbs0dh .xn--q9jyb4c .xn--rhqv96g .xn--s9brj9c .xn--unup4y .xn--wgbh1c .xn--wgbl6a .xn--xkc2al3hye2a .xn--xkc2dl3a5ee0h .xn--yfro4i67o .xn--ygbi2ammx .xn--zfr164b .xxx .xyz .ye .yt .za .zm .zone .zw"), true);
+
+        $html = '';
+        $position = 0;
+        while (preg_match($rexUrlLinker, $text, $match, PREG_OFFSET_CAPTURE, $position)) {
+            list($url, $urlPosition) = $match[0];
+
+            // Add the text leading up to the URL.
+            $html .= myspecialchars(substr($text, $position, $urlPosition - $position));
+
+            $scheme      = $match[1][0];
+            $username    = $match[2][0];
+            $password    = $match[3][0];
+            $domain      = $match[4][0];
+            $afterDomain = $match[5][0]; // everything following the domain
+            $port        = $match[6][0];
+            $path        = $match[7][0];
+
+            // Check that the TLD is valid or that $domain is an IP address.
+            $tld = strtolower(strrchr($domain, '.'));
+            if (preg_match('{^\.[0-9]{1,3}$}', $tld) || isset($validTlds[$tld])) {
+                // Do not permit implicit scheme if a password is specified, as
+                // this causes too many errors (e.g. "my email:foo@example.org").
+                if (!$scheme && $password) {
+                    $html .= myspecialchars($username);
+
+                    // Continue text parsing at the ':' following the "username".
+                    $position = $urlPosition + strlen($username);
+                    continue;
+                }
+
+                if (!$scheme && $username && !$password && !$afterDomain) {
+                    // Looks like an email address.
+                    $completeUrl = "mailto:$url";
+                    $linkText = $url;
+                } else {
+                    // Prepend http:// if no scheme is specified
+                    $completeUrl = $scheme ? $url : "http://$url";
+                    $linkText = "$domain$port$path";
+                }
+                // Cheap e-mail obfuscation to trick the dumbest mail harvesters.
+                $html .= str_replace('@', '&#64;', '<a href="' . myspecialchars($completeUrl) . '">' . myspecialchars($linkText) . '</a>');
+            } else {
+                // Not a valid URL.
+                $html .= myspecialchars($url);
+            }
+
+            // Continue text parsing from after the URL.
+            $position = $urlPosition + strlen($url);
+        }
+
+        // Add the remainder of the text.
+        $html .= myspecialchars(substr($text, $position));
+        return $html;
     }
 }
 
@@ -4027,20 +4110,20 @@ class AA_Stringexpand {
 
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
-        'strlen'           => 'strlen',             // old AA_Stringexpand_Strlen
-        'str_repeat'       => 'str_repeat',         // old AA_Stringexpand_Str_repeat
-        'strtoupper'       => 'strtoupper',         //     AA_Stringexpand_Strtoupper
-        'strtolower'       => 'strtolower',         //     AA_Stringexpand_Strtolower
-        'striptags'        => 'strip_tags',         // old AA_Stringexpand_Striptags
-        'htmlspecialchars' => 'myspecialchars',     // old AA_Stringexpand_Htmlspecialchars - similar to {safe}, but without double_escape
-        'urlencode'        => 'urlencode',          // old AA_Stringexpand_Urlencode
-        'ord'              => 'ord',                // old AA_Stringexpand_Ord
-        'rand'             => 'rand',               // old AA_Stringexpand_Rand
-        'fmod'             => 'fmod',               // old AA_Stringexpand_Fmod
+        'strlen'           => 'strlen',             // old  AA_Stringexpand_Strlen
+        'str_repeat'       => 'str_repeat',         // old  AA_Stringexpand_Str_repeat
+        'strtoupper'       => 'strtoupper',         //      AA_Stringexpand_Strtoupper
+        'strtolower'       => 'strtolower',         //      AA_Stringexpand_Strtolower
+        'striptags'        => 'strip_tags',         // old  AA_Stringexpand_Striptags
+        'htmlspecialchars' => 'myspecialchars',     // old  AA_Stringexpand_Htmlspecialchars - similar to {safe}, but without double_escape
+        'urlencode'        => 'urlencode',          // old  AA_Stringexpand_Urlencode
+        'ord'              => 'ord',                // old  AA_Stringexpand_Ord
+        'rand'             => 'rand',               // old  AA_Stringexpand_Rand
+        'fmod'             => 'fmod',               // old  AA_Stringexpand_Fmod
         /** math function log() */
-        'log'              => 'log',                // old AA_Stringexpand_Log
-        'unpack'           => 'unpack_id',          // old AA_Stringexpand_Unpack
-        'string2id'        => 'string2id',          // old AA_Stringexpand_String2id
+        'log'              => 'log',                // old  AA_Stringexpand_Log
+        'unpack'           => 'unpack_id',          // old  AA_Stringexpand_Unpack
+        'string2id'        => 'string2id',          // old  AA_Stringexpand_String2id
 
         /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
          *  {version[:aa|svn]}
@@ -4262,6 +4345,24 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
         $search  = json2arr($search,true);
         $replace = json2arr($replace,true);
         return str_replace($search, $replace, $text);
+    }
+}
+
+/** replaces string with REGEXP
+ *      {replace:<!-- .* -->::{full_text.......}}
+ *   The ussage is as PHP preg_replace, but we do not allow you to specify
+ *   delimiters and modifiers because of dangerous /e modifier
+ */
+class AA_Stringexpand_Replace extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters ($search and $replace could be spaces) */
+    function doTrimParams() { return false; }
+
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    function expand($search='', $replace='', $text='') {
+        //$search  = json2arr($search,true);
+        //$replace = json2arr($replace,true);
+        return preg_replace('`'.str_replace('`','\`',$search).'`', $replace, $text);
     }
 }
 
@@ -5123,6 +5224,7 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
  *      {xpath:{include:http#://example.cz/list.html}://img[@id="bigpict"]:width}
  *      {xpath:{include:http#://example.cz/list.html}://h2[2]}  - second <h2>
  *      {xpath:{item:784557:full_text.......}://data/udaj[uze=//uzemi/element[kod="3026"]/@id][uka="u1"]/hod}  - xpath subqueries used for data from CSU (czso.cz)
+ *      {xpath:{include:http#://example.cz/list.html}://div [@id="wantedTable"]//table:XML}
  */
 class AA_Stringexpand_Xpath extends AA_Stringexpand {
     /** Do not trim all parameters ($delimiter could contain spaces at the begin) */
@@ -5132,7 +5234,8 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
      * @param $string    - XML or HTML string (possibly loaded with {include:<url>})
      * @param $query     - XPath query - @see XPath documentation
      * @param $attr      - if empty, the <text> value of the matching element is returned
-     *                     if specified, then the attribute is returned
+     *                     if specified, then the attribute is returned (like width attribute of image in third example above)
+     *                     use 'XML' if you want to get the whole inner HTML
      * @param $delimiter - by default, it returns just first matching value.
      *                     If specified, then all matching texts are returned delimited by <delimiter>
      */
@@ -5145,7 +5248,14 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
 
         $entries = $xpath->query($query);
         foreach ($entries as $entry) {
-            $ret .= $attr ? $entry->attributes->getNamedItem($attr)->nodeValue : $entry->nodeValue;
+            // huhl ($entry);
+            if ($attr=='XML') {
+                $ret.= $entry->ownerDocument->saveHTML($entry);
+            } elseif ($attr)  {
+                $ret .= $entry->attributes->getNamedItem($attr)->nodeValue;
+            } else {
+                $ret .= $entry->nodeValue;
+            }
             if ($delimiter == 'AA_PrintJustFirst') {
                 break;
             }
@@ -5444,6 +5554,8 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
  *
  * @param field_id - id of the field in item
  * @param index    - integer index in multivalue array - default 0 (the first one)
+ * @param item_id
+ * @param lang     - if you want exact language for translated field, specify it - cz / es / en / ...
  *
  */
 class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
@@ -5459,9 +5571,9 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $text
      */
-    function expand($field_id='', $index=0, $item_id='') {
+    function expand($field_id='', $index=0, $item_id='', $lang='') {
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
-        return (is_object($item) AND $item->isField($field_id)) ? $item->getval($field_id, (int)$index) : '';
+        return (is_object($item) AND $item->isField($field_id)) ? $item->getval($field_id, (int)$index + ($lang ? AA_Content::getLangNumber($lang) : 0)) : '';
     }
 }
 
@@ -5480,5 +5592,43 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
         return $form->getAjaxHtml();
     }
 }
+
+/** Translation */
+class AA_Stringexpand_Tr extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function
+     * @param $text
+     */
+    function expand($text='') {
+        $slice_id = '8b3528995d5ec6bd4cfd6ff0c4afd72a';
+        $set      = new AA_Set(array($slice_id), new AA_Condition('headline........', '=', '"'.$text.'"'));
+        $zids     = $set->query();
+
+        if ($zids->count()) {
+            return AA_Items::getItem($zids[0])->f_2('headline........');
+        }
+        // in current implementation it is not necessary to construct the ID
+        // this way. However - it could be used for speedup in future, so why not use it right now as well
+       // $item_id = string2id($text.$slice_id);
+       //
+       // // if not present - translate to default language of the slice
+       // $translations = AA_Slices::getSliceProperty($slice_id, 'translations');
+       //
+       // $ic = new ItemContent();
+       // $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
+       // $ic->setItemId($item_id);
+       // $ic->setSliceID($slice_id);
+       // //$ic->complete4Insert();
+       //
+       // $ic->storeItem('insert');     // invalidatecache, feed
+
+        return $text;
+    }
+}
+
+
+
 
 ?>
