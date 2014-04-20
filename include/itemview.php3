@@ -537,10 +537,6 @@ class itemview {
         $this->_content = call_user_func_array($this->get_content_funct, array($foo_zids));
     }
 
-    if ($debug>1) {
-        huhl("itemview:get_content: found",$this->_content);
-    }
-
     $CurItem = new AA_Item("", $this->aliases);   // just prepare
     $CurItem->set_parameters($this->parameters);
 
@@ -614,15 +610,18 @@ class itemview {
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
         $ingroup_index = 0;
         $group_index   = 0;
-        for ( $i=0; $i<$number_of_ids; $i++ ) {
+        AA::$debug && AA::$dbg->log("itemlist - number_of_ids: $number_of_ids");
+        
+        $zidscount = $this->zids->count();
+        for ( $i=0; $i<$number_of_ids; ++$i ) {
             // display banner, if you have to
             if ( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
                 $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
             }
 
             $zidx = $this->from_record+$i;
-            if ($zidx >= $this->zids->count()) {
-                continue;
+            if ($zidx >= $zidscount) {
+                break;
             }
             /* mimo hack -- put this on a stack **/
             if (!$GLOBALS['QueryIDsIndex'])          { $GLOBALS['QueryIDsIndex']          = array(); }
