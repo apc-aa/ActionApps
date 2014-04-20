@@ -273,11 +273,13 @@ class AA_Validate_Regexp extends AA_Validate {
     /** Regular Expression */
     var $pattern;
     var $empty_expression = '/^\s*$/';
+    var $maxlength;
 
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+        return array (                      //           id            name              type    multi  persist validator, required, help, morehelp, example
             'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
-            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/')
+            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
+            'maxlength'        => array( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
             );
     }
 
@@ -286,7 +288,13 @@ class AA_Validate_Regexp extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        return preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
+        if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+        }
+        if ( strlen($this->pattern) < 3 ) {
+            return true;
+        }
+        return  preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
     }
 
     function varempty($var) {
@@ -298,7 +306,8 @@ class AA_Validate_Regexp extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"' : '';  // we need to convert /^[a-z]*$/ to ^[a-z]*$
+        $max = ($this->maxlength > 0) ? ' maxlength='.(int)$this->maxlength : '';
+        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"'.$max : $max;  // we need to convert /^[a-z]*$/ to ^[a-z]*$
     }
 }
 
