@@ -513,7 +513,7 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
         $this->query("INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined180', 'lt_apcCategories', 'World - Globalization', 'World - Globalization', '', '1310')");
         $this->query("INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined181', 'lt_apcCategories', 'World - Debt', 'World - Debt', '', '1320')");
 
-        $this->message(_m('MAke sure, the constants are registered'));
+        $this->message(_m('Make sure, the constants are registered'));
         $this->query("REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined054', 'lt_groupNames', 'Code Pages', 'lt_codepages', '', '0')");
         $this->query("REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined055', 'lt_groupNames', 'Languages Shortcuts', 'lt_languages', '', '1000')");
         $this->query("REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined057', 'lt_groupNames', 'AA Core Bins', 'AA_Core_Bins....', '', '10000')");

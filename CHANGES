@@ -1,3 +1,18 @@
+14-04-19 - new translation environment - still exprerimental. I will describe 
+(honzam)   it after we finish it
+         - better handling of selectboxes with requiered value - empty option 
+           displayed only when no value is present and is unselectable
+         - {text2html} now converts urls to links
+         - new {replace:pattern:string:text} - replaces string using regular 
+           expressions>
+             {replace:<!-- .* -->::{full_text.......}}
+         - new possibility to get matching XML or HTML code from {xpath} - just
+           use XML as third parameter:
+             {xpath:{include:http#://example.cz/list.html}://div [@id="wantedTable"]//table:XML}; 
+         - view speedup - fixed problem with views, where the listlen is set 
+           too high - it took ages to finish. Now fixed.
+         - prototype.js updated to 1.7.1
+         - better integer validation in forms' include/validate.php3
 14-03-25 - fix sliceexport after last changes
 (honzam)
 14-03-23 - {cookie} without any parameter gives you list of all cookies

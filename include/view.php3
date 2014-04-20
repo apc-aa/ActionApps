@@ -174,9 +174,7 @@ class AA_View_Commands {
      */
     function parseCommand($cmd, $als=false) {
 
-        if ( $GLOBALS['debug'] ) {
-            huhl("<br>ParseCommand - cmd:", $cmd);
-        }
+        AA::$debug && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
 
         // cmd could be array - in this case more commands are passed to view
         // Ussage: cmd[89][]=c-1-On&cmd[89][]=c-2-Cars&cmd[89][]=x-89-2233-5244
@@ -243,7 +241,7 @@ function ParseSettings($set) {
  * @param $query_string
  */
 function ParseViewParameters($query_string="") {
-    global $cmd, $set, $vid, $als, $slice_id, $debug;
+    global $cmd, $set, $vid, $als, $slice_id;
     global $x;   // url parameter - used for cmd[]=x-111-url view parameter
 
     if ($query_string) {
@@ -269,16 +267,14 @@ function ParseViewParameters($query_string="") {
         add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
     }
 
-    if ( $debug ) {
-        $query_string = str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string );
-        huhl("ParseViewParameters: vid=$vid, query_string=$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
-    }
+    AA::$debug && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string )."$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
 
     // Splits on "-" and subsitutes aliases
     $commands = new AA_View_Commands($cmd[$vid], $GLOBALS['als']);
     $v_conds  = new AA_Set;
 
-    if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $commands);
+    AA::$debug && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
+
     $commands->reset();
     while($command = $commands->current()) {
         $commands->next();
@@ -387,10 +383,7 @@ function ParseViewParameters($query_string="") {
     //  $arr['item_ids'] = $item_ids;
     $arr['zids']        = $zids;
 
-    if ( $debug ) {
-        huhl($arr);
-    }
-
+    AA::$debug && AA::$dbg->log($arr);
     return $arr;
 }
 
@@ -423,19 +416,16 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
 function GetViewConds($view_info, $param_conds) {
     // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
-    if ( $GLOBALS['debug'] ) {
-        huhl("<br>(GetViewConds) param_conds=",$param_conds);
-    }
+    AA::$debug && AA::$dbg->log("(GetViewConds) param_conds=",$param_conds);
     $conds = array();
 
     ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'], $view_info['cond1cond'],  $param_conds[1]);
     ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'], $view_info['cond2cond'],  $param_conds[2]);
     ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'], $view_info['cond3cond'],  $param_conds[3]);
     if ($param_conds[0]) {
-        $cond['valuejoin'] = $param_conds[0];
+        $conds['valuejoin'] = $param_conds[0];
     }
-
-    if ( $GLOBALS['debug'] ) huhl("<br>(GetViewConds) conds=",$conds);
+    AA::$debug && AA::$dbg->log("(GetViewConds) conds=",$conds);
 
     return $conds;
 }
@@ -544,7 +534,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
  * @param $view_param
  */
 function GetView($view_param) {
-    global $nocache, $debug;
+    global $nocache;
 
     //create keystring from values, which exactly identifies resulting content
     $key = get_hash($view_param, PageCache::globalKeystring());
@@ -565,7 +555,6 @@ function GetView($view_param) {
 
 // Return view result based on parameters,
 function GetViewFromDB($view_param, $return_with_slice_ids=false) {
-    global $debug;
     $vid           = $view_param["vid"];
     $als           = $view_param["als"];
     $conds         = $view_param["conds"];
@@ -627,9 +616,8 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
     $cache_sid = $slice_id;     // pass back to GetView (passed by reference)
 
     // ---- display content in according to view type ----
-    if ($debug) {
-        huhl("GetViewFromDB:view_info=",$view_info);
-    }
+    AA::$debug && AA::$dbg->log("GetViewFromDB:view_info=",$view_info);
+    
     switch( $view_info['type'] ) {
         case 'discus':
             // create array of discussion parameters
@@ -750,13 +738,8 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             if ($year < 1900 || $year > 3000) {
                 $year = $today['year'];
             }
-            if ($debug) huhl("GetViewFromDB:year=$year;month=$month");
-            $calendar_conds = array (array( 'operator' => '<',
-                                            'value' => mktime (0,0,0,$month+1,1,$year),
-                                            $view_info['field1'] => 1 ),
-                                     array( 'operator' => '>=',
-                                            'value' => mktime (0,0,0,$month,1,$year),
-                                            $view_info['field2'] => 1 ));
+            $calendar_conds = array (array( 'operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1 ),
+                                     array( 'operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1 ));
             // Note drops through to next case
 
 //        case 'full':  // parameters: zids, als
@@ -814,13 +797,13 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             }
             //end mlx stuff
             // Note this zids2 is always packed ids, so lost tag information
-            if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
+            AA::$debug && AA::$dbg->log("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
+
             if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
                 $zids2 = $zids2->retag($zids);
-                if ($debug) huhl("Retagged zids=",$zids2);
             }
 
-            if ($debug) { huhl("GetViewFromDB: Filtered ids=",$zids2); }
+            AA::$debug && AA::$dbg->log("GetViewFromDB: Filtered ids=",$zids2);
 
             $format = $view->getViewFormat($selected_item);
             $format['calendar_month'] = $month;
@@ -829,16 +812,19 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 $format['group_by'] = $view_param['group_by'];
             }
 
+            AA::$debug && AA::$dbg->group("GetListLength".'_'.$dbgtime);
             list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
+            AA::$debug && AA::$dbg->groupend("GetListLength".'_'.$dbgtime);
 
-            if ($debug) { huhl("GetViewFromDB: Filtered listlen=",$listlen); }
+            AA::$debug && AA::$dbg->log("GetViewFromDB: Filtered listlen=",$listlen);
 
             $itemview = new itemview( $format, $fields, $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
             if (isset($zids2) && ($zids2->count() > $list_from)) {
                 $itemview_type = (($view_info['type'] == 'calendar') ? 'calendar' : 'view');
-                if ($debug) { huhl("GetViewFromDB: to show=",$zids2, $itemview_type); }
+                AA::$debug && AA::$dbg->log("GetViewFromDB: to show=",$zids2, $itemview_type);
                 $ret = $itemview->get_output($itemview_type);
+                AA::$debug && AA::$dbg->log("GetViewFromDB: to showend");
             }
             else {
                 /* Not sure if this was a necessary change that got missed, or got changed again
@@ -849,7 +835,11 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 //    huhl("XYZZY:v578, msg=",$noitem_msg);
                 $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
                 */
+                
+                AA::$debug && AA::$dbg->group("unaliasWithScrollerEasy".'_'.$dbgtime);
                 $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
+                AA::$debug && AA::$dbg->groupend("unaliasWithScrollerEasy".'_'.$dbgtime);
+                
             }
             break;
 
@@ -858,20 +848,16 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             // I create a CurItem object so I can use the unalias function
             $CurItem      = new AA_Item("", $als);
             $formatstring = $view_info["odd"];          // it is better to copy format-
-    if ($debug) {
-        huhl("GetViewFromDB: unalias=",$CurItem, $formatstring);
-    }
+            AA::$debug && AA::$dbg->log("GetViewFromDB: unalias=",$CurItem, $formatstring);
             $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
             break;
     }
 
-    if ($debug) {
-        huhl("GetViewFromDB: ret=",$ret);
-    }
+    AA::$debug && AA::$dbg->log("GetViewFromDB: ret=",$ret);
 
     // user could make the view to display view ID before and after the view output
     // which is usefull mainly for debugging. See view setting in admin interface
-    if ( $debug OR ($ret AND ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
+    if ( AA::$debug OR ($ret AND ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
         $ret = "<!-- $vid -->$ret<!-- /$vid -->";
     }
 
