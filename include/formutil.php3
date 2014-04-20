@@ -366,10 +366,10 @@ class inputform {
                     $GLOBALS[$htmlvarname] = $x->getFlag();
                 }
                 // get values from form (values are filled when error on form ocures
-                if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
+                if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {  // multiple - 1=multiple, 2=translate
                       // get the multivalues
-                    foreach ( $GLOBALS[$varname] as $value ) {
-                        $field_value[] = array('value' => stripslashes($value)); // it is quoted!!!
+                    foreach ( $GLOBALS[$varname] as $key => $value ) {
+                        $field_value[$key] = array('value' => stripslashes($value)); // it is quoted!!!
                     }
                 } else {
                     $field_value[0]['value'] = stripslashes($GLOBALS[$varname]);  // it is quoted!!!
@@ -485,6 +485,7 @@ class AA_Inputfield {
     var $html_rb_show;     // show HTML/Plaintext radiobutton?
 
     var $valid;            // validation function used (this function we added in order we can use this class for AA Admin forms as well)
+    var $translations;     // field allows translation
     var $dbfield;          // contains name of database field. It is often
                            // empty, so we will use varname, but there are some
                            // cases, where we use different database field than
@@ -612,6 +613,10 @@ class AA_Inputfield {
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
             $this->valid         = $field["input_validate"];
+
+            if ($field["multiple"] & 2) {   // translation
+                $this->translations = AA_Slices::getSlice(unpack_id($field["slice_id"]))->getTranslations();
+            }
             if ( isset($field["const_arr"]) ) {
                 $this->const_arr  = $field["const_arr"];
             }
@@ -675,7 +680,7 @@ class AA_Inputfield {
                     $slice_field = 'publish_date....';
                 }
             }
-            $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
             $zids            = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormatedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
@@ -1293,12 +1298,9 @@ class AA_Inputfield {
 
         global $sess;
 
-        list($name,$val,$add) = $this->prepareVars();
+        list($name,$val,$add) = $this->prepareVars('multi');
         // make the textarea bigger, if already filled with long text
-        $rows     = max($rows, min(substr_count($val,"\n")+1, 30));
-        $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-        $val      = myspecialchars($val);
         $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
         $colsy    = ($cols = (int)$cols) ? " cols=$cols" : '';
         $colspan  = $single ? 2 : 1;
@@ -1307,7 +1309,7 @@ class AA_Inputfield {
         if ($single) {
             $this->echoo("</tr>\n<tr class=\"formrow{formpart}\">");
         }
-        $this->echoo("<td colspan=\"$colspan\">");
+        $this->echoo( ($colspan==1) ? '<td>' : "<td colspan=\"$colspan\">");
         $this->html_radio($showhtmlarea ? false : 'convertors');
 
         // fix for IE - where the textarea icons are too big so there is
@@ -1315,11 +1317,60 @@ class AA_Inputfield {
         if ($showhtmlarea) {
             $rows += 8;
         }
-        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$val</textarea>\n";
-        if ($showhtmlarea) {
-            $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
-        } elseif ( $showrich_href ) {
-            $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
+
+        if ($this->translations) {
+            $first = true;
+            $parts = array();
+            $tarea = "<div class=\"aa-langdiv\">";
+            foreach($this->translations as $lang) {
+                $lang_id           = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $value             = myspecialchars($val[$lang_id]['value']);
+                if ( !strlen($value) AND $first) {
+                    // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
+                    $value = $val[0]['value'];
+                }
+                $rows              = max($rows, min(substr_count($value,"\n")+1, 30));
+                $rows_css          = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
+
+                $name2             = $name."[$lang_id]";
+                $id2               = $name.'-'.$lang_id;
+                $classes           = array($first ?'aa-open' : '');
+                if (strlen(trim($value))) {
+                    $classes[] = 'aa-filled';
+                }
+                $parts["part$id2"] = array($lang, $classes);
+
+                $tarea .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
+                $tarea .= "<textarea id=\"$id2\" name=\"$name2\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+                $tarea .= "</label>";
+                if ($showhtmlarea) {
+                    $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$id2'");
+                } elseif ( $showrich_href ) {
+                    $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
+                }
+                $first = false;
+            }
+            if (count($parts)>1) {
+                $tarea .= "<div class=\"aa-langswitch\">";
+                $tarea .= "\n  <input type=\"button\" value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
+                foreach ($parts as $id => $prop) {
+                    $tarea .= "\n     <input type=\"button\" value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"$('$id').toggle();$('aa-but$id').toggleClassName('aa-open')\">";
+                }
+                $tarea .= "\n</div>";
+                $tarea .= "\n</div>";
+            }
+        } else {
+
+            $value    = myspecialchars($val[0]['value']);
+            $rows     = max($rows, min(substr_count($value,"\n")+1, 30));
+            $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
+
+            $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+            if ($showhtmlarea) {
+                $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
+            } elseif ( $showrich_href ) {
+                $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
+            }
         }
         $this->echovar($tarea);
         $this->helps('plus');

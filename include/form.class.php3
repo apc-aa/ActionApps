@@ -38,7 +38,7 @@ class AA_Formrow extends AA_Storable {
         $widget = $this->getWidget();
         return $widget->getHtml($this->getRowProperty(), $content);
     }
-    
+
     // in order we can dispaly row widget (used for editing forms)
     function addFormrows($form) {
         $slice  = AA_Slices::getSlice($form->object_owner);
@@ -49,7 +49,7 @@ class AA_Formrow extends AA_Storable {
         $w = new AA_Widget_Formrow(array('const_arr' => $f_arr));
         //$w = new AA_Widget_Mch(array('columns'=>1,'const_arr' => $f_arr));
         $form->addRow(new AA_Formrow_Full($p, $w));  // use default widget for the field
-    }        
+    }
 }
 
 class AA_Formrow_Text extends AA_Formrow {
@@ -181,7 +181,7 @@ class AA_Widget_Formrow extends AA_Widget {
         $selected  = new AA_Value($arr);
         $fields->setAaValue($aa_property->getId(), $selected);
         $widget    = "<select name=\"$input_name\" id=\"$input_name\" multiple>";
-        $options   = $this->getOptions($selected, $fields, false, false, !$aa_property->isRequired());
+        $options   = $this->getOptions($selected, $fields, false, false, $aa_property->isRequired() ? 2 : 1);
         $widget   .= $this->getSelectOptions( $options );
         $widget   .= "</select>";
 
@@ -252,19 +252,11 @@ class AA_Form extends AA_Object {
         $content = $this->_getContent();
 
         $html    = $this->_getRowsHtml($content);
-
-        $prop  = AA_Object::getPropertyObject('aa_owner');
-        $widg  = new AA_Widget_Hid();
-        $html .= $widg->getHtml($prop, $content);
-
-        $prop  = AA_Object::getPropertyObject('aa_type');
-        $widg  = new AA_Widget_Hid();
-        $html .= $widg->getHtml($prop, $content);
+        $html   .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+        $html   .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
 
         if ($this->object_id) {
-            $prop  = AA_Object::getPropertyObject('aa_id');
-            $widg  = new AA_Widget_Hid();
-            $html .= $widg->getHtml($prop, $content);
+            $html .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
         }
 
         return $html;

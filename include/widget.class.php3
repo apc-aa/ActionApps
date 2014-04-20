@@ -314,9 +314,11 @@ class AA_Widget extends AA_Components {
             }
         }
 
-        if ( $add_empty ) {
+        if ( $add_empty == 1 ) {
             // put empty option to the front
             array_unshift($ret, array('k'=>'', 'v'=>'', 'selected' => !$selectedused, 'mis' => false));
+        } elseif ( ($add_empty == 2) AND !$selectedused ) {
+            array_unshift($ret, array('k'=>'', 'v'=>'', 'selected' => true, 'mis' => false, 'justdefault' => true));
         }
         return $ret;
     }
@@ -336,9 +338,10 @@ class AA_Widget extends AA_Components {
             if ( ($restrict == 'unselected') AND $option['selected'] ) {
                 continue;  // do not print this option
             }
-            $selected = $option['selected'] ? $select_string : '';
-            $missing  = $option['mis']      ? 'class="sel_missing"' : '';
-            $ret     .= "<option value=\"". myspecialchars($option['k']) ."\" $selected $missing>".myspecialchars($option['v'])."</option>";
+            $selected = $option['selected']    ? $select_string : '';
+            $missing  = $option['mis']         ? ' class="sel_missing"' : '';
+            $default  = $option['justdefault'] ? ' hidden disabled' : '';
+            $ret     .= "<option value=\"". myspecialchars($option['k']) ."\"$selected$missing$default>".myspecialchars($option['v'])."</option>";
         }
         return $ret;
     }
@@ -393,7 +396,7 @@ class AA_Widget extends AA_Components {
             $selected  = $content->getAaValue($aa_property->getId());
             // empty select option for not required fields and also for live selectbox,
             // because people thinks, that the first value is filled in the database (which is not)
-            $add_empty = !$required OR ($type=='live' AND $selected->isEmpty());
+            $add_empty = (!$required ? 1 : 2);
             $options   = $this->getOptions($selected, $content, $use_name, false, $add_empty);
             $widget   .= $this->getSelectOptions( $options );
             $widget   .= "</select>";
