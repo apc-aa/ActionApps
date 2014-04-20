@@ -158,6 +158,8 @@ require_once AA_INC_PATH."item.php3";
 
 if ($lang_file) {
     mgettext_bind(GetLang($lang_file), 'output');
+    AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
+    AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }
 
 $res = ModW_GetSite( $apc_state, AA::$site_id, $site_info );

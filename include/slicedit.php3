@@ -129,6 +129,22 @@ if ($user_firstname || $user_surname) {
     } while (false);
 }
 
+
+// additional settings
+if ($slice_id) {
+    // make sure the slicesettings object for this slice exists
+    $slicesetings_id = string2id('AA_Slicesettings'.$slice_id);
+    if (is_null(AA_Slicesettings::load($slicesetings_id))) {
+        $slicesetings = new AA_Slicesettings;
+        $slicesetings->setNew($slicesetings_id, $slice_id);
+        $slicesetings->save();
+    }
+
+    $form       = AA_Form::factoryForm('AA_Slicesettings', string2id('AA_Slicesettings'.$slice_id), $slice_id);
+    $form_state = $form->process($_POST['aa']);
+}
+
+
 if ( $add || $update ) {
     do {
         if ( !$owner ) {  // insert new owner
@@ -327,7 +343,6 @@ if ( $add || $update ) {
             // create new upload directory
             Files::destinationDir(AA_Slices::getSlice($slice_id));
         }
-        $slice = AA_Slices::getSlice($slice_id);
 //        $slice->setSliceField('_upload_url.....', $upload_url);
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice

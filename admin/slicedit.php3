@@ -39,6 +39,8 @@ require_once AA_INC_PATH."pagecache.php3";
 // add mlx functions
 require_once AA_INC_PATH."mlx.php";
 
+
+
 $PERMS_STATE = array( "0" => _m("Not allowed"),
                       "1" => _m("Active"),
                       "2" => _m("Hold bin") );
@@ -196,8 +198,11 @@ if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $mailman_field_lists, false, "", "../doc/reader.html#mailman");
 }
 
-FrmInputText("reading_password", _m("Password for Reading"), $reading_password,
-             100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
+FrmInputText("reading_password", _m("Password for Reading"), $reading_password, 100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
+
+if ($slice_id) {
+    FrmStaticText(_m("Additional setting"), AA_Form::factoryForm('AA_Slicesettings', string2id('AA_Slicesettings'.$slice_id), $slice_id)->getObjectEditHtml(),false,'','',false);
+}
 
 if ($slice_id=="") {
     echo "<input type=\"hidden\" name=\"add\" value=\"1\">";        // action

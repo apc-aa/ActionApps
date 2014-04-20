@@ -48,6 +48,7 @@ class AA_Slice {
     var $dynamic_fields;  // 2 member array( $fields, $prifields)
     var $setting;         // slice setting - Record form slice table
     var $dynamic_setting; // dynamic slice setting fields stored in content table
+    var $setting_object;  // newest set of slice setting - stored in object AA_Slicesettings    
 
     // computed values form slice fields
     var $js_validation;  // javascript form validation code
@@ -63,6 +64,7 @@ class AA_Slice {
         $this->unpackedid     = $slice_id; // unpacked id
         $this->fields         = new AA_Fields($this->unpackedid);
         $this->dynamic_fields = new AA_Fields($this->unpackedid, 1);
+        $this->setting_object = null;     
     }
 
     /** loadsettings function
@@ -111,6 +113,7 @@ class AA_Slice {
         $db = getDB();
         $SQL = "SELECT * FROM content WHERE item_id = '".$this->sql_id()."' ORDER BY content.number";
         $db->tquery($SQL);
+        $content4id = array();
         while ($db->next_record()) {
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
             $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
@@ -120,18 +123,27 @@ class AA_Slice {
         freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
     }
+    
+    /** getTranslations
+     *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
+     */
+    function loadSettingObject()  {
+        return $this->setting_object ?: $this->setting_object = AA_Slicesettings::load(string2id('AA_Slicesettings'.$this->unpackedid));
+    }
 
     /** getProperty function
      * @param $fname
      */
     function getProperty($fname) {
+        if ($fname=='translations') {
+            return $this->getTranslations();
+        }
         if (AA_Fields::isSliceField($fname)) {
             $this->loadsettingfields();
             return $this->dynamic_setting->getValue($fname);
-        } else {
-            $this->loadsettings();
-            return $this->setting[$fname];
         }
+        $this->loadsettings();
+        return $this->setting[$fname];
     }
 
     /** isField function
@@ -224,6 +236,14 @@ class AA_Slice {
     function getCharset()     {
         return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
     }
+
+    /** getTranslations
+     *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
+     */
+    function getTranslations()  {
+        return is_null($this->loadSettingObject()) ? array() : $this->setting_object->getProperty('translations');
+    }
+
 
     /** sql_id function
      *  Return an id in a form that can be passed to sql, (needs outer quotes)
@@ -493,7 +513,7 @@ class AA_Slices {
     }
 
     /** getSliceProperty function
-     *  static function
+     *  static function called as: AA_Slices::getSliceProperty($slice_id, 'translations');
      * @param $slice_id
      * @param $field
      */
@@ -649,5 +669,26 @@ class AA_Module {
         return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
     }
 }
+
+/** Slice settings */
+class AA_Slicesettings extends AA_Object {
+
+    // must be protected or public - AA_Object needs to read it
+    protected $translations;
+    
+    /** do not display Name property on the form by default */
+    const USES_NAME = false;    
+    
+
+    /** allows storing object in database
+     *  AA_Object's method
+     */
+    static function getClassProperties() {
+        return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
+            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true,  true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...'))
+            );
+    }
+}
+
 
 ?>

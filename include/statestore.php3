@@ -283,12 +283,21 @@ class AA_Object extends AA_Storable {
 
     /** Object Owner - id if object's parent, where the object belongs - optional */
     var $aa_owner;
+    
+    /** display Name property on the form by default< */
+    const USES_NAME = true;    
 
     /** We store also following data, but it do not need its own variable
      *   aa_type       - class of the object
      *   aa_version    - version of the object class (if it is not 1)
      *   aa_subobjects - helper field used for quicker load of object
      */
+
+    function setNew($id, $owner, $name='') {
+        $this->aa_id    = $id;
+        $this->aa_owner = $owner;
+        $this->aa_name  = $name;
+    }
 
     /** setOwnerId function
      * @param $owner_id
@@ -391,9 +400,6 @@ class AA_Object extends AA_Storable {
             case 'aa_subobjects': return new AA_Property('aa_subobjects' ,'Subobjects', 'string', true,  true, 'string', false);
             case 'aa_id':         return new AA_Property('aa_id' ,        'Id',         'string', false, true, 'id',     true);
         }
-        // does not work - will work with static::getClassProperties() in php 5.3
-        // $props = self::getClassProperties();
-        // return isset($props[$property_id]) ? $props[$property_id] : null;
         return null;
     }
 
@@ -898,10 +904,7 @@ class AA_Object extends AA_Storable {
 
         // specific part for form
         $object = new $otype;
-
-        $object->setId($content->getId());
-        $object->setOwnerId($oowner);
-        $object->setName($content->getName());
+        $object->setNew($content->getId(), $oowner, $content->getName());
 
         // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3
         $props = is_null($otype) ? static::getClassProperties() : $otype::getClassProperties();
@@ -917,7 +920,9 @@ class AA_Object extends AA_Storable {
     static function addFormrows($form) {
 
 //        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
-        AA_Object::getPropertyObject('aa_name')->addPropertyFormrows($form);  // use default widget for the field
+        if (static::USES_NAME) {
+            AA_Object::getPropertyObject('aa_name')->addPropertyFormrows($form);  // use default widget for the field
+        }
 
         // self didn't give us the calling class and we do not have late static bindings in PHP < 5.3
         $props = static::getClassProperties();

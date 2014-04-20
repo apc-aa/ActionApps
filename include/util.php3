@@ -41,6 +41,13 @@ require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."widget.class.php3";
 require_once AA_INC_PATH."field.class.php3";
 
+/** identity function - used for chaining with constructor
+ *  Ussage: with(new AA_Some_Object())->set(something);
+ */
+function with($object) {
+    return $object;
+}
+
 /** a_href function
  *  Get <a href> tag
  * @param $url
@@ -805,7 +812,10 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     $credentials = AA_Credentials::singleton();
     // returned ids (possibly removed items in trash, ...)
-    $ids         = array();
+    $ids            = array();
+    $item_permitted = array();
+    $translate      = array();
+    $content        = array();
     while ( $db->next_record() ) {
 
         $row = $db->Record;
@@ -889,7 +899,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         while ( $db->next_record() ) {
 
             $row = $db->Record;
-
+            
             $item_id = $row['item_id'];
             $fooid   = ($use_short_ids ? $translate[unpack_id($item_id)] : unpack_id($item_id) );
 
@@ -905,7 +915,11 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
                     // with the same number (=NULL) - the ones which cames from "add value to field" operation)
                     continue;
                 }
-                $content[$fooid][$row['field_id']][] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                if ($row['number'] > 999999) {  // translations
+                    $content[$fooid][$row['field_id']][$row['number']] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                } else {
+                    $content[$fooid][$row['field_id']][] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                }
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
                 // if speeds the item->f_h() function a bit

@@ -179,19 +179,11 @@ function GetAliases4Type( $type, $additional="" ) {
  * @param $flag
  */
 function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML) {
-    // you can specify multiple value ($value is array then)
-    if ( !is_array($value) ) {
-        $value = array($value);
-    }
-
     do {
         $colname = AA_Fields::createFieldId( strtolower( substr( $alias,2,12 )));
     } while ( isset($content4id[$colname]) );
-
-    foreach ( $value as $v ) {
-        $content4id[$colname][] = array ("value" => $v, "flag" => $flag);
-    }
-    $aliases[$alias] = GetAliasDef("f_h", $colname, _m("Alias for %1",array($colname)));
+    $content4id[$colname][] = array ("value" => $value, "flag" => $flag);
+    $aliases[$alias] = GetAliasDef("f_1", $colname, _m("Alias for %1",array($colname)));
 }
 
 /** sess_return_url function
@@ -524,7 +516,7 @@ class AA_Item {
         return $this->content4id->getSliceID();
     }
 
-    /** getSliceID function  */
+    /** getOwnerID function  */
     function getOwnerID() {
         return $this->content4id->getSliceID();
     }
@@ -534,8 +526,7 @@ class AA_Item {
      * @param $field_id
      */
     function getWidgetAjaxHtml($field_id) {
-        $tmpobj = AA_Slices::getSlice($this->getSliceID());
-        return $tmpobj->getWidgetAjaxHtml($field_id, $this->getItemID());
+        return AA_Slices::getSlice($this->getSliceID())->getWidgetAjaxHtml($field_id, $this->getItemID());
     }
 
     /** getbaseurl function
@@ -736,6 +727,25 @@ class AA_Item {
     function f_1($col, $param="") {
         return $this->getval($col);
     }
+
+    /** f_2 function
+     *  Prints translated field based on currently selected language
+     * @param $col
+     * @param $param
+     */
+    function f_2($col, $param="") {
+        // first_child try translation to right language
+        if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber(AA::$lang)))) {
+            // if not present - translate to default language of the slice
+            $translations = AA_Slices::getSliceProperty($this->getSliceID(), 'translations');
+            if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber($translations[0])))) {
+                // last try the 0 index (if the field was not set to translation)
+                $txt = $this->getval($col);
+            }
+        }
+        return DeHtml($txt, $this->getFlag($col));
+    }
+
 
     /** f_h function
      * print due to html flag set (escape html special characters or just print)

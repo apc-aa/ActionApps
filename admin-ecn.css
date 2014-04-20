@@ -404,6 +404,10 @@ select.live, input.live, textarea.live {
     border: 1px solid #EBDABE;
 }
 
+select.updating, input.updating, textarea.updating {
+    outline: 1px solid #FF0000;
+}
+
 div.ajax_value {
     background: url("images/edit.png") no-repeat scroll right bottom transparent;
     padding-right: 20px;
@@ -510,6 +514,89 @@ input.cancel-button {
 #aa-message-box.aa-ok span {
     background-color: #E2FAC4;
 }
+
+/* translate in inputform */
+.aa-langdiv strong {
+    padding: 0 2px 1px 2px;
+    line-height: 1;
+    display: inline-block;
+    border-radius: 7px 7px 0 0;
+    background-color: #A8977A;
+    text-decoration: none;
+    color: #FFF;
+    border: 1px solid #91856E;
+    border-bottom: none;
+    margin-top: 4px;
+    text-shadow: 0 0 1px #464545;
+    font-size: 8pt;
+}
+.aa-langswitch {
+    height: 12px;
+    border-bottom: 1px solid #CFC0A8;
+    margin-bottom: 12px;
+}
+.aa-langswitch input[type=button] {
+    box-shadow: #53452e 0px 0px 2px;
+    padding: 0 2px 2px 2px;
+    display: inline-block;
+    border-radius: 7px;
+    background-color: #D1C1A7;
+    text-decoration: none;
+    color: #FFFFFF;
+    border: none;
+    margin-top: 4px;
+    text-shadow: 0 0 1px #464545;
+}
+.aa-langswitch input[type=button].aa-open,
+.aa-langswitch input[type=button].aa-filled.aa-open,
+.aa-langswitch input[type=button].aa-filled.aa-open:hover {
+    display: none;
+}
+.aa-langswitch input[type=button].aa-filled {
+    box-shadow: #000 0px 0px 2px;
+    background-color: #A8977A;
+    color: #FFF;
+    text-shadow: 0 0 1px #464545;
+}
+.aa-langswitch input[type=button]:hover {
+    background-color: #FAF2D9;
+    color: #494949;
+    box-shadow: 0 0 6px #000;
+    text-shadow: none;
+}
+.aa-langswitch input[type=button].aa-open:hover {
+    background-color: #cab89c;
+    box-shadow: #000 0px 0px 2px;
+}
+.aa-langswitch input[type=button].aa-open.aa-filled:hover {
+    background-color: #A8977A;
+    box-shadow: #000 0px 0px 2px;
+}
+.aa-langswitch input[type=button].aa-langall {
+    float: right;
+    text-shadow: 0 0 1px white;
+    box-shadow: 0 0 2px #EBDABE;
+    color: #441717;
+    padding: 0 7px 2px 17px;
+    background:  #EBDABE
+        url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiDHbV82NgYFgHxMwMuEEBE5DYBMQ1eBQtAOKJTFBOB1QAHVwA4iwQgwlJMB2I9yHx3wFxEBB/R1f4C4gjgPgOEP8F4mggvg+TZEGz6jUQ+wCxBxDvQJYACDAAikQQ/JwyWB0AAAAASUVORK5CYII=)
+        no-repeat 4px center;
+}
+
+.aa-langswitch input[type=button].aa-langall.aa-open {
+    background:  #EBDABE
+        url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAF9JREFUeNpiDHbVY0AD6kDsAcQTkQVZ0BSJAvEWIFYE4ptAvAMmwYSkiA2IVwCxChAzA/FSqAYMhTOB2AmJLwTE64CYE1lhBRAnMGACAyCeBnOjHxC3MOAGIAMuAAQYAGZzCzB44OhiAAAAAElFTkSuQmCC)
+        no-repeat 4px center;
+}
+
+.aa-langswitch input[type=button].aa-langall.aa-open {
+    display: inline-block;
+}
+
+.aa-langswitch input[type=button].aa-langall:hover {
+    box-shadow: 0 0 6px #000;
+}
+
 
 
 

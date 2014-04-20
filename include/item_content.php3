@@ -264,7 +264,19 @@ class AA_Content {
      * @param $what
      */
     function getValue($field_id, $idx=0) {
-        return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
+        if ( !is_array($a = $this->content[$field_id]) ) {
+            return false;
+        }
+        if (isset($a[$idx])) {
+            return $a[$idx]['value'];
+        } 
+        if ( (key($a)>=1000000) AND ($idx<1000000) ) {
+            if (strlen($v = $a[AA::$langnum[0]+$idx]['value'])) {
+                return $v;
+            }
+        }
+        return false;
+        //return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
     }
 
     function getFlag($field_id) {
@@ -301,6 +313,14 @@ class AA_Content {
             }
         }
         return $changes;
+    }
+
+    /** converts two letter lang code into number used for translation fields in $content4id array
+     *  cz -> 78000000, en -> 118000000, ...
+     *  you can use any two (smallcaps) letter for language
+     */
+    static function getLangNumber($lang) {
+        return strlen($lang) ? 1000000*((ord($lang{0})-97)*26+(ord($lang{1})-97+1)) : 0;
     }
 
     /** @return Abstract Data Structure of current object
@@ -457,11 +477,11 @@ class ItemContent extends AA_Content {
             }
 
             // fill the multivalues
-            foreach ($var as $v) {
+            foreach ($var as $key => $v) {
                 $flag = $f["html_show"] ? ($GLOBALS[$htmlvarname]=="h" ? FLAG_HTML : 0)
                                         : ($f["html_default"] > 0      ? FLAG_HTML : 0);
                 // content uses NOT quoted values => stripslashes
-                $this->content[$pri_field_id][]   = array('value'=> stripslashes($v), 'flag'=>$flag);
+                $this->content[$pri_field_id][(int)$key]   = array('value'=> stripslashes($v), 'flag'=>$flag);
             }
         }
         return true;
@@ -584,8 +604,8 @@ class ItemContent extends AA_Content {
      * @param $field_id
      * @param $val
      */
-    function setValue($field_id,$val) {
-        $this->content[$field_id][0]['value'] = $val;
+    function setValue($field_id,$val,$num=0) {
+        $this->content[$field_id][$num]['value'] = $val;
     }
 
     /** setItemID function
@@ -1116,14 +1136,16 @@ class ItemContent extends AA_Content {
                     continue;
                 }
                 // serve multiple values for one field
-                $order    = 0;
                 $numbered = (count($cont) > 1);
                 $set      = false;
                 unset($parameters);
                 unset($thumbnails);
-                foreach ($cont as $v) {
+                foreach ($cont as $numkey => $v) {
                     // file upload needs the $fields array, because it stores
                     // some other fields as thumbnails
+                    
+                    
+                    
                     if ($fnc["fnc"]=="fil") {
                         //Note $thumbnails is undefined the first time in this loop
                         if (is_array($thumbnails)) {
@@ -1136,28 +1158,26 @@ class ItemContent extends AA_Content {
 
                         if (!$stop) {
                             if ($numbered) {
-                                $parameters["order"] = $order;
+                                $parameters["order"] = $numkey;
                             }
                             $parameters["fields"]    = $fields;
                             $parameters["context"]   = $context;
                             $thumbnails = $field_writer->$fncname($id, $f, $v, $fnc["param"], $parameters);
                         }
                     } else {
-                        if ($numbered) {
-                            $parameters["order"] = $order;
-                            $field_writer->$fncname($id, $f, $v, $fnc["param"], $parameters);
-                        } else {
-                            $field_writer->$fncname($id, $f, $v, $fnc["param"]);
-                        }
+                        $field_writer->$fncname($id, $f, $v, $fnc["param"], $numbered ? array('order'=>$numkey) : '');
                     }
                     // do not store multiple values if field is not marked as multiple
                     // ERRORNOUS
                     //if( !$f["multiple"]!=1 )
                         //continue;
-                    $order++;
                 }
             }
         }
+        // if ($_POST['AA_CP_Session']=='6953b900572e78f86907c6484992a895') {
+        //     huhl(AA_Item::getItem($id));
+        //     exit;
+        // }
     }
 
     /** transform function

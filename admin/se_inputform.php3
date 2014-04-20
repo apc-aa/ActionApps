@@ -115,6 +115,24 @@ function Qvarsetadd($varname, $type, $value) {
     }
 }
 
+/** get_params function
+ * Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
+ *   (c) Jakub, 28.1.2003
+ * @param $src
+ * @param $fnc (by link)
+ * @param $params (by link)
+ */
+function get_params($src, &$fnc, &$params) {
+    if (strchr ($src,":")) {
+        $params = substr ($src, strpos ($src,":")+1);
+        $fnc = substr ($src, 0, strpos ($src,":"));
+    }
+    else {
+        $params = "";
+        $fnc = $src;
+    }
+}
+
 if ($update) {
     do {
         QValidateInput("input_before",    _m("Before HTML code"),    $input_before,      $err, false, "text");
@@ -151,9 +169,11 @@ if ($update) {
         Qvarsetadd("input_default", "quoted", ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
         // mark as multiple
         // Mark field as multiple is not necessary - we can remove this
-        // property in the future. Honza, 17.10.2006
+        // property in the future. Honza, 2006-10-17
+        // On the other hand we use it for marting the field as translateable
+        // Honza, 2014-03-24
         $widget_class = AA_Widget::constructClassName($input_show_func_f);
-        Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : ($widget_class::multiple() ? 1 : 0)));
+        Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0))));
 
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
             Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
@@ -243,24 +263,6 @@ if ( !($fld = DB_AA::select1("SELECT * FROM field WHERE slice_id='$p_slice_id' A
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
 
-/** get_params function
- * Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
- *   (c) Jakub, 28.1.2003
- * @param $src
- * @param $fnc (by link)
- * @param $params (by link)
- */
-function get_params($src, &$fnc, &$params) {
-    if (strchr ($src,":")) {
-        $params = substr ($src, strpos ($src,":")+1);
-        $fnc = substr ($src, 0, strpos ($src,":"));
-    }
-    else {
-        $params = "";
-        $fnc = $src;
-    }
-}
-
 if ( !$update ) {      // load defaults
     $input_before  = $fld['input_before'];
     $input_help    = $fld['input_help'];
@@ -292,6 +294,7 @@ if ( !$update ) {      // load defaults
     $html_show    = $fld["html_show"];
     $feed         = $fld["feed"];
     $text_stored  = $fld["text_stored"];
+    $translation  = $fld["multiple"] & 2;
 }
 
 HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -351,132 +354,119 @@ foreach ($input_show_classes as $class) {
     $isc_arr[strtolower(substr($class, 10))] = $class::name();
 }
 
+$tab_separator = "\n<tr><td colspan=2><hr></td></tr>\n";
+
 echo "
-  <tr>
-   <td>
      <tr>
-      <td class=\"tabtxt\"><b>". _m("Input type") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\">";
+      <td class=tabtxt><b>". _m("Input type") ."</b></td>
+      <td class=tabtxt>";
        FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
 
-      echo "<div class=\"tabhlp\">". _m("Input field type in Add / Edit item.") ."</div>
-            <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
+      echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
+            <table border=0 cellspacing=0 cellpadding=4 bgcolor=\"". COLOR_TABBG ."\">
              <tr>
-              <td class=\"tabtit\"><b>". _m("Constants") ."</b> ";
+              <td class=tabtit><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
       $constants_menu = explode('|', str_replace(" ","&nbsp;",_m("Edit|Use as new|New")));
-      echo "   <div class=\"tabtit\">". _m("Choose a Constant Group or a Slice.") ."</div>
+      echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
-              <td class=\"tabtit\">
-                <font class=\"tabtxt\"><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>"
+              <td class=tabtit>
+                <font class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>"
                     . $constants_menu[0] ."</a></b></font><br>
-                <span class=\"tabtxt\"><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
+                <span class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
                     . $constants_menu[1] ."</a></b></span><br>
-                <span class=\"tabtxt\">
+                <span class=tabtxt>
                     <B><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></B></span>
               </td>
              </tr>
             </table>
-            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-                <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
-                <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
+            <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
+                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+                <td class=tabhlp><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-                <textarea name=\"input_show_func_p\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". myspecialchars($input_show_func_p) ."</textarea>
+                <textarea name=\"input_show_func_p\" rows=4 cols=50 wrap=\"virtual\">". myspecialchars($input_show_func_p) ."</textarea>
       </td>
-     </tr>
-     <tr><td colspan=\"4\"><hr></td></tr>
+      </tr>";
+FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1, false, _m('Only Text Area and Text Field widgets allows translation. Languages should be set on Slice Setting page.'));
+
+echo $tab_separator;
+echo "
      <tr>
-      <td class=\"tabtxt\"><b>". _m("Default") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\">";
+      <td class=tabtxt><b>". _m("Default") ."</b></td>
+      <td class=tabtxt>";
         // txt and qte is the same, so it is better to use the only one
         if ($input_default_f == 'qte') {
             $input_default_f = 'txt';
         }
         FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES), $input_default_f);
-      echo "<div class=\"tabhlp\">". _m("How to generate the default value") ."</div>
-            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-                <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
-                <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
+      echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
+            <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
+                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+                <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
             <input type=\"text\" name=\"input_default\" size=50 value=\"". myspecialchars($input_default) ."\">
       </td>
-     </tr>
-     <tr><td colspan=\"4\"><hr></td></tr>
+     </tr>";
+echo $tab_separator;
+echo "
      <tr>
-         <td class=\"tabtxt\"><b>". _m("Validate") ."</b></td>
-         <td class=\"tabtxt\" colspan=\"3\">";
+         <td class=tabtxt><b>". _m("Validate") ."</b></td>
+         <td class=tabtxt>";
          FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES), $input_validate_f);
-         echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-             <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
-             <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
+         echo "<table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
+             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+             <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
          <input type=\"text\" name=\"input_validate_p\" size=\"50\" value=\"". myspecialchars($input_validate_p) ."\">
          </td>
       </td>
-     </tr>
-     <tr><td colspan=\"4\"><hr></td></tr>
+     </tr>";
+echo $tab_separator;
+echo "
      <tr>
-         <td class=\"tabtxt\"><b>". _m("Stored as") ."</b></td>
-         <td class=\"tabtxt\" colspan=\"3\">";
+         <td class=tabtxt><b>". _m("Stored as") ."</b></td>
+         <td class=tabtxt>";
          if ($fld['in_item_tbl']) {
              echo _m('Stored in <em>item</em> table - it is not possible to change store method');
          } else {
              FrmSelectEasy("text_stored", array('1'=>_m('Text'), '0'=>_m('Number')), $text_stored);
              $text_rows    = DB_AA::select1("SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id=item.id WHERE item.slice_id = '$p_slice_id' AND content.field_id = '".$fld['id']."' AND (content.flag & 64) = 64", 'cnt');
              $numeric_rows = DB_AA::select1("SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id=item.id WHERE item.slice_id = '$p_slice_id' AND content.field_id = '".$fld['id']."' AND (content.flag & 64) = 0", 'cnt');
-             echo "<div class=\"tabhlp\">"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
+             echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }
          echo "
          </td>
       </td>
-     </tr>
-     <tr><td colspan=\"4\"><hr></td></tr>
+     </tr>";
+echo $tab_separator;
+echo "
      <tr>
-         <td class=\"tabtxt\"><b>". _m("Insert") ."</b></td>
-         <td class=\"tabtxt\" colspan=\"3\">";
+         <td class=tabtxt><b>". _m("Insert") ."</b></td>
+         <td class=tabtxt>";
          FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard($INSERT_TYPES), $input_insert_func_f);
-         echo "<div class=\"tabhlp\">"._m("Defines how value is stored in database.")."</div>
-         <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-             <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
-             <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
+         echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
+         <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
+             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+             <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
          <input type=\"text\" name=\"input_insert_func_p\" size=\"50\" value=\"". myspecialchars($input_insert_func_p) ."\">
          </td>
-     </tr>
-     <tr><td colspan=\"4\"><hr></td></tr>
+     </tr>";
+echo $tab_separator;
+
+FrmInputChBox("html_show", _m("Show 'HTML' / 'plain text' option"), $html_show);
+FrmInputChBox("html_default", _m("'HTML' as default"), $html_default, false, '', 1, false, _m('HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to <br> etc. HTML is good option for any nontextual data, at least.'));
+FrmTextarea(  "input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"));
+FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, 50, false,  _m("Text shown after user click on '?' in input form"));
+FrmTextarea(  "input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
+
+echo $tab_separator;
+echo "
      <tr>
-      <td class=\"tabtxt\"><b>HTML</b></td>
-      <td class=\"tabtxt\" colspan=3>
-        <input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") .">
-        <b>". _m("Show 'HTML' / 'plain text' option") ."</b><br>
-        <input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") .">
-        <b>". _m("'HTML' as default") ."</b>
-      </td>
-     </tr>
-     <tr>
-      <td class=\"tabtxt\"><b>". _m("Help for this field") ."</b></td>
-      <td class=\"tabtxt\" colspan=3><textarea name=\"input_help\" rows=\"2\" cols=\"50\" wrap=\"virtual\">". myspecialchars($input_help) ."</textarea>
-      <div class=\"tabhlp\">". _m("Shown help for this field") ."</div>
-      </td>
-     </tr>
-     <tr>
-      <td class=\"tabtxt\"><b>". _m("More help") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\"><input type=\"text\" name=\"input_morehlp\" size=\"50\" maxlength=\"254\" value=\"". myspecialchars($input_morehlp) ."\">
-      <div class=\"tabhlp\">". _m("Text shown after user click on '?' in input form") ."</div>
-      </td>
-     </tr>
-     <tr>
-      <td class=\"tabtxt\"><b>". _m("Before HTML code") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\"><textarea name=\"input_before\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". myspecialchars($input_before) ."</textarea>
-      <div class=\"tabhlp\">". _m("Code shown in input form before this field") ."</div>
-      </td>
-     </tr>
-     <tr><td colspan=\"4\"><hr></td></tr>
-     <tr>
-      <td class=\"tabtxt\"><b>". _m("Feeding mode") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\">";
+      <td class=tabtxt><b>". _m("Feeding mode") ."</b></td>
+      <td class=tabtxt>";
         FrmSelectEasy("feed", inputFeedModes(), $feed);
-      echo "<div class=\"tabhlp\">". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
+      echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
      </tr>";
 FrmTabSeparator(_m("ALIASES used in views to print field content (%1)", array($fld['id'])));

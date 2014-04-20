@@ -151,6 +151,9 @@ class AA_Debug {
 
 
     function _do($func, $params) {
+        $time = microtime(true) - $this->_starttime['main'];
+        echo "<small><em>$time</em></small><br>\n";
+        
         foreach ($params as $a) {
             if (is_object($a) && is_callable(array($a,"__toString"))) {
                 print $a;
@@ -182,6 +185,8 @@ class AA {
     public static $perm;
     public static $site_id;
     public static $encoding;
+    public static $lang;       // two letters small caps - cz / es / en / ... 
+    public static $langnum;    // array of prefered language numbers - > 10000000 
 }
 
 AA::$debug = $_GET['debug'];
