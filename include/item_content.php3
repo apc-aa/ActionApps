@@ -446,7 +446,7 @@ class ItemContent extends AA_Content {
             return false;
         }
 
-        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
+        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
         foreach ($prifields as $pri_field_id) {
             $f = $fields[$pri_field_id];
@@ -521,7 +521,7 @@ class ItemContent extends AA_Content {
             $this->setItemID($id);    // grabbed from globals (sent by form (for update))
         }                             // it is posted as 'id' and not as standard 'v'.unpack_id('id..............')
                                       // from historical reasons. We probably change it in next versions - TODO
-        $this->setSliceID($slice->unpacked_id());
+        $this->setSliceID($slice->getId());
     }
 
     /** is_empty function
@@ -714,7 +714,7 @@ class ItemContent extends AA_Content {
         // start from scretch with new content
         $new_content = new ItemContent;
         $fields      = $slice->getFields();
-        $profile     = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
+        $profile     = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
         foreach ($fields as $field_id => $field) {
             $property = $field->getAaProperty();
@@ -730,7 +730,7 @@ class ItemContent extends AA_Content {
         if ( $new_content->getExpiryDate() <= 0 ) {
             $new_content->setValue('expiry_date.....', now()+(60*60*24*365*10));
         }
-        $new_content->setSliceID($slice->unpacked_id());
+        $new_content->setSliceID($slice->getId());
         $this->content = $new_content->getContent();
         if ($status == 4) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->auth["uid"])));  // set error code

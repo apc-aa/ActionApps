@@ -79,6 +79,7 @@ function getSliceEncoding($slice_id) {
  */
 function GetExternalCategories($feed_id, $add_other=false) {
     global $db;
+    $ext_categs = array();
     $db->query("SELECT category_id, category, category_name, target_category_id, approved
                   FROM ef_categories
                  WHERE feed_id='$feed_id' ORDER BY category_name");
@@ -124,6 +125,8 @@ function UseAllCategoriesOption( &$ext_categs ) {
  */
  function GetExternalMapping($l_slice_id, $r_slice_id) {
      global $db;
+     $map_to   = array();
+     $map_from = array();
 
      $db->query("SELECT * FROM feedmap WHERE from_slice_id='".q_pack_id($r_slice_id)."'
                  AND to_slice_id='".q_pack_id($l_slice_id)."'
@@ -173,6 +176,7 @@ function GetBaseFieldId( &$fields, $ftype ) {
  */
 function GetGroupConstants($slice_id) {
     global $db;
+    $cat_ids   = array();
     $cat_group = GetCategoryGroup($slice_id);
     if (!$cat_group) {
         return false;
@@ -327,7 +331,7 @@ class LastEditList {
      */
     function setFromSlice($conds, &$slice) {
         ParseEasyConds($conds);
-        $zids    = QueryZIDs( array($slice->unpacked_id()), $conds, '', 'ALL');
+        $zids    = QueryZIDs( array($slice->getId()), $conds, '', 'ALL');
         $format  = array('odd_row_format' => '{id..............}-{last_edit.......}',
                          'row_delimiter'  => ',');
         $itemview = new itemview($format, '', '', $zids,

@@ -818,7 +818,7 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
 {
     global $oldcontent4id, $auth;
 
-    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
+    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {
@@ -826,7 +826,7 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
     }
 
     // Are we editing dynamic slice setting fields?
-    $slice_fields = ($id == $slice->unpacked_id());
+    $slice_fields = ($id == $slice->getId());
 
     // get slice fields and its priorities in inputform
     $fields = $slice->getFields($slice_fields);

@@ -228,12 +228,12 @@ class DB_AA extends DB_Sql {
     /** static
      *  first parameter describes the desired output
      *  written with speed in mind - so all the loops are condition free
-     *  used as: $chid = DB_AA::select('id', 'SELECT id FROM `change` WHERE ...');         -> [id1, id2, ...]
-     *                   DB_AA::select('',   'SELECT id, other FROM `change` WHERE ...');  -> [id1, id2, ...]
-     *                   DB_AA::select(array(), 'SELECT id FROM `change`');                -> [[id=>id1], [id=>id2], ...]
-     *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');          -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
-     *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');  -> [[id1=>other1], [id2=>other2], ...]
-     *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');  -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
+     *  used as: $chid = DB_AA::select('id', 'SELECT id FROM `change` WHERE ...');                   -> [id1, id2, ...]
+     *                   DB_AA::select('',   'SELECT id, other FROM `change` WHERE ...');            -> [id1, id2, ...]
+     *                   DB_AA::select(array(), 'SELECT id FROM `change`');                          -> [[id=>id1], [id=>id2], ...]
+     *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');                    -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
+     *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
+     *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
      *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
      **/

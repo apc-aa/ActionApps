@@ -83,7 +83,7 @@ class AA_Collection {
         $slice          = $this->getReaderSlice();
         $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
 
-        $aa_set         = new AA_Set($slice->unpacked_id(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '=', 1));
+        $aa_set         = new AA_Set($slice->getId(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '=', 1));
         if ( !is_null( $how_often ) ) {
             $aa_set->addCondition(new AA_Condition($field_howoften, '=', $how_often));
         }

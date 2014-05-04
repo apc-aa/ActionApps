@@ -41,30 +41,97 @@
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
 require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 
-class AA_Slice {
+class AA_Module {
+    /** define, which class is used for module setting - like AA_Modulesettings_Slice */
+    const SETTING_CLASS = '';
+    protected $module_id;
+    protected $module_setting;         // Array of module settings
+    protected $moduleobject_setting;   // Array of module settings
+
+    function __construct($id) {
+        $this->module_id            = $id;
+        $this->module_setting       = null;
+        $this->moduleobject_setting = false;
+    }
+
+    protected function _isModuleProperty($prop) {
+        return AA_Metabase::singleton()->isColumn('module', $prop);
+    }
+
+    protected function _getModuleProperty($prop) {
+        if (is_null($this->module_setting)) {
+            $this->module_setting = DB_AA::select1('SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', '', array(array('id',$this->module_id, 'l')));
+            if (!is_array($this->module_setting)) {
+                $this->module_setting = array();
+            }
+        }
+        return isset($this->module_setting[$prop]) ? $this->module_setting[$prop] : false;
+    }
+
+    protected function _isModuleObjectProperty($prop) {
+        return empty($class = static::SETTING_CLASS) ? null : $class::isProperty($prop);
+    }
+
+    protected function _getModuleObjectProperty($prop) {
+        if ($this->moduleobject_setting === false) {
+            // tho object id is derived from SETTING_CLASS name and module_id
+            $this->moduleobject_setting = empty($class = static::SETTING_CLASS) ? null : $class::load(string2id($class.$this->module_id));
+        }
+        return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
+    }
+
+    /** get module ID   */
+    function getId() {
+        return $this->module_id; // Return a 32 character id
+    }
+
+    function getProperty($prop) {
+        if ($this->_isModuleProperty($prop)) {
+            return $this->_getModuleProperty($prop);
+        }
+        if ($this->_isModuleObjectProperty($prop)) {
+            return $this->_getModuleobjectProperty($prop);
+        }
+        return null;
+    }
+
+    /** getLang function
+     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
+     */
+    function getLang()     {
+        return GetLang($this->getProperty('lang_file'));
+    }
+
+    /** getCharset function
+     *  Returns character encoding for the slice ('windows-1250', ...)
+     */
+    function getCharset()     {
+        return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
+    }
+}
+
+class AA_Slice extends AA_Module {
     var $name;            // The name of the slice
-    var $unpackedid;      // The unpacked id of the slice i.e. 32 chars
     var $fields;          // 2 member array( $fields, $prifields)
     var $dynamic_fields;  // 2 member array( $fields, $prifields)
-    var $setting;         // slice setting - Record form slice table
     var $dynamic_setting; // dynamic slice setting fields stored in content table
-    var $setting_object;  // newest set of slice setting - stored in object AA_Modulesettings_Slice    
 
+    const SETTING_CLASS = 'AA_Modulesettings_Slice';
+    
     // computed values form slice fields
     var $js_validation;  // javascript form validation code
     var $show_func_used; // used show functions in the input form
     /** AA_Slice function
-     * @param $slice_id
+     * @param $module_id
      */
-    function AA_Slice($slice_id) {
+    function __construct($module_id) {
         global $errcheck;
-        if ($errcheck && ! ereg("[0-9a-f]{32}",$slice_id)) {
-            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id", array($slice_id)));
+        if ($errcheck && ! ereg("[0-9a-f]{32}",$module_id)) {
+            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id", array($module_id)));
         }
-        $this->unpackedid     = $slice_id; // unpacked id
-        $this->fields         = new AA_Fields($this->unpackedid);
-        $this->dynamic_fields = new AA_Fields($this->unpackedid, 1);
-        $this->setting_object = null;     
+        $this->fields         = new AA_Fields($module_id);
+        $this->dynamic_fields = new AA_Fields($module_id, 1);
+        parent::__construct($module_id);
     }
 
     /** loadsettings function
@@ -78,8 +145,7 @@ class AA_Slice {
         }
 
         // get fields from slice table
-        $SQL = "SELECT * FROM slice WHERE id = '".$this->sql_id(). "'";
-        $this->setting = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        $this->setting = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$this->getId(), 'l')));
         if ( $this->setting ) {
             // do it more secure and do not store it plain
             // (we should be carefull - mainly with debug outputs)
@@ -88,16 +154,9 @@ class AA_Slice {
             }
         } else {
             if ($GLOBALS['errcheck']) {
-                huhl("Slice ".$this->unpacked_id()." is not a valid slice");
+                huhl("Slice ".$this->getId()." is not a valid slice");
             }
             return false;
-        }
-
-        // get fields from module table
-        $SQL = "SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM module WHERE id = '".$this->sql_id(). "'";
-        $rec = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-        if ( is_array($rec)) {   // not true for AA_Core_Fields.. (but it probably should be filled)
-            $this->setting = array_merge($this->setting, $rec);
         }
         return true;
     }
@@ -111,7 +170,7 @@ class AA_Slice {
             return;
         }
         $db = getDB();
-        $SQL = "SELECT * FROM content WHERE item_id = '".$this->sql_id()."' ORDER BY content.number";
+        $SQL = "SELECT * FROM content WHERE item_id = '".q_pack_id($this->module_id)."' ORDER BY content.number";
         $db->tquery($SQL);
         $content4id = array();
         while ($db->next_record()) {
@@ -124,26 +183,23 @@ class AA_Slice {
         $this->dynamic_setting = new ItemContent($content4id);
     }
     
-    /** getTranslations
-     *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
-     */
-    function loadSettingObject()  {
-        return $this->setting_object ?: $this->setting_object = AA_Modulesettings_Slice::load(string2id('AA_Modulesettings_Slice'.$this->unpackedid));
-    }
-
     /** getProperty function
      * @param $fname
      */
-    function getProperty($fname) {
-        if ($fname=='translations') {
-            return $this->getTranslations();
+    function getProperty($prop) {
+        if ( AA_Metabase::singleton()->isColumn('slice', $prop)) {
+            $this->loadsettings();
+            return $this->setting[$prop];
         }
-        if (AA_Fields::isSliceField($fname)) {
+        // test module property and moduleobject property
+        if ( !is_null($ret=parent::getProperty($prop)) ) {
+            return $ret;
+        }
+        if (AA_Fields::isSliceField($prop)) {
             $this->loadsettingfields();
-            return $this->dynamic_setting->getValue($fname);
+            return $this->dynamic_setting->getValue($prop);
         }
-        $this->loadsettings();
-        return $this->setting[$fname];
+        return null;
     }
 
     /** isField function
@@ -160,16 +216,16 @@ class AA_Slice {
         return $this->getProperty('name');
     }
 
-    /** Checks, if the unpackedid is OK and the slice is not deleted */
+    /** Checks, if the module_id is OK and the slice is not deleted */
     function isValid() {
-        return $this->loadsettings() AND !$this->deleted();
+        return !$this->deleted();
     }
 
     /** jumpLink function
      *
      */
     function jumpLink() {
-        return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()). "\">".$this->name()."</a>";
+        return "<a href=\"".get_admin_url("index.php3?change_id=".$this->getId()). "\">".$this->name()."</a>";
     }
 
     /** deleted function
@@ -193,19 +249,15 @@ class AA_Slice {
         return $this->getProperty('type');
     }
 
-    /** unpacked_id function
-     *
-     */
-    function unpacked_id() {
-        return $this->unpackedid; // Return a 32 character id
-    }
+    /** unpacked_id function - removed - use getId()  */
+    // function unpacked_id() {
+    //     return $this->module_id; // Return a 32 character id
+    // }
 
-    /** packed_id function
-     *
-     */
-    function packed_id() {
-        return pack_id($this->unpackedid);
-    }
+    /** packed_id function - removed - use pack_id($module->getId()) */
+    // function packed_id() {
+    //     return pack_id($this->module_id);
+    // }    
 
     /** getFields function
      */
@@ -223,32 +275,16 @@ class AA_Slice {
         return $field ? $field->getWidget() : null;
     }
 
-    /** getLang function
-     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
-     */
-    function getLang()     {
-        return GetLang($this->getProperty('lang_file'));
-    }
-
-    /** getCharset function
-     *  Returns character encoding for the slice ('windows-1250', ...)
-     */
-    function getCharset()     {
-        return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
-    }
-
     /** getTranslations
      *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
      */
     function getTranslations()  {
-        return is_null($this->loadSettingObject()) ? array() : $this->setting_object->getProperty('translations');
+        return $this->getProperty('translations');
     }
 
 
-    /** sql_id function
-     *  Return an id in a form that can be passed to sql, (needs outer quotes)
-     */
-    function sql_id()      { return q_pack_id($this->unpackedid); }
+    /** sql_id function - removed - use DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l'))); */
+    // function sql_id()      { return q_pack_id($this->module_id); }
 
     /** fields function
      *  fetch the fields
@@ -300,8 +336,8 @@ class AA_Slice {
             $ret['perms'] = FILEMAN_MODE_DIR;
         } else {
             // files are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-            $ret['path']  = IMG_UPLOAD_PATH. $this->unpacked_id();
-            $ret['url']   = get_if($this->getProperty('_upload_url.....'), IMG_UPLOAD_URL. $this->unpacked_id());
+            $ret['path']  = IMG_UPLOAD_PATH. $this->getId();
+            $ret['url']   = get_if($this->getProperty('_upload_url.....'), IMG_UPLOAD_URL. $this->getId());
             $ret['perms'] = (int)IMG_UPLOAD_DIR_MODE;
         }
         return $ret;
@@ -324,7 +360,7 @@ class AA_Slice {
      *  Get all the views for this slice
      */
     function views() {
-        return AA_Views::getSliceViews($this->unpackedid);
+        return AA_Views::getSliceViews($this->module_id);
     }
 
     /** get_format_strings function
@@ -404,7 +440,7 @@ class AA_Slice {
         }
 
         global $auth;
-        $profile = AA_Profile::getProfile($auth->auth["uid"], $this->unpacked_id()); // current user settings
+        $profile = AA_Profile::getProfile($auth->auth["uid"], $this->getId()); // current user settings
         $this->loadsettings();
 
         // get slice fields and its priorities in inputform
@@ -502,53 +538,53 @@ class AA_Slices {
 
     /** getSlice function
      *  main factory static method
-     * @param $slice_id
+     * @param $module_id
      */
-    function getSlice($slice_id) {
-        if (guesstype($slice_id) != 'l') {
+    function getSlice($module_id) {
+        if (guesstype($module_id) != 'l') {
             return null;
         }
         $slices = AA_Slices::singleton();
-        return $slices->_getSlice($slice_id);
+        return $slices->_getSlice($module_id);
     }
 
     /** getSliceProperty function
-     *  static function called as: AA_Slices::getSliceProperty($slice_id, 'translations');
-     * @param $slice_id
-     * @param $field
+     *  static function called as: AA_Slices::getSliceProperty($module_id, 'translations');
+     * @param $module_id
+     * @param $prop
      */
-    function getSliceProperty($slice_id, $field) {
-        $slice = AA_Slices::getSlice($slice_id);
-        return $slice ? $slice->getProperty($field) : null;
+    function getSliceProperty($module_id, $prop) {
+        $slice = AA_Slices::getSlice($module_id);
+        return $slice ? $slice->getProperty($prop) : null;
     }
 
     /** getField function - returns slice's field
      *  static function
-     * @param $slice_id
+     * @param $module_id
      * @param $field
      */
-    function getField($slice_id, $field_id) {
+    function getField($module_id, $field_id) {
         $slices = AA_Slices::singleton();
-        $slice  = $slices->_getSlice($slice_id);
+        $slice  = $slices->_getSlice($module_id);
         return $slice ? $slice->getField($field_id) : null;
     }
 
     /** getName function
      *  static function
-     * @param $slice_id
+     * @param $module_id
      */
-    function getName($slice_id) {
-        return AA_Slices::getSliceProperty($slice_id, 'name');
+    function getName($module_id) {
+        return AA_Slices::getSliceProperty($module_id, 'name');
     }
 
     /** _getSlice function
-     * @param $slice_id
+     * @param $module_id
      */
-    function & _getSlice($slice_id) {
-        if (!isset($this->a[$slice_id])) {
-            $this->a[$slice_id] = new AA_Slice($slice_id);
+    function & _getSlice($module_id) {
+        if (!isset($this->a[$module_id])) {
+            $this->a[$module_id] = new AA_Slice($module_id);
         }
-        return $this->a[$slice_id];
+        return $this->a[$module_id];
     }
 }
 
@@ -601,22 +637,21 @@ class AA_Modules {
      *  @param $module_id
      */
     function getModule($module_id) {
-        $modules = AA_Modules::singleton();
-        return $modules->_getModule($module_id);
+        return AA_Modules::singleton()->_getModule($module_id);
     }
 
     /** getModuleProperty function
      *  static function
-     * @param $slice_id
+     * @param $module_id
      * @param $field
      */
-    function getModuleProperty($module_id, $field) {
+    function getModuleProperty($module_id, $prop) {
         $module = AA_Modules::getModule($module_id);
-        return $module ? $module->getProperty($field) : null;
+        return $module ? $module->getProperty($prop) : null;
     }
 
     /** _getSlice function
-     * @param $slice_id
+     * @param $module_id
      */
     function _getModule($module_id) {
         if (!isset($this->a[$module_id])) {
@@ -626,49 +661,11 @@ class AA_Modules {
     }
 }
 
-class AA_Module {
-    var $id;
-    var $fields; // Array of fields
-
-    function __construct($id) {
-        $this->id = $id;
-        $this->fields = array();
-    }
-
-    /** load function
-     * @param $force
-     */
-    function load() {
-        if (empty($this->fields)) {
-            $SQL = "SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM module WHERE id = '".q_pack_id($this->id). "'";
-            $this->fields = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-            if (!$this->fields) {
-                $this->fields = array();
-            }
-        }
-        return !empty($this->fields);
-    }
-
-    function getProperty($field) {
-        return $this->load() ? $this->fields[$field] : false;
-    }
-
-    /** getLang function
-     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
-     */
-    function getLang()     {
-        $lang_file = $this->getProperty('lang_file');
-        $lang_file = substr($lang_file, 0, strpos($lang_file, '_'));
-        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
-    }
-
-    /** getCharset function
-     *  Returns character encoding for the slice ('windows-1250', ...)
-     */
-    function getCharset()     {
-        return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
-    }
+class AA_Module_Site extends AA_Module {
 }
+
+
+
 
 /** Slice settings */
 class AA_Modulesettings_Slice extends AA_Object {
@@ -679,6 +676,10 @@ class AA_Modulesettings_Slice extends AA_Object {
     /** do not display Name property on the form by default */
     const USES_NAME = false;    
     
+    /** check, if the $prop is the property of this object */
+    static function isProperty($prop) {
+        return in_array($prop, array('translations'));
+    }
 
     /** allows storing object in database
      *  AA_Object's method
@@ -709,8 +710,5 @@ class AA_Modulesettings_Site extends AA_Object {
             );
     }
 }
-
-
-
 
 ?>

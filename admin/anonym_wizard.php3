@@ -49,7 +49,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     $GLOBALS['sess'] = null;
 
     $ret       = '';   // resulting HTML code
-    $slice_id  = $slice->unpacked_id();
+    $slice_id  = $slice->getId();
     $form_type = $slice->getProperty('permit_anonymous_edit');
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
@@ -66,9 +66,9 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
 
     // get form - we need to call $form->getForm() before we call
     // $form->getFormStart(), $form->getFormJavascript
-    $inputform_settings['form_action'] = AA_INSTAL_URL.'filler.php3';
-    $form      = new inputform($inputform_settings);
-    $form_code = $form->getForm(new ItemContent, $slice, false, $show);
+    $inputform_settings = array('form_action' => AA_INSTAL_URL.'filler.php3');
+    $form               = new inputform($inputform_settings);
+    $form_code          = $form->getForm(new ItemContent, $slice, false, $show);
 
     $ret .= $form->getFormStart();
 

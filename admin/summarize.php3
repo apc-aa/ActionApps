@@ -264,7 +264,7 @@ function nearestSlice($st,$possmodels) {
     $sm_min = "";
     reset($possmodels);
     while (list(,$sm) = each($possmodels)) {
-        if ($sm == $st->unpacked_id()) {
+        if ($sm == $st->getId()) {
             continue;
         }
         $sc = compareSlices($st,$sao[$sm],0);
@@ -368,14 +368,14 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
       if ($opened) {
         $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
         print("<li><a href=\"" . $u1
-        . "&change_id=" . $st->unpacked_id()
+        . "&change_id=" . $st->getId()
         . $fixert ."\">Fix this slice</a>");
         if ($pre == "Added") {
             print("<li>Or add field to ".$sm->name(). " by hand</a>");
         } else {
-          if (!ignored_slice($sm->unpacked_id())) {
+          if (!ignored_slice($sm->getId())) {
             print("<li>or <a href=\"" . $u1
-            . "&change_id=" . $sm->unpacked_id()
+            . "&change_id=" . $sm->getId()
             . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
           }
         }
@@ -397,8 +397,8 @@ function compareSliceTableFields($st,$sm,$pr) {
 //    global $scoreUnshown,$AA_CP_Session;
     $score = 0;
     $opened = 0;
-    $ft = $slicetablefields[$st->packed_id()];
-    $fm = $slicetablefields[$sm->packed_id()];
+    $ft = $slicetablefields[pack_id($st->getId())];
+    $fm = $slicetablefields[pack_id($sm->getId())];
       $fixer="";
       reset($ft);
       while (list($ftk,$ftv) = each($ft)) {
@@ -442,11 +442,11 @@ function compareSliceTableFields($st,$sm,$pr) {
         print("<li>Will fix to allow editing</li>");
 //        $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
 //        print("<li><a href=\"" . $u1
-//        . "&change_id=" . $st->unpacked_id()
+//        . "&change_id=" . $st->getId()
 //        . $fixert ."\">Fix this slice</a>");
-//        if (!ignored_slice($sm->unpacked_id())) {
+//        if (!ignored_slice($sm->getId())) {
 //            print("<li>or <a href=\"" . $u1
-//            . "&change_id=" . $sm->unpacked_id()
+//            . "&change_id=" . $sm->getId()
 //            . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
 //        }
         print("</ul></li>\n");

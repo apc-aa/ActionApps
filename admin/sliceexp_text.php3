@@ -38,17 +38,6 @@ require_once AA_INC_PATH . "slice.class.php3";
 require_once AA_INC_PATH . "xml_serializer.php3";
 require_once AA_INC_PATH . "convert_charset.class.php3";
 
-
-function getRecord(&$record) {
-    $ret = array();
-    foreach ($record as $key => $val) {
-        if (!is_integer($key)) {
-            $ret[$key] = $val;
-        }
-    }
-    return $ret;
-}
-
 class AA_Slice_Exporter {
     var $type;
     var $gzip;
@@ -88,12 +77,11 @@ class AA_Slice_Exporter {
      * @return writes to file
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
-        global $db, $sess;
-
-        $SQL = "SELECT * FROM slice WHERE id='".$slobj->sql_id()."'";
-        $slice = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        global $sess;
+        
+        $slice = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l')));
         if (!$slice) {
-            MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->unpacked_id() ." not found", "standalone");
+            MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found", "standalone");
             exit;
         }
         $uid = unpack_id($slice['id']);
@@ -113,12 +101,9 @@ class AA_Slice_Exporter {
         }
 
         $slice["id"] = $uid;
-
-        $SQL = "SELECT * FROM field WHERE slice_id='".$slobj->sql_id()."'";
-        $db->query($SQL);
-        while ($db->next_record()) {
-            //add the record to the fields array:
-            $new = getRecord($db->Record);
+        
+        $fields = DB_AA::select(array(), 'SELECT * FROM `field`', array(array('id',$slobj->getId(), 'l')));
+        foreach ($fields as $new) {
             $new["slice_id"] = $uid; // Use new id if set
 
             //unpack the IDs
@@ -159,6 +144,7 @@ class AA_Slice_Exporter {
 
     function exportOneSliceData($slobj, $temp_file) {
         if ($this->spec_date) {
+            $conds = array();
             $conds[0]["operator"]         = "e:>=";
             $conds[0]["publish_date...."] = 1;
             $conds[0]['value']            = $this->from_date;
@@ -168,7 +154,7 @@ class AA_Slice_Exporter {
         } else {
             $conds="";
         }
-        $zids=QueryZIDs(array($slobj->unpacked_id()), $conds, "", "ALL");
+        $zids=QueryZIDs(array($slobj->getId()), $conds, "", "ALL");
         if ($zids->count() == 0) {
             if ($this->spec_date) {
                 fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$this->from_date." to ".$this->to_date.").\n</comment>\n");
@@ -193,7 +179,7 @@ class AA_Slice_Exporter {
      * @param $new_slice_id
      */
     function exporter($slice_id, $export_slices, $new_slice_id) {
-        global $db, $sess;
+        global $sess;
         $temp_file = tmpfile();
 
         if ( !$temp_file ) {
@@ -236,7 +222,7 @@ class AA_Slice_Exporter {
             }
 
             fwrite($temp_file, "<slice id=\"");
-            fwrite($temp_file, ($this->type != _m("Export to Backup") ? $new_slice_idunpack : $slobj->unpacked_id()));
+            fwrite($temp_file, ($this->type != _m("Export to Backup") ? $new_slice_idunpack : $slobj->getId()));
             fwrite($temp_file, "\" name=\"".myspecialchars($slobj->name())."\">\n");
 
             if ($this->struct) {

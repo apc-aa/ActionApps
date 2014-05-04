@@ -186,7 +186,7 @@ class inputform {
         // This function also fills the $this->show_func_used and
         // $this->js_proove_fields
         $form       = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
-        $profile    = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
+        $profile    = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
         $page_title = get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_title' : 'add_title'), $this->page_title);
 
         if ( $this->display_aa_begin_end ) {
@@ -287,7 +287,7 @@ class inputform {
         $buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - @todo
 
 
-        FrmTabEnd( $buttons, $sess, $slice->unpacked_id() );
+        FrmTabEnd( $buttons, $sess, $slice->getId() );
 
         if ( $GLOBALS['g_formpart'] ) {
             FrmJavascript('document.getElementById("inputtabrows").style.display = \'\';
@@ -316,7 +316,7 @@ class inputform {
     function getForm(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
         global $auth;
 
-        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
+        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
         list($fields, $prifields) = $slice->fields(null, $slice_fields);
 

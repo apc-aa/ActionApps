@@ -414,7 +414,7 @@ class MLX
             }
             if ($langid) {
                 $extra = "\n<span class='mlx-view'><a href='../slice.php3"
-                    ."?slice_id=".$this->slice->unpackedid."&sh_itm=".$langid
+                    ."?slice_id=".$this->slice->getId()."&sh_itm=".$langid
                     ."&o=1&mlxl=".$v['name']."' target='_blank'>("._m("view").")</a>"
                     ."</span>\n";
             }

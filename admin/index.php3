@@ -103,7 +103,7 @@ $actions->addAction(new AA_Manageraction_Item_MoveItem('Activate', 1));
 $actions->addAction(new AA_Manageraction_Item_MoveItem('Folder2',  2));
 $actions->addAction(new AA_Manageraction_Item_MoveItem('Folder3',  3));
 
-$new_action = new AA_Manageraction_Item_Feed('Feed', $slice->unpacked_id());
+$new_action = new AA_Manageraction_Item_Feed('Feed', $slice->getId());
 $new_action->setOpenUrl($sess->url("feed_to.php3"));
 $actions->addAction($new_action);
 
