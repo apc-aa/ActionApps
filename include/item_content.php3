@@ -269,7 +269,7 @@ class AA_Content {
         }
         if (isset($a[$idx])) {
             return $a[$idx]['value'];
-        } 
+        }
         if ( (key($a)>=1000000) AND ($idx<1000000) ) {
             if (strlen($v = $a[AA::$langnum[0]+$idx]['value'])) {
                 return $v;
@@ -280,7 +280,11 @@ class AA_Content {
     }
 
     function getFlag($field_id) {
-        return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0]['flag'] : false );
+        if (is_array($this->content[$field_id])) {
+            $curr = reset($this->content[$field_id]);
+            return $curr['flag'];
+        }
+        return false;
     }
 
     /** getValues function
@@ -1143,9 +1147,9 @@ class ItemContent extends AA_Content {
                 foreach ($cont as $numkey => $v) {
                     // file upload needs the $fields array, because it stores
                     // some other fields as thumbnails
-                    
-                    
-                    
+
+
+
                     if ($fnc["fnc"]=="fil") {
                         //Note $thumbnails is undefined the first time in this loop
                         if (is_array($thumbnails)) {
