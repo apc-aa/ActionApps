@@ -133,14 +133,14 @@ if ($user_firstname || $user_surname) {
 // additional settings
 if ($slice_id) {
     // make sure the slicesettings object for this slice exists
-    $slicesetings_id = string2id('AA_Slicesettings'.$slice_id);
-    if (is_null(AA_Slicesettings::load($slicesetings_id))) {
-        $slicesetings = new AA_Slicesettings;
+    $slicesetings_id = string2id('AA_Modulesettings_Slice'.$slice_id);
+    if (is_null(AA_Modulesettings_Slice::load($slicesetings_id))) {
+        $slicesetings = new AA_Modulesettings_Slice;
         $slicesetings->setNew($slicesetings_id, $slice_id);
         $slicesetings->save();
     }
 
-    $form       = AA_Form::factoryForm('AA_Slicesettings', string2id('AA_Slicesettings'.$slice_id), $slice_id);
+    $form       = AA_Form::factoryForm('AA_Modulesettings_Slice', string2id('AA_Modulesettings_Slice'.$slice_id), $slice_id);
     $form_state = $form->process($_POST['aa']);
 }
 

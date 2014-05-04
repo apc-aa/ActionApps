@@ -201,7 +201,7 @@ if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
 FrmInputText("reading_password", _m("Password for Reading"), $reading_password, 100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 
 if ($slice_id) {
-    FrmStaticText(_m("Additional setting"), AA_Form::factoryForm('AA_Slicesettings', string2id('AA_Slicesettings'.$slice_id), $slice_id)->getObjectEditHtml(),false,'','',false);
+    FrmStaticText(_m("Additional setting"), AA_Form::factoryForm('AA_Modulesettings_Slice', string2id('AA_Modulesettings_Slice'.$slice_id), $slice_id)->getObjectEditHtml(),false,'','',false);
 }
 
 if ($slice_id=="") {

@@ -48,7 +48,7 @@ class AA_Slice {
     var $dynamic_fields;  // 2 member array( $fields, $prifields)
     var $setting;         // slice setting - Record form slice table
     var $dynamic_setting; // dynamic slice setting fields stored in content table
-    var $setting_object;  // newest set of slice setting - stored in object AA_Slicesettings    
+    var $setting_object;  // newest set of slice setting - stored in object AA_Modulesettings_Slice    
 
     // computed values form slice fields
     var $js_validation;  // javascript form validation code
@@ -128,7 +128,7 @@ class AA_Slice {
      *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
      */
     function loadSettingObject()  {
-        return $this->setting_object ?: $this->setting_object = AA_Slicesettings::load(string2id('AA_Slicesettings'.$this->unpackedid));
+        return $this->setting_object ?: $this->setting_object = AA_Modulesettings_Slice::load(string2id('AA_Modulesettings_Slice'.$this->unpackedid));
     }
 
     /** getProperty function
@@ -671,7 +671,7 @@ class AA_Module {
 }
 
 /** Slice settings */
-class AA_Slicesettings extends AA_Object {
+class AA_Modulesettings_Slice extends AA_Object {
 
     // must be protected or public - AA_Object needs to read it
     protected $translations;
@@ -689,6 +689,28 @@ class AA_Slicesettings extends AA_Object {
             );
     }
 }
+
+/** Slice settings */
+class AA_Modulesettings_Site extends AA_Object {
+
+    // must be protected or public - AA_Object needs to read it
+    protected $translation_slice;
+    protected $additional_aliases;
+    
+    /** do not display Name property on the form by default */
+    const USES_NAME = false;    
+
+    /** allows storing object in database
+     *  AA_Object's method
+     */
+    static function getClassProperties() {
+        return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
+            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true,  true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...'))
+            );
+    }
+}
+
+
 
 
 ?>
