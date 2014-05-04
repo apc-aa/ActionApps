@@ -453,7 +453,7 @@ function GetDiscussion2MailAliases() {
  * view_id:mail_address:param3:param4:...
  * @param $d_item_id
  * @param $new_id
-*/
+ */
 function send2mailList($d_item_id, $new_id) {
     global $db;
     $db->tquery("SELECT content.text FROM

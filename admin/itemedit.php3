@@ -182,7 +182,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     // prepare content4id array before call StoreItem function
     $content4id = new ItemContent;
     $content4id->setFromForm( $slice, $oldcontent4id, $insert ); // sets also [slice_id] as well as [id]
-
+    
     if ($slice->getProperty('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA) {
         // unset ITEM_FLAG_ANONYMOUS_EDITABLE bit in flag
         $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);

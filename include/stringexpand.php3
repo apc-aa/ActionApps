@@ -5248,7 +5248,6 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
 
         $entries = $xpath->query($query);
         foreach ($entries as $entry) {
-            // huhl ($entry);
             if ($attr=='XML') {
                 $ret.= $entry->ownerDocument->saveHTML($entry);
             } elseif ($attr)  {
