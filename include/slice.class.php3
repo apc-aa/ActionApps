@@ -44,16 +44,33 @@ require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 class AA_Module {
     /** define, which class is used for module setting - like AA_Modulesettings_Slice */
     const SETTING_CLASS = '';
+
+    /** array of already constructed modules */
+    protected static $_modules=array();  // Array unpacked module id -> AA_Module object
+
     protected $module_id;
     protected $module_setting;         // Array of module settings
     protected $moduleobject_setting;   // Array of module settings
 
+    /** it is better to call it using getModule() - $site = AA_Module_Site::getModule($module_id); */
     function __construct($id) {
         $this->module_id            = $id;
         $this->module_setting       = null;
         $this->moduleobject_setting = false;
     }
 
+    /** get module
+     *  called as $site = AA_Module_Site::getModule($module_id)
+     * @param $module_id
+     */
+    static public function getModule($module_id) {
+        if (!isset(static::$_modules[$module_id])) {
+            $class = get_called_class();
+            static::$_modules[$module_id] =  new $class($module_id);
+        }
+        return static::$_modules[$module_id];
+    }
+    
     protected function _isModuleProperty($prop) {
         return AA_Metabase::singleton()->isColumn('module', $prop);
     }
@@ -78,6 +95,28 @@ class AA_Module {
             $this->moduleobject_setting = empty($class = static::SETTING_CLASS) ? null : $class::load(string2id($class.$this->module_id));
         }
         return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
+    }
+    
+    static public function processModuleObject($module_id) {
+        if ($module_id AND !empty($class = static::SETTING_CLASS)) {
+            // make sure the slicesettings object for this slice exists
+            $modulesetings_id = string2id($class.$module_id);
+            if (is_null($class::load($modulesetings_id))) {
+                $modulesetings = new $class;
+                $modulesetings->setNew($modulesetings_id, $module_id);
+                $modulesetings->save();
+            }
+            
+            $form       = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
+            $form_state = $form->process($_POST['aa']);
+        }
+    }   
+    
+    static public function getModuleObjectForm($module_id) {
+        if ($module_id AND !empty($class = static::SETTING_CLASS)) {
+            return AA_Form::factoryForm($class, string2id($class.$module_id), $module_id)->getObjectEditHtml();
+        }
+        return '';
     }
 
     /** get module ID   */
@@ -662,9 +701,8 @@ class AA_Modules {
 }
 
 class AA_Module_Site extends AA_Module {
+    const SETTING_CLASS = 'AA_Modulesettings_Site';
 }
-
-
 
 
 /** Slice settings */
@@ -701,12 +739,19 @@ class AA_Modulesettings_Site extends AA_Object {
     /** do not display Name property on the form by default */
     const USES_NAME = false;    
 
+
+    /** check, if the $prop is the property of this object */
+    static function isProperty($prop) {
+        return in_array($prop, array('translate_slice', 'add_aliases'));
+    }
+
     /** allows storing object in database
      *  AA_Object's method
      */
     static function getClassProperties() {
-        return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
-            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true,  true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...'))
+        return array ( //                             id             name                                 type     multi  persist validator, required, help, morehelp, example
+            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"), 'string', false, true, array('enum', AA_Modules::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
+            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum', AA_Modules::getUserModules('W')), false, _m('select sitemodule, where we have to look for additional {_:...} aliases'))
             );
     }
 }

@@ -54,7 +54,7 @@ if ( get_magic_quotes_gpc() ) {
 
 AA::$site_id  = $_REQUEST['site_id'];
 $site_info    = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
-$module       = AA_Modules::getModule(AA::$site_id);
+$module       = AA_Module_Site::getModule(AA::$site_id);
 $lang_file    = $module->getProperty('lang_file');
 AA::$encoding = $module->getCharset();
 
@@ -201,10 +201,6 @@ if ($debugtime) {
 function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     global $show_ids;
 
-    // site_id should be defined as url parameter
-    $module_id   = $site_id;
-    $p_module_id = q_pack_id($module_id);
-
     $tree        = new sitetree();
     $tree        = unserialize($site_info['structure']);
 
@@ -215,22 +211,11 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     if (count($show_ids)<1) {
         exit;
     }
-
-    $in_ids = implode( ',', $show_ids );
-
-    $db = getDB();
-    // get contents to show
-    $SQL = "SELECT spot_id, content, flag from site_spot WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
-    $db->tquery($SQL);
-    while ( $db->next_record() ) {
-        $contents[$db->f('spot_id')] = $db->f('content');
-        $flags[$db->f('spot_id')]    = $db->f('flag');
-    }
-    freeDB($db);
-
+    
+    $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $site_id, 'l'), array('spot_id', $show_ids, 'i')));
+    
     foreach ( $show_ids as $v ) {
-        $spot_content = $contents[$v];
-        $out .= ( ($flags[$v] & MODW_FLAG_JUST_TEXT) ? $spot_content : AA_Stringexpand::unalias($spot_content, '', $apc_state['item']));
+        $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA_Stringexpand::unalias($spots[$v]['content'], '', $apc_state['item']));
     }
     return $out;
 }

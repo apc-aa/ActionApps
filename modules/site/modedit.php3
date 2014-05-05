@@ -59,6 +59,9 @@ if ($template_id) {        // add module
     }
 }
 
+// additional settings
+AA_Module_Site::processModuleObject($module_id);
+
 if ($add || $update) {
     do {
         if (!$owner ) {  // insert new owner
@@ -242,6 +245,10 @@ FrmJavascript('
 
     FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
 
+    if ($module_id) {
+        FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id),false,'','',false);
+    }
+    
     FrmTabEnd($form_buttons, $sess, $module_id);
 
 echo "\n </form>";
