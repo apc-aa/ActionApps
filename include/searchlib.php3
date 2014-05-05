@@ -195,6 +195,14 @@ class AA_Condition extends AA_Object {
         $ret[] = "conds[$condition_number][value]=".    $this->value;
         return join('&', $ret);
     }
+    
+    /** create whole phrase from the text
+     *  Puts the expression in the quotes, so it becames phrase
+     *  Example:   I say: "Hola..."    ->    "I say: \"Hola\"..."
+     */
+    static public function makePhrase($text) {
+        return '"'. str_replace('"', '\"', $text). '"';
+    }
 
     /** matches function
      * @param $itemcontent
@@ -484,7 +492,7 @@ class AA_Set extends AA_Object {
         foreach ($conds as $icond => $cond) {
             if (is_array($cond['value'])) {
                 // make phrases from all the all the values
-                array_walk($cond['value'], 'PutInQuotes');
+                $cond['value'] = array_map( array('AA_Condition','makePhrase'), $cond['value']);
                 if ($cond['valuejoin'] == 'AND') {
                     foreach ($cond['value'] as $val) {
                         $newcond = $cond;
@@ -848,7 +856,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
     }
 
     if ($operator == '==') {
-        return " ($field = '$querystring') ";            // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
+        return " ($field = '". str_replace("'","\'",$querystring) ."') ";            // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
     }
 
     // query string could be slashed - sometimes :-(
@@ -979,16 +987,6 @@ function ProoveFieldNames($slices, $conds) {
 
 // -------------------------------------------------------------------------------------------
 
-/** PutInQuotes function
- *  Puts the expression in the quotes, so it becames phrase
- *  Example:   I say: "Hay..."    ->    "I say: \"Hay\"..."
- * @param $text
- * @param $key
- */
-function PutInQuotes(&$text, $key) {
-    $text = '"'. str_replace('"', '\"', $text). '"';
-}
-
 /* parses the conds from a multiple select box: e.g.
     conds[1][value][0] = 'apple'
     conds[1][value][1] = 'cherry'
@@ -1010,7 +1008,7 @@ function ParseMultiSelectConds(&$conds) {
     foreach ($conds as $icond => $cond) {
         if (is_array($cond['value'])) {
             // make phrases from all the all the values
-            array_walk($cond['value'], 'PutInQuotes');
+            $cond['value'] = array_map( array('AA_Condition','makePhrase'), $cond['value']);
             if ($cond['valuejoin'] == 'AND') {
                 foreach ($cond['value'] as $val) {
                     $newcond = $cond;
