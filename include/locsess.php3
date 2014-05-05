@@ -235,7 +235,7 @@ class DB_AA extends DB_Sql {
      *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
      *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
-     *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
+     *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
      **/
     function select($column, $query, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;

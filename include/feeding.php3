@@ -334,11 +334,11 @@ function AddRelationFeed($dest_id, $source_id) {
 }
 
 function FromFed($item_id) {
-    return array_map('unpack_id', DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
+    return array_map('unpack_id', DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
 }
 
 function WhereFed($item_id) {
-    return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
+    return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
 }
 
 /** CreateFeedTree function

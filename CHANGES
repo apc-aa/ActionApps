@@ -1,3 +1,21 @@
+14-05-05 - new possibility to specify in site settings the another "Additional 
+(honzam)   Aliases Sites" from which will be {_:Alias} aliases taken, so you can
+           share {_:..} aliases in all your sites
+         - translation slice is now fully configurable, so you can use 
+           {tr:text...} for translation of static texts in the site. 
+           If you want to use it, you should 
+             1) create translation slice, which is normal slice with 
+                headline........ field set as "Allow translation" 
+             2) specify the languages, in which you want to translate the slice
+                in Slice Setting (en, es, cz, ... for example) 
+             3) set the Translate Slice in Site module settings
+             4) Use {tr:some text in en} anywhere in your site module. For every
+                such text is created Item in the translation slice (after first
+                display on screen), so you can then translate the text.
+                The right lang version is used for each phrase based on {xlang}
+                (example.com/es/page) 
+         - sitemodule allows to store additional setting - at this moment 
+           Translate slice and Sites for Additional aliases and more in future
 14-05-04 - improved CSS for {live..} and other components
 (honzam) - generalized Modules settings 
          - fixed problem with HTML/Plain text settings for translated fields
