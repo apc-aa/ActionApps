@@ -4836,9 +4836,15 @@ class AA_Stringexpand__ extends AA_Stringexpand {
                 $sc[AA::$site_id] = array();
             }
             if (is_null($sc[AA::$site_id][$name])) {
-                $zids = AA_Object::querySet('AA_Aliasfunc', new AA_Set(array(AA::$site_id), new AA_Condition('alias', '=', '"'.quote($name).'"')));
+                // look for additional aliases
+                $modules = array(AA::$site_id);
+                if ($site = AA_Module_Site::getModule(AA::$site_id)) {
+                    if (is_array($add_modules = $site->getProperty('add_aliases'))) {
+                        $modules = array_merge($modules,array_filter($add_modules));
+                    }
+                }
+                $zids = AA_Object::querySet('AA_Aliasfunc', new AA_Set($modules, new AA_Condition('alias', '==', $name)));
                 $sc[AA::$site_id][$name] = AA_Object::loadProperty($zids->longids(0),'code');
-
                 // another approach read all at once - not used
                 // huhl( AA_Object::loadProperties($zids->longids(), 'aa_name'));
             }
@@ -5601,27 +5607,25 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
      * @param $text
      */
     function expand($text='') {
-        $slice_id = '8b3528995d5ec6bd4cfd6ff0c4afd72a';
-        $set      = new AA_Set(array($slice_id), new AA_Condition('headline........', '=', '"'.$text.'"'));
-        $zids     = $set->query();
+        if ($site = AA_Module_Site::getModule(AA::$site_id)) {
+            if ($translate_slice = $site->getProperty('translate_slice')) {
+                $set  = new AA_Set(array($translate_slice), new AA_Condition('headline........', '==', $text));
+                $zids = $set->query();
+        
+                if ($zids->count()) {
+                    return AA_Items::getItem($zids[0])->f_2('headline........');
+                }
+                // if not present - translate to default language of the slice
+                $translations = AA_Slices::getSliceProperty($translate_slice, 'translations');
 
-        if ($zids->count()) {
-            return AA_Items::getItem($zids[0])->f_2('headline........');
+                $ic = new ItemContent();
+                $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
+                $ic->setSliceID($translate_slice);
+                //$ic->complete4Insert();
+                
+                $ic->storeItem('insert');     // invalidatecache, feed
+            }
         }
-        // in current implementation it is not necessary to construct the ID
-        // this way. However - it could be used for speedup in future, so why not use it right now as well
-       // $item_id = string2id($text.$slice_id);
-       //
-       // // if not present - translate to default language of the slice
-       // $translations = AA_Slices::getSliceProperty($slice_id, 'translations');
-       //
-       // $ic = new ItemContent();
-       // $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
-       // $ic->setItemId($item_id);
-       // $ic->setSliceID($slice_id);
-       // //$ic->complete4Insert();
-       //
-       // $ic->storeItem('insert');     // invalidatecache, feed
 
         return $text;
     }
