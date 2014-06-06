@@ -86,19 +86,22 @@ class AA_Module {
     }
 
     protected function _isModuleObjectProperty($prop) {
-        return empty($class = static::SETTING_CLASS) ? null : $class::isProperty($prop);
+        $class = static::SETTING_CLASS;
+        return empty($class) ? null : $class::isProperty($prop);
     }
 
     protected function _getModuleObjectProperty($prop) {
         if ($this->moduleobject_setting === false) {
             // tho object id is derived from SETTING_CLASS name and module_id
-            $this->moduleobject_setting = empty($class = static::SETTING_CLASS) ? null : $class::load(string2id($class.$this->module_id));
+            $class = static::SETTING_CLASS;
+            $this->moduleobject_setting = empty($class) ? null : $class::load(string2id($class.$this->module_id));
         }
         return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
     }
     
     static public function processModuleObject($module_id) {
-        if ($module_id AND !empty($class = static::SETTING_CLASS)) {
+        $class = static::SETTING_CLASS;
+        if ($module_id AND !empty($class)) {
             // make sure the slicesettings object for this slice exists
             $modulesetings_id = string2id($class.$module_id);
             if (is_null($class::load($modulesetings_id))) {
@@ -113,7 +116,8 @@ class AA_Module {
     }   
     
     static public function getModuleObjectForm($module_id) {
-        if ($module_id AND !empty($class = static::SETTING_CLASS)) {
+        $class = static::SETTING_CLASS;
+        if ($module_id AND !empty($class)) {
             return AA_Form::factoryForm($class, string2id($class.$module_id), $module_id)->getObjectEditHtml();
         }
         return '';
