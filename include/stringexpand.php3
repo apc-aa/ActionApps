@@ -3663,7 +3663,8 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      *  @author haha
      */
     function defineDelimiters() {
-        $delimiter_chars = "()[] ,.;:?!\"&'\n\r";
+        $delimiter_chars = "()[] ,.;:?!\"'\n\r";   // I removed & in order you can disable substitution by adding
+                                                   // &nbsp; or even better &zwnj; character to the word - like: gender&zwnj;
         for ($i=0, $len=strlen($delimiter_chars); $i<$len; $i++) {
             $index              = $delimiter_chars[$i];
             $delimiters[$index] = 'AA#@'.$index.'AA#@';
