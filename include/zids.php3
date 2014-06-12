@@ -108,6 +108,16 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($this->type == "z") {
             $this->type = guesstype($this->a[0]);
         }
+        $this->clean();
+    }
+
+    /** remove non valid ids */
+    function clean() {
+        switch ($this->type) {
+        case 's': $this->a = array_values(array_filter($this->a, 'is_short_id'));  break;
+        case 'l': $this->a = array_values(array_filter($this->a, 'is_long_id'));   break;
+        case 'p': $this->a = array_values(array_filter($this->a, 'is_packed_id')); break;
+        }
     }
 
     /** setFromItemArr function
@@ -160,6 +170,7 @@ class zids implements Iterator, ArrayAccess, Countable {
                 $this->a[] = $id;
             }
         }
+        $this->clean();
     }
 
     /** add function
@@ -184,6 +195,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         } else {
             return false;
         }
+        $this->clean();
         return true;
     }
 
@@ -506,6 +518,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($this->count() <= 0) {
             return array();
         }
+        $ret = array();
         $trans = $this->get_retyped($from_type);
         foreach ( $this->a as $idx => $zid ) {
             $ret[$trans[$idx]] = $zid;
@@ -562,6 +575,11 @@ function guesstype($str) {
     debug("Error, unable to guess type of id '$str' - ask mitra");
     return ('z');
 }
+
+/** type validating functions */
+function is_short_id($id)  { return guesstype($id)=='s'; }
+function is_long_id($id)   { return guesstype($id)=='l'; }
+function is_packed_id($id) { return guesstype($id)=='p'; }
 
 /** q_pack_id function
  * returns packed and quoted md5 id
