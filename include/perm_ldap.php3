@@ -846,8 +846,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         for ($i=0; $i < $aci["count"]; ++$i) {
             $apcaci = ParseApcAci( $aci[$i] );
             if ($apcaci) {
-                $info[$apcaci["dn"]]         = $this->getIDsInfo($apcaci["dn"]);
-                $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
+                $info[$apcaci["dn"]] = $apcaci["perm"];
             }
         }
         return $info;
