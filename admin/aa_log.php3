@@ -47,6 +47,9 @@ $manager = new AA_Manager('log', $manager_settings);
 $manager->performActions();
 
 $aa_set  = $manager->getSet();
+
+//$aa_set->addCondition(new AA_Condition('params',       'LIKE', 'niZ1W'));
+
 $zids    = AA_Metabase::queryZids(array('table'=>'log'), $aa_set);
 
 require_once AA_INC_PATH."menu.php3";

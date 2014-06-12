@@ -128,10 +128,7 @@ class AA_Formrow_Field extends AA_Formrow {
 class AA_Widget_Formrow extends AA_Widget {
 
     /** Constructor - use the default for AA_Object */
-    function __construct($params=array()) {
-        // assign all the properties (using parent constructor)
-        parent::AA_Object($params);
-    }
+    // function __construct($params=array()) { parent::__construct($params); }  // not needed - called as default
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -180,7 +177,7 @@ class AA_Widget_Formrow extends AA_Widget {
         $fields    = new AA_Content;
         $selected  = new AA_Value($arr);
         $fields->setAaValue($aa_property->getId(), $selected);
-        $widget    = "<select name=\"$input_name\" id=\"$input_name\" multiple>";
+        $widget    = "<select name=\"$input_name\" id=\"$input_name\" multiple size=20>";
         $options   = $this->getOptions($selected, $fields, false, false, $aa_property->isRequired() ? 2 : 1);
         $widget   .= $this->getSelectOptions( $options );
         $widget   .= "</select>";

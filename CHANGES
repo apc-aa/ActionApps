@@ -1,5 +1,19 @@
-14-06-12 - display more informations in field mapping (field ID)
-(honzam) - fixed variables quoting in CSV import
+14-06-12 - new possibility to disable adding new comments to discussion
+(honzam)   see Slice Admin -> Fulltext -> "New comments disabled"
+         - RSS import better works with encoding. It also deals well with XML
+           starting with BOM mark
+         - in dictionary feture with replacing the word with link (or another
+           string) now we do not count "&" as the word delimiter. It allows us
+           to disable the substitution by adding &nbsp; or even better &zwnj;
+           character to the word - like: gender&zwnj;
+         - fixed DOC/PDF/.. convertors, if configured
+         - improved jsview.php3 - script for inserting views in the page using
+           javascript. Now is working also with <script> tag inside the view.
+         - display more informations in field mapping (field ID)
+         - fixed variables quoting in CSV import
+         - fix possible source of SQL injections - zids are better checked when
+           the values is entered in
+         - fixed perm LDAP
 14-06-06 - fix for PHP < 5.5
 14-05-05 - new possibility to specify in site settings the another "Additional
 (honzam)   Aliases Sites" from which will be {_:Alias} aliases taken, so you can

@@ -164,7 +164,7 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                 // -->
         </script>
 
-        <table align=left width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+        <table align=center width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>">
             <tr><td class="tabtit" align="left">
                     <?php
                     if ($desc['name']) {
@@ -243,7 +243,7 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                     $what = $$list;
                     echo $what['hint'];
                     echo '
-<p align=\"center\">';
+<p align="center">';
                     if (is_array($desc['params']))
                         echo '
     <input type="button" value="' . _m("OK - Save") . '" onclick="writeParams(); self.close()">&nbsp;&nbsp;

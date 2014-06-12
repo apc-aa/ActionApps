@@ -118,8 +118,7 @@ abstract class AA_Serializable {
         $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
 
         // first parameter is the class identifier - the parameters starts then
-        $i      = 1;
-        $class  = self::constructClassName($splited[0], get_called_class().'_');
+        $class  = self::constructClassName(array_shift($splited), get_called_class().'_');
         $params = array('class' => $class);
 
         if ( class_exists($class) ) {
@@ -127,9 +126,16 @@ abstract class AA_Serializable {
             // call AA_Widget_Txt::getClassProperties()), for example
             $props = $class::getClassProperties();
             foreach ($props as $name =>$property) {
-                if (isset($splited[$i])) {
-                    $params[$name] = $splited[$i++];
+                $value = array_shift($splited);
+                if (isset($value)) {
+                    $params[$name] = $value;
                 }
+            }
+            // is there rest? Add all the values to the last parameter
+            // It isthere for older 1-parameter classes, where we do not escape ":"
+            // like AA_Generator_Txt - we want it as it was written - not splitted
+            if (count($splited)) {
+                $params[$name] .= ':'.join(':',$splited);
             }
         }
         return $params;
