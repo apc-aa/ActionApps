@@ -107,10 +107,9 @@ if ($convertto) {
 }
 
 $html_code = GetView($view_param);                    // get view content
-$html_code = str_replace( '"', '\"', $html_code );    // backslash quotes
-$html_code = str_replace( "\r\n", '\n', $html_code ); // remove newlines
-$html_code = str_replace( "\n", '\n', $html_code );   // remove newlines
-$html_code = str_replace( "\r", '\n', $html_code );   // remove newlines
+// backslash quotes, remove newlines, escape </script, which will make the code broken
+$html_code = str_replace( array('"',"\r\n","\n","\r",'<script','</script'), array('\"','\n','\n','\n','\x3Cscript','\x3C/script'), $html_code );   // remove newlines
+
 echo 'document.write("'. $html_code .'");';           // print it as javascript
 exit;
 
