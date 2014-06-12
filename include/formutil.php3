@@ -1077,6 +1077,9 @@ class AA_Inputfield {
      */
     function get_convertors() {
         global $CONV_HTMLFILTERS;
+        global $CONV_HTMLFILTERS_DOC;
+        global $CONV_HTMLFILTERS_PDF;
+        global $CONV_HTMLFILTERS_XLS;
         if ( isset($CONV_HTMLFILTERS) AND is_array($CONV_HTMLFILTERS) ) {
             $delim='';
             foreach ( $CONV_HTMLFILTERS as $format => $program) {
@@ -1088,6 +1091,28 @@ class AA_Inputfield {
             }
             $convertor = "<a href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
         }
+/**
+ * for new version by Jirkar
+ * not functional
+ * file misc/msconvert/index.php3 needs more changes
+
+        $delim='';
+        if ( defined('CONV_HTMLFILTERS_DOC')  ) {
+            $convertor .= $delim . 'doc';
+            $delim = '/';
+        }
+        if ( defined('CONV_HTMLFILTERS_PDF')  ) {
+            $convertor .= $delim . 'pdf';
+            $delim = '/';
+        }
+        if ( defined('CONV_HTMLFILTERS_XLS')  ) {
+            $convertor .= $delim . 'xls';
+            $delim = '/';
+        }
+        if ( $delim == '/'  ) {
+            $convertor = "<a href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
+        }
+*/
         return $convertor;
     }
 

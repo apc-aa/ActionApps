@@ -53,7 +53,7 @@ if (!$userfile) {
             $safe_file_name=escapeshellcmd($file_name);
             $safe_encoding=escapeshellarg ($encoding);
             if ( defined('CONV_HTMLFILTERS_DOC')) {
-                exec(str_replace('%1',$uploadpath$safe_file_name,CONV_HTMLFILTERS_DOC),$out);
+                exec(str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_DOC),$out);
                 $out=join("\n",$out);
             }
             unlink ("$uploadpath$file_name");
@@ -73,11 +73,10 @@ if (!$userfile) {
                     $buffer[]=$line;
                 }
             }
-
         } elseif (preg_match("/.pdf$/i",$realname)){
             $safe_file_name=escapeshellcmd($file_name);
             if ( defined('CONV_HTMLFILTERS_PDF')) {
-                exec (str_replace('%1',$uploadpath$safe_file_name,CONV_HTMLFILTERS_PDF),$out);
+                exec (str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_PDF),$out);
                 $out=join("\n",$out);
             }
             unlink ("$uploadpath$file_name");
@@ -101,7 +100,7 @@ if (!$userfile) {
             $safe_encoding=escapeshellarg ($encoding);
             $safe_sysenc=escapeshellarg ($sysenc);
             if ( defined('CONV_HTMLFILTERS_XLS')) {
-                exec (str_replace('%1',$uploadpath$safe_file_name,CONV_HTMLFILTERS_XLS),$out);
+                exec (str_replace('%1',"$uploadpath$safe_file_name",CONV_HTMLFILTERS_XLS),$out);
                 $out=join("\n",$out);
             }
             unlink ("$uploadpath$file_name");
