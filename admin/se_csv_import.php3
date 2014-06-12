@@ -60,11 +60,11 @@ require_once AA_INC_PATH. 'files.class.php3';
 
 define("FILE_PREFIX", 'importdata');
 
-$text      = magic_strip($text);
-$upfile    = magic_strip($upfile);
-$url       = magic_strip($url);
-$enclosure = magic_strip($enclosure);
-$delimiter = magic_strip($delimiter);
+$text      = $_REQUEST['text'];
+$upfile    = $_REQUEST['upfile'];
+$url       = $_REQUEST['url'];
+$enclosure = $_REQUEST['enclosure'];
+$delimiter = $_REQUEST['delimiter'];
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
