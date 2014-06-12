@@ -66,12 +66,16 @@ if ( $update ) {
         $varset->add("fulltext_format", "quoted", $fulltext_format);
         $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
         $varset->add("fulltext_remove", "quoted", $fulltext_remove);
-        $varset->add("flag", "number", $discus_htmlf ? 1 : 0);
-        $varset->add("vid", "number", $discus_sel);
 
+        $discus_flag = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', array(array('id',$slice_id,'l')));
+        $discus_flag &= ~ (DISCUS_HTML_FORMAT | DISCUS_ADD_DISABLED); // clear the bits
+        $discus_flag |= $discus_htmlf ? DISCUS_HTML_FORMAT : 0;
+        $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;
 
-        $SQL = "UPDATE slice SET ". $varset->makeUPDATE().
-               " WHERE id='".q_pack_id($slice_id)."'";
+        $varset->add("flag", "number", $discus_flag);
+        $varset->add("vid",  "number", $discus_sel);
+
+        $SQL = "UPDATE slice SET ". $varset->makeUPDATE()." WHERE id='".q_pack_id($slice_id)."'";
 
         if ( !$db->tquery($SQL)) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
@@ -87,8 +91,7 @@ if ( $update ) {
 }
 
 if ( $slice_id != "" ) {  // set variables from database
-    $SQL= " SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom,
-                   fulltext_remove, flag, vid
+    $SQL= " SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid
             FROM slice WHERE id='". q_pack_id($slice_id)."'";
     $db->query($SQL);
     if ($db->next_record()) {
@@ -96,7 +99,8 @@ if ( $slice_id != "" ) {  // set variables from database
         $fulltext_format        =  $db->f('fulltext_format');
         $fulltext_format_bottom =  $db->f('fulltext_format_bottom');
         $fulltext_remove        =  $db->f('fulltext_remove');
-        $discus_htmlf           = ($db->f('flag') & DISCUS_HTML_FORMAT) == DISCUS_HTML_FORMAT;
+        $discus_htmlf           = ($db->f('flag') & DISCUS_HTML_FORMAT)  == DISCUS_HTML_FORMAT;
+        $discus_disabled        = ($db->f('flag') & DISCUS_ADD_DISABLED) == DISCUS_ADD_DISABLED;
         $discus_vid             =  $db->f('vid');
     }
 }
@@ -151,6 +155,7 @@ FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50,
 FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false,
              _m("The template for dicsussion you can set on \"Design\" -> \"View\" page"));
 FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
+FrmInputChBox("discus_disabled", _m("New comments disabled"), $discus_disabled);
 
 PrintAliasHelp(GetAliasesFromFields($fields),$fields, false, $form_buttons, $sess, $slice_id);
 

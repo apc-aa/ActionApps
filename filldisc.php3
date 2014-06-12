@@ -107,6 +107,10 @@ if (empty($slice)) {
      echo _m("Comment to wrong item - item's slice not found.");
      exit;
 }
+if ($slice->getProperty('flag') & DISCUS_ADD_DISABLED) {
+     echo _m("New comments disabled.");
+     exit;
+}
 
 // test for spam
 $discussion_fields = array (

@@ -920,7 +920,9 @@ define ("FEEDMAP_FLAG_EXTMAP", 3);
 define ("FEEDMAP_FLAG_JOIN",   4);
 define ("FEEDMAP_FLAG_RSS",    5);
 
+/** flag in the slice table */
 define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice table
+define ("DISCUS_ADD_DISABLED", 2);  // disbles filldisc adding on new comments
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
 $CONDS_NOT_FIELD_NAMES = array(
