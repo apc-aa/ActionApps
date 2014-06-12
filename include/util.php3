@@ -899,7 +899,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         while ( $db->next_record() ) {
 
             $row = $db->Record;
-            
+
             $item_id = $row['item_id'];
             $fooid   = ($use_short_ids ? $translate[unpack_id($item_id)] : unpack_id($item_id) );
 
@@ -1299,6 +1299,7 @@ function join_escaped($pattern, $strings, $escape_pattern) {
  * @param $strings
  */
 function join_and_quote( $pattern, $strings ) {
+    $retval = '';
     foreach ((array)$strings as $string) {
         if ($retval) {
             $retval .= $pattern;

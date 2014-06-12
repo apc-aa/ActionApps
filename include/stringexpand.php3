@@ -2497,6 +2497,7 @@ class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
 /** Filter ids by the expression
  *  {filter:<ids>:<expression>:<equals-to>}
  *  {filter:4785-4478-5789:_#SLICE_ID:879e87a4546abe23879e87a4546abe23}
+ *  {filter:4785-4478-5789:{({item:{relation........}:_#APPROVED})}:1}
  *  Usualy it is much better to use filtering by database - like you do in {ids},
  *  but sometimes it is necessary to filter concrete ids, so we use this
  *  Returns only ids, which <expression> equals to <equals-to>
@@ -5611,7 +5612,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
             if ($translate_slice = $site->getProperty('translate_slice')) {
                 $set  = new AA_Set(array($translate_slice), new AA_Condition('headline........', '==', $text));
                 $zids = $set->query();
-        
+
                 if ($zids->count()) {
                     return AA_Items::getItem($zids[0])->f_2('headline........');
                 }
@@ -5622,7 +5623,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                 $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
                 $ic->setSliceID($translate_slice);
                 //$ic->complete4Insert();
-                
+
                 $ic->storeItem('insert');     // invalidatecache, feed
             }
         }
