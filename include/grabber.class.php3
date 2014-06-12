@@ -359,7 +359,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
      *
      */
     function _getRssData() {
-        return http_fetch($this->feed['server_url']);
+        return trim(http_fetch($this->feed['server_url']),"\xef\xbb\xbf \t\n\r\0\x0B"); // remove also BOM (the first three characters)
     }
     /** _getApcData function
      *
@@ -498,10 +498,10 @@ class AA_Grabber_Aarss extends AA_Grabber {
         if ($debugfeed >= 8) huhl("Fetched data=",myspecialchars($xml_data));
 
         // if an error occured, write it to the LOG
-        if (substr($xml_data,0,1) != "<") {
+        if (($first_char=substr($xml_data,0,1)) != "<") {
             AA_Log::write("CSN","Feeding mode ($feed_debug_name): $xml_data");
             if ($debugfeed >= 1) {
-                print("\n<br>$feed_debug_name:bad data returned: $xml_data");
+                print("\n<br>$feed_debug_name:bad data returned (first character &quot;$first_char&quot; (ord=".ord($first_char).") is not &quot;&lt;&quot;):$xml_data");
             }
             return false;
         }
@@ -511,7 +511,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         if (!( $this->aa_rss = aa_rss_parse( $xml_data ))) {
             AA_Log::write("CSN","Feeding mode ($feed_debug_name): Unable to parse XML data");
-            if ($debugfeed >= 1) print("\n<br>$feed_debug_name:".$feed['server_url'].":unparsable: <hr>".myspecialchars($xml_data)."<hr>");
+            if ($debugfeed >= 1) print("\n<br>$feed_debug_name:".$this->feed['server_url'].":unparsable: <hr>".myspecialchars($xml_data)."<hr>");
             return false;
         }
 
@@ -536,7 +536,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         }
 
         // Find channel definition
-        if (!($this->channel = $aa_rss['channels'][$this->r_slice_id])) {
+        if (!($this->channel = $this->aa_rss['channels'][$this->r_slice_id])) {
             while (list(,$this->channel) = each($this->aa_rss['channels'])) {
                 if ($this->channel) {
                    break;
@@ -545,7 +545,13 @@ class AA_Grabber_Aarss extends AA_Grabber {
         }
 
         list(,$map) = GetExternalMapping($this->slice_id,$this->r_slice_id);
+        if ($debugfeed >= 7) {
+            print("\n<br>Mapping: $map, $this->slice_id, $this->r_slice_id");
+        }
         if (!$map && ($feed_type == FEEDTYPE_RSS)) {
+            if ($debugfeed >= 2) {
+                print("\n<br>using default mapping");
+            }
             $map = $DEFAULT_RSS_MAP;
         }
         $this->map = $map;

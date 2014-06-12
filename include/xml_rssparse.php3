@@ -69,8 +69,7 @@ $module2abbrev = array(
   * Older versions of AA RSS feeds do not contain XML encoding setting and uses
   * iso-8859-1. New versions (>=2.8) uses encoding setting and utf-8
   * which is correct also for non iso-8859-1 languages
-  * There must be two global variables defined
-  * - $g_source_encoding  - encoding of input XML data
+  * There must be global variable defined
   * - g_slice_encoding    - destination encoding
   * @param $v
   */
@@ -79,30 +78,10 @@ function decode($v) {
     if ( !$encoder ) {
         $encoder = new ConvertCharset;
     }
-    return $encoder->Convert($v, $GLOBALS['g_source_encoding'], $GLOBALS['g_slice_encoding']);
+    if ($GLOBALS['debugfeed'] >=8) huhl("decode: UTF-8 ---> ". $GLOBALS['g_slice_encoding']. ": $v");
+    return $encoder->Convert($v, 'utf-8', $GLOBALS['g_slice_encoding']);
 }
 
-/** seems_utf8 function
- *  Function decides if the string could be utf-8 or not
- * @param $str
- */
-function seems_utf8($str) {
-    for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
-        if (ord($str[$i]) < 0x80) continue; // 0bbbbbbb
-        elseif ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; // 110bbbbb
-        elseif ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; // 1110bbbb
-        elseif ((ord($str[$i]) & 0xF8) == 0xF0) $n=3; // 11110bbb
-        elseif ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; // 111110bb
-        elseif ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; // 1111110b
-        else return false; // Does not match any model
-        for ($j=0; $j<$n; ++$j) { // n bytes matching 10bbbbbb follow ?
-            if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80)) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
 /** nsName2abbrevname function
  * @param $name
  */
@@ -342,34 +321,14 @@ function aa_rss_parse($xml_data) {
         huhl("aa_rss_parse:Parsing ...");
     }
 
-
-    // get encoding from the xml document: it is used in decode() function above
-    // Added by Norbert Brazda
-    $regexp = '/<\?xml.*encoding=[\'"]([^\'"]*)[\'"].*\?>/m';  // /m means multiline
-    if (preg_match($regexp, $xml_data, $enc)) {
-        $GLOBALS['g_source_encoding'] = strtolower($enc[1]);
-    } else {
-        $GLOBALS['g_source_encoding'] = 'iso-8859-1';
-    }
-
     // Destination slice encoding should be set in aa_rss_parse caller function.
     // If not set, we probably want to parse data for current slice (node list, ... )
     if ( !$GLOBALS['g_slice_encoding'] ) {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($GLOBALS['slice_id']);
     }
 
-    // Older versions of AA RSS do not contain XML encoding setting but uses
-    // utf-8 (but only for iso-8859-1 slices - as supported by php.
-    // New versions (>=2.8) uses encoding setting and utf-8 and works well with
-    // slices in other encoding
-    if ( strpos( substr($xml_data,0,100), 'encoding="UTF-8"' ) ) {
-        $source_encoding = 'utf-8';
-    } else {
-        $source_encoding = ( seems_utf8($xml_data) ? 'utf-8' : 'iso-8859-1');
-        if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Encoding not specified, used: $source_encoding" );
-    }
-    // see php.net/xml_parser_create_ns for mmore info - it supports only utf-8
-    $xml_parser = xml_parser_create_ns($source_encoding);
+    // encoding detected automaticaly - utf-8 on the output of the parsed
+    $xml_parser = xml_parser_create_ns();
 
     // Clear out, or will just append to previous parse!
     // unset do not works for GLOBAL variables!!!

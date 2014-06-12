@@ -134,7 +134,7 @@ class AA_Feed {
         $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         $feeddata['feed_type']       = FEEDTYPE_RSS;
         // fictive remote slice id, but always the same for the same url
-        $feeddata['remote_slice_id'] = q_pack_id(attr2id($feeddata['server_url']));
+        $feeddata['remote_slice_id'] = pack_id(attr2id($feeddata['server_url']));
 
         $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
         $this->destination_slice_id  = unpack_id($feeddata['slice_id']);
@@ -185,10 +185,16 @@ class AA_Feed {
 if ($feed_id) {          // just one specified APC feed
     $feed = new AA_Feed();
     $feed->loadAAFeed($feed_id, $_GET['time']);
+    if ($_REQUEST['debugfeed']>8) {
+        huhl('aafeed', $feed);
+    }
     $feed->feed();
 } elseif ($rssfeed_id) { // just one specified RSS feed
     $feed = new AA_Feed();
     $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
+    if ($_REQUEST['debugfeed']>8) {
+        huhl('rssfeed', $feed);
+    }
     $feed->feed();
 } else {                 // all RSS and APC and general feeds
     $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
