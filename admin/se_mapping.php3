@@ -215,13 +215,14 @@ FrmTabSeparator(_m("Fields' mapping"));
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-          <td class="tabtxt" align="center"><b><?php echo _m("To") ?></b></td>
-          <td class="tabtxt" align="center"><b><?php echo _m("From") ?></b></td>
+          <td class="tabtxt" align="center" colspan=2><b><?php echo _m("To") ?></b></td>
+          <td class="tabtxt" align="center" colspan=2><b><?php echo _m("From") ?></b></td>
           <td class="tabtxt" align="center"><b><?php echo _m("Value") ?></b></td>
         </tr>
 <?php
 foreach ($to_fields as $f_id => $f_name) {
     echo "<tr><td class=\"tabtxt\"><b>$f_name</b></td>\n";
+    echo "<td class=\"tabtxt\">$f_id</td>\n";
     echo "<td>";
     $val = "";
 
@@ -246,7 +247,8 @@ foreach ($to_fields as $f_id => $f_name) {
             break;
     }
     FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
-    echo "</td><td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></input></td>";
+    echo "</td><td class=\"tabtxt\">$sel</td>";
+    echo "<td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></input></td>";
     echo "</tr>\n";
 }
 FrmTabEnd($form_buttons, $sess, $slice_id);
