@@ -437,12 +437,20 @@ function AA_ReloadAjaxResponse(id, responseText) {
  *  The main chane is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
-function AA_SendWidgetLive(id) {
+function AA_SendWidgetLive(id, liveinput, fnc) {
     AA_StateChange(id, 'updating');
 
     var valdivid   = 'widget-' + id;
     var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
 
+    // browser supports HTML5 validation
+    if (typeof liveinput.checkValidity == 'function') {
+        if (!liveinput.checkValidity()) {
+            AA_StateChange(base_id, 'invalid');
+            return;
+        }
+    }
+    
     var code = Form.serialize(valdivid);
     code += '&' + sess + '&inline=1';  // do not send us whole page as result
 
@@ -451,6 +459,9 @@ function AA_SendWidgetLive(id) {
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
             AA_StateChange(id, 'normal');
+            if (typeof fnc == 'function') {
+                fnc();
+            }
         }
     });
 }
@@ -614,6 +625,12 @@ function AA_Rotator(id, interval, max) {
 
     AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
 }
+
+// function AA_Message(text, type) {
+//     var box = (typeof $('aa-message-box') != "undefined") ? $('aa-message-box') : new Element('div', {'id': 'aa-message-box', 'class': 'aa-ok'});
+//     box.update('<div>'+text+'</div>');
+// }
+
 
 
 /* Cookies */
