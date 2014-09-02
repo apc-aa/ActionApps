@@ -586,9 +586,10 @@ class AA_Set extends AA_Object {
     /** addSortFromString function accept various type of sort string:
      *           1)   headline........-
      *           2)   category.......1,publish_date....-,headline........
-     *           3)   sort[0]=headline........-
-     *           4)   sort[0][headline........]=d
-     *           5)   sort[0][headline........]=d&sort[1][publish_date....]=a
+     *           3)   category.......1+publish_date....-headline........    (this one is usefull for view's set[]=sort-category.......1+publish_date....-) 
+     *           4)   sort[0]=headline........-
+     *           5)   sort[0][headline........]=d
+     *           6)   sort[0][headline........]=d&sort[1][publish_date....]=a
      *        or with group limits (limited number of items displayed in each group)
      *           1)   5headline........-
      *           2)   sort[0]=5headline........-
@@ -618,7 +619,7 @@ class AA_Set extends AA_Object {
      */
     function addSortFromBasicString( $sort_string ) {
         if ($sort_string) {
-            $sorts = explode(',',$sort_string);
+            $sorts = array_filter(explode(',', str_replace(array('-','+',' '),array('-,','+,', '+,'), $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
             foreach ($sorts as $number => $sort) {
                 $retone = array();
                 // is defined group limit?

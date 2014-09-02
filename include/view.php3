@@ -439,14 +439,6 @@ function GetViewSort(&$view_info, $param_sort=null) {
     // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
 
     $sort = false;
-    if ($param_sort['sort']) {
-        if ( $param_sort['sort'] == 'AAnoSORT' ) {
-            return false;
-        }
-        $set    = new AA_Set;
-        $set->addSortFromString($param_sort['sort']);
-        $sort = $set->getSort();
-    }
     // grouping
 
     if ($param_sort['group_by']) {
@@ -462,11 +454,19 @@ function GetViewSort(&$view_info, $param_sort=null) {
     }
 
     //sorting
-    if ($view_info['order1']) {
-        $sort[] = array($view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
-    }
-    if ($view_info['order2']) {
-        $sort[] = array($view_info['order2'] => $VIEW_SORT_DIRECTIONS[$view_info['o2_direction']]);
+    if ($param_sort['sort']) {
+        if ( $param_sort['sort'] != 'AAnoSORT' ) {
+            $set    = new AA_Set;
+            $set->addSortFromString($param_sort['sort']);
+            $sort = $set->getSort();
+        }
+    } else {
+        if ($view_info['order1']) {
+            $sort[] = array($view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
+        }
+        if ($view_info['order2']) {
+            $sort[] = array($view_info['order2'] => $VIEW_SORT_DIRECTIONS[$view_info['o2_direction']]);
+        }
     }
 
     if ($param_sort['group_limit'] AND count($sort)>0) {
@@ -617,7 +617,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
     // ---- display content in according to view type ----
     AA::$debug && AA::$dbg->log("GetViewFromDB:view_info=",$view_info);
-    
+
     switch( $view_info['type'] ) {
         case 'discus':
             // create array of discussion parameters
@@ -835,11 +835,11 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 //    huhl("XYZZY:v578, msg=",$noitem_msg);
                 $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
                 */
-                
+
                 AA::$debug && AA::$dbg->group("unaliasWithScrollerEasy".'_'.$dbgtime);
                 $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
                 AA::$debug && AA::$dbg->groupend("unaliasWithScrollerEasy".'_'.$dbgtime);
-                
+
             }
             break;
 
