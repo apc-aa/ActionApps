@@ -282,6 +282,11 @@ class AA_Router_Seo extends AA_Router {
         $arr = explode('/', trim($parsed_url['path'],'/'));
         $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],trim($home,'/'));
 
+        // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
+        if (count($arr) < 2) {
+            $arr = explode('/', trim( parse_url($home, PHP_URL_PATH),'/'));
+        }
+
         for ($i=1, $ino=count($arr); $i<$ino; ++$i) {
             $ret['xseo'.$i] = $arr[$i];
         }
