@@ -1,14 +1,18 @@
-14-09-02 - SEO sitemodule now better handles the homeages for different 
-(honzam)   languages - you can use example.org/cz url and it points to cz 
-           version of "start" page, if the home is set as /en/start 
+14-09-11 - reduction of database connections in AA
+(honzam) - rotator now uses slide UP/DOWN
+         - optimized debug output to browser console using ?debug=c
+         - improved javascript escaping functions
+14-09-02 - SEO sitemodule now better handles the homeages for different
+(honzam)   languages - you can use example.org/cz url and it points to cz
+           version of "start" page, if the home is set as /en/start
            in the sitemodule
          - better sorting parameter for view - now you can specify the sortorder
-           with multiple columns just like: 
-             set[]=sort-category.......1+publish_date....-headline........ 
+           with multiple columns just like:
+             set[]=sort-category.......1+publish_date....-headline........
              (+ and - means sortorder; + is default)
-         - prototype javascript library updated to latest version 1.7.2           
-         - prototype verion of AA js library (aajslib.php3) now allows the same   
-           parameters for AA_SendWidgetLive funcion than the jquery counterpart   
+         - prototype javascript library updated to latest version 1.7.2
+         - prototype verion of AA js library (aajslib.php3) now allows the same
+           parameters for AA_SendWidgetLive funcion than the jquery counterpart
 14-06-12 - new possibility to disable adding new comments to discussion
 (honzam)   see Slice Admin -> Fulltext -> "New comments disabled"
          - RSS import better works with encoding. It also deals well with XML
