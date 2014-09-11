@@ -1122,7 +1122,7 @@ class AA_Item {
     function f_t($col, $param="") {
         $p = ParamExplode($param);
         if ( isset($p[1]) ) {
-            $text  = get_if( $p[0], $this->getval($col) );
+            $text  = $p[0] ?: $this->getval($col);
             $modif = $p[1];
             if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'))) {
                 if ( $fnc = AA_Stringexpand::$php_functions[$modif] ) {
