@@ -380,8 +380,8 @@ function AA_Rotator(id, interval, max) {
         AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
     }
 
-    $(jqid(id)+ ' .rot-hide').hide();
-    $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').show();
+    $(jqid(id)+ ' .rot-hide').slideUp(200);
+    $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').slideDown(200);
 
     $(jqid(id)+ ' .rot-active').removeClass('active');
     $(jqid(id)+ ' .rot-active:nth-child('+(AA_Rotator.rotators[id].index+1)+')').addClass('active');
