@@ -107,22 +107,21 @@ class AA_Debug_Console extends AA_Debug {
     function _do($func, $params) {
         $code = '';
         foreach ($params as $a) {
-            if (is_object($a) && !is_callable(array($a,"__toString"))) {
+            if (is_array($a) OR (is_object($a) && !is_callable(array($a,"__toString")))) {
                 $a = print_r($a, true);
             }
-            $code .= "\n console.$func('". str_replace("'", "\'", str_replace('\\', '\\\\', $a)). "');";
+            $code .= "console.$func('". escape4js(DB_AA::$_instances_no.' '.$a). "');\n";  //str_replace("'", "\'", str_replace('\\', '\\\\', $a)).
         }
         $this->_script($code);
     }
 
     function _groupstart($group) {
-        echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
-        $this->_script("\n console.group();");
+        $this->_script("console.group();");
         $this->_do('log', array($group));
     }
 
     function _groupend($group) {
-        $this->_script("\n console.groupEnd();");
+        $this->_script("console.groupEnd();");
         $this->_do('log', array($group));
     }
 
@@ -139,7 +138,7 @@ class AA_Debug_Console extends AA_Debug {
        }
        ' .$code;
         }
-        echo  "\n<script>$code</script>\n";
+        echo  "\n<script>\n  $code\n</script>\n";
     }
 }
 

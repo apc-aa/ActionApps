@@ -3493,17 +3493,17 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
      * @param $property
      */
     function expand( $text='' ) {
-        if ($text=='0') {
-            $GLOBALS['debug']=0;
-        }
-        if ($text=='1') {
-            $GLOBALS['debug']=1;
-        }
+        $ret = '';
+        switch ($text) {
+            case '0':  $GLOBALS['debug'] = 0; break;
+            case '1':  $GLOBALS['debug'] = 1; break;
 
-        return "";
+            // do not rely on this - could be changed. If you want specific format, then add any text parameter
+            default:   $ret = "\nDababase instances: ". DB_AA::$_instances_no;
+        }
+        return $ret;
     }
 }
-
 
 
 /** makeAsShortcut function
