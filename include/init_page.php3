@@ -158,7 +158,8 @@ if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_
     exit;
 }
 
-$db           = new DB_AA;
+is_object( $db ) || ($db = getDB());
+
 $event        = new aaevent;
 $contentcache = new contentcache;
 

@@ -99,17 +99,11 @@ function endslash(&$s) {
     }
 }
 
-/** debuglog function
- *  To use this function, the file "debuglog.txt" must exist and have writing permission for the www server
- * @param $text
+/** backslash quotes, remove newlines, escape </script, which will make the code broken
+ *  use as: echo 'document.write("'. escape4js($code) .'");';
  */
-function debuglog($text) {
-    require_once AA_INC_PATH."files.class.php3";  // file wrapper
-    $file = &AA_File_Wrapper::wrapper(AA_INC_PATH."logs.txt");
-    if ($file->open('a')) {
-        $file->write(date( "h:i:s j-m-y "). $text. "\n");
-        $file->close();
-    }
+function escape4js($code) {
+    return str_replace( array("'","\r\n","\n","\r",'<script','</script'), array("\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $code );   // remove newlines ...
 }
 
 /** array_add function
@@ -1388,40 +1382,6 @@ function getSelectBoxFromParamWizard($var) {
     return $retval;
 }
 
-// This pair of functions remove the guessing about which of $db $db2
-// to use
-// Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
-//
-$spareDBs = array();
-/** getDB function
- *
- */
-function getDB() {
-    global $spareDBs;
-    if (!($db = array_pop($spareDBs))) {
-        $db = new DB_AA;
-    }
-    return $db;
-}
-/** freeDB function
- * @param $db
- */
-function freeDB($db) {
-    global $spareDBs;
-    array_push($spareDBs,$db);
-}
-
-/** tryQuery function
- *  Try a query, displaying debugging if $debug, return true on success, false on failure
- * @param $SQL
- */
-function tryQuery($SQL) {
-    $db  = getDB();
-    $res = $db->tquery($SQL);
-    freeDB($db);
-    return $res;
-}
-
 /** GetAAImage function
  * @param $filename
  * @param $alt
@@ -1648,9 +1608,7 @@ function test_print($item, $key) {
  * @param $else2
  */
 function get_if($value, $else, $else2='aa_NoNe') {
-    return $value ? $value :
-           ($else ? $else :
-           (($else2=='aa_NoNe') ? $else : $else2));
+    return $value ?: ($else ?: (($else2=='aa_NoNe') ? $else : $else2));
 }
 
 /** aa_version function

@@ -90,8 +90,7 @@ require_once AA_INC_PATH."searchlib.php3";
 $encap = true; // just for calling extsessi.php
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
-$db  = new DB_AA;
-$db2 = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
@@ -106,11 +105,8 @@ if ($convertto) {
     $view_param['convertto']   = $convertto;
 }
 
-$html_code = GetView($view_param);                    // get view content
-// backslash quotes, remove newlines, escape </script, which will make the code broken
-$html_code = str_replace( array('"',"\r\n","\n","\r",'<script','</script'), array('\"','\n','\n','\n','\x3Cscript','\x3C/script'), $html_code );   // remove newlines
-
-echo 'document.write("'. $html_code .'");';           // print it as javascript
+// get view content; backslash quotes, remove newlines, escape </script, which will make the code broken
+echo 'document.write(\''. escape4js(GetView($view_param)) .'\');';           // print it as javascript
 exit;
 
 ?>

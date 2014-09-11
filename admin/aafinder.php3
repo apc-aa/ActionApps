@@ -64,7 +64,7 @@ echo "<h1><b>" ._m("AA finder"). "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 if ($_POST['go_findview'] && $_POST['findview']) {
     $fields = array (
@@ -268,7 +268,7 @@ if ($_POST['go_finditem'] && $_POST['finditem']) {
 if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_edit_op']) {
 
     function query_search ($field, $op, $value,$sess) {
-        $db = new DB_AA;
+        $db = getDB();
         $sql="SELECT distinct slice.name as slice_name, slice.id as slice_id, item.short_id as short_id, item.id as long_id from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE ".$field." ".$op."'".quote($value)."' ORDER BY slice_name, short_id";
         $db->query($sql);
 
@@ -286,6 +286,7 @@ if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_ed
         }
 
         $output .= "</ul>";
+
 
         return $output;
     }

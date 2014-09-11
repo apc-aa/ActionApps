@@ -181,7 +181,8 @@ function SendOkPage($txt) {
 }
 
   // init used objects
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
+
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 $itemvarset = new Cvarset();

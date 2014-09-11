@@ -84,7 +84,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             }
             $filters[$db->f("filterid")] = $txt;
         }
-        
+
         return  array (
         "table" => "alerts_collection_filter",
         "type" => "browse",
@@ -247,7 +247,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
 
 function FindAlertsFilterPermissions() {
     global $auth, $_filter_permissions;
-    $db = new DB_AA;
 
     // work only once
     if (isset ($_filter_permissions))
@@ -262,6 +261,8 @@ function FindAlertsFilterPermissions() {
         if (strchr ($perms, PS_FULLTEXT))
             $restrict_slices[] = q_pack_id($my_slice_id);
     $_filter_permissions = array ();
+
+    $db = getDB();
     if (is_array($restrict_slices)) {
         $db->query("SELECT DISTINCT ADF.id FROM alerts_filter ADF
                      INNER JOIN view ON view.id = ADF.vid
@@ -271,6 +272,7 @@ function FindAlertsFilterPermissions() {
         while ($db->next_record())
             $_filter_permissions[] = $db->f("id");
     }
+    freeDB($db);
     return $_filter_permissions;
 }
 

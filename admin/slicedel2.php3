@@ -59,20 +59,19 @@ if ($del) {
 page_close();                                // to save session variables
 // There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
-go_url(con_url($sess->url("slicedel.php3"),
-                                          "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
+go_url(con_url($sess->url("slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 /** DeleteOneModule function
  * @param $del
  */
 function DeleteOneModule($del) {
-    global $db, $g_modules;
+    global $g_modules;
 
     // check if module can be deleted
-    ExitIfCantDelete( $del, $db );
+    ExitIfCantDelete( $del);
 
     // delete module (from common module table)
-    DeleteModule( $del, $db );
+    DeleteModule( $del );
 
     // delete slice from permission system -----------------------------------------
     DelPermObject($del, "slice");
@@ -80,89 +79,62 @@ function DeleteOneModule($del) {
     switch ($g_modules[$del]['type']) {
         case 'Alerts': DeleteAlerts($del); break;
         case 'S': DeleteSlice($del); break;
-        default: echo "Functions for deleting module type ".$g_modules[$slice_id]['type']
-        ." are not yet defined."; exit;
+        default: echo "Functions for deleting module type ".$g_modules[$del]['type']." are not yet defined."; exit;
     }
 }
 /** DeleteAlerts function
  * @param $module_id
  */
 function DeleteAlerts($module_id) {
-    global $db;
-
-    $db->query("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($module_id)."'");
-    if (!$db->next_record()) {
+    if ( ($collectionid = DB_AA::select1('SELECT id FROM `alerts_collection`', 'id', array(array('moduleid',$module_id, 'l')))) === false) {
         return;
     }
-    $collectionid = $db->f ("id");
-    $db->query("DELETE LOW_PRIORITY FROM alerts_collection_filter WHERE collectionid=$collectionid");
-    $db->query("DELETE LOW_PRIORITY FROM alerts_collection WHERE id=$collectionid");
-    $db->query("DELETE LOW_PRIORITY FROM alerts_collection_howoften WHERE id=$collectionid");
-    $db->query("DELETE LOW_PRIORITY FROM module WHERE id='".q_pack_id($module_id)."'");
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `alerts_collection_filter`', array(array('collectionid', $collectionid)));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `alerts_collection`', array(array('id', $collectionid)));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `alerts_collection_howoften`', array(array('id', $collectionid)));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', array(array('id', $module_id, 'l')));
 }
+
+/** DeleteItem function
+ *  Completely deletes item content from database with all subsequencies
+ *  but not deleted item from item table !!!
+ *  @param $id
+ */
+function DeleteItem($id) {
+    $p_itm_id = q_pack_id($id);
+
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `content`', array(array('item_id', $id, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `offline`', array(array('id', $id, 'l')));
+    // delete feeding relation
+    DB_AA::sql("DELETE LOW_PRIORITY FROM `relation` WHERE (source_id='$p_itm_id' OR destination_id='$p_itm_id') AND ((flag & ". REL_FLAG_FEED .") != 0)");
+}
+
 /** DeleteSlice function
  * @param $del
  */
 function DeleteSlice($del) {
-    global $db;
     $p_del = q_pack_id($del);
 
     // delete items
-    $db2  = new DB_AA;
-    $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
-    $db->query($SQL);
-    while ( $db->next_record() ) {
-      DeleteItem($db2, unpack_id($db->f('id'))); // deletes from content, offline and
+    $item_ids = DB_AA::select('id', 'SELECT id FROM `item`', array(array('slice_id', $del, 'l')));
+    foreach ($item_ids as $item_id) {
+        DeleteItem(unpack_id($item_id)); // deletes from content, offline and
     }                                           // relation tables
 
-    // delete items
-    $SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
-    // delete feedmap
-    $SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_del'
-                                                OR to_slice_id='$p_del'";
-    $db->query($SQL);
-
-    // delete feedprms
-    $SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_del'
-                                                OR to_id='$p_del'";
-    $db->query($SQL);
-
-    // delete email_notify
-    $SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `item`', array(array('slice_id', $del, 'l')));
+    DB_AA::sql("DELETE LOW_PRIORITY FROM `feedmap` feedmap WHERE from_slice_id='$p_del' OR to_slice_id='$p_del'");
+    DB_AA::sql("DELETE LOW_PRIORITY FROM `feedperms` WHERE from_id='$p_del' OR to_id='$p_del'");
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `email_notify`', array(array('slice_id', $del, 'l')));
     // delete fields
-    $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
-    // delete view
-    $SQL = "DELETE LOW_PRIORITY FROM view WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
-    // delete email
-    $SQL = "DELETE LOW_PRIORITY FROM email WHERE owner_module_id='$p_del'";
-    $db->query($SQL);
-
-    // delete profile
-    $SQL = "DELETE LOW_PRIORITY FROM profile WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
-    // delete rssfeeds
-    $SQL = "DELETE LOW_PRIORITY FROM rssfeeds WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
-    // delete constant_slice
-    $SQL = "DELETE LOW_PRIORITY FROM constant_slice WHERE slice_id='$p_del'";
-    $db->query($SQL);
-
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `field`', array(array('slice_id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `view`', array(array('slice_id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `email`', array(array('owner_module_id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `profile`', array(array('slice_id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `rssfeeds`', array(array('slice_id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `constant_slice`', array(array('slice_id', $del, 'l')));
     // delete all module specific tables
-    $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
-    $db->query($SQL);
-
-    $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
-    $db->query($SQL);
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `slice`', array(array('id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', array(array('id', $del, 'l')));
 }
 
 ?>

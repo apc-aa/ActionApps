@@ -44,10 +44,10 @@ $err["Init"] = "";      // error array (Init - just for initializing variable
 $p_del       = q_pack_id($del);
 
 // check if module can be deleted
-ExitIfCantDelete( $del, $db );
+ExitIfCantDelete( $del );
 
 // delete module (from common module table)
-DeleteModule( $del, $db );
+DeleteModule( $del );
 
 // delete all module specific tables
 

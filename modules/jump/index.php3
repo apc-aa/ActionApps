@@ -28,7 +28,7 @@ require_once AA_INC_PATH . "varset.php3";
 require_once AA_INC_PATH . "view.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
 if ($db->next_record()) {
     $dest = $db->f("destination");

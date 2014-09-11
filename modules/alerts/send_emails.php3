@@ -101,7 +101,7 @@ function showCollectionAddOns() {
 
 function showSelectionTable() {
     global $sess;
-    $db = new DB_AA;
+    $db = getDB();
     $db->query (
         "SELECT view.slice_id, slice.name AS slice_name,
             alerts_filter.vid, view.name AS view_name,
@@ -118,6 +118,7 @@ function showSelectionTable() {
         $av[$db->f("vid")]["type"] = $db->f("view_type");
         $av[$db->f("vid")]["filters"][$db->f("fid")] = $db->f("filter_name");
     }
+    freeDB($db);
 
     //echo "<BR><B>"._m("Selections ordered by slice and view:")."</B><BR>";
     echo "<BR><TABLE border=1 cellpadding=3 cellspacing=0>

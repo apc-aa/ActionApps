@@ -90,7 +90,7 @@ editor to replace<br>
 <SELECT name=slices_chosen[] MULTIPLE SIZE=30>
 ';
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $db->query ("SELECT * FROM slice ORDER BY name");
 while ($db->next_record())
     echo "  <OPTION value='".unpack_id ($db->f("id"))."'>".$db->f("name")."\n";

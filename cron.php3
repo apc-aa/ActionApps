@@ -50,7 +50,7 @@ require_once AA_INC_PATH."varset.php3";
 
 # zvetseni limitu - neprojde rozeslani vsech emailu
 if( !ini_get('safe_mode') ){
-  set_time_limit(3600);          
+  set_time_limit(3600);
 }
 
 /**
@@ -73,8 +73,7 @@ function cron($time = 0) {
 
     if (!$time) $time = time();
 
-    $db        = new DB_AA;
-    $db_update = new DB_AA;
+    $db = getDB();
 
     $parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
     if ($debug) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
@@ -175,10 +174,10 @@ function cron($time = 0) {
                 echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
             }
             //echo "Nearest time: "; print_r ($nearest);
-            $db_update->query("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+            DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
         }
         elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-            $db_update->query("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+            DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
             fopen ($url,"r");
         }
     }
@@ -187,7 +186,7 @@ function cron($time = 0) {
 
 // Use this for debug purposes
 /*
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $db->query("UPDATE cron SET last_run = NULL");
 $debug = 1;
 

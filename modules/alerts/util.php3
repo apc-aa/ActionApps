@@ -22,9 +22,7 @@ http://www.apc.org/
 require_once AA_INC_PATH."mail.php3";
 require_once AA_INC_PATH."mgettext.php3";
 
-if (!is_object($db)) {
-    $db=new DB_AA;
-}
+is_object( $db ) || ($db = getDB());
 
 function GetCollection($slice_id) {
     $SQL =  "SELECT AC.*, module.name, module.lang_file, module.slice_url
@@ -39,7 +37,7 @@ function GetCollection($slice_id) {
 }
 
 function set_collectionid() {
-    global $collectionid, $collectionprop, $db, $no_slice_id, $slice_id;
+    global $collectionid, $collectionprop, $no_slice_id, $slice_id;
 
     if (!$no_slice_id) {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
@@ -72,11 +70,9 @@ function get_bin_names() {
 }
 
 function new_collection_id() {
-    global $db;
     do {
         $new_id = gensalt(5);
-        $db->query("SELECT id FROM alerts_collection WHERE id = '$new_id'");
-    } while ($db->next_record());
+    } while ( DB_AA::select1('SELECT id FROM `alerts_collection`', 'id',  array(array('id',$new_id))) );
     return $new_id;
 }
 

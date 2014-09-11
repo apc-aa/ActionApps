@@ -656,18 +656,13 @@ class ItemContent extends AA_Content {
         require_once AA_INC_PATH."itemfunc.php3";
         global $db, $err, $varset, $itemvarset, $error, $ok;
 
-        $db         = new DB_AA;
-
         $id = $this->getValue("id..............");
         if ($id == "new id") {	    // if the item has no id => set up an unique new id
             $id = new_id();
             $insert = true;
         } else {
             // Check duplicity
-            $p_id   = q_pack_id($id);
-            $SQL    = "SELECT id FROM item WHERE item.id='$p_id'";
-            $db->query($SQL);
-            $insert = !$db->next_record();
+            $insert = (false===DB_AA::select1('SELECT id FROM `item`', 'id', array(array('id',$id, 'l'))));
         }
         if ($insert == false) {	    // if the item is already in the DB :
             switch ($actionIfItemExists) {

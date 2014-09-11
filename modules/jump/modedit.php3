@@ -33,7 +33,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."varset.php3";
 
 // create the $jumps array:
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $db->query("SELECT * FROM module WHERE type='J'");
 while ($db->next_record())
     $jumps[unpack_id($db->f("id"))] = $db->f("name");

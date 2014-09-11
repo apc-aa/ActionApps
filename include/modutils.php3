@@ -171,28 +171,18 @@ function GetModuleFields( $source_id, $db ) {
 /** ExitIfCantDelete function
  *  check if module can be deleted
  * @param $del
- * @param $db
  */
-function ExitIfCantDelete( $del, $db ) {
-    $p_del = q_pack_id($del);
-    $SQL = "SELECT deleted FROM module WHERE id='$p_del'";
-    $db->query($SQL);
-    if ( !$db->next_record() ) {
+function ExitIfCantDelete( $del ) {
+    if ( DB_AA::select1('SELECT deleted FROM `module`', '', array(array('id',$del, 'l'))) === false ) {
         go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
     }
-    // now you can delete also slices not marked for deletion
-    //  if ( $db->f(deleted) < 1 )
-    //    go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No module flagged for deletion."))));
 }
 
 /** DeleteModule function
  *  delete module from module table
  * @param $del
- * @param $db
  */
-function DeleteModule( $del, $db ) {
-    $p_del = q_pack_id($del);
-    $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
-    $db->query($SQL);
+function DeleteModule( $del ) {
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', array(array('id', $del, 'l')));
 }
 ?>

@@ -41,7 +41,8 @@ if ($cancel) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$db          = new DB_AA;
+is_object( $db ) || ($db = getDB());
+
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
@@ -137,7 +138,6 @@ if ( $insert || $update ) {
             $varset->doInsert('polls');
 
             // copy design themes...
-            $db2  = new DB_AA;
             $SQL = "SELECT * FROM polls_design WHERE module_id='$p_template_id'";
             $db->query($SQL);
             while ( $db->next_record() ) {

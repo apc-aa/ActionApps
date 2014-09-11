@@ -52,7 +52,7 @@ list($short_id, $ar) = each ($live_checkbox);
 reset($ar);
 list($field_id, $action) = each ($ar);
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
 if ($db->next_record()) {
     $item_id = unpack_id($db->f("id"));

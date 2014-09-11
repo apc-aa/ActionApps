@@ -214,8 +214,7 @@ $p_slice_id = q_pack_id($slice_id);
 
 require_once AA_INC_PATH."javascript.php3";
 
-$db  = new DB_AA; 	 // open BD
-$db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
+is_object( $db ) || ($db = getDB());
 
 $slice      = AA_Slices::getSlice($slice_id);
 $fields     = $slice->fields('record');            // get fields info

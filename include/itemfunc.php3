@@ -43,7 +43,7 @@ if ( !is_object($event) ) {
 
 /** classes for default values of the fields
  *  derived from  AA_Serializable in order to be able to factory from string
- *  
+ *
  *  Ussage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
 */
 abstract class AA_Generator extends AA_Serializable {
@@ -52,18 +52,18 @@ abstract class AA_Generator extends AA_Serializable {
 
 /** AA_Generator_Now - current timestamp */
 class AA_Generator_Now extends AA_Generator {
-    
-    /** Name of the component for selection */    
+
+    /** Name of the component for selection */
     static function name() { return _m("Now, i.e. current date");  }
 
     /** generate() - main function for generating the value */
     function generate()    { return new AA_Value(now()); }
 }
-        
+
 /** AA_Generator_Uid - User ID */
 class AA_Generator_Uid extends AA_Generator {
 
-    /** Name of the component for selection */    
+    /** Name of the component for selection */
     static function name() { return _m("User ID");  }
 
     /** generate() - main function for generating the value */
@@ -72,11 +72,11 @@ class AA_Generator_Uid extends AA_Generator {
         return new AA_Value(isset($auth) ? $auth->auth["uid"] : "9999999999");
     }
 }
-        
+
 /** AA_Generator_Log - Login name */
 class AA_Generator_Log extends AA_Generator {
 
-    /** Name of the component for selection */    
+    /** Name of the component for selection */
     static function name() { return _m("Login name");  }
 
     /** generate() - main function for generating the value */
@@ -85,11 +85,11 @@ class AA_Generator_Log extends AA_Generator {
         return new AA_Value(isset($auth) ? $auth->auth["uname"] : "anonymous");
     }
 }
-        
+
 /** AA_Generator_Dte - Date + 'Parameter' days */
 class AA_Generator_Dte extends AA_Generator {
 
-    /** Name of the component for selection */    
+    /** Name of the component for selection */
     static function name() {  return _m("Date + 'Parameter' days");  }
 
     /** getClassProperties function of AA_Serializable  */
@@ -98,7 +98,7 @@ class AA_Generator_Dte extends AA_Generator {
             'plusdays' => new AA_Property( 'plusdays',  _m("Number of days"), 'int', false, true, 'int', false, '', '', '365')
             );
     }
-    
+
     /** generate() velue of currrent timestamp */
     function generate()    {  return new AA_Value(mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y")));  }
 }
@@ -106,7 +106,7 @@ class AA_Generator_Dte extends AA_Generator {
 /** AA_Generator_Txt - Text from 'Parameter' */
 class AA_Generator_Txt extends AA_Generator {
 
-    /** Name of the component for selection */    
+    /** Name of the component for selection */
     static function name() {  return _m("Text from 'Parameter'");  }
 
     /** getClassProperties function of AA_Serializable  */
@@ -115,7 +115,7 @@ class AA_Generator_Txt extends AA_Generator {
             'text' => new AA_Property( 'text',  _m("Text"), 'text' )
             );
     }
-    
+
     /** generate() velue of currrent timestamp */
     function generate() {
         return new AA_Value($this->text);
@@ -124,13 +124,13 @@ class AA_Generator_Txt extends AA_Generator {
 
 /** AA_Generator_Qte - only for backward complatibility. The same as Txt */
 class AA_Generator_Qte extends AA_Generator_Txt {}
-        
+
 /** AA_Generator_Rnd - Random string */
 class AA_Generator_Rnd extends AA_Generator {
 
-    /** Name of the component for selection */    
+    /** Name of the component for selection */
     static function name()        {  return _m("Random string");  }
-    /** Decription  of the component for selection */    
+    /** Decription  of the component for selection */
     static function description() {  return _m("Random alphanumeric [A-Z0-9] string.");  }
 
     /** getClassProperties function of AA_Serializable  */
@@ -141,19 +141,19 @@ class AA_Generator_Rnd extends AA_Generator {
             'wheretocheck' => new AA_Property( 'wheretocheck',  _m("Slice only"),     'bool',   false, true, 'bool', false, _m("Do you want to check for uniqueness this slice only or all slices?"))
             );
     }
-    
+
     /** generate() velue of currrent timestamp */
     function generate() {
         global $slice_id;
-    
+
         $len        = $this->length ?: 5;   // default is 5
         $field_id   = $this->checkfield;
         $slice_only = is_numeric($this->wheretocheck) ? $this->wheretocheck : true;
-        
+
         if (strlen($field_id) != 16) {
             return new AA_Value(gensalt($len));
         }
-        
+
         $rec = false;
         do {
             $randstring = gensalt($len);
@@ -166,13 +166,13 @@ class AA_Generator_Rnd extends AA_Generator {
         return new AA_Value($randstring);
     }
 }
-        
+
 /** AA_Generator_Variable - AA Expression */
 class AA_Generator_Variable extends AA_Generator {
 
-    /** Name of the component for selection */    
+    /** Name of the component for selection */
     static function name()        {  return _m("AA Expression");  }
-    /** Decription  of the component for selection */    
+    /** Decription  of the component for selection */
     static function description() {  return _m("any text with possible {AA expressions} like: {date:Y}");  }
 
     /** getClassProperties function of AA_Serializable  */
@@ -181,20 +181,20 @@ class AA_Generator_Variable extends AA_Generator {
             'text' => new AA_Property( 'text',  _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}')
             );
     }
-    
+
     /** getClassProperties function of AA_Serializable  */
     function generate() {
         return new AA_Value(AA_Stringexpand::unalias($this->text));
     }
 }
-        
+
 /** AA_Generator_Mul - Multivalues */
 class AA_Generator_Mul extends AA_Generator {
-    
-    protected $text; 
-    protected $delimiter; 
 
-    /** Name of the component for selection */    
+    protected $text;
+    protected $delimiter;
+
+    /** Name of the component for selection */
     static function name()        {  return _m("Multivalue");  }
 
     /** getClassProperties function of AA_Serializable  */
@@ -204,7 +204,7 @@ class AA_Generator_Mul extends AA_Generator {
             'delimiter' => new AA_Property( 'delimiter',  _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|')
             );
     }
-    
+
     /** getClassProperties function of AA_Serializable  */
     function generate() {
         return new AA_Value(explode(($this->delimiter ?: '|'), $this->text));
@@ -596,7 +596,7 @@ class AA_Field_Writer {
 
     protected function _clear_field($item_id, $field_id) {
         // delete content just for displayed fields
-        DB_AA::sql("DELETE FROM content WHERE item_id='". q_pack_id($item_id). "' AND field_id = '".quote($field_id)."'");
+        DB_AA::delete('content', array(array('item_id', $item_id, 'l'), array('field_id', $field_id)));
     }
 
     protected function _store($item_id, $field, $value, $param, $additional='') {

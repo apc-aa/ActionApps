@@ -69,7 +69,7 @@ if ( !$sh_itm ) {
     exit;
 }
 
-$db  = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $p_id = q_pack_id($sh_itm);
 
 switch( $type ) {

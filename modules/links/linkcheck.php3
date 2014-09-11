@@ -33,7 +33,7 @@ require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."util.php3";
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 require_once AA_INC_PATH."linkcheck.class.php3";
 

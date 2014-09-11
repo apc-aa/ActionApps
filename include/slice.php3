@@ -148,14 +148,11 @@ function PutSearchLog() {
     $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery = DeBackslash($httpquery);
     $httpquery = str_replace("'", "\\'", $httpquery);
-    $db = new DB_AA;
     $found_count = count ($GLOBALS['item_ids']);
     list($usec, $sec) = explode(" ",microtime());
     $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS['slice_starttime']);
     $user = $_SERVER['PHP_AUTH_USER'];
-    $db->query(
-    "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1)
-    VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
+    DB_AA::sql("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
 }
 
 ?>

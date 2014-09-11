@@ -31,7 +31,6 @@
  */
 function GetTableView($viewID) {
     global $auth, $slice_id;
-    $db = new DB_AA;
 
     $attrs_edit = array (
         "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");

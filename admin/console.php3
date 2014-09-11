@@ -49,7 +49,7 @@ echo "<h1><b>" ._m("ActionApps Cosole"). "</b></h1>";
 
 echo $Msg;
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 if ($code) {
     $code = get_magic_quotes_gpc() ? stripslashes($code) : $code;

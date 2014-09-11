@@ -25,6 +25,7 @@ $timestart = microtime(true);
 require_once "../../include/config.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."pagecache.php3";
+
 //require_once AA_INC_PATH."stringexpand.php3";
 //require_once AA_INC_PATH."item.php3"; // So site_ can create an item
 require_once AA_BASE_PATH."modules/site/router.class.php";
@@ -35,7 +36,7 @@ function IsInDomain( $domain ) {
 }
 
 // ----------------- function definition end -----------------------------------
-$db          = new DB_AA;
+is_object( $db ) || ($db = getDB());
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // change the state
@@ -139,8 +140,12 @@ $cache_key = get_hash('site', PageCache::globalKeystring(), AA::$site_id.":$post
 $site_nocache = $_REQUEST['nocache'];
 if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($cache_key,$site_nocache))) {
     echo $res;
-    if ( $debug ) {
-        echo '<br><br>Site cache hit!!! Page generation time: '. (microtime(true) - $timestart);
+    if ( $debug OR $debugtime) {
+        echo '<br><br>Site cache hit!!!';
+        echo '<br>Page generation time: '. (microtime(true) - $timestart);
+        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
+        echo '<br>  (spareDBs): '. count($spareDBs);
+        AA::$dbg->duration_stat();
     }
     if ($hit_zid) {
         AA_Hitcounter::hit($hit_zid);
@@ -176,23 +181,24 @@ if ($hit_zid) {
 // UPDATE: there is no need to add alse site module itself, since it
 // is added automaticaly - Honza 2005-06-16
 
-if ( $GLOBALS['debug'] ) huhl("<br>Site.php3 is_array(slices4cache):". is_array($slices4cache), '<br>Site.php3 nocache:'.$site_nocache);
-
 // the cache should be always cleared, if the site is changed
 if (!in_array(AA::$site_id, (array)$slices4cache)) {
     $slices4cache[] = AA::$site_id;
 }
 
+AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
+
 if (is_array($slices4cache) && !$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
     $GLOBALS['pagecache']->store($cache_key, $res, $str2find);
 }
-
+AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
 
 if ($debugtime) {
-    $timeend = microtime(true);
-    $time    = $timeend - $timestart;
-    echo "<br><br>Page generation time: $time";
+    echo '<br><br>Site cache MIS!!!';
+    echo '<br>Page generation time: '. (microtime(true) - $timestart);
+    echo '<br>Dababase instances: '. DB_AA::$_instances_no;
+    echo '<br>  (spareDBs): '. count($spareDBs);
     AA::$dbg->duration_stat();
 }
 
@@ -211,9 +217,9 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     if (count($show_ids)<1) {
         exit;
     }
-    
+
     $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $site_id, 'l'), array('spot_id', $show_ids, 'i')));
-    
+
     foreach ( $show_ids as $v ) {
         $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA_Stringexpand::unalias($spots[$v]['content'], '', $apc_state['item']));
     }
@@ -236,7 +242,6 @@ function ModW_id2item($id,$use_short_ids="false") {
  *  e.g. ModW_str2arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
  */
 function ModW_str2arr($varnames, $str, $strdef, $reg) {
-    global $debug;
     if (!$str) { $str = $strdef; }
     $varout = array();
     if (!(ereg($reg, $str, $vars))) {
@@ -247,7 +252,7 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
     for ($i=0, $ino=min(strlen($varnames),count($vars)-1); $i<$ino; ++$i) {
         $varout[substr($varnames,$i,1)] = $vars[$i+1];
     }
-    if ($debug) { print("<br>State="); print_r($varout); }
+    AA::$debug && AA::$dbg->info('State=',$varout);
     return $varout;
 }
 

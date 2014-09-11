@@ -27,11 +27,7 @@ class MLXImport {
     ///@param $slice_id (string) unpacked slice id of content slice (not control slice)
     function MLXImport($slice_id) {
         $this->slice_id = $slice_id;
-/*
-        $this->varset = new Cvarset();
-        $this->itemvarset = new Cvarset();
-        $this->db = new DB_AA;
-*/
+
         $this->sliceObj = AA_Slices::getSlice($slice_id);
 
         list($this->fields,) = GetSliceFields($this->slice_id);

@@ -43,7 +43,7 @@ function RSS_restrict($txt, $len) {
   return utf8_encode(myspecialchars(substr($txt,0,$len)));
 }
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 if ($slice_id==""){
   echo "Error: slice_id not defined";

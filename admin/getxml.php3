@@ -467,7 +467,7 @@ function RestrictIdsByCategory( &$ids, &$categories, $slice_id, &$content, $cat_
 
 //------------------------------------------------------------------------------
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 // check the node_name and password against the nodes table's data
 if (!CheckNameAndPassword($node_name, $password)) {

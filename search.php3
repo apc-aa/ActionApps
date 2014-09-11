@@ -6,8 +6,8 @@
 
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -49,9 +49,9 @@ $sql = aa_search_db ($where, $retflds);
 
 //echo ("<font color=red>$sql</font><br>");
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 // echo "$db->Host, $db->Database, $db->User, \"$db->Password\"<br>";
-   
+
 $c = $db->query($sql);
 $a = $db->nf();
 echo("Number of results: $a<br>");

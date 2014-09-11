@@ -84,19 +84,19 @@ class Cvariable {
 }
 
 class Cvarset {
-    var $vars;        // array of variables
-    var $db;          // database handler
-    var $just_print;  // debug option - just prints the query (not implemented for all methods!!!)
+    var $vars;          // array of variables
+    var $last_used_db;  // database handler
+    var $just_print;    // debug option - just prints the query (not implemented for all methods!!!)
 
     /** Cvarset function
      *  constructor - also good for filling the varset
      * @param $arr
      */
-    function __construct( $arr=array(), $db = null) {
-        $TRANS            = array('i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked');
-        $this->vars       = array();
-        $this->db         = $db;
-        $this->just_print = false;
+    function __construct( $arr=array()) {
+        $TRANS              = array('i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked');
+        $this->vars         = array();
+        $this->last_used_db = null;
+        $this->just_print   = false;
 
         foreach ( $arr as $def ) {
             $this->add($def[0], isset($def[2]) ? $TRANS[$def[2]] : 'text', $def[1]);
@@ -272,14 +272,13 @@ class Cvarset {
             huhl($SQL);
             return;
         }
-        if ( is_null($this->db) ) {
-            $this->db = getDB();
-        }
+        $this->last_used_db = getDB();
         if ( $nohalt=='nohalt' ) {
-            $retval = $this->db->query_nohalt($SQL);
+            $retval = $this->last_used_db->query_nohalt($SQL);
         } else {
-            $retval = $this->db->tquery($SQL);
+            $retval = $this->last_used_db->tquery($SQL);
         }
+        freeDB($this->last_used_db);
         return $retval;
     }
 
@@ -343,11 +342,11 @@ class Cvarset {
     /** before doUpdate you can call saveHistory() to store changes */
     function saveHistory($tablename, $id) {
         $this->_doQuery($this->makeSELECT($tablename));
-        if ($this->db->num_rows() != 1) {
+        if ($this->last_used_db->num_rows() != 1) {
             // Error: there are several rows with the same key variables
-            return "Error using doUpdate: " . $this->db->num_rows(). " rows match the query";
+            return "Error using doUpdate: " . $this->last_used_db->num_rows(). " rows match the query";
         }
-        $data = $this->db->Record;
+        $data = $this->last_used_db->Record;
         $packed = AA_Metabase::getPacked($tablename);
         foreach ($packed as $col) {
            $data[$col] = unpack_id($data[$col]);
@@ -455,12 +454,12 @@ class Cvarset {
      */
     function makeINSERTorUPDATE($tablename) {
         $this->_doQuery($this->makeSELECT($tablename));
-        switch ($this->db->num_rows()) {
+        switch ($this->last_used_db->num_rows()) {
             case 0: return $this->makeINSERT($tablename);
             case 1: return $this->makeUPDATE($tablename);
             default:
             // Error: there are several rows with the same key variables
-            return "Error using makeINSERTorUPDATE: " . $this->db->num_rows(). " rows match the query";
+            return "Error using makeINSERTorUPDATE: " . $this->last_used_db->num_rows(). " rows match the query";
         }
     }
 
@@ -468,7 +467,7 @@ class Cvarset {
      * @param $tablename
      */
     function last_insert_id() {
-        return $this->db->last_insert_id();
+        return $this->last_used_db->last_insert_id();
     }
 
     // Static //

@@ -40,24 +40,21 @@ if ($del) {
 }
 
 $err["Init"] = "";      // error array (Init - just for initializing variable
-$p_del = q_pack_id($del);
 
 // check if module can be deleted
-ExitIfCantDelete( $del, $db );
+ExitIfCantDelete( $del );
 
 // delete module (from common module table)
-DeleteModule( $del, $db );
+DeleteModule( $del );
 
 // delete all module specific tables
-$SQL = "DELETE LOW_PRIORITY FROM links WHERE id='$p_del'";
-$db->query($SQL);
+DB_AA::sql('DELETE LOW_PRIORITY FROM `links`', array(array('id', $del, 'l')));
 
 // delete module from permission system
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url(AA_INSTAL_PATH . "admin/slicedel.php3"),
-                                          "Msg=".rawurlencode(_m("Links module successfully deleted"))));
+go_url(con_url($sess->url(AA_INSTAL_PATH . "admin/slicedel.php3"), "Msg=".rawurlencode(_m("Links module successfully deleted"))));
 
 ?>
 

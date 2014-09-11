@@ -97,7 +97,7 @@ function GetFieldMapping($from_slice_id, $destination_id) {
  * @param $item_id
  */
 function GetBaseItem($item_id) {
-    global $db;
+    $db = getDb();
     $dest_id = $item_id;
 
     while ($item_id) {
@@ -109,6 +109,7 @@ function GetBaseItem($item_id) {
         $db->query($SQL);
         $item_id = $db->next_record() ? unpack_id($db->f('source_id')) : false;
     }
+    freeDb($db);
     return $dest_id;
 }
 
@@ -118,38 +119,20 @@ function GetBaseItem($item_id) {
  * @param $destination
  */
 function IsItemFed($item_id, $destination) {
-    global $db;
     $p_destination = q_pack_id($destination);
-    $base_id       = GetBaseItem($item_id);
-    $p_base_id     = q_pack_id($base_id); // Trace back to the original id
+    $base_id       = GetBaseItem($item_id);  // Trace back to the original id
 
     // if item comes from $destination slice (i.e. $destination slice contains base record)
-    $db->query("SELECT slice_id FROM item WHERE id='$p_base_id'");
-    if ($db->next_record()) {
-        if (unpack_id($db->f('slice_id')) == $destination) {
-            return true;
-        }
+    if ( $p_destination == DB_AA::select1('SELECT slice_id FROM `item`', 'slice_id', array(array('id',$base_id, 'l'))) ) {
+        return true;
     }
 
-    // get all items, which were fed to $destination slice
-    $SQL = "SELECT source_id FROM relation, item
-             WHERE relation.destination_id = item.id
-               AND item.slice_id = '$p_destination'
-               AND ((flag & ". REL_FLAG_FEED .") != 0)";
-    $db->tquery($SQL);
-
-    // Build an array of source id's
-    while ($db->next_record()) {
-        $sources[] = unpack_id($db->f('source_id'));
-    }
-
-    if (!isset($sources) || !is_array($sources)) {
-        return false;
-    }
+    $SQL     = "SELECT source_id FROM relation, item WHERE relation.destination_id = item.id AND item.slice_id = '$p_destination' AND ((flag & ". REL_FLAG_FEED .") != 0)";
+    $sources = array_map('unpack_id', DB_AA::select('source_id', $SQL));
 
     // Test array for containing an item fed from same baseid
     foreach ($sources as $source_id) {
-        if ($base_id ==  GetBaseItem($source_id)) {
+        if ($base_id == GetBaseItem($source_id)) {
             return true;
         }
     }
@@ -440,7 +423,7 @@ function Update($item_id, $slice_id, $dest_id, $destination_id) {
 function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
 
     $items[$item_id] = $slice_id;
-    $db2 = new DB_AA; 	// do not use db, because of conflict in Update - StoreItem
+    $db = getDB(); 	// do not use global db, because of conflict in Update - StoreItem
 
     while (list($item_id,$slice_id) = each($items)) {
         $p_item_id = q_pack_id($item_id);
@@ -450,11 +433,11 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
                  WHERE destination_id = id
                    AND source_id='$p_item_id'
                    AND ((flag & ". REL_FLAG_FEED .") != 0)";
-        $db2->query($SQL);
-        while ( $db2->next_record() ) {
+        $db->query($SQL);
+        while ( $db->next_record() ) {
             $update     = true;
-            $d_id       = unpack_id($db2->f('destination_id'));
-            $dest_sl_id = unpack_id($db2->f('slice_id'));
+            $d_id       = unpack_id($db->f('destination_id'));
+            $dest_sl_id = unpack_id($db->f('slice_id'));
             //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
             //      continue;
 
@@ -524,29 +507,5 @@ function FeedItem($item_id) {
             }
         }
     }
-}
-
-/** DeleteItem function
- *  Completely deletes item content from database with all subsequencies
- *  but not deleted item from item table !!!
- * @param $db
- * @param $id
- */
-function DeleteItem($db, $id) {
-    $p_itm_id = q_pack_id($id);
-
-    // delete content
-    $SQL = "DELETE LOW_PRIORITY FROM content WHERE item_id='$p_itm_id'";
-    $db->query($SQL);
-
-    // delete offline
-    $SQL = "DELETE LOW_PRIORITY FROM offline WHERE id='$p_itm_id'";
-    $db->query($SQL);
-
-    // delete feeding relation
-    $SQL = "DELETE LOW_PRIORITY FROM relation WHERE (source_id='$p_itm_id'
-                OR destination_id='$p_itm_id')
-               AND ((flag & ". REL_FLAG_FEED .") != 0)";
-    $db->query($SQL);
 }
 ?>

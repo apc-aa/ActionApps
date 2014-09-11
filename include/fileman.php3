@@ -457,10 +457,11 @@ function fileman_copy_template($srcdir, $dstdir) {
     $aliases = array (
         "_#SLICE_ID" => $slice_id);
 
-    $db = new DB_AA;
+    $db = getDB();
     $db->query("SELECT name FROM slice WHERE id = '".q_pack_id ($slice_id)."'");
     $db->next_record();
     $aliases["_#SLICNAME"] = $db->f('name');
+    freeDB($db);
 
     if (!is_dir ($srcdir)) {
         return _m("Wrong directory name")." ($srcdir)";

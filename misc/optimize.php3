@@ -40,16 +40,15 @@ require_once AA_INC_PATH."config.php3";
 require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
 require_once AA_INC_PATH."util.php3";
 
-// init used objects
-$db = new DB_AA;
-$err["Init"] = "";          // error array (Init - just for initializing variable
-
 set_time_limit(160);
 
 if ( substr( DB_PASSWORD, 0, 5 ) != $key ) {
     exit;                 // We need first five characters of database password
 }                         // Noone then can run the script icidentaly (or with
                           // bad thoughts)
+// init used objects
+is_object( $db ) || ($db = getDB());
+$err["Init"] = "";          // error array (Init - just for initializing variable
 
 // optimize slice tables ------------------------------------------------------
 $db->query("OPTIMIZE TABLE module");

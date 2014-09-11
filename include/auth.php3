@@ -31,10 +31,7 @@
 
 require_once AA_INC_PATH."util.php3";
 
-if (!is_object( $db )) {
-    $db = new DB_AA;
-}
-
+is_object( $db ) || ($db = getDB());
 
 class AA_Mysqlauth {
 
@@ -65,7 +62,7 @@ class AA_Mysqlauth {
         $db->query("DELETE FROM auth_group ".$where);
         freeDB($db);
     }
-    
+
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::updateReaders function
     *   Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
@@ -78,12 +75,12 @@ class AA_Mysqlauth {
         if (($sl_type != "ReaderManagement") OR !$sl_auth_field_group) {
             return;
         }
-    
+
         // This select follows the idea of QueryZIDs: it uses several times the
         // table content to place several fields on one row.
         $zids    = new zids($item_ids, 'p');
         $readers = AA_Mysqlauth::getReadersData($slice_id, $zids);
-    
+
         if ( is_array( $readers )) {
             foreach ($readers as $reader) {
                 $reader_obj = new ItemContent($reader);
@@ -106,7 +103,7 @@ class AA_Mysqlauth {
         return GetItemContent($zids, false, true, array('id..............','status_code.....','slice_id........',
                                                         'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD));
     }
-    
+
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::maintenance function
     *   Adds readers moved automatically from Pending to Active, deletes readers moved from
@@ -117,31 +114,31 @@ class AA_Mysqlauth {
     */
     function maintenance() {
         $db = getDB();
-    
+
         // Create the array $oldusers with user names
         $db->query("SELECT username FROM auth_user");
         while ($db->next_record()) {
             $oldusers[$db->f("username")] = 1;
         }
-    
+
         $slices = GetTable2Array("SELECT id, auth_field_group FROM slice WHERE type='ReaderManagement'");
-    
+
         // Work slice by slice
         foreach ($slices as $slice_id => $slice) {
             if (! $slice["auth_field_group"]) {
                 continue;
             }
             // Get all reader data for this slice
-    
+
             $readers = AA_Mysqlauth::getReadersData(unpack_id($slice_id));
-    
+
             if ( is_array( $readers )) {
                 foreach ($readers as $reader) {
                     $reader_obj = new ItemContent($reader);
-    
+
                     $olduser_exists = $oldusers[$reader_obj->getValue(FIELDID_USERNAME)];
                     unset($oldusers[$reader_obj->getValue(FIELDID_USERNAME)]);
-    
+
                     // Add readers which should be in auth_user but are not
                     // (perhaps moved recently from Pending to Active)
                     if (AA_Mysqlauth::isActive($reader_obj) AND $reader_obj->is_set($slice["auth_field_group"])) {
@@ -159,9 +156,9 @@ class AA_Mysqlauth {
                 }
             }
         }
-    
+
         // Sanity checks:
-    
+
         // Delete readers which are in no slice
         if (is_array( $oldusers ) && count( $oldusers )) {
             $result["not existing readers deleted"] = count( $oldusers );
@@ -170,7 +167,7 @@ class AA_Mysqlauth {
             $db->query("DELETE FROM auth_user ".$where);
             $db->query("DELETE FROM auth_group ".$where);
         }
-    
+
         // Delete readers with no groups
         $db->query("
             SELECT auth_user.username FROM auth_user LEFT JOIN auth_group
@@ -183,7 +180,7 @@ class AA_Mysqlauth {
             }
             $db->query("DELETE FROM auth_user WHERE username IN ('".join_and_quote("','", $usernames)."')");
         }
-    
+
         // Delete groups with username not from auth_user
         $db->query ("
             SELECT auth_group.username FROM auth_user RIGHT JOIN auth_group
@@ -196,7 +193,7 @@ class AA_Mysqlauth {
             }
             $db->query("DELETE FROM auth_group WHERE username IN ('".join_and_quote("','", $usernames)."')");
         }
-    
+
         if ($GLOBALS["log_auth_results"]) {
             // Log the results
             if (!is_array($result)) {
@@ -213,7 +210,7 @@ class AA_Mysqlauth {
         }
         freeDB($db);
     }
-    
+
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::deleteReader function
      * @param $username
@@ -223,7 +220,7 @@ class AA_Mysqlauth {
         $db->query("DELETE FROM auth_user WHERE username='".addslashes($username)."'");
         AA_Mysqlauth::updateGroups($username);
     }
-    
+
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::updateReader function
      * @param $username
@@ -236,7 +233,7 @@ class AA_Mysqlauth {
             VALUES ('".addslashes($username)."', '".addslashes($password)."', ".time().")");
         AA_Mysqlauth::updateGroups($username, $groups);
     }
-    
+
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::isActive function
      * @param $reader
@@ -246,10 +243,10 @@ class AA_Mysqlauth {
                ($reader->getValue('publish_date....') <= time()) AND
                ($reader->getValue('expiry_date.....') >= time());
     }
-    
-    
+
+
     // --------------------------------------------------------------------------
-    
+
     /** AA_Mysqlauth::updateGroups function
     *   Writes user's groups to the database.
     *   You can specify multiple groups for the user in two ways:
@@ -262,7 +259,7 @@ class AA_Mysqlauth {
         global $db;
         $username = addslashes($username);
         $db->query("DELETE FROM auth_group WHERE username='$username'");
-    
+
         $final_groups = array();
         foreach( (array)$groups as $group_string ) {
             $final_groups = array_merge($final_groups, explode(";", $group_string['value']));
@@ -273,7 +270,7 @@ class AA_Mysqlauth {
             }
         }
     }
-    
+
     // --------------------------------------------------------------------------
     /** AA_Mysqlauth::select function
      * @param $auth_field_group
@@ -291,9 +288,9 @@ class AA_Mysqlauth {
           AND password.item_id = item.id
           AND password.field_id = '".FIELDID_PASSWORD."'";
     }
-    
+
     // --------------------------------------------------------------------------
-    
+
     /** AA_Mysqlauth::changeGroups function
      * Called from Event_ItemsAfterPropagateConstantChanges().
      * @param $constant_id
@@ -301,21 +298,15 @@ class AA_Mysqlauth {
      * @param $newvalue
      */
     function changeGroups($constant_id, $oldvalue, $newvalue) {
-        global $db_usernames;
-        if (!is_object($db_usernames)) {
-            $db_usernames = new DB_AA;
-        }
-    
         if (empty($newvalue) OR ($oldvalue == $newvalue)) {
             return;
         }
-        $db_usernames->query("SELECT * FROM constant WHERE id='".q_pack_id($constant_id)."'");
-        if (!$db_usernames->next_record()) {
+        if (false === ($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', array(array('id', $constant_id, 'l'))))) {
             return;
         }
-        $group_id = $db_usernames->f("group_id");
-        $db_usernames->query("
-            SELECT username.text FROM slice
+
+        $usernames = DB_AA::select('text',
+            "SELECT username.text as text FROM slice
             INNER JOIN field ON slice.id=field.slice_id
             INNER JOIN item ON slice.id = item.slice_id
             INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
@@ -326,11 +317,11 @@ class AA_Mysqlauth {
             OR  field.input_show_func LIKE '___:$group_id')
             AND content.text = '$newvalue'
             AND username.field_id='".FIELDID_USERNAME."'");
-    
+
         $newvalue = stripslashes($newvalue);
-    
-        while ($db_usernames->next_record()) {
-            AA_Mysqlauth::updateGroups($db_usernames->f("text"), $newvalue);
+
+        foreach ($usernames as $name) {
+            AA_Mysqlauth::updateGroups($name, $newvalue);
         }
     }
 }

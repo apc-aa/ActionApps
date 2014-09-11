@@ -42,7 +42,8 @@ if ($cancel) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$db          = new DB_AA;
+is_object( $db ) || ($db = getDB());
+
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
@@ -248,7 +249,7 @@ FrmJavascript('
     if ($module_id) {
         FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id),false,'','',false);
     }
-    
+
     FrmTabEnd($form_buttons, $sess, $module_id);
 
 echo "\n </form>";

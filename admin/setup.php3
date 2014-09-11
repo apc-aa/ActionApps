@@ -143,7 +143,7 @@ function HtmlEnd() {
 
 page_open(array("sess" => "AA_SL_Session"));
 
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 // Check if database is already created
 $store_halt        = $db->Halt_On_Error;

@@ -57,7 +57,7 @@ set_time_limit($time_limit);
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
-$db = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 $SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
                                      group_id='lt_groupNames',

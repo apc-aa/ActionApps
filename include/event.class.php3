@@ -186,6 +186,7 @@ class aaevent {
                 $this->handlers[] = new $reaction_class( $db->f('params'), $type, $class, $selector);
             }
         }
+        freeDB($db);
     }
 }
 

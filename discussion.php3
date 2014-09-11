@@ -93,7 +93,7 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 add_vars();
 
 $p_slice_id= q_pack_id($slice_id);
-$db = new DB_AA; 	   	 // open BD
+is_object( $db ) || ($db = getDB());
 
 list($usec, $sec) = explode(" ",microtime());
 $disc_starttime   = ((float)$usec + (float)$sec);

@@ -59,13 +59,10 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
         return "";
     }
 
-    $db = new DB_AA;
-    $db->query("SELECT name FROM slice WHERE id = '".q_pack_id($slice_id)."'");
-    if (!$db->next_record()) {
+    if ( ($slice_name = DB_AA::select1('SELECT name FROM `slice`', 'name', array(array('id',$slice_id, 'l')))) === false) {
         return _m("Slice not found.");
     }
-    $slice_name = $db->f("name");
-    $me         = AA::$perm->getIDsInfo($auth->auth["uid"]);
+    $me = AA::$perm->getIDsInfo($auth->auth["uid"]);
 
     $aliases               = array();
     $aliases["_#SLICNAME"] = GetAliasDef( "f_t:$slice_name",      "id..............");
@@ -93,7 +90,8 @@ if ($slice_id) {  // edit slice
     }
 }
 
-$db         = new DB_AA;
+is_object( $db  ) || ($db  = getDB());
+
 $varset     = new CVarset();
 $superadmin = IsSuperadmin();
 
@@ -285,16 +283,14 @@ if ( $add || $update ) {
             }
 
             // copy fields
-            $db2  = new DB_AA;
-            $SQL = "SELECT * FROM field WHERE slice_id='". q_pack_id($set_template_id) ."'";
-            $db->query($SQL);
-            while ( $db->next_record() ) {
+            $fields = DB_AA::select(array(), 'SELECT * FROM field', array(array('slice_id', $set_template_id, 'l')));
+            foreach ($fields as $field) {
                 $varset->clear();
                 $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
-                $varset->setFromArray($db->Record);
+                $varset->setFromArray($field);
                 $varset->set("slice_id", $slice_id, "unpacked" );
                 $SQL = "INSERT INTO field " . $varset->makeINSERT();
-                if ( !$db2->query($SQL)) {
+                if ( !$db->query($SQL)) {
                     $err["DB"] .= MsgErr("Can't copy fields");
                     break;
                 }

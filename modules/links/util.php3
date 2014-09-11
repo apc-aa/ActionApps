@@ -217,14 +217,11 @@ function Links_SliceID2Category($sl_id) {
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */
 function Links_GetLinkContent($zids) {
-    global $db;
-
-    if (!is_object($db))
-        $db = new DB_AA;
-
-    if (!$zids OR $zids->count()<1)
+    if (!$zids OR $zids->count()<1) {
         return false;
+    }
 
+    $db = getDB();
     // construct WHERE clausule
     $sel_in = $zids->sqlin( false );
 
@@ -257,6 +254,8 @@ function Links_GetLinkContent($zids) {
                 $content[$foo_id][$key][] = array('value' => $val);
         }
     }
+
+    freeDB($db);
 
     // get language data for links
     $SQL = "SELECT links_languages.*, links_link_lang.link_id
@@ -292,10 +291,8 @@ function Links_GetLinkContent($zids) {
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */
 function Links_GetCategoryContent($zids) {
-    global $db;
-
-    if (!is_object($db))   $db = new DB_AA;
     if ( !$zids )          return false;
+    $db = getDB();
 
     // construct WHERE clausule
     $sel_in = $zids->sqlin( false );
@@ -312,7 +309,7 @@ function Links_GetCategoryContent($zids) {
             $content[$foo_id][$key][] = array('value' => $val);
         }
     }
-
+    freeDB($db);
     return $content;
 }
 

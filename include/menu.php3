@@ -61,7 +61,7 @@ function get_aamenus() {
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
     $aamenus = array();
-    
+
     $aamenus["view"] = array (
         "label"       => GetLabel($profile,'ui_manager','top_view', _m("View site")),
         "exact_href"  => $r_slice_view_url,
@@ -197,7 +197,7 @@ function get_aamenus() {
 
     if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 
-        $db = new DB_AA;
+        $db = getDB();
         $items = &$aamenus["itemmanager_submenu"]["items"];
 
         // Add associated Alerts to Item Manager submenu
@@ -221,6 +221,7 @@ function get_aamenus() {
             INNER JOIN view ON view.id = AF.vid
             WHERE view.slice_id = '".q_pack_id($slice_id)."'");
         AddAlertsModules($items, $db, _m("Alerts Sent"), _m("List of Alerts modules sending items from this slice."));
+        freeDB($db);
     }
 
     // left menu for aaadmin is common to all modules, so it is shared

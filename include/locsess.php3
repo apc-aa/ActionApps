@@ -153,7 +153,7 @@ class AA_Debug {
     function _do($func, $params) {
         $time = microtime(true) - $this->_starttime['main'];
         echo "<small><em>$time</em></small><br>\n";
-        
+
         foreach ($params as $a) {
             if (is_object($a) && is_callable(array($a,"__toString"))) {
                 print $a;
@@ -185,8 +185,8 @@ class AA {
     public static $perm;
     public static $site_id;
     public static $encoding;
-    public static $lang;       // two letters small caps - cz / es / en / ... 
-    public static $langnum;    // array of prefered language numbers - > 10000000 
+    public static $lang;       // two letters small caps - cz / es / en / ...
+    public static $langnum;    // array of prefered language numbers - > 10000000
 }
 
 AA::$debug = $_GET['debug'];
@@ -199,46 +199,54 @@ class DB_AA extends DB_Sql {
     var $Password  = DB_PASSWORD;
 
     public static $queries = array();
+    public static $_instances_no = 0;
 
-    /** allways open, reusable database connection for one time queries */
-    private static $_db    = null;
+    /* public: constructor */
+    function __construct($query = "") {
+        self::$_instances_no++;
+        parent::__construct($query);
+    }
 
-    /** static
+    /** 
      *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
      *  used as: $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
      **/
-    function select1($query, $column=false, $where=null) {
-        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+    static function select1($query, $column=false, $where=null) {
+        $db = getDB();
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
 
         AA::$debug && AA::$dbg->log("$query $sqlwhere LIMIT 1");
 
         $db->query("$query $sqlwhere LIMIT 1");
-        if (!$db->next_record()) {
-            return false;
+        $ret = false;
+        if ($db->next_record()) {
+            if (!is_array($column)) {
+                $ret = empty($column) ? $db->Record : $db->Record[$column];
+            } else {
+                $key = key($column);
+                $val = empty($column) ? $db->Record : array_intersect_key($db->Record, array_flip($column));
+                $ret = is_numeric($key) ? $val : array($db->Record[$key] => $val);
+            }
         }
-        if (!is_array($column)) {
-            return empty($column) ? $db->Record : $db->Record[$column];
-        }
-        $key = key($column);
-        $val = empty($column) ? $db->Record : array_intersect_key($db->Record, array_flip($column));
-        return is_numeric($key) ? $val : array($db->Record[$key] => $val);
+        freeDB($db);
+        return $ret;
     }
 
-    /** static
+    /** 
      *  first parameter describes the desired output
      *  written with speed in mind - so all the loops are condition free
      *  used as: $chid = DB_AA::select('id', 'SELECT id FROM `change` WHERE ...');                   -> [id1, id2, ...]
      *                   DB_AA::select('',   'SELECT id, other FROM `change` WHERE ...');            -> [id1, id2, ...]
      *                   DB_AA::select(array(), 'SELECT id FROM `change`');                          -> [[id=>id1], [id=>id2], ...]
      *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');                    -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
+     *                   DB_AA::select(array('id'=>1), 'SELECT id FROM `change`');                   -> [[id1=>1], [id2=>1], ...]
      *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
      *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
      *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
      **/
-    function select($column, $query, $where=null) {
-        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+    static function select($column, $query, $where=null) {
+        $db = getDB();
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
 
         $db->query("$query $sqlwhere");
@@ -279,8 +287,14 @@ class DB_AA extends DB_Sql {
                              $ret[$db->Record[$key]] = $db->Record;
                         }
                     } elseif (!is_array($values)) {
-                        while ($db->next_record()) {
-                             $ret[$db->Record[$key]] = $db->Record[$values];
+                        if (is_string($values)) {
+                            while ($db->next_record()) {
+                                 $ret[$db->Record[$key]] = $db->Record[$values];
+                            }
+                        } else {
+                            while ($db->next_record()) {
+                                 $ret[$db->Record[$key]] = $values;
+                            }
                         }
                     } else {
                         $col_keys = array_flip($values);
@@ -291,24 +305,30 @@ class DB_AA extends DB_Sql {
                 }
             }
         }
+        freeDB($db);
         return $ret;
     }
 
     function quote($string) {
-        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
-        return $db->quote($string);
+        $db = getDB();
+        $ret = $db->quote($string);
+        freeDB($db);
+        return $ret;
     }
 
     /** static
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
      **/
-    function sql($query, $where=null) {
-        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+    static function sql($query, $where=null) {
+        $db = getDB();
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
-        return $db->query("$query $sqlwhere");
+        $ret = $db->query("$query $sqlwhere");
+        freeDB($db);
+        return $ret;        
     }
 
-    function delete($table, $where=null) {
+    /** used as: DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
+    static function delete($table, $where=null) {
         return DB_AA::sql("DELETE FROM `$table`", $where);
     }
 
@@ -318,7 +338,7 @@ class DB_AA extends DB_Sql {
      *  array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))
      * @param $tablename
      */
-    function makeWHERE($varlist) {
+    static protected function makeWHERE($varlist) {
         $delim = '';
         $where = '';
         foreach ( $varlist as $vardef) {
@@ -433,6 +453,42 @@ class DB_AA extends DB_Sql {
         }
     }
 }
+
+// This pair of functions remove the guessing about which of $db $db2
+// to use
+// Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
+//
+$spareDBs = array();
+/** getDB function
+ *
+ */
+function getDB() {
+    global $spareDBs;
+    if (!($db = array_pop($spareDBs))) {
+        $db = new DB_AA;
+    }
+    return $db;
+}
+/** freeDB function
+ * @param $db
+ */
+function freeDB($db) {
+    global $spareDBs;
+    array_push($spareDBs,$db);
+}
+
+/** tryQuery function
+ *  Try a query, displaying debugging if $debug, return true on success, false on failure
+ * @param $SQL
+ */
+function tryQuery($SQL) {
+    $db  = getDB();
+    $res = $db->tquery($SQL);
+    freeDB($db);
+    return $res;
+}
+
+
 
 class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
     var $database_class = "DB_AA";           // Which database to connect...

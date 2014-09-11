@@ -97,7 +97,8 @@ class linkcheck
      * @param $url
      */
     function check_url($url) {
-        $time = time();
+        $return = array();
+        $time   = time();
         if (!eregi("^http://", $url)) {
             if (eregi("^mailto:", $url)) {
                 $url = trim(eregi_replace("^mailto:(.+)", "\\1", $url));
@@ -152,39 +153,32 @@ class linkcheck
      *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
      */
     function checking() {
-        global $db;
-        $db2 = new DB_AA;
+        $db = getDB();
 
         // select from links_links, ordered by validated (timestamp),
         // unchecked links have validated = 0
-        $SQL = "SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated";
-        $db->tquery($SQL);
+        $links = DB_AA::select(array(), 'SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated');
+        $max   = min(LINKS_VALIDATION_COUNT, count($links));
 
-        for ($i = 0; (($i < LINKS_VALIDATION_COUNT) && ($db->next_record())); ++$i) {
+        for ($i = 0; $i < $max; ++$i) {
 
-            $l_id  = $db->f('id');
-            $l_url = $db->f('url');
-            $l_vc  = $db->f('valid_codes');
-            $l_vr  = $db->f('valid_rank');
+            $l_id  = $links['id'];
+            $l_url = $links['url'];
+            $l_vc  = $links['valid_codes'];
+            $l_vr  = $links['valid_rank'];
 
             $val = $this->check_url($l_url); // check url
             $val["valid_codes"] = $this->add_check($val, $l_vc); // add this check into valid_codes
             $val["valid_rank"]  = $this->count_weight($val["valid_codes"]); // count rank for link
-
-            if ($debug) {
-                print_r($val);
-            }
 
             // update values in db
             $SQL = "UPDATE links_links SET valid_codes='".$val["valid_codes"]."',
                                            valid_rank='" .$val["valid_rank"]. "',
                                            validated='"  .$val["timestamp"].  "'
                     WHERE id = '".$l_id."'";
-            if ($debug) {
-                echo "<pre> $SQL </pre>";
-            }
-            $db2->tquery($SQL);
+            $db->tquery($SQL);
         }
+        freeDB();
     }
 
     /** add_check function

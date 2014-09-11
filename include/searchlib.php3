@@ -195,7 +195,7 @@ class AA_Condition extends AA_Object {
         $ret[] = "conds[$condition_number][value]=".    $this->value;
         return join('&', $ret);
     }
-    
+
     /** create whole phrase from the text
      *  Puts the expression in the quotes, so it becames phrase
      *  Example:   I say: "Hola..."    ->    "I say: \"Hola\"..."
@@ -586,7 +586,7 @@ class AA_Set extends AA_Object {
     /** addSortFromString function accept various type of sort string:
      *           1)   headline........-
      *           2)   category.......1,publish_date....-,headline........
-     *           3)   category.......1+publish_date....-headline........    (this one is usefull for view's set[]=sort-category.......1+publish_date....-) 
+     *           3)   category.......1+publish_date....-headline........    (this one is usefull for view's set[]=sort-category.......1+publish_date....-)
      *           4)   sort[0]=headline........-
      *           5)   sort[0][headline........]=d
      *           6)   sort[0][headline........]=d&sort[1][publish_date....]=a
@@ -952,26 +952,19 @@ function GetWhereExp( $field, $operator, $querystring ) {
 // -------------------------------------------------------------------------------------------
 
 /** ProoveFieldNames function
- * show info about non-existing fields in all given slices
+ * show debug info about non-existing fields in all given slices
  * @param $slices
  * @param $conds
  */
 function ProoveFieldNames($slices, $conds) {
 
-    if (!(isset($slices) AND is_array($slices) AND isset($conds) AND is_array($conds))) {
+    if (!is_array($slices) OR !is_array($conds)) {
         return;
     }
 
     global $CONDS_NOT_FIELD_NAMES;
-    if (!is_array($slices) || !is_array($conds)) {
-        return;
-    }
-    $db = new DB_AA;
     foreach ($slices as $slice_id) {
-        $db->query("SELECT * FROM field WHERE slice_id='".q_pack_id($slice_id)."'");
-        while ($db->next_record()) {
-            $slicefields[$db->f("id")] = 1;
-        }
+        $slicefields = DB_AA::select(array('id'=>1), 'SELECT id FROM `field`', array(array('slice_id', $slice_id, 'l')));
         foreach ($conds as $cond) {
             if (!(isset($cond) AND is_array($cond))) {
                 continue;
@@ -979,7 +972,7 @@ function ProoveFieldNames($slices, $conds) {
             foreach ($cond as $key => $foo) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
                 if (!$CONDS_NOT_FIELD_NAMES[$key] AND !isset($slicefields[$key]) AND !strpos($key, '@')) {
-                    echo "Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").<br>";
+                    AA::$dbg->warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").");
                 }
             }
         }
@@ -1336,9 +1329,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         return new zids(); // restrict_zids defined but empty - no result
     }
 
-    if (AA::$debug AND !empty($slices)) {
-        ProoveFieldNames($slices, $conds);
-    }
+    AA::$debug && ProoveFieldNames($slices, $conds);
 
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
@@ -1802,20 +1793,17 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
  */
 
 function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
-  // parameter format example:
-  // conds[0][discussion][subject] = 1;   // discussion fields are preceded by [discussion]
-  // sort[0][category........]='a';    // order items by category ascending
+    // parameter format example:
+    // conds[0][discussion][subject] = 1;   // discussion fields are preceded by [discussion]
+    // sort[0][category........]='a';    // order items by category ascending
 
-  if (!$slice_id && !$slices) {
-      return;
-  }
+    if (!$slice_id && !$slices) {
+        return;
+    }
 
-    $fields = array ("date","subject","author","e_mail","body","state","flag","url_address",
-        "url_description", "remote_addr", "free1", "free2");
+    $fields = array ("date","subject","author","e_mail","body","state","flag","url_address", "url_description", "remote_addr", "free1", "free2");
 
     global $debug;          // displays debug messages
-
-    $db = new DB_AA;
     if ( $debug ) {
       echo "<br>Conds:<br>";
       huhl($conds);
@@ -1891,15 +1879,15 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
   }
 */
 
-if ( $debug ) {
-  echo "<br><br>select_conds:";
-  print_r($select_conds);
-  echo "<br><br>select_order:";
-  print_r($select_order);
-}
+    if ( $debug ) {
+      echo "<br><br>select_conds:";
+      print_r($select_conds);
+      echo "<br><br>select_order:";
+      print_r($select_order);
+    }
 
     // construct query --------------------------
-    $SQL = "SELECT discussion.id
+    $SQL = "SELECT discussion.id as id
             FROM discussion INNER JOIN item ON item.id = discussion.item_id
             WHERE ";
 
@@ -1921,13 +1909,7 @@ if ( $debug ) {
     }
 
     // get result --------------------------
-    $db->tquery($SQL);
-
-    while ( $db->next_record() ) {
-        $arr[] = unpack_id($db->f('id'));
-    }
-
-    return $arr;
+    return array_map('unpack_id', DB_AA::select('id', $SQL));
 }
 
 

@@ -87,8 +87,7 @@ add_vars();
 // it must be here as we are using functions like GetCategoryGroup() where
 // we still use
 //     global $db;
-$db  = new DB_AA;
-$db2 = new DB_AA;
+is_object( $db ) || ($db = getDB());
 
 if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
