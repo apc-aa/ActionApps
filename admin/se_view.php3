@@ -57,12 +57,11 @@ function show_digest_filters() {
     $db->query("SELECT aditional, aditional3 FROM view WHERE id=". ($view_id ? $view_id : 0));
     if ($db->next_record()) {
         $group = $db->f("aditional");
-        $sort = $db->f("aditional3");
+        $sort  = $db->f("aditional3");
     } else {
         $group = 0;
     }
 
-    $sortrows = 1 + strlen ($sort) / 50;
     echo "<tr><td class=\"tabtxt\"><b>"._m("Group by selections")."</b></td>
         <td class=\"tabtxt\"><b><input type=\"radio\" name=\"aditional\" value=\"1\" "
         .($group ? "checked" : "")."> ".

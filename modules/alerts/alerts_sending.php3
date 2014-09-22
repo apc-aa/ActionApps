@@ -251,8 +251,6 @@ class AA_Collection {
             return;
         }
 
-        $howoften_options = get_howoften_options();
-
         // first I create a hierarchical array $slices and than use it instead of the recordset
 
         $now = time();
@@ -469,7 +467,8 @@ function initialize_last() {
 // -------------------------------------------------------------------------------------
 
 function get_view_settings_cached($vid) {
-    global $cached_view_settings;
+    static $cached_view_settings;
+
     if (!$vid) {
         return "";
     }
@@ -497,12 +496,12 @@ function get_view_settings_cached($vid) {
 *   @param string $filter_settings  One or more filter IDs separted by comma ",".
 */
 function get_filter_output_cached($vid, $filter_settings, $zids) {
-    global $cached_view_settings, $cached_filter_outputs;
+    static $cached_filter_outputs;
 
     if ($zids->count() == 0) {
         return "";
     }
-    if ( !isset($cached_filter_settings[$filter_settings])) {
+    if ( !isset($cached_filter_outputs[$filter_settings])) {
         $set = &get_view_settings_cached($vid);
         // set language
         mgettext_bind($set["lang"], 'alerts', true);
@@ -516,9 +515,9 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
         $itemview   = new itemview($set["format"], $set["fields"], $set["aliases"], $zids, 0, $set["info"]->f("listlen"), $item_url);
         $items_text = $itemview->get_output ("view");
         //if (! strstr ($filter_settings, ","))
-        $cached_filter_settings[$filter_settings] = $items_text;
+        $cached_filter_outputs[$filter_settings] = $items_text;
     } else {
-        $items_text = $cached_filter_settings[$filter_settings];
+        $items_text = $cached_filter_outputs[$filter_settings];
     }
     return $items_text;
 }

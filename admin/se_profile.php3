@@ -208,7 +208,6 @@ $inputform_entries = array(
                       'add_btn_insert'                  => _m('Button "Insert" / "Insert as new" (add form)'),
                       'add_btn_ins_edit'                => _m('Button "Insert & Edit" (add form)'),
                       'add_btn_ins_preview'             => _m('Button "Insert & View" (add form)'),
-                      'add_btn_ins_edit'                => _m('Button "Insert & Edit" (add form)'),
                       'add_btn_cancel'                  => _m('Button "Cancel" (add form)'),
                       'edit_title'                      => _m('Title (edit form)'),
                       'edit_tophtml'                    => _m('Top HTML code (edit form)'),
@@ -216,7 +215,6 @@ $inputform_entries = array(
                       'edit_btn_update'                 => _m('Button "Update" (edit form)'),
                       'edit_btn_upd_edit'               => _m('Button "Update & Edit" (edit form)'),
                       'edit_btn_upd_preview'            => _m('Button "Update & View" (edit form)'),
-                      'edit_btn_upd_edit'               => _m('Button "Update & Edit" (edit form)'),
                       'edit_btn_reset'                  => _m('Button "Reset form" (edit form)'),
                       'edit_btn_cancel'                 => _m('Button "Cancel" (edit form)')
                       );

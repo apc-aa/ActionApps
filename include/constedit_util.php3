@@ -25,7 +25,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Jakub Adámek
+ * @author    Jakub Adamek
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -103,7 +103,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
     $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
     $add_button_trigger = "";
     if( $aa_onchange_exist ){
-       list($aux1,$fieldid,$aux2) = split("'",$aa_onchange_exist,3);
+       list($aux1,$fieldid,$aux2) = explode("'",$aa_onchange_exist,3);
        $add_button_trigger = "aa_onChange('".$fieldid."'); ";
     }
 

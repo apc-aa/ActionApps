@@ -102,7 +102,7 @@ function RegisterItem( $id, $packet, $db ) {
  * @param $bin2fill
  */
 function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
-    global $db, $itemvarset, $varset;
+    global $db;
 
     if (IsDuplicated($packet, $db)) {
         return WDDX_DUPLICATED;
@@ -162,7 +162,7 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     }
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
 
-    StoreItem($id, $slice_id, $content4id, $fields, true, true, true);
+    StoreItem($id, $slice_id, $content4id, true, true, true);
                                       // insert, invalidatecache, feed
     RegisterItem(q_pack_id($id), $packet, $db);
     return WDDX_OK;

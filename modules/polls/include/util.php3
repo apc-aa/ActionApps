@@ -33,7 +33,6 @@ require_once AA_INC_PATH. "varset.php3";
 
 /** Predefined aliases for polls. For another aliases use 'inline' aliases. */
 function GetAnswerAliases() {
-    $metabase = AA_Metabase::singleton();
     $aliases = array (
         "_#QUESTION" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),
         "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),  // deprecated
@@ -57,7 +56,6 @@ function GetAnswerAliases() {
 
 /** Predefined aliases for polls. For another aliases use 'inline' aliases. */
 function GetPollsAliases() {  // function - we need trnslate _m() on use (not at include time)
-    $metabase = AA_Metabase::singleton();
     $aliases = array (
         "_#POLL_ID_" => GetAliasDef( "f_1",               "id",           _m('Poll ID')),
         "_#MODULEID" => GetAliasDef( "f_n",               "module_id",    _m('Module ID')),

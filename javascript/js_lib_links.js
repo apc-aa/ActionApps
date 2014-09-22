@@ -123,7 +123,7 @@ function FindPathTo(catid) {
   var current = catid;
   var i=0;
 
-  path2cat   = new Array();
+  path2cat   = [];
   path2cat[i++] = current;
 
   while( current != treeStart ) {
@@ -137,12 +137,12 @@ function FindPathTo(catid) {
 
 function ClearTree() {
   level=0;
-  downcat = new Array()
+  downcat = [];
   downcat[level] = treeStart
 }
 
 function GoToCategoryID(catid, sbx, pathid, cat_id_fld) {
-  path2cat = new Array();
+  path2cat = [];
   if( catid == "" ) {
     if( sbx.selectedIndex < 0 ) {
       return

@@ -32,7 +32,7 @@ function cmp($a, $b) {
 }
 
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"));
     exit;
 }
 

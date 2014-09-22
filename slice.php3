@@ -518,13 +518,13 @@ if (isMLXSlice($slice_info)) {
     if (!$mlxView) {
         $mlxView = new MLXView($mlx);
     }
-    $mlxView->preQueryZIDs(unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
+    $mlxView->preQueryZIDs(unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$conds);
 }
 
-$zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator, true );
+$zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
 
 if (isMLXSlice($slice_info)) {
-    $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
+    $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id);
 }
 
 if ( !$scrl ) {
@@ -534,7 +534,7 @@ if ( !$scrl ) {
 
 if ( !$srch AND !$encap AND !$easy_query ) {
     $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
-    pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id]['value'], $slice_id, $encap);
+    pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
 }
 
 

@@ -53,7 +53,7 @@ function ModW_GetTree( &$tree, $site_id ){
     $p_site_id = q_pack_id($site_id);
 
     $SQL = "SELECT structure FROM site WHERE id='$p_site_id'";
-    $db->query();
+    $db->query($SQL);
     if ($db->next_record()) {
         $tree = unserialize( $db->f('structure') );
     }

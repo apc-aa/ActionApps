@@ -306,7 +306,7 @@ class MLX
             $this->fatal("MLX update: mlxid corrupted: $id ".strlen($id).", $p_id");
         }
 
-        $added = StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
+        $added = StoreItem($id, $this->langSlice, $content4mlxid, $insert, true, true);
 
         $content4id->setValue(MLX_CTRLIDFIELD, $p_id);
         $this->trace("done. id=$id ($added)");
@@ -325,7 +325,7 @@ class MLX
      *     - language
      *     - mlxid - id of the main mlx artice (where other items are joined)
      */
-    function itemform($lang_control, $params, $content4id, $action, $lang, $mlxid)
+    function itemform($params, $content4id, $action, $lang, $mlxid)
     {
         global $DOCUMENT_URI;
         global $PHP_SELF;
@@ -336,8 +336,8 @@ class MLX
         switch ($action) {
             case "update":
             case "edit":
-                $lang  = $content4id['lang_code.......'][0][value];
-                $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0][value]);
+                $lang  = $content4id['lang_code.......'][0]['value'];
+                $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']);
                 break;
             case "insert":
             case "add":
@@ -350,14 +350,14 @@ class MLX
                     $itemcontent = GetItemContent($tritemid);
                     $content4form = $itemcontent[$tritemid];
                     foreach ($this->slice->fields('record') as $slfield) {
-                        $kstr = 'v'.unpack_id($slfield[id]);
+                        $kstr = 'v'.unpack_id($slfield['id']);
                         unset($GLOBALS[$kstr]);
                         unset($GLOBALS[$kstr."html"]);
                         if (!$slfield[input_show]) {
                             continue;
                         }
 //						$this->dbg($slfield);
-                        $itcnt = $content4form[$slfield[id]];
+                        $itcnt = $content4form[$slfield['id']];
                         $GLOBALS[$kstr."html"] = ($v[0]['flag']==65 ? 1 : 0); //TODO fix
                         if ($slfield['multiple'] && is_array($itcnt)) {
                             foreach ($itcnt as $vai) {
@@ -551,19 +551,16 @@ class MLXView
      * @param $conds
      * @param $slices
      */
-    function preQueryZIDs($ctrlSliceID,&$conds,&$slices)
-    {
+    function preQueryZIDs($ctrlSliceID, &$conds) {
         switch($this->mode) {
             case 'ONLY': //add to conds
                 $translations = $this->getPrioTranslationFields($ctrlSliceID);
                 $value = key($translations);
-                $conds[] = array('lang_code.......'=>$value,
-                    'value'=>$value,
-                    'operator'=>"=");
+                $conds[] = array('lang_code.......'=>$value, 'value'=>$value, 'operator'=>"=");
                 break;
-// 		__mlx_dbg($conds,"conds".__FUNCTION__);
+                // 		__mlx_dbg($conds,"conds".__FUNCTION__);
             default:
-//                 __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
+                //      __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
                 break;
         }
     }
@@ -587,11 +584,8 @@ class MLXView
      * @param $nocache
      * @param $cachekeyextra
      */
-    function postQueryZIDs(&$zidsObj,$ctrlSliceID,$slice_id, $conds, $sort,
-        $group_by,$type, $slices, $neverAllItems, $restrict_zids,
-        $defaultCondsOperator,$nocache,$cachekeyextra="")
-    {
-        global $QueryIDsCount, $debug;
+    function postQueryZIDs(&$zidsObj, $ctrlSliceID, $slice_id) {
+        global $QueryIDsCount;
 
         if($this->mode != "MLX") {
             return;
@@ -1073,9 +1067,7 @@ class MLXGetText
         $content4id['post_date.......'][0]['value'] = time();
         $content4id['publish_date....'][0]['value'] = time();
         $content4id['expiry_date.....'][0]['value'] = time()+3600*24*365*10;
-        StoreItem( new_id(), $sliceid, $content4id,
-            $this->currentDomainRef['slices'][$sliceid]['fields'],
-            true,true,false);
+        StoreItem( new_id(), $sliceid, $content4id, true,true,false);
         $GLOBALS['varset'] = $old_varset;
         $GLOBALS['itemvarset'] = $old_itemvarset;
     }

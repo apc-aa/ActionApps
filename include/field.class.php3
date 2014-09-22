@@ -657,7 +657,7 @@ function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $ad
         $lookup_fields[''] = " ";  // default - none
     }
     while ($db->next_record()) {
-        $lookup_fields[$db->f('id')] = $db->f(name);
+        $lookup_fields[$db->f('id')] = $db->f('name');
     }
     return $lookup_fields;
 }

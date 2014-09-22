@@ -62,7 +62,6 @@ http://www.apc.org/
 // new_state() function
 //   - exactly the same as we use in standard site control file
 function new_state(&$new_state, $x, $p, $d, $t, $scrl) {
-    global $apc_varnames, $apc_init, $apc_reg;
     if (isset($t)) {
         $new_state['t'] = $t;
     }

@@ -52,7 +52,7 @@ function AafinderSliceLink($slice_id) {
 }
 
 if (!IsSuperadmin()) {
-    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
+    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
 }
 
@@ -354,7 +354,7 @@ echo '<tr><td>';
 echo '<form name="f_finditem_edit" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
     <input type="text" name="finditem_edit" value="'.safe($_POST['finditem_edit']).'" size="30">&nbsp;&nbsp;
-    <select name="finditem_edit_op" value="">
+    <select name="finditem_edit_op">
     <option value="LIKE">Contiene</option>
     <option value="=">Frase exacta</option>
     <option value="item">Número de item</option>

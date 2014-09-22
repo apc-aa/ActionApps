@@ -50,12 +50,12 @@ $module_id   = $slice_id;
 
 if ($template_id) {        // add module
     if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
+        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODW_SETTINGS)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
+        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"));
         exit;
     }
 }

@@ -1,6 +1,6 @@
 // array of listboxes where all selection should be selected
-var listboxes = Array();
-var htmlareas = Array();
+var listboxes = [];
+var htmlareas = [];
 var myform    = document.inputform;
 var relatedwindow;  // window for related stories
 var urlpickerwindow; // window for local URL picking

@@ -13,7 +13,7 @@
     <!--#include virtual="/apc-aa/view.php3?vid=317"-->
     </body></html>
     
-    (c) Jakub Adámek, May 2002
+    (c) Jakub Adamek, May 2002
 */
 
 /* First you need to add variables from URL --- this is not automatical when including PHP from .shtml 
@@ -24,7 +24,7 @@ function DeBackslash($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
 }   
 
-function add_vars($query_string="", $debug="") {
+function add_vars($query_string="") {
   global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
   if ( $query_string ) 
     $varstring = $query_string;

@@ -58,7 +58,7 @@ $varset = new Cvarset();
  * @param $separate=false
  */
 function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $separate=false) {
-    global $sess, $slice_id;
+    global $sess;
     $name = safe($name); $pri=safe($pri);
 
     $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
@@ -84,18 +84,8 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $sep
 }
 
 /** ShowNewField function
- * @param $id
- * @param $name
- * @param $pri
- * @param $required
- * @param $show
- * @param $type=""
- * @param $alias=""
- * @param $separate=false
  */
 function ShowNewField($from_slice) {
-    $name = safe($name); $pri=safe($pri);
-
     $id       = 'New_Field';
     $name     = '';
     $show     = true;

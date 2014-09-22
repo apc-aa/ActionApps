@@ -22,7 +22,7 @@
  *
  * @package   ReaderInput
  * @version   $Id$
- * @author    Jakub Adámek, Econnect
+ * @author    Jakub Adamek, Econnect
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -87,7 +87,7 @@ class AA_Mailman {
             }
         }
 
-        freeDB();
+        freeDB($db);
 
         endslash($MAILMAN_SYNCHRO_DIR);
 

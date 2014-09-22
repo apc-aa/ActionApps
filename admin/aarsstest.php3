@@ -35,7 +35,7 @@ require_once menu_include();   //show navigation column depending on $show
  */
 function TV_PageBegin(&$config_arr) {
     if (! $config_arr["cond"] ) {
-        MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"), "standalone");
+        MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
         exit;
     }
 

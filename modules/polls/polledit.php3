@@ -93,7 +93,7 @@ if ($insert  || $update ) {
     }
     if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr(($update ? _m("Can't update poll with id ".$poll_id) : _m("Can't insert new poll")));
-        break;
+        exit;
     }
 
     $SQL         = "SELECT * FROM polls_answer WHERE (poll_id='$poll_id')";

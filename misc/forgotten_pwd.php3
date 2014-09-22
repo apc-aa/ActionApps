@@ -12,10 +12,10 @@ $script_path = AA_INSTAL_PATH."misc/forgotten_pwd.php3";
 <HTML>
 <HEAD>
 <SCRIPT LANGUAGE="JavaScript">
-<!-- Begin
+<!-- // Begin
 function validatePwd() {
     var invalid = " "; // Invalid character is a space
-    var minLength = 6; // Minimum length
+    // var minLength = 6; // Minimum length
     var pw1 = document.myForm.password.value;
     var pw2 = document.myForm.password2.value;
     // check for a value in both fields.
@@ -119,7 +119,7 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
        list($fields,) = GetSliceFields($sliceID);
        $fields["password........"]["input_insert_func"] = "qte:";
        $userdata["password........"][0]['value']        = ParamImplode(array('AA_PASSWD',$password));
-       $update=StoreItem( $itemID, $sliceID, $userdata, $fields, false, true, false ); // insert, invalidatecache, feed
+       $update = StoreItem( $itemID, $sliceID, $userdata, false, true, false ); // insert, invalidatecache, feed
        if ($update) echo "Your password has been updated."; else
        die ("There was an error updating your password. Please contact ".ERROR_REPORTING_EMAIL);
     }

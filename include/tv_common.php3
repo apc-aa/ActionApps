@@ -86,7 +86,6 @@ function CreateWhereFromList($column, $list, $type="number") {
     @return array (unpacked module id => module name), e.g. to create a selectbox
     @param $all if you want all modules, otherwise only permitted are returned */
 function SelectModule($all = false) {
-    global $db, $auth;
     if (IsSuperadmin() || $all) {
         $where = '(1=1)';
     } else {

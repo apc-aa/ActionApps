@@ -63,7 +63,7 @@ function save_notify2db($slice_id, $function, $emails) {
         $uid = trim($uid);
         if ( AA_Validate::validate($uid, 'email')) {
             $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', '$p_slice_id', $function)";
-            $result = $db->query($SQL);
+            $db->query($SQL);
         }
     }
 }
@@ -75,12 +75,12 @@ if ($cancel){
 }
 
 if (! $slice_id){
-    MsgPage($sess->url(self_base())."index.php3", "error on se_notify.php3", "standalone");
+    MsgPage($sess->url(self_base())."index.php3", "error on se_notify.php3");
     exit;
 }
 
 if (!IfSlPerm(PS_EDIT)) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"));
     exit;
 }
 

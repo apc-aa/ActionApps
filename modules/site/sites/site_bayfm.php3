@@ -82,7 +82,7 @@ function myfillform($txt) {
     if ($GLOBALS["post2shtml_id"]) {
        add_post2shtml_vars(true);
         $g="";
-        if ($result[success]) return $g;
+        if ($result['success']) return $g;
         while (list($k,$v) = each($result[validate])) {
             $g .= "<br>".$v;  // $v should also indicate name of $k
         }

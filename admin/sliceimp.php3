@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Jakub Adámek, Pavel Jisl
+ * @author    Jakub Adamek, Pavel Jisl
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -38,7 +38,7 @@ require_once AA_INC_PATH."mgettext.php3";
 require_once AA_INC_PATH."formutil.php3";
 
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"));
     exit;
 }
 
@@ -51,14 +51,8 @@ $itemvarset = new Cvarset();
  * @param $slice
  * @return true
  */
-function proove_ID($slice)
-{
-    global $newID,
-           $sess,
-           $showme,
-           $resolve_conflicts,
-           $overwrite,
-           $new_slice_ids;
+function proove_ID($slice) {
+    global $resolve_conflicts, $overwrite, $new_slice_ids;
 
     $res = $resolve_conflicts[$slice["id"]];
     if ((strlen($res)!=0)&&(strlen($res) != 16))	{
@@ -107,12 +101,8 @@ function proove_ID($slice)
  * @return true
  */
  // same function as above, but for table item and content
-function proove_data_ID($data_id)
-{
-    global $data_newID,
-           $sess,
-           $data_showme,
-           $data_resolve_conflicts, //Set from data_conflicts_list
+function proove_data_ID($data_id) {
+    global $data_resolve_conflicts, //Set from data_conflicts_list
            $data_overwrite;
     $res = $data_resolve_conflicts[$data_id];
     if ($res && strlen($res) != 16)	{
@@ -150,13 +140,9 @@ function proove_data_ID($data_id)
  * @param $slice (by link)
  */
 // imports one slice (called by XML parser)
-function import_slice(&$slice)
-{
+function import_slice(&$slice){
     global $db,
-           $showme,
            $IDconflict,
-           $slice_id,
-           $sess,
            $conflicts_ID,
            $Cancel,
            $imported_list,
@@ -209,10 +195,7 @@ function import_slice(&$slice)
  // returns false on failure, but ignored
 function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 {
-    global $db,
-           $data_showme,
-           $data_IDconflict,
-           $sess,
+    global $data_IDconflict,
            $data_conflicts_ID,
            $Cancel,
            $data_imported_list,
@@ -245,7 +228,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
           $id           = $new_data_id;
         }
 
-        if ( StoreItem($id, $slice_id, $cont, $fields, $insert, true, $feed)) {
+        if ( StoreItem($id, $slice_id, $cont, $insert, true, $feed)) {
             if ($data_overwrite) {
                 $data_overwritten_list[] = $id." (id:".$id.")";
             } else {

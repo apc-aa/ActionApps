@@ -91,13 +91,13 @@ class MLXImport {
     ///TODO support for $action='update'
     ///TODO support for $action='replace' and unique fields
     function import(&$data,$action = 'insert') {
-        $defaults["display_count..."][0][value] = 0;
-        $defaults["status_code....."][0][value] = 1;
-        $defaults["flags..........."][0][value] = ITEM_FLAG_OFFLINE;
-        $defaults["posted_by......."][0][value] = 0;
-        $defaults["edited_by......."][0][value] = 0;
-        $defaults["publish_date...."][0][value] = time();
-        $defaults["expiry_date....."][0][value] = time() + 200*365*24*60*60;
+        $defaults["display_count..."][0]['value'] = 0;
+        $defaults["status_code....."][0]['value'] = 1;
+        $defaults["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
+        $defaults["posted_by......."][0]['value'] = 0;
+        $defaults["edited_by......."][0]['value'] = 0;
+        $defaults["publish_date...."][0]['value'] = time();
+        $defaults["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
 
 //		define('MLX_TRACE',1);
 //		$GLOBALS['errcheck'] = true;
@@ -130,8 +130,7 @@ class MLXImport {
                     $this->added[$mlxid]['headline........'] = $content['headline........'][0][value];
             }
             // store the content
-            $added += StoreItem( $cntitemid, $this->slice_id, $content,
-                $this->fields, ($action=='insert') );     // invalidatecache, feed
+            $added += StoreItem( $cntitemid, $this->slice_id, $content, ($action=='insert') );     // invalidatecache, feed
             // preserve info for rollback (not implemented)
             $this->added[$mlxid][$mlxl] = $cntitemid;
         }

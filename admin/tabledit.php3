@@ -60,7 +60,7 @@ if (!is_array($tableview)) {
     exit;
 }
 if (! $tableview["cond"] ) {
-    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"), "standalone");
+    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
     exit;
 }
 

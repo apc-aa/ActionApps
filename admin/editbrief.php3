@@ -22,7 +22,7 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
- * based on live_checkbox.php3 by Jakub Adámek, October 2002
+ * based on live_checkbox.php3 by Jakub Adamek, October 2002
  *
  * This is intended to be a basic utility that can be used in hand-made links
  *   to make specific changes
@@ -93,7 +93,7 @@ while (list($short_ids, $ar) = each($edit)) {
         }
         $fields = $slicefields[$slice_id];
 //        huhl("Would store i=",$item_id, "f=",$content4id);
-        StoreItem($item_id, $slice_id, $content4id, $fields, false, true, false);
+        StoreItem($item_id, $slice_id, $content4id, false, true, false);
       }
     }
 }

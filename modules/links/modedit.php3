@@ -54,12 +54,12 @@ $module_id   = $slice_id;
 
 if ($template['Links']) {        // add module
     if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-        MsgPage($sess->url(self_base())."index.php3", _m('No permission to add module'), "standalone");
+        MsgPage($sess->url(self_base())."index.php3", _m('No permission to add module'));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_LINKS_SETTINGS)) {
-        MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit module'), "standalone");
+        MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit module'));
         exit;
     }
 }

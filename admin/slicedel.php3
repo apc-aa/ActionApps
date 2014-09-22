@@ -47,10 +47,10 @@ if (!IsSuperadmin()) {
  * @return prints a table row with a checkbox and a link
  */
 function PrintSlice($id, $name, $type) {
-    global $sess, $MODULES;
+    global $MODULES;
 
-    $name=safe($name); $id=safe($id);
-    $url = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
+    $name = safe($name); $id = safe($id);
+    $url  = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
 
     echo "<tr class=\"tabtxt\">
             <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>

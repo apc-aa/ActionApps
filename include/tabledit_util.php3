@@ -69,7 +69,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                         if ($ok) $GLOBALS["Msg"] = _m("Insert was successfull.");
                     }
                     else {
-                        $ok = TableUpdate( $myview["table"], $val[key($par)], $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_update"], $myview["triggers"]);
+                        $ok = TableUpdate( $val[key($par)], $myview["fields"], $primary_aliases, $myview["messages"]["error_update"], $myview["triggers"]);
                         if ($ok) {
                             $GLOBALS["Msg"] = _m("Update was successfull.");
                         }
@@ -87,7 +87,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                     while (list ($key, $vals) = each ($val)) {
                         RunColumnFunctions($vals, $myview["fields"], $myview["table"], $myview["join"]);
                         if ($key != $GLOBALS['new_key']) {
-                            $ok = $ok && TableUpdate ( $myview["table"], $vals, $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_update"], $myview["triggers"]);
+                            $ok = $ok && TableUpdate ( $vals, $myview["fields"], $primary_aliases, $myview["messages"]["error_update"], $myview["triggers"]);
                         }
                     }
                     if (!$ok) {
@@ -291,8 +291,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
  * @param $be_cautios
  * @return true if successfull, false if not
  */
-function TableUpdate($default_table, $val, $columns, $primary_aliases, $primary="", $error_msg="",
-    $triggers = "", $be_cautious=1) {
+function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers = "", $be_cautious=1) {
     global $db, $err;
 
     if (!ProoveVals($val, $columns))
@@ -363,8 +362,7 @@ function TableUpdate($default_table, $val, $columns, $primary_aliases, $primary=
  * @param $triggers
  * @param $be_cautious
  */
-function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_aliases,
-    $primary="", $error_msg="", $triggers="", $be_cautious=1) {
+function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
     global $db, $err;
 
     if (!ProoveVals($val, $columns))
@@ -445,11 +443,8 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
  */
 function ProcessInsert($myviewid, $myview, $primary_aliases, $val, &$cmd) {
     // WARNING: a bit hackish: after inserting an item, the command is changed
-    TableInsert($newkey, $where, $myview["table"], $val[$GLOBALS['new_key']],
-                $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_insert"],
-                $myview["triggers"]);
+    TableInsert($newkey, $where, $myview["table"], $val[$GLOBALS['new_key']], $myview["fields"], $primary_aliases, $myview["messages"]["error_insert"], $myview["triggers"]);
     if ($newkey != "") {
-        global $tabledit_settings;
         $cmd[$myviewid]["edit"][$newkey] = 1;
         $cmd[$myviewid]["insert"] = $where;
     } else {
@@ -635,7 +630,7 @@ function PrintJavaScript_Validate() {
     $_javascript_validate_printed = 1;
 
     echo '
-    <script language="JavaScript" type="text/javascript">
+    <script type="text/javascript">
     <!--'
         . get_javascript_field_validation()."
 

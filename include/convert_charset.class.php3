@@ -624,9 +624,7 @@ class ConvertCharset {
         $Debug[1][1] = "Notice, both charsets " . $Value . " are identical! Check encoding tables files." . "<br>";
         $Debug[1][2] = "Notice, there is no unicode char in the string you are trying to convert." . "<br>";
 
-        if (DEBUG_MODE >= $Group) {
-            return $Debug[$Group][$Number];
-        }
+        return (DEBUG_MODE >= $Group) ? $Debug[$Group][$Number] : '';
     } // function DebugOutput
 
 } //class ends here

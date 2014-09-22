@@ -579,7 +579,7 @@ class AA_Identifier {
     function getRow()      { return $this->path[2]; }
     function getColumn()   { return $this->path[3]; }
 
-    /** Parses the identifier string (like "Configuración->field->category........")
+    /** Parses the identifier string (like "Configuraciï¿½n->field->category........")
      *  static member function - called like $idf = AA_Identifier::factoryFromString($idf_string)
      */
     function factoryFromString($idf) {
@@ -650,9 +650,7 @@ class AA_Sync_Action {
         $module_id   = $idf->getModuleId();
         $table       = $idf->getTable();
         $row         = $idf->getRow();
-        $column      = $idf->getColumn();
-
-        $p_module_id = pack_id($module_id);
+        //$column      = $idf->getColumn();
 
         $metabase    = AA_Metabase::singleton();
 
@@ -765,7 +763,6 @@ function Central_GetAaContent($zids) {
  */
 function Central_QueryZids($conds, $sort="", $type="app") {
     global $debug;                 // displays debug messages
-    global $nocache;               // do not use cache, if set
 
     if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 

@@ -164,7 +164,6 @@ function uilr($inp,$act) {
  *   @param string $value - the internationalized string to display
 */
 function inputplusaction($name,$value) {
-    $argname = ($argname ? $argname : "arg[$name]");
     return uilr("<input name=\"arg[$name]\">", fileAction($name,$value));
 }
 

@@ -47,7 +47,7 @@ function PrintImg($src, $width=0, $height=0, $path='rel') {
     $width  = $width ? "width=\"$width\"" : "";
     $height = $height ? "height=\"$height\"" : "";
     $img    = (($path=='rel') ? "../images/$src" : AA_INSTAL_PATH."images/$src");
-    return "<img src=\"$img\" $width $height border='0'></img>";
+    return "<img src=\"$img\" $width $height border='0'>";
 }
 
 $imgsrc = array(
@@ -273,7 +273,7 @@ function GetDiscussionFormat(&$view_info) {
  */
 function GetDiscussionTree(&$d_content) {
     if (!$d_content) {
-        return;
+        return false;
     }
     while (list($d_id, $val) = each($d_content)) {
         if ($val["hide"] == true) {                  // if hidden => skip
@@ -354,7 +354,7 @@ function DeleteTree(&$tree, $d_id) {
  */
 function GetParent(&$tree, $d_id) {
     if (!$tree) {
-        return;
+        return false;
     }
     foreach ($tree as $source_id => $foo ) {
         while (list($dest_id, ) = each($tree[$source_id])) {
@@ -363,6 +363,7 @@ function GetParent(&$tree, $d_id) {
             }
         }
     }
+    return false;
 }
 
 /** DeleteNode function

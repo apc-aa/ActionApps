@@ -207,10 +207,9 @@ if ($debugtime) {
 function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     global $show_ids;
 
-    $tree        = new sitetree();
-    $tree        = unserialize($site_info['structure']);
-
+    $tree        = unserialize($site_info['structure']);   // new sitetree();
     $show_ids    = array();
+    $out         = '';
 
     // it fills $show_ids array
     $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');

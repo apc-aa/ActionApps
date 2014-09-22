@@ -30,7 +30,7 @@
  *
  * @package UserInput
  * @version $Id$
- * @author Honza Malík, Jakub Adámek, Econnect
+ * @author Honza Malik, Jakub Adamek, Econnect
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
 /*
@@ -466,7 +466,7 @@ if ($debugfill) huhl("Going to Store Item");
 if ($debugfill) huhl("content4id=",$content4id);
 if (is_array($result)) {
     SendErrorPage( $result );
-} elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, true, true, $oldcontent4id )) { // insert, invalidatecache, feed
+} elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $insert, true, true )) { // insert, invalidatecache, feed
     if ($debugfill) huhl("Filler: sending error");
     SendErrorPage( array("store" => _m("Some error in store item.")));
 } else {

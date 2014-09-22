@@ -72,7 +72,7 @@ function GetHidden($itemform_id) {
  *
  */
 function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null) {
-    global $tsp; // defined in constants.php3
+    global $tps; // defined in constants.php3
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
     if ($zid) {               // id of new item defined
@@ -237,7 +237,7 @@ unset( $content4id );
 if ($edit) {
     if ( !is_array($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
-        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
         exit;
     }
 
@@ -245,7 +245,7 @@ if ($edit) {
     $content = GetItemContent($id);
     if ( !$content ) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
-        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
         exit;
     }
 
@@ -257,7 +257,7 @@ if ($edit) {
     $real_user = $auth->auth['uid'];
     if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
         $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
-        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
         exit;
     }
 
@@ -274,15 +274,9 @@ if ($lang_control) {
     if (empty($mlx)) {
         $mlx = new MLX($slice);
     }
-    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform($lang_control,
-        array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
-        $content4id->getContent(),$action,$mlxl,$mlxid);
+    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap), $content4id->getContent(),$action,$mlxl,$mlxid);
 }
 // end mimo changes
-
-if ($GLOBALS['debug']) {
-    huhl($content4id);
-}
 
 // print begin ---------------------------------------------------------------
 if ( !$encap ) {

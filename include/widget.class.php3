@@ -475,7 +475,7 @@ class AA_Widget extends AA_Components {
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
         $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
-        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //ULOŽIT ZMÌNU
+        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //ULOï¿½IT ZMï¿½NU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
         return $widget_html;
     }
@@ -971,7 +971,6 @@ class AA_Widget_Dte extends AA_Widget {
 
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time);
 
-        $row_count   = $this->getProperty('row_count', 4);
         $value       = $content->getAaValue($aa_property->getId());
         $count       = max($value->valuesCount(),1);
         for ( $i = 0; $i < $count; ++$i ) {
@@ -2217,7 +2216,7 @@ class AA_Property extends AA_Storable {
      * @param $type
      * @param $priority
      */
-    private function _saveSingle($value, $object_id, $priority=0, $owner_id) {
+    private function _saveSingle($value, $object_id, $priority, $owner_id) {
 //      not necessary - we must call validate before object saving,
 //      so this kind of thig is already spotted
 //      if ( is_array($value) ) {

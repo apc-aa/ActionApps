@@ -696,7 +696,7 @@ class AA_Searchbar extends AA_Storable {
         }
 
         echo '</table>
-              <script language="JavaScript" type="text/javascript"> <!--
+              <script type="text/javascript"> <!--
              ';
         echo AA_Operators::getJsDefinition();
         echo '

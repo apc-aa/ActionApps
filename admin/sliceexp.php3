@@ -25,7 +25,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Jakub Adámek, Pavel Jisl
+ * @author    Jakub Adamek, Pavel Jisl
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -41,7 +41,7 @@ require_once AA_INC_PATH."formutil.php3";
 
 // Make sure you have permissions to do this
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"));
     exit;
 }
 
@@ -117,14 +117,14 @@ if (isset($b_export_to_file)) {
         else {
             form.submit();
         }
-    };
+    }
     function validate2() {
         sl_count = 0;
         x = document.f['export_slices[]'];
         form = document.forms["f"];
         for (i=0; i<x.length; i++) {
           sl_count += (x.options[i].selected ? 1 : 0);
-        };
+        }
         if (sl_count == 0) {
           alert (<?php  echo '"'._m("You must select one or more slices to backup").'"' ?>);
           return false;
@@ -132,7 +132,7 @@ if (isset($b_export_to_file)) {
         else {
             return true;
         }
-    };
+    }
     //-->
 </script>
 </head>
@@ -216,7 +216,7 @@ if ($SHOWTEXT == "") {
     </tr>
     <tr>
         <td><input type="submit" name="b_export_type" value="<?php echo _m("Export to Backup") ?>"></td>
-        <td><input type="button" name="b_export_type" value="<?php echo _m("Export to another ActionApps") ?>" onClick="javascript:validate()"></td>
+        <td><input type="button" name="b_export_type" value="<?php echo _m("Export to another ActionApps") ?>" onClick="validate()"></td>
     </tr>
     </form>
     </tr></td>

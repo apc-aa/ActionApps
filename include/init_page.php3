@@ -31,7 +31,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Honza Malík, Jakub Adámek, Econnect
+ * @author    Honza Malik, Jakub Adamek, Econnect
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -153,8 +153,7 @@ $after_login = !$no_slice_id && !$slice_id;
 $perm_slices = GetUserSlices();
 
 if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
-    MsgPage($sess->url(self_base())."index.php3",
-        _m("You do not have permission to edit items in the slice").": ".AA_Slices::getName($slice_id),"standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slices::getName($slice_id));
     exit;
 }
 
@@ -176,7 +175,7 @@ while ($db->next_record()) {
 
 if (!$no_slice_id) {
     if (!is_array($g_modules)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"), "standalone");
+        MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"));
         exit;
     }
 

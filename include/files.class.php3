@@ -926,7 +926,8 @@ class AA_File_Info {
             case 'gif':
             case 'png':
                     $wrapper = new  AA_Image_File_Info($url);
-                default:
+                    break;
+            default:
                     $wrapper = new AA_File_Info($url);
             }
         return $wrapper;

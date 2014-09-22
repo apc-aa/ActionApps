@@ -142,7 +142,7 @@ function resolveOperator($op) {
     case '+': return array("type"=>TOKEN_TYPE_OPERATOR_AND, "value"=>"and");
     case '-': return array("type"=>TOKEN_TYPE_OPERATOR_NOT, "value"=>"not");
     }
-    return array("value"=>TOKEN_TYPE_UNKNOWN, "value"=>"divny operator");
+    return array("type"=>TOKEN_TYPE_UNKNOWN, "value"=>"strange operator");
 }
 
 /** isLetter function

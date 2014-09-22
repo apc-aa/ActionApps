@@ -628,7 +628,6 @@ function sqlin( $column, $values ) {
  * @param $str
  */
 function id_t2l(&$str) {
-    global $errcheck;
     if (!$str) {
         huhe(print("Warning: zids:id_t2l:converting empty string"));
         return null;

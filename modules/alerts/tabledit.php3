@@ -8,7 +8,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adamek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -65,7 +65,7 @@ if (!is_array($tableview)) {
     exit;
 }
 if (! $tableview["cond"] )  {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
 }
 

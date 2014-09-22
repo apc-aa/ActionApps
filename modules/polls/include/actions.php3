@@ -67,8 +67,6 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     * @param $akce_param  - not used
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
-        $item_ids = array_keys($item_arr);
-
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
         $SQL = "UPDATE polls SET status_code = '".$this->to_bin."' WHERE ". $zids->sqlin('id', true);

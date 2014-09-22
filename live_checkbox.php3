@@ -18,7 +18,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*  (c) Jakub Adámek, October 2002
+/*  (c) Jakub Adamek, October 2002
 
     Used by live checkboxes (item alias function f_k).
     Updates a boolean field in database and sends
@@ -70,12 +70,11 @@ if (!$debug) {
 $content4ids = GetItemContent($item_id);
 reset($content4ids);
 $content4id = current($content4ids);
-$oldcontent4id = $content4id;
 $action = ! ($content4id[$field_id][0]['value']);
 $content4id = array ($field_id => array (0 => array ("value" => $action)));
 list($fields) = GetSliceFields($slice_id);
 
-StoreItem($item_id, $slice_id, $content4id, $fields, false, true, false, $oldcontent4id);
+StoreItem($item_id, $slice_id, $content4id, false, true, false);
 
 readfile ($image_path.'cb_'.($action ? "on" : "off").'.gif');
 page_close();

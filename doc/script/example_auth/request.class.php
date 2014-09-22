@@ -308,10 +308,10 @@ class AA_Client_Auth {
 
         if ( !$response->isError() ) {
             $session_id = $response->getResponse();
-            $x = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
+            setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
             $_COOKIE['AA_Sess'] = $session_id;
             if ($_REQUEST['username']) {
-                $y = setcookie('AA_Uid', $_REQUEST['username'], $this->_cookie_lifetime, '/');
+                setcookie('AA_Uid', $_REQUEST['username'], $this->_cookie_lifetime, '/');
                 $_COOKIE['AA_Uid']  = $_REQUEST['username'];  // we need it for current page as well
             }
             return true;

@@ -52,7 +52,6 @@ $GLOBALS['menu_function'] = 'get_aamenus_links';
 function get_aamenus_links() {
     global $r_slice_view_url,
            $auth,
-           $AA_CP_Session,
            $linkedit,
            $r_state,
            $bookmarks,

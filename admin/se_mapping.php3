@@ -248,7 +248,7 @@ foreach ($to_fields as $f_id => $f_name) {
     }
     FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
     echo "</td><td class=\"tabtxt\">$sel</td>";
-    echo "<td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></input></td>";
+    echo "<td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></td>";
     echo "</tr>\n";
 }
 FrmTabEnd($form_buttons, $sess, $slice_id);

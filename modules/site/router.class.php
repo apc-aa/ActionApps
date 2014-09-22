@@ -350,7 +350,7 @@ class AA_Router_Seo extends AA_Router {
                     unset($apc_state['xseo'. $i]);
                     $state = 'CLEAR';
                 } else {// $state = 'COPY';
-                    $apc_state['xseo'. $i] = $apc_state['xseo'. $i];
+                    // $apc_state['xseo'. $i] = $apc_state['xseo'. $i];
                 }
             }
             if ($state != 'COPY') {

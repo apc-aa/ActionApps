@@ -44,8 +44,8 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         return $tableview;
     }
 
-    global $auth, $slice_id, $db, $collectionid;
-    global $attrs_edit, $attrs_browse, $format, $langs;
+    global $auth, $db;
+    global $attrs_edit, $attrs_browse;
 
     // ------------------------------------------------------------------------------------
 
@@ -55,11 +55,9 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         if ($db->num_rows()) {
             while ($db->next_record())
                 $collection_filters [$db->f("id")] = $db->f("description");
-            $no_filters = false;
         }
         else {
             $collection_filters[-1] = _m("No selections defined. You must define some.");
-            $no_filters = true;
         }
 
         // filter select box
@@ -246,7 +244,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
 // ----------------------------------------------------------------------------------
 
 function FindAlertsFilterPermissions() {
-    global $auth, $_filter_permissions;
+    global $_filter_permissions;
 
     // work only once
     if (isset ($_filter_permissions))
@@ -279,7 +277,7 @@ function FindAlertsFilterPermissions() {
 // ----------------------------------------------------------------------------------
 
 function FindAlertsUserPermissions() {
-    global $Tab, $db, $collectionid, $sess, $setTab;
+    global $Tab, $db, $collectionid;
     $now = time();
     switch ($Tab) {
         case 'appb': $where = "status_code = 1 AND start_date > $now"; break;

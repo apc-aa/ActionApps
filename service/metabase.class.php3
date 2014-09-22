@@ -889,11 +889,9 @@ class AA_Metabase {
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
      *  @global bool $debug=1       - many debug messages
-     *  @global bool $nocache       - do not use cache, even if use_cache is set
      */
     function queryZids($settings, $set) {
         global $debug;                 // displays debug messages
-        global $nocache;               // do not use cache, if set
 
         $tablename = $settings['table'];
         $conds     = $set->getConds();

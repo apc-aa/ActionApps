@@ -111,8 +111,7 @@ HtmlPageBegin('default', true);
  <title><?php echo _m("User management - Groups");?></title>
 <script Language="JavaScript"><!--
 function UpdateGroup(action) {
-  var foo= CommaDelimeted( 'document.f.sel_users_sel' )
-  document.f.posted_users.value = foo
+  document.f.posted_users.value  = CommaDelimeted( 'document.f.sel_users_sel' )
   document.f.submit_action.value = action
   document.f.submit()
 }

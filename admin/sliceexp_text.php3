@@ -25,7 +25,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Jakub Adámek, Pavel Jisl
+ * @author    Jakub Adamek, Pavel Jisl
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -81,7 +81,7 @@ class AA_Slice_Exporter {
         
         $slice = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l')));
         if (!$slice) {
-            MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found", "standalone");
+            MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
         }
         $uid = unpack_id($slice['id']);
@@ -93,7 +93,7 @@ class AA_Slice_Exporter {
 
         if ($this->type != _m("Export to Backup")) {
             if (strlen ($new_slice_id) != 16) {
-                MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id), "standalone");
+                MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id));
                 exit;
             } else {
                 $uid = unpack_id($new_slice_id);
@@ -214,7 +214,7 @@ class AA_Slice_Exporter {
 
             if ($this->type != _m("Export to Backup")) {
                 if (strlen ($new_slice_id) != 16) {
-                    MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id), "standalone");
+                    MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id));
                     exit;
                 } else {
                     $new_slice_idunpack = unpack_id($new_slice_id);

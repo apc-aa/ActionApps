@@ -136,7 +136,7 @@ if ( count($err) <= 1 ) {
         go_url( $sess->url(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
     }
 } else {
-  MsgPage($sess->url(self_base()."se_import.php3"), $err, "admin");
+  MsgPage($sess->url(self_base()."se_import.php3"), $err);
 }
 
 page_close();

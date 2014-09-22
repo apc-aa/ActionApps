@@ -55,7 +55,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
         $fillform_url = AA_INSTAL_PATH .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id;
         if ($use_show_result) {
-            $fillform_url. "&show_result=$show_result";
+            $fillform_url .= "&show_result=$show_result";
         }
         $ret .= "<!--#include virtual=\"$fillform_url\" -->";
     }

@@ -333,7 +333,7 @@ class AA_Computedfields_Updater {
                 foreach ($updaters as $sid => $interval) {
                     switch ($interval) {
                         case 1: $time = mktime(rand(0,5),   rand(0,59),  rand(0,59), date("m")+1, 1,           date("Y")); break;
-                        case 2: $time = strtotime("next Monday")+rand(0,(5*60*60)); // Monday - 0-5 in the morning
+                        case 2: $time = strtotime("next Monday")+rand(0,(5*60*60));                                        break;// Monday - 0-5 in the morning
                         case 3: $time = mktime(rand(0,4),   rand(0,59),  rand(0,59), date("m"),   date("d")+1, date("Y")); break;
                         case 4: $time = mktime(date("G")+1, rand(0,4),   rand(0,59), date("m"),   date("d"),   date("Y")); break;
                         case 5: $time = mktime(date("G"),   date("i")+1, rand(0,10), date("m"),   date("d"),   date("Y")); break;

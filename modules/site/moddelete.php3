@@ -31,11 +31,11 @@ if ($cancel)
 
 if ($del) {
   if (!IsSuperadmin()) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete a site."), "admin");
+    MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete a site."));
     exit;
   }
 } else {
-  MsgPage($sess->url(self_base())."index.php3", _m("Module not found."), "admin");
+  MsgPage($sess->url(self_base())."index.php3", _m("Module not found."));
   exit;
 }
 

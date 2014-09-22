@@ -844,7 +844,6 @@ class AA_Inputfield {
             case 'freeze_fld':
             case 'freeze_rio':
             case 'freeze_sel':
-            case 'freeze_fil':
             case 'freeze_pre':
             case 'freeze_tpr':
             case 'freeze_inf':
@@ -2950,14 +2949,14 @@ function GetHtmlTable( $content ) {
  * @param $src
  */
 function getFrmJavascriptFile( $src ) {
-    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
+    return "\n <script type=\"text/javascript\" src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
 }
 /** getFrmJavascript function
  * @param $code
  */
 function getFrmJavascript( $jscode ) {
     return '
-    <script language="JavaScript" type="text/javascript"> <!--
+    <script type="text/javascript"> <!--
       '.$jscode.'
       //-->
     </script>
@@ -3159,14 +3158,13 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
         $conds = false;
         $sort  = false;
         switch ((string)$group) {
+            case 'AA_BIN_ACTIVE':
+            case '':               $bins = AA_BIN_ACTIVE;  break;
             case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
             case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
             case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
-            case 'AA_BIN_ACTIVE':  $bins = AA_BIN_ACTIVE;  break;
             case 'AA_BIN_HOLDING': $bins = AA_BIN_HOLDING; break;
             case 'AA_BIN_TRASH':   $bins = AA_BIN_TRASH;   break;
-            case 'AA_BIN_ACTIVE':
-            case '':               $bins = AA_BIN_ACTIVE;  break;
             default:
 
                 $searchbar->setFromBookmark($group);

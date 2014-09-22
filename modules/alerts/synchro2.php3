@@ -4,7 +4,7 @@
  * Adds Alerts-specific fields to the Reader Management Slice.
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adamek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -225,8 +225,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
 /** Returns array (unpacked_slice_id => name) of slices which contain
 *   all fields listed in $required_fields_in_reader_management. */
 function getReaderManagementSlices () {
-    global $db, $required_fields_in_reader_management, $slice_id,
-           $collectionprop;
+    global $db, $slice_id, $collectionprop;
 
     $slices = GetUserSlices();
     $SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement'

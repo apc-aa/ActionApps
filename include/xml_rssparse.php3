@@ -169,7 +169,7 @@ function startElement($parser, $name, $attrs) {
       $item['categories'][] = substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1); break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
-      $fielddata = array(value=>"", flag=>0);
+      $fielddata = array('value'=>"", 'flag'=>0);
       break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELD":       // field's URI

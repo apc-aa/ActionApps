@@ -218,8 +218,6 @@ function Links_RefuseLink($param, $lid, $akce_param) {
  * Moves link to specified folder
  */
 function Links_Move2Folder($lid, $folder) {
-    global $auth, $db;
-
     // get link's base category
     $base_category_path = GetBaseCategoryPath( $lid );
 
@@ -232,8 +230,7 @@ function Links_Move2Folder($lid, $folder) {
         return _m('No permission to move link');  // error
     }
 
-    $SQL = "UPDATE links_links SET folder='$folder' WHERE id = $lid";
-    $db->query($SQL);
+    DB_AA::sql("UPDATE links_links SET folder='$folder' WHERE id = $lid");
     return false;                                         // OK - no error
 }
 

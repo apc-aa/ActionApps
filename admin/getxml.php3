@@ -360,8 +360,6 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
         $xml_items.="\t</rdf:Bag></aa:categories>\n";
     }
 
-    $p_date_id = GetBaseFieldId($slice_fields,"publish_date");      // get publish_date field id
-
     // create Dublin Core elements
     foreach ( $MAP_DC2AA as $k => $v) {
         $cont = GetBaseFieldContent($slice_fields,$v,$content4id);

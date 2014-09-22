@@ -59,8 +59,8 @@ function GetCommonMenu($profile) {
         "u_new"       => array("label"=>_m("New User"),        "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_uedit.php3?usr_new=1"),
 
         "header2"     =>_m("Groups"),
-        "g_edit"      => array("label"=>_m("Edit Group"),      "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php3", "cond"=>1),
-        "g_new"       => array("label"=>_m("New Group"),       "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php3?grp_new=1", "cond"=>1),
+        "g_edit"      => array("label"=>_m("Edit Group"),      "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php3"),
+        "g_new"       => array("label"=>_m("New Group"),       "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php3?grp_new=1"),
 
         "header5"     =>_m("Slice structure"),
         "sliceexp"    => array("label"=>_m("Export"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceexp.php3"),

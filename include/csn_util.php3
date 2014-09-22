@@ -296,7 +296,7 @@ function name2rssfeed($slice_id,$name) {
     if ($db->next_record()) {
       $res = $db->Record;
       $res["feed_type"] = FEEDTYPE_RSS;
-      $res["remote_slice_id"] = attr2id($db->f(server_url));
+      $res["remote_slice_id"] = attr2id($db->f('server_url'));
     }
     freeDB($db);
     return $res;

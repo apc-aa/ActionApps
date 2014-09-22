@@ -140,17 +140,15 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
         $current_bin     =  $manager->getBin();
 
         switch($this->to_bin) {
-            case 1: return IfSlPerm(PS_ITEMS2ACT) AND
-                           ($current_bin != 'app' ) AND
-                           ($current_bin != 'appb') AND
-                           ($current_bin != 'appc');
+            case 1: return IfSlPerm(PS_ITEMS2ACT) AND   ($current_bin != 'app' ) AND
+                                                        ($current_bin != 'appb') AND
+                                                        ($current_bin != 'appc');
                     // Folder2 is Holding bin - prepared for more than three bins
-            case 2: return IfSlPerm(PS_ITEMS2HOLD) AND
-                           ($current_bin != 'hold');
+            case 2: return IfSlPerm(PS_ITEMS2HOLD) AND  ($current_bin != 'hold');
                     // Folder3 is Trash
-            case 3: return IfSlPerm(PS_ITEMS2TRASH) AND
-                           ($current_bin != 'trash');
+            case 3: return IfSlPerm(PS_ITEMS2TRASH) AND ($current_bin != 'trash');
         }
+        return false;
     }
 }
 
@@ -331,7 +329,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
         $zids->setFromItemArr($item_arr);
 
         if ($zids->count() < 1) {
-            return;
+            return false;     // OK
         }
 
         // check if there are no ids from bad slice (attack???)
@@ -341,7 +339,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
         $zids_to_move = new zids(GetTable2Array($SQL, '', 'id'), 'p');
 
         if ($zids_to_move->count() < 1) {
-            return;
+            return false;     // OK
         }
 
         tryQuery("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
@@ -404,7 +402,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
             $zids->setFromItemArr($item_arr);
 
             if ($zids->count() < 1) {
-                return;
+                return false;     // OK
             }
 
             $wherein = " AND ". $zids->sqlin('id');
@@ -422,7 +420,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         }
         if (count($items_to_delete) < 1) {
             freeDB($db);
-            return;
+            return false;     // OK
         }
 
         // mimo enabled -- problem?
@@ -438,7 +436,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         $pagecache->invalidateFor("slice_id=$slice_id");
         freeDB($db);
 
-        return false;
+        return false;     // OK
     }
 
     /** Checks if the user have enough permission to perform the action */
@@ -611,7 +609,7 @@ class AA_Manageraction_Taskmanager_Delete extends AA_Manageraction {
         $zids->setFromItemArr($item_arr, 's');
 
         if ($zids->count() < 1) {
-            return;
+            return false;     // OK
         }
 
         // $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
@@ -658,7 +656,7 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
         $zids->setFromItemArr($item_arr, 's');
 
         if ($zids->count() < 1) {
-            return;
+            return false;     // OK
         }
 
         $toexecute = new AA_Toexecute;

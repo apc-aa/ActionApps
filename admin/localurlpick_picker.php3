@@ -49,9 +49,9 @@ document.forms[0].url.value=parent.frames[1].location;
       <td class=tablename>
       <form 
  enctype="text/plain" method="post" name="navigator" onSubmit="changeURLlocation();return false;">
-<input type=button value=Back onClick="javascript:history.go(-1)">
-<input type=button value=Forward onClick="javascript:history.go(+1)">
-<input type=button value=Home onClick="javascript:parent.frames[1].location='<? echo htmlspecialchars($_GET["url"]); ?>'">
+<input type=button value=Back onClick="history.go(-1)">
+<input type=button value=Forward onClick="history.go(+1)">
+<input type=button value=Home onClick="parent.frames[1].location='<? echo htmlspecialchars($_GET["url"]); ?>'">
 <input
  size="60" name="url"
  value="http://"> <input

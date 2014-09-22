@@ -337,7 +337,7 @@ class AA_Field_Writer {
                     $this->_store($reverse_id, $field, $value, $param);
                 }
                 freeDB($db);
-                break;;
+                break;
 
             case 'x':   // just filling character - remove it
             default:

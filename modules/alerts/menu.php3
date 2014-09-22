@@ -44,7 +44,7 @@ $menu_function = 'get_aamenus_alerts';
 set_collectionid();
 
 function get_aamenus_alerts() {
-    global $r_slice_view_url, $auth, $slice_id;
+    global $auth, $slice_id;
 
     $aamenus["admin"] = array (
         "label" => _m("Alerts Settings"),

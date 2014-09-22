@@ -1,16 +1,16 @@
 /* JavaScript functions to be used with constedit.php3
     Hierarchical constant editor */
 
-var hcEasyDelete = new Array();
-var hcLevelCount = new Array();
-var hcConsts     = new Array();
+var hcEasyDelete = [];
+var hcLevelCount = [];
+var hcConsts     = [];
 
 // contains selected index (or -1 when nothing selected) for all levels
-var hcSelectedItems = new Array();
+var hcSelectedItems = [];
 // selected box number
-var hcSelectedBox = new Array();
+var hcSelectedBox   = [];
 // list of IDs of items deleted
-var hcDeletedIDs = new Array ();
+var hcDeletedIDs    = [];
 
 // ID counter to be set for new items
 var hcNewID = 0;
@@ -22,7 +22,7 @@ function clearSelectBox (formname, boxname) {
 }
 
 function hcResolveValues (arr) {
-    var i = new Number();
+    var i = 0;
     for (i=0; i < arr.length; ++i) {
         if (arr[i][colValue] == '#')
             arr[i][colValue] = arr[i][colName];
@@ -34,7 +34,7 @@ function hcResolveValues (arr) {
 // call at the start of this page
 function hcInit(hcid) {
     hcResolveValues(hcConsts[hcid]);
-    hcSelectedItems[hcid] = Array();
+    hcSelectedItems[hcid] = [];
     hcSelectedBox[hcid]   = -1;
 
 

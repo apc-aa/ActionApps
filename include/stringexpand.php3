@@ -1009,12 +1009,10 @@ function parseMath($text) {
  * @param $item
  */
 function parseLoop($out, &$item) {
-    global $contentcache;
 
     if ( !is_object($item) ) {
         return '';
     }
-
 
     // alternative syntax {@field...} or {list:field...}
     if ( (substr($out,0,5) == "list:") ) {
@@ -1220,7 +1218,6 @@ $QUOTED_ARRAY   = array("|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "_AA_ReMoVe
  * @param $text
  */
 function QuoteColons($text) {
-    global $UNQUOTED_ARRAY, $QUOTED_ARRAY;
     return str_replace($GLOBALS['UNQUOTED_ARRAY'], $GLOBALS['QUOTED_ARRAY'], $text);
 }
 
@@ -1231,7 +1228,6 @@ function QuoteColons($text) {
  * @param $text
  */
 function DeQuoteColons($text) {
-    global $UNQUOTED_ARRAY, $QUOTED_ARRAY;
     return str_replace($GLOBALS['QUOTED_ARRAY'], $GLOBALS['UNQUOTED_ARRAY'], $text);
 }
 
@@ -2028,7 +2024,6 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='', $no_url_encode=false) {
-        $values = array();
         if ( !is_object($this->item) OR !$this->item->isField($text) ) {
             return AA_Stringexpand_Conds::_joinArray(json2arr($text), $no_url_encode, '');
         }
@@ -2696,7 +2691,6 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
             $unique_slices = AA_Stringexpand::unalias("{site:{modulefield:{slice_id........}:site_ids}:modules}", '', $this->item);
         }
         if ( !empty($unique_slices) ) {
-            $i = 1;
             // we do not want to create infinitive loop for wrong parameters
             for ($i=2; $i < 100000; $i++) {
                 $ids = AA_Stringexpand_Seo2ids::expand($unique_slices, $base.$add, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
@@ -3704,8 +3698,8 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
             case "fileman":
             // Note this won't work if called from a Static view because no slice_id available
             // This should be fixed.
-                if ($itemview->slice_info["id"]) {
-                    $mysliceid = unpack_id($itemview->slice_info['id']);
+                if ($this->itemview->slice_info["id"]) {
+                    $mysliceid = unpack_id($this->itemview->slice_info['id']);
                 } elseif ($GLOBALS['slice_id']) {
                     $mysliceid = $GLOBALS['slice_id'];
                 } else {
@@ -3747,7 +3741,6 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
  * @param $parturl
  */
 function expandFilenameWithHttp($parturl) {
-    global $errcheck;
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
 
     // filename do not use colons as separators => dequote before callig
@@ -3821,7 +3814,7 @@ class AA_Unalias_Callback {
      * @param $itemview
      */
     function expand_bracketed($match) {
-        global $contentcache, $als, $debug, $errcheck;
+        global $contentcache, $als, $errcheck;
         $out = $match[1];
 
         // See http://apc-aa.sourceforge.net/faq#aliases for details
@@ -4063,12 +4056,8 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
      * @param $slice_id
      */
     function expand($slice_id) {
-        $SQL = "SELECT sum(disc_count) FROM item WHERE slice_id=\"$slice_id\"";
-        $db  = getDB();
-        $res = $db->tquery($SQL);
-        $dc  = $db->next_record() ? $db->f("sum(disc_count)") : 0;
-        freeDB($db);
-        return $dc;
+        $dc = DB_AA::select1('SELECT sum(disc_count) AS total FROM `item`', 'total', array(array('slice_id', $slice_id,'l')));
+        return $dc ?: 0;
     }
 }
 
@@ -4201,7 +4190,7 @@ class AA_Stringexpand {
      * @param $itemview
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
-        global $debug, $debugtime;
+        global $debugtime;
 
         if (++AA_Stringexpand::$recursion_count > 5000) {
             --AA_Stringexpand::$recursion_count;
@@ -5485,7 +5474,6 @@ class AA_Stringexpand_Tagcloud extends AA_Stringexpand {
     function expand($item_ids='', $count='', $alias='', $count_field='') {
         $alias       = get_if($alias, '_#HEADLINK');
         $count_field = get_if($count_field, '{count:{backlinks:{id..............}::-}}');
-        $delimiter   = get_if($delimiter, ' ');
         $results     = array();
 
         $items = AA_Items::getItems(new zids(explode('-',$item_ids)));

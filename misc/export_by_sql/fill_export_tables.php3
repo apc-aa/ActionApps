@@ -36,7 +36,7 @@ if ($slices_chosen) {
     $db->query ("SELECT input_show_func FROM field WHERE slice_id IN (".$slice_ids.")");
     $groups = "";
     while ($db->next_record()) {
-        list ($show_func, $group) = split(":", $db->f("input_show_func"));
+        list ($show_func, $group) = explode(":", $db->f("input_show_func"));
         if ($group && $show_types[$show_func]['paramformat'] == 'fnc:const:param'
             && substr($group,0,7) != "#sLiCe-")
             $groups[] = $group;

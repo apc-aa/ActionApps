@@ -431,7 +431,7 @@ function debug() {
     }
     $messages = func_get_args();
     foreach ( $messages as $msg ) {
-        AA::$dbg->log($a);
+        AA::$dbg->log($msg);
     }
 }
 
@@ -484,7 +484,7 @@ function huhl() {
  */
 function PrintArray($a) {
     if (is_array($a)) {
-        while ( list( $key, $val ) = each( $a ) ) {
+        foreach ( $a as $val) {
             if (is_array($val)) {
                PrintArray($val);
             } else {
@@ -682,44 +682,46 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 
     /* create SQL query for different types of numeric constants */
     switch ($numeric_bin) {
-    case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH : return ' 1=1 ';
-    case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING:                                  return " $table.status_code=1 ";
-    case AA_BIN_ACTIVE | AA_BIN_EXPIRED:                                                   return " $table.status_code=1 AND ($table.publish_date <= '$now') ";
-    case AA_BIN_ACTIVE | AA_BIN_PENDING:                                                   return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
-    default:
-        $or_conds = array();
-        if (($numeric_bin & (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
-            $or_conds[] = " $table.status_code=1 ";
-        } else {
-            if ($numeric_bin & AA_BIN_ACTIVE) {
-                $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
-                /* condition can specify expiry date (good for archives) */
-                if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
-                    //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
-                    $SQL .= " AND $table.expiry_date > '$now' ";
-                }
-                $or_conds[] = $SQL;
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH :
+            return ' 1=1 ';
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING:
+            return " $table.status_code=1 ";
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED:
+            return " $table.status_code=1 AND ($table.publish_date <= '$now') ";
+        case AA_BIN_ACTIVE | AA_BIN_PENDING:
+            return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
+    }
+    $or_conds = array();
+    if (($numeric_bin & (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
+        $or_conds[] = " $table.status_code=1 ";
+    } else {
+        if ($numeric_bin & AA_BIN_ACTIVE) {
+            $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
+            /* condition can specify expiry date (good for archives) */
+            if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+                //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
+                $SQL .= " AND $table.expiry_date > '$now' ";
             }
-            if ($numeric_bin & AA_BIN_EXPIRED) {
-               $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
-            }
-            if ($numeric_bin & AA_BIN_PENDING) {
-               $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
-            }
+            $or_conds[] = $SQL;
         }
-        if ($numeric_bin & AA_BIN_HOLDING) {
-            $or_conds[] = " $table.status_code=2 ";
+        if ($numeric_bin & AA_BIN_EXPIRED) {
+           $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
         }
-        if ($numeric_bin & AA_BIN_TRASH) {
-            $or_conds[] = " $table.status_code=3 ";
-        }
-        switch (count($or_conds)) {
-            case 0:  return ' 1=1 ';
-            case 1:  return ' '. $or_conds[0] .' ';
-            default: return ' (('. join(') OR (', $or_conds) .')) ';
+        if ($numeric_bin & AA_BIN_PENDING) {
+           $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
         }
     }
-    return ' 1=1 ';
+    if ($numeric_bin & AA_BIN_HOLDING) {
+        $or_conds[] = " $table.status_code=2 ";
+    }
+    if ($numeric_bin & AA_BIN_TRASH) {
+        $or_conds[] = " $table.status_code=3 ";
+    }
+    switch (count($or_conds)) {
+        case 0:  return ' 1=1 ';
+        case 1:  return ' '. $or_conds[0] .' ';
+    }
+    return ' (('. join(') OR (', $or_conds) .')) ';
 }
 
 
@@ -753,14 +755,12 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     $db = getDB();
 
     // get content from item table
-    $delim = "";
 
     $use_short_ids = (($zids_type = $zids->onetype()) == 's');
     $metabase      = AA_Metabase::singleton();
 
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {
-        $item_sql_fields = $fields2get;
 
         $content_fields = array();
         $item_fields    = array();
@@ -968,7 +968,6 @@ function GetItemContentMinimal($zids, $fields2get=false) {
     if ($sel_in) {
         // get content from item table
         $db    = getDB();
-        $delim = "";
         $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
         $db->tquery($SQL);
         $n_items = 0;
@@ -1189,21 +1188,21 @@ function FrmHtmlPage($param='') {
  * @param $msg - displayed message
  * @param $dummy - was used in past, now you should use MsgPageMenu from msgpage.php3
  */
-function MsgPage($url, $msg, $dummy="standalone") {
-  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+function MsgPage($url, $msg) {
+    HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+    echo "<title>" . _m("Toolkit news message") . "</title>
+      </head>
+    <body>";
 
-  echo "<title>"._m("Toolkit news message")."</title>
-    </head>
-  <body>";
-
-  if ( isset($msg) AND is_array($msg))
-    PrintArray($msg);
-   else
-    echo "<p>$msg</p><br><br>";
-  echo "<a href=\"$url\">"._m("Back")."</a>";
-  echo "</body></html>";
-  page_close();
-  exit;
+    if (isset($msg) AND is_array($msg)) {
+        PrintArray($msg);
+    } else {
+        echo "<p>$msg</p><br><br>";
+    }
+    echo "<a href=\"$url\">"._m("Back")."</a>";
+    echo "</body></html>";
+    page_close();
+    exit;
 }
 
 function StoreToContent($item_id, $field, $value, $additional='') {
@@ -1346,7 +1345,6 @@ function ReadFileSafe($url) {
  */
 function add_post2shtml_vars($delete = true) {
     global $post2shtml_id;
-    global $debugfill;
     add_vars();
     if (!$post2shtml_id) {
         return;

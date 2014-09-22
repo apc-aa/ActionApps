@@ -156,7 +156,6 @@ function ChangeFieldID($old_id, $new_id)
                 WHERE ".$settings['slice_id']." = '$p_slice_id'";
         $rows = GetTable2Array ($SQL);
         if (is_array($rows)) {
-            $i = 0;
             foreach ($rows as $row) {
                 $varset->clear();
                 foreach ($settings['fields'] as $field) {

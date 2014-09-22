@@ -54,7 +54,7 @@ class AA_Log {
      * @param $params
      * @param $selector
      */
-    function write($event, $params="", $selector="" ) {
+    static function write($event, $params="", $selector="" ) {
         global $auth;
 
         if ( !AA_Log::isLogable($event) ) {

@@ -160,7 +160,7 @@ class tabledit {
         $edit = $this->cmd["edit"];
         if (is_array($edit)) {
             reset($edit);
-            $edit_key = key($edit);
+            // $edit_key = key($edit);  // is unused so commented out, Honza 2014-09-13
             $tecmd["edit"] = $edit;
         }
         elseif (is_array($tecmd["edit"])) {
@@ -197,7 +197,7 @@ class tabledit {
         global $$scrname;
         $scroll = $$scrname;
         if (is_object($this->sess))
-            $scrurl = $this->sess->url($GLOBALS[PHP_SELF]."?set_tview=".$this->gotoview2());
+            $scrurl = $this->sess->url($_SERVER[PHP_SELF]."?set_tview=".$this->gotoview2());
 
         if (is_object($scroll)) {
             $scroll->metapage = $this->view["listlen"];

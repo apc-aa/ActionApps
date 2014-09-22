@@ -50,7 +50,7 @@ $GLOBALS['aamenus']       = "aamenus";
 $GLOBALS['menu_function'] = 'get_aamenus_polls';
 
 function get_aamenus_polls() {
-    global $r_slice_view_url, $r_state, $auth, $AA_CP_Session, $polledit, $slice_id;
+    global $r_slice_view_url, $r_state, $auth, $polledit, $slice_id;
 
     $module_location = "modules/polls/";
 

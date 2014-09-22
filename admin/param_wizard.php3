@@ -126,7 +126,7 @@ if (is_array($desc['params'])) {
                 document.location = page;
             }
             function writeParams () {
-                params = new String("");
+                params = '';
                 for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
                     if (i > 0) params += ":";
                     val = document.f.elements["param"+i].value;

@@ -386,7 +386,7 @@ echo '
 <body id="body_white_color" '.$on_load.'>
  <H1><B>'. $pagename .'</B></H1>';
  if ( Links_IsPublic() ) {
-     echo '<div style="padding: 0px 20px 10px;">'. _m('<!--NewPublicLinkText-->'). '</div>';
+     echo '<div style="padding: 0 20px 10px;">'. _m('<!--NewPublicLinkText-->'). '</div>';
  }
 
 PrintArray($r_err);

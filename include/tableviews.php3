@@ -37,13 +37,7 @@ function GetTableView($viewID) {
     $attrs_browse = array (
         "table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
         "table_search" => "border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");
-    $format = array (
-        "hint" => array (
-            "before" => "<i>",
-            "after" => "</i>"),
-        "caption" => array (
-            "before" => "<b>",
-            "after" => "</b>"));
+    // $format = array (...
 
     /* ------------------------------------------------------------------------------------
        polls_design

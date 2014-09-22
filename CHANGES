@@ -1,3 +1,5 @@
+14-09-23 - CSS cleanup
+(honzam) - PHP code cleanup based on static analysis of PHPStorm 
 14-09-11 - reduction of database connections in AA
 (honzam) - rotator now uses slide UP/DOWN
          - optimized debug output to browser console using ?debug=c

@@ -42,7 +42,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
+ * @author    Mitra (based on earlier versions by Jakub Adï¿½mek, Pavel Jisl)
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -82,7 +82,7 @@ function bayfm_preimport($s) {
     }
     // Edit Items, translate vids in field "unspecified....1"
     reset($s['SLICE']);
-    while (list($k,$sl) = each(&$s['SLICE'])) {
+    while (list($k,$sl) = each($s['SLICE'])) {
         if (is_array($sl['DATA'])) {
             print("<br>Processing Data");
             foreach ($sl['DATA'] as $sld) {
@@ -149,9 +149,8 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
         $slice["name"] = $sl['NAME'];
         if ($dry_run) {
             huhl("Would import slice=",$slice);
-            $slice_id_new = '11111111111111112222222222222222';
         } else {
-            $slice_id_new = import_slice($slice);
+            import_slice($slice);
         }
     }
     elseif ($s['VERSION'] == "1.1") {
@@ -226,8 +225,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
  * @param $slice_id_new
  */
 function import_views(&$slvs, $slice_id_new) {
-    global $dry_run, $view_resolve_conflicts, $new_slice_ids,
-           $view_IDconflict,$IDconflict, $view_conflicts_ID;
+    global $dry_run;
 
     if ( $dry_run ) {
         huhl($slvs);

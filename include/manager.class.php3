@@ -633,10 +633,10 @@ class AA_Manager extends AA_Storable {
 
                   // we store open_url parameter to js variable for
                   // MarkedActionGo() function
-                echo '<script language="JavaScript" type="text/javascript"> <!--
-                         var markedactionurl     = Array();
-                         var markedactionurladd  = Array();
-                         var markedactionsetting = Array();
+                echo '<script type="text/javascript"> <!--
+                         var markedactionurl     = [];
+                         var markedactionurladd  = [];
+                         var markedactionsetting = [];
                             '. $javascr .'
                         // -->
                       </script>';

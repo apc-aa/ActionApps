@@ -51,10 +51,6 @@ function IsHistoryActionPerm($action) {
     return false;
 }
 
-
-//id   	 resource_id   	 type   	 user   	 time
-//Celé texty  	 id   	 change_id   	 selector   	 priority   	 value   	 type
-
 /** GetHistoryFields function
  * List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
@@ -136,12 +132,11 @@ function GetHistoryContent($zids) {
  *  @global bool $debug=1       - many debug messages
  */
 function QueryHistoryZIDs($slice_id, $conds, $sort="") {
-    global $debug;                 // displays debug messages
 
     $HISTORY_FIELDS = GetHistoryFields();
 
-    $where_sql    = MakeSQLConditions($HISTORY_FIELDS, $conds, $HISTORY_FIELDS, $foo);
-    $order_by_sql = MakeSQLOrderBy(   $HISTORY_FIELDS, $sort,  $foo);
+    $where_sql      = MakeSQLConditions($HISTORY_FIELDS, $conds, $HISTORY_FIELDS, $foo);
+    $order_by_sql   = MakeSQLOrderBy(   $HISTORY_FIELDS, $sort,  $foo);
 
     $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record, item
               WHERE change.id = change_record.change_id AND item.id = UNHEX(change.resource_id) AND item.slice_id = '". q_pack_id($slice_id)."'

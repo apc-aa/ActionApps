@@ -32,8 +32,7 @@ function SetContent(id,txt,d) {
   }
 }
 
-function GetContent(id, d)
-{
+function GetContent(id, d) {
     if(!d) d=document;
     if(d.getElementById) {
         return d.getElementById(id).innerHTML;
@@ -65,88 +64,14 @@ function MoveElement(id, d, direction) {
         } else {
             swap = el.nextSibling;
         }
-    }
-
-    var a = el.parentNode.rows;
-
-    if (this.descending)
-        a.reverse();
-
-    if (SortableTable.removeBeforeSort) {
-        // remove from doc
-        var nextSibling = tBody.nextSibling;
-        var p = tBody.parentNode;
-        p.removeChild(tBody);
-    }
-
-    // insert in the new order
-    var l = a.length;
-    for (var i = 0; i < l; i++)
-        tBody.appendChild(a[i].element);
-
-    if (SortableTable.removeBeforeSort) {
-        // insert into doc
-        p.insertBefore(tBody, nextSibling);
-    }
-
-    this.updateHeaderArrows();
-
-    this.destroyCache(a);
-
-    if (typeof this.onsort == "function")
-        this.onsort();
-};
-
-function CacheRows() {
-    var rows = this.tBody.rows;
-    var l = rows.length;
-    var a = new Array(l);
-    var r;
-    for (var i = 0; i < l; i++) {
-        r = rows[i];
-        a[i] = {
-            value:		this.getRowValue(r, sType, nColumn),
-            element:	r
-        };
-    };
-    return a;
-};
-
-function destroyCache(oArray) {
-    var l = oArray.length;
-    for (var i = 0; i < l; i++) {
-        oArray[i].value = null;
-        oArray[i].element = null;
-        oArray[i] = null;
-    }
-}
-
-
-function getRowValue(oRow, sType, nColumn) {
-    var s;
-    var c = oRow.cells[nColumn];
-    if (typeof c.innerText != "undefined")
-        s = c.innerText;
-    else
-        s = getInnerText(c);
-    return s;
-}
-
-function getInnerText(oNode) {
-    var s = "";
-    var cs = oNode.childNodes;
-    var l = cs.length;
-    for (var i = 0; i < l; i++) {
-        switch (cs[i].nodeType) {
-            case 1: //ELEMENT_NODE
-                s += SortableTable.getInnerText(cs[i]);
-                break;
-            case 3:	//TEXT_NODE
-                s += cs[i].nodeValue;
-                break;
+        if ( swap != null ) {  // in case the element do not exist => do nothing
+            content = el.innerHTML;
+            alert(el.innerHTML);
+            alert(swap.innerHTML);
+            el.innerHTML   = swap.innerHTML;
+            swap.innerHTML = content;
         }
     }
-    return s;
 }
 
 
@@ -158,30 +83,7 @@ function MoveRowDown(id, d) {
     return MoveElement(id, d, 'down');
 }
 
-function MoveElement(id, d, direction) {
-    var el,swap, content;
-    if(!d) d=document;
-    if(!d.getElementById) {  // do not work in dom1
-        return ;
-    }
-    el = d.getElementById(id);
-    if ( el != null ) {  // in case the element do not exist => do nothing
-        if ( direction == 'up' ) {
-            swap = el.previousSibling;
-        } else {
-            swap = el.nextSibling;
-        }
-        if ( swap != null ) {  // in case the element do not exist => do nothing
-            content = el.innerHTML;
-            alert(el.innerHTML);
-            alert(swap.innerHTML);
-            el.innerHTML   = swap.innerHTML;
-            swap.innerHTML = content;
-        }
-    }
-}
-
-var popupwindows = Array();
+var popupwindows = [];
 var popup_date = new Date();         // we need just to create unique id for the
 var popupwindows_id = popup_date.getTime();   // popups (think of popup in popup)
 

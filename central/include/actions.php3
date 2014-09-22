@@ -240,8 +240,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
                 return false;
             }
 
-            $items_to_delete = array();
-            $item_ids        = array_keys($item_arr);
+            $items_to_delete = array_keys($item_arr);
             if (count($items_to_delete) < 1) {
                 return false;
             }

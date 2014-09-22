@@ -239,7 +239,6 @@ class spot {
     function set($what,$value)             { $this->set_translated($GLOBALS['SPOT_VAR_NAMES'][$what], $value); }
 
     function conditionMatches(&$state) {
-        $i=0;
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
                 $value = ($var[0]=='{') ? AA_Stringexpand::unalias($var, '', $state['item']) : $state[$var];
@@ -262,7 +261,7 @@ class sitetree {
     }
 
     /** Creates the spot object and adds it in the sequence (positions) */
-    function addInSequence($where, $name, $content=false, $conditions=false, $variables=false, $flag=false) {
+    function addInSequence($where, $name, $conditions=false, $variables=false, $flag=false) {
         // parent is not set yet (set by addInSequence() in next step);
         $spot = new spot( $this->new_id(), $name, $conditions, $variables, false, $flag );
         if ($this->_addInSequence($spot, $where)) {

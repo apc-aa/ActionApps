@@ -117,7 +117,7 @@ function ShowEmailAliases() {
  */
 function GetEmailTableView($viewID) {
     global $slice_id;
-    global $attrs_edit, $attrs_browse, $format, $langs;
+    global $attrs_edit, $attrs_browse;
 
     if ($viewID == "email_edit") {
         $mylangs = GetEmailLangs();
@@ -181,7 +181,6 @@ function GetEmailTableView($viewID) {
     //        but may be added anywhere else
 
     if ($viewID == "email") {
-        $mylangs = GetEmailLangs();
         return  array (
         "table" => "email",
         "type" => "browse",

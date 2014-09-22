@@ -5,7 +5,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adamek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -32,7 +32,7 @@ http://www.apc.org/
 require_once "alerts_sending.php3";
 
 function showCollectionAddOns() {
-    global $example, $fire, $auth, $cmd, $db, $sess, $collectionprop, $collectionid;
+    global $example, $fire, $auth, $sess, $collectionprop, $collectionid;
 
     initialize_last();
 

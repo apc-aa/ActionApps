@@ -374,7 +374,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     }
 
     else if ($cmd=='copytmp') {
-        $tmperr = fileman_copy_template (FILEMAN_BASE_DIR."templates/".$arg, FILEMAN_BASE_DIR.$fileman_dir);
+        $tmperr = fileman_copy_template(FILEMAN_BASE_DIR."templates/".$arg, FILEMAN_BASE_DIR.$fileman_dir);
         if ($tmperr) {
             $err[] = _m("Error: ").": $tmperr";
         }

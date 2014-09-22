@@ -131,7 +131,7 @@ function cron($time = 0) {
                 }
 
                 if (strstr($value,'/')) {
-                    list($from,$to,$step) = split('[/-]',$value);
+                    list($from,$to,$step) = preg_split('~[/-]~',$value);
                     for ($i = $from; $i <= $to; $i += $step)
                         if ($i <= $now_part && $i > $nearest_part)
                             $nearest_part = $i;

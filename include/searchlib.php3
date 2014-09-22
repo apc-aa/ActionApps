@@ -229,7 +229,6 @@ class AA_Condition extends AA_Object {
             case 'XLIKE':   return (strpos($field_value, $this->value) === false) ? false : true;
             case 'RLIKE':   return (strpos($field_value, $this->value) === 0)     ? true  : false;
             case 'LLIKE':   return  strpos($field_value, $this->value) == (strlen($field_value)-strlen($this->value));
-            case '=':       return  $field_value == $this->value;
             case 'BETWEEN':
                 $arr = explode( ",", $this->value );
                 return (((int)$field_value >= (int)$arr[0]) AND ((int)$field_value <= (int)$arr[1]));
@@ -1212,7 +1211,7 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  * @return zids from SQL query;
  */
 function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=false, $group_limit=null ) {
-    global $QueryIDsCount, $debug;
+    global $QueryIDsCount;
     $db = getDB();
 
     $arr           = array();       // result ids array
@@ -1312,12 +1311,11 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 *                                     // view parameter instead)
 *   </pre>
 */
-function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE", $use_cache=false ) {
+function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE" ) {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
     global $CONDS_NOT_FIELD_NAMES; // list of special conds[] indexes (defined in constants.php3)
-    global $QueryIDsCount;
 
     if (!is_array($slices)) {
         $slices = empty($slices) ? array() : (array)$slices;
@@ -1730,8 +1728,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 *       replaces the default "RLIKE" for conditions with no operator set
 *
 *   @return A zids object with a list of the ids that match the query.
-*
-*   @global  int $QueryIDsCount (out) is set to the count of IDs returned
 *
 *   Parameter format example - {see QueryZIDs, FAQ}
 *   Fields definition - {see include/constants.php3}

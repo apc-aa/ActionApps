@@ -240,8 +240,8 @@ function GetModuleLetter($type) {
  */
 function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
     <script type="text/javascript"><!--
-      var mod       = new Array();
-      var mod_names = new Array();
+      var mod       = [];
+      var mod_names = [];
     <?php
     // tell javascript, which module uses which permission roles
     echo "\n var mod_types='$mod_types';\n";

@@ -49,9 +49,8 @@
  * @param $a
  */
 function xml_serialize($k,&$v,$i,$ii,$a=null) {
-    global $debug;
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
-    $end = (isset($a) ? "$k" : "t");
+    $end   = (isset($a) ? "$k" : "t");
     if (is_null($v)) {
         return "$i<$start />";
     }
@@ -116,10 +115,9 @@ class xml_unserializer {
      */
     function parse($xml_data) {
         if (!xml_parse($this->parser, $xml_data, true)) {
-            return sprintf("XML parse error: %s at line %d",
-                xml_error_string(xml_get_error_code($this->parser)),
-                xml_get_current_line_number($this->parser));
-                xml_parser_free($this->parser);
+            $ret =  sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
+            xml_parser_free($this->parser);
+            return $ret;
         }
         return $this->top;
     }
@@ -129,7 +127,6 @@ class xml_unserializer {
      * @param $attrs
      */
     function startElement($parser, $name, $attrs) {
-        global $debugimport;
         if ($this->debug) {
             huhl("\n:start='".$name."'",$attrs,$this);
         }
@@ -156,7 +153,6 @@ class xml_unserializer {
             $this->top = null;
         }
         $this->chardata = "";
-//        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top);
     }
 
     /** endElement function

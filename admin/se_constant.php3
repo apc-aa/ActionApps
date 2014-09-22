@@ -78,7 +78,6 @@ if ( $group_id ) {
  *
  */
 function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
-    global $sess;
     $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
 
     $count = '';
@@ -101,13 +100,13 @@ function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
 }
 
 /** propagateChanges function
-* Propagates changes to a constant value to the items which contain this value.
-*   @param $constant_id
-*   @param string $newvalue The new value with added slashes (e.g. from a form)
-*   @param $oldvalue
-*/
+ * Propagates changes to a constant value to the items which contain this value.
+ *   @param $constant_id
+ *   @param string $newvalue The new value with added slashes (e.g. from a form)
+ *   @param $oldvalue
+ */
 function propagateChanges($constant_id, $newvalue, $oldvalue) {
-    global $db, $group_id, $Msg, $debug, $event, $slice_id;
+    global $db, $group_id, $Msg, $event, $slice_id;
 
     if ($oldvalue == $newvalue) return;
 
@@ -411,9 +410,8 @@ echo '
   var data2sort;
 
   function GetFormData( col2sort ) {
-    var i,element,varname;
-    data2sort = null;
-    data2sort = new Array();
+    var i,element;
+    data2sort = [];
     for (i=0; i<='. $lastIndex .'; i++) {
       element = "document.f.elements[\'"+col2sort+"["+i+"]\']";
       // add rownumber at the end of the text (to be able to get old possition)

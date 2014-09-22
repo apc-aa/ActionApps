@@ -89,7 +89,7 @@ reset($list["items"]);
 while (list ($name, $item) = each($list["items"])) {
     echo "<hr>";
     echo "<h2 id=$name>$name: $item[name]</h2>\n";
-    echo processSlashes($item[desc]) . "<br>\n";
+    echo processSlashes($item['desc']) . "<br>\n";
     $params = $item["params"];
     if (is_array($params)) {
         echo "<br>" . _m("Parameters:");
@@ -102,8 +102,8 @@ while (list ($name, $item) = each($list["items"])) {
         reset($params);
         while (list (, $param) = each($params)) {
             echo "<TR>";
-            echo "<TD><B>" . nl($param[name]) . "</B></TD><TD>";
-            switch ($param[type]) {
+            echo "<TD><B>" . nl($param['name']) . "</B></TD><TD>";
+            switch ($param['type']) {
                 case "INT": echo " (" . _m("integer number") . ")";
                     break;
                 case "STR": echo " (" . _m("any text") . ")";
@@ -115,8 +115,8 @@ while (list ($name, $item) = each($list["items"])) {
                 default : echo "&nbsp;";
             }
             echo "</TD>
-              <TD>" . nl(processSlashes($param[desc])) . "</TD>
-              <TD>" . nl($param[example]) . "</TD></TR>\n";
+              <TD>" . nl(processSlashes($param['desc'])) . "</TD>
+              <TD>" . nl($param['example']) . "</TD></TR>\n";
         }
         echo "</TABLE>\n";
     }

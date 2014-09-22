@@ -104,7 +104,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 <title><?php echo _m("Admin - Discussion comments management");?></title>
 
-<script Language="JavaScript"><!--
+<script type="text/javascript"><!--
   function InitPage() {}
   function DeleteComment(id) {
     if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))

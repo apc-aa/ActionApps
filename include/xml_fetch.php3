@@ -235,7 +235,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
  * @param $field_refs
  * @param $fields
  */
-function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &$fields) {
+function updateFieldsMapping($l_slice_id, $r_slice_id, &$field_refs, &$fields) {
     global $debugfeed;
 
     list($ext_map,$field_map) = GetExternalMapping($l_slice_id, $r_slice_id);
@@ -321,7 +321,7 @@ function field2arr($field) {
     } else { // Must be 1.0 which doesn't have an RSS version
         $flag = FLAG_HTML;
     }
-    return array(value => $field, flag => $flag);
+    return array('value' => $field, 'flag' => $flag);
 }
 
 /** map1field function

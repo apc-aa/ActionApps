@@ -43,7 +43,7 @@ function GetCentalEditTableView() {
 }
 
 if ( !IsSuperadmin() ) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"), "standalone");
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
     exit;
 }
 

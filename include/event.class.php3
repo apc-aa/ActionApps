@@ -121,6 +121,7 @@ class aaevent {
                 $this->returns[] = $handler->process($type, $slice, $slice_type, $ret_params, $params, $params2);
             }
         }
+        return false;
     }
 
     /** get_handlers function
@@ -247,9 +248,8 @@ class NewDiscussionCommentEvent {
         if ( $vid{0} == 't' ) {   // email template
             $mail_id = substr($vid,1);
             AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
-            return;
+            return false;
         }
-
 
         $function = $this->funct;
         return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
@@ -289,18 +289,17 @@ function GetNotifications($type, $class, $selector, $reaction=null, $params=null
 function AddNotification($type, $class, $selector, $reaction, $params) {
 
     // check if user already is not set for this item
-    if ( count(GetNotifications($type, $class, $selector, $reaction, $params)) > 0 ) {
-        return false;
+    if ( !count(GetNotifications($type, $class, $selector, $reaction, $params)) ) {
+        $notification_id = new_id();
+        $notificationVS = new Cvarset();
+        $notificationVS->add("id", "text", $notification_id);
+        $notificationVS->add("type", "text", $type);
+        $notificationVS->add("class", "text", $class);
+        $notificationVS->add("selector", "text", $selector);
+        $notificationVS->add("reaction", "text", $reaction);
+        $notificationVS->add("params", "quoted", $params);
+        $notificationVS->doInsert('event');
     }
-    $notification_id = new_id();
-    $notificationVS  = new Cvarset();
-    $notificationVS->add("id",        "text",   $notification_id);
-    $notificationVS->add("type",      "text",   $type);
-    $notificationVS->add("class",     "text",   $class);
-    $notificationVS->add("selector",  "text",   $selector);
-    $notificationVS->add("reaction",  "text",   $reaction);
-    $notificationVS->add("params",    "quoted", $params);
-    $notificationVS->doInsert('event');
 }
 
 

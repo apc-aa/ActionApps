@@ -45,55 +45,16 @@ function $JSL(){
         else			str.push(0xF0+(i>>18),0x80+(i>>12&0x3F),0x80+(i>>6&0x3F),0x80+(i&0x3F));
         return "%"+str.map($JSL.$encodeURI).join("%");
     };
-};$JSL=new $JSL();
+}
+$JSL=new $JSL();
 if(typeof(encodeURI)==="undefined"){function encodeURI(str){
     var elm=/([\x00-\x20]|[\x25|\x3C|\x3E|\x5B|\x5D|\x5E|\x60|\x7F]|[\x7B-\x7D]|[\x80-\uFFFF])/g;
     return $JSL.encodeURI(str.toString().replace(elm,$JSL.$encodeURIComponent));
-}};
+}}
 if(typeof(encodeURIComponent)==="undefined"){function encodeURIComponent(str){
     var elm=/([\x23|\x24|\x26|\x2B|\x2C|\x2F|\x3A|\x3B|\x3D|\x3F|\x40])/g;
     return $JSL.encodeURI(encodeURI(str).replace(elm,function(a,b){return "%"+$JSL.charCodeAt(b)}));
-}};
-
-
-/*
-function writeProposal(divid, item_id, fid, text) {
-    var divtag = document.getElementById(divid);
-    var divcontent = divtag.innerHTML;
-    SetContent(divid, text);
-    convertToForm(divtag, item_id, fid);
-    proposeChange(divid, item_id, fid);
-    //SetContent(divid, divcontent);
-}
-*/
-
-/*
-function convertToForm(divtag, item_id, fid) {
-    var divcontent = divtag.innerHTML;
-    if ((divcontent.substring(0,6) == '<input') ||
-        (divcontent.substring(0,6) == '<INPUT') ||
-    (divcontent.substring(0,9) == '<textarea') ||
-    (divcontent.substring(0,9) == '<TEXTAREA')) {
-        // already converted to form
-        return;
-    }
-    var divid = divtag.getAttribute('id');
-    var contentdiv = divtag.innerHTML;
-    var formhtml;
-    var perms = (typeof do_change == 'undefined') ? 1 : do_change;
-
-    if ( (contentdiv.length >= 60) || (fid=='edit_note......1')) {
-        formhtml = '<textarea cols="80" rows="8" id="i' + divid + '">'+ contentdiv + '</textarea>';
-    } else {
-        formhtml = '<input type="text" size="80" id="i' + divid + '" value="' + contentdiv +'">';
-    }
-    formhtml += ' <input type="hidden" id="h' + divid + '" value="' + divtag.innerHTML +'">';
-    formhtml += ' <input type="button" value="ULOŽIT ZMÌNU" onclick="proposeChange(\''+divid+'\', \''+item_id+'\', \''+fid+'\', \''+perms+'\')">';
-    formhtml += ' <input type="button" value="storno" onclick="SetContent(\''+divid+'\', document.getElementById(\'h'+divid+'\').value)">';
-    SetContent(divtag.getAttribute('id'), formhtml);
-}
-
-*/
+}}
 
 function displayInput(valdivid, item_id, fid) {
     var valdivtag = document.getElementById(valdivid);
@@ -149,7 +110,7 @@ function proposeChange(combi_id, item_id, fid, change) {
                 // SetContent('zmena'+divid, '');
             } else {
                 SetContent('ajaxv_'+combi_id, document.getElementById('ajaxh_'+combi_id).value);  // restore old content
-                SetContent('ajaxch_'+combi_id, document.getElementById('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovaná zmìna: ' + self.xmlHttpReq.responseText +'</span><br>');
+                SetContent('ajaxch_'+combi_id, document.getElementById('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">NavrhovanÃ¡ zmÄ›na: ' + self.xmlHttpReq.responseText +'</span><br>');
             }
             valdivtag.setAttribute("data-aa-edited", "0");
         }

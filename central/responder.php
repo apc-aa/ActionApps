@@ -116,7 +116,6 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 
     function run() {
         $ret = array();
-        $slice_id_cache = array();
         foreach ( $this->sync_commands as $serialized_command ) {
             $cmd = unserialize($serialized_command);
             $ret[] = $cmd->doAction();

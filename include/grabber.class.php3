@@ -532,7 +532,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         if (($feed_type == FEEDTYPE_APC) OR ($feed_type == FEEDTYPE_EXACT)) {
             //Update the field names and add new fields to feedmap table
-            updateFieldsMapping($this->feed_id, $this->slice_id, $this->r_slice_id, $this->aa_rss['channels'][$this->r_slice_id]['fields'],$this->aa_rss['fields']);
+            updateFieldsMapping($this->slice_id, $this->r_slice_id, $this->aa_rss['channels'][$this->r_slice_id]['fields'],$this->aa_rss['fields']);
         }
 
         // Find channel definition

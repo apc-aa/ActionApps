@@ -194,7 +194,7 @@ function mapslice() {
  * @param $new
  */
 function copyslicefield($new) {
-  global $slice_id,$nearest,$slicefieldcopy;
+  global $slice_id, $slicefieldcopy;
   $db  = getDB();
   $SQL = "UPDATE slice SET ".$slicefieldcopy."='".quote($new)."' WHERE id='".q_pack_id($slice_id)."'";
   $db -> tquery($SQL);
@@ -204,7 +204,7 @@ function copyslicefield($new) {
  *
  */
 function do_showfield() {
-  global $showfield,$slice_id,$nearest;
+  global $showfield,$slice_id;
   $db = getDB();
   $GLOBALS['debug']=1;
   $SQL = "UPDATE field SET input_show=1 WHERE (id='".$showfield."') AND (slice_id='".q_pack_id($slice_id)."')";
@@ -327,7 +327,6 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         if ($pr) print("<li>$pre field: $fn : " . (($fm["input_show"] == 1) ? url_showfield($fn) : "") . (($fm["required"] == 1) ? "not required " : "")) . "</li>\n" ;
         $score += $scoreUnshown;
     } else {
-      $fixer="";
       reset($ft);
       while (list($ftk,$ftv) = each($ft)) {
           if ($ftk == "slice_id") {
@@ -399,7 +398,6 @@ function compareSliceTableFields($st,$sm,$pr) {
     $opened = 0;
     $ft = $slicetablefields[pack_id($st->getId())];
     $fm = $slicetablefields[pack_id($sm->getId())];
-      $fixer="";
       reset($ft);
       while (list($ftk,$ftv) = each($ft)) {
           $hf = 0;

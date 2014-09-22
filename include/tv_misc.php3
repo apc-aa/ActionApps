@@ -37,7 +37,8 @@ require_once AA_INC_PATH."tv_email.php3";
  */
 function GetMiscTableView($viewID) {
     global $slice_id;
-    global $attrs_edit, $attrs_browse, $format, $langs;
+//  global $attrs_edit, $attrs_browse, $format, $langs;
+    global              $attrs_browse;
 
     $p_slice_id = q_pack_id($slice_id);
 

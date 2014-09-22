@@ -69,7 +69,7 @@ function hex2dec(hex) {
 }
 
 function packID(unpackedID) {
-    var packedID = new String();
+    var packedID = '';
     for (j=0; j < unpackedID.length; j += 2) {
         code = hex2dec(unpackedID.substr(j,2));
         if (code != 0) {

@@ -310,7 +310,7 @@ class AA_Slice extends AA_Module {
 
     /** getField function     */
     function getField($field_id) {
-        return $this->fields->getField($field_id);;
+        return $this->fields->getField($field_id);
     }
 
     function getWidget($field_id) {

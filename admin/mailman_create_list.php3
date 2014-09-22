@@ -90,7 +90,7 @@ if ($create_list && $admin_email && $list_name && $admin_password) {
  * @return none on error
  */
 function add_mailman_list() {
-    global $create_list, $admin_email, $list_name, $admin_password, $groupid, $db;
+    global $admin_email, $list_name, $admin_password, $groupid, $db;
     $db->query ("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."'
         AND name='".$list_name."'");
     if ($db->next_record()) {

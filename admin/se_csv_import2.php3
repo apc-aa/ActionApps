@@ -259,17 +259,14 @@ class AA_Csv_Importer {
  *
  */
     function preview() {
-        global $sess;
         $this->_prepare();
 
-        $slice = AA_Slices::getSlice($this->slice_id);
-
+        $slice         = AA_Slices::getSlice($this->slice_id);
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
         // Create list of fields from the first row of csv data
-        $fieldNames = createFieldNames($this->fileName,$this->addParams);
-
-        $slice_fields = $slice->fields('record');
+        $fieldNames    = createFieldNames($this->fileName,$this->addParams);
+        $slice_fields  = $slice->fields('record');
 
         $slf['id..............'] = "Item id";
         foreach ( $slice_fields as $k => $v ) {

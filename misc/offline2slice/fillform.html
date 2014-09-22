@@ -20,14 +20,14 @@
  */
 	var i_cb = 0;
 	var second_part = false;
-	var oneFile = new String("");
-	var wddx = new String("");
+	var oneFile = "";
+	var wddx    = "";
 //	var hm = 0;	   // how many (forms in file)
 
 // replace bad characters in string
 	function uprav( retezec ) {
-		instr = new String(retezec);
-		outstr = new String("");
+		instr  = retezec;
+		outstr = "";
 		
 		for (var i=0; i<instr.length; i++) {
 			if (instr.charAt(i) == "<") outstr = outstr.concat( "&lt;" )
@@ -70,7 +70,7 @@
 	}
 
 	function coreOnClick() {
-		var ret = new String("");
+		var ret = "";
 		var regExp = new RegExp("^foo", "i");
 		
 		for (var i=i_cb; i < document.forms["base"].elements.length; i++) {
@@ -142,7 +142,7 @@
 
 //	boo==true -> do not send file content (in second form), but adds it to wddxPacket
 	function wait(boo) {
-	   var re = new String("");
+	   var re = "";
 
 	   if  ( document.OffLine2Slice.retrieved() ) {
 	      re = document.OffLine2Slice.retrieveError();

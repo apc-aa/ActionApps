@@ -34,7 +34,7 @@ Calendar._C = null;
 
 Calendar.is_ie = ( (navigator.userAgent.toLowerCase().indexOf("msie") != -1) &&
 		   (navigator.userAgent.toLowerCase().indexOf("opera") == -1) );
-Calendar._MD = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+Calendar._MD = [31,28,31,30,31,30,31,31,30,31,30,31];
 
 // ** public functions (these can be thought as static, since none of them use
 // ** "this" and they can be accessed without using an instance of the object).
@@ -100,7 +100,7 @@ Calendar.removeClass = function(el, className) {
 		return;
 	}
 	var classes = el.className.split(" ");
-	var newClasses = new Array;
+	var newClasses = [];
 	for (i = 0; i < classes.length; ++i) {
 		if (classes[i] != className) {
 			newClasses[newClasses.length] = classes[i];
@@ -831,7 +831,7 @@ Calendar.prototype.formatDate = function () {
 	var d = this.date.getDate();
 	var y = this.date.getFullYear();
 	var w = this.date.getDay();
-	var s = new Array;
+	var s = [];
 	s['d'] = d;
 	s['dd'] = (d < 10) ? ('0' + d) : d;
 	s['m'] = 1+m;
@@ -916,7 +916,7 @@ Calendar.prototype.parseDate = function (str, fmt) {
 };
 
 Calendar.prototype.hideShowCovered = function () {
-	var tags = new Array ('applet', 'iframe', 'select');
+	var tags = ['applet', 'iframe', 'select'];
 	var el = this.element;
 
 	var p = Calendar.getAbsolutePos(el);
