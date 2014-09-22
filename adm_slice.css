@@ -137,7 +137,7 @@
     
     .aaPostbyF  {
     	color : #AAAAAA;
-    	font-style : Arial,Helvetica,Univers,Zurich BT;
+        font-style : italic;
     	font-size : x-small;
     }
     
@@ -149,7 +149,7 @@
     
     .aaPostbyC  {
     	color : #FFCC33;
-    	font-style : Arial,Helvetica,Univers,Zurich BT;
+        font-style : italic;
     	font-size : x-small;
     }
     

@@ -270,14 +270,14 @@ TD.sel_title {
 #formtabs, #formtabs2 {
     font-size: 0.85em;
     font-weight: bold;
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     background-color: #584011;
     border-bottom: 1px solid #EBDABE;
 }
 
 #formtabs td, #formtabs2 td {
-    padding: 0px;
+    padding: 0;
     border-bottom: 1px solid #745623;;
 }
 
@@ -285,8 +285,8 @@ TD.sel_title {
     color: #000000;
     background-color: #EBDABE;
     text-decoration: none;
-    margin: 0px;
-    padding: 0px 6px;
+    margin: 0;
+    padding: 0 6px;
     border-right: 1px solid #EBDABE;
 }
 .tabsnonactiv {
@@ -321,14 +321,13 @@ TD.sel_title {
 
 #sitetree div {
     border-right: 1px solid #EBDABE;
-    background-repeat: repeat-y;
-    background-image: url(modules/site/images/i_bg.gif);
+    background: url(modules/site/images/i_bg.gif) repeat-y;
 }
 
 #sitetree .spot  {
     color: #000000;
     text-decoration: none;
-    margin: 0px 0px 0px 0px;
+    margin: 0 0 0 0;
     background-color: #F5F0E7;
     border-top: none;
     border-bottom:  1px solid #EBDABE;
@@ -337,7 +336,7 @@ TD.sel_title {
 }
 
 #sitetree div.choice, #sitetree div.lastchoice {
-    padding: 0px 5px 5px 21px;
+    padding: 0 5px 5px 21px;
 }
 
 #sitetree div.lastchoice {
@@ -348,8 +347,7 @@ TD.sel_title {
 #sitetree div.conditions {
     border-top: 1px solid #EBDABE;
     border-left: 1px solid #EBDABE;
-    background-color: #EBDABE;
-    background-image: none;
+    background: #EBDABE none;
 }
 
 #sitetree div.conditions a, #sitetree div.variables {
@@ -368,15 +366,15 @@ TD.sel_title {
 }
 
 .choice img, .lastchoice img {
-    margin: 0px 0px 0px -21px;
-    padding: 0px;
+    margin: 0 0 0 -21px;
+    padding: 0;
     float: left;
     border: none;
 }
 
 img.eye {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     float: right;
     border: none;
 }
@@ -387,8 +385,8 @@ img.eye {
 }
 
 #sitetree div.selected {
-    margin: 0px 1px 0px 0px;
-    padding: 0px;
+    margin: 0 1px 0 0;
+    padding: 0;
     border: none;
 }
 
@@ -422,13 +420,12 @@ div.ajax_value[data-aa-edited="1"]:hover {
 }
 
 input.save-button, input.cancel-button {
-     border-top: 1px solid #D6C4A9;
-     border-left: 1px solid #D6C4A9;
-     border-bottom: solid 1px #A0988D;
-     border-right: solid 1px #A0988D;
-     padding-left: 15px;
-     font-size: 9px;
-     text-transform: lowercase;
+    border: 1px solid #D6C4A9;
+    border-right-color: #A0988D;
+    border-bottom-color: #A0988D;
+    padding-left: 15px;
+    font-size: 9px;
+    text-transform: lowercase;
 }
 input.save-button {
      background : url("images/save.png") no-repeat #DBDAD9 0 -2px;
@@ -468,7 +465,7 @@ input.cancel-button {
     background-color: #F0E8DC;
 }
 [class^="aa-button-"] {
-    box-shadow: #000 0px 0px 3px;
+    box-shadow: #000 0 0 3px;
     padding: 1px 8px 2px 18px;
     display: inline-block;
     border-radius: 7px;
@@ -536,7 +533,7 @@ input.cancel-button {
     margin-bottom: 12px;
 }
 .aa-langswitch input[type=button] {
-    box-shadow: #53452e 0px 0px 2px;
+    box-shadow: #53452e 0 0 2px;
     padding: 0 2px 2px 2px;
     display: inline-block;
     border-radius: 7px;
@@ -553,7 +550,7 @@ input.cancel-button {
     display: none;
 }
 .aa-langswitch input[type=button].aa-filled {
-    box-shadow: #000 0px 0px 2px;
+    box-shadow: #000 0 0 2px;
     background-color: #A8977A;
     color: #FFF;
     text-shadow: 0 0 1px #464545;
@@ -566,11 +563,11 @@ input.cancel-button {
 }
 .aa-langswitch input[type=button].aa-open:hover {
     background-color: #cab89c;
-    box-shadow: #000 0px 0px 2px;
+    box-shadow: #000 0 0 2px;
 }
 .aa-langswitch input[type=button].aa-open.aa-filled:hover {
     background-color: #A8977A;
-    box-shadow: #000 0px 0px 2px;
+    box-shadow: #000 0 0 2px;
 }
 .aa-langswitch input[type=button].aa-langall {
     float: right;
