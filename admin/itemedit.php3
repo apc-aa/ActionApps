@@ -221,7 +221,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
         } elseif ($preview) {
             go_url( $preview_url );
         } elseif (!$go_edit) { // if go_edit - continue to edit again
-            go_return_or_url(self_base() . "index.php3",1,1);
+            go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
         }
     }
 }
