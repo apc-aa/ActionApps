@@ -39,7 +39,7 @@ if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
 }
 
-if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR IsUserReader($auth->auth["uid"])) {
+if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable($auth->auth["uid"])) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change user data"), "admin");
     exit;
 }
