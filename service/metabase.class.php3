@@ -77,7 +77,12 @@ class AA_MbC {
         return $this->c[0];
     }
 
-    function getAsProperty() {
+    private function _getBaseType() {
+        $dbtype = strtolower($this->c[1]);
+        return substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"));
+    }
+
+    private function _getFieldType() {
         // Used in AA database
         // bigint(20)
         // bigint(30)
@@ -145,36 +150,66 @@ class AA_MbC {
         // varchar(60)
         // varchar(80)
 
-        $dbtype = strtolower($this->c[1]);
-        switch(substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"))) {
-            case 'binary':
-            case 'varbinary':
-            case 'char':
-            case 'varchar':
-            case 'enum':
-                $type = 'text'; break;
-
+        switch($this->_getBaseType()) {
             case 'float':
             case 'double':
                 $type = 'float'; break;
 
             case 'int':
+            case 'mediumint':
             case 'bigint':
             case 'smallint':
             case 'tinyint':
             case 'timestamp':
                 $type = 'int'; break;
 
-            case 'longtext':
-            case 'mediumint':
-            case 'mediumtext':
-            case 'text':
+           // case 'binary':
+           // case 'varbinary':
+           // case 'char':
+           // case 'varchar':
+           // case 'enum':
+           // case 'longtext':
+           // case 'mediumtext':
+           // case 'text':
             default:
                 $type = 'text';
         }
+        return $type;
+    }
+
+    private function _getSearchType() {
+        switch($this->_getBaseType()) {
+            case 'float':
+            case 'double':
+
+            case 'int':
+            case 'mediumint':
+            case 'bigint':
+            case 'smallint':
+            case 'tinyint':
+                $type = 'numeric'; break;
+
+            case 'timestamp':
+                $type = 'date'; break;
+
+           // case 'binary':
+           // case 'varbinary':
+           // case 'char':
+           // case 'varchar':
+           // case 'enum':
+           // case 'longtext':
+           // case 'mediumtext':
+           // case 'text':
+            default:
+                $type = 'text';
+        }
+        return $type;
+    }
+
+    function getAsProperty() {
+        $type = $this->_getFieldType();
                                   // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
         return  new AA_Property( $this->c[0], $this->c[0], $type, false,  true,        $type,  !($this->c[2]), $this->c[6]);
-
     }
 
     function getCreateSql() {
@@ -214,6 +249,17 @@ class AA_MbC {
         if ($this->c[6]) { $ret .= "\n            'Comment' => \"".$this->c[6].'"';   }
         $ret .= "\n        )";
         return $ret;
+    }
+
+    function getAlias() {
+        switch ($this->c[0]) {
+            case 'time': return GetAliasDef( "f_d:Y-m-d H:i", $this->c[0], $this->c[0]);
+        }
+        return GetAliasDef( "f_1", $this->c[0], $this->c[0]);
+    }
+
+    function getFieldDef() {
+        return GetFieldDef( $this->c[0], $this->c[0], $this->_getSearchType(), false, 1, 1);
     }
 }
 
@@ -296,7 +342,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         }
     }
 
-    function factoryFromDb($tablename) {
+    static function factoryFromDb($tablename) {
         $columns = GetTable2Array("SHOW FULL COLUMNS FROM `$tablename`", 'Field');
         $indexes = GetTable2Array("SHOW INDEX FROM `$tablename`", '');
         return new AA_MbT($tablename, $columns, $indexes);
@@ -371,6 +417,32 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
             // else urecognized row
             echo $row;
         }
+    }
+
+    /** generateAliases
+     *
+     */
+    function generateAliases() {
+        $aliases = array();
+        foreach ($this->c as $column_name => $column) {
+            // @todo - make alias field type aware
+            $aliases["_#". substr(str_pad(strtoupper($column_name),8,'_'),0,8)] = $column->getAlias();
+        }
+        return $aliases;
+    }
+
+
+    /** getSearchArray function
+     *
+     */
+    function getSearchArray() {
+        $fieldarr = array();
+        $i = 1;
+        foreach ($this->c as $column_name => $column) {
+            // @todo - make alias field type aware
+            $fieldarr[$column_name] = $column->getFieldDef();
+        }
+        return $fieldarr;
     }
 
     /** Iterator interface */
@@ -701,31 +773,7 @@ class AA_Metabase {
      *
      */
     function getSearchArray($tablename) {
-        $i = 0;
-        $table         = $this->tables[$tablename];
-        $table_columns = $table->getColumnNames();
-        foreach ($table_columns as $column_name) { // in priority order
-            $field_type = 'text';    // @todo - get the type from field type
-            // we can hide the field, if we put in fields.search_pri=0
-            $search_pri = ++$i;
-                               //             $name,        $field,       $operators, $table, $search_pri, $order_pri
-            $ret[$column_name] = GetFieldDef( $column_name, $column_name, $field_type, false, $search_pri, $search_pri);
-        }
-        return $ret;
-    }
-
-    /** generateAliases
-     *
-     */
-    function generateAliases($tablename) {
-        $aliases = array();
-        $table         = $this->tables[$tablename];
-        $table_columns = $table->getColumnNames();
-        foreach ($table_columns as $column_name) { // in priority order
-            // @todo - make alias field type aware
-            $aliases["_#". substr(str_pad(strtoupper($column_name),8,'_'),0,8)] = GetAliasDef( "f_h", $column_name, $column_name);
-        }
-        return $aliases;
+        return $this->tables[$tablename]->getSearchArray();
     }
 
     /** @return rows from $tablename for given $module_id in form
@@ -984,7 +1032,8 @@ class AA_Metabase {
      * @param $params
      */
     function getManagerConf($tablename, $actions=null, $switches=null) {
-        $aliases       = $this->generateAliases($tablename);
+        $table         = $this->tables[$tablename];
+        $aliases       = $table->generateAliases();
         $search_fields = $this->getSearchArray($tablename);
 
         $manager_settings = array(
@@ -1002,7 +1051,7 @@ class AA_Metabase {
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                  'format'               => array(    // optionaly to manager_vid you can set format array
-                     'compact_top'      => '<table border="0" cellspacing="0" cellpadding="5">
+                     'compact_top'      => '<div class="aa-items-manager"><table>
                                             <tr>
                                               <th width="30">&nbsp;</td>
                                               <th>'.join("</th>\n<th>", array_keys($search_fields)).'</th>
@@ -1021,7 +1070,7 @@ class AA_Metabase {
                                             </tr>
                                            ',
                      'compact_remove'   => "",
-                     'compact_bottom'   => "</table>"
+                     'compact_bottom'   => "</table></div><br>"
                                   ),
                  'fields'               => $search_fields,
                  'aliases'              => $aliases,
