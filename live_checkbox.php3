@@ -52,13 +52,14 @@ list($short_id, $ar) = each ($live_checkbox);
 reset($ar);
 list($field_id, $action) = each ($ar);
 
-is_object( $db ) || ($db = getDB());
-$db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
-if ($db->next_record()) {
-    $item_id = unpack_id($db->f("id"));
-    $slice_id = unpack_id($db->f("slice_id"));
+//is_object( $db ) || ($db = getDB());
+//$db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
+if ($arr = DB_AA::select1('SELECT id, slice_id FROM `item`', '', array(array('short_id',$short_id, 'i')))) {
+    $item_id  = unpack_id($arr['id']);
+    $slice_id = unpack_id($arr['slice_id']);
+} else {
+    failed();
 }
-else failed();
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     failed();
@@ -69,12 +70,17 @@ if (!$debug) {
 }
 $content4ids = GetItemContent($item_id);
 reset($content4ids);
-$content4id = current($content4ids);
-$action = ! ($content4id[$field_id][0]['value']);
-$content4id = array ($field_id => array (0 => array ("value" => $action)));
+$content4id   = current($content4ids);
+$action       = ! ($content4id[$field_id][0]['value']);
+$content4id   = array ($field_id => array (0 => array ("value" => $action)));
 list($fields) = GetSliceFields($slice_id);
 
+//huhl($item_id, $slice_id, $content4id, false, true, false);
+
+
 StoreItem($item_id, $slice_id, $content4id, false, true, false);
+
+//huhl($image_path.'cb_'.($action ? "on" : "off").'.gif');
 
 readfile ($image_path.'cb_'.($action ? "on" : "off").'.gif');
 page_close();
@@ -84,7 +90,7 @@ exit;
 
 function failed () {
     global $image_path;
-    readfile ($image_path.'cb_failed.gif');
+    readfile ($image_path.'cb_failed.png');
     page_close();
     exit;
 }
