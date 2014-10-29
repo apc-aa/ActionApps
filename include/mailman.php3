@@ -39,12 +39,13 @@ class AA_Mailman {
      *   Creates one file for each mailing list, named the same as the list.
      *   If no users are subscribed to a list, an empty file is created.
      */
-    function createSynchroFiles($slice_id) {
+    public static function createSynchroFiles($slice_id) {
         global $MAILMAN_SYNCHRO_DIR;
 
         if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
             return;
         }
+        endslash($MAILMAN_SYNCHRO_DIR);
 
         $slice = AA_Slices::getSlice($slice_id);
         $field = $slice->getProperty("mailman_field_lists");
@@ -52,61 +53,37 @@ class AA_Mailman {
             return;
         }
 
-        $db = getDB();
-
-        $db->tquery("SELECT email.text AS email, maillist.text AS maillist,
-            mailconf.text AS mailconf
-            FROM item INNER JOIN content email ON item.id = email.item_id
-            INNER JOIN content maillist ON item.id = maillist.item_id
-            INNER JOIN content mailconf ON item.id = mailconf.item_id
-            WHERE email.field_id='".FIELDID_EMAIL."'
-            AND maillist.field_id='".$field."'
-            AND mailconf.field_id='".FIELDID_MAIL_CONFIRMED."'
-            AND item.slice_id='".q_pack_id($slice_id)."'
-            AND item.status_code=1
-            AND item.publish_date <= ".time()."
-            AND item.expiry_date >= ".time());
-
-        while ($db->next_record()) {
-            if ($db->f("mailconf") && $db->f("mailconf") != "off") {
-                $maillist[$db->f("maillist")][] = $db->f("email");
-            }
-        }
-
         // Add empty mailing lists
-        $db->query("SELECT input_show_func FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
-        if (!$db->next_record()) {
-            freeDB($db);
-            return;
-        }
-        list(,$group_id) = explode(":", $db->f("input_show_func"));
-        $db->query("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
-        while ($db->next_record()) {
-            if (! $maillist[$db->f("value")]) {
-                $maillist[$db->f("value")] = array();
+        if ($group_id = GetCategoryGroup($slice_id, $field)) {
+            $maillists = array_keys(GetConstants($group_id));
+            foreach ($maillists as $listname) {
+                self::_createOneFile($slice_id, $field, $listname);
             }
         }
 
-        freeDB($db);
+        //if ($_REQUEST['AA_CP_Session']=='82c3642996563f2b668d21e11c13bf42') {
+        //    huhl($MAILMAN_SYNCHRO_DIR, $maillist);
+        //    exit;
+        //}
+    }
 
-        endslash($MAILMAN_SYNCHRO_DIR);
 
-        if (!is_array($maillist)) {
-            return;
-        }
+    /** AA_Mailman::_createOneFile function
+     *   Creates one file for each mailing list, named the same as the list.
+     */
+    private static function _createOneFile($slice_id, $field_id, $listname) {
+        global $MAILMAN_SYNCHRO_DIR;
+        if ($slice_id AND $field_id AND $listname) {
+            $mails = join("\n",AA_Validate::filter(explode('|',str_replace(array(' ',"\t"),array('',''),AA_Stringexpand::unalias("{item:{ids:$slice_id:d-$field_id-=-$listname}:".FIELDID_EMAIL.":|}"))), 'email'));
 
-        // Write files
-        foreach ($maillist as $listname => $emails) {
-            // I don't want to use @fopen because I believe it is better to know
-            // that an error occured
-            if ($listname && ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w"))) {
-                foreach ($emails as $email) {
-                    fwrite ($fd, $email."\n");
-                }
-                fclose ($fd);
+            if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
+               fwrite ($fd, $mails);
+               fclose ($fd);
             }
         }
     }
+
+
 
     // --------------------------------------------------------------------------
     /** constantsChanged function
