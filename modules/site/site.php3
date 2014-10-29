@@ -53,7 +53,8 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
-AA::$site_id  = $_REQUEST['site_id'];
+$host = ltrim($_SERVER['HTTP_HOST'],'w.');
+AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url',array("http://$host/", "https://$host/",)))));
 $site_info    = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
 $module       = AA_Module_Site::getModule(AA::$site_id);
 $lang_file    = $module->getProperty('lang_file');
