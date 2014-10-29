@@ -1231,13 +1231,16 @@ class AA_Inputfield {
     function dateSelect($y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false) {
         list($name,$val,$add) = $this->prepareVars();
 
-        $datectrl = new datectrl($this->varname(), $y_range_minus, $y_range_plus, $from_now, $display_time);
+        $datectrl = new datectrl($this->varname(), $y_range_minus, $y_range_plus, $from_now, $display_time, $this->required);
         $datectrl->setdate_int($val);
+
+        AA::$debug && AA::$dbg->log('---------------', $this, $val, $datectrl);
+
         $this->field_name('plus');
 
         $this->echovar( $datectrl->getdayselect(),   'day'  );
         $this->echovar( $datectrl->getmonthselect(), 'month');
-        $this->echovar( $datectrl->getyearselect($this->required),  'year' );
+        $this->echovar( $datectrl->getyearselect(),  'year' );
         $this->echovar( $datectrl->gettimeselect(),  'time' );
         $this->helps('plus');
     }

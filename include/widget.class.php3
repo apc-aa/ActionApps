@@ -969,7 +969,7 @@ class AA_Widget_Dte extends AA_Widget {
         $from_now      = $this->getProperty('relative',   1);
         $display_time  = $this->getProperty('show_time',  0);
 
-        $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time);
+        $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time, $aa_property->isRequired());
 
         $value       = $content->getAaValue($aa_property->getId());
         $count       = max($value->valuesCount(),1);
@@ -983,7 +983,7 @@ class AA_Widget_Dte extends AA_Widget {
             $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
             $input_name   = $base_name_add. "[y][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions($aa_property->isRequired())."</select>";
+            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions()."</select>";
             if ($datectrl->isTimeDisplayed()) {
                 $input_name   = $base_name_add. "[t][$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);

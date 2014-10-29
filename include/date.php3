@@ -52,6 +52,7 @@ class datectrl {
     var $y_range_minus;   // how many years + display in year select list
     var $from_now;        // year range is in relation to today's date/selected date
     var $display_time;    // display time too
+    var $required;
 
     /** datectrl function
      *  constructor
@@ -62,12 +63,13 @@ class datectrl {
      * @param $from_now = false
      * @param $display_time = false
      */
-    function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false) {
+    function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false, $required=true) {
         $this->name          = $name;
         $this->y_range_plus  = $y_range_plus;
         $this->y_range_minus = $y_range_minus;
         $this->from_now      = $from_now;
         $this->display_time  = $display_time;
+        $this->required      = $required;
         $this->update();
     }
     /** update function
@@ -125,7 +127,11 @@ class datectrl {
      * @param $date
      */
     function setdate_int($date) {
-        $d           = datectrl::isTimestamp($date) ? getdate($date) : getdate();
+        if (!$date AND !$this->required) {
+            $d = array('year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0);
+        } else {
+            $d = datectrl::isTimestamp($date) ? getdate($date) : getdate();
+        }
         $this->year  = $d["year"];
         $this->month = $d["mon"];
         $this->day   = $d["mday"];
@@ -227,14 +233,14 @@ class datectrl {
         return (!$this->year OR ($this->year==1970 AND $this->month==1 AND $this->day==1));
     }
 
-    function getYearOptions($required=true) {
+    function getYearOptions() {
         $at           = getdate(time());
         $from         = ( $this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus );
         $to           = ( $this->from_now ? $at["year"] + $this->y_range_plus  : $this->y_range_plus );
         $selectedused = false;
         $ret          = '';
 
-        if (!$required) {
+        if (!$this->required) {
             if ($this->isEmpty()) {
                 $selectedused = true;
                 $ret .= '<option value="0" selected class="sel_on">----</option>';
@@ -263,8 +269,8 @@ class datectrl {
      * print select box for year
      * @return string
      */
-    function getyearselect($required=false) {
-        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions($required)."</select>";
+    function getyearselect() {
+        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions()."</select>";
     }
 
     function isTimeDisplayed() {
