@@ -342,7 +342,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         }
     }
 
-    function factoryFromDb($tablename) {
+    static function factoryFromDb($tablename) {
         $columns = GetTable2Array("SHOW FULL COLUMNS FROM `$tablename`", 'Field');
         $indexes = GetTable2Array("SHOW INDEX FROM `$tablename`", '');
         return new AA_MbT($tablename, $columns, $indexes);
@@ -474,7 +474,7 @@ class AA_Metabase {
     }
 
     /** Static function called like $metabase = AA_Metabase::singleton() */
-    function singleton() {
+    public static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
             // Now create the metabase object
@@ -937,11 +937,9 @@ class AA_Metabase {
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
      *  @global bool $debug=1       - many debug messages
-     *  @global bool $nocache       - do not use cache, even if use_cache is set
      */
     function queryZids($settings, $set) {
         global $debug;                 // displays debug messages
-        global $nocache;               // do not use cache, if set
 
         $tablename = $settings['table'];
         $conds     = $set->getConds();

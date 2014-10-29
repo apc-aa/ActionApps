@@ -397,6 +397,7 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
  * @param $foo2
  */
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
+
     $item_id = $itemContent->getItemID();
     AA_Mysqlauth::updateReaders( array( pack_id( $item_id )), $slice_id );
 //    AlertsSendInstantAlert( $item_id, $slice_id );

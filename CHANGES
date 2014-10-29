@@ -1,5 +1,15 @@
+14-10-29 - AA -> Edit User now allows editing of permissions for all users including the ines from Reader Slice
+(honzam) - main Site Module file site.php3 could be called without site_id parameter, now. The id of the site is then searched using current domain user requested and Url field in Site Module Settings
+         - {modulefield:<slice_id>:property} now allows to get url, when requested in property parameter
+         - {expandable:<some text>} now do not need second parameter length, which defaults to 49
+         - the error picture for live checkbox added (it is for older - f_k implementation, not the newest using {live::} which do not use pictures)
+         - mailman synchronization functionality was rewritten - now uses more standard approach
+         - the date widget allows you to not fill the date, if the date field is not required - now also for {live} and {ajax}
+         - fixed problem when session expires in AA admin and you are forced to relogin - the correct page after login is now displayed, not the initial one (url parameters fixed)
+         - fixed user self setting in AA
+         - metabase files synchronized
 14-09-23 - CSS cleanup
-(honzam) - PHP code cleanup based on static analysis of PHPStorm 
+(honzam) - PHP code cleanup based on static analysis of PHPStorm
 14-09-11 - reduction of database connections in AA
 (honzam) - rotator now uses slide UP/DOWN
          - optimized debug output to browser console using ?debug=c
@@ -340,7 +350,7 @@
                             of ussage precounted. It is very good idea,to have such
                             field - in other case the counts must be countedon every
                             ussage. The count could be counted automaticaly
-                            in the field by using "Comuted field for INSERT/UPDATE"
+                            in the field by using "Computed field for INSERT/UPDATE"
                             with the parameter "_#BACKLINK:_#BACKLINK::day", where
                             alias _#BACKLINK could be definned as
                               {count:{backlinks:{id..............}::-}}

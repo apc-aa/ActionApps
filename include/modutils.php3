@@ -90,8 +90,9 @@ function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner,
  * @param $owner
  * @param $deleted
  * @param $new_id
-*/
+ */
 function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, $new_id="" ) {
+    global $auth, $err;
     $varset     = new CVarset();
 
     if ( $module_id )  {
@@ -142,10 +143,10 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
  *   fills variables from module and owners table
  * @param $source_id
  * @param $db
-*/
+ */
 function GetModuleFields( $source_id, $db ) {
     // lookup owners
-    $slice_owners[0] = _m("Select owner");
+    $slice_owners = array(_m("Select owner"));
     $SQL = "SELECT id, name FROM slice_owner ORDER BY name";
     $db->query($SQL);
     while ($db->next_record()) {

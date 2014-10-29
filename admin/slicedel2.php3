@@ -122,7 +122,7 @@ function DeleteSlice($del) {
     }                                           // relation tables
 
     DB_AA::sql('DELETE LOW_PRIORITY FROM `item`', array(array('slice_id', $del, 'l')));
-    DB_AA::sql("DELETE LOW_PRIORITY FROM `feedmap` feedmap WHERE from_slice_id='$p_del' OR to_slice_id='$p_del'");
+    DB_AA::sql("DELETE LOW_PRIORITY FROM `feedmap`   WHERE from_slice_id='$p_del' OR to_slice_id='$p_del'");
     DB_AA::sql("DELETE LOW_PRIORITY FROM `feedperms` WHERE from_id='$p_del' OR to_id='$p_del'");
     DB_AA::sql('DELETE LOW_PRIORITY FROM `email_notify`', array(array('slice_id', $del, 'l')));
     // delete fields

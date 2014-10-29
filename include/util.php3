@@ -964,6 +964,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
         $zids = new zids( $zids, 'l');
     }
     $sel_in = $zids->sqlin( '' );
+    $content = array();
 
     if ($sel_in) {
         // get content from item table
@@ -1012,27 +1013,28 @@ function GetConstantContent( $zids ) {
     if ( !$zids ) {
         return false;
     }
-  $db = getDB();
+    $db = getDB();
 
-  $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
-  $db->tquery( $SQL );
-  $i=1;
-  while ($db->next_record()) {
-    $coid = $db->f('short_id');
-    $content[$coid]["const_name"][]        = GrabConstantColumn($db, "name");
-    $content[$coid]["const_value"][]       = GrabConstantColumn($db, "value");
-    $content[$coid]["const_pri"][]         = GrabConstantColumn($db, "pri");
-    $content[$coid]["const_group"][]       = GrabConstantColumn($db, "group");
-    $content[$coid]["const_class"][]       = GrabConstantColumn($db, "class");
-    $content[$coid]["const_counter"][]     = $i++;
-    $content[$coid]["const_id"][]          = GrabConstantColumn($db, "id");
-    $content[$coid]["const_description"][] = GrabConstantColumn($db, "description");
-    $content[$coid]["const_short_id"][]    = GrabConstantColumn($db, "short_id");
-    $content[$coid]["const_level"][]       = GrabConstantColumn($db, "level");
-  }
-  freeDB($db);
+    $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
+    $db->tquery( $SQL );
+    $content = array();
+    $i=1;
+    while ($db->next_record()) {
+        $coid = $db->f('short_id');
+        $content[$coid]["const_name"][]        = GrabConstantColumn($db, "name");
+        $content[$coid]["const_value"][]       = GrabConstantColumn($db, "value");
+        $content[$coid]["const_pri"][]         = GrabConstantColumn($db, "pri");
+        $content[$coid]["const_group"][]       = GrabConstantColumn($db, "group");
+        $content[$coid]["const_class"][]       = GrabConstantColumn($db, "class");
+        $content[$coid]["const_counter"][]     = $i++;
+        $content[$coid]["const_id"][]          = GrabConstantColumn($db, "id");
+        $content[$coid]["const_description"][] = GrabConstantColumn($db, "description");
+        $content[$coid]["const_short_id"][]    = GrabConstantColumn($db, "short_id");
+        $content[$coid]["const_level"][]       = GrabConstantColumn($db, "level");
+    }
+    freeDB($db);
 
-  return $content;
+    return $content;
 }
 
 /** StoreTable2Content function

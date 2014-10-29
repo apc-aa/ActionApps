@@ -411,12 +411,12 @@ function Update($item_id, $slice_id, $dest_id, $destination_id) {
 function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
     $items[$item_id] = $slice_id;
 
+    $db = getDB(); 	// do not use global db, because of conflict in Update - StoreItem
     while (list($item_id,$slice_id) = each($items)) {
         $p_item_id = q_pack_id($item_id);
 
         // get fed items
-        $db = getDB(); 	// do not use global db, because of conflict in Update - StoreItem
-        $SQL = "SELECT destination_id, slice_id  FROM relation inner join table item on relation.destination_id = item.id
+        $SQL = "SELECT destination_id, slice_id FROM relation INNER JOIN item ON relation.destination_id = item.id
                  WHERE source_id='$p_item_id'
                    AND ((flag & ". REL_FLAG_FEED .") != 0)";
         $db->query($SQL);
@@ -430,8 +430,8 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
             Update($item_id,$slice_id,$d_id,$dest_sl_id);
             $items[$d_id] = $dest_sl_id;
         }
-        freeDB($db);
     }
+    freeDB($db);
     return $update;
 }
 

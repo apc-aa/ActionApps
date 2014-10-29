@@ -697,7 +697,7 @@ function IsEditable($fieldcontent, $field, &$profile) {
  * @param $context
  * @return true on success, false otherwise
  */
-function StoreItem( $id, $slice_id, $content4id, $fields, $insert, $invalidatecache=true, $feed=true, $oldcontent4id="", $context='direct' ) {
+function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='direct' ) {
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);

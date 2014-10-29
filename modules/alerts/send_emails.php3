@@ -29,9 +29,10 @@ http://www.apc.org/
 
 // (c) Econnect, Jakub Adamek, December 2002
 
+
 require_once "alerts_sending.php3";
 
-function showCollectionAddOns() {
+function ShowCollectionAddOns() {
     global $example, $fire, $auth, $sess, $collectionprop, $collectionid;
 
     initialize_last();
