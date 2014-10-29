@@ -884,7 +884,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters (the $add parameter could contain space) */
     function doTrimParams() { return false; }
 
-    function expand($text, $length, $add='', $switch_state_1='', $switch_state_2='') {
+    function expand($text, $length=49, $add='', $switch_state_1='', $switch_state_2='') {
         // it is nonsense to show expandable trigger if both contents are empty
         if (($text = trim($text)) == '') {
             return '';
@@ -1169,7 +1169,7 @@ function getConstantValue($group, $what, $field_name) {
                 $cid = $val[$field_name];
                 if ($cid) {
                     $content = GetConstantContent(new zids($cid, 's'));
-                    $item = new AA_Item($content[$cid], GetAliases4Type('const'));
+                    $item    = new AA_Item($content[$cid], GetAliases4Type('const'));
                     return $item->subst_alias($what);
                 }
             }
@@ -3345,7 +3345,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
             return join('-', (array)GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
         }
         if (!AA_Fields::isSliceField($property)) {  // it is "slice field" (begins with underscore _)
-            $property = 'name';
+            $property = ($property=='url') ? 'slice_url' : 'name';
         }
         return $slice->getProperty($property);
     }
@@ -3770,7 +3770,7 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
      * @param $variable
      */
     function expand($variable='') {
-        return $slice = $_SERVER[$variable];
+        return $_SERVER[$variable];
     }
 }
 
