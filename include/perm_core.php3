@@ -443,7 +443,7 @@ class AA_Perm {
 
 
     /**
-     * ussage: AA::$perm->isUsernameFree($var)
+     *
      */
     public function authenticateUsername($username, $password) {
         foreach ($this->perm_systems as $perm_sys) {
@@ -528,6 +528,17 @@ class AA_Perm {
         return false;
     }
 
+    /** isUserEditable function
+     * @param $uid
+     * @return true, if the User data (name, mail, ..) could be edited on AA Permission page
+     */
+    public function isUserEditable($uid) {
+        if ( $uid AND ($ps = $this->_whichUsersystem($uid))) {
+            return $ps->isUserEditable($uid);
+        }
+        return false;
+    }
+
     function getGroupMembers($group_id) {
         if ( $group_id AND ($ps = $this->_whichUsersystem($group_id))) {
             return $ps->getGroupMembers($group_id);
@@ -576,16 +587,14 @@ class AA_Perm {
      */
     private function _whichUsersystem($uid) {
         foreach ($this->perm_systems as $perm_sys) {
-            if ($perm_sys->userIdFromatMatches($uid)) {
+            if ($perm_sys->userIdFormatMatches($uid)) {
                 return $perm_sys;
             }
         }
         return false;
     }
 
-    /** $this->_whichUsersystem($uid) function
-     *  returns the permission system for the user id
-     *  @param $uid
+    /** $this->_whichPermstorage() function
      */
     private function _whichPermstorage() {
         foreach ($this->perm_systems as $perm_sys) {
@@ -708,11 +717,11 @@ class AA_Perm {
 AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
 
 class AA_Permsystem {
-    /** userIdFromatMatches - is user id in correct format?
+    /** userIdFormatMatches - is user id in correct format?
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
-    function userIdFromatMatches($uid)                          {}
+    function userIdFormatMatches($uid)                          {}
     function authenticateUsername($username, $password)         {}
     function isUsernameFree($username)                          {}
     function findUsernames($pattern)                            {}
@@ -728,6 +737,9 @@ class AA_Permsystem {
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
     function storesGeneralPerms()                               { return false; }
+
+    /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
+    function isUserEditable()                                   { return false; }
 
     /** getUserPerms function
      * @param $uid
@@ -745,11 +757,11 @@ class AA_Permsystem {
 
 class AA_Permsystem_Reader extends AA_Permsystem {
 
-    /** userIdFromatMatches - is user id in correct format?
+    /** userIdFormatMatches - is user id in correct format?
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
-    function userIdFromatMatches($uid) {
+    function userIdFormatMatches($uid) {
         // Reader perms - long ID (32 hexa)
         return (guesstype($uid) == 'l');
     }

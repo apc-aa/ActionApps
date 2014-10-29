@@ -122,7 +122,9 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
     // following code (in do {}) is used also in slice wizard
     do  {
         // Procces user data -------------------------------------------------------
-        $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
+        if ( ($submit_action != "update_submit") OR AA::$perm->isUserEditable($selected_user)) {
+            $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
+        }
 
         if ( count($err) > 1) {
             break;
@@ -130,7 +132,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
         if ( $add_submit ) {      // -------------------- new user ------------------
             NewUserData($err, $user_login, $userrecord, $user_super, $perms_roles, $um_uedit_no_go_url);
-        } else {                 // ----------------- update user ------------------
+        } elseif (AA::$perm->isUserEditable($selected_user))  {      // ----------------- update user ------------------
             ChangeUserData($err, $selected_user, $userrecord, $user_super, $perms_roles);
         }
 
@@ -291,11 +293,15 @@ if ( $usr_edit OR ($submit_action == "update_submit") ) {
     FrmTabCaption(_m("New user"));
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
 }
-FrmInputPwd("user_password1", _m("Password"),       $user_password1, 50, 50, true);
-FrmInputPwd("user_password2", _m("Retype password"),$user_password2, 50, 50, true);
-FrmInputText("user_firstname",_m("First name"),     $user_firstname, 50, 50, true);
-FrmInputText("user_surname",  _m("Surname"),        $user_surname, 50, 50, true);
-FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
+
+if ( !($usr_edit OR ($submit_action == "update_submit")) OR AA::$perm->isUserEditable($selected_user)) {
+    FrmInputPwd("user_password1", _m("Password"),       $user_password1, 50, 50, true);
+    FrmInputPwd("user_password2", _m("Retype password"),$user_password2, 50, 50, true);
+    FrmInputText("user_firstname",_m("First name"),     $user_firstname, 50, 50, true);
+    FrmInputText("user_surname",  _m("Surname"),        $user_surname, 50, 50, true);
+    FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
+}
+
 //  FrmInputText("user_mail2",_m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
 //  FrmInputText("user_mail3",_m("E-mail")." 3",    $user_mail3, 50, 50, false);
 FrmInputChBox("user_super",   _m("Superadmin account"), $user_super, false, "", 1, false);
