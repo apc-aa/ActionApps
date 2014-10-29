@@ -476,15 +476,16 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
-    function storesGeneralPerms() {
-        return true;
-    }
+    function storesGeneralPerms()                               { return true; }
 
-    /** userIdFromatMatches - is user id in correct format?
+    /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
+    function isUserEditable()                                   { return true; }
+
+    /** userIdFormatMatches - is user id in correct format?
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
-    function userIdFromatMatches($uid) {
+    function userIdFormatMatches($uid) {
         // LDAP perms - starting with uid (Users) od cn (Groups)
         return  ((substr($uid,0,4) == 'uid=') OR (substr($uid,0,3) == 'cn='));
     }
