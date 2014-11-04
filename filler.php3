@@ -219,8 +219,17 @@ function SendOkPage($txt, $new_ids = array()) {
 
     // we can use something like:
     //    ok_url = "/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
-    if ($_REQUEST["ok_url"]) {
-        $_REQUEST["ok_url"] = str_replace('_#N1_ID___', $new_ids[0], $_REQUEST["ok_url"]);
+    // You can use also _#N1_ID___, _#N2_ID___,.., _#N245_ID___, ...)
+    //    the ids goes from N1, 2, 3..  in order of filling in the database and
+    //    DO NOT correspond with nXXX in aa[n100_536366d6ee723][..]
+    //    there are new ids as well as updated (aa[u6376353533...]) - the new ones
+    //    goes first, then updated
+    if ($_REQUEST["ok_url"] AND (false !== strpos($_REQUEST["ok_url"],'_#N'))) {
+        $new_als = array();
+        foreach ($new_ids as $k => $v) {
+            $new_als[] = '_#N'.($k+1).'_ID___';
+        }
+        $_REQUEST["ok_url"] = str_replace($new_als, $new_ids, $_REQUEST["ok_url"]);
     }
     if ($_REQUEST["inline"]) {
         if ($_REQUEST["ok_url"]) {

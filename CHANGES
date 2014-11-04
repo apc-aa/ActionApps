@@ -1,3 +1,10 @@
+14-11-04 - now you can refer notonly to first inserted item in ok_url
+(honzam)   of filler.php3, but also to second, ...
+             - you can use also _#N1_ID___, _#N2_ID___,.., _#N245_ID___, ...
+             - the ids goes from N1, 2, 3..  in order of filling in the database
+               and DO NOT correspond with nXXX in aa[n100_536366d6ee723][..]
+             - there are new ids as well as updated (aa[u6376353533...])
+                 - the new ones goes first, then updated ones
 14-10-29 - AA -> Edit User now allows editing of permissions for all users including the ines from Reader Slice
 (honzam) - main Site Module file site.php3 could be called without site_id parameter, now. The id of the site is then searched using current domain user requested and Url field in Site Module Settings
          - {modulefield:<slice_id>:property} now allows to get url, when requested in property parameter
