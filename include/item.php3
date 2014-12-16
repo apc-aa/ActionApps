@@ -486,6 +486,11 @@ class AA_Item {
         return $this->content4id->isActive();
     }
 
+    function isMultilingual($field_id) {
+        return $this->content4id->isMultilingual($field_id);
+    }
+
+
     /** checks, if the field looks like the field ID */
     function isField($text) {
         return $this->content4id->isField($text);
@@ -753,22 +758,27 @@ class AA_Item {
      * @param $param delimiter - used to separate values if the field is multi
      */
     function f_h($col, $param="") {
-        if ( $param ) {
-            $values = $this->getValues($col);
-            if (empty($values)) {
-                return '';
-            }
-            // create list of values for multivalue fields
-            if (strlen($param)>2) {  // for speedup of standard {relation........} alias
-                $param = $this->unalias( $param );
-            }
-            foreach ( $values as $v ) {
-                $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
-            }
-            return $res;
+        if ( empty($param) ) {
+            return DeHtml($this->getval($col), $this->getFlag($col));
+        }
+        if (($param=='AA_DashOrLanG') AND $this->isMultilingual($col)) {
+            return DeHtml($this->getval($col), $this->getFlag($col));
+        } else {
+            $param = '-';
         }
 
-        return DeHtml($this->getval($col), $this->getFlag($col));
+        $values = $this->getValues($col);
+        if (empty($values)) {
+            return '';
+        }
+        // create list of values for multivalue fields
+        if (strlen($param)>2) {  // for speedup of standard {relation........} alias
+            $param = $this->unalias( $param );
+        }
+        foreach ( $values as $v ) {
+            $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
+        }
+        return $res;
     }
 
     /** f_d function
