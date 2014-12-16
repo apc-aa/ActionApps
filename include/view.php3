@@ -53,6 +53,20 @@ function GetAliasesFromUrl($als) {
     return $ret;
 }
 
+/** GetViewAliases function
+ * @param $als
+ */
+function GetViewAliases($conds) {
+    $ret = array();
+    if (is_array($conds) ) {
+        foreach ( $conds as $k => $v ) {
+            $ret[str_pad('_#VIEW_C'.($k+1), 10 ,'_')] = GetAliasDef( 'f_s:'.$v['value'] );
+        }
+    }
+    return $ret;
+}
+
+
 
 /** Class for storing url commands for view (object of this class stores just
  *  one command
@@ -765,7 +779,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 }
             }
             list($fields,) = GetSliceFields($slice_id);
-            $aliases       = GetAliasesFromFields($fields, $als);
+            $aliases       = array_merge(GetAliasesFromFields($fields, $als), GetViewAliases($conds));
 
             if (is_array($slices)) {
                 foreach ( $slices as $sid) {
@@ -775,6 +789,8 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             }
 
             $sort  = GetViewSort($view_info, $param_sort);
+
+            AA::$debug && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
 
             //mlx stuff
             if (!$slice) {
