@@ -1,3 +1,19 @@
+14-12-16 - new _#VIEW_C1_, _#VIEW_C2_, _#VIEW_C3_, _#VIEW_C4_, ... _#VIEW_Cnn
+(honzam)   aliases usable inside views representing current value of conditon
+           1, 2, ...
+         - new {avatar:<img_url>:[<person_name>]:[<avatar-size>]} which return
+           avatar img or colored div with initials - ussage:
+            <div class=dis-avatar>{avatar:{img_url.........}:{_#HEADLINE}}</div>
+         - new {sortstring:<shortitem_id>[:<relation_field>]} - returns string
+           usefull for sorting the tree of items. The string is based on
+           the short_ids, so if the branch of current item 35897 is
+           2458-15878-35897, then the string will be E2458F15878F35897, which
+           works well for ordering the tree
+         - translation is usable also with standard "Text field" widget - not
+           only textarea
+         - f_h, _#this and direct field output like in {headline........} works
+           better with translations
+         - test emails in selectbox on Alerts - Send Page are sorted
 14-11-04 - now you can refer notonly to first inserted item in ok_url
 (honzam)   of filler.php3, but also to second, ...
              - you can use also _#N1_ID___, _#N2_ID___,.., _#N245_ID___, ...

@@ -58,8 +58,8 @@ function IfLink( $cond, $url, $txt ) {
 function PrintUser($perm, $usr_id, $editor_perm) {
     global $perms_roles, $sess;
 
-    $username = perm_username($usr_id);
-    $usr_id   = rawurlencode($usr_id);
+    $username   = perm_username($usr_id);
+    $usr_id_enc = rawurlencode($usr_id);
     // select role icon
     $role_images = array(0 => "rolex.gif",
                          1 => "role1.gif",
@@ -67,7 +67,6 @@ function PrintUser($perm, $usr_id, $editor_perm) {
                          3 => "role3.gif",
                          4 => "role4.gif");
     $role = 0;
-    
 
     if (      IsPerm($perm,$perms_roles["SUPER"]['id']) ) {
         $role = 4;
@@ -81,12 +80,12 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     echo "<tr><td><img src=\"../images/". $role_images[$role] ."\" width=50 height=25 border=0></td>\n";
 
-    $go_url_arr = array( 'User'        => "um_uedit.php3?usr_edit=1&selected_user=$usr_id",
-                         'Group'       => "um_gedit.php3?grp_edit=1&selected_group=$usr_id",
+    $go_url_arr = array( 'User'        => "um_uedit.php3?usr_edit=1&selected_user=$usr_id_enc",
+                         'Group'       => "um_gedit.php3?grp_edit=1&selected_group=$usr_id_enc",
                          'Reader'      => "#",
-                         'ReaderGroup' => "index.php3?change_id=$usr_id" );
+                         'ReaderGroup' => "index.php3?change_id=$usr_id_enc" );
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
-    
+
     // add link to user settings for superadmins
     $usr_code = ( !IsSuperadmin() ? $usrinfo['name'] :
         '<a href="'. get_admin_url(  $go_url_arr[$usrinfo['type']] ) .'">'. $usrinfo['name'] .'</a>' );
@@ -96,12 +95,12 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     echo "<td class=\"tabtxt\">". (($usrinfo['mail']) ? $usrinfo['mail'] : "&nbsp;") ."</td>\n";
     echo "<td class=\"tabtxt\">". _mdelayed($usrinfo['type']) ."</td>\n";
 
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=AUTHOR"), _m("Author"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=EDITOR"), _m("Editor"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php3?UsrAdd=$usr_id&role=ADMINISTRATOR"), _m("Administrator"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrDel=$usr_id&role=AUTHOR"), _m("Revoke"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id_enc&role=AUTHOR"), _m("Author"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id_enc&role=EDITOR"), _m("Editor"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php3?UsrAdd=$usr_id_enc&role=ADMINISTRATOR"), _m("Administrator"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
     // show profile button also for groups
-    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\" onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id") ."'\"></td>\n";
+    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\" onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
     echo "</tr>\n";
 }
 
@@ -141,7 +140,7 @@ if ( $continue ) {
             $slice_users[$usr_id] = AA_Perm::joinSliceAndAAPerm($slice_users[$usr_id], $aa_users[$usr_id]);
         }
     }
-    
+
     // no slice permission set, but aa perms yes
     foreach ($aa_users as $usr_id => $prm ) {
         if ( !$slice_users[$usr_id] ) {
