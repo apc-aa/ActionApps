@@ -96,7 +96,7 @@ class AA_Collection {
         $content4ids = GetItemContent($this->getReaders($how_often), false, $ignore_reading_password, array(FIELDID_USERNAME, FIELDID_EMAIL));
         if ( is_array($content4ids) ) {
             foreach ($content4ids as $reader_id => $content4id ) {
-                $ret[$reader_id] = $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')';
+                $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')', "() \t\n\r\0\x0B");
             }
         }
         return $ret;
@@ -412,7 +412,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
         foreach ( $collection_ids as $collection_id ) {
             $collection = new AA_Collection($collection_id);
             $total_emails += $collection->sendEmails($ho, $emails, $update, $item_id, $reader_id);
-    
+
         }
     }
     return $total_emails;
