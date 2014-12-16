@@ -257,6 +257,11 @@ class AA_Content {
         return new AA_Value( $this->content[$field_id] );
     }
 
+
+    function isMultilingual($field_id) {
+        return is_array($a = $this->content[$field_id]) && (key($a) >= 1000000);
+    }
+
     /** getValue function
      *  Returns the value for a field. If it is a multi-value
      *   field, this is the first value.
@@ -270,6 +275,7 @@ class AA_Content {
         if (isset($a[$idx])) {
             return $a[$idx]['value'];
         }
+        // the same test as in isMultilingual($field_id) above;
         if ( (key($a)>=1000000) AND ($idx<1000000) ) {
             if (strlen($v = $a[AA::$langnum[0]+$idx]['value'])) {
                 return $v;

@@ -376,6 +376,9 @@ input.cancel-button {
     text-shadow: 0 0 1px #464545;
     font-size: 8pt;
 }
+.aa-langdiv input {
+    display: block;
+}
 .aa-langswitch {
     height: 12px;
     border-bottom: 1px solid #CFC0A8;

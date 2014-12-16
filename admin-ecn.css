@@ -527,6 +527,9 @@ input.cancel-button {
     text-shadow: 0 0 1px #464545;
     font-size: 8pt;
 }
+.aa-langdiv input {
+    display: block;
+}
 .aa-langswitch {
     height: 12px;
     border-bottom: 1px solid #CFC0A8;
@@ -595,5 +598,26 @@ input.cancel-button {
 }
 
 
+.dis-avatar {
+    width: 48px;
+    height: 48px;
+    float: left;
+    margin-right: 12px;
+}
+.dis-avatar div {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.2em;
+    text-align: center;
+}
+.dis-color1 { background-color: #afb478; }
+.dis-color2 { background-color: #a48a72; }
+.dis-color3 { background-color: #a1988f; }
+.dis-color4 { background-color: #c5c5c5; }
+.dis-color5 { background-color: #eae5e0; }
+.dis-color6 { background-color: #e1bfc5; }
+.dis-color7 { background-color: #bb94c6; }
+.dis-color8 { background-color: #c46f87; }
 
 

@@ -1164,7 +1164,7 @@ class AA_Inputfield {
         }
     }
 
-    // pivate functions - field specific helper functions ---------------------
+    // private functions - field specific helper functions ---------------------
 
     /** getRadioButtonTag function
      * Returns one radio tag - Used in inputRadio
@@ -1192,6 +1192,20 @@ class AA_Inputfield {
         $ret = "\n<input type='checkbox' name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
         $ret .= ">".myspecialchars($v);
+        return $ret;
+    }
+
+    // $parts["part$id2"] = array($lang, $classes);
+    protected static function getLangSwitch($parts) {
+        $ret = '';
+        if (count($parts)>1) {
+            $ret .= "<div class=\"aa-langswitch\">";
+            $ret .= "\n  <input type=\"button\" value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
+            foreach ($parts as $id => $prop) {
+                $ret .= "\n     <input type=\"button\" value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"$('$id').toggle();$('aa-but$id').toggleClassName('aa-open')\">";
+            }
+            $ret .= "\n</div>";
+        }
         return $ret;
     }
 
@@ -1255,11 +1269,9 @@ class AA_Inputfield {
     *                      any usage) - added by Jakub, 28.1.2003
     */
     function inputText($maxsize=255, $size=25, $type="text") {
-        list($name,$val,$add) = $this->prepareVars();
-        $val     = myspecialchars($val);
+        list($name,$val,$add) = $this->prepareVars('multi');
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
-        $link    = ((substr($val,0,7)==='http://') OR (substr($val,0,8)==='https://')) ? '&nbsp;'.a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
 
         if (in_array($type, array('password','search', 'email', 'url', 'tel', 'number', 'range', 'date', 'month', 'week', 'time', 'datetime', 'datetime-local', 'color'))) {
             $input_type = "type=$type";
@@ -1275,10 +1287,53 @@ class AA_Inputfield {
 
         $this->field_name('plus');
         $this->html_radio();
-        $this->echovar( "<input $input_type name=\"$name\" size=\"$size\"". ($this->required ? " required": '').
-                        $GLOBALS['mlxFormControlExtra'].
-                        " maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">$link" );
+
+        if ($this->translations) {
+            $first = true;
+            $parts = array();
+            $widg = "<div class=\"aa-langdiv\">";
+            foreach($this->translations as $lang) {
+                $lang_id           = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $value             = myspecialchars($val[$lang_id]['value']);
+                if ( !strlen($value) AND $first) {
+                    // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
+                    $value = $val[0]['value'];
+                }
+
+                $name2             = $name."[$lang_id]";
+                $id2               = $name.'-'.$lang_id;
+                $classes           = array($first ?'aa-open' : '');
+                if (strlen(trim($value))) {
+                    $classes[] = 'aa-filled';
+                }
+                $parts["part$id2"] = array($lang, $classes);
+
+                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
+
+
+                $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+                $widg .= "<input $input_type id=\"$id2\" name=\"$name2\" size=\"$size\"". (($this->required AND $first) ? " required": '').
+                                $GLOBALS['mlxFormControlExtra'].
+                                " maxlength=\"$maxsize\" value=\"$value\"".getTriggers("input",$name).">$link";
+                $widg .= "</label>";
+                $first = false;
+            }
+            $widg .= AA_Inputfield::getLangSwitch($parts);
+            $widg .= "\n</div>";
+
+        } else {
+            $value     = myspecialchars($val[0]['value']);
+            $link    = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+
+            $widg =  "<input $input_type name=\"$name\" size=\"$size\"". ($this->required ? " required": '').
+                            $GLOBALS['mlxFormControlExtra'].
+                            " maxlength=\"$maxsize\" value=\"$value\"".getTriggers("input",$name).">$link";
+        }
+
+        $this->echovar($widg);
         $this->helps('plus');
+
+
     }
 
     /** staticText function
@@ -1348,7 +1403,7 @@ class AA_Inputfield {
         if ($this->translations) {
             $first = true;
             $parts = array();
-            $tarea = "<div class=\"aa-langdiv\">";
+            $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = myspecialchars($val[$lang_id]['value']);
@@ -1367,39 +1422,32 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = array($lang, $classes);
 
-                $tarea .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
-                $tarea .= "<textarea id=\"$id2\" name=\"$name2\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
-                $tarea .= "</label>";
+                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
+                $widg .= "<textarea id=\"$id2\" name=\"$name2\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+                $widg .= "</label>";
                 if ($showhtmlarea) {
-                    $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$id2'");
+                    $widg .= getFrmJavascript( "htmlareas[htmlareas.length] = '$id2'");
                 } elseif ( $showrich_href ) {
-                    $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
+                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
                 }
                 $first = false;
             }
-            if (count($parts)>1) {
-                $tarea .= "<div class=\"aa-langswitch\">";
-                $tarea .= "\n  <input type=\"button\" value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
-                foreach ($parts as $id => $prop) {
-                    $tarea .= "\n     <input type=\"button\" value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"$('$id').toggle();$('aa-but$id').toggleClassName('aa-open')\">";
-                }
-                $tarea .= "\n</div>";
-                $tarea .= "\n</div>";
-            }
+            $widg .= AA_Inputfield::getLangSwitch($parts);
+            $widg .= "\n</div>";
         } else {
 
             $value    = myspecialchars($val[0]['value']);
             $rows     = max($rows, min(substr_count($value,"\n")+1, 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
             if ($showhtmlarea) {
-                $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
+                $widg .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
             } elseif ( $showrich_href ) {
-                $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
+                $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
             }
         }
-        $this->echovar($tarea);
+        $this->echovar($widg);
         $this->helps('plus');
     }
 
@@ -1434,6 +1482,7 @@ class AA_Inputfield {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
+        $records = array();
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getRadioButtonTag($k, $v, $add);
         }
