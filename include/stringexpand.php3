@@ -1735,7 +1735,7 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='') {
-        return str_replace(array("'","\r\n", "\r", "\n"), array("\'", " ", " ", " "), safe($text));
+        return str_replace(array("'","\r\n", "\r", "\n"), array("\'", " ", " ", " "), $text);
     }
 }
 
@@ -2538,6 +2538,30 @@ class AA_Stringexpand_Path extends AA_Stringexpand {
      */
     function expand($item_id, $relation_field=null) {
         return join('-', array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field)));
+    }
+}
+
+/** returns string usefull for sorting the tree of items. The string is based on
+ *  the short_ids, so if the branch of current item 35897 is 2458-15878-35897,
+ *  then the string will be E2458F15878F35897, which works well for ordering
+ *  the tree
+ *  {sortstring:<shortitem_id>[:<relation_field>]}
+ *  {path:2a4352366262227383484784635362ab:relation.......1}
+ *  @return dash separated long ids of items from root to the item
+ */
+class AA_Stringexpand_Sortstring extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id          - item id of the tree root (short or long)
+     * @param $relation_field   - tree relation field (default relation........)
+     */
+    function expand($item_id, $relation_field=null) {
+        $zids = new zids(array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field), 'l'));
+        return join('', array_map( array('AA_Stringexpand_Sortstring','shortsortid') , $zids->shortids()));
+    }
+
+    /** @return B1 for $id=1, F25487 for $id=25487, ... */
+    static function shortsortid($id) {
+        return chr(65+strlen((string)$id)).$id;
     }
 }
 
@@ -3899,7 +3923,7 @@ class AA_Unalias_Callback {
                     return QuoteColons($this->item->f_1($out));  // for speedup and safety - ignore, if it is multivalue
                 default:
                     if ( $this->item->isField($out) ) {
-                        return QuoteColons($this->item->f_h($out,"-"));
+                        return QuoteColons($this->item->f_h($out,'AA_DashOrLanG'));
                         // QuoteColons used to mark colons, which is not parameter separators.
                     }
             }
@@ -4458,12 +4482,44 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
 //error_reporting(E_ALL ^ E_NOTICE);
 //ini_set('display_errors', 1);
 
+/** @return avatar img or colored div with initials
+ *  {avatar:<img_url>:[<person_name>]:[<avatar-size>]}
+ *  Ussage:
+ *     <div class="dis-avatar">{avatar:{img_url.........}:{_#HEADLINE}}</div>
+ **/
+class AA_Stringexpand_Avatar extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function
+     * @param $image - image url
+     * @param $phpthumb_params - parameters as you would put to url for phpThumb
+     *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
+     */
+    function expand($image='', $name='', $size='') {
+        $size  = get_if($size, 48);
+        $title = (strpos($name,'@')===false) ? $name : substr($name,0,strpos($name,'@'));
+
+        if ($img = AA_Stringexpand::unalias("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
+            return $img;
+        }
+        $nplus    = $title . '--';
+        $second   = strcspn($title,' -_.');
+        $initials = $nplus[0].$nplus[strlen($title)==$second ? 1 : $second+1];
+        $color    = (crc32($name) % 8) + 1;
+        return "<div class=\"dis-color$color\" title=\"$title\">$initials</div>";
+    }
+}
+
+
+
 
 /** Creates link to modified image using phpThub
  *  {img:<url>:[<phpthumb_params>]:[<info>]:[<param1>]:[<param2>]}
  *
  *  Ussage:
  *     <img src="{img:{img_url.........}:w=150&h=150}">
+ *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
  *
@@ -4483,6 +4539,9 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
         //AA::$debug && AA::$dbg->info('AA_Stringexpand_Img0', $image, $phpthumb_params, $info, $param1, $param2);
 
+        if (!$image) {
+            return '';
+        }
         list($img_url,$img_short) = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
 
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
