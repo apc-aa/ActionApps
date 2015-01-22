@@ -86,7 +86,8 @@ $hit_zid = null;
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id(AA::$site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
     //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
-    $home         = trim($site_info['state_file']) ? trim($site_info['state_file']) : '/' .substr($lang_file,0,2). '/';
+    // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
+    $home         = AA_Stringexpand::unalias(trim($site_info['state_file'])) ?: '/' .substr($lang_file,0,2). '/';
     $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
 
     // use REDIRECT_URL for homepage redirects:
