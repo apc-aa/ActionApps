@@ -58,6 +58,16 @@ var AA_Config = {
 }
 
 
+// switch current item in gallery
+function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
+    $('div.switcher .active').removeClass('active');
+    if ($(jqid(thumb_id))) {
+        $(jqid(thumb_id)).addClass('active');
+       // $(jqid(thumb_id)).parentNode.scrollTop = $(jqid(thumb_id)).offsetTop - $(jqid(thumb_id)).parentNode.offsetTop - 50;
+    }
+    $(jqid(photo_div)).load(AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
+}
+
 // now AA specific functions
 function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
     if ( $(jqid(div_id_1)).is(':visible') ) {
@@ -380,8 +390,8 @@ function AA_Rotator(id, interval, max) {
         AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
     }
 
-    $(jqid(id)+ ' .rot-hide').slideUp(200);
-    $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').slideDown(200);
+    $(jqid(id)+ ' .rot-hide').hide();
+    $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').show();
 
     $(jqid(id)+ ' .rot-active').removeClass('active');
     $(jqid(id)+ ' .rot-active:nth-child('+(AA_Rotator.rotators[id].index+1)+')').addClass('active');
