@@ -319,8 +319,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
         $item = GetItemFromContent($content4id);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
         $ret  = $content4id->getAaValue($field_id);
-        $ret->setFlag($flag);
-        return $ret;
+        return $ret->setFlag($flag);
     }
 
     /** htmlSetting function
@@ -869,7 +868,6 @@ class AA_Transformator {
                 continue;
             }
             $field_content->removeDuplicates();
-
             $newcontent4id = new ItemContent();
             $newcontent4id->setAaValue($field_id, $field_content);
             $newcontent4id->setItemID($item_id);

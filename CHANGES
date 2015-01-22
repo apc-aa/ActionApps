@@ -1,3 +1,12 @@
+15-01-22 - home page setting of Site module now can contain some logic
+(honzam)   like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
+         - no site module created problem fixed
+         - new possibility to also remove specific value form field via
+             aa[r<item_id>] with filler (similar to aa[i...], aa[u...])
+         - nicer and better aligned [+] and [-] images for expandable, htmltoggle
+         - improved multilingual field content - fixes
+         - updated aajslib-jquery to have be more compatible with aajslib.php
+           - added AA_GalleryGoto()
 14-12-16 - new _#VIEW_C1_, _#VIEW_C2_, _#VIEW_C3_, _#VIEW_C4_, ... _#VIEW_Cnn
 (honzam)   aliases usable inside views representing current value of conditon
            1, 2, ...
