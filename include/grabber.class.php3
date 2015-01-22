@@ -410,6 +410,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
             huhl('_getExactData() - Local pairs:', $local_pairs);
         }
 
+        $base                    = array();
         $base["node_name"]       = ORG_NAME;
         $base["password"]        = $this->feed['password'];
         $base["user"]            = $this->feed['user_id'];
@@ -764,24 +765,20 @@ class AA_Grabber_Form {
         $trans_item_alias = array_keys($id_trans_table);
         $trans_item_ids   = array_values($id_trans_table);
 
+        $UPDATE_MODES = array('u'=>'update', 'i'=>'add', 'r'=>'update');
         foreach ( $aa as $dirty_item_id => $item_fields) {
 
             // common fields
             if ($dirty_item_id == 'all' ) {
                 continue;
             }
-            // edited item - update = field content is changed to new value
-            elseif ( $dirty_item_id{0} == 'u' ) {
+
+            // 'u': edited item - update = field content is changed to new value
+            // 'r': edited item - remove value from field
+            // 'i': edited item - insert = field content is added to the existing content of the field
+            if ( $store_mode = $UPDATE_MODES[$dirty_item_id{0}] ) {
                 $item_id    = substr($dirty_item_id, 1);
-                $store_mode = 'update';
-                $item = AA_Item::getItem($item_id);
-                $item_fields['slice_id________'] = pack_id($item->getSliceId());
-            }
-            // edited item - insert = field content is added to the existing content of the field
-            elseif ( $dirty_item_id{0} == 'i' ) {
-                $item_id    = substr($dirty_item_id, 1);
-                $store_mode = 'add';
-                $item = AA_Item::getItem($item_id);
+                $item       = AA_Item::getItem($item_id);
                 $item_fields['slice_id________'] = pack_id($item->getSliceId());
             }
             // new items
@@ -804,14 +801,27 @@ class AA_Grabber_Form {
             if ( isset($aa['all']) ) {
                 $item_fields = array_merge($aa['all'], $item_fields);
             }
+
+            if ($dirty_item_id{0} == 'r') {
+                $oldcontent4id    = new ItemContent();
+                $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
+                if (!$oldcontent4id->getSliceID() OR !$oldcontent4id->getItemID()) {
+                    continue;
+                }
+            }
+
             foreach ($item_fields as $dirty_field_id => $val_array) {
-                // get the content of the field (values and flags)
-                $aa_value = AA_Widget::getValue($val_array);
-
-                $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
-
                 // create full_text......1 from full_text______1
                 $field_id = AA_Form_Array::getFieldIdFromVar($dirty_field_id);
+
+                // get the content of the field (values and flags)
+                $aa_value = AA_Widget::getValue($val_array);
+                $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
+
+                if ($dirty_item_id{0} == 'r') {
+                    $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
+                }
+
                 $item->setAaValue($field_id, $aa_value);
             }
             $this->_items[] = array($item, $store_mode);
