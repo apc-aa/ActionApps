@@ -83,6 +83,21 @@ class AA_Value {
         return $aav;
     }
 
+    /** Static for creating value from array[][value]
+     *  Called as
+     *     AA_Value::factoryFromContent($arr);
+     */
+    function factoryFromContent($arr) {
+        $aav = new AA_Value();
+        // preserves keys - necessary for translated values
+        foreach($arr as $key => $val) {  
+            $aav->val[(int)$key] = $val['value'];
+        }
+        $first = reset($arr);
+        return $aav->setFlag( $first['flag'] );
+    }
+    
+    
     /** getValue function
      *  Returns the value for a field. If it is a multi-value
      *   field, this is the first value.
@@ -118,14 +133,20 @@ class AA_Value {
             // in AA_ItemContent - [0]['value'] = ..
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
-            foreach($value as $val) {
-                $this->val[] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
+            foreach($value as $key => $val) {
+                $this->val[(int)$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
                 // @todo check, if $val->getSomething is callable
             }
         } elseif ( !is_null($value) ) {
             $this->val[] = $value;
         }
         return $this->removeDuplicates();
+    }
+
+    /** Remove Value */
+    function removeValues($remove) {
+        $this->val = array_diff($this->val, $remove);
+        return $this;
     }
 
     /** Set $value - value is normal (numeric) array or string value */
@@ -160,7 +181,10 @@ class AA_Value {
 
     /** Remove duplicate values from the array */
     function removeDuplicates() {
-        $this->val = array_values( array_unique($this->val) );
+        reset($this->val);
+        if (key($this->val) < 1000000) {  // do not remove for multilingual
+            $this->val = array_values( array_unique($this->val) );
+        }
         return $this;
     }
 
@@ -173,8 +197,8 @@ class AA_Value {
      */
      function getArray() {
          $ret = array();
-         foreach ($this->val as $v) {
-             $ret[] = array('value'=>$v, 'flag'=>$this->flag);
+         foreach ($this->val as $k => $v) {
+             $ret[(int)$k] = array('value'=>$v, 'flag'=>$this->flag);
          }
          return $ret;
      }
@@ -254,9 +278,8 @@ class AA_Content {
      * @param $field_id
      */
     function getAaValue($field_id) {
-        return new AA_Value( $this->content[$field_id] );
+        return AA_Value::factoryFromContent( $this->content[$field_id] );
     }
-
 
     function isMultilingual($field_id) {
         return is_array($a = $this->content[$field_id]) && (key($a) >= 1000000);
@@ -367,10 +390,12 @@ class ItemContent extends AA_Content {
      * @param $content4id
      */
     function ItemContent($content4id = "") {
-        if ( is_array($content4id) ) {
-            $this->setFromArray($content4id);
-        } elseif ( $content4id ) {
-            $this->setByItemID($content4id );
+        if ($content4id) {
+            if ( is_array($content4id) ) {
+                $this->setFromArray($content4id);
+            } elseif ( $content4id ) {
+                $this->setByItemID($content4id );
+            }
         }
     }
 
@@ -852,7 +877,7 @@ class ItemContent extends AA_Content {
         }
 
         // remove old content first (just in content table - item is updated)
-        if (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add')) {
+        if (in_array($mode, array('update', 'overwrite', 'add'))) {
             $oldItemContent = new ItemContent($id);
             if ($throw_events) {
                 $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
@@ -865,8 +890,7 @@ class ItemContent extends AA_Content {
 
         switch ($mode) {
         case 'overwrite':
-            $varset     = new CVarset();
-            $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "'");
+            DB_AA::delete('content', array(array('item_id', $id, 'l')));
             break;
         case 'update':
             // delete content of all fields, which are in new content array
@@ -981,7 +1005,6 @@ class ItemContent extends AA_Content {
     function updateComputedFields($id, $fields=null, $mode='update', $restict_fields=null) {
         global $itemvarset; // set by insert_fnc_qte function
 
-        $varset       = new CVarset();
         $itemvarset   = new CVarset();
         $field_writer = new AA_Field_Writer;
 
@@ -1035,8 +1058,9 @@ class ItemContent extends AA_Content {
 
             // $this->_clean_updated_fields($id, $fields);
 
-
-            $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
+            if ($id AND $fid) {
+                DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $fid)));
+            }
 
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);
@@ -1101,17 +1125,15 @@ class ItemContent extends AA_Content {
      * @param $fields
      */
     function _clean_updated_fields($id, &$fields) {
-        $varset     = new CVarset();
-        $delim = $in = "";
+        $in = array();
         foreach ($this->content as $fid => $fooo) {
             if (!$fields[$fid]['in_item_tbl']) {
-                $in .= $delim."'". addslashes($fid) ."'";
-                $delim = ",";
+                $in[] = $fid;
             }
         }
-        if ($in) {
+        if ($in AND $id) {
             // delete content just for displayed fields
-            $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id IN ($in)");
+            DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $in)));
             // note extra images deleted in insert_fnc_fil if needed
         }
     }
@@ -1140,16 +1162,14 @@ class ItemContent extends AA_Content {
                 if (!is_array($cont)) {
                     continue;
                 }
-                // serve multiple values for one field
-                $numbered = (count($cont) > 1);
                 $set      = false;
                 unset($parameters);
                 unset($thumbnails);
                 foreach ($cont as $numkey => $v) {
+
+                    $numkey = (int)$numkey;
                     // file upload needs the $fields array, because it stores
                     // some other fields as thumbnails
-
-
 
                     if ($fnc["fnc"]=="fil") {
                         //Note $thumbnails is undefined the first time in this loop
@@ -1162,15 +1182,13 @@ class ItemContent extends AA_Content {
                         }
 
                         if (!$stop) {
-                            if ($numbered) {
-                                $parameters["order"] = $numkey;
-                            }
-                            $parameters["fields"]    = $fields;
-                            $parameters["context"]   = $context;
+                            $parameters["order"]   = $numkey;
+                            $parameters["fields"]  = $fields;
+                            $parameters["context"] = $context;
                             $thumbnails = $field_writer->$fncname($id, $f, $v, $fnc["param"], $parameters);
                         }
                     } else {
-                        $field_writer->$fncname($id, $f, $v, $fnc["param"], $numbered ? array('order'=>$numkey) : '');
+                        $field_writer->$fncname($id, $f, $v, $fnc["param"], array('order'=>$numkey));
                     }
                     // do not store multiple values if field is not marked as multiple
                     // ERRORNOUS
