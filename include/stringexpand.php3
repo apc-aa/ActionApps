@@ -692,7 +692,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -742,7 +742,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         $selected = ($is_on == 1) ? 1 : 0;
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -787,7 +787,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php3 calls
@@ -902,7 +902,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -944,7 +944,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php3 calls
@@ -1484,7 +1484,8 @@ class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercache {
      * @param $delimiter  // default is '-'
      */
     function expand($ids, $offset, $length='', $delimiter='-') {
-        $arr = explode($delimiter, $ids);
+        // cut off spaces well as delimiters
+        $arr = explode($delimiter, trim($ids, " \t\n\r\0\x0B\xA0" .((strlen($delimiter) == 1) ? $delimiter : '')));
         $arr = ($length === '') ? array_slice($arr, $offset) : array_slice($arr, $offset, $length);
         return join($delimiter, $arr);
     }
