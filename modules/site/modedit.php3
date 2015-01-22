@@ -24,7 +24,7 @@ http://www.apc.org/
     $update=1 .. write changes to database
 */
 
-$no_slice_id   = $template['W'] ? true : false;       // message for init_page.php3
+$no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for init_page.php3
 
 require_once "../../include/init_page.php3";
 //require_once AA_INC_PATH."en_site_lang.php3";
@@ -60,8 +60,12 @@ if ($template_id) {        // add module
     }
 }
 
-// additional settings
-AA_Module_Site::processModuleObject($module_id);
+
+
+// additional settings - just make sure it is set
+if (!$add) {
+    AA_Module_Site::processModuleObject($module_id);
+}
 
 if ($add || $update) {
     do {
@@ -86,6 +90,7 @@ if ($add || $update) {
 
         // write all fields needed for module table
         $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false, $superadmin, 'W', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
+
         if (!$module_id) {   // error?
             break;
         }
@@ -143,6 +148,8 @@ if ($add || $update) {
                 $varset->set("flag", "", "number" );
                 $varset->doInsert('site_spot');
             }
+
+            AA_Module_Site::processModuleObject($module_id);
         }
         $GLOBALS['pagecache']->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
     } while(false);
