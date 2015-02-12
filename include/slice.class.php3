@@ -151,6 +151,10 @@ class AA_Module {
     function getCharset()     {
         return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
     }
+
+    function getDefaultLang() {
+        return $this->getLang();
+    }
 }
 
 class AA_Slice extends AA_Module {
@@ -324,7 +328,11 @@ class AA_Slice extends AA_Module {
     function getTranslations()  {
         return $this->getProperty('translations');
     }
-
+    
+    /** for translated fields - if not translated, use default language of the module */
+    function getDefaultLang() {
+        return is_array($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
+    }
 
     /** sql_id function - removed - use DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l'))); */
     // function sql_id()      { return q_pack_id($this->module_id); }
@@ -706,6 +714,14 @@ class AA_Modules {
 
 class AA_Module_Site extends AA_Module {
     const SETTING_CLASS = 'AA_Modulesettings_Site';
+    
+    /** for translated fields - if not translated, use default language of the module */
+    function getDefaultLang() {
+        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slices::getSliceProperty($translate_slice, 'translations'))) {
+            return $translations[0];
+        }
+        return $this->getLang();
+    }
 }
 
 

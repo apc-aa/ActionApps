@@ -607,6 +607,10 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
     if (!isset($GLOBALS['apc_state']['router'])) {
         mgettext_bind($view->getLang(), 'output');
     }
+    if (!AA::$langnum) { // for multilingual content (not defined when called from view.php3, or cron.php3 mail, ...)
+        AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
+        AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+    }
 
     $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( ((strlen($view->f('noitem_msg')) > 0) ) ?

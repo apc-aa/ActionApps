@@ -302,11 +302,27 @@ class AA_Content {
         if ( (key($a)>=1000000) AND ($idx<1000000) ) {
             if (strlen($v = $a[AA::$langnum[0]+$idx]['value'])) {
                 return $v;
+            } elseif (strlen($v = $a[$this->_getDefaultLangNum()+$idx]['value'])) {
+                return $v;
             }
         }
         return false;
         //return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
     }
+    
+    private function _getDefaultLangNum() {
+        static $def_lang_num = '';
+        if ($def_lang_num) {
+            return $def_lang_num;
+        }
+        $def_lang = '';
+        if ( AA::$site_id ) {
+            $def_lang = AA_Modules::getModule(AA::$site_id)->getDefaultLang();
+        } else {
+            $def_lang = AA_Modules::getModule($this->getOwnerId())->getDefaultLang() || strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
+        }
+        return ($def_lang_num = AA_Content::getLangNumber($def_lang)); // array of prefered languages in priority order.
+    }        
 
     function getFlag($field_id) {
         if (is_array($this->content[$field_id])) {
