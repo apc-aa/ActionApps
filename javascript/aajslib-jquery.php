@@ -379,19 +379,29 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
  *   AA_Rotator('mydiv', 2000, 3);
  * </script>
  */
-function AA_Rotator(id, interval, max) {
+function AA_Rotator(id, interval, max, speed, effect) {
     // Check to see if the rotators-set  has been initialized
     if ( typeof AA_Rotator.rotators == 'undefined' ) {
         AA_Rotator.rotators = {};
     }
 
     if ( typeof AA_Rotator.rotators[id] == 'undefined' ) {
-        AA_Rotator.rotators[id]       = {"index": 0, "max": max };
+        AA_Rotator.rotators[id]       = {"index": 0, "max": max, "speed": speed, "effect":effect };
         AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
+        $(jqid(id)).hover(function(ev) {
+            clearInterval(AA_Rotator.rotators[id].timer);
+        }, function(ev){
+            AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
+        });        
     }
 
-    $(jqid(id)+ ' .rot-hide').hide();
-    $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').show();
+    if (AA_Rotator.rotators[id].effect == 'fade') {
+        $(jqid(id)+ ' .rot-hide').fadeOut(AA_Rotator.rotators[id].speed);
+        $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').fadeIn(AA_Rotator.rotators[id].speed);
+    } else {
+        $(jqid(id)+ ' .rot-hide').hide(AA_Rotator.rotators[id].speed);
+        $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').show(AA_Rotator.rotators[id].speed);
+    }
 
     $(jqid(id)+ ' .rot-active').removeClass('active');
     $(jqid(id)+ ' .rot-active:nth-child('+(AA_Rotator.rotators[id].index+1)+')').addClass('active');

@@ -606,7 +606,7 @@ function isArray(obj) {
  *   AA_Rotator('mydiv', 2000, 3);
  * </script>
  */
-function AA_Rotator(id, interval, max) {
+function AA_Rotator(id, interval, max, speed, effect) {
     // Check to see if the rotators-set  has been initialized
     if ( typeof AA_Rotator.rotators == 'undefined' ) {
         AA_Rotator.rotators = {};

@@ -5434,32 +5434,38 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
 /** Rotates on one place in the page different contents (divs) with specified interval
  *  {rotator:<item-ids>:<html-code>:<interval>}
  *  {rotator:{ids:a24657bf895242c762607714dd91ed1e}:_#FOTO_S__<div>_#HEADLINE</div>}
+ *  @param speed:  '' | slow | fast
+ *  @param effect: '' | fade
  */
 class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
-    function expand($ids='', $code='', $interval='') {
+    function expand($ids='', $code='', $interval='', $speed='', $effect='') {
         $frames = array();
         $zids = new zids(explode('-', $ids));
         if ( $zids->count() <= 0 ) {
             return '';
         }
-
-
-        $interval = (int)$interval ? (int)$interval : 3000;
+         
+        $interval   = (int)$interval ? (int)$interval : 3000;
+        $extrastyle = ($effect == 'fade') ? 'position:absolute;' : '';
+        $showfirst  = '';
 
         $items = AA_Items::getItems($zids);
         foreach($items as $long_id=>$item) {
             $frame = trim(AA_Stringexpand::unalias($code, '', $item));
             if ($frame) {
-                $frames[] = "<div class=rot-hide>$frame</div>";
+                $frames[]  = "<div class=rot-hide style=\"$showfirst $extrastyle\">$frame</div>";
+                $showfirst = 'display:none;'; 
             }
         }
         if (!count($frames)) {
             return '';
         }
-        $div_id = 'rot'.get_hash($ids, $code, $interval);
-        return "<div id=\"$div_id\">".join("\n",$frames)."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).");</script>";
+        
+        $extrahightdiv = ($effect == 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
+        
+        $div_id = 'rot'.get_hash($ids, $code, $interval, $speed, $effect);
+        return "<div id=\"$div_id\" style=\"position:relative\"'>".join("\n",$frames).$extrahightdiv."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
     }
-
 }
 
 /** Recounts all computed field in the specified item (or dash separated items)

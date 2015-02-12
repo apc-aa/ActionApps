@@ -1,3 +1,8 @@
+15-02-12 - translated field - if not translated, use default language of the module include/item_content.php3
+(honzam) - new parameters speed and efect for
+             {rotator:<item-ids>:<html-code>:<interval>:<speed>,<effect>}
+               - speed  = ""|slow|fast
+               - effect = ""|fade
 15-01-22 - home page setting of Site module now can contain some logic
 (honzam)   like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
          - no site module created problem fixed
