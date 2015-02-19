@@ -90,14 +90,14 @@ class AA_Value {
     function factoryFromContent($arr) {
         $aav = new AA_Value();
         // preserves keys - necessary for translated values
-        foreach($arr as $key => $val) {  
+        foreach($arr as $key => $val) {
             $aav->val[(int)$key] = $val['value'];
         }
         $first = reset($arr);
         return $aav->setFlag( $first['flag'] );
     }
-    
-    
+
+
     /** getValue function
      *  Returns the value for a field. If it is a multi-value
      *   field, this is the first value.
@@ -309,7 +309,7 @@ class AA_Content {
         return false;
         //return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
     }
-    
+
     private function _getDefaultLangNum() {
         static $def_lang_num = '';
         if ($def_lang_num) {
@@ -322,7 +322,7 @@ class AA_Content {
             $def_lang = AA_Modules::getModule($this->getOwnerId())->getDefaultLang() || strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
         return ($def_lang_num = AA_Content::getLangNumber($def_lang)); // array of prefered languages in priority order.
-    }        
+    }
 
     function getFlag($field_id) {
         if (is_array($this->content[$field_id])) {
@@ -732,16 +732,19 @@ class ItemContent extends AA_Content {
         return $added_to_db ? array( 0 => ($insert ? 'INSERT' : 'UPDATE'), 1 => $id ) : false;
     }
 
-    /*
-    function validate() {
-        $slice_id = $this->getSliceID();
-        if (!$slice_id) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
-            return false;
+    function validateReport() {
+        $slice  = AA_Slices::getSlice($this->getSliceID());
+        $fields = $slice->getFields();
+        $ret    = array();
+
+        foreach ($fields as $field_id => $field) {
+            $property    = $field->getAaProperty();
+            if ($validreport = $property->validateReport($this->getValuesArray($field_id))) {
+                $ret[$field_id] = $validreport;
+            }
         }
-        $slice     = AA_Slices::getSlice($this->getSliceID());
-    not yet written
-    */
+        return $ret;
+    }
 
     /** validates and fills content with default and hidden fields in order it could be stored into database */
     function complete4Insert() {

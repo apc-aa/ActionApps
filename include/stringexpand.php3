@@ -5444,7 +5444,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         if ( $zids->count() <= 0 ) {
             return '';
         }
-         
+
         $interval   = (int)$interval ? (int)$interval : 3000;
         $extrastyle = ($effect == 'fade') ? 'position:absolute;' : '';
         $showfirst  = '';
@@ -5454,15 +5454,15 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
             $frame = trim(AA_Stringexpand::unalias($code, '', $item));
             if ($frame) {
                 $frames[]  = "<div class=rot-hide style=\"$showfirst $extrastyle\">$frame</div>";
-                $showfirst = 'display:none;'; 
+                $showfirst = 'display:none;';
             }
         }
         if (!count($frames)) {
             return '';
         }
-        
+
         $extrahightdiv = ($effect == 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
-        
+
         $div_id = 'rot'.get_hash($ids, $code, $interval, $speed, $effect);
         return "<div id=\"$div_id\" style=\"position:relative\"'>".join("\n",$frames).$extrahightdiv."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
     }
@@ -5656,8 +5656,6 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
 
 /** Translation */
 class AA_Stringexpand_Tr extends AA_Stringexpand {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
 
     /** expand function
      * @param $text
@@ -5687,7 +5685,25 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
     }
 }
 
+/** Validate */
+class AA_Stringexpand_Validate extends AA_Stringexpand {
 
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getId();
+    }
 
+    /** expand function
+     * @param $text
+     */
+    function expand() {
+        // $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
+        if (!($item = ($this ? $this->item : null))) {
+            return '';
+        }
+        $valid = $item->getItemContent()->validateReport();
+        return json_encode($valid);
+    }
+}
 
 ?>

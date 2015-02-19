@@ -2141,15 +2141,20 @@ class AA_Property extends AA_Storable {
         return $form->addRow(new AA_Formrow_Full($this, $widget));
     }
 
+    function validateReport($value_arr) {
+        return $this->validate($value_arr, true);
+    }
 
-
-    function validate($value_arr) {
+    function validate($value_arr, $detail=null) {
         $valid  = true;
         foreach ( $value_arr as $v) {
             $valid = $this->validator->validate($v);
             if ( !$valid ) {
                 break;
             }
+        }
+        if ($detail) {
+            return $valid ? array() : array($this->validator->lastErr(), $this->validator->lastErrMsg());
         }
         return $valid;
     }
