@@ -1136,9 +1136,6 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
 /** AA_Grabber_Slice - grabs data from slice based on AA_Set
  *  Right now we use it mainly for apc-aa/admin/se_export.php
  */
-/** AA_Grabber_Slice - grabs data from slice based on AA_Set
- *  Right now we use it mainly for apc-aa/admin/se_export.php
- */
 class AA_Grabber_Slice extends AA_Grabber {
 
     var $set;                 /** AA_Set specifies the slice, conds and sort */

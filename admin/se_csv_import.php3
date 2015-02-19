@@ -188,7 +188,7 @@ function InitPage() {}
       }
   }
 ?>
-<form enctype="multipart/form-data" method="post" name="f" action="<?php echo $sess->url(self_base() . "se_csv_import.php3")?>">
+<form enctype="multipart/form-data" method="post" name="f" action="<?php echo $sess->url(self_base() . "se_csv_import.php3"); ?>">
 
 <table width="600" border="0" cellspacing="0" cellpadding="1"
        bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">

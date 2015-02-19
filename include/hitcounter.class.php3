@@ -306,10 +306,7 @@ class AA_Hitcounter_Group {
 
 class AA_Computedfields_Updater {
 
-    /** updateDisplayCount - updates item.display_count and hit_archive based
-     *  on hit log in hit_short_id and hit_long_id tables
-     *                     - it also plans the the hit_x..... field counting
-     *                       into toexecute queue
+    /** plan filed updater proces for future time based on field settings
      */
     function plan() {
 
