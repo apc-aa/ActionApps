@@ -246,7 +246,7 @@ function Links_admin_url($script, $add) {
  * @param $vid
  * @param $var
  */
-function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null) {
+function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null, $safe=true) {
     global $sess, $AA_CP_Session, $profile;
 
     // $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
@@ -282,7 +282,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     } elseif (isset($profile) AND $profile->getProperty('input_view')) {
         $param[] = 'vid='.$profile->getProperty('input_view');
     }
-    return con_url($url2go,$param);
+    return $safe ? con_url($url2go,$param) : get_url($url2go,$param);
 }
 
 /** GetFormatedItems function
@@ -761,10 +761,12 @@ class AA_Item {
         if ( empty($param) ) {
             return DeHtml($this->getval($col), $this->getFlag($col));
         }
-        if (($param=='AA_DashOrLanG') AND $this->isMultilingual($col)) {
-            return DeHtml($this->getval($col), $this->getFlag($col));
-        } else {
-            $param = '-';
+        if ($param=='AA_DashOrLanG') {
+            if ($this->isMultilingual($col)) {
+                return DeHtml($this->getval($col), $this->getFlag($col));
+            } else {
+                $param = '-';
+            }
         }
 
         $values = $this->getValues($col);

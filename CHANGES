@@ -1,5 +1,16 @@
-15-05-22 - fixed Related Item Selection (there was bug with some characters)
-(honzam) - fixed Item Manager - do not display wrong page after items deletion
+15-05-22 - new <persistent-id> parameter in
+(honzam)   {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]}
+             - if provided <persistent-id> identifier ([a-z-]*), the toggle
+             state will be persistent between page loads;
+         - new {sortid:<number>} -  usefull for sorting numbers in text mode.
+           The string is based on number and the length, so it creates B1 from 1,
+           C10 from 10, C89 from 89, and E2458 from 2458
+         - fixed "Update & Edit" - now works well with fileuploads, ...
+         - fixed ajax editing for translated multilingual fields
+         - better support for multilingual translation widgets (text field, text area)
+         - improved standard form html (just a little)
+         - fixed Related Item Selection (there was bug with some characters)
+         - fixed Item Manager - do not display wrong page after items deletion
          - fixed Export items feature in Item Manager - now works with items
            in all bins (Trash, Holding,...)
          - improved Rotator (fix for 1 slide only)
