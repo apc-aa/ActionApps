@@ -867,7 +867,7 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
             $default = $field->getDefault();
             // modify the value to be compatible with $_GET[] array - we use
             // slashed variables (this will be changed in future) - TODO
-            $$varname     = ($default->valuesCount() > 1) ? array_map('addslashes',$default->getValues()) : addslashes($default->getValue());
+            $$varname     = ($default->count() > 1) ? array_map('addslashes',$default->getValues()) : addslashes($default->getValue());
             $$htmlvarname = $default->getFlag();
         } elseif ($validate=='date') {
             $default = $field->getDefault();
