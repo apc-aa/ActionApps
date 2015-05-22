@@ -521,7 +521,7 @@ class AA_Manageraction_Item_Export extends AA_Manageraction {
         $zids->setFromItemArr($item_arr);
 
         if ($zids->count() > 0) {
-            $exportset = AA_Object::factory('AA_Exportsetings', array('grabber_type'=>'AA_Grabber_Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human'));     
+            $exportset = AA_Object::factory('AA_Exportsetings', array('grabber_type'=>'AA_Grabber_Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human', 'bins'=>AA_BIN_ALL));
             $exportset->setOwnerId($manager->getModuleId());
             $exportset->export($zids);
         }
