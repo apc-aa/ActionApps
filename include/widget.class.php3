@@ -258,7 +258,7 @@ class AA_Widget extends AA_Components {
         $this->_selected = array();
         //if ( is_null($this->_selected) ) {  // not cached yet => create selected array
         if (is_object($aa_value)) {
-            for ( $i=0, $ino=$aa_value->valuesCount(); $i<$ino; ++$i) {
+            for ( $i=0, $ino=$aa_value->count(); $i<$ino; ++$i) {
                 $val = $aa_value->getValue($i);
                 if ( strlen($val) ) {
                     $this->_selected[(string)$val] = true;
@@ -414,26 +414,35 @@ class AA_Widget extends AA_Components {
                 $input_type     = 'type=text';
             }
 
-            for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
-                $input_name   = $base_name ."[$i]";
-                $input_id     = AA_Form_Array::formName2Id($input_name);
-                $input_value  = myspecialchars($value->getValue($i));
-                $link         = ((substr($input_value,0,7)==='http://') OR (substr($input_value,0,8)==='https://')) ? '&nbsp;'.a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-                $widget      .= $delim. "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live', 'right', $link ? 16 : 0);
-                $delim        = '<br />';
-                $autofocus    = '';
+            if ($value->isEmpty()) {
+                $value->addValue('');   // display empty field at least
             }
-
-            // no input was printed, we need to print one
-            if ( !$widget ) {
-                $input_name   = $base_name ."[0]";
-                $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget       = "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\" $required $widget_add $autofocus>".AA_Widget::_saveIcon($base_id, $type=='live');
+            $value->fixTranslations($aa_property->getTranslations());  // modify for tranclations if needed
+            foreach ($value as $i => $val) {
+                $input_name   = $base_name ."[$i]";
+                $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $input_type, $width, $max_characters, $autofocus, $base_id, $type, $widget_add, $required);
+                $delim        = "\n<br />";
+                $required     = ''; // only one is required
+                $autofocus    = '';
             }
         }
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+     private function _getOneInput($input_name, $i, $val, $input_type, $width, $max_characters, $autofocus, $base_id, $type, $widget_add, $required) {
+         $input_id    = AA_Form_Array::formName2Id($input_name);
+         $input_value = myspecialchars($val);
+         $link        = ((substr($input_value,0,7)==='http://') OR (substr($input_value,0,8)==='https://')) ? '&nbsp;'.a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+         $ret         =  "<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live', 'right', $link ? 16 : 0);
+         if ($lang = AA_Content::getLangId($i)) {
+             $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
+         }
+         return $ret;
+     }
 
     /** @return widget HTML for using in form
      *  @param  $aa_property - the variable
@@ -521,7 +530,7 @@ class AA_Widget extends AA_Components {
 
         foreach ( (array)$data4field as $key => $value ) {
             if (is_numeric($key)) {
-                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+                $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
             elseif (($key != 'flag') AND class_exists($class = AA_Widget::constructClassName($key))) {
                 // call function like AA_Widget_Dte::getValue($data)
@@ -583,17 +592,33 @@ class AA_Widget_Txt extends AA_Widget {
         $required    = $aa_property->isRequired() ? 'required' : '';
         $value       = $content->getAaValue($aa_property->getId());
 
-        $count       = max($value->valuesCount(),1);
-        for ( $i = 0; $i < $count; ++$i ) {
+        if ($value->isEmpty()) {
+            $value->addValue('');   // display empty textarea at least
+        }
+        $value->fixTranslations($aa_property->getTranslations());
+        foreach ($value as $i => $val) {
             $input_name   = $base_name ."[$i]";
-            $input_id     = AA_Form_Array::formName2Id($input_name);
-            $input_value  = myspecialchars($value->getValue($i));
-            $widget      .= $delim. "\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
-            $delim        = '<br />';
+            $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $row_count, $widget_add, $widget_add2, $required);
+            $delim        = "\n<br />";
+            $required     = ''; // only one is required
         }
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+     private function _getOneInput($input_name, $i, $val, $row_count, $widget_add, $widget_add2, $required) {
+         $input_id     = AA_Form_Array::formName2Id($input_name);
+         $input_value  = myspecialchars($val);
+
+         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
+         if ($lang = AA_Content::getLangId($i)) {
+             $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
+         }
+         return $ret;
+     }
 }
 
 /** Textarea with Presets widget */
@@ -729,7 +754,7 @@ class AA_Widget_Mfl extends AA_Widget {
         $value         = $content->getAaValue($aa_property->getId());
         $widget        = '';
         // display at least one option
-        for ( $i=0, $ino=max(1,$row_count,$value->valuesCount()); $i<$ino; ++$i) {
+        for ( $i=0, $ino=max(1,$row_count,$value->count()); $i<$ino; ++$i) {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
@@ -761,7 +786,7 @@ class AA_Widget_Mfl extends AA_Widget {
 
         foreach ( (array)$data4field as $key => $value ) {
             if (is_numeric($key) AND strlen($value)) {
-                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+                $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
         return new AA_Value($fld_value_arr, $flag);
@@ -914,7 +939,8 @@ class AA_Widget_Rio extends AA_Widget {
         $htmlopt      = array();
         for ( $i=0, $ino=count($options); $i<$ino; ++$i) {
             $htmlopt[]  = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required");
-        }
+            // $required     = ''; // fotr radio it could be in all options
+       }
 
         $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-rio').$widget_add2;
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
@@ -972,7 +998,7 @@ class AA_Widget_Dte extends AA_Widget {
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time, $aa_property->isRequired());
 
         $value       = $content->getAaValue($aa_property->getId());
-        $count       = max($value->valuesCount(),1);
+        $count       = max($value->count(),1);
         for ( $i = 0; $i < $count; ++$i ) {
             $datectrl->setdate_int($value->getValue($i));
             $input_name   = $base_name_add. "[d][$i]";
@@ -1060,7 +1086,7 @@ class AA_Widget_Chb extends AA_Widget {
         $widget        = '';
         $delim         = '';
         $value         = $content->getAaValue($aa_property->getId());
-        for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
+        for ( $i=0, $ino=$value->count(); $i<$ino; ++$i) {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
@@ -1122,7 +1148,7 @@ class AA_Widget_Chb extends AA_Widget {
 
         foreach ( (array)$data4field as $key => $value ) {
             if (is_numeric($key)) {
-                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+                $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
         if (!count($fld_value_arr)) {
@@ -1240,7 +1266,7 @@ class AA_Widget_Mch extends AA_Widget {
 
         foreach ( (array)$data4field as $key => $value ) {
             if (is_numeric($key)) {
-                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+                $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
         if (!count($fld_value_arr)) {
@@ -1414,7 +1440,7 @@ class AA_Widget_Fil extends AA_Widget {
         $display_url    = (int)$this->getProperty('display_url', 0);
         $value          = $content->getAaValue($aa_property->getId());
 
-        for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
+        for ( $i=0, $ino=$value->count(); $i<$ino; ++$i) {
             $input_name   = $base_name ."[fil][url][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
@@ -1912,7 +1938,7 @@ class AA_Widget_Lup extends AA_Widget {
  *  required, ...), name, and some description of the variable. It do not hold
  *  the information, how the value is presented to the user and how it could
  *  be entered. It also do not contain the value of the variable.
- *  For displaying the AA_Variable we choose some AA_Widget and pass
+ *  For displaying the AA_Property we choose some AA_Widget and pass
  *  the AA_Value there.
  *  Used also for definition of components's parameters
  *  (like AA_Transofrmations, ...)
@@ -1984,6 +2010,9 @@ class AA_Property extends AA_Storable {
     /** array of constants used for selections (selectbox, radio, ...) */
     var $const_arr = array();
 
+    /** array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es') */
+    var $translations = array();
+
 
     /** AA_Property function
      * @param $id
@@ -1999,7 +2028,7 @@ class AA_Property extends AA_Storable {
      * @param $show_content_type_switch
      * @param $content_type_switch_default
      */
-    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {  // default values are needed for AA_Storable's construction
+    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
         $this->id                          = $id;
         $this->name                        = $name;
         $this->type                        = $type;
@@ -2015,6 +2044,7 @@ class AA_Property extends AA_Storable {
         $this->perm                        = $perms;
         $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
         $this->default                     = $default;
+        $this->translations                = is_array($translations) ? $translations : array();
     }
 
     /** getClassProperties function of AA_Serializable
@@ -2062,9 +2092,14 @@ class AA_Property extends AA_Storable {
         return $this->input_help;
     }
 
-    /** getHelp function */
+    /** getConstants function */
     function getConstants() {
         return $this->const_arr;
+    }
+
+    /** getTranslations function */
+    function getTranslations() {
+        return $this->translations;
     }
 
     /** set the Values array and also the validator */

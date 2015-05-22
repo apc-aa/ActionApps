@@ -207,7 +207,10 @@ class AA_Field {
     function getAaProperty($multiple=null, $required=null) {
         if (is_null($multiple)) {
             $multiple = $this->getWidget()->multiple();
-        }        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
+        }
+        $translations = ($this->data['multiple'] & 2) ? AA_Slices::getSlice($this->getSliceId())->getTranslations() : array();
+
+        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
         return new AA_Property( $this->getId(),
                                 $this->getName(),
                                 $this->getProperty('text_stored') ? 'text' : 'int',
@@ -221,7 +224,8 @@ class AA_Field {
                                 $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
                                 AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
                                 null,               // perms
-                                $this->getDefault()
+                                $this->getDefault(),
+                                $translations
                                );
     }
 

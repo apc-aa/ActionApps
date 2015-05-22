@@ -35,7 +35,7 @@ require_once AA_INC_PATH."itemfunc.php3";
  *            could contain flags...
  *          - the values are always plain (= no quoting, no htmlspecialchars...)
  */
-class AA_Value {
+class AA_Value implements Iterator, ArrayAccess, Countable {
     /** array of the values */
     var $val;
 
@@ -161,11 +161,6 @@ class AA_Value {
         return $this;
     }
 
-    /** Returns number of values */
-    function valuesCount() {
-        return count($this->val);
-    }
-
     /** clear function  */
     function clear() {
         $this->val  = array();
@@ -177,6 +172,37 @@ class AA_Value {
          foreach ($this->val as $k => $v) {
              $this->val[$k] = str_replace($search, $replace, $v);
          }
+    }
+
+    /** Makes sure the value contains all the translations.
+     *  It also converts untranslated values to default language (then user switched to translated field, for example)
+     */
+    function fixTranslations($translations) {
+        if ($translations) {
+            $maxindex = 0;
+            foreach ($this->val as $k => $v) {
+                if (strlen($v)) { // do not add index for all empty values
+                    $maxindex = max($maxindex, $k % 1000000);
+                }
+            }
+
+            $first  = true;
+            $newval = array();
+            foreach($translations as $lang) {
+                $lang_id = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                for ($i=0; $i<=$maxindex; $i++) {
+                    $value = isset($this->val[$lang_id + $i]) ? $this->val[$lang_id + $i] : '';
+                    if ( !strlen($value) AND $first AND isset($this->val[$i])) {
+                        // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
+                        $value = $this->val[$i];
+                    }
+                    $newval[$lang_id + $i] = $value;
+                }
+                $first = false;
+            }
+            $this->val = $newval;
+        }
+        return $this;
     }
 
     /** Remove duplicate values from the array */
@@ -202,6 +228,22 @@ class AA_Value {
          }
          return $ret;
      }
+
+    /** Iterator interface */
+    public function rewind()  { reset($this->val);                        }
+    public function current() { return current($this->val);               }
+    public function key()     { return key($this->val);                   }
+    public function next()    { next($this->val);                         }
+    public function valid()   { return (current($this->val) !== false);   }
+
+    /** Countable interface - Returns number of values  */
+    public function count()   { return count($this->val);                 }
+
+    /** ArrayAccess interface */
+    public function offsetSet($offset, $value) { $this->val[$offset] = $value;      }
+    public function offsetExists($offset)      { return isset($this->val[$offset]); }
+    public function offsetUnset($offset)       { unset($this->val[$offset]);        }
+    public function offsetGet($offset)         { return isset($this->val[$offset]) ? $this->val[$offset] : null; }
 }
 
 
@@ -371,6 +413,18 @@ class AA_Content {
     static function getLangNumber($lang) {
         return strlen($lang) ? 1000000*((ord($lang{0})-97)*26+(ord($lang{1})-97+1)) : 0;
     }
+
+    /** reverse function to getLangNumber
+     *  78000000 -> cz, 78000001 -> cz, 118000000 -> en...
+     */
+    static function getLangId($langnumber) {
+        if ($langnumber<1000000) {
+            return '';
+        }
+        $num = $langnumber/1000000-1;
+        return chr(intval($num / 26) + 97) . chr(($num % 26)+97);
+    }
+
 
     /** @return Abstract Data Structure of current object
      *  @deprecated - for backward compatibility (used in AA_Object getContent)
@@ -1073,34 +1127,26 @@ class ItemContent extends AA_Content {
                 $item  = new AA_Item($this->getContent(),$slice->aliases());
             }
 
-            // delete content just for this computed field
-
-            // $this->_clean_updated_fields($id, $fields);
-
-            if ($id AND $fid) {
-                DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $fid)));
-            }
 
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);
-
-
             $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value, $f['html_default']>0 ? FLAG_HTML : 0);
-
-
 
             // set this value also to $item in order we can count with it
             // in next computed field
             $item->setAaValue($fid, $aa_val);
-
             $values = $item->getValues($fid);
 
-            if ($GLOBALS['debug']) {
-                huhl($id, $fid, $new_computed_value, $aa_val, $values, '-----');
-            }
-
-
+            //if ($GLOBALS['debug']) {
+            //    huhl($id, $fid, $new_computed_value, $aa_val, $values, '-----');
+            //}
             //AA_Log::write('DEBUG', "$id - $fid:".serialize($values), 'debug');
+
+            // delete content just for this computed field
+            // $this->_clean_updated_fields($id, $fields);
+            if ($id AND $fid) {
+                DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $fid)));
+            }
 
             foreach($values as $varr) {
                 //  store the computed value for this field to database
