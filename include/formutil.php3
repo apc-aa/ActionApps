@@ -1048,6 +1048,12 @@ class AA_Inputfield {
         }
     }
 
+    /** field_tr - begin of field row */
+    function field_tr($start=true) {
+        $start = $start ? ' fieldstart' : '';
+        $this->echoo("\n<tr class=\"formrow{formpart}$start cont-".$this->varname."\">");
+    }
+
     /** field_name function
      * Prints field name (and 'needed' sign - star) in table cell for inputform
      * @param $plus
@@ -1057,9 +1063,9 @@ class AA_Inputfield {
     function field_name( $plus=false, $colspan=1, $name=null ) {
         $name = is_null($name) ? $this->name : $name;
         switch( $plus ) {
-        case 'plus':    $this->echoo("\n<tr class=\"fieldstart formrow{formpart} cont-".$this->varname."\">");
+        case 'plus':    $this->field_tr();
                         break;
-        case 'secrow':  $this->echoo("\n<tr class=\"formrow{formpart} cont-".$this->varname."\">");
+        case 'secrow':  $this->field_tr(false);
         }
         $this->echoo("\n <td class=\"tabtxt\" ".
                       (($colspan==1) ? '': "colspan=\"$colspan\"").
@@ -1221,7 +1227,7 @@ class AA_Inputfield {
     function inputChBox($changeorder=false, $colspan=1){
         list($name,$val,$add) = $this->prepareVars();
 
-        $this->echoo("\n<tr class=\"formrow{formpart} fieldstart\">");
+        $this->field_tr();
         if ( !$changeorder ) {
             $this->field_name(false, $colspan);
         }
@@ -1386,10 +1392,11 @@ class AA_Inputfield {
         $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
         $colsy    = ($cols = (int)$cols) ? " cols=$cols" : '';
         $colspan  = $single ? 2 : 1;
-        $this->echoo("<tr class=\"fieldstart formrow{formpart}\">");
+        $this->field_tr();
         $this->field_name(false, $colspan);
         if ($single) {
-            $this->echoo("</tr>\n<tr class=\"formrow{formpart}\">");
+            $this->echoo("</tr>");
+            $this->field_tr(false);
         }
         $this->echoo( ($colspan==1) ? '<td>' : "<td colspan=\"$colspan\">");
         $this->html_radio($showhtmlarea ? false : 'convertors');
