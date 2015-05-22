@@ -663,7 +663,7 @@ class AA_Stringexpand_Lastdisc extends AA_Stringexpand {
 }
 
 
-/** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>]} like:
+/** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]} like:
  *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...:bottom}
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time
@@ -675,11 +675,12 @@ class AA_Stringexpand_Lastdisc extends AA_Stringexpand {
  *  @param $code_2         - HTML code displayed as alternative after clicking
  *                           on the link
  *  @param $position       - position of the link - top|bottom (top is default)
+ *  @param $persistent_id  - identifier [a-z-]* - if provided, the toggle state will be persistent between page loads
  */
 class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
-    function expand($switch_state_1, $code_1, $switch_state_2, $code_2, $position='') {
+    function expand($switch_state_1, $code_1, $switch_state_2, $code_2, $position='', $persistent_id='') {
 
         // it is nonsense to show expandable trigger if both contents are empty
         if ($code_1.$code_2 == '') {
@@ -697,16 +698,21 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $link   = '';
+        $script = '';
 
         if ($code_1 == $code_2) {
             // no need to add toggle
             $ret = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         } else {
-            $link = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '{$switches_js[0]}', 'toggle_1_$uniqid', '{$switches_js[1]}', 'toggle_2_$uniqid');return false;\">{$switches[0]}</a>\n";
+            $func = "AA_HtmlToggle('toggle_link_$uniqid', '{$switches_js[0]}', 'toggle_1_$uniqid', '{$switches_js[1]}', 'toggle_2_$uniqid'".($persistent_id ? ", '$persistent_id')" : ")");
+            $link = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"$func; return false;\">{$switches[0]}</a>\n";
             $ret  = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
             $ret .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
+            if ($persistent_id) {
+                $script = "<script> if (localStorage['$persistent_id'] == '2') $func; </script>\n";
+            }
         }
-        return (trim($position)=='bottom') ?  $ret. $link : $link. $ret;
+        return (trim($position)=='bottom') ?  $ret. $link. $script: $link. $ret. $script;
     }
 }
 
@@ -2133,19 +2139,6 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
  *   {itree:{xid:path}: <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
  *   {itree:{xid:path}: _#HEADLINK &gt;: _#HEADLINE}
  *
- * all the subtree:
- *   <ul>{itree:{treestring:{_#ITEM_ID_}::1}:_#2<ul>:<li>_#HEADLINK</li>::</ul>}</ul>
- *
- * for site map of whole pages slice:
- *   {item:{ids:{_#SLICE_ID}:d-relation........-ISNULL-1-switch..........-=-0:number..........}:
- *     {(
- *         <ul>
- *           {itree:{treestring:{_#ITEM_ID_}::1}:_#2<ul>:<li>_#HEADLINK</li>::</ul>}
- *         </ul>
- *     )}
- *   }
- *
- *
  * However, you will be able to use it for discussions tree as well.
  *
  *
@@ -2570,14 +2563,25 @@ class AA_Stringexpand_Sortstring extends AA_Stringexpand {
      */
     function expand($item_id, $relation_field=null) {
         $zids = new zids(array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field), 'l'));
-        return join('', array_map( array('AA_Stringexpand_Sortstring','shortsortid') , $zids->shortids()));
-    }
-
-    /** @return B1 for $id=1, F25487 for $id=25487, ... */
-    static function shortsortid($id) {
-        return chr(65+strlen((string)$id)).$id;
+        return join('', array_map( array('AA_Stringexpand_Sortid','expand') , $zids->shortids()));
     }
 }
+
+/** @return string usefull for sorting numbers in text mode. The string is based
+ *  on number nad length, so it creates B1 from 1, C10 from 10, C89 from 89, and
+ *  E2458 from 2458
+ *  {sortid:<number>}
+ */
+class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $number - number to be tranformed to string for sorting
+     * @return B1 for $id=1, F25487 for $id=25487, ...
+     */
+    function expand($number) {
+        return chr(65+strlen((string)$number)).$number;
+    }
+}
+
 
 /** @return string representation of the tree (with long ids) under specifield
  *          item based on the relation field
@@ -2742,6 +2746,8 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
         return $base.$add;
     }
 }
+
+
 
 /** returns string unique for the slice(s) within the field. Numbers are added
  *  if the conflict is found
@@ -4151,7 +4157,6 @@ class AA_Stringexpand {
         'log'              => 'log',                // old  AA_Stringexpand_Log
         'unpack'           => 'unpack_id',          // old  AA_Stringexpand_Unpack
         'string2id'        => 'string2id',          // old  AA_Stringexpand_String2id
-        'base64'           => 'base64_encode',             // old  AA_Stringexpand_Base64
 
         /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
          *  {version[:aa|svn]}
@@ -4371,7 +4376,7 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
     function expand($search='', $replace='', $text='') {
         $search  = json2arr($search,true);
-        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replace could be string (which then replaces all the occurences of $searches)
+        $replace = json2arr($replace,true);
         return str_replace($search, $replace, $text);
     }
 }
@@ -5622,8 +5627,9 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
 }
 
 /** Returns the value at position <index> for multivalue fields
- *    {index:<field-id>[:<index>]}
- *    {index:category........}  - return first value
+ *    {index:<field-id>[:<index>][:<item_id>][:<lang>]}
+ *    {index:category........}      - return first value
+ *    {index:headline........:::cz} - return first value in Czech
  *
  * @param field_id - id of the field in item
  * @param index    - integer index in multivalue array - default 0 (the first one)
