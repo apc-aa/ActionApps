@@ -232,18 +232,22 @@ class AA_View_Commands {
 /** ParseSettings function
  * Separates 'set' parameters for current view into array. To escape ','
  *                 character uses ',,'.
- * @param string $set set[<vid>] string from url. 'set' parameters are in form
- *                    set[<vid>]=property1-value1,property2-value2
+ * @param array $set_arr set[<vid>][] array of strings from url. 'set' parameters are in form
+ *                      set[<vid>]=property1-value1,property2-value2
+ *                   or
+ *                      set[<vid>][]=property1-value1&set[<vid>][]=property2-value2[,...]
  * @return array asociative array of properties
  */
-function ParseSettings($set) {
+function ParseSettings($set_arr) {
     $ret  = array();
-    $sets = split_escaped(",", $set, ",,");
-    if (isset($sets) AND is_array($sets)) {
-        foreach ($sets as $v) {
-            $pos = strpos($v,'-');
-            if ($pos) {
-                $ret[substr($v,0,$pos)] = substr($v,$pos+1);
+    foreach ($set_arr as $set) {
+        $sets = split_escaped(",", $set, ",,");
+        if (isset($sets) AND is_array($sets)) {
+            foreach ($sets as $v) {
+                $pos = strpos($v,'-');
+                if ($pos) {
+                    $ret[substr($v,0,$pos)] = substr($v,$pos+1);
+                }
             }
         }
     }
@@ -338,7 +342,7 @@ function ParseViewParameters($query_string="") {
         }
     }
 
-    $arr = ParseSettings($set[$vid]);
+    $arr = isset($set[$vid]) ? ParseSettings((array)$set[$vid]) : array();
 
     // Following line is here just for caching purposes - we are creating cache
     // keystring from view parameters and we need to add all set[] and cmd[]
