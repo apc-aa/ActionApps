@@ -51,6 +51,10 @@ function AafinderSliceLink($slice_id) {
     return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Slices::getName($slice_id) .")");
 }
 
+function AafinderSiteLink($spot_id, $slice_id) {
+    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Modules::getModuleProperty($slice_id,'name') .")");
+}
+
 if (!IsSuperadmin()) {
     MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
@@ -66,7 +70,7 @@ echo $Msg;
 
 is_object( $db ) || ($db = getDB());
 
-if ($_POST['go_findview'] && $_POST['findview']) {
+if ($_GET['go_findview'] && $_GET['findview']) {
     $fields = array (
         'id',
         'before',
@@ -96,7 +100,7 @@ if ($_POST['go_findview'] && $_POST['findview']) {
     $SQL = "SELECT view.id, view.type, view.slice_id, slice.name
         FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "view.$field LIKE \"%". addcslashes(quote($_POST['findview']),'_%')."%\" OR ";
+        $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findview']),'_%')."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
@@ -107,7 +111,7 @@ if ($_POST['go_findview'] && $_POST['findview']) {
     }
 }
 
-if ($_POST['go_findslice'] && $_POST['findslice']) {
+if ($_GET['go_findslice'] && $_GET['findslice']) {
     $fields = array (
         'slice.name',
         'slice.type',
@@ -132,7 +136,7 @@ if ($_POST['go_findslice'] && $_POST['findslice']) {
 
     $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_POST['findslice']),'_%') ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findslice']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
@@ -145,7 +149,7 @@ if ($_POST['go_findslice'] && $_POST['findslice']) {
 }
 
 
-if ($_POST['go_findfield'] && $_POST['findfield']) {
+if ($_GET['go_findfield'] && $_GET['findfield']) {
     $fields = array (
         'id',
         'type',
@@ -176,7 +180,7 @@ if ($_POST['go_findfield'] && $_POST['findfield']) {
 
     $SQL = "SELECT slice_id, id, name FROM field WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_POST['findfield']),'_%') ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findfield']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
@@ -186,7 +190,25 @@ if ($_POST['go_findfield'] && $_POST['findfield']) {
     }
 }
 
-if ($_POST['go_finddiscus'] && $_POST['finddiscus']) {
+
+if ($_GET['go_findspot'] && $_GET['findspot']) {
+    $fields = array (
+        'content'
+        );
+
+    $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
+    foreach ($fields as $field) {
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findspot']),'_%') ."%\" OR ";
+    }
+    $SQL .= "0";
+    $db->query($SQL);
+    echo $db->num_rows()." matching site spots found:<br>";
+    while ($db->next_record()) {
+        echo AafinderSiteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
+    }
+}
+
+if ($_GET['go_finddiscus'] && $_GET['finddiscus']) {
     $fields = array (
         'subject',
         'author',
@@ -201,7 +223,7 @@ if ($_POST['go_finddiscus'] && $_POST['finddiscus']) {
 
     $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
     foreach ($fields as $field) {
-        $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_POST['finddiscus']),'_%') ."%\" OR ";
+        $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_GET['finddiscus']),'_%') ."%\" OR ";
     }
     $SQL .= "0) ORDER BY date";
     $db->query($SQL);
@@ -222,8 +244,8 @@ if ($_POST['go_finddiscus'] && $_POST['finddiscus']) {
 }
 
 
-if ($_POST['go_finditem'] && $_POST['finditem']) {
-    $zid = new zids($_POST['finditem']);
+if ($_GET['go_finditem'] && $_GET['finditem']) {
+    $zid = new zids($_GET['finditem']);
     $item = AA_Items::getItem($zid);
     if ($item) {
         $long_id = $item->getItemID();
@@ -265,7 +287,7 @@ if ($_POST['go_finditem'] && $_POST['finditem']) {
     }
 }
 
-if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_edit_op']) {
+if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_op']) {
 
     function query_search ($field, $op, $value,$sess) {
         $db = getDB();
@@ -291,13 +313,13 @@ if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_ed
         return $output;
     }
 
-    switch ($_POST['finditem_edit_op']) {
+    switch ($_GET['finditem_edit_op']) {
         case 'LIKE': $field = "content.text";
-                     print query_search ($field, 'LIKE','%'. $_POST['finditem_edit'].'%',$sess);break;
+                     print query_search ($field, 'LIKE','%'. $_GET['finditem_edit'].'%',$sess);break;
         case '=':    $field = "content.text";
-                     print query_search ($field, '=',$_POST['finditem_edit'],$sess);break;
+                     print query_search ($field, '=',$_GET['finditem_edit'],$sess);break;
         case 'item': $field = "item.short_id";
-                     print query_search ($field, '=',$_POST['finditem_edit'],$sess);break;
+                     print query_search ($field, '=',$_GET['finditem_edit'],$sess);break;
     }
 }
 
@@ -307,53 +329,59 @@ if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_ed
 
 FrmTabCaption(_m("Manage"));
 echo '<tr><td>';
-echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'" method="post">';
+echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'">';
 echo '<b>'._m("Manage User:").'</b><br>
     <input type="text" name="usr" value="" size="30">&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
-    <input type="submit" name="go_finduser" value="'._m("Go!").'">';
+    <input type="submit" name="go_finduser" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'" method="post">';
+echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'">';
 echo '<b>'._m("Manage Group:").'</b><br>
     <input type="text" name="grp" value="" size="30">&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
-    <input type="submit" name="go_findgroup" value="'._m("Go!").'">';
+    <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr>';
 FrmTabSeparator(_m("Find"));
 echo '<tr><td>';
-echo '<form name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_findview" action="">';
 echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br>
-    <input type="text" name="findview" value="'.safe($_POST['findview']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findview" value="'._m("Go!").'">';
+    <input type="text" name="findview" value="'.safe($_GET['findview']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_findview" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_findslice" action="">';
 echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br>
-    <input type="text" name="findslice" value="'.safe($_POST['findslice']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findslice" value="'._m("Go!").'">';
+    <input type="text" name="findslice" value="'.safe($_GET['findslice']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_findslice" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_findfield" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_findfield" action="">';
 echo '<b>'._m("Find all FIELDS containing in its definition the string:").'</b><br>
-    <input type="text" name="findfield" value="'.safe($_POST['findfield']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findfield" value="'._m("Go!").'">';
+    <input type="text" name="findfield" value="'.safe($_GET['findfield']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_findfield" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_finddiscus" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_findspot" action="">';
+echo '<b>'._m("Find all SITE SPOTS containing in its definition the string:").'</b><br>
+    <input type="text" name="findspot" value="'.safe($_GET['findspot']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_findspot" value="'._m("Go!").'">' .$sess->get_hidden_session();
+echo '</form>';
+echo '</td></tr><tr><td>';
+echo '<form name="f_finddiscus" action="">';
 echo '<b>'._m("Find all DISCUSSION COMMENTS containing in any field the string:").'</b><br>
-    <input type="text" name="finddiscus" value="'.safe($_POST['finddiscus']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_finddiscus" value="'._m("Go!").'">';
+    <input type="text" name="finddiscus" value="'.safe($_GET['finddiscus']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_finddiscus" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_finditem" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_finditem" action="">';
 echo '<b>'._m("Get all informations about the ITEM").'</b><br>
-    <input type="text" name="finditem" value="'.safe($_POST['finditem']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_finditem" value="'._m("Go!").'">';
+    <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_finditem" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form></td></tr>';
 echo '<tr><td>';
-echo '<form name="f_finditem_edit" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_finditem_edit" action="">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
-    <input type="text" name="finditem_edit" value="'.safe($_POST['finditem_edit']).'" size="30">&nbsp;&nbsp;
+    <input type="text" name="finditem_edit" value="'.safe($_GET['finditem_edit']).'" size="30">&nbsp;&nbsp;
     <select name="finditem_edit_op">
     <option value="LIKE">Contiene</option>
     <option value="=">Frase exacta</option>
