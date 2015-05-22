@@ -100,11 +100,15 @@ function PrintRule($rule) {
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
             break;
         case 'hide':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name']);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value']==1 ? 'hide' : 'show'], $fields[$rule['selector']]['name']);
             break;
         case 'fill':
         case 'hide&fill':
         case 'predefine':
+            if (!$rule['value']) {   // for 'show' the hide&fill value is '0' and in this case
+                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'], _m('--disabled-- (added by "Show field" rule)'));
+                break;
+            }
             $fnc = ParseFnc(substr($rule['value'],2));  // all default should have fnc:param format
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'],
                 $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],

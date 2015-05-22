@@ -85,6 +85,7 @@ $PROPERTY_TYPES = array( 'listlen'           => _m("Item number"),
                          'admin_order'       => _m("Item order"),
                          'admin_perm'        => _m("Item permissions"),
                          'hide'              => _m("Hide field"),
+                         'show'              => _m("Show field"),
                          'hide&fill'         => _m("Hide and Fill"),
                          'fill'              => _m("Fill field"),
                          'predefine'         => _m("Predefine field"),
@@ -227,19 +228,20 @@ $permission_roles = array(
                       );
 
 
-// row, rule, show_field_selectbox, function_selectbox, show_parameter_box, show_html_checkbox, description
-PrintSetRule( 1,'listlen',           0,0,                  1,0,_m("number of item displayed in Item Manager") );
-PrintSetRule( 2,'input_view',        0,0,                  1,0,_m("id of view used for item input") );
-PrintSetRule( 3,'admin_search',      1,$inputDefaultTypes, 1,0,_m("preset \"Search\" in Item Manager"));
-PrintSetRule( 4,'admin_order',       1,$SORTORDER_TYPES,   0,0,_m("preset \"Order\" in Item Manager"));
-PrintSetRule(12,'admin_perm',        0,0,                  1,0,_m('ID of "Item Set" which defines the permissions for item - see "Admin - Item Set"'));
-PrintSetRule( 5,'hide',              1,0,                  0,0,_m("hide the field in inputform"));
-PrintSetRule( 6,'hide&fill',         1,$inputDefaultTypes, 1,1,_m("hide the field in inputform and fill it by the value"));
-PrintSetRule( 7,'fill',              1,$inputDefaultTypes, 1,1,_m("fill the field in inputform by the value"));
-PrintSetRule( 8,'predefine',         1,$inputDefaultTypes, 1,1,_m("predefine value of the field in inputform"));
-PrintSetRule( 9,'ui_manager',        $menu_entries,      0,1,0,_m("redefine manager UI - (empty values = do not show)"));
-PrintSetRule(10,'ui_manager_hide',   $manager_hide,      0,0,0,_m("hide this UI element"));
-PrintSetRule(11,'ui_inputform',      $inputform_entries, 0,1,0,_m("redefine inputform UI - (empty values = do not show)"));
+         // row, rule,            show_field_selectbox,function_selectbox,show_parameter_box,show_html_checkbox, description
+PrintSetRule( 1,'listlen',        0,                   0,                 1,                 0,                 _m('number of item displayed in Item Manager') );
+PrintSetRule( 2,'input_view',     0,                   0,                 1,                 0,                 _m('id of view used for item input') );
+PrintSetRule( 3,'admin_search',   1,                   $inputDefaultTypes,1,                 0,                 _m('preset "Search" in Item Manager'));
+PrintSetRule( 4,'admin_order',    1,                   $SORTORDER_TYPES,  0,                 0,                 _m('preset "Order" in Item Manager'));
+PrintSetRule(12,'admin_perm',     0,                   0,                 1,                 0,                 _m('ID of "Item Set" which defines the permissions for item - see "Admin - Item Set"'));
+PrintSetRule( 5,'hide',           1,                   0,                 0,                 0,                 _m('hide the field in inputform'));
+PrintSetRule(13,'show',           1,                   0,                 0,                 0,                 _m('show (= unhide) the field in inputform (reverts hide made by group profile,...)'));
+PrintSetRule( 6,'hide&fill',      1,                   $inputDefaultTypes,1,                 1,                 _m('hide the field in inputform and fill it by the value'));
+PrintSetRule( 7,'fill',           1,                   $inputDefaultTypes,1,                 1,                 _m('fill the field in inputform by the value'));
+PrintSetRule( 8,'predefine',      1,                   $inputDefaultTypes,1,                 1,                 _m('predefine value of the field in inputform'));
+PrintSetRule( 9,'ui_manager',     $menu_entries,       0,                 1,                 0,                 _m('redefine manager UI - (empty values = do not show)'));
+PrintSetRule(10,'ui_manager_hide',$manager_hide,       0,                 0,                 0,                 _m('hide this UI element'));
+PrintSetRule(11,'ui_inputform',   $inputform_entries,  0,                 1,                 0,                 _m('redefine inputform UI - (empty values = do not show)'));
 
 echo "</table>
     </form>

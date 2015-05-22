@@ -109,7 +109,7 @@ class AA_Profile {
         // TODO: deal with priority of multiple groups
         if ( $group_profile ) {
             foreach ( $group_profile as $v ) {
-                if ( !$this->getProperty($v['property'],$v['selector'],true) ) {
+                if ( false === $this->getProperty($v['property'],$v['selector'],true) ) {
                     $this->set( $v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid'] );
                 }
             }
@@ -117,7 +117,7 @@ class AA_Profile {
         // now add properties from default profile, if it is not already set
         if ( $general_profile ) {
             foreach ( $general_profile as $v ) {
-                if ( !$this->getProperty($v['property'],$v['selector'],true) ) {
+                if ( false === $this->getProperty($v['property'],$v['selector'],true) ) {
                     $this->set( $v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid'] );
                 }
             }
@@ -332,6 +332,15 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
             if ( $field_id ) {
                 $profile->deleteProperty($property, $field_id);
                 $profile->insertProperty($property, $field_id, '1');
+                $Msg = MsgOK(_m("Rule added"));
+            }
+            break;
+        case 'show':
+            if ( $field_id ) {
+                $profile->deleteProperty('hide',      $field_id);
+                $profile->insertProperty('hide',      $field_id, '0');  // clear preset value for hide
+                $profile->deleteProperty('hide&fill', $field_id);
+                $profile->insertProperty('hide&fill', $field_id, '0'); // clear preset value for hide&fill
                 $Msg = MsgOK(_m("Rule added"));
             }
             break;
