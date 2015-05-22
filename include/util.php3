@@ -223,6 +223,13 @@ function ParamImplode($param) {
     return implode(":", $param);
 }
 
+/** Converts float value into php form of float */
+function PhpFloat($value) {
+    // internaly uses PHP float allways with decimal point so we have to convert
+    // twice, since (float) typecasting is unfortunatelly LOCALE dependent. Grr
+    return str_replace(',', '.',(float)str_replace(',', '.', trim($value)));
+}
+
 /** add_vars function
  *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
  *   to GLOBALS.

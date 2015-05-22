@@ -3003,7 +3003,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
         $OPERATORS = array('>'=>'>', '>='=>'>=', 'gt'=>'>', 'ge'=>'>=', '='=>'==', '=='=>'==', 'eq'=>'==', '<'=>'<', '<='=>'<=', 'lt'=>'<', 'le'=>'<=', '<>'=>'<>', '!='=>'<>');
 
         $arg_list = func_get_args();   // must be asssigned to the variable
-        $etalon   = (float)str_replace(',', '.', trim(array_shift($arg_list)));
+        $etalon   = PhpFloat(array_shift($arg_list));
         $operator = $OPERATORS[str_replace(array('&gt;','&lt;'), array('>','<'),array_shift($arg_list))];
         if ($operator) {
             $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
