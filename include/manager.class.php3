@@ -368,26 +368,10 @@ class AA_Manager extends AA_Storable {
             }
             exit;
         }
-/*
-        if (!isset($akce)) {
-            $akce = $_GET['akce'];
-        }
-        if (!isset($chb)) {
-            $akce = $_GET['chb'];
-        }
-*/
-        // update scroller
 
-        if ( isset($this->scroller) ) {
-            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])); // use $return_url if set.
-            if ( $_GET['listlen'] ) {
-                $this->setListlen($_GET['listlen']);
-            }
-            // new search - go to first page
-            if ( $_REQUEST['srchbr_akce']) {
-                $this->go2page(1);
-            }
-        }
+        /* if (!isset($akce)) { $akce = $_GET['akce']; }
+           if (!isset($chb))  { $akce = $_GET['chb'];  }
+        */
 
         // call custom searchbar function (if searchbar action invoked)
         // used for additional search functions like 'category search' in Links
@@ -457,6 +441,19 @@ class AA_Manager extends AA_Storable {
                 }
             }
         }
+
+        // update scroller (items could be deleted, moved, ...)
+        if ( isset($this->scroller) ) {
+            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])); // use $return_url if set.
+            if ( $_GET['listlen'] ) {
+                $this->setListlen($_GET['listlen']);
+            }
+            // new search - go to first page
+            if ( $_REQUEST['srchbr_akce']) {
+                $this->go2page(1);
+            }
+        }
+
     }
 
     /** Displays the manager. This function joins together some common method
@@ -547,6 +544,8 @@ class AA_Manager extends AA_Storable {
             return $ids_count;
         }
 
+        $this->scroller->countPages( $ids_count );
+
         // update itemview
         $this->itemview->assign_items($zids);                // ids to show
         $this->itemview->from_record = $this->scroller->metapage * ($this->scroller->current-1);                // from which index begin showing items
@@ -557,8 +556,6 @@ class AA_Manager extends AA_Storable {
         // - you bacame another user !!!)
 
         echo $this->itemview->get_output('view');
-
-        $this->scroller->countPages( $ids_count );
 
         echo '<table border="0" cellpadding="3" class="aa_manager_actions">
                 <tr class="aa_manager_actions_tr"><td>';
