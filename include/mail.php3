@@ -37,7 +37,7 @@ require_once AA_INC_PATH."validate.php3";
 require_once AA_INC_PATH."toexecute.class.php3";
 
 
-class AA_Mail extends htmlMimeMail  {
+class AA_Mail extends htmlMimeMail implements iEditable {
 
     /** static getTemplate */
     function getTemplate($mail_id) {
@@ -239,6 +239,16 @@ class AA_Mail extends htmlMimeMail  {
         }
         return $mail_count;
     }
+
+    /** iEditable method - adds Object's editable properties to the $form */
+    public static function addFormrows($form) {
+         AA_MetabaseTableEdit::defaultAddFormrows('email', $form);
+    }
+    /** iEditable method - creates Object from the form data */
+    public static function factoryFromForm($oowner, $otype=null) {}
+    /** iEditable method - save the object to the database */
+    public        function save() {}
+
 };
 
 /** html2text function

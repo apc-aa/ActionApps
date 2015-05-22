@@ -71,7 +71,6 @@ function expand_return_url($session=true) {
  *  This function goes to either $return_url if set, or to $url
  * if $usejs is set, then it will use inline Javascript, its not clear why this is done
  *    sometimes (item.php3) but not others.
- * if $session is set, then any session variable will be added, to the return_url case to allow for quicker 2nd access
  *    session is always added to the other case
  * if $add_param are set, then they are added to the cases EXCEPT return_url
  * @param $url
@@ -584,10 +583,14 @@ function GetModuleInfo($module_id, $type) {
     if (!$module_id) {
         return false;
     }
+
+
     $p_module_id = q_pack_id($module_id);
 
     $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
+
     $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+
     if ( $ret AND $ret['reading_password'] ) {
         // do it more secure and do not store it plain
         // (we should be carefull - mainly with debug outputs)

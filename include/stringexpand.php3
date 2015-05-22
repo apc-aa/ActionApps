@@ -2133,6 +2133,19 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
  *   {itree:{xid:path}: <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
  *   {itree:{xid:path}: _#HEADLINK &gt;: _#HEADLINE}
  *
+ * all the subtree:
+ *   <ul>{itree:{treestring:{_#ITEM_ID_}::1}:_#2<ul>:<li>_#HEADLINK</li>::</ul>}</ul>
+ *
+ * for site map of whole pages slice:
+ *   {item:{ids:{_#SLICE_ID}:d-relation........-ISNULL-1-switch..........-=-0:number..........}:
+ *     {(
+ *         <ul>
+ *           {itree:{treestring:{_#ITEM_ID_}::1}:_#2<ul>:<li>_#HEADLINK</li>::</ul>}
+ *         </ul>
+ *     )}
+ *   }
+ *
+ *
  * However, you will be able to use it for discussions tree as well.
  *
  *
@@ -2729,8 +2742,6 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
         return $base.$add;
     }
 }
-
-
 
 /** returns string unique for the slice(s) within the field. Numbers are added
  *  if the conflict is found
@@ -4140,6 +4151,7 @@ class AA_Stringexpand {
         'log'              => 'log',                // old  AA_Stringexpand_Log
         'unpack'           => 'unpack_id',          // old  AA_Stringexpand_Unpack
         'string2id'        => 'string2id',          // old  AA_Stringexpand_String2id
+        'base64'           => 'base64_encode',             // old  AA_Stringexpand_Base64
 
         /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
          *  {version[:aa|svn]}
@@ -4359,7 +4371,7 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
     function expand($search='', $replace='', $text='') {
         $search  = json2arr($search,true);
-        $replace = json2arr($replace,true);
+        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replace could be string (which then replaces all the occurences of $searches)
         return str_replace($search, $replace, $text);
     }
 }

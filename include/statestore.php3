@@ -279,7 +279,7 @@ class AA_Storable extends AA_Serializable {
     }
 }
 
-class AA_Object extends AA_Storable {
+class AA_Object extends AA_Storable implements iEditable {
 
     /** Object ID   - 32 characters long hexadecimal number */
     var $aa_id;
@@ -289,9 +289,9 @@ class AA_Object extends AA_Storable {
 
     /** Object Owner - id if object's parent, where the object belongs - optional */
     var $aa_owner;
-    
+
     /** display Name property on the form by default< */
-    const USES_NAME = true;    
+    const USES_NAME = true;
 
     /** We store also following data, but it do not need its own variable
      *   aa_type       - class of the object
@@ -349,10 +349,8 @@ class AA_Object extends AA_Storable {
         return is_null($default) ? $this->$property_id : (($this->$property_id == '') ? $default : $this->$property_id);
     }
 
-    /** save function
-     *  Save the object to the database
-     */
-    function save() {
+    /** iEditable method - save the object to the database */
+    public function save() {
         if ( !$this->aa_owner ) {
             throw new Exception('No owner set for property '. $this->id. ' - '. $this->name);
         }
@@ -897,8 +895,8 @@ class AA_Object extends AA_Storable {
         return $manager_settings;
     }
 
-    /**  AA_Object's method */
-    static function factoryFromForm($oowner, $otype=null) {
+    /** iEditable method - creates Object from the form data */
+    public static function factoryFromForm($oowner, $otype=null) {
         $grabber = new AA_Objectgrabber_Form();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
@@ -922,8 +920,8 @@ class AA_Object extends AA_Storable {
         return $object;
     }
 
-    /**  AA_Object's method */
-    static function addFormrows($form) {
+    /** iEditable method - adds Object's editable properties to the $form */
+    public static function addFormrows($form) {
 
 //        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
         if (static::USES_NAME) {
@@ -937,6 +935,16 @@ class AA_Object extends AA_Storable {
         }
         return $form;
     }
+}
+
+/** With this interface the object can be edited by AA_Form */
+interface iEditable {
+    /** iEditable method - adds Object's editable properties to the $form */
+    public static function addFormrows($form);
+    /** iEditable method - creates Object from the form data */
+    public static function factoryFromForm($oowner, $otype=null);
+    /** iEditable method - save the object to the database */
+    public        function save();
 }
 
 /** Components (plugins) manipulation class */

@@ -1,3 +1,9 @@
+15-05-22 - fixed Related Item Selection (there was bug with some characters)
+(honzam) - fixed Item Manager - do not display wrong page after items deletion
+         - fixed Export items feature in Item Manager - now works with items
+           in all bins (Trash, Holding,...)
+         - improved Rotator (fix for 1 slide only)
+         - better character conversion to ascii (for seo ...)
 15-02-19 - new {validate} function - when used in ItemManager or any other view
 (honzam)   for items, shows current validation report for the fields in the item
            (whether all fields matches the field type - mails, ...).

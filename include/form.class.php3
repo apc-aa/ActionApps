@@ -310,8 +310,8 @@ class AA_Form extends AA_Object {
         return $content;
     }
 
-    /**  AA_Object's method */
-    static function factoryFromForm($oowner, $otype=null) {
+    /** iEditable method - creates Object from the form data */
+    public static function factoryFromForm($oowner, $otype=null) {
         $grabber = new AA_Objectgrabber_Form();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
@@ -333,8 +333,11 @@ class AA_Form extends AA_Object {
         return $object;
     }
 
-    /**  AA_Object's method */
-    // static function arrFormrows($form) {
+    /** iEditable method - adds Object's editable properties to the $form */
+    // public static function addFormrows($form);
+
+    /** iEditable method - save the object to the database */
+    // public        function save();
 }
 
 ?>

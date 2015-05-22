@@ -1089,4 +1089,24 @@ class AA_Metabase {
     }
 }
 
+class AA_MetabaseTableEdit {
+
+    /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
+    public static function defaultAddFormrows($tablename, $form) {
+        $metabase  = AA_Metabase::singleton();
+        $props     = $metabase->getColumnProperies($tablename);
+        foreach ($props as $name => $property) {
+            $property->addPropertyFormrows($form);
+        }
+        return $form;
+    }
+
+    /** helps other classes to implement iEditable method factoryFromForm - creates Object from the form data */
+    //public static function defaultFactoryFromForm($tablename, $oowner, $otype=null) {}
+    /** helps other classes to implement iEditable method save - save the object to the database */
+    //public        function defaultSave($tablename) {}
+
+
+}
+
 ?>
