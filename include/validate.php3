@@ -606,7 +606,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
     $type                = $validate_definition[0];
 
     switch ($type) {
-        case 'regexp':   $regexp    = $validate_definition[1];
+        case 'regexp':   $regexp    = array('pattern'=>$validate_definition[1]);
                          $err_text  = isset($validate_definition[2]) ? $validate_definition[2] : null;
                          $validator = new AA_Validate_Regexp($regexp, null, $err_text);
                          break;
