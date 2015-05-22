@@ -391,7 +391,7 @@ class ConvertCharset {
 
 
 
-    /** prepares the string for url name or filename (removes all accents, ...) 
+    /** prepares the string for url name or filename (removes all accents, ...)
      *  ConvertCharset::singleton()->escape($string, $encoding=null);
      */
     function escape($string, $encoding=null, $dot=false) {
@@ -400,7 +400,7 @@ class ConvertCharset {
             $base  = $this->Convert($base, $encoding, 'us-ascii');
         }
         $base  = str_replace(' ', '-', $base);
-        $base  = preg_replace($dot ? '/[^[:alnum:]-_\.]/' : '/[^[:alnum:]-_]/', '-', $base) ;
+        $base  = preg_replace($dot ? '/[^\da-z-_.]/i' : '/[^\da-z-_]/i', '-', $base) ;
         while ( strpos($base, '--') !== false ) {
             $base = str_replace('--', '-', $base);
         }
