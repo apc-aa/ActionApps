@@ -380,6 +380,8 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
  * </script>
  */
 function AA_Rotator(id, interval, max, speed, effect) {
+    if (max<2) { return; }
+
     // Check to see if the rotators-set  has been initialized
     if ( typeof AA_Rotator.rotators == 'undefined' ) {
         AA_Rotator.rotators = {};
@@ -392,7 +394,7 @@ function AA_Rotator(id, interval, max, speed, effect) {
             clearInterval(AA_Rotator.rotators[id].timer);
         }, function(ev){
             AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
-        });        
+        });
     }
 
     if (AA_Rotator.rotators[id].effect == 'fade') {

@@ -450,7 +450,7 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
             return;
         }
     }
-    
+
     var code = Form.serialize(valdivid);
     code += '&' + sess + '&inline=1';  // do not send us whole page as result
 
@@ -607,6 +607,8 @@ function isArray(obj) {
  * </script>
  */
 function AA_Rotator(id, interval, max, speed, effect) {
+    if (max<2) { return; }
+
     // Check to see if the rotators-set  has been initialized
     if ( typeof AA_Rotator.rotators == 'undefined' ) {
         AA_Rotator.rotators = {};
