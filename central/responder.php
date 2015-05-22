@@ -161,6 +161,8 @@ class AA_Responder_Get_Widget extends AA_Responder {
         // Use right language (from slice settings) - languages are used for button texts, ...
         $lang        = $slice->getLang();
         mgettext_bind($lang, 'output');
+        AA::$lang    = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
+        AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid) : '';
