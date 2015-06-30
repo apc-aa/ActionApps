@@ -37,9 +37,12 @@ require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 define ('AA_AUTH_NOBODY', $GLOBALS['nobody'] ? true : false);
 
 class AA_CP_Auth extends Auth {
-    var $classname      = "AA_CP_Auth";
-    var $lifetime       = 200;                // 200 minutes
-    var $nobody         = AA_AUTH_NOBODY;
+
+    function __construct() {
+        $this->classname = "AA_CP_Auth";
+        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 200;   // 200 minutes
+        $this->nobody    = AA_AUTH_NOBODY;
+    }
 
     /** relogin_if function
      * @param $t
