@@ -1,3 +1,26 @@
+15-06-30 - new possibility to define reaction to events
+(honzam)     "New Item", "Item Updated".
+           It is done by Admin -> Planed Tasks. You can send mails by {mail:..},
+           recount some fields by {recount:...} etc. You can also specify, if
+           the task should be done directly, or it should be planed for future
+           (by specifying "+ seconds" parameter)
+         - new "Condition" field in Planed Tasks where you can specify
+           the Condition for which the task is performed
+         - nicer admin interface of Planed Tasks
+         - -- any text field -- search is the default for the Item Manager
+         - more powerfull interface for AA -> Find
+         - better searching for related item in widgets (try harder to find item
+           for filled item, even if the item no longer matches filters)
+         - fixed searchbar in item manager for fields using numeric constants
+         - fixed object search, so Planed task, logs, site aliases are now
+           searchable in admin interface
+         - pagecache is valid just for one domain (there are sites, where
+           content is based also on domain name
+             - enviro.example.org, culture.example.org, ... )
+         - the length of Login timeout is now configurable by AA_LOGIN_TIMEOUT
+           (in minutes) constant (default 200 minutes)
+         - updated phplib,
+         - speed optimalization
 15-05-22 - new <persistent-id> parameter in
 (honzam)   {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]}
              - if provided <persistent-id> identifier ([a-z-]*), the toggle

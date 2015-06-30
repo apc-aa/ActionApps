@@ -49,7 +49,7 @@ require_once AA_BASE_PATH. "central/include/actions.php3";
 function CountItemsInBins() {
     $db = getDB();
 
-    $ret['folder1'] = $ret['folder2'] = $ret['folder3'] = 0;
+    $ret = array('folder1'=>0, 'folder2'=>0, 'folder3' => 0);
     $db->tquery("SELECT status_code, count(*) as cnt FROM central_conf
                  GROUP BY status_code");
                  while ( $db->next_record() ) {
