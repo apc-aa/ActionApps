@@ -56,7 +56,7 @@ function AafinderSiteLink($spot_id, $slice_id) {
 }
 
 if (!IsSuperadmin()) {
-    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
 }
 
@@ -70,7 +70,7 @@ echo $Msg;
 
 is_object( $db ) || ($db = getDB());
 
-if ($_GET['go_findview'] && $_GET['findview']) {
+if (strlen($_GET['findtext']) AND $_GET['findinview']) {
     $fields = array (
         'id',
         'before',
@@ -100,18 +100,19 @@ if ($_GET['go_findview'] && $_GET['findview']) {
     $SQL = "SELECT view.id, view.type, view.slice_id, slice.name
         FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findview']),'_%')."%\" OR ";
+        $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%')."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
-    echo $db->num_rows()." matching views found:<br>";
+    echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
     while ($db->next_record()) {
         $view = AA_Views::getView($db->f("id"));
         echo $view->jumpLink($db->f("id")." -  ".$view->f("name")." (".$db->f("name").") "). "<br>\n";
     }
+    echo '<br><br>';
 }
 
-if ($_GET['go_findslice'] && $_GET['findslice']) {
+if (strlen($_GET['findtext']) AND $_GET['findinslice']) {
     $fields = array (
         'slice.name',
         'slice.type',
@@ -136,20 +137,21 @@ if ($_GET['go_findslice'] && $_GET['findslice']) {
 
     $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findslice']),'_%') ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
-    echo $db->num_rows()." matching slices found:<br>";
+    echo "<b>slices</b> <small>(".$db->num_rows()." matching found)</small><br>";
     while ($db->next_record()) {
         echo $db->f("name")." "
                 ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id($db->f("id")))
                 ."\">"._m("Jump")."</a><br>";
     }
+    echo '<br><br>';
 }
 
 
-if ($_GET['go_findfield'] && $_GET['findfield']) {
+if (strlen($_GET['findtext']) AND $_GET['findinfield']) {
     $fields = array (
         'id',
         'type',
@@ -180,35 +182,37 @@ if ($_GET['go_findfield'] && $_GET['findfield']) {
 
     $SQL = "SELECT slice_id, id, name FROM field WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findfield']),'_%') ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
-    echo $db->num_rows()." matching fields found:<br>";
+    echo "<b>fields</b> <small>(".$db->num_rows()." matching found)</small><br>";
     while ($db->next_record()) {
         echo $db->f("name")." ".AafinderFieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
     }
+    echo '<br><br>';
 }
 
 
-if ($_GET['go_findspot'] && $_GET['findspot']) {
+if (strlen($_GET['findtext']) AND $_GET['findinspot']) {
     $fields = array (
         'content'
         );
 
     $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findspot']),'_%') ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
-    echo $db->num_rows()." matching site spots found:<br>";
+    echo "<b>site spots</b> <small>(".$db->num_rows()." matching found)</small><br>";
     while ($db->next_record()) {
         echo AafinderSiteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
     }
+    echo '<br><br>';
 }
 
-if ($_GET['go_finddiscus'] && $_GET['finddiscus']) {
+if (strlen($_GET['findtext']) AND $_GET['findindiscus']) {
     $fields = array (
         'subject',
         'author',
@@ -223,11 +227,11 @@ if ($_GET['go_finddiscus'] && $_GET['finddiscus']) {
 
     $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
     foreach ($fields as $field) {
-        $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_GET['finddiscus']),'_%') ."%\" OR ";
+        $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
     }
     $SQL .= "0) ORDER BY date";
     $db->query($SQL);
-    echo $db->num_rows()." matching comments found:<br>";
+    echo "<b>comments</b> <small>(".$db->num_rows()." matching found)</small><br>";
     while ($db->next_record()) {
         if (!$head) {
             echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->Record)).'</td></tr>');
@@ -241,8 +245,8 @@ if ($_GET['go_finddiscus'] && $_GET['finddiscus']) {
         echo '<tr><td>'. join('</td><td>', $print).'</td></tr>';
     }
     echo '</table>';
+    echo '<br><br>';
 }
-
 
 if ($_GET['go_finditem'] && $_GET['finditem']) {
     $zid = new zids($_GET['finditem']);
@@ -256,11 +260,11 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
         echo "<br>_#HEADLINE: ". $item->unalias($format);
         echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
         echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
+        echo "<pre>";
+        echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
+        print_r($item->content4id);
+        echo "</pre>";
     }
-    echo "<pre>";
-    echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
-    print_r($item->content4id);
-    echo "</pre>";
 
     $long_id = $zid->longids(0);
     if ($long_id) {
@@ -277,6 +281,14 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";
         }
+        if ($rec = GetTable2Array('SELECT * FROM object_text WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields')) {
+            echo '<h3>'. _m('Object') .'</h3><pre>';
+            print_r($rec);
+            print_r(GetTable2Array('SELECT * FROM object_integer WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
+            print_r(GetTable2Array('SELECT * FROM object_float   WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
+            echo "</pre>";
+        }
+
         $changes = AA_ChangesMonitor::singleton();
         echo '<h3>'. _m('History') .'</h3><pre>';
         print_r($changes->getHistory(array($long_id)));
@@ -285,6 +297,7 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
       //  print_r($changes->getProposals(array($long_id)));
       //  echo "</pre>";
     }
+    echo '<br><br>';
 }
 
 if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_op']) {
@@ -331,63 +344,47 @@ FrmTabCaption(_m("Manage"));
 echo '<tr><td>';
 echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'">';
 echo '<b>'._m("Manage User:").'</b><br>
-    <input type="text" name="usr" value="" size="30">&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
+    <input type="text" name="usr" value="" size=60>&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
     <input type="submit" name="go_finduser" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'">';
 echo '<b>'._m("Manage Group:").'</b><br>
-    <input type="text" name="grp" value="" size="30">&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
+    <input type="text" name="grp" value="" size=60>&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
     <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr>';
-FrmTabSeparator(_m("Find"));
+FrmTabSeparator(_m("Search"));
 echo '<tr><td>';
-echo '<form name="f_findview" action="">';
-echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br>
-    <input type="text" name="findview" value="'.safe($_GET['findview']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findview" value="'._m("Go!").'">' .$sess->get_hidden_session();
+echo '<form name="f_findtext" action="">';
+echo '<b>'._m('Find in').'</b>
+      <label><input type="checkbox" name="findinview"   value="1" '. ((!$_GET['findtext'] OR $_GET['findinview'  ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinslice"  value="1" '. ((!$_GET['findtext'] OR $_GET['findinslice' ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinfield"  value="1" '. ((!$_GET['findtext'] OR $_GET['findinfield' ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinspot"   value="1" '. ((!$_GET['findtext'] OR $_GET['findinspot'  ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findindiscus" value="1" '. ((                      $_GET['findindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
+    <br>
+    <input type="text" name="findtext" value="'.safe($_GET['findtext']).'" size=60>&nbsp;&nbsp;
+      <input type="submit" name="go_findtext" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_findslice" action="">';
-echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br>
-    <input type="text" name="findslice" value="'.safe($_GET['findslice']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findslice" value="'._m("Go!").'">' .$sess->get_hidden_session();
-echo '</form>';
-echo '</td></tr><tr><td>';
-echo '<form name="f_findfield" action="">';
-echo '<b>'._m("Find all FIELDS containing in its definition the string:").'</b><br>
-    <input type="text" name="findfield" value="'.safe($_GET['findfield']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findfield" value="'._m("Go!").'">' .$sess->get_hidden_session();
-echo '</form>';
-echo '</td></tr><tr><td>';
-echo '<form name="f_findspot" action="">';
-echo '<b>'._m("Find all SITE SPOTS containing in its definition the string:").'</b><br>
-    <input type="text" name="findspot" value="'.safe($_GET['findspot']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_findspot" value="'._m("Go!").'">' .$sess->get_hidden_session();
-echo '</form>';
-echo '</td></tr><tr><td>';
-echo '<form name="f_finddiscus" action="">';
-echo '<b>'._m("Find all DISCUSSION COMMENTS containing in any field the string:").'</b><br>
-    <input type="text" name="finddiscus" value="'.safe($_GET['finddiscus']).'" size="30">&nbsp;&nbsp;
-    <input type="submit" name="go_finddiscus" value="'._m("Go!").'">' .$sess->get_hidden_session();
-echo '</form>';
-echo '</td></tr><tr><td>';
+
 echo '<form name="f_finditem" action="">';
 echo '<b>'._m("Get all informations about the ITEM").'</b><br>
-    <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size="30">&nbsp;&nbsp;
+    <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size=60>&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">' .$sess->get_hidden_session();
-echo '</form></td></tr>';
-echo '<tr><td>';
+echo '</form>';
+
+echo '</td></tr><tr><td>';
 echo '<form name="f_finditem_edit" action="">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
-    <input type="text" name="finditem_edit" value="'.safe($_GET['finditem_edit']).'" size="30">&nbsp;&nbsp;
+    <input type="text" name="finditem_edit" value="'.safe($_GET['finditem_edit']).'" size=60>&nbsp;&nbsp;
     <select name="finditem_edit_op">
-    <option value="LIKE">Contiene</option>
-    <option value="=">Frase exacta</option>
-    <option value="item">Número de item</option>
+    <option value="LIKE">'._m('contains').'</option>
+    <option value="=">'._m('is').'</option>
+    <option value="item">'._m('Item number').'</option>
     </select>
-    <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">';
+    <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">'.$sess->get_hidden_session();
 echo '</form></td></tr>';
 
 FrmTabEnd();
