@@ -167,7 +167,7 @@ class AA_Widget extends AA_Components {
     /** returns array(ids => formated text) for the current widget based on
      *  the widget settings
      */
-    public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm='') {
+    public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm='', $ignore_filters=false) {
 
         $values_array = $this->getProperty('const_arr');  // is asociative!
         if ( !empty($values_array) ) {          // values assigned directly
@@ -179,7 +179,8 @@ class AA_Widget extends AA_Components {
         $ids_arr = false;
 
         $constgroup   = $this->getProperty('const');
-        $filter_conds = $this->getProperty('filter_conds');
+                        // $restrict_zids could be removed from this check. Honza 2015-06-11
+        $filter_conds = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds');
         $sort_by      = $this->getProperty('sort_by');
         $slice_field  = $this->getProperty('slice_field');
 
@@ -308,7 +309,14 @@ class AA_Widget extends AA_Components {
         if ( isset( $this->_selected ) AND is_array( $this->_selected ) ) {
             foreach ( $this->_selected as $k =>$foo ) {
                 if ( !$already_selected[$k] ) {
-                    $ret[] = array('k'=>$k, 'v'=>$k, 'selected' => true, 'mis' => true);
+                    $val_txt = $k;
+                    if ($this->getProperty('const') AND (guesstype($k)=='l')) {
+                        $opt = $this->getFormattedOptions(null, new zids($k, 'l'), '', true);
+                        if (!strlen($val_txt = $opt[$k])) {
+                            $val_txt = $k;
+                        }
+                    }
+                    $ret[] = array('k'=>$k, 'v'=>$val_txt, 'selected' => true, 'mis' => true);
                     $selectedused = true;
                 }
             }
@@ -2028,7 +2036,7 @@ class AA_Property extends AA_Storable {
      * @param $show_content_type_switch
      * @param $content_type_switch_default
      */
-    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
+    function __construct($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
         $this->id                          = $id;
         $this->name                        = $name;
         $this->type                        = $type;
