@@ -60,6 +60,8 @@ $module       = AA_Module_Site::getModule(AA::$site_id);
 $lang_file    = $module->getProperty('lang_file');
 AA::$encoding = $module->getCharset();
 
+header('Content-Type: text/html; charset='.AA::$encoding );
+
 //    - see /include/constants.php3
 if ( !is_array($site_info) ) {
     echo "<br>Error: no 'site_id' or 'site_id' is invalid";
@@ -134,7 +136,7 @@ if ( !isset($apc_state) )  {
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeystring(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
+$cache_key = get_hash('site', PageCache::globalKeyArray(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
