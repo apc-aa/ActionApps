@@ -57,29 +57,26 @@ class PageCache  {
      *  Return string to use in keystr for cache if could do a stringexpand
      *  Returns part of keystring
      */
-    function globalKeystring() {
-        $ks = "";
-        if (isset($GLOBALS["apc_state"])) {
-            $ks .= serialize($GLOBALS["apc_state"]);
+    function globalKeyArray() {
+        // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
+        $ks = array('host' => ltrim($_SERVER['HTTP_HOST'],'w.'));
+        if (isset($GLOBALS['apc_state'])) {
+            $ks['apc_state'] = $GLOBALS['apc_state'];
         }
-        if (isset($GLOBALS["als"])) {
-            $ks .= serialize($GLOBALS["als"]);
+        if (isset($GLOBALS['als'])) {
+            $ks['als'] = $GLOBALS['als'];
         }
-        if (isset($GLOBALS["slice_pwd"])) {
-            $ks .= serialize($GLOBALS["slice_pwd"]);
+        if (isset($GLOBALS['slice_pwd'])) {
+            $ks['slice_pwd'] = $GLOBALS['slice_pwd'];
         }
 
         if (isset($_COOKIE)) {
-            $work = array();
             // do not count with cookie names starting with underscore
             // (Google urchin uses cookies like __utmz which varies very often)
             foreach( $_COOKIE as $key => $val ) {
                 if (!(substr((string)$key,0,1)=='_')) {
-                    $work[$key] = $val;
+                    $ks["C$key"] = $val;
                 }
-            }
-            if (count($work)>0) {
-                $ks .= serialize($work);
             }
         }
         return $ks;
@@ -192,7 +189,7 @@ class PageCache  {
      */
     function store($key, $content, $str2find, $force=false) {
         global $cache_nostore;
-        
+
         AA::$debug && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.$str2find->getStr2find(), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
 
         if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
@@ -214,7 +211,7 @@ class PageCache  {
 
             // it is not necessary to check, if the  AA_Pagecache_Purge is planed
             // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
-            if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
+            if (mt_rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $cache_purger  = new AA_Pagecache_Purge();
                 $toexecute     = new AA_Toexecute;
