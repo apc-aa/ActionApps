@@ -10,6 +10,8 @@
  * PHPLIB Data Storage Container using a SQL database
  */
 
+// Based on ct_sql.inc,v 1.7 2006/03/14 22:16:18 richardarcher
+
 class CT_Sql {
   //
   // Define these parameters by overwriting or by
@@ -78,7 +80,7 @@ class CT_Sql {
       $now,
       $id,
       $name);
-    $squery = sprintf("select count(sid) count from %s where val='%s' and changed='%s' and sid='%s' and name='%s'",
+    $squery = sprintf("select count(sid) as count from %s where val='%s' and changed='%s' and sid='%s' and name='%s'",
       $this->database_table,
       $str,
       $now,
@@ -281,10 +283,10 @@ class Session {
           $id = '';
       }
 
-      //# do not accept user provided ids for creation
-      if ($id != "" && $this->block_alien_sid) {   # somehow an id was provided by the user
+      // do not accept user provided ids for creation
+      if ($id != "" && $this->block_alien_sid) {   // somehow an id was provided by the user
           if($this->that->ac_get_value($id, $this->name) == "") {
-              # no - the id doesn't exist in the database: Ignore it!
+              // no - the id doesn't exist in the database: Ignore it!
               $id = "";
           }
       }
@@ -310,8 +312,8 @@ class Session {
           }
           break;
       case "get":
-          #we don't trust user input; session in url doesn't
-          #mean cookies are disabled
+          //we don't trust user input; session in url doesn't
+          //mean cookies are disabled
           if ($this->newid &&( 0 == $this->lifetime ))  {   // even if not a newid
               SetCookie($this->name, $id, 0, $this->cookie_path, $this->cookie_domain);
           }
@@ -503,7 +505,7 @@ class Session {
   }
 
   function release_token() {
-      # set the  mode for this run
+      // set the  mode for this run
       if ( isset($this->fallback_mode) && ("get" == $this->fallback_mode) && ("cookie" == $this->mode) && (! isset($_COOKIE[$this->name])) ) {
           $this->mode = $this->fallback_mode;
       }
@@ -525,23 +527,23 @@ class Session {
   }
 
   function put_headers() {
-      # Allowing a limited amount of caching, as suggested by
-      # Padraic Renaghan on phplib@lists.netuse.de.
-      #
-      # Note that in HTTP/1.1 the Cache-Control headers override the Expires
-      # headers and HTTP/1.0 ignores headers it does not recognize (e.g,
-      # Cache-Control). Mulitple Cache-Control directives are split into
-      # mulitple headers to better support MSIE 4.x.
-      #
-      # Added pre- and post-check for MSIE 5.x as suggested by R.C.Winters,
-      # see http://msdn.microsoft.com/workshop/author/perf/perftips.asp#Use%20Cache-Control%20Extensions
-      # for details
+      // Allowing a limited amount of caching, as suggested by
+      // Padraic Renaghan on phplib@lists.netuse.de.
+      //
+      // Note that in HTTP/1.1 the Cache-Control headers override the Expires
+      // headers and HTTP/1.0 ignores headers it does not recognize (e.g,
+      // Cache-Control). Mulitple Cache-Control directives are split into
+      // mulitple headers to better support MSIE 4.x.
+      //
+      // Added pre- and post-check for MSIE 5.x as suggested by R.C.Winters,
+      // see http://msdn.microsoft.com/workshop/author/perf/perftips.asp#Use%20Cache-Control%20Extensions
+      // for details
       switch ($this->allowcache) {
 
       case "passive":
           $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
           header("Last-Modified: " . $mod_gmt);
-          # possibly ie5 needs the pre-check line. This needs testing.
+          // possibly ie5 needs the pre-check line. This needs testing.
           header("Cache-Control: post-check=0, pre-check=0");
           break;
 
@@ -579,7 +581,7 @@ class Session {
   // Destroy all session data older than this
   //
   function gc() {
-      if ((rand()%100) < $this->gc_probability) {
+      if (mt_rand(0,100) < $this->gc_probability) {
           $this->that->ac_gc($this->gc_time, $this->name);
       }
   }
@@ -617,8 +619,8 @@ class Auth {
                                   // from db using auth_refreshlogin()
                                   // method. Set to 0 to disable refresh
 
-  var $mode = "log";              // "log" for login only systems,
-                                  // "reg" for user self registration
+  //  var $mode = "log";              // "log" for login only systems,
+                                      // "reg" for user self registration
 
   var $magic = "";                // Used in uniqid() generation
 
@@ -645,43 +647,43 @@ class Auth {
       $this->in = true;
     }
 
-    # Check current auth state. Should be one of
-    #  1) Not logged in (no valid auth info or auth expired)
-    #  2) Logged in (valid auth info)
-    #  3) Login in progress (if $this->cancel_login, revert to state 1)
+    // Check current auth state. Should be one of
+    //  1) Not logged in (no valid auth info or auth expired)
+    //  2) Logged in (valid auth info)
+    //  3) Login in progress (if $this->cancel_login, revert to state 1)
     if ($this->is_authenticated()) {
       $uid = $this->auth["uid"];
       switch ($uid) {
         case "form":
-          # Login in progress
+          // Login in progress
           if ((isset($_POST[$this->cancel_login]) && $_POST[$this->cancel_login]) or
               (isset($_GET[$this->cancel_login]) && $_GET[$this->cancel_login])) {
-            # If $this->cancel_login is set, delete all auth info and set
-            # state to "Not logged in", so eventually default or automatic
-            # authentication may take place
+            // If $this->cancel_login is set, delete all auth info and set
+            // state to "Not logged in", so eventually default or automatic
+            // authentication may take place
             $this->unauth();
             $state = 1;
           } else {
-            # Set state to "Login in progress"
+            // Set state to "Login in progress"
             $state = 3;
           }
           break;
         default:
-          # User is authenticated and auth not expired
+          // User is authenticated and auth not expired
           $state = 2;
           break;
       }
     } else {
-      # User is not (yet) authenticated
+      // User is not (yet) authenticated
       $this->unauth();
       $state = 1;
     }
 
     switch ($state) {
       case 1:
-        # No valid auth info or auth is expired
+        // No valid auth info or auth is expired
 
-        # Check for user supplied automatic login procedure
+        // Check for user supplied automatic login procedure
         if ( $uid = $this->auth_preauth() ) {
           $this->auth["uid"] = $uid;
           $this->auth["exp"] = time() + (60 * $this->lifetime);
@@ -689,103 +691,58 @@ class Auth {
           return true;
         }
 
-        # Check for "log" vs. "reg" mode
-        switch ($this->mode) {
-          case "yes":
-          case "log":
-            if ($this->nobody) {
-              # Authenticate as nobody
-              $this->auth["uid"] = "nobody";
-              # $this->auth["uname"] = "nobody";
-              $this->auth["exp"] = 0x7fffffff;
-              $this->auth["refresh"] = 0x7fffffff;
-              return true;
-            } else {
-              # Show the login form
-              $this->auth_loginform();
-              $this->auth["uid"] = "form";
-              $this->auth["exp"] = 0x7fffffff;
-              $this->auth["refresh"] = 0x7fffffff;
-              $sess->freeze();
-              exit;
-            }
-            break;
-          case "reg":
-           if ($this->nobody) {
-              # Authenticate as nobody
-              $this->auth["uid"] = "nobody";
-              # $this->auth["uname"] = "nobody";
-              $this->auth["exp"] = 0x7fffffff;
-              $this->auth["refresh"] = 0x7fffffff;
-              return true;
-            } else {
-            # Show the registration form
-              $this->auth_registerform();
-              $this->auth["uid"] = "form";
-              $this->auth["exp"] = 0x7fffffff;
-              $this->auth["refresh"] = 0x7fffffff;
-              $sess->freeze();
-              exit;
-            }
-            break;
-          default:
-            # This should never happen. Complain.
-            echo "Error in auth handling: no valid mode specified.\n";
-            $sess->freeze();
-            exit;
+        if ($this->nobody) {
+          // Authenticate as nobody
+          $this->auth["uid"] = "nobody";
+          // $this->auth["uname"] = "nobody";
+          $this->auth["exp"] = 0x7fffffff;
+          $this->auth["refresh"] = 0x7fffffff;
+          return true;
+        } else {
+          // Show the login form
+          $this->auth_loginform();
+          $this->auth["uid"] = "form";
+          $this->auth["exp"] = 0x7fffffff;
+          $this->auth["refresh"] = 0x7fffffff;
+          $sess->freeze();
+          exit;
         }
         break;
       case 2:
-        # Valid auth info
-        # Refresh expire info
+        // Valid auth info
+        // Refresh expire info
         // DEFAUTH handling: do not update exp for nobody.
-        if ($uid != "nobody")
+        if ($uid != "nobody") {
           $this->auth["exp"] = time() + (60 * $this->lifetime);
+        }
         break;
       case 3:
-        # Login in progress, check results and act accordingly
-        switch ($this->mode) {
-          case "yes":
-          case "log":
-            if ( $uid = $this->auth_validatelogin() ) {
-              $this->auth["uid"] = $uid;
-              $this->auth["exp"] = time() + (60 * $this->lifetime);
-              $this->auth["refresh"] = time() + (60 * $this->refresh);
-              return true;
+        // Login in progress, check results and act accordingly
+        if ( $uid = $this->auth_validatelogin() ) {
+          $this->auth["uid"] = $uid;
+          $this->auth["exp"] = time() + (60 * $this->lifetime);
+          $this->auth["refresh"] = time() + (60 * $this->refresh);
+          return true;
+        } else {
+            if ($this->nobody) {
+                $this-> unauth();
+                // Authenticate as nobody
+                $this->auth["uid"] = "nobody";
+                $this->auth["exp"] = 0x7fffffff;
+                $this->auth["refresh"] = 0x7fffffff;
+                return true;
             } else {
-              $this->auth_loginform();
-              $this->auth["uid"] = "form";
-              $this->auth["exp"] = 0x7fffffff;
-              $this->auth["refresh"] = 0x7fffffff;
-              $sess->freeze();
-              exit;
+                $this->auth_loginform();
+                $this->auth["uid"] = "form";
+                $this->auth["exp"] = 0x7fffffff;
+                $this->auth["refresh"] = 0x7fffffff;
+                $sess->freeze();
+                exit;
             }
-            break;
-          case "reg":
-            if ($uid = $this->auth_doregister()) {
-              $this->auth["uid"] = $uid;
-              $this->auth["exp"] = time() + (60 * $this->lifetime);
-              $this->auth["refresh"] = time() + (60 * $this->refresh);
-              return true;
-            } else {
-              $this->auth_registerform();
-              $this->auth["uid"] = "form";
-              $this->auth["exp"] = 0x7fffffff;
-              $this->auth["refresh"] = 0x7fffffff;
-              $sess->freeze();
-              exit;
-            }
-            break;
-          default:
-            # This should never happen. Complain.
-            echo "Error in auth handling: no valid mode specified.\n";
-            $sess->freeze();
-            exit;
-            break;
         }
         break;
       default:
-        # This should never happen. Complain.
+        // This should never happen. Complain.
         echo "Error in auth handling: invalid state reached.\n";
         $sess->freeze();
         exit;
@@ -795,12 +752,19 @@ class Auth {
 
   function login_if( $t ) {
     if ( $t ) {
-      $this->unauth();  # We have to relogin, so clear current auth info
-      $this->nobody = false; # We are forcing login, so default auth is
-                             # disabled
-      $this->start(); # Call authentication code
+      $this->unauth();       // We have to relogin, so clear current auth info
+      $this->nobody = false; // We are forcing login, so default auth is
+                             // disabled
+      $this->start();        // Call authentication code
     }
   }
+
+  /** auth4 */
+  // function __sleep () {
+  //   $this->persistent_slots[]="classname";
+  //   return $this->persistent_slots;
+  //  }
+
 
   function unauth($nobody = false) {
     $this->auth["uid"]   = "";
@@ -873,46 +837,33 @@ class Auth {
 }
 
 /*
- * $Id$
- */
- function page_open($feature) {
+* $Id$
+*/
+function page_open($feature) {
 
-     # enable sess and all dependent features.
-     if (isset($feature["sess"])) {
-         global $sess;
-         $sess = new $feature["sess"];
-         $sess->start();
+    // enable sess and all dependent features.
+    if (isset($feature["sess"])) {
+        global $sess;
+        $sess = new $feature["sess"];
+        $sess->start();
 
-         # the auth feature depends on sess
-         if (isset($feature["auth"])) {
-             global $auth;
+        // the auth feature depends on sess
+        if (isset($feature["auth"])) {
+            global $auth;
 
-             if (!is_object($auth)) {
-                 $auth = new $feature["auth"];
-             }
-             $auth->start();
-         }
-     }
- }
+            if (!is_object($auth)) {
+                $auth = new $feature["auth"];
+            }
+            $auth->start();
+        }
+    }
+}
 
- function page_close() {
-     global $sess;
+function page_close() {
+    global $sess;
 
-     if (is_object($sess)) {
-         $sess->freeze();
-     }
- }
-
- function sess_load($session) {
-     foreach ($session as $k => $v) {
-         $GLOBALS[$k] = new $v;
-         $GLOBALS[$k]->start();
-     }
- }
-
- function sess_save($session) {
-     foreach ($session as $v) {
-         $GLOBALS[$v]->freeze();
-     }
- }
+    if (is_object($sess)) {
+        $sess->freeze();
+    }
+}
 ?>
