@@ -195,12 +195,16 @@ function OpenWindowIfRequest(form_name, bar, admin_url) {
     var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
     var idx2=doc.elements['srchbr_oper['+bar+']'].selectedIndex;
 
-    if ((field_types.charAt(idx) == 3) && (doc.elements['srchbr_oper['+bar+']'].options[idx2].value == "select")) {
+    if (doc.elements['srchbr_oper['+bar+']'].options[idx2].value == "select") {
         sel_val = doc.elements['srchbr_field['+bar+']'].options[idx].value;
         sel_name = "srchbr_value["+bar+"]";
         sel_text = doc.elements['srchbr_value['+bar+']'].value;
         OpenConstantsWindow(sel_name,sel_val,1, sel_text, admin_url);
-        doc.elements['srchbr_oper['+bar+']'].selectedIndex = 2; // equals
+        if (field_types.charAt(idx) == 3) {
+            doc.elements['srchbr_oper['+bar+']'].selectedIndex = 2; // equals
+        } else if (field_types.charAt(idx) == 4) {                    // numconstants
+            doc.elements['srchbr_oper['+bar+']'].selectedIndex = 0; // =
+        }
     }
 }
 function ChangeOperators(form_name, bar, selectedVal ) {

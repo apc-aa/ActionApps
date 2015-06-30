@@ -100,6 +100,9 @@ class AA_Operators {
             // constants
             operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
             operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",            "select");
+            // numconstants
+            operator_names[4]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
+            operator_values[4] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL",            "select");
             ';
     }
 }

@@ -195,7 +195,13 @@ class AA_Field {
             $field_type = 'date';
         }
         $r = $this->getRelation();
-        return empty($r) ? array($field_type, $field_add) : $r;
+
+        if (!empty($r)) {
+            $field_add  = $r[1];
+            $field_type = ($field_type == 'numeric') ? 'numconstants' : $r[0];
+        }
+
+        return array($field_type, $field_add);
     }
 
 
@@ -495,6 +501,7 @@ class AA_Fields implements Iterator {
     function getSearchArray() {
         $this->load();
         $i = 0;
+        $ret = array();
         foreach ( $this->fields as $field_id => $field ) { // in priority order
             list($field_type,$field_add) = $field->getSearchType();
             if ($field_type=='relation') {
