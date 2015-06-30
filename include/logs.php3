@@ -77,7 +77,7 @@ class AA_Log {
         freeDB($db);
 
         // with probability 1:1000 call log cleanup
-        if ( rand(0,1000) == 1) {
+        if ( mt_rand(0,1000) == 1) {
             AA_Log::cleanup();
         }
         return true;

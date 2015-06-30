@@ -4851,7 +4851,7 @@ class AA_Stringexpand_Randomstring extends AA_Stringexpand_Nevercache {
         $ret = '';
         $salt_chars = "abcdefghijklmnoprstuvwxABCDEFGHIJKLMNOPQRSTUVWX0123456789";
         for ($i=0; $i < $len; $i++) {
-            $ret .= $salt_chars[rand(0,56)];
+            $ret .= $salt_chars[mt_rand(0,56)];
         }
         return $ret;
     }

@@ -203,8 +203,7 @@ class Mail_mimePart {
         $encoded =& $this->_encoded;
 
         if (!empty($this->_subparts)) {
-            srand((double)microtime()*1000000);
-            $boundary = '=_' . md5(uniqid(rand()) . microtime());
+            $boundary = '=_' . hash('md5', uniqid('',true));
             $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . "\t" . 'boundary="' . $boundary . '"';
 
             // Add body parts to $subparts

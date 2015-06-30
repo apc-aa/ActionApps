@@ -256,7 +256,7 @@ class Files {
      * @param $ident
      */
     function getTmpFilename($ident) {
-        return $ident . "_" . md5(uniqid(rand(),1))  . "_" . date("mdY");
+        return $ident . "_" . hash('md5', uniqid('',true)) . "_" . date("mdY");
     }
 
     /** deleteTmpFiles function

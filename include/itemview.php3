@@ -179,7 +179,7 @@ class itemview {
                 $keystr .= $this->zids->id($i);
             }
         }
-        $key = get_hash('outp', $keystr, $this->disc, $this->aliases, PageCache::globalKeystring());
+        $key = get_hash('outp', $keystr, $this->disc, $this->aliases, PageCache::globalKeyArray());
 
         global $str2find_passon, $pagecache;
         if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($key)) ) {
@@ -508,7 +508,7 @@ class itemview {
       if ( !$rweight || !is_array($this->fields[$rweight]) ) {
         // not weighted, we can select random id(s)
         for ( $i=0; $i<$this->num_records; $i++) {
-          $sel = rand( 0, $this->zids->count() - 1) ;
+          $sel = mt_rand( 0, $this->zids->count() - 1) ;
           if ( $this->zids->id($sel) )
             $foo_ids[] = $this->zids->id($sel);
         }
@@ -549,7 +549,7 @@ class itemview {
         $weightsum += $v[$rweight][0]['value'];
       }
       for ( $i=0; $i<$this->num_records; $i++) {
-        $winner = rand(1,$weightsum);
+        $winner = mt_rand(1,$weightsum);
         reset( $this->_content );
         $ws=0;
         while ( list($k,$v) = each($this->_content) ) {
@@ -611,7 +611,7 @@ class itemview {
         $ingroup_index = 0;
         $group_index   = 0;
         AA::$debug && AA::$dbg->log("itemlist - number_of_ids: $number_of_ids");
-        
+
         $zidscount = $this->zids->count();
         for ( $i=0; $i<$number_of_ids; ++$i ) {
             // display banner, if you have to

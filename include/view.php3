@@ -555,7 +555,7 @@ function GetView($view_param) {
     global $nocache;
 
     //create keystring from values, which exactly identifies resulting content
-    $key = get_hash($view_param, PageCache::globalKeystring());
+    $key = get_hash($view_param, PageCache::globalKeyArray());
 
     if ( $res = $GLOBALS['pagecache']->get($key, $nocache) ) {
         return $res;
