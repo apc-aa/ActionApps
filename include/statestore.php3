@@ -349,6 +349,10 @@ class AA_Object extends AA_Storable implements iEditable {
         return is_null($default) ? $this->$property_id : (($this->$property_id == '') ? $default : $this->$property_id);
     }
 
+    function setProperty($property_id, $value) {
+        return $this->$property_id = $value;
+    }
+
     /** iEditable method - save the object to the database */
     public function save() {
         if ( !$this->aa_owner ) {
@@ -601,6 +605,9 @@ class AA_Object extends AA_Storable implements iEditable {
         }
 
         $properties = $type::getClassProperties();
+        $properties['aa_name']  = self::getPropertyObject('aa_name');
+        $properties['aa_owner'] = self::getPropertyObject('aa_owner');
+        $properties['aa_type']  = self::getPropertyObject('aa_type');
 
         // parse conditions ----------------------------------
         $tables_counter = array('object_text'=>1, 'object_integer'=>0, 'object_float'=>0);
@@ -610,7 +617,7 @@ class AA_Object extends AA_Storable implements iEditable {
         $tables['t0']['join'] = 'object_text as t0';
 
         if ( !empty($owners) ) {
-            $tables['t1']['cond'] = "t1.property='aa_owner' AND ". sqlin('t1.value', $owners);
+            $tables['t1']['cond'] = "t1.property='aa_owner' AND ". CVarset::sqlin('t1.value', $owners);
             $tables['t1']['join'] = "LEFT JOIN object_text as t1 ON (t1.object_id=t0.object_id AND t1.property='aa_owner')";
             $tables_counter['object_text']++;
         }
@@ -623,20 +630,19 @@ class AA_Object extends AA_Storable implements iEditable {
             $cond_flds   = array();
             $store       = '';
             foreach ( $cond as $fid => $v ) {
-                if ( $CONDS_NOT_FIELD_NAMES[$fid] ) {
+                if ( $GLOBALS['CONDS_NOT_FIELD_NAMES'][$fid] ) {
                     continue;      // it is not field_id parameters - skip it for now
                 }
 
                 $field = $properties[$fid];
-
                 if ( empty($field) OR ($v=="")) {
-                    debug("skipping $fid in conds[]: not known $fid or empty condition");
+                    AA::$debug && AA::$dbg->log("skipping $fid in conds[]: not known $fid or empty condition");
                     continue;
                 }
 
-                $field_store = $field->storageType();
+                $field_store = AA_Property::storageType($field->getType());
                 if ( empty($field_store) ) {
-                    debug("skipping $fid in conds[]: no storage table (is it object?)");
+                    AA::$debug && AA::$dbg->log("skipping $fid in conds[]: no storage table (is it object?)");
                     continue;
                 }
                 // will not work with one condition for columns of different types (text/int/...) - which is right, I think.
@@ -644,11 +650,11 @@ class AA_Object extends AA_Storable implements iEditable {
                 $cond_flds[] = $fid;
             }
             if ( !empty($cond_flds) ) {
-                $tbl = (($store == 'object_text') ? 't' : ($store == 'object_integer') ? 'i' : 'f') . $tables_counter[$store]++;
+                $tbl = (($store == 'object_text') ? 't' : (($store == 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
 
                 // fill arrays to be able construct select command
                 $tables[$tbl]['cond'] = GetWhereExp( "$tbl.value", $cond['operator'], $cond['value'] );
-                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". sqlin("$tbl.property", $cond_flds).')'; // OR $tbl.property is NULL))"; - like in content
+                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". CVarset::sqlin("$tbl.property", $cond_flds).')'; // OR $tbl.property is NULL))"; - like in content
                 if (count($cond_flds) == 1) {
                     // mark this field as sortable (store without apostrofs)
                     $sortable[ reset($cond_flds) ] = $tbl;
@@ -688,19 +694,19 @@ class AA_Object extends AA_Storable implements iEditable {
             $field = $properties[$fid];
 
             if ( empty($field)) {
-                debug("skipping $fid in sort[]: not known $fid");
+                AA::$debug && AA::$dbg->log("skipping $fid in sort[]: not known $fid");
                 continue;
             }
 
             if ( !$sortable[ $fid ] ) {           // this field is not joined, yet
-                $store = $field->storageType();
+                $store = AA_Property::storageType($field->getType());
                 if ( empty($store) ) {
-                    debug("skipping $fid in sort[]: no storage table (is it object?)");
+                    AA::$debug && AA::$dbg->log("skipping $fid in sort[]: no storage table (is it object?)");
                     continue;
                 }
 
-                $tbl = (($store == 'object_text') ? 't' : ($store == 'object_integer') ? 'i' : 'f') . $tables_counter[$store]++;
-                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". sqlin("$tbl.property", $cond_flds); // OR $tbl.property is NULL))"; - like in content
+                $tbl = (($store == 'object_text') ? 't' : (($store == 'object_integer') ? 'i' : 'f')) . $tables_counter[$store]++;
+                $tables[$tbl]['join'] = "LEFT JOIN $store as $tbl ON ($tbl.object_id=t0.object_id AND ". CVarset::sqlin("$tbl.property", $fid).')'; // OR $tbl.property is NULL))"; - like in content
 
                 // mark this field as sortable (store without apostrofs)
                 $sortable[$fid] = $tbl;
@@ -742,7 +748,6 @@ class AA_Object extends AA_Storable implements iEditable {
         if ( count($select_order) ) {                                // order ----------
             $SQL .= " ORDER BY ". implode(', ', $select_order);
         }
-
         // not cached result
         return GetZidsFromSQL( $SQL, 'objectid', 'l');
     }
@@ -753,16 +758,37 @@ class AA_Object extends AA_Storable implements iEditable {
     function _getSearchArray($properties) {
         $i   = 0;
         $ret = array();
-        foreach ($properties as $prop_id => $property) {
+        $props = array_merge(array('aa_name' => self::getPropertyObject('aa_name')), $properties);
+        //if (!isset($properties['aa_name']))  { $properties['aa_name']  = self::getPropertyObject('aa_name'); }
+        //if (!isset($properties['aa_owner'])) { $properties['aa_owner'] = self::getPropertyObject('aa_owner'); }
+        //if (!isset($properties['aa_type']))  { $properties['aa_type']  = self::getPropertyObject('aa_type'); }
+
+        foreach ($props as $prop_id => $property) {
             if ($property->isObject()) {
                 continue;
             }
+
             $field_type = $property->getType();    // @todo - convert to right search values
+
+            switch ($field_type) {
+                case 'int': $field_type = 'numeric'; break;
+
+                case 'text':
+                case 'numeric':
+                case 'date':
+                case 'constants':
+                case 'numconstants':
+                          break;
+
+                // case 'string':
+                default:
+                      $field_type = 'text';
+            }
 
             // we can hide the field, if we put in fields.search_pri=0
             $search_pri = ++$i;
                                //             $name,        $field,       $operators, $table, $search_pri, $order_pri
-            $ret[$prop_id] = GetFieldDef( $prop_id, $prop_id, $field_type, false, $search_pri, $search_pri);
+            $ret[$prop_id] = GetFieldDef( $property->getName(), $prop_id, $field_type, false, $search_pri, $search_pri);
         }
         return $ret;
     }
@@ -777,7 +803,7 @@ class AA_Object extends AA_Storable implements iEditable {
                 continue;
             }
             // @todo - make alias field type aware
-            $aliases["_#". substr(str_pad(strtoupper($prop_id),8,'_'),0,8)] = GetAliasDef( "f_h", $prop_id, $prop_id);
+            $aliases["_#". substr(str_pad(strtoupper($prop_id),8,'_'),0,8)] = GetAliasDef( 'f_h:, ', $prop_id, $prop_id);
         }
         $aliases["_#AA_NAME_"] = GetAliasDef( "f_h", 'aa_name', 'aa_name');
         $aliases["_#AA_ID___"] = GetAliasDef( "f_h", 'aa_id',   'aa_id');
