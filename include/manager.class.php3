@@ -51,7 +51,7 @@ class AA_Manager extends AA_Storable {
     var $actions_hint;
     var $actions_hint_url;
     var $switches;
-    var $messages;        // various language messages (like page title, ...)
+    var $messages;        // various language messages (title, noitem_msg, about)
     var $itemview;        // itemview object
     var $show;            // what controls show (scroller, searchbar, ...)
     var $bin;             // stores the bin in which we are - string
@@ -462,6 +462,14 @@ class AA_Manager extends AA_Storable {
      **/
     function display($zids) {
         global $r_err, $r_msg;          // @todo - check if it is still needed
+
+        if ($this->messages['title']) {
+            echo '<h1>'. $this->messages['title'] .'</h1>';
+        }
+        if ($this->messages['about']) {
+            echo '<div class="aa-about"><small>'. $this->messages['about'] .'<br><br></small></div>';
+        }
+
         $this->printSearchbarBegin();
         $this->printSearchbarEnd();     // close the searchbar form
         $this->printAndClearMessages();
@@ -482,7 +490,7 @@ class AA_Manager extends AA_Storable {
         $this->display($zids);
 
         $r_state['manager']    = $this->getState();
-        $r_state["manager_id"] = $this->_manager_id;
+        $r_state['manager_id'] = $this->_manager_id;
 
         HtmlPageEnd();
     }

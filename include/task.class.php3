@@ -34,18 +34,24 @@
  */
 class AA_Plannedtask extends AA_Object {
 
-    protected $task = '';
- //   protected $time = '';
- //   protected $shift = '';
+    protected $task      = '';
+    protected $condition = '';
+    protected $event     = '';
+    protected $time      = '';
+    protected $shift     = 0;
+    protected $item      = '';
 
     /** allows storing form in database
      *  AA_Object's method
      */
     static function getClassProperties() {
-        return array (          //           id        name       type        multi  persist validator, required, help, morehelp, example
-            'task'    => new AA_Property( 'task',  _m("Task"),         'text',    false, true, '', true),
-            'time'    => new AA_Property( 'time',  _m("Time to run"),  'string',  false, true, '', true, _m('Specify the time, when the task shoud be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="http://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>"Monday 10:00" - runs every Monday at 16:00<br>"first day of this month 10:00"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.')),
-            'shift'   => new AA_Property( 'shift', _m("+ seconds"),    'int',     false, true, '', false, _m('Optionaly specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)'))
+        return array (          //           id            name              type        multi  persist validator, required, help, morehelp, example
+            'task'      => new AA_Property( 'task',      _m("Task"),         'text',    false, true, '', true),
+            'condition' => new AA_Property( 'condition', _m("Condition"),    'text',    false, true, '', false, _m('If specified, the task is performed only if Condition is evaluated to value different from zero or empty value')),
+            'event'     => new AA_Property( 'event',     _m("Event to run"), 'string',  true,  true, array('enum',array('ITEM_NEW'=> _m('New Item'), 'ITEM_UPDATED'=> _m('Item Updated'))), false,  _m('Event, when the task shoud be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify "+ seconds" parameter or set it to 0, then the task is executed directly. If the "+ seconds" offset is set, then the task is planed to execute once after x seconds.')),
+            'time'      => new AA_Property( 'time',      _m("Time to run"),  'string',  false, true, '', false, _m('Specify the time, when the task shoud be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="http://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>"Monday 10:00" - runs every Monday at 16:00<br>"first day of this month 10:00"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.')),
+            'shift'     => new AA_Property( 'shift',     _m("+ seconds"),    'int',     false, true, '', false, _m('Optionaly specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)')),
+            'item_id'   => new AA_Property( 'item_id',   _m("Item ID"),      'string',  false, true, 'id', false, _m('Optionaly specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. For "event" tasks (Item updated/new) is always filled with id of modified item.'))
             );
     }
 
@@ -59,7 +65,7 @@ class AA_Plannedtask extends AA_Object {
          '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Time'), _m('+ seconds'), _m('Task'), _m('ID'))).'</th>
+              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Task'), _m('Condition'), _m('ID'))).'</th>
             </tr>
             ';
     }
@@ -71,21 +77,32 @@ class AA_Plannedtask extends AA_Object {
            <tr>
              <td>'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
              <td>_#AA_NAME_</td>
-             <td>_#TIME____</td>
-             <td>_#SHIFT___</td>
-             <td>_#TASK____</td>
-             <td>_#AA_ID___</td>
+             <td>_#EVENT___</td>
+             <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>
+             <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
+             <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
+             <td><small>_#AA_ID___</small></td>
            </tr>
            ';
    }
 
     function nexttime() {
         // every 5 min
+        if ( !strlen($time = trim($this->getProperty('time'))) ) {
+            return 0;
+        }
         return strtotime($this->getProperty('time')) + (int)$this->getProperty('shift');
     }
 
     function toexecutelater() {
-        AA_Stringexpand::unalias($this->task);
+        $condition = trim($this->condition);
+        if (strlen($condition)) {
+            $condition_res = trim(AA_Stringexpand::unalias($condition));
+            if (!strlen($condition_res) OR ((string)$condition_res==='0')) {
+                return;
+            }
+        }
+        AA_Stringexpand::unalias($this->task, '', is_long_id($this->item_id) ? AA_Items::getItem(new zids($this->item_id, 'l')) : null);
     }
 
     /** method called after save */
@@ -96,11 +113,11 @@ class AA_Plannedtask extends AA_Object {
     }
 
     /** check if the task is scheduled and if not - schedule it for future execution */
-    function schedule() {
-        $time = $this->nexttime();
+    function schedule($force_time = null) {
+        $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
             $toexecute = new AA_Toexecute;
-            $toexecute->laterOnce($this, array(), 'Plannedtask_'. $this->getId(), 100, $time);
+            $toexecute->laterOnce($this, array(), 'Plannedtask_'. $this->getId(). (is_long_id($this->item_id) ? ('_'.$this->item_id) : ''), 100, $time);
         }
     }
 
@@ -115,6 +132,28 @@ class AA_Plannedtask extends AA_Object {
         // $form->addRow(new AA_Formrow_Text(_m('last execution'). ": $last_execution" ));
         return $form;
     }
+
+    static public function executeForEvent($module_id, $event_id, $item_id ) {
+        $aa_set = new AA_Set();
+        $aa_set->setModules($module_id);
+        $aa_set->addCondition(new AA_Condition('event', '=', $event_id));
+
+        $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
+
+        $GLOBALS['ddd'] = true;
+
+        foreach ($zids as $id) {
+            $task = AA_Object::load($id, 'AA_Plannedtask');
+            if (is_long_id($item_id)) {
+                $task->setProperty('item_id', $item_id);
+            }
+            if ( ($shift = (int)$task->getProperty('shift')) == 0) {
+                $task->toexecutelater();
+            } else {
+                $task->schedule(time()+$shift);
+            }
+        }
+    }
 }
 
 
@@ -127,7 +166,7 @@ class AA_Plannedtask_Schedule {
 
         $aa_set = new AA_Set();
         //$aa_set->setModules($module_id);
-        //$aa_set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+        //$aa_set->addCondition(new AA_Condition('time', 'NOTNULL', 1));
 
         $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
 

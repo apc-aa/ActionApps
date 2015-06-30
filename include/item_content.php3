@@ -1058,6 +1058,7 @@ class ItemContent extends AA_Content {
 
         if ($throw_events) {
             if ($mode == 'insert') {
+                AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
                 $diff = $itemContent->diff($oldItemContent);
@@ -1065,6 +1066,7 @@ class ItemContent extends AA_Content {
                     $changes = AA_ChangesMonitor::singleton();
                     $changes->addHistory($diff);
                 }
+                AA_Plannedtask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
