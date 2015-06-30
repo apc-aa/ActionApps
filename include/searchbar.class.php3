@@ -194,8 +194,16 @@ class AA_Searchbar extends AA_Storable {
         $this->show                 = (((string)$show == 'aa_default') ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show);
         $this->hint                 = $hint;
         $this->hint_url             = $hint_url;
+        $this->search_fields        = array();
+        $this->search_operators     = array();
 
         if ( isset($fields) AND is_array($fields) ) {
+            // add "all fields" search
+            $this->search_fields['all_fields']            = _m('-- any text field --');
+            $this->search_operators['all_fields']         = 'text';
+            $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
+            $this->search_operators['all_fields_numeric'] = 'numeric';
+
             uasort ($fields, "searchfields_cmp");
             $last_pri = false;
             foreach ( $fields as $fid => $v) {
@@ -211,11 +219,6 @@ class AA_Searchbar extends AA_Storable {
                     $this->search_operators[$fid] = $v['operators'];
                 }
             }
-            // add "all fields" search
-            $this->search_fields['all_fields']            = _m('-- any text field --');
-            $this->search_operators['all_fields']         = 'text';
-            $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
-            $this->search_operators['all_fields_numeric'] = 'numeric';
 
             // sort
             uasort ($fields, "orderfields_cmp");
@@ -703,7 +706,7 @@ class AA_Searchbar extends AA_Storable {
                 var field_types    = "';
 
         // print string like "120021020010" which defines field type (charAt())
-        $oper_translate = array( 'text' => 0, 'numeric' => 1, 'date' => 2, 'constants' => 3);
+        $oper_translate = array( 'text' => 0, 'numeric' => 1, 'date' => 2, 'constants' => 3, 'numconstants' => 4);
         if ( isset($this->search_operators) AND is_array($this->search_operators) ) {
             foreach ($this->search_operators as $v) {
                 echo $oper_translate[$v];
