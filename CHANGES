@@ -1,3 +1,9 @@
+15-07-13 - new possibility to authenticate to the second domain -
+(honzam)   the central/setcookie.php3 is the blank pixel script, which can be
+           used for authentication to another domain if you are already logged
+           in one - just include folowing HTML code to sitemodule of example-one.org:
+            <img src="//www.example-two.org/apc-aa/central/setcookie.php?s={cookie:AA_Sess}">
+           this will set the auth cookie in example-two.org.
 15-06-30 - new possibility to define reaction to events
 (honzam)     "New Item", "Item Updated".
            It is done by Admin -> Planed Tasks. You can send mails by {mail:..},
