@@ -75,7 +75,7 @@ class AA_Plannedtask extends AA_Object {
       // huhl($aliases);exit;
        return '
            <tr>
-             <td>'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
+             <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
              <td>_#AA_NAME_</td>
              <td>_#EVENT___</td>
              <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>

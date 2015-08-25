@@ -569,7 +569,6 @@ class AA_Object extends AA_Storable implements iEditable {
    // * Finds object IDs for objects given by conditions
    // *
    // *   @param string        $type   - object type
-   // *   @param AA_Slices     $owners - search only objects owned by those slices
    // *   @param $set
    // *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
    // *   @return A zids object with a list of the ids that match the query.
@@ -577,23 +576,8 @@ class AA_Object extends AA_Storable implements iEditable {
    // *   @global  bool $debug (in) many debug messages
    // *   @global  bool $nocache (in) do not use cache, even if use_cache is set
    // */
-   //function query($type, $owners=null, $set=null, $restrict_zids=null) {
-   //    // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND
-   //    // c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
-   //    global $debug;                 // displays debug messages
-   //    global $nocache;               // do not use cache, if set
-   //
-   //    $SQL = "SELECT o1.object_id FROM object_text as o1, object_text as o2 WHERE o1.object_id=o2.object_id
-   //            AND o1.property='aa_type'  AND o1.value='".quote($type)."'
-   //            AND o2.property='aa_owner' AND o2.value='".quote(reset($owners))."'";
-   //
-   //    $ids = GetTable2Array($SQL, '', 'object_id');
-   //    return $ids ? $ids : array();
-   //
    //    // @todo !!! - rewrite it.
    //    // do the same as in quryZids for any object
-   //}
-
     function querySet($type, $set, $restrict_zids=null) {
 
         $owners = $set->getModules();
@@ -858,7 +842,7 @@ class AA_Object extends AA_Storable implements iEditable {
     protected static function getManagerRowHtml($fields, $aliases, $links) {
         return '
             <tr>
-              <td>'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
+              <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
             </tr>
             ';
@@ -900,7 +884,7 @@ class AA_Object extends AA_Storable implements iEditable {
                      'category_bottom'  => "",
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
-                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)))),
+                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
