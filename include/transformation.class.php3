@@ -167,7 +167,7 @@ abstract class AA_Transformation {
 /*  New approach - not fully functional, yet
 class AA_Transformation_Value extends AA_Transformation {
 
-    function AA_Transformation_Value($param) {
+    function __construct($param) {
         $this->parameters    = array();
         $this->parameters['new_flag']    = getAAField(array('varname'=>'new_flag',    'name'=>_m('Mark as'),     'required'=>true, 'value' => array( 0 => array( 'value' => $param['new_flag']))));
         $this->parameters['new_content'] = getAAField(array('varname'=>'new_content', 'name'=>_m('New content'), 'value' => array( 0 => array( 'value' => $param['new_content'])), 'input_help' => _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK')));
@@ -207,7 +207,7 @@ class AA_Transformation_Value extends AA_Transformation {
     }
 
     function transform($field_id, &$content4id) {
-        $slice = AA_Slices::getSlice($content4id->getSliceID());
+        $slice = AA_Slice::getModule($content4id->getSliceID());
         $item = new AA_Item($content4id->getContent(),$slice->aliases());
 
         $text = $item->subst_alias($this->getParam('new_content'));
@@ -230,7 +230,7 @@ class AA_Transformation_Value extends AA_Transformation {
     /** AA_Transformation_Value function
      * @param $param
      */
-    function AA_Transformation_Value($param) {
+    function __construct($param) {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
@@ -285,6 +285,62 @@ class AA_Transformation_Value extends AA_Transformation {
     }
 }
 
+/** Used for {newitem:}, ... */
+class AA_Transformation_Exactvalues extends AA_Transformation {
+
+    var $new_content;
+
+    /** AA_Transformation_Exactvalues function
+     * @param $param
+     */
+    function __construct($param) {
+        $this->new_content = $param['new_content'];
+    }
+
+    /** name function
+     * @return message
+     */
+    function name() {
+        return _m("Fill by exact values");
+    }
+
+    /** description function
+     * @return message
+     */
+    function description() {
+        return _m("Returns values exactly as specified (no evaluation, ...)");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     * @return array
+     */
+    function transform($field_id, &$content4id) {
+        $item = GetItemFromContent($content4id);
+        $text = $this->getParam('new_content');
+        $flag = $item->getFlag($field_id);
+        return new AA_Value($text,$flag);
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
+    function htmlSetting($input_prefix, $params) {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
+
+        FrmTextarea(  $varname_new_content, _m('New content'), $_GET[$varname_new_content],  12, 80, false, _m('Exact value only - no AA expressions'));
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
 class AA_Transformation_Setflag extends AA_Transformation {
 
     var $new_flag;
@@ -292,7 +348,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
     /** AA_Transformation_Value function
      * @param $param
      */
-    function AA_Transformation_Setflag($param) {
+    function __construct($param) {
         $this->new_flag    = $param['new_flag'];
     }
 
@@ -354,7 +410,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
     /** AA_Transformation_AddValue function
      * @param $param
      */
-    function AA_Transformation_AddValue($param) {
+    function __construct($param) {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
@@ -424,7 +480,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     /** AA_Transformation_AddValue function
      * @param $param
      */
-    function AA_Transformation_ParseMulti($param) {
+    function __construct($param) {
         $this->new_flag       = $param['new_flag'];
         $this->source         = $param['source'];
         $this->delimiter      = $param['delimiter'];
@@ -495,7 +551,7 @@ class AA_Strreplace {
      * @param $pattern
      * @param $replacements
      */
-    function AA_Strreplace( $method, $pattern, $replacements ) {
+    function __construct( $method, $pattern, $replacements ) {
         $this->method       = $method;
         $this->pattern      = $pattern;
         $this->replacements = $replacements;
@@ -540,7 +596,7 @@ class AA_Transformation_Translate extends AA_Transformation {
     /** AA_Transformation_Translate function
      * @param $param
      */
-    function AA_Transformation_Translate($param) {
+    function __construct($param) {
         $this->new_flag    = $param['new_flag'];
         $this->translation = $param['translation'];
     }
@@ -645,7 +701,7 @@ class AA_Transformation_Replace extends AA_Transformation {
     /** AA_Transformation_Translate function
      * @param $param
      */
-    function AA_Transformation_Replace($param) {
+    function __construct($param) {
         $this->searchpattern = $param['searchpattern'];
         $this->replacestring = $param['replacestring'];
     }
@@ -710,7 +766,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     /** AA_Transformation_Translate function
      * @param $param
      */
-    function AA_Transformation_Regexpreplace($param) {
+    function __construct($param) {
         $this->searchpattern = $param['searchpattern'];
         $this->replacestring = $param['replacestring'];
         $this->unalias       = $param['unalias'];
@@ -787,7 +843,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
     /** AA_Transformation_CopyField function
      * @param $param
      */
-    function AA_Transformation_CopyField($param) {
+    function __construct($param) {
         $this->field2copy = $param['field2copy'];
     }
 

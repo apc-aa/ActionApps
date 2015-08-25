@@ -56,9 +56,9 @@ class AA_Saver {
      * @param $store_mode
      * @param $id_mode
      */
-    function AA_Saver($grabber, $transformations, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
+    function __construct($grabber, $transformations=null, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
         $this->grabber         = $grabber;
-        $this->transformations = $transformations;
+        $this->transformations = is_array($transformations) ? $transformations : array();
         $this->slice_id        = $slice_id;
         $this->store_mode      = $store_mode;
         $this->id_mode         = $id_mode;
@@ -74,6 +74,17 @@ class AA_Saver {
         $this->grabber->prepare();    // maybe some initialization in grabber
 
         while ($content4id = $this->grabber->getItem()) {
+
+            // if we want some Transformations, do them here
+            foreach($this->transformations as $field_id => $transformation) {
+                $field_content = $transformation->transform($field_id, $content4id);
+                if (!$field_content) {
+                    // no need to change, or something goes wrong - missing parameter for transformation, ....
+                    continue;
+                }
+                $field_content->removeDuplicates();
+                $content4id->setAaValue($field_id, $field_content);
+            }
 
             $id_mode    = ($this->id_mode    == 'by_grabber') ? $this->grabber->getIdMode()    : $this->id_mode;
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
@@ -319,7 +330,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
      * @param $feed
      * @param $fire
      */
-    function AA_Grabber_Aarss($feed_id, &$feed, $fire) {
+    function __construct($feed_id, &$feed, $fire) {
         global $debugfeed;
 
         /** Process one feed and returns parsed RSS (both AA and other)
@@ -401,7 +412,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         global $debugfeed;
 
         // get local item list (with last edit times)
-        $slice       = AA_Slices::getSlice($this->slice_id);
+        $slice       = AA_Slice::getModule($this->slice_id);
         $local_list  = new LastEditList();
         $local_list->setFromSlice('', $slice);  // no conditions - all items
         $local_pairs = $local_list->getPairs();
@@ -469,7 +480,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         set_time_limit(240); // Allow 4 minutes per feed
 
-        $slice           = AA_Slices::getSlice($this->slice_id);
+        $slice           = AA_Slice::getModule($this->slice_id);
         $feed_debug_name = 'Feed #'. $this->feed_id .' ('. getFeedTypeName($feed_type).'): '.
                            $this->feed['name'] .' : ' .$this->feed['remote_slice_name'].
                            ' -> '.$slice->name();
@@ -679,7 +690,7 @@ class AA_Grabber_Form {
     var $_items;
     var $_last_store_mode;
 
-    function AA_Grabber_Form() {
+    function __construct() {
         $_items = array();
     }
 
@@ -1028,7 +1039,7 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
     var $dir;                   /** directory, where teh files are */
     var $_files;                /** list if files to grab - internal array */
 
-    function AA_Grabber_Iekis_Xml($dir) {
+    function __construct($dir) {
         $this->dir = $dir;
     }
 
@@ -1144,7 +1155,7 @@ class AA_Grabber_Slice extends AA_Grabber {
     var $_content_cache;      /**  */
     var $_index;              /**  */
 
-    function AA_Grabber_Slice($set, $restrict_zids=null) {
+    function __construct($set, $restrict_zids=null) {
         $this->set            = $set;
         $this->restrict_zids  = $restrict_zids;
         $this->_longids       = array();
@@ -1192,7 +1203,7 @@ class AA_Grabber_Slice extends AA_Grabber {
 
     function getCharset() {
         $modules = $this->set->getModules();
-        if ($module = AA_Modules::getModule($modules[0])) {
+        if ($module = AA_Slice::getModule($modules[0])) {
             return $module->getCharset();
         }
         return 'UTF-8';
@@ -1213,7 +1224,7 @@ class AA_Grabber_Discussion extends AA_Grabber {
     var $_content_cache;      /**  */
     var $_index;              /**  */
 
-    function AA_Grabber_Discussion($set) {
+    function __construct($set) {
         $this->set            = $set;
         $this->_longids       = array();
         $this->_content_cache = array();
@@ -1283,7 +1294,7 @@ class AA_Grabber_Ical extends AA_Grabber {
     var $vComponentsPos;        /** pointer of components */
 
 
-    function AA_Grabber_Ical($url){
+    function __construct($url){
         $this->url=$url;
     }
       /** Name of the grabber - used for grabber selection box */
@@ -1385,7 +1396,7 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
     var $_items;
     var $_last_store_mode;
 
-    function AA_Grabber_Pohoda_Stocks($file) {
+    function __construct($file) {
         $this->file = $file;
     }
 
@@ -1482,7 +1493,7 @@ class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
     var $file;                /** list if files to grab - internal array */
     var $_items;
 
-    function AA_Grabber_Pohoda_Orders_Result($file) {
+    function __construct($file) {
         $this->file = $file;
     }
 
