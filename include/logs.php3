@@ -132,7 +132,7 @@ class AA_Log_Clenup {
     var $time;
     var $type;
 
-    function AA_Log_Clenup($time, $type='') {
+    function __construct($time, $type='') {
         $this->time = $time;
         $this->type = $type;
     }

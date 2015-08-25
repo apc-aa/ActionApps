@@ -229,7 +229,7 @@ class AA_Trees {
     var $rev = array();
 
     /** Constructor  */
-    function AA_Trees() {
+    function __construct() {
         $this->a   = array();
     }
 

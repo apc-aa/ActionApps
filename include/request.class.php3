@@ -167,7 +167,7 @@ class AA_Response {
 
     static $Response_type = 'serialize';
 
-    function AA_Response($response = null, $error = 0) {
+    function __construct($response = null, $error = 0) {
         $this->response = $response;
         $this->error    = $error;
     }
@@ -213,7 +213,7 @@ class AA_Request {
     var $command;
     var $params;
 
-    function AA_Request( $command, $params=array()) {
+    function __construct( $command, $params=array()) {
         $this->command = $command;
         $this->params  = $params;
     }

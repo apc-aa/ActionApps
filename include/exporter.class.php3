@@ -33,7 +33,7 @@ class AA_Exporter extends AA_Object {
     var $field_set;
     var $grabber;
 
-    function AA_Exporter($params) {
+    function __construct($params) {
         // params: field_set, grabber
         $this->field_set = $params['field_set'];
         $this->grabber   = $params['grabber'];
@@ -160,9 +160,9 @@ class AA_Exporter_Excel extends AA_Exporter {
 
     var $current_row;
 
-    function AA_Exporter_Excel($params) {
+    function __construct($params) {
         $this->current_row = -1;
-        parent::AA_Exporter($params);
+        parent::__construct($params);
     }
 
     function _outputEnd($item)   {
@@ -389,7 +389,7 @@ class AA_Fieldset {
     /** array of field names - corresponds to $_fields array    */
     var $_names;
 
-    function AA_Fieldset() {
+    function __construct() {
         $this->_fields = array();
         $this->_types  = array();
         $this->_names  = array();
@@ -502,7 +502,7 @@ class AA_Exportsetings extends AA_Object {
 
         $slice_id = $this->aa_owner;
 
-        $slice  = AA_Slices::getSlice($slice_id);
+        $slice  = AA_Slice::getModule($slice_id);
 
         if (!$slice->isValid()) {
             echo _m('No slice specified');

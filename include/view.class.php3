@@ -47,7 +47,7 @@ class AA_View {
      * @param $id
      * @param $rec
      */
-    function AA_View($id, $rec=null) {
+    function __construct($id, $rec=null) {
         $this->id = (int)$id;
         if (isset($rec)) {
             $this->fields = $rec;
@@ -219,7 +219,7 @@ class AA_Views {
     var $a = array();
 
     /** AA_Views function  */
-    function AA_Views() {
+    function __construct() {
         $this->a = array();
     }
 

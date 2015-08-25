@@ -54,7 +54,7 @@ class AA_Slice_Exporter {
     var $_encoder;
 
     /** Constructor */
-    function AA_Slice_Exporter($type, $gzip, $struct, $data, $spec_date, $from_date, $to_date, $hex, $views, $to_utf) {
+    function __construct($type, $gzip, $struct, $data, $spec_date, $from_date, $to_date, $hex, $views, $to_utf) {
         $this->type       = $type;
         $this->gzip       = $gzip;
         $this->struct     = $struct;
@@ -209,7 +209,7 @@ class AA_Slice_Exporter {
         }
 
         foreach ($export_slices as $sid) {
-            $slobj = AA_Slices::getSlice($sid);
+            $slobj = AA_Slice::getModule($sid);
             $this->prepareEncoder($slobj->getCharset());
 
             if ($this->type != _m("Export to Backup")) {

@@ -79,7 +79,7 @@ class AA_Alias {
      * @param $parameters = null
      * @param $hlp = ''
      */
-    function AA_Alias($alias, $field_id, $funct, $parameters=null, $hlp='') {
+    function __construct($alias, $field_id, $funct, $parameters=null, $hlp='') {
         $this->alias       = $alias;
         $this->funct       = $funct;
         $this->field_id    = $field_id;
@@ -106,7 +106,7 @@ class AA_Aliases {
     /** AA_Aliases function
      *
      */
-    function AA_Aliases() {
+    function __construct() {
         $this->aliases = array();
     }
     /** addAlias function
@@ -149,6 +149,7 @@ class AA_Aliases {
 * @global array $MODULES
 *     "name" is a description of the module,
 *     "hide_create_module" doesn't show the module in the Create Slice / Module page
+*     @todo convert to AA_Module (AA_Module_site, ...)
 */
 $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => _m('Slice'),
@@ -961,6 +962,7 @@ define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
 /** status codes - in itemContent */
 define("SC_ACTIVE", 1);
 define("SC_HOLDING_BIN", 2);
+define("SC_NO_BIN", 4);
 
 /** HTMLArea constants */
 // not supported with new version of HtmlArea

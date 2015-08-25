@@ -529,7 +529,7 @@ class AA_File_Wrapper {
      * @param $url string
      * @param $info array
      */
-    function AA_File_Wrapper($url, &$info) {
+    function __construct($url, &$info) {
         $this->url = $url;
         $this->info = $info;
     }
@@ -638,8 +638,8 @@ class AA_HTTP_File_Wrapper extends AA_File_Wrapper {
      * @param $url
      * @param $info
      */
-    function AA_HTTP_File_Wrapper($url, &$info) {
-        parent::AA_File_Wrapper($url, $info);
+    function __construct($url, &$info) {
+        parent::__construct($url, $info);
         $this->setDefaultPort(80);
         $this->setDefaultHost('localhost');
         $this->setDefaultPath('/');
@@ -718,8 +718,8 @@ class AA_HTTPS_File_Wrapper extends AA_HTTP_File_Wrapper {
      * @param $url
      * @param $info
      */
-    function AA_HTTPS_File_Wrapper($url, &$info) {
-        parent::AA_HTTP_File_Wrapper($url, $info);
+    function __construct($url, &$info) {
+        parent::__construct($url, $info);
         $this->setDefaultPort(443);
         $this->setDefaultHost('ssl://localhost');
         if (isset($this->info['host'])) {
@@ -877,7 +877,7 @@ class AA_File_Info {
      * Constructor.
      * @param $url string
      */
-    function AA_File_Info($url) {
+    function __construct($url) {
         $this->url = $url;
         $this->size = filesize($this->url);
     }
@@ -949,8 +949,8 @@ class AA_Image_File_Info extends AA_File_Info {
      * Constructor.
      * @param $url string
      */
-    function AA_Image_File_Info($url) {
-        parent::AA_File_Info($url);
+    function __construct($url) {
+        parent::__construct($url);
         //print_r(getimagesize($this->url));
         $size = getimagesize($this->url);
         list($this->img_width, $this->img_height) = $size;
@@ -1007,8 +1007,8 @@ class AA_Jpg_Image_File_Info extends AA_Image_File_Info {
      * Constructor.
      * @param $url string
      */
-    function AA_Jpg_Image_File_Info($url) {
-        parent::AA_Image_File_Info($url);
+    function __construct($url) {
+        parent::__construct($url);
         $this->exifParse();
     }
 
@@ -1147,7 +1147,7 @@ class AA_Image_Manipulator {
      * Constructor.
      * @param $url string
      */
-    function AA_Image_Manipulator($url) {
+    function __construct($url) {
         $this->url = $url;
     }
 
@@ -1251,7 +1251,7 @@ class AA_Directory_Wrapper {
      * @param $url string
      * @param $info array
      */
-    function AA_Directory_Wrapper($url, &$info) {
+    function __construct($url, &$info) {
         $this->url             = Files::fixPath($url);
         $this->info            = $info;
         $this->dp              = NULL;

@@ -74,7 +74,7 @@ class AA_Grabber_Assignmentform extends AA_Grabber {
     var $_items;            /** list if files to grab - internal array */
     var $_index;              /**  */
 
-    function AA_Grabber_Assignmentform() {
+    function __construct() {
         $_items = array();
     }
 
@@ -188,7 +188,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
 
     list($item_id, $field_id) = AA_Form_Array::parseId4Form($_POST['input_id']);
     $item   = AA_Item::getItem(new zids($item_id));
-    $slice  = AA_Slices::getSlice($item->getSliceId());
+    $slice  = AA_Slice::getModule($item->getSliceId());
 
     // Use right language (from slice settings) - languages are used for button texts, ...
     $lang    = $slice->getLang();
@@ -261,4 +261,3 @@ elseif (AA_V::P('change_id')) {
 
 exit;
 ?>
-

@@ -43,7 +43,7 @@ class AA_Responder extends AA_Object {
  */
 class AA_Responder_Get_Sessionid extends AA_Responder {
 
-    function AA_Responder_Get_Sessionid($param=null) {}
+    function __construct($param=null) {}
 
     /** every authenticated user can get his/her session_id */
     function isPerm() { return true; }
@@ -56,7 +56,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
 
 /** @return array of informations about AA - org_name, domaun */
 class AA_Responder_Get_Aaname extends AA_Responder {
-    function AA_Responder_Get_Aaname($param=null) {}
+    function __construct($param=null) {}
 
     function run() {
         return new AA_Response(array('org_name'=>ORG_NAME, 'domain'=>AA_HTTP_DOMAIN));
@@ -68,7 +68,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
     /** array of module types to get */
     var $types;
 
-    function AA_Responder_Get_Modules($param=null) {
+    function __construct($param=null) {
         $this->types = is_array($param['types']) ? $param['types'] : array();
     }
 
@@ -87,7 +87,7 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
     var $limited;  // array - limits the sended definitions
     var $type;     // module type
 
-    function AA_Responder_Get_Module_Defs($param) {
+    function __construct($param) {
         $this->ids     = is_array($param['ids']) ? $param['ids'] : array();
         $this->limited = is_array($param['limited']) ? $param['limited'] : array();
         $this->type    = $param['type'];
@@ -110,7 +110,7 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
 class AA_Responder_Do_Synchronize extends AA_Responder {
     var $sync_commands;
 
-    function AA_Responder_Do_Synchronize($param) {
+    function __construct($param) {
         $this->sync_commands = is_array($param['sync']) ? $param['sync'] : array();
     }
 
@@ -128,13 +128,13 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
     var $definition_chunk;
 
-    function AA_Responder_Do_Import_Module_Chunk($param) {
+    function __construct($param) {
         $this->definition_chunk = $param['definition_chunk'];
     }
 
     function run() {
         AA_Log::write('IMPORT', serialize($this->definition_chunk), 'start');
-        $ret[] = $this->definition_chunk->importModuleChunk();
+        $ret = $this->definition_chunk->importModuleChunk();
         AA_Log::write('IMPORT', $ret, 'result');
         return new AA_Response($ret);
     }
@@ -145,7 +145,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
     var $field_id;
     var $item_id;
 
-    function AA_Responder_Get_Widget($param=null) {
+    function __construct($param=null) {
         $this->field_id   = $param['field_id'];
         $this->item_id    = $param['item_id'];
     }
@@ -156,7 +156,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
         $item        = AA_Item::getItem(new zids($this->item_id));
         $iid         = $item->getItemID();
-        $slice       = AA_Slices::getSlice($item->getSliceId());
+        $slice       = AA_Slice::getModule($item->getSliceId());
 
         // Use right language (from slice settings) - languages are used for button texts, ...
         $lang        = $slice->getLang();
@@ -179,7 +179,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 //    var $slice_id;
 //    var $value;
 //
-//    function AA_Responder_Get_Hco_Widget_Options($param=null) {
+//    function __construct($param=null) {
 //        $this->field_id = $param['field_id'];
 //        $this->slice_id = $param['slice_id'];
 //        $this->value    = $param['value'];
@@ -189,7 +189,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 //
 //    function run() {
 //
-//        $slice       = AA_Slices::getSlice($this->slice_id);
+//        $slice       = AA_Slice::getModule($this->slice_id);
 //
 //        // Use right language (from slice settings) - languages are used for button texts, ...
 //        $lang        = $slice->getLang();
@@ -213,7 +213,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
     var $slice_id;
     var $slice_fields;  // bool
 
-    function AA_Responder_Get_Fields($param=null) {
+    function __construct($param=null) {
         $this->slice_id     = $param['slice_id'];
         $this->slice_fields = $param['slice_fields'] ? true : false;
     }
@@ -233,7 +233,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
             $ret .=  "\n  <option value=\"". $this->slice_id .'-'. myspecialchars($k).'"> '. myspecialchars($v['name']) ." </option>";
         }
         $ret           .= "\n </select>";
-        $slice          = AA_Slices::getSlice($this->slice_id);
+        $slice          = AA_Slice::getModule($this->slice_id);
         $ret            = $encoder->Convert($ret, $slice->getCharset(), 'utf-8');
         return new AA_Response($ret);
     }
@@ -258,7 +258,7 @@ class AA_Responder_Tags extends AA_Responder {
     function run() {
         $ret    = array();
         $trimed = trim($this->input);
-        $field  = AA_Slices::getField($this->slice_id, $this->field_id);
+        $field  = AA_Slice::getModule($this->slice_id)->getField($this->field_id);
         $found  = false;
         if ($field AND $trimed) {
             $widget = $field->getWidget();

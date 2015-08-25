@@ -46,7 +46,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param $value
      * @param $flag
      */
-    function AA_Value($value=null, $flag=null) {
+    function __construct($value=null, $flag=null) {
         $this->clear();
         $this->addValue($value);
         $this->setFlag(!is_null($flag) ? $flag : ( (is_array($value) AND is_array($value[0])) ? $value[0]['flag'] : 0));
@@ -787,7 +787,7 @@ class ItemContent extends AA_Content {
     }
 
     function validateReport() {
-        $slice  = AA_Slices::getSlice($this->getSliceID());
+        $slice  = AA_Slice::getModule($this->getSliceID());
         $fields = $slice->getFields();
         $ret    = array();
 
@@ -804,7 +804,7 @@ class ItemContent extends AA_Content {
     function complete4Insert() {
         global $auth;
 
-        $slice = AA_Slices::getSlice($this->getSliceID());
+        $slice = AA_Slice::getModule($this->getSliceID());
         if (!$slice) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
             return false;
@@ -831,7 +831,7 @@ class ItemContent extends AA_Content {
         }
         $new_content->setSliceID($slice->getId());
         $this->content = $new_content->getContent();
-        if ($status == 4) {
+        if ($status == SC_NO_BIN) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->auth["uid"])));  // set error code
             return false;
         }
@@ -892,7 +892,7 @@ class ItemContent extends AA_Content {
         $itemvarset   = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
 
         $slice_id     = $this->getSliceID();
-        $slice        = AA_Slices::getSlice($slice_id);
+        $slice        = AA_Slice::getModule($slice_id);
         $fields       = $slice->fields('record');
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
@@ -943,9 +943,9 @@ class ItemContent extends AA_Content {
             return false;
         }
 
-        // do not store item, if status_code==4
-        if ((int)$this->getStatusCode() == 4) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("Status code 4"));
+        // do not store item, if status_code==SC_NO_BIN
+        if ((int)$this->getStatusCode() == SC_NO_BIN) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Status code"));
             return false;
         }
 
@@ -1087,7 +1087,7 @@ class ItemContent extends AA_Content {
         $computed_field_exist = false;
 
         // could be called also from outside to recompute fields
-        $slice        = AA_Slices::getSlice($this->getSliceID());
+        $slice        = AA_Slice::getModule($this->getSliceID());
         if (!$fields) {
             $fields   = $slice->fields('record');
         }

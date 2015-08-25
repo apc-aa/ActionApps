@@ -49,9 +49,9 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Item_MoveItem($id, $to_bin) {
+    function __construct($id, $to_bin) {
         $this->to_bin = $to_bin;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -159,7 +159,7 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
 
     /** Constructor - fills the information about the target bin */
     function __construct($id) {
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -205,9 +205,9 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
     var $slice_id;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Item_Feed($id, $slice_id) {
+    function __construct($id, $slice_id) {
         $this->slice_id = $slice_id;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -260,9 +260,9 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
      *  We use default empty parameters, since we need to construct this
      *  class from state by setFromState() method
      */
-    function AA_Manageraction_Item_Move2slice($id='', $slice_id='') {
+    function __construct($id='', $slice_id='') {
         $this->slice_id = $slice_id;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -370,9 +370,9 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
     var $selected;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Item_DeleteTrash($id, $selected=false) {
+    function __construct($id, $selected=false) {
         $this->selected = $selected;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -492,7 +492,7 @@ class AA_Manageraction_Item_Email extends AA_Manageraction {
     // uses setOpenUrl() method to open search_replace.php3 window
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
-        // $slice = AA_Slices::getSlice($manager->getModuleId());
+        // $slice = AA_Slice::getModule($manager->getModuleId());
         // return ($slice->type() == 'ReaderManagement');
         return true; // allow in all slices
     }
@@ -502,8 +502,8 @@ class AA_Manageraction_Item_Email extends AA_Manageraction {
 /** AA_Manageraction_Export - Exports selected items to Excel file */
 class AA_Manageraction_Item_Export extends AA_Manageraction {
 
-    function AA_Manageraction_Item_Export($id) {
-        parent::AA_Manageraction($id);
+    function __construct($id) {
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -541,9 +541,9 @@ class AA_Manageraction_Item_Tab extends AA_Manageraction {
     var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Item_Tab($id, $to_bin) {
+    function __construct($id, $to_bin) {
         $this->to_bin = $to_bin;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** main executive function - Handler for Tab switch - switch between bins
@@ -563,8 +563,8 @@ class AA_Manageraction_Item_Gobookmark extends AA_Manageraction {
     //var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Item_Gobookmark($id) {
-        parent::AA_Manageraction($id);
+    function __construct($id) {
+        parent::__construct($id);
     }
 
     /** main executive function - Handler for Tab switch - switch between bins

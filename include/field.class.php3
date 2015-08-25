@@ -41,7 +41,7 @@ class AA_Field {
     /** AA_Field function
      *  @param $data
      */
-    function AA_Field($data) {
+    function __construct($data) {
         $this->data   = is_array($data) ? $data : array();
         $this->widget = null;
     }
@@ -214,7 +214,7 @@ class AA_Field {
         if (is_null($multiple)) {
             $multiple = $this->getWidget()->multiple();
         }
-        $translations = ($this->data['multiple'] & 2) ? AA_Slices::getSlice($this->getSliceId())->getTranslations() : array();
+        $translations = ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : array();
 
         // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
         return new AA_Property( $this->getId(),
@@ -328,7 +328,7 @@ class AA_Fields implements Iterator {
      * @param $master_id
      * @param $collection
      */
-    function AA_Fields($master_id, $collection = 0) {
+    function __construct($master_id, $collection = 0) {
         $this->master_id  = $master_id;
         $this->fields     = null;
         $this->collection = $collection;

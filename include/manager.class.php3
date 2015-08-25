@@ -96,7 +96,7 @@ class AA_Manager extends AA_Storable {
      *
      * @param array $settings - main manager settings
      */
-    function AA_Manager($manager_id, $settings) {
+    function __construct($manager_id, $settings) {
         global $r_state, $sess, $auth;
 
         $this->show        = isset($settings['show']) ? $settings['show'] : ( MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS );
@@ -684,7 +684,7 @@ class AA_Manageraction extends AA_Storable {
     var $open_url_add;
 
     /** constructor - assigns identifier of action */
-    function AA_Manageraction($id, $open_url=null, $open_url_add=null) {
+    function __construct($id, $open_url=null, $open_url_add=null) {
         $this->id = $id;
         if ($open_url) {
             $this->setOpenUrl($open_url, $open_url_add);
@@ -762,7 +762,7 @@ class AA_Manageractions {
     /** set of AA_Manageraction s */
     var $actions;
 
-    function AA_Manageractions() {
+    function __construct() {
         $this->actions = array();
     }
 

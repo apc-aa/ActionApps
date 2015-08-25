@@ -76,7 +76,7 @@ class AA_Scroller extends AA_Storable {
      * @param $ulr
      * @param $pgcnt is the number of pages to scroll
      */
-    function AA_Scroller($id = "", $url = "", $pgcnt = 0) {
+    function __construct($id = "", $url = "", $pgcnt = 0) {
         $this->id         = $id;
         $this->pgcnt      = $pgcnt;
         $this->urldefault = $url;

@@ -224,7 +224,7 @@ class AA_Hitcounter_Stats {
     /** For which field we will cont the hits (hit_1...., hit_2...) */
     var $field_id;
 
-    function AA_Hitcounter_Stats($slice_id, $field_id) {
+    function __construct($slice_id, $field_id) {
         $this->slice_id = $slice_id;
         $this->field_id = $field_id;
     }

@@ -39,7 +39,7 @@ class AA_Profile_Rule {
     var $values;
 
 
-    function AA_Profile_Rule($property, $selector, $values) {
+    function __construct($property, $selector, $values) {
         $this->property = $property;
         $this->selector = $selector;
         $this->values   = $values;

@@ -92,9 +92,9 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     var $update_action;
 
     /** Constructor - fills the information about the optimize method */
-    function AA_Manageraction_Central_Sqlupdate($id, $action) {
+    function __construct($id, $action) {
         $this->update_action  = $action;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -146,9 +146,9 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
     var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Central_MoveItem($id, $to_bin) {
+    function __construct($id, $to_bin) {
         $this->to_bin = $to_bin;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -211,9 +211,9 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
     var $selected;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Central_DeleteTrash($id, $selected=false) {
+    function __construct($id, $selected=false) {
         $this->selected = $selected;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -284,9 +284,9 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
     var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Central_Tab($id, $to_bin) {
+    function __construct($id, $to_bin) {
         $this->to_bin = $to_bin;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** main executive function - Handler for Tab switch - switch between bins */
@@ -315,10 +315,10 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
     var $optimize_method;
 
     /** Constructor - fills the information about the optimize method */
-    function AA_Manageraction_Central_Optimize($id, $class, $method) {
+    function __construct($id, $class, $method) {
         $this->optimize_class  = $class;
         $this->optimize_method = $method;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */

@@ -37,7 +37,7 @@ class AA_Poll {
     /** AA_Poll function - constructor
      * @param $poll_id
      */
-    function AA_Poll($poll_id) {
+    function __construct($poll_id) {
         $this->poll_id = $poll_id; // unpacked id
         $this->_sum    = null;
     }
@@ -309,7 +309,7 @@ class AA_Polls {
     var $a = array();     // Array poll_id -> AA_Poll object
 
     /** AA_Polls constructor  */
-    function AA_Polls() {
+    function __construct() {
         $this->a = array();
     }
 

@@ -162,7 +162,7 @@ class AA_Response {
 
     static $Response_type = 'serialize';
 
-    function AA_Response($response = null, $error = 0) {
+    function __construct($response = null, $error = 0) {
         $this->response = $response;
         $this->error    = $error;
     }
@@ -208,7 +208,7 @@ class AA_Request {
     var $command;
     var $params;
 
-    function AA_Request( $command, $params=array()) {
+    function __construct( $command, $params=array()) {
         $this->command = $command;
         $this->params  = $params;
     }
@@ -283,7 +283,7 @@ class AA_Client_Auth {
      *  is valid just for current browser session, 63072000 for two years */
     var $_cookie_lifetime;
 
-    function AA_Client_Auth($options=array()) {
+    function __construct($options=array()) {
         if (!is_array($options)) {
             $options = array();
         }

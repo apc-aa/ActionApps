@@ -46,9 +46,9 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     var $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Polls_MoveItem($id, $to_bin) {
+    function __construct($id, $to_bin) {
         $this->to_bin = $to_bin;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */
@@ -106,9 +106,9 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
     var $selected;
 
     /** Constructor - fills the information about the target bin */
-    function AA_Manageraction_Polls_DeleteTrash($id, $selected=false) {
+    function __construct($id, $selected=false) {
         $this->selected = $selected;
-        parent::AA_Manageraction($id);
+        parent::__construct($id);
     }
 
     /** Name of this Manager's action */

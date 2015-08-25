@@ -65,7 +65,7 @@ class AA_Actionapps {
      *    'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD',
      *    'status_code'));
      */
-    function AA_Actionapps($content4id) {
+    function __construct($content4id) {
         $this->local_data          = $content4id;
         $this->_remote_session_id  = null;
         $this->_remote_session_id_time  = 0;
@@ -262,7 +262,7 @@ class AA_Module_Definition {
     /** data for the module */
     var $data;
 
-    function AA_Module_Definition() {
+    function __construct() {
         $this->clear();
     }
 
@@ -335,7 +335,7 @@ class AA_Module_Definition_Chunk {
         return $chunks;
     }
 
-    function AA_Module_Definition_Chunk($module_id, $table, $rows) {
+    function __construct($module_id, $table, $rows) {
         $this->module_id = $module_id;
         $this->data      = array($table => $rows);
     }
@@ -344,17 +344,53 @@ class AA_Module_Definition_Chunk {
 
         $metabase    = AA_Metabase::singleton();
 
+        $msgs = array('ok'=>array(), 'err'=>array());
+        $keys = array();
+
         foreach ($this->data as $table => $records) {
             if ( empty($records) ) {
                 continue;
             }
 
+            // just for reporting
+            if (!isset($msgs['ok'][$table])) {
+                $msgs['ok'][$table]  = array();
+                $msgs['err'][$table] = array();
+                $keys[$table] = $metabase->getKeys($table);
+            }
             $metabase->packIds($table, $records);    // pack ids ...
             foreach ($records as $data) {
-                $metabase->doInsert($table, $data, 'nohalt');
+                $ident = array();
+                foreach ($keys[$table] as $col) {
+                    $ident[] = $data[$col];
+                }
+                if ($res = $metabase->doInsert($table, $data, 'nohalt')) {
+                    $msgs['ok'][$table][] = $ident;
+                } else {
+                    $msgs['err'][$table][] = $ident;
+                }
             }
         }
-        return 'ok';
+        $ret = array();
+        if ($msg = $this->_formatReport($msgs['ok'])) {
+            $ret[] = 'OK: '. $msg;
+        }
+        if ($msg = $this->_formatReport($msgs['err'])) {
+            $ret[] = 'Err: '. $msg;
+        }
+        return $ret;
+    }
+
+    function _formatReport($arr) {
+        $ret = '';
+        foreach ($arr as $table => $idents) {
+            $ret .= count($idents). " $table (";
+            foreach ($idents as $ident) {
+                $ret .= '['.join(',',$ident).']';
+            }
+            $ret .= '); ';
+        }
+        return $ret;
     }
 }
 
@@ -464,7 +500,7 @@ class AA_Difference {
     var $actions;
 
     /** */
-    function AA_Difference($type, $description, $actions=array()) {
+    function __construct($type, $description, $actions=array()) {
         $this->type        = $type;
         $this->description = $description;
         $this->actions     = empty($actions) ? array() : (is_array($actions) ? $actions : array($actions));
@@ -558,7 +594,7 @@ class AA_Identifier {
     /**  $path[0] ~ module_id, [1] ~ table, [2] ~ row, [3] ~ column */
     var $path;
 
-    function AA_Identifier($module_id=null, $table=null, $row=null, $column=null) {
+    function __construct($module_id=null, $table=null, $row=null, $column=null) {
         $this->path = array();
         if ($module_id) {
             $this->path[0] = $module_id;
@@ -611,7 +647,7 @@ class AA_Sync_Action {
     /** action parameters (field's data). Could be scalar as well as array */
     var $params;
 
-    function AA_Sync_Action($type, $identifier, $params=null) {
+    function __construct($type, $identifier, $params=null) {
         $this->type       = $type;
         $this->identifier = $identifier;
         $this->params     = $params;
@@ -690,7 +726,7 @@ class AA_Task_Sync {
     /** AA_Actionapps object  - In which AA we have to do the action */
     var $actionapps;
 
-    function AA_Task_Sync($sync_action, $actionapps) {
+    function __construct($sync_action, $actionapps) {
         $this->sync_action = $sync_action;
         $this->actionapps  = $actionapps;
     }
@@ -712,7 +748,7 @@ class AA_Task_Import_Module_Chunk {
     /** AA_Actionapps object  - In which AA we have to do the action */
     var $actionapps;
 
-    function AA_Task_Import_Module_Chunk($module_definition_chunk, $actionapps) {
+    function __construct($module_definition_chunk, $actionapps) {
         $this->module_definition_chunk = $module_definition_chunk;
         $this->actionapps              = $actionapps;
     }

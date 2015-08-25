@@ -45,7 +45,7 @@ if ( !IsSuperadmin() ) {
 /*
 class AA_Task_Test {
 
-    function AA_Task_Test() {
+    function __construct() {
     }
 
     function toexecutelater() {

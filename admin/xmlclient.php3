@@ -120,7 +120,7 @@ class AA_Feed {
      * @param $destination_slice_id = null
      * @param $fire = 'write'
      */
-    function AA_Feed($grabber=null, $destination_slice_id=null, $fire='write') {
+    function __construct($grabber=null, $destination_slice_id=null, $fire='write') {
         $this->grabber              = $grabber;
         $this->destination_slice_id = $destination_slice_id;
         $this->fire                 = $fire;

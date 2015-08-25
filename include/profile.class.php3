@@ -49,7 +49,7 @@ class AA_Profile {
      *  @param $module_id - for which slice/module we hold the profile?
      *  @param $user_id   - for which user we hold the profile?
      */
-    function AA_Profile($user_id, $module_id) {
+    function __construct($user_id, $module_id) {
         $this->user_id   = $user_id;
         $this->module_id = $module_id;
     }

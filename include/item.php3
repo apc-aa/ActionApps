@@ -371,7 +371,7 @@ function GetItemFromContent($content) {
         return null;
     }
     // reuse slice, if possible
-    $slice = AA_Slices::getSlice($content->getSliceID());
+    $slice = AA_Slice::getModule($content->getSliceID());
     return new AA_Item($content->getContent(), $slice ? $slice->aliases() : '');
 }
 
@@ -394,7 +394,7 @@ class AA_Item {
      *  Take a look at AA_Item::getItem() (non caching) or
      *  AA_Items::getItem() (caching), if you want to create item from id
      */
-    function AA_Item($content4id='', $aliases='', $format='', $remove='', $param=false){
+    function __construct($content4id='', $aliases='', $format='', $remove='', $param=false){
         // there was three other options, but now it was never used so I it was
         // removed: $item_content, $top and $bottom (honzam 2003-08-19)
         $this->set_data($content4id);
@@ -531,7 +531,7 @@ class AA_Item {
      * @param $field_id
      */
     function getWidgetAjaxHtml($field_id) {
-        return AA_Slices::getSlice($this->getSliceID())->getWidgetAjaxHtml($field_id, $this->getItemID());
+        return AA_Slice::getModule($this->getSliceID())->getWidgetAjaxHtml($field_id, $this->getItemID());
     }
 
     /** getbaseurl function
@@ -742,7 +742,7 @@ class AA_Item {
         // first_child try translation to right language
         if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber(AA::$lang)))) {
             // if not present - translate to default language of the slice
-            $translations = AA_Slices::getSliceProperty($this->getSliceID(), 'translations');
+            $translations = AA_Slice::getModule($this->getSliceID())->getProperty('translations');
             if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber($translations[0])))) {
                 // last try the 0 index (if the field was not set to translation)
                 $txt = $this->getval($col);
@@ -1647,7 +1647,7 @@ class AA_Items {
 
     /** AA_Items function - constructor - called only from singleton() !
      */
-    function AA_Items() {
+    function __construct() {
         $this->_i = array();
     }
 

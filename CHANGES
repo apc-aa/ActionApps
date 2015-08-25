@@ -1,3 +1,36 @@
+15-08-25 - CKEditor used as WYSIWYG editor insted of Xinha
+(honzam) - new {newitem:<template_long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
+           which creates new item. The new item  it is based on template item,
+           which is normal item which you can put in HoldingBin/TrashBin... and
+           the default values for the new item is taken from the item except
+           seo............. and status_code...... fields
+           Then you can modify the field values for the new item:
+             {newitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
+           c239cb267837a25b4efb5892ca4f4324 is ID on template item
+           The values could be single (for headline........), or multiple -
+           written in JSON format.
+         - new parameter <delimiter> for {sequence:<min>:<max>:<step>:<delimiter>}
+           which could change deafault json output
+         - new parameters "width" and "max characters" for "Multiple text field"
+           widget
+         - AA tries to fix some administrators mistakes so we accept also
+           &gt; and &lt; (and its combinations) as operator for conditions like
+             d-publish_date....-&gt;=-{timestamp:2015-08-15}
+         - date operator modifiers (d,e,m) now could be written without ":"
+           in order you can skip escaping, so d:> could be d> ...
+         - new Transformation "Fill by exact values" which returns values
+           exactly as specified (no evaluation, ...) - used internaly for for
+           {newitem:...} at this moment through AA_Saver API
+         - {_:...} aliases could be deleted through admin interface (Site Module -> Aliases)
+         - new possibility to search for seo............. value in AA -> Find;
+         - better - tabled - output for found item in AA -> Find
+         - nicer look of Tasks,... admin page/table
+         - AA now supports PHP 5.6.x
+         - the sitemodule for {_:...} aliases is found even if called through /apc-aa/view.php3
+         - new pagecache approach which holds also headers and decoded the item
+           to count hit, so the page could be server quicker if found in cache
+         - move to AA_Module_Site site module repository
+         - move AA_Slices to AA_Slice for standard module repository
 15-07-13 - new possibility to authenticate to the second domain -
 (honzam)   the central/setcookie.php3 is the blank pixel script, which can be
            used for authentication to another domain if you are already logged

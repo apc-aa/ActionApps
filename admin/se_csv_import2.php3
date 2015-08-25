@@ -89,7 +89,7 @@ class AA_Csv_Importer {
 /** AA_Csv_Importer function
  *
  */
-    function AA_Csv_Importer() {}
+    function __construct() {}
 
 /** loadFromRequest function
  *
@@ -194,7 +194,7 @@ class AA_Csv_Importer {
         //-----------------------------------------------------------------------------
         // Output items should contain just these slice fields
 
-        $slice = AA_Slices::getSlice($this->slice_id);
+        $slice = AA_Slice::getModule($this->slice_id);
 
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
@@ -261,7 +261,7 @@ class AA_Csv_Importer {
     function preview() {
         $this->_prepare();
 
-        $slice         = AA_Slices::getSlice($this->slice_id);
+        $slice         = AA_Slice::getModule($this->slice_id);
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
         // Create list of fields from the first row of csv data
@@ -308,7 +308,7 @@ class AA_Csv_Importer {
         //----------------------------------------------------------------------------
         // Create output fields
 
-        $slice = AA_Slices::getSlice($this->slice_id);
+        $slice = AA_Slice::getModule($this->slice_id);
 
         list($slice_fields, $prifields) =  $slice->fields();
 

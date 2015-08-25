@@ -65,7 +65,7 @@ class AA_MbC {
      */
     var $c;
 
-    function AA_MbC($column) {
+    function __construct($column) {
         $this->c = array( $column['Field'], $column['Type'], $column['Null']=='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment'] );
     }
 
@@ -273,7 +273,7 @@ class AA_MbI {
     var $s; // sort of index P|U|I  (= PRIMARY|UNIQUE|INDEX)
     var $c; // columns array (array of column names of array (name,part) for partial column index (like text(10))
 
-    function AA_MbI($table, $name, $sort) {
+    function __construct($table, $name, $sort) {
         $this->t = $table;
         $this->n = $name;
         $this->s = $sort;
@@ -315,7 +315,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     // This is temporary solution - we will use some better structure (MDB2?)
     // for table definition in order we can check the field type,
     // the indexes, generate sql_update script, ...
-    function AA_MbT($tablename, $columns, $indexes='') {
+    function __construct($tablename, $columns, $indexes='') {
         $this->t = $tablename;
         $this->c = array();
         $this->k = array();
@@ -469,7 +469,7 @@ class AA_Metabase {
     /** AA_Metabase function - constructor
      *  Do not use it - use $metabase = AA_Metabase::singleton() instead
      */
-    function AA_Metabase() {
+    function __construct() {
         $this->tables   = array();
     }
 
