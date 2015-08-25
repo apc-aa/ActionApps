@@ -75,6 +75,17 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
+if ($_GET['delete']==1) {
+    if ($oid AND $otype) {
+        if ( $obj = AA_Object::load($oid, $otype) ) {
+            $obj->delete();
+        }
+    }
+    go_url($ret_url);
+    exit;
+}
+
+
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 
