@@ -10,7 +10,6 @@
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
@@ -44,38 +43,65 @@ require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 class AA_Module {
     /** define, which class is used for module setting - like AA_Modulesettings_Slice */
     const SETTING_CLASS = '';
+    const SETTING_TABLE = '';
 
     /** array of already constructed modules */
     protected static $_modules=array();  // Array unpacked module id -> AA_Module object
 
     protected $module_id;
     protected $module_setting;         // Array of module settings
+    protected $table_setting;          // Array of specific table settings
     protected $moduleobject_setting;   // Array of module settings
 
     /** it is better to call it using getModule() - $site = AA_Module_Site::getModule($module_id); */
     function __construct($id) {
         $this->module_id            = $id;
         $this->module_setting       = null;
+        $this->table_setting        = null;
         $this->moduleobject_setting = false;
     }
 
-    /** get module
-     *  called as $site = AA_Module_Site::getModule($module_id)
+    /** get module - called as:
+     *   $name = AA_Module_Site::getModuleName($module_id)
+     *   $name = AA_Slice::getModuleName($module_id)
+     * @param $module_id
+     */
+    static public function getModuleName($module_id) {
+        $module = static::getModule($module_id);
+        return $module ? $module->getName() : '';
+    }
+
+    /** get module - called as:
+     *   $site  = AA_Module_Site::getModule($module_id)
+     *   $slice = AA_Slice::getModule($module_id)
      * @param $module_id
      */
     static public function getModule($module_id) {
+        if (!is_long_id($module_id)) {
+            return null;
+        }
         if (!isset(static::$_modules[$module_id])) {
             $class = get_called_class();
             static::$_modules[$module_id] =  new $class($module_id);
         }
         return static::$_modules[$module_id];
     }
-    
-    protected function _isModuleProperty($prop) {
+
+    /** getModuleProperty function
+     *  static function
+     * @param $module_id
+     * @param $field
+     */
+    static public function getModuleProperty($module_id, $prop) {
+        $module = static::getModule($module_id);
+        return $module ? $module->getProperty($prop) : null;
+    }
+
+    protected function _isModuleTableProperty($prop) {
         return AA_Metabase::singleton()->isColumn('module', $prop);
     }
 
-    protected function _getModuleProperty($prop) {
+    protected function _getModuleTableProperty($prop) {
         if (is_null($this->module_setting)) {
             $this->module_setting = DB_AA::select1('SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', '', array(array('id',$this->module_id, 'l')));
             if (!is_array($this->module_setting)) {
@@ -83,6 +109,22 @@ class AA_Module {
             }
         }
         return isset($this->module_setting[$prop]) ? $this->module_setting[$prop] : false;
+    }
+
+    protected function _isSpecificTableProperty($prop) {
+        return static::SETTING_TABLE && AA_Metabase::singleton()->isColumn(static::SETTING_TABLE, $prop);
+    }
+
+    protected function _getSpecificTableProperty($prop) {
+        if (is_null($this->table_setting)) {
+            $this->table_setting = DB_AA::select1('SELECT * FROM `'.static::SETTING_TABLE.'`', '', array(array('id',$this->module_id, 'l')));
+            if (!is_array($this->table_setting)) {
+                $this->table_setting = array();
+            } else {
+                unset($this->table_setting['id']);  // do not use it from here - it is packed - use $this->module_id instead
+            }
+        }
+        return isset($this->table_setting[$prop]) ? $this->table_setting[$prop] : false;
     }
 
     protected function _isModuleObjectProperty($prop) {
@@ -98,7 +140,7 @@ class AA_Module {
         }
         return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
     }
-    
+
     static public function processModuleObject($module_id) {
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
@@ -109,12 +151,12 @@ class AA_Module {
                 $modulesetings->setNew($modulesetings_id, $module_id);
                 $modulesetings->save();
             }
-            
+
             $form       = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
             $form_state = $form->process($_POST['aa']);
         }
-    }   
-    
+    }
+
     static public function getModuleObjectForm($module_id) {
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
@@ -128,9 +170,16 @@ class AA_Module {
         return $this->module_id; // Return a 32 character id
     }
 
+    function getName() {
+        return $this->_getModuleTableProperty('name');
+    }
+
     function getProperty($prop) {
-        if ($this->_isModuleProperty($prop)) {
-            return $this->_getModuleProperty($prop);
+        if ($this->_isSpecificTableProperty($prop)) {
+            return $this->_getSpecificTableProperty($prop);
+        }
+        if ($this->_isModuleTableProperty($prop)) {
+            return $this->_getModuleTableProperty($prop);
         }
         if ($this->_isModuleObjectProperty($prop)) {
             return $this->_getModuleobjectProperty($prop);
@@ -164,7 +213,8 @@ class AA_Slice extends AA_Module {
     var $dynamic_setting; // dynamic slice setting fields stored in content table
 
     const SETTING_CLASS = 'AA_Modulesettings_Slice';
-    
+    const SETTING_TABLE = 'slice';
+
     // computed values form slice fields
     var $js_validation;  // javascript form validation code
     var $show_func_used; // used show functions in the input form
@@ -172,40 +222,19 @@ class AA_Slice extends AA_Module {
      * @param $module_id
      */
     function __construct($module_id) {
-        global $errcheck;
-        if ($errcheck && ! ereg("[0-9a-f]{32}",$module_id)) {
-            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id", array($module_id)));
-        }
         $this->fields         = new AA_Fields($module_id);
         $this->dynamic_fields = new AA_Fields($module_id, 1);
         parent::__construct($module_id);
     }
 
-    /** loadsettings function
-     *  Load $this from the DB for any of $fields not already loaded
-     *  @return true/false if the settings is loaded (= slice_id is OK)
-     *  @param  $force
-     */
-    function loadsettings($force=false) {
-        if ( !$force AND isset($this->setting) AND is_array($this->setting) ) {
-            return true;
-        }
-
-        // get fields from slice table
-        $this->setting = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$this->getId(), 'l')));
-        if ( $this->setting ) {
-            // do it more secure and do not store it plain
-            // (we should be carefull - mainly with debug outputs)
-            if ($this->setting['reading_password']) {
-                $this->setting['reading_password'] =  AA_Credentials::encrypt($this->setting['reading_password']);
+    protected function _getSpecificTableProperty($prop) {
+        if (is_null($this->table_setting)) {
+            parent::_getSpecificTableProperty();
+            if ($this->table_setting['reading_password']) {
+                $this->table_setting['reading_password'] =  AA_Credentials::encrypt($this->table_setting['reading_password']);
             }
-        } else {
-            if ($GLOBALS['errcheck']) {
-                huhl("Slice ".$this->getId()." is not a valid slice");
-            }
-            return false;
         }
-        return true;
+        return isset($this->table_setting[$prop]) ? $this->table_setting[$prop] : false;
     }
 
     /** loadsettingfields function
@@ -229,16 +258,12 @@ class AA_Slice extends AA_Module {
         freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
     }
-    
+
     /** getProperty function
      * @param $fname
      */
     function getProperty($prop) {
-        if ( AA_Metabase::singleton()->isColumn('slice', $prop)) {
-            $this->loadsettings();
-            return $this->setting[$prop];
-        }
-        // test module property and moduleobject property
+        // test slice table property, module table property and moduleobject property
         if ( !is_null($ret=parent::getProperty($prop)) ) {
             return $ret;
         }
@@ -304,7 +329,7 @@ class AA_Slice extends AA_Module {
     /** packed_id function - removed - use pack_id($module->getId()) */
     // function packed_id() {
     //     return pack_id($this->module_id);
-    // }    
+    // }
 
     /** getFields function
      */
@@ -328,7 +353,7 @@ class AA_Slice extends AA_Module {
     function getTranslations()  {
         return $this->getProperty('translations');
     }
-    
+
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {
         return is_array($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
@@ -418,24 +443,23 @@ class AA_Slice extends AA_Module {
      *  Returns array of admin format strings as used in manager class
      */
     function get_format_strings() {
-         $this->loadsettings();
          // additional string for compact_top and compact_bottom needed
          // for historical reasons (not manager.class verion of item manager)
          return array ( "compact_top"     => '<table border="0" cellspacing="0" cellpadding="1" bgcolor="#F5F0E7" class="mgr_table">'.
-                                             $this->setting['admin_format_top'],
+                                             $this->getProperty('admin_format_top'),
                         "category_sort"   => false,
                         "category_format" => "",
                         "category_top"    => "",
                         "category_bottom" => "",
                         "even_odd_differ" => false,
                         "even_row_format" => "",
-                        "odd_row_format"  => $this->setting['admin_format'],
-                        "compact_remove"  => $this->setting['admin_remove'],
-                        "compact_bottom"  => $this->setting['admin_format_bottom']. '</table>',
-                        "noitem_msg"      => $this->setting['admin_noitem_msg'],
+                        "odd_row_format"  => $this->getProperty('admin_format'),
+                        "compact_remove"  => $this->getProperty('admin_remove'),
+                        "compact_bottom"  => $this->getProperty('admin_format_bottom'). '</table>',
+                        "noitem_msg"      => $this->getProperty('admin_noitem_msg'),
                         // id is packed (format string are used as itemview
                         //               parameter, where $slice_info expected)
-                        "id"              => $this->setting['id'] );
+                        "id"              => pack_id($this->module_id));
     }
 
     /** aliases function
@@ -472,8 +496,8 @@ class AA_Slice extends AA_Module {
 
     function allowed_bin_4_user() {
         // put the item into the right bin
-        $bin2fill = (int) $this->getProperty("permit_anonymous_post");
-        return ($bin2fill < 1) ? 4 : $bin2fill;
+        $bin2fill = IfSlPerm(PS_EDIT_ALL_ITEMS, $this->module_id) ? 1 : (int) $this->getProperty("permit_anonymous_post");
+        return ($bin2fill < 1) ? SC_NO_BIN : $bin2fill;
     }
 
     /** _compute_field_stats function
@@ -492,7 +516,6 @@ class AA_Slice extends AA_Module {
 
         global $auth;
         $profile = AA_Profile::getProfile($auth->auth["uid"], $this->getId()); // current user settings
-        $this->loadsettings();
 
         // get slice fields and its priorities in inputform
         list( $fields, $prifields) = $this->fields(null, $slice_fields);
@@ -564,83 +587,7 @@ class AA_Slice extends AA_Module {
     }
 }
 
-class AA_Slices {
-    var $a = array();     // Array unpackedsliceid -> slice obj
-    /** AA_Slices function
-     *
-     */
-    function AA_Slices() {
-        $this->a = array();
-    }
-
-    /** singleton
-     *  called from getSlice method
-     *  This function makes sure, there is just ONE static instance if the class
-     *  @todo  convert to static class variable (after migration to PHP5)
-     */
-    function singleton() {
-        static $instance = null;
-        if (is_null($instance)) {
-            // Now create the AA_Slices object
-            $instance = new AA_Slices;
-        }
-        return $instance;
-    }
-
-    /** getSlice function
-     *  main factory static method
-     * @param $module_id
-     */
-    function getSlice($module_id) {
-        if (guesstype($module_id) != 'l') {
-            return null;
-        }
-        $slices = AA_Slices::singleton();
-        return $slices->_getSlice($module_id);
-    }
-
-    /** getSliceProperty function
-     *  static function called as: AA_Slices::getSliceProperty($module_id, 'translations');
-     * @param $module_id
-     * @param $prop
-     */
-    function getSliceProperty($module_id, $prop) {
-        $slice = AA_Slices::getSlice($module_id);
-        return $slice ? $slice->getProperty($prop) : null;
-    }
-
-    /** getField function - returns slice's field
-     *  static function
-     * @param $module_id
-     * @param $field
-     */
-    function getField($module_id, $field_id) {
-        $slices = AA_Slices::singleton();
-        $slice  = $slices->_getSlice($module_id);
-        return $slice ? $slice->getField($field_id) : null;
-    }
-
-    /** getName function
-     *  static function
-     * @param $module_id
-     */
-    function getName($module_id) {
-        return AA_Slices::getSliceProperty($module_id, 'name');
-    }
-
-    /** _getSlice function
-     * @param $module_id
-     */
-    function & _getSlice($module_id) {
-        if (!isset($this->a[$module_id])) {
-            $this->a[$module_id] = new AA_Slice($module_id);
-        }
-        return $this->a[$module_id];
-    }
-}
-
-
-
+// deprecated - @todo - remove it - move to AA_Module
 class AA_Modules {
 
     // Store the single instance of Database
@@ -701,7 +648,7 @@ class AA_Modules {
         return $module ? $module->getProperty($prop) : null;
     }
 
-    /** _getSlice function
+    /** _getModule function
      * @param $module_id
      */
     function _getModule($module_id) {
@@ -714,13 +661,39 @@ class AA_Modules {
 
 class AA_Module_Site extends AA_Module {
     const SETTING_CLASS = 'AA_Modulesettings_Site';
-    
+    const SETTING_TABLE = 'site';
+
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {
-        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slices::getSliceProperty($translate_slice, 'translations'))) {
+        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModule($translate_slice)->getProperty('translations'))) {
             return $translations[0];
         }
         return $this->getLang();
+    }
+
+    function getSite($apc_state) {
+        global $show_ids; // @todo - convert to object variable
+
+        $tree        = unserialize($this->getProperty('structure'));   // new sitetree();
+        $show_ids    = array();
+        $out         = '';
+
+        // it fills $show_ids array
+        $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
+        if (count($show_ids)<1) {
+            exit;
+        }
+
+        $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $this->module_id, 'l'), array('spot_id', $show_ids, 'i')));
+
+        foreach ( $show_ids as $v ) {
+            $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA_Stringexpand::unalias($spots[$v]['content'], '', $apc_state['item']));
+        }
+        return $out;
+    }
+
+    function getRelatedSlices() {
+        return GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($this->module_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
     }
 }
 
@@ -730,10 +703,10 @@ class AA_Modulesettings_Slice extends AA_Object {
 
     // must be protected or public - AA_Object needs to read it
     protected $translations;
-    
+
     /** do not display Name property on the form by default */
-    const USES_NAME = false;    
-    
+    const USES_NAME = false;
+
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
         return in_array($prop, array('translations'));
@@ -755,9 +728,9 @@ class AA_Modulesettings_Site extends AA_Object {
     // must be protected or public - AA_Object needs to read it
     protected $translation_slice;
     protected $additional_aliases;
-    
+
     /** do not display Name property on the form by default */
-    const USES_NAME = false;    
+    const USES_NAME = false;
 
 
     /** check, if the $prop is the property of this object */

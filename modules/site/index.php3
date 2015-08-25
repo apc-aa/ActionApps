@@ -33,8 +33,7 @@ require_once AA_BASE_PATH."modules/site/sitetree.php3";   // module specific uti
 
 $module_id   = $slice_id;
 $p_module_id = q_pack_id($module_id);
-$site_info   = GetModuleInfo($module_id,'W');   // W is identifier of "site" module
-                                                //    - see /include/constants.php3
+
 // r_spot_id holds current position in the tree
 if (!isset($r_spot_id)) {
     $r_spot_id = 1;
@@ -58,8 +57,8 @@ if (isset($go_sid)) {
 
 $tree = new sitetree();
 
-if ($site_info['structure'] != "") {
-    $tree = unserialize($site_info['structure']);
+if ( ($structre = AA_Module_Site::getModule($module_id)->getProperty('structure')) != '') {
+    $tree = unserialize($structre);
 } else {
     // get information about start spot (=start of the tree)
     $SQL = "SELECT * FROM site_spot WHERE site_id = '$p_module_id' AND spot_id='1'";
