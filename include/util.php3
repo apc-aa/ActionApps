@@ -1126,6 +1126,9 @@ function safe( $var ) {
  * @param $lang
  */
 function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
+    AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang ?: get_mgettext_lang()];
+    AA::sendHeaders(AA::getHeaders());
+    
     if ($stylesheet == "default") {
         $stylesheet = AA_INSTAL_PATH .ADMIN_CSS;
     }
@@ -1145,9 +1148,8 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
       ';
     }
 
-    $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang ? $lang : get_mgettext_lang()];
     echo "<!--$lang-->";
-    echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=$charset\">\n";
+    echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".AA::$encoding."\">\n";
     if ($js_lib) {
         FrmJavascriptFile( 'javascript/js_lib.js' );
     }
@@ -1435,7 +1437,7 @@ class AA_Credentials {
 
     /** AA_Credentials function
      */
-    function AA_Credentials() {
+    function __construct() {
         $this->_pwd = array();
     }
 
@@ -1455,7 +1457,7 @@ class AA_Credentials {
 
     /** main method for checking the slice_pwd */
     function checkSlice($slice_id, $crypted_additional_slice_pwd=null) {
-        return $this->checkCryptedPassword(AA_Slices::getSliceProperty($slice_id,'reading_password'), $crypted_additional_slice_pwd);
+        return $this->checkCryptedPassword(AA_Slice::getModule($slice_id)->getProperty('reading_password'), $crypted_additional_slice_pwd);
     }
 
     function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null) {
@@ -1472,7 +1474,7 @@ class AA_Credentials {
      * @param $slice_id
      */
     function loadFromSlice($slice_id) {
-        $this->register(AA_Slices::getSliceProperty($slice_id,'reading_password'));
+        $this->register(AA_Slice::getModule($slice_id)->getProperty('reading_password'));
     }
 
     function register($crypted_slice_pwd) {
@@ -1659,7 +1661,7 @@ class AA_GeneralizedArray {
     /** AA_GeneralizedArray function
      *
      */
-    function AA_GeneralizedArray() {
+    function __construct() {
         $this->arr = array();
     }
     /** add function

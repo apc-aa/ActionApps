@@ -46,7 +46,7 @@ class AA_Collection {
     var $email_id_alert;     /** Id of alert email template */
     var $slice_url;          /** Used for caching of slice_url */
 
-    function AA_Collection($collection_id) {
+    function __construct($collection_id) {
         $this->id               = $collection_id;
         $this->reader_slice_id  = null;
         $this->alerts_module_id = null;
@@ -66,7 +66,7 @@ class AA_Collection {
         return $this->$property;
     }
 
-    function getReaderSlice()    { return AA_Slices::getSlice($this->_get('reader_slice_id'));  }
+    function getReaderSlice()    { return AA_Slice::getModule($this->_get('reader_slice_id'));  }
     function getAlertsModuleId() { return $this->_get('alerts_module_id');   }
     function getEmailIdWelcome() { return $this->_get('email_id_welcome'); }
     function getEmailIdAlert()   { return $this->_get('email_id_alert');   }
@@ -474,7 +474,7 @@ function get_view_settings_cached($vid) {
     }
     if (!$cached_view_settings[$vid]) {
         $view         = AA_Views::getView($vid);
-        $slice        = AA_Slices::getSlice(unpack_id($view->f("slice_id")));
+        $slice        = AA_Slice::getModule(unpack_id($view->f("slice_id")));
         $fields       = $slice->fields('record');
         $cached_view_settings[$vid] = array (
             "lang"    => substr($slice->getProperty('lang_file'),0,2),

@@ -39,7 +39,7 @@ $sh_itm     = $_GET['sh_itm'];
 $slice_id   = $_GET['slice_id'];
 $return_url = $_GET['return_url'];
 
-$slice = AA_Slices::getSlice($slice_id);
+$slice = AA_Slice::getModule($slice_id);
 if (empty($slice)) {
      echo _m("Wrong slice_id.");
      exit;

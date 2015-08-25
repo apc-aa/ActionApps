@@ -39,8 +39,8 @@ require_once AA_INC_PATH."stringexpand.php3"; // for translateString()
  * @return array
  */
 function GetFieldMapping($from_slice_id, $destination_id) {
-    $fields_from = AA_Slices::getSlice($from_slice_id)->getFields()->getRecordArray();
-    $fields_to   = AA_Slices::getSlice($destination_id)->getFields()->getPriorityArray();
+    $fields_from = AA_Slice::getModule($from_slice_id)->getFields()->getRecordArray();
+    $fields_to   = AA_Slice::getModule($destination_id)->getFields()->getPriorityArray();
 
     if (empty($fields_to)) {
         return array();
@@ -207,8 +207,8 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     }
     $content4id    = $content[$item_id];   // shortcut
 
-    $from_slice  = AA_Slices::getSlice($from_slice_id);
-    $destination = AA_Slices::getSlice($destination_id);
+    $from_slice  = AA_Slice::getModule($from_slice_id);
+    $destination = AA_Slice::getModule($destination_id);
     $fields      = $from_slice->getFields();
     $catfieldid  = $fields->getCategoryFieldId();
 
@@ -371,7 +371,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
 function Update($item_id, $slice_id, $dest_id, $destination_id) {
     global $varset, $itemvarset;
 
-    $slice       = AA_Slices::getSlice($slice_id);
+    $slice       = AA_Slice::getModule($slice_id);
     $fields      = $slice->getFields();
 
     $map         = GetFieldMapping($slice_id, $destination_id);
@@ -450,7 +450,7 @@ function FeedItem($item_id) {
     }
 
     $slice_id   = $content4id["u_slice_id......"][0]['value'];
-    $slice      = AA_Slices::getSlice($slice_id);
+    $slice      = AA_Slice::getModule($slice_id);
 
     // get this item category_id
     $cat_group = GetCategoryGroup($slice_id);

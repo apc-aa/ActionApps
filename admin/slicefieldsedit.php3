@@ -91,7 +91,7 @@ if ($update) {
 //   list ($fields, $prifields) = GetSliceFields ()
 //   $oldcontent4id
 
-$slice = AA_Slices::getSlice($slice_id);
+$slice = AA_Slice::getModule($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
 list($fields, $prifields) = $slice->fields(null, true);
 
@@ -148,7 +148,7 @@ if ($edit) {
 if (!$encap) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
-        'page_title'           => _m("Slice Setting"). " (". AA_Slices::getName($slice_id).")",
+        'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName($slice_id).")",
     );
 }
 

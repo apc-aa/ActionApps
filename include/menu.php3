@@ -158,7 +158,7 @@ function get_aamenus() {
         "tasks"         => array("cond"=>isSuperadmin(),        "href"=>"admin/se_tasks.php3",                 "label"=>_m("Planed Tasks")),
     ));
 
-    $slice = AA_Slices::getSlice($slice_id);
+    $slice = AA_Slice::getModule($slice_id);
     if ( $slice AND $slice->getProperty("mailman_field_lists")) {
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"  => IfSlPerm(PS_FIELDS),

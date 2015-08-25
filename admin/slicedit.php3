@@ -191,7 +191,7 @@ if ($superadmin) {
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 
-$slice     = AA_Slices::getSlice($slice_id);
+$slice     = AA_Slice::getModule($slice_id);
 if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     $slicefields = GetFields4Select($slice_id, false, 'input_pri');
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $auth_field_group, false, "", "../doc/reader.html#auth_field_group");

@@ -87,13 +87,13 @@ $module_id = $slice_id;
 // (like Links, ...) it is not so confusing
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice       = AA_Slices::getSlice($module_id);
+$slice       = AA_Slice::getModule($module_id);
 
 $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slices::getName($slice_id));
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slice::getModuleName($slice_id));
     exit;
 }
 

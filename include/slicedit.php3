@@ -325,7 +325,7 @@ if ( $add || $update ) {
             /* End of Wizard stuff */
 
             // create new upload directory
-            Files::destinationDir(AA_Slices::getSlice($slice_id));
+            Files::destinationDir(AA_Slice::getModule($slice_id));
         }
 //        $slice->setSliceField('_upload_url.....', $upload_url);
 

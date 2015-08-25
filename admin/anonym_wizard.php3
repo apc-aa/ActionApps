@@ -128,7 +128,7 @@ if (!IfSlPerm(PS_FIELDS)) {
 
 // get all warnings
 $warning = array();
-$slice   = AA_Slices::getSlice($slice_id);
+$slice   = AA_Slice::getModule($slice_id);
 
 
 // lookup fields

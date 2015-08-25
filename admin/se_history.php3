@@ -158,7 +158,7 @@ $module_id = $slice_id;
 // (like Links, ...) it is not so confusing
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice       = AA_Slices::getSlice($module_id);
+$slice       = AA_Slice::getModule($module_id);
 
 $manager_settings = array(
      'module_id' => $slice_id,

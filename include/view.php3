@@ -121,7 +121,7 @@ class AA_View_Commands {
      * @param $cmd
      * @param $als
      */
-    function AA_View_Commands($cmd, $als=false) {
+    function __construct($cmd, $als=false) {
         $this->commands = array();
         $this->parseCommand($cmd, $als);
     }
@@ -636,6 +636,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
     // and view_param[slice_id] is empty or same
 
     $cache_sid = $slice_id;     // pass back to GetView (passed by reference)
+    if (!AA::$site_id AND !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
+        AA::$slice_id = $slice_id;
+    }
 
     // ---- display content in according to view type ----
     AA::$debug && AA::$dbg->log("GetViewFromDB:view_info=",$view_info);
@@ -729,7 +732,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 list($fields,) = GetSliceFields($slice_id);
                 $aliases = GetAliasesFromFields($fields, $als);
                 //mlx stuff
-                $slice = AA_Slices::getSlice($slice_id);
+                $slice = AA_Slice::getModule($slice_id);
                 if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
                     $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                     //make sure the lang info doesnt get reused with different view
@@ -802,7 +805,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
             //mlx stuff
             if (!$slice) {
-                $slice = AA_Slices::getSlice($slice_id);
+                $slice = AA_Slice::getModule($slice_id);
             }
             if (isMLXSlice($slice)) {
                 $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
@@ -883,7 +886,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
     if ($view_param['convertto'] OR $view_param['convertfrom'] ) {
         if (!$view_param['convertfrom']) {
-            $slice                     = AA_Slices::getSlice($slice_id);
+            $slice                     = AA_Slice::getModule($slice_id);
             $view_param['convertfrom'] = $slice->getCharset();
         }
         require_once AA_INC_PATH."convert_charset.class.php3";

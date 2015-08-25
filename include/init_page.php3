@@ -153,7 +153,7 @@ $after_login = !$no_slice_id && !$slice_id;
 $perm_slices = GetUserSlices();
 
 if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slices::getName($slice_id));
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slice::getModuleName($slice_id));
     exit;
 }
 
@@ -228,7 +228,8 @@ if (!$no_slice_id) {
 
 $mgettext_file = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
-AA::$lang    = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
-AA::$langnum = array(AA_Content::getLangNumber(AA::$lang)); // array of prefered languages in priority order.
+AA::$lang     = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
+AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang)); // array of prefered languages in priority order.
+AA::$slice_id = $slice_id; // array of prefered languages in priority order.
 
 ?>

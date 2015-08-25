@@ -161,7 +161,8 @@ function PrintModuleSelection() {
             "S" => array (0, _m("Slice")),
             "RM"=> array (1, _m("Reader Management Slice")));
 
-        while ($db->next_record()) {
+       $modules = array();
+       while ($db->next_record()) {
             if ($db->f("type") == "S") {
                 $order = $db->f("slice_type") == "ReaderManagement" ? 1 : 0;
             } else {
@@ -258,7 +259,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
                 $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
                 break;
             case 'S':
-                if (AA_Slices::getSliceProperty($slice_id, 'type') == "ReaderManagement") {
+                if (AA_Slice::getModule($slice_id)->getProperty('type') == "ReaderManagement") {
                     $title_img = a_href(AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
                 break;
@@ -268,7 +269,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         }
 
         $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
-        $title_name  = ($slice_id ? AA_Slices::getName($slice_id) : _m("New slice"));
+        $title_name  = ($slice_id ? AA_Slice::getModuleName($slice_id) : _m("New slice"));
 
         $title_out   = $title_img .'&nbsp;'. $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
 

@@ -102,7 +102,7 @@ if (is_numeric($_REQUEST['respuesta'])) {
 }
 
 $slice_id = unpack_id(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
-$slice    = AA_Slices::getSlice($slice_id);
+$slice    = AA_Slice::getModule($slice_id);
 if (empty($slice)) {
      echo _m("Comment to wrong item - item's slice not found.");
      exit;

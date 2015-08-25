@@ -43,7 +43,7 @@ require_once AA_INC_PATH."mail.php3";
  */
 function email_notify($slice_id, $event, $item_id) {
     $p_slice_id = q_pack_id($slice_id);
-    $slice      = AA_Slices::getSlice($slice_id);
+    $slice      = AA_Slice::getModule($slice_id);
 
     // select the text templates
     switch ($event){

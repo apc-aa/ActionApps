@@ -131,7 +131,7 @@ function Submit() {
 ?>
 <form method="post" name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
 <?php
-  FrmTabCaption(_m("Existing remote imports into the slice") ." <b>". AA_Slices::getName($slice_id). "</b>");
+  FrmTabCaption(_m("Existing remote imports into the slice") ." <b>". AA_Slice::getModuleName($slice_id). "</b>");
   FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));
   FrmTabSeparator(_m("All remote nodes"), array("delete" => array('value'=>_m("Delete"),'type'=>'button', 'add'=>'onClick="Delete()"')));
   FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, false, true);

@@ -512,7 +512,7 @@ class AA_Validate_Unique extends AA_Validate {
             return true;
         }
         if ( $this->scope == 'slice') {
-            if ( !AA_Slices::getField($slice_id, $this->field_id) ) {
+            if ( !AA_Slice::getModule($slice_id)->getField($this->field_id) ) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
             }
             $SQL = "SELECT * FROM content INNER JOIN item ON content.item_id = item.id

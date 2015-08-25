@@ -233,7 +233,7 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
  * @return prints xml <channel>
  */
 function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs, $time) {
-    $slice = AA_Slices::getSlice($slice_id);
+    $slice = AA_Slice::getModule($slice_id);
     echo "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
                    "\t\t<title>".code($slice->getProperty('name'))."</title>\n".
                    "\t\t<description>".code($slice->getProperty('description'))."</description>\n".
@@ -315,7 +315,7 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
 
     // get slice url for current slice
     if ( !isset($slice_url[$slice_id]) ) {
-        $slice = AA_Slices::getSlice($slice_id);
+        $slice = AA_Slice::getModule($slice_id);
         $slice_url[$slice_id] = $slice->getProperty('slice_url');
     }
 
@@ -504,7 +504,7 @@ if (!CheckFeedingPermissions($slice_id, $node_name, $user)) {
 }
 $GLOBALS['g_slice_encoding'] = getSliceEncoding($slice_id);
 
-$slice = AA_Slices::getSlice($slice_id);
+$slice = AA_Slice::getModule($slice_id);
 
 if ($exact AND !$ids) {
 

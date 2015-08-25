@@ -69,7 +69,7 @@ echo "<h1>"._m("Admin - Create Mailman List")."</b></h1>";
 PrintArray($err);
 echo $Msg;
 
-$slice = AA_Slices::getSlice($slice_id);
+$slice = AA_Slice::getModule($slice_id);
 if (! $slice->getProperty("mailman_field_lists")) {
     echo _m('First set Mailman Lists Field in Slice Settings.');
     HtmlPageEnd(); page_close(); exit;

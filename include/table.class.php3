@@ -40,7 +40,7 @@ class AA_Table {
      * @param $id
      * @param $relation_field
      */
-    function AA_Table($id) {
+    function __construct($id) {
         $this->id       = $id;
         $this->rows     = array();
         $this->colindex = array();
@@ -155,7 +155,7 @@ class AA_Array {
     /** Constructor
      * @param $id
      */
-    function AA_Array($id) {
+    function __construct($id) {
         $this->id      = $id;
         $this->arr     = array();
     }

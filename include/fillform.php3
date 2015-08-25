@@ -96,7 +96,7 @@ function fillForm() {
        return;
     }
 
-    $slice = AA_Slices::getSlice($slice_id);
+    $slice = AA_Slice::getModule($slice_id);
 
     // reader management: aw=ABCDE is sent in welcome
     // emails to confirm the email address

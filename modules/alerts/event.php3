@@ -41,7 +41,7 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
         ON alerts_collection.module_id = module.id
         WHERE alerts_collection.slice_id='".q_pack_id($slice_id)."'");
 
-    $slice   = AA_Slices::getSlice($slice_id);
+    $slice   = AA_Slice::getModule($slice_id);
     $aliases = $slice->aliases();
 
 

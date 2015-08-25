@@ -47,7 +47,7 @@ class AA_Mailman {
         }
         endslash($MAILMAN_SYNCHRO_DIR);
 
-        $slice = AA_Slices::getSlice($slice_id);
+        $slice = AA_Slice::getModule($slice_id);
         $field = $slice->getProperty("mailman_field_lists");
         if ($slice->getProperty("type") != "ReaderManagement" || ! $field) {
             return;

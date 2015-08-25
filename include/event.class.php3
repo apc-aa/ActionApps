@@ -334,7 +334,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
 
     // if the view vid is assigned to fulltext view, take the e-mail template
     // from that view
-    $view_id     = AA_Slices::getSliceProperty($slice_id, 'vid');
+    $view_id     = AA_Slice::getModule($slice_id)->getProperty('vid');
 
     if ( $view_id > 0 ) {
         // get id of e-mail template (stored in aditional6 field of view definition)

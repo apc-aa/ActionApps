@@ -465,7 +465,7 @@ class AA_Field_Writer {
                     $sid = $item->getSliceID();
                 }
             }
-            $slice = AA_Slices::getSlice($sid);
+            $slice = AA_Slice::getModule($sid);
             if (!is_object($slice) OR !$slice->isValid()) {
                 $err[$field["id"]] = _m("Slice with id '%1' is not valid.", array($sid));
                 return;

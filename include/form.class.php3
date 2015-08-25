@@ -41,7 +41,7 @@ class AA_Formrow extends AA_Storable {
 
     // in order we can dispaly row widget (used for editing forms)
     function addFormrows($form) {
-        $slice  = AA_Slices::getSlice($form->object_owner);
+        $slice  = AA_Slice::getModule($form->object_owner);
         $fields = $slice->getFields();
         $f_arr  = $fields->getNameArray();
               // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
@@ -108,7 +108,7 @@ class AA_Formrow_Field extends AA_Formrow {
     }
 
     private function _getField() {
-        $slice  = AA_Slices::getSlice($this->slice_id);
+        $slice  = AA_Slice::getModule($this->slice_id);
         $fields = $slice->getFields();
         return $fields->getField($this->field_id);
     }
@@ -276,7 +276,7 @@ class AA_Form extends AA_Object {
         $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
         $html .= "\n  </fieldset>";
 
-        $slice = AA_Slices::getSlice($this->object_owner);
+        $slice = AA_Slice::getModule($this->object_owner);
         if (!empty($slice)) {
             $charset = $slice->getCharset();
             if ($charset != 'utf-8') {

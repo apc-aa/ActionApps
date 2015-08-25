@@ -77,7 +77,7 @@ function initSummarize() {
     $SQL = "SELECT id FROM slice ORDER BY created_at";
     $db -> tquery($SQL);
     while ($db->next_record()) {
-        $sao[unpack_id($db->f("id"))] = AA_Slices::getSlice(unpack_id($db->f("id")));
+        $sao[unpack_id($db->f("id"))] = AA_Slice::getModule(unpack_id($db->f("id")));
     }
     $SQL = "SELECT * FROM slice";
     $slicetablefields = GetTable2Array($SQL,"id",1);

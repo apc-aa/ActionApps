@@ -28,7 +28,7 @@ class MLXImport {
     function MLXImport($slice_id) {
         $this->slice_id = $slice_id;
 
-        $this->sliceObj = AA_Slices::getSlice($slice_id);
+        $this->sliceObj = AA_Slice::getModule($slice_id);
 
         list($this->fields,) = GetSliceFields($this->slice_id);
         //do sanity checks

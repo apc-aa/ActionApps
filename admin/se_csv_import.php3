@@ -80,7 +80,7 @@ if (!isset($dataType)) {
     $dataType = "file";
 }
 
-$slice = AA_Slices::getSlice($slice_id);
+$slice = AA_Slice::getModule($slice_id);
 
 // Upload a data to the server. The file name is generated automaticly
 // by unique id function. The path is upload_directory/csv_data.

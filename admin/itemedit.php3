@@ -78,7 +78,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     if ($zid) {               // id of new item defined
         // now we need to fill $item in order we can display item headline
         $content  = new ItemContent($zid);
-        $slice    = AA_Slices::getSlice($content->getSliceID());
+        $slice    = AA_Slice::getModule($content->getSliceID());
         $aliases  = $slice->aliases();
         DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD_, ...
         $item     = new AA_Item($content->getContent(),$aliases);
@@ -169,7 +169,7 @@ if ( $id ) {
     unset($content4id);
 }
 
-$slice = AA_Slices::getSlice($slice_id);
+$slice = AA_Slice::getModule($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
 list($fields, $prifields) = $slice->fields();
 

@@ -90,7 +90,7 @@ echo '
 PrintArray($err);
 echo $Msg;
 
-$slice  = AA_Slices::getSlice($slice_id);
+$slice  = AA_Slice::getModule($slice_id);
 
 if ( !IsSuperadmin() ) {
     $restricted_fields = array( 'slice_id........' => true,

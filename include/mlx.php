@@ -726,7 +726,7 @@ class MLXView
         if(!$ctrlSliceID) {
 //             $GLOBALS['errcheck'] = true;
 //              __mlx_dbg(func_get_args(),__FUNCTION__);
-            $sliceobj = AA_Slices::getSlice(unpack_id($slice_id));
+            $sliceobj = AA_Slice::getModule(unpack_id($slice_id));
             $ctrlSliceID = $sliceobj->getProperty(MLX_SLICEDB_COLUMN);
             if(!$ctrlSliceID) {
                 return "MLXView::getTranslations no ctrlSliceID";
@@ -829,7 +829,7 @@ class MLXEvents
         if(empty($item_ids)) {
             return;
         }
-        $sliceobj = AA_Slices::getSlice($slice_id);
+        $sliceobj = AA_Slice::getModule($slice_id);
         if(!IsMLXSlice($sliceobj)) {
             return;
         }

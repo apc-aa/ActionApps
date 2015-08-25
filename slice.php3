@@ -216,7 +216,7 @@ require_once AA_INC_PATH."javascript.php3";
 
 is_object( $db ) || ($db = getDB());
 
-$slice      = AA_Slices::getSlice($slice_id);
+$slice      = AA_Slice::getModule($slice_id);
 $fields     = $slice->fields('record');            // get fields info
 $slice_info = GetSliceInfo($slice_id);       // get slice info
 if (!$slice_info OR $slice_info['deleted']>0) {

@@ -75,7 +75,7 @@ echo "
     <TD rowspan=2 align=center class=nblogo>$nb_logo</td>
     <TD height=43 colspan=2 align=center valign=middle class=slicehead>
     $nb_context  -  ".
-    ($module_id ? AA_Slices::getName($module_id) : _m("New slice"))
+    ($module_id ? AA_Slice::getModuleName($module_id) : _m("New slice"))
     ."</TD>
   </TR>
   <TR>

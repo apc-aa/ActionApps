@@ -109,7 +109,7 @@ function Delete() {
 
 FrmTabCaption(_m("Inter node export settings"));
 ?>
-      <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slices::getName($slice_id)."</b>"; ?></td></tr>
+      <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slice::getModuleName($slice_id)."</b>"; ?></td></tr>
       <tr><td colspan="2" align="center">
         <select name="perms" size="5">
          <?php

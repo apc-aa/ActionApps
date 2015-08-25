@@ -116,7 +116,7 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     // update database
     $id = new_id();
 
-    $slice  = AA_Slices::getSlice($slice_id);
+    $slice  = AA_Slice::getModule($slice_id);
     $charset = $slice->getCharset();   // like 'windows-1250'
     $encoder       = new ConvertCharset;
 
@@ -195,7 +195,7 @@ $error = "";
 $ok = "";
 
 $p_slice_id = q_pack_id($slice_id);
-$slice      = AA_Slices::getSlice($slice_id);
+$slice      = AA_Slice::getModule($slice_id);
 
 // There are two possibilities, how to send the data
 //   1) using GET/POST in $offline_data variable

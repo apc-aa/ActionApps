@@ -70,8 +70,8 @@ class AA_Mysqlauth {
     *   @param $slice_id
     */
     function updateReaders( $item_ids, $slice_id ) {
-        $sl_type             = AA_Slices::getSliceProperty($slice_id, 'type');
-        $sl_auth_field_group = AA_Slices::getSliceProperty($slice_id, 'auth_field_group');
+        $sl_type             = AA_Slice::getModule($slice_id)->getProperty('type');
+        $sl_auth_field_group = AA_Slice::getModule($slice_id)->getProperty('auth_field_group');
         if (($sl_type != "ReaderManagement") OR !$sl_auth_field_group) {
             return;
         }
@@ -98,10 +98,9 @@ class AA_Mysqlauth {
      * @param $restrict_zids = false
      */
     function getReadersData($slice_id, $restrict_zids=false) {
-        $auth_field_group = AA_Slices::getSliceProperty($slice_id, 'auth_field_group');
+        $auth_field_group = AA_Slice::getModule($slice_id)->getProperty('auth_field_group');
         $zids  = QueryZIDs( array($slice_id), '', '', 'ALL', 0, $restrict_zids);
-        return GetItemContent($zids, false, true, array('id..............','status_code.....','slice_id........',
-                                                        'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD));
+        return GetItemContent($zids, false, true, array('id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD));
     }
 
     // --------------------------------------------------------------------------

@@ -57,8 +57,8 @@ class AA_Jstriggers {
                 $js_trig[$ctrig] = 1;
             }
         }
-        
-        $javascript = AA_Slices::getSliceProperty($slice_id, 'javascript');
+
+        $javascript = is_null($slice = AA_Slice::getModule($slice_id)) ? '' : $slice->getProperty('javascript');
 
         $ws = "[ \t\n\r]*";
         foreach ($js_trig as $trg => $foo) {
@@ -76,6 +76,7 @@ class AA_Jstriggers {
      * @param $add
      */
     function get($control, $unpacked_fieldid='', $add="") {
+
 
         $js_trig     = AA_Jstriggers::loadTriggers($GLOBALS['slice_id']);
         $js_triggers = AA_Jstriggers::$js_triggers;

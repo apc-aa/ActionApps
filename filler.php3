@@ -107,7 +107,7 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
 } elseif ($_REQUEST['inline']) {
     if ($_REQUEST['slice_id']) {
-        $slice = AA_Slices::getSlice($_REQUEST['slice_id']);
+        $slice = AA_Slice::getModule($_REQUEST['slice_id']);
         if ($slice->isValid()) {
             $charset = $slice->getCharset();
         }
@@ -244,7 +244,7 @@ function SendOkPage($txt, $new_ids = array()) {
                 $item = AA_Item::getItem(new zids($long_id, 'l'));
                 $text = AA_Stringexpand::unalias($retcode, '', $item);
                 if ($text AND $item) {
-                    $slice = AA_Slices::getSlice($item->getSliceID());
+                    $slice = AA_Slice::getModule($item->getSliceID());
                     if (!empty($slice)) {
                         $charset = $slice->getCharset();
                         if ($charset != 'utf-8') {
@@ -342,7 +342,7 @@ if ( !$slice_id ) {
     SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
 }
 
-$slice      = AA_Slices::getSlice($slice_id);
+$slice      = AA_Slice::getModule($slice_id);
 $p_slice_id = q_pack_id($slice_id);
 
 if (!is_object($slice) OR !$slice->isValid()) {
@@ -414,7 +414,7 @@ if (! $insert && is_array($notshown)) {
 }
 
 // put the item into the right bin
-if (4 == ($bin2fill = $slice->allowed_bin_4_user())) {
+if (SC_NO_BIN == ($bin2fill = $slice->allowed_bin_4_user())) {
     SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
 }
 // you may force to put the item into a higher bin (active < hold < trash)

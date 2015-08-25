@@ -39,7 +39,7 @@ $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items     = $chb;
 
 //if ( IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
-//    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to send mails from this slice: ").AA_Slices::getName($slice_id));
+//    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to send mails from this slice: ").AA_Slice::getModuleName($slice_id));
 //    exit;
 //}
 
@@ -47,7 +47,7 @@ $items     = $chb;
 $credentials = AA_Credentials::singleton();
 $credentials->loadFromSlice($slice_id);
 
-$slice       = AA_Slices::getSlice($slice_id);
+$slice       = AA_Slice::getModule($slice_id);
 
 if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
@@ -159,8 +159,8 @@ echo '
   <title>'.  _m("Write email to users") .'</title>';
 
 IncludeManagerJavascript();
-// FrmJavascriptFile( 'javascript/inputform.js' );
-// echo getHtmlareaJavascript($slice_id);
+FrmJavascriptFile( 'javascript/inputform.js?v=1' );
+echo getHtmlareaJavascript($slice_id);
 // FrmJavascript(' window.onload   = xinha_init; window.onunload = HTMLArea.flushEvents;');
 
 echo '
@@ -192,7 +192,7 @@ if ($user_templates) {
     FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id'], false);
 }
 
-FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true );
+FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         30, 80, true , '', '', '', true);
 FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true , '', '', false, 'email');
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false, '', '', false, 'email');
 FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false, '', '', false, 'email');

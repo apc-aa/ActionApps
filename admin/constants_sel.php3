@@ -40,7 +40,7 @@ require_once AA_INC_PATH . "slice.class.php3";
 
 $module_id   = $slice_id; // get from session
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice       = AA_Slices::getSlice($module_id);
+$slice       = AA_Slice::getModule($module_id);
 $fields      = $slice->fields('record');
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -96,11 +96,11 @@ echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', array('co
 
 // following definition MUST be after $aainput->get() - this method modifies
 // $aainput->varname() !!!
-$form_buttons = array("var_id" => array("type"=>"hidden", "value"=>$var_id),
-                      "btn_ok" => array("type"=>"button",
+$form_buttons = array("var_id" => array("type" =>"hidden", "value"=>$var_id),
+                      "btn_ok" => array("type" =>"button",
                                         "value"=> _m("OK"),
-                                        "add"=> 'onclick=\'updateChanges(this.form)\''),
-                      "cancel");
+                                        "add"  => 'onclick=\'updateChanges(this.form)\''),
+                      "close");
 
 FrmTabEnd($form_buttons,$sess, $slice_id);
 echo "</form>

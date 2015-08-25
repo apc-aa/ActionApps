@@ -167,7 +167,7 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $from_id => $to_id) {
-                $this->message( _m('Wrong destination slice id: %1 -> %2', array(AA_Slices::getName($from_id), $to_id)));
+                $this->message( _m('Wrong destination slice id: %1 -> %2', array(AA_Slice::getModuleName($from_id), $to_id)));
             }
             $ret = false;
         }
@@ -178,7 +178,7 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $from_id => $to_id) {
-                $this->message( _m('Wrong source slice id: %1 -> %2', array($from_id, AA_Slices::getName($to_id))));
+                $this->message( _m('Wrong source slice id: %1 -> %2', array($from_id, AA_Slice::getModuleName($to_id))));
             }
             $ret = false;
         }
@@ -839,7 +839,7 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-        if ($path = Files::destinationDir(AA_Slices::getSlice($GLOBALS['slice_id']))) {
+        if ($path = Files::destinationDir(AA_Slice::getModule($GLOBALS['slice_id']))) {
             $this->message(_m('OK, %1 created', array($path)));
             return true;
         }
@@ -1189,7 +1189,7 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
 
         $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
         foreach ($slices as $sid => $default) {
-            $this->message(_m('slice id: %1 (%2), default value for expiry_date.....: %3', array($sid, AA_Slices::getName($sid), $default)));
+            $this->message(_m('slice id: %1 (%2), default value for expiry_date.....: %3', array($sid, AA_Slice::getModuleName($sid), $default)));
         }
         $this->message(_m('We found %1 hidden exipry_date..... fields', array(count($slices))));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
@@ -1206,11 +1206,11 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
         foreach ($slices as $sid => $default) {
             $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
             //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
-            $this->message(_m('items changed: %1 in slice: %2 (%3)', array($db->affected_rows(), $sid, AA_Slices::getName($sid))));
+            $this->message(_m('items changed: %1 in slice: %2 (%3)', array($db->affected_rows(), $sid, AA_Slice::getModuleName($sid))));
 
             $db->query("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
             //huhl("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
-            $this->message(_m('field default changed for expiry_date..... in %1 (%2)', array($sid, AA_Slices::getName($sid))));
+            $this->message(_m('field default changed for expiry_date..... in %1 (%2)', array($sid, AA_Slice::getModuleName($sid))));
         }
         freeDb($db);
         return true;
