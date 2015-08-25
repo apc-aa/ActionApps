@@ -25,26 +25,55 @@ $timestart = microtime(true);
 require_once "../../include/config.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."pagecache.php3";
-
-//require_once AA_INC_PATH."stringexpand.php3";
-//require_once AA_INC_PATH."item.php3"; // So site_ can create an item
-require_once AA_BASE_PATH."modules/site/router.class.php";
 require_once AA_INC_PATH."hitcounter.class.php3";
+
+// -- CACHE -------------------------------------------------------------------
+// CACHE_TTL defines the time in seconds the page will be stored in cache
+// (Time To Live) - in fact it can be infinity because of automatic cache
+// flushing on page change
+
+/** Create keystring from values, which exactly identifies resulting content */
+//  25June03 - Mitra - added post2shtml into here, maybe should add all URL?
+//  25Sept03 - Honza - all apc_state is serialized instead of just
+//       $apc_state['state'] (we store browser agent in state in kormidlo.cz)
+//  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
+//                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
+//                      - it is in fact all global variables used in view.php3
+$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST);  // $_GET is already in $_SERVER['REQUEST_URI']; *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES
+//AA::$debug && AA::$dbg->info('site', PageCache::globalKeyArray(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
+
+
+// store nocache to the variable (since it should be set for some view and we
+// do not want to have it set for whole site.
+// temporary solution - should be solved on view level (not global nocache) - TODO
+$site_nocache = $_REQUEST['nocache'];
+if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
+    $cacheentry->processPage();
+    if ( $_REQUEST['debug'] OR $_REQUEST['debugtime']) {
+        echo '<br><br>Site cache hit!!!';
+        echo '<br>Page generation time: '. (microtime(true) - $timestart);
+        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
+        echo '<br>  (spareDBs): '. count($spareDBs);
+        AA::$dbg->duration_stat();
+    }
+    exit;
+}
+// -- /CACHE ------------------------------------------------------------------
+
+
 
 function IsInDomain( $domain ) {
     return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
 }
 
-// ----------------- function definition end -----------------------------------
-is_object( $db ) || ($db = getDB());
-$err["Init"] = "";          // error array (Init - just for initializing variable
-
-// change the state
-add_vars();                 // get variables pased to stm page
-
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
+// ----------------- function definition end -----------------------------------
+
+
+// change the state
+add_vars();                 // get variables pased to stm page
 
 if ( get_magic_quotes_gpc() ) {
     $_POST    = StripslashesDeep($_POST);
@@ -53,20 +82,20 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
+require_once AA_BASE_PATH."modules/site/router.class.php";
+is_object( $db ) || ($db = getDB());
+$err["Init"] = "";          // error array (Init - just for initializing variable
+
 $host = ltrim($_SERVER['HTTP_HOST'],'w.');
 AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url',array("http://$host/", "https://$host/",)))));
-$site_info    = GetModuleInfo(AA::$site_id,'W');   // W is identifier of "site" module
-$module       = AA_Module_Site::getModule(AA::$site_id);
-$lang_file    = $module->getProperty('lang_file');
-AA::$encoding = $module->getCharset();
 
-header('Content-Type: text/html; charset='.AA::$encoding );
-
-//    - see /include/constants.php3
-if ( !is_array($site_info) ) {
+if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
     echo "<br>Error: no 'site_id' or 'site_id' is invalid";
     exit;
 }
+
+$lang_file    = $module->getProperty('lang_file');
+AA::$encoding = $module->getCharset();
 
 // There are two possibilities, how to control the apc_state variable. It could
 // be se in ./modules/site/sites/site_...php control file. The control file
@@ -84,12 +113,12 @@ if ( !is_array($site_info) ) {
 //                                    ));
 //    readfile($url);
 
-$hit_zid = null;
-if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
-    $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id(AA::$site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+$hit_lid = null;
+if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
+    $slices4cache = $module->getRelatedSlices();
     //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
     // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
-    $home         = AA_Stringexpand::unalias(trim($site_info['state_file'])) ?: '/' .substr($lang_file,0,2). '/';
+    $home         = AA_Stringexpand::unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
     $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
 
     // use REDIRECT_URL for homepage redirects:
@@ -107,14 +136,12 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $lang_file    = substr_replace($lang_file, $apc_state['xlang'], 0, 2);
 
     // count hit for current page - deffered after the page is sent to user
-    if ($tmp_xid = $router->xid()) {
-        $hit_zid = new zids($tmp_xid, 'l');
-    }
-} elseif ( $site_info['state_file'] ) {
+    $hit_lid = $router->xid();
+} elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
-    require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
+    require_once AA_BASE_PATH."modules/site/sites/site_".$module->getProperty('state_file');
     if (!is_array($slices4cache)) {
-        $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id(AA::$site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+        $slices4cache = $module->getRelatedSlices();
     }
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
@@ -122,38 +149,6 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
 
 if ( !isset($apc_state) )  {
     echo "<br>Error: no 'state_file' nor 'apc_state' variable defined";
-    exit;
-}
-
-// CACHE_TTL defines the time in seconds the page will be stored in cache
-// (Time To Live) - in fact it can be infinity because of automatic cache
-// flushing on page change
-
-/** Create keystring from values, which exactly identifies resulting content */
-//  25June03 - Mitra - added post2shtml into here, maybe should add all URL?
-//  25Sept03 - Honza - all apc_state is serialized instead of just
-//       $apc_state['state'] (we store browser agent in state in kormidlo.cz)
-//  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
-//                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
-//                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeyArray(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
-
-// store nocache to the variable (since it should be set for some view and we
-// do not want to have it set for whole site.
-// temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = $_REQUEST['nocache'];
-if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($cache_key,$site_nocache))) {
-    echo $res;
-    if ( $debug OR $debugtime) {
-        echo '<br><br>Site cache hit!!!';
-        echo '<br>Page generation time: '. (microtime(true) - $timestart);
-        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
-        echo '<br>  (spareDBs): '. count($spareDBs);
-        AA::$dbg->duration_stat();
-    }
-    if ($hit_zid) {
-        AA_Hitcounter::hit($hit_zid);
-    }
     exit;
 }
 
@@ -171,12 +166,8 @@ if ($lang_file) {
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }
 
-$res = ModW_GetSite( $apc_state, AA::$site_id, $site_info );
-echo $res;
-
-if ($hit_zid) {
-    AA_Hitcounter::hit($hit_zid);
-}
+$cacheentry = new AA_Cacheentry($module->getSite( $apc_state ), AA::getHeaders(), $hit_lid);
+$cacheentry->processPage();
 
 // In $slices4cache array MUST be listed all (unpacked) slice ids (and other
 // modules), which is used in the site. If you mention the slice in this array,
@@ -194,7 +185,7 @@ AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
 
 if (is_array($slices4cache) && !$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
-    $GLOBALS['pagecache']->store($cache_key, $res, $str2find);
+    $GLOBALS['pagecache']->storePage($cache_key, $cacheentry, $str2find);
 }
 AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
 
@@ -207,27 +198,6 @@ if ($debugtime) {
 }
 
 // ----------------- process status end ---------------------------------------
-
-function ModW_GetSite( $apc_state, $site_id, $site_info ) {
-    global $show_ids;
-
-    $tree        = unserialize($site_info['structure']);   // new sitetree();
-    $show_ids    = array();
-    $out         = '';
-
-    // it fills $show_ids array
-    $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
-    if (count($show_ids)<1) {
-        exit;
-    }
-
-    $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $site_id, 'l'), array('spot_id', $show_ids, 'i')));
-
-    foreach ( $show_ids as $v ) {
-        $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA_Stringexpand::unalias($spots[$v]['content'], '', $apc_state['item']));
-    }
-    return $out;
-}
 
 function ModW_StoreIDs($spot_id, $depth) {
     $GLOBALS['show_ids'][] = $spot_id;

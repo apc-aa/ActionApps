@@ -42,6 +42,27 @@
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."toexecute.class.php3";
 
+class AA_Cacheentry {
+    var $c = '';      // content
+    var $h = array();  // headers array
+    var $i = '';      // item id for page hit
+
+    function __construct($content, array $headers=array(), $item_id='') {
+        $this->c = $content;
+        $this->h = $headers;
+        $this->i = $item_id;
+    }
+
+    /** send headers, print output and count hit */
+    function processPage() {
+        AA::sendHeaders($this->h);
+        echo $this->c;
+        if ($this->i) {
+            AA_Hitcounter::hit(new zids($this->i, 'l'));
+        }
+    }
+}
+
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
 
@@ -49,7 +70,7 @@ class PageCache  {
      *  PageCache class constructor
      * @param $ct
      */
-    function PageCache($ct = 600) {
+    function __construct($ct = 600) {
         $this->cacheTime = $ct;
     }
 
@@ -163,17 +184,8 @@ class PageCache  {
      * @param $keyid
      */
     function getById($keyid) {
-        $ret   = false;
-        $db    = getDB();
-        $SQL   = "SELECT * FROM pagecache WHERE id='$keyid'";
-        $db->tquery($SQL);
-        if ($db->next_record()) {
-            if ( (time() - $this->cacheTime) < $db->f("stored") ) {
-                $ret = $db->f('content');
-            }
-        }
-        freeDB($db);
-        return $ret;
+        $arr   = DB_AA::select1('SELECT stored, content FROM `pagecache`', '', array(array('id', $keyid)));
+        return ( $arr AND ((time() - $this->cacheTime) < $arr['stored']) ) ? $arr['content'] : false;
     }
 
     /** set function
@@ -220,6 +232,22 @@ class PageCache  {
         }
         return $key;
     }
+
+    /** special cache function for storing whole page. The whole page should be
+     *  cached also with headers and id of item, where to count hit.
+     *  When page is stored with storePage(), then you have to use getPage()
+     *  counterpart function
+     */
+    function storePage($key, AA_Cacheentry $entry, $str2find, $force=false) {
+        // @todo - we can use json_encode, when $entry->$h['encoding']=='utf-8' which is quicker, than serialize
+        $this->store($key, serialize($entry), $str2find, $force);
+    }
+
+    function getPage($key, $action='get') {
+        $entry = $this->get($key, $action);
+        return $entry ? unserialize($entry) : $entry;
+    }
+
 
     /** invalidateById function
      *  Remove specified ids from cache

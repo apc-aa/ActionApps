@@ -40,7 +40,6 @@ function __autoload ($class_name) {
         'AA_Permsystem_Ldap' => 'include/perm_ldap.php3',
         'AA_Array'           => 'include/table.class.php3',
         'ConvertCharset'     => 'include/convert_charset.class.php3',
-        'AA_Slices'          => 'include/slice.class.php3',
         'AA_Items'           => 'include/item.php3',
         'AA_Form_Array'      => 'include/widget.class.php3',
         'AA_Mysqlauth'       => 'include/auth.php3',
@@ -179,14 +178,28 @@ class AA_Debug {
     }
 }
 
+/** Page level (global) variables you can count with */
 class AA {
     public static $dbg;
     public static $debug;
     public static $perm;
     public static $site_id;
-    public static $encoding;
+    public static $slice_id;   // optional - filled by view.php3 when site_id is not available (so it is used as allpage main module to find {_:alias} aliases)
+    public static $encoding;   // inner module's/slice's encoding (utf-8, ...)
     public static $lang;       // two letters small caps - cz / es / en / ...
     public static $langnum;    // array of prefered language numbers - > 10000000
+    public static $headers;    // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
+
+    static function getHeaders() {
+        if (isset(AA::$headers['status'])) {
+            return array(AA::$headers['status']);
+        }
+        return array('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ));
+    }
+    // typicaly called as AA::sendHeaders(AA::getHeaders());
+    static function sendHeaders(array $headers) {
+        foreach ($headers as $header) { header($header); }
+    }
 }
 
 AA::$debug = $_GET['debug'];
@@ -207,7 +220,7 @@ class DB_AA extends DB_Sql {
         parent::__construct($query);
     }
 
-    /** 
+    /**
      *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
      *  used as: $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
      **/
@@ -232,7 +245,7 @@ class DB_AA extends DB_Sql {
         return $ret;
     }
 
-    /** 
+    /**
      *  first parameter describes the desired output
      *  written with speed in mind - so all the loops are condition free
      *  used as: $chid = DB_AA::select('id', 'SELECT id FROM `change` WHERE ...');                   -> [id1, id2, ...]
@@ -324,7 +337,7 @@ class DB_AA extends DB_Sql {
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
         $ret = $db->query("$query $sqlwhere");
         freeDB($db);
-        return $ret;        
+        return $ret;
     }
 
     /** used as: DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */

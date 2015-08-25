@@ -98,7 +98,10 @@ if (is_numeric($time_limit)) {
 // Need to be able to set content-type for RSS, cannot do it in the view
 // because the cache wont reflect this
 if ($contenttype) {
-    header("Content-type: $contenttype");
+    $contenttype = trim(strtolower($contenttype));
+    if ($len = strspn($contenttype,'abcdefghijklmnopqrstuvwxyz/')) {
+        AA::$headers['type'] = substr($contenttype,0,$len);
+    }
 }
 
 if ($filename) {
@@ -119,7 +122,9 @@ if ($convertto) {
     $view_param['convertto']   = $convertto;
 }
 
-echo GetView($view_param);
+$ret = GetView($view_param);
+AA::sendHeaders(AA::getHeaders());
+echo $ret;
 
 (AA::$debug OR $debugtime) && AA::$dbg->groupend("view", "Completed view");
 
