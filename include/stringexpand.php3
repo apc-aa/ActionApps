@@ -53,7 +53,7 @@ class AA_Aliasfunc extends AA_Object {
      * @param $desc;
      * @param $ussage;
      */
-    function AA_Aliasfunc($alias, $code, $desc, $ussage) {
+    function __construct($alias, $code, $desc, $ussage) {
         $this->alias  = $alias;
         $this->code   = $code;
         $this->desc   = $desc;
@@ -1054,7 +1054,7 @@ function parseLoop($out, &$item) {
     //        Odd HTML is: {@fieldlist(_#CSV_FMTD):,:_#1}, where
     //        _#CSV_FMTD is defined as f_t and with parameter: {alias:{loop............}:f_t::csv}.
     if ( $field == 'fieldlist' ) {
-        $item_slice  = AA_Slices::getSlice($item->getSliceID());
+        $item_slice  = AA_Slice::getModule($item->getSliceID());
         $item_fields = $item_slice->getFields();
         $fields_arr  = $item_fields->getPriorityArray();
 
@@ -2095,8 +2095,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
 
         // for speedup - single items evaluate here
         if ( $ids_string AND (($id_type == 's') OR ($id_type == 'l'))) {
-            $item = AA_Items::getItem(new zids($ids_string,$id_type));
-            if ($item) {
+            if ($item = AA_Items::getItem(new zids($ids_string,$id_type))) {
                 return $item->subst_alias($content);
             }
         }
@@ -2231,7 +2230,7 @@ class AA_Treecache {
     var $bottom;
     var $_cache;
 
-    function AA_Treecache($content, $delim, $top, $bottom) {
+    function __construct($content, $delim, $top, $bottom) {
         $this->content = $content;
         $this->delim   = $delim;
         $this->top     = $top;
@@ -2387,7 +2386,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
             if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
                 $item = AA_Items::getItem(new zids($item_id,$id_type));
                 if ($item) {
-                    $slice = AA_Slices::getSlice($item->getSliceID());
+                    $slice = AA_Slice::getModule($item->getSliceID());
                     $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
                         $ret  .= AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
                 }
@@ -2424,7 +2423,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         if ( $limit ) {
             $zids = ($limit<0) ? $zids->slice($limit,-$limit) : $zids->slice(0,$limit);
         }
-        return join($zids->longids(), $delimiter ? $delimiter : '-');
+        return join($zids->longids(), $delimiter ?: '-');
     }
 }
 
@@ -2679,6 +2678,25 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
  *  the specified SEO string in seo............. field. If there are more such
  *  ids (which should not be), they are dash separated
  */
+//class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
+//    /** expand function
+//     * @param $slices
+//     * @param $seo_string
+//     */
+//    function expand($slices, $seo_string, $bins='') {
+//        if ($seo_string=='') {
+//            return '';
+//        }
+//
+//        $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
+//
+//        $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
+//        $zids = $set->query();
+//        return join($zids->longids(), '-');
+//        // added expiry date in order we can get ids also for expired items
+//        // return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
+//    }
+//}
 class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
     /** expand function
      * @param $slices
@@ -2689,13 +2707,31 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
             return '';
         }
 
+        // this way we solve the problem mainly in sitemodules, with slices which do not have seo............. field
+        static $_seoslices = array();  // stores only slices with 'seo' field
+        if (strpos($slices,'-') !== false) {
+            $sarr = $_seoslices[$slices];
+            if ( !is_array($sarr) ) {
+                $sarr = self::_getSeoSlices(explode('-', $slices));
+                $_seoslices[$slices] = $sarr;
+            }
+            if (empty($sarr)) {
+                return '';
+            }
+        } else {
+          $sarr = array($slices);
+        }
         $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
 
-        $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
+        $set  = new AA_Set($sarr, new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
         $zids = $set->query();
         return join($zids->longids(), '-');
         // added expiry date in order we can get ids also for expired items
         // return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
+    }
+
+    static function _getSeoSlices($slices) {
+        return array_map('unpack_id', DB_AA::select('slice_id', 'SELECT slice_id FROM field', array(array('slice_id', $slices, 'l'), array('id', 'seo.............'))));
     }
 }
 
@@ -2898,7 +2934,7 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $group_id
      */
-    function expand($type, $min='', $max='', $step='') {
+    function expand($type, $min='', $max='', $step='', $delimiter='') {
         $arr = array();
         switch ($type) {
         case 'num':
@@ -2912,7 +2948,7 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
             }
             break;
         }
-        return empty($arr) ? '' : json_encode($arr);
+        return empty($arr) ? '' : (strlen($delimiter) ? join($delimiter, $arr) : json_encode($arr));
     }
 }
 
@@ -2964,6 +3000,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
         $etalon   = trim(array_shift($arg_list));
         $ret      = false;
         $i        = 0;
+
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
             if ($etalon == trim($arg_list[$i])) {
                 $ret = $arg_list[$i+1];
@@ -3228,7 +3265,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
             }
             $slice_id = $this->item->getSliceID();
         }
-        return AA_Slices::getField($slice_id, $field_id);
+        return AA_Slice::getModule($slice_id)->getField($field_id);
     }
 }
 
@@ -3354,7 +3391,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
         if (!empty($item)) {
 
             $iid   = $item->getItemID();
-            $slice = AA_Slices::getSlice($item->getSliceId());
+            $slice = AA_Slice::getModule($item->getSliceId());
 
             // Use right language (from slice settings) - languages are used for button texts, ...
             $lang  = $slice->getLang();
@@ -3368,6 +3405,78 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Creates new item based on the template item
+ *    {newitem:<template_long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
+ *
+ * The new item  it is based on template item, which is normal item which you
+ * can put in HoldingBin/TrashBin... and the default values for the new item is
+ * taken from the item except seo............. and status_code...... fields
+ * Then you can modify the field values for the new item:
+ *
+ * {newitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
+ *
+ * c239cb267837a25b4efb5892ca4f4324 is ID on template item
+ * The values could be single (for headline........), or multiple - written in JSON format.
+ */
+class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    /** expand function
+     * @param $template_item_id
+     * @param $field_id1
+     * @param $value1
+     * @param ...
+     */
+    function expand() {
+        $arg_list              = func_get_args();   // must be asssigned to the variable
+
+        if (!is_long_id($template_long_item_id = array_shift($arg_list))) {
+            return '';
+        }
+
+        $i                     = 0;
+        $transformations       = array();
+        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+            if ( (strlen($field_id = $arg_list[$i]) != 16) OR !count($value=json2arr($arg_list[$i+1])) ) {
+                $i += 2;
+                continue;
+            }
+            $transformations[$field_id] = new AA_Transformation_Exactvalues(array('new_content'=>$value));
+            $i += 2;
+        }
+
+        // move to active, clear seo
+        if ( !isset($transformations['status_code.....']) ) {
+            $transformations['status_code.....'] = new AA_Transformation_Exactvalues(array('new_content'=>array(1)));
+        }
+        if ( !isset($transformations['seo.............']) ) {
+            $transformations['seo.............'] = new AA_Transformation_Exactvalues(array('new_content'=>array('')));
+        }
+
+        // return IfSlPerm(PS_EDIT_ALL_ITEMS, $manager->getModuleId());
+
+        // the template must be in related slices (to not allow to create item in foreign slice)
+        if (AA::$site_id) {
+            $slices = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
+        } elseif (AA::$slice_id) {
+            $slices = array(AA::$slice_id);
+        }
+
+        if (!count($slices)) {
+            return '';
+        }
+
+        $grabber = new AA_Grabber_Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
+        // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
+        $saver   = new AA_Saver($grabber, $transformations, null, 'insert_if_new', 'new');
+        $saver->run();
+
+        //SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
+        return join('-',$saver->changedIds());
+    }
+}
+
 /** Get module (slice, ...) property (currently only "module fileds"
  *  (beggining with underscore) and 'name' is supported
  *  replacing older {alias:_abstract.......:f_s:slice_info} syntax
@@ -3377,7 +3486,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
      * @param $property
      */
     function expand($slice_id, $property='') {
-        $slice = AA_Slices::getSlice($slice_id);
+        $slice = AA_Slice::getModule($slice_id);
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
@@ -3652,7 +3761,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
          *  used in format string
          */
 
-        $format  = AA_Slices::getField($dictionaries[0], $format) ? '{substr:{'.$format.'}:0:50}' : $format;
+        $format  = AA_Slice::getModule($dictionaries[0])->getField($format) ? '{substr:{'.$format.'}:0:50}' : $format;
         $format  = "{@keywords........:##}_AA_DeLiM_$format";
 
         // above is little hack - we need keyword pair, but we want to call
@@ -3748,7 +3857,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
                     // if ($errcheck) huhl("No slice_id defined when expanding fileman");
                     return "";
                 }
-                $fileman_dir = AA_Slices::getSliceProperty($mysliceid,"fileman_dir");
+                $fileman_dir = AA_Slice::getModule($mysliceid)->getProperty("fileman_dir");
             // Note dropthrough from case "fileman"
             case "site":
                 if ($type == "site") {
@@ -3828,16 +3937,16 @@ class AA_Unalias_Callback {
     // is usefull just in case we are using the same expresion inside the same
     // spot or view field
     // We use it just for easy expressions - like field, aliases, where we do not use $contentcache
-    var $_localcache;
+    // var $_localcache;
 
     /** AA_Unalias_Callback function
      * @param $item
      * @param $itemview
      */
-    function AA_Unalias_Callback( $item, $itemview ) {
+    function __construct( $item, $itemview ) {
         $this->item        = is_object($item) ? $item : null;
         $this->itemview    = $itemview;
-        $this->_localcache = array();
+        // $this->_localcache = array();
     }
 
     function expand_bracketed_timedebug($match) {
@@ -3907,15 +4016,22 @@ class AA_Unalias_Callback {
             case '-': return QuoteColons(substr($out,1));
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                       if ($out[1] == "#") {
-                          if (isset($this->_localcache[$out])) {
-                              return $this->_localcache[$out];
-                          }
                           if (isset($als[substr($out,2)])) {
-                              return ($this->_localcache[$out] = QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
+                              return QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
                           } elseif (isset($this->item)) {
                               // just alias or not so common: {_#SOME_ALSand maybe some text}
-                              return ($this->_localcache[$out] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
+                              return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
                           }
+                          //// This somehow did not work for {item:{xid:1}:{ifeq:{_#EVERMA21}:1::...}} so the concept of localcache is removed. Honza 2015-07-27
+                          // if (isset($this->_localcache[$loccache_id = $out.$this->item->getItemID()])) {
+                          //     return $this->_localcache[$loccache_id];
+                          // }
+                          // if (isset($als[substr($out,2)])) {
+                          //     return ($this->_localcache[$loccache_id] = QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
+                          // } elseif (isset($this->item)) {
+                          //     // just alias or not so common: {_#SOME_ALSand maybe some text}
+                          //     return ($this->_localcache[$loccache_id] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
+                          // }
                       }
         }
 
@@ -4171,7 +4287,7 @@ class AA_Stringexpand {
     /** AA_Stringexpand function
      * @param $item
      */
-    function AA_Stringexpand($param) {
+    function __construct($param) {
         $this->item     = $param['item'];
         $this->itemview = $param['itemview'];
     }
@@ -4891,32 +5007,36 @@ class AA_Stringexpand__ extends AA_Stringexpand {
     }
 
     function expand() {
-        static $sc = null;
+        static $saliases = array();
+        static $smodules = null;
 
         $arg_list = func_get_args();   // must be asssigned to the variable
         $name     = array_shift($arg_list);
 
-        if ( isset($GLOBALS['STRINGEXPAND_SHORTCUTS'][$name]) ) {
+        if ( isset($GLOBALS['STRINGEXPAND_SHORTCUTS'][$name]) ) { // old deprecated listing of aliases in custom file
             $text = $GLOBALS['STRINGEXPAND_SHORTCUTS'][$name];
         } else {
-            // read the shortcuts from the database
-            if (is_null($sc) OR is_null($sc[AA::$site_id])) {
-                $sc[AA::$site_id] = array();
-            }
-            if (is_null($sc[AA::$site_id][$name])) {
-                // look for additional aliases
-                $modules = array(AA::$site_id);
-                if ($site = AA_Module_Site::getModule(AA::$site_id)) {
-                    if (is_array($add_modules = $site->getProperty('add_aliases'))) {
-                        $modules = array_merge($modules,array_filter($add_modules));
+            if (is_null($saliases[$name])) {
+                if (is_null($smodules)) {
+                    if (AA::$site_id) {
+                        $smodules = array(AA::$site_id);
+                        if ($site = AA_Module_Site::getModule(AA::$site_id)) {
+                            if (is_array($add_modules = $site->getProperty('add_aliases'))) {
+                                $smodules = array_merge($smodules,array_filter($add_modules));
+                            }
+                        }
+                    } elseif (AA::$slice_id) {
+                        $smodules = explode('-',AA_Stringexpand_Modulefield::expand(AA::$slice_id, 'site_ids'));
+                    } else {
+                        $smodules = array();
                     }
                 }
-                $zids = AA_Object::querySet('AA_Aliasfunc', new AA_Set($modules, new AA_Condition('alias', '==', $name)));
-                $sc[AA::$site_id][$name] = AA_Object::loadProperty($zids->longids(0),'code');
+                $zids = AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('alias', '==', $name)));
+                $saliases[$name] = AA_Object::loadProperty($zids->longids(0),'code');
                 // another approach read all at once - not used
                 // huhl( AA_Object::loadProperties($zids->longids(), 'aa_name'));
             }
-            $text = $sc[AA::$site_id][$name];
+            $text = $saliases[$name];
         }
 
         return AA_Stringexpand::replaceParams($text, $arg_list);
@@ -5130,12 +5250,14 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
 class AA_Stringexpand_Header extends AA_Stringexpand {
     function expand($header=null) {
         switch ($header) {
-        case '404': header('HTTP/1.0 404 Not Found');
+        case '404': AA::$headers['status'] = 'HTTP/1.0 404 Not Found';
                     break;
-        case 'xml': header('Content-Type: text/xml');
+        case 'xml': AA::$headers['type']   = 'text/xml';
                     break;
-        }
+        case 'svg': AA::$headers['type']   = 'image/svg+xml';
+                    break;
         return '';
+        }
     }
 }
 
@@ -5180,7 +5302,7 @@ class AA_Password_Manager_Reader {
         //AA::$debug = true;
 
         if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', array(array('owner_module_id',$slice_id, 'l'), array('type','password change')))) {
-            $slice     = AA_Slices::getSlice($slice_id);
+            $slice     = AA_Slice::getModule($slice_id);
             $user_item = new AA_Item($user_info, $slice->aliases( array("_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link", "", _m('Password link')))));
 
             //huhl($user_item);
@@ -5688,7 +5810,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     return AA_Items::getItem($zids[0])->f_2('headline........');
                 }
                 // if not present - translate to default language of the slice
-                $translations = AA_Slices::getSliceProperty($translate_slice, 'translations');
+                $translations = AA_Slice::getModule($translate_slice)->getProperty('translations');
 
                 $ic = new ItemContent();
                 $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
