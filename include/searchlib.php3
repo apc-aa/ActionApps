@@ -143,7 +143,7 @@ class AA_Condition extends AA_Object {
      * @param $operator
      * @param $value
      */
-    function AA_Condition($fields=null, $operator=null, $value=null) {
+    function __construct($fields=null, $operator=null, $value=null) {
         $this->fields    = (array)$fields;
         $this->operator  = $operator;
         $this->value     = $value;
@@ -284,7 +284,7 @@ class AA_Sortorder extends AA_Object {
 
 
     /** AA_Sortorder function  */
-    function AA_Sortorder($sort) {
+    function __construct($sort) {
         $this->clear();
         foreach ($sort as $key => $val) {
             if ($key == 'limit') {
@@ -354,7 +354,7 @@ class AA_Set extends AA_Object {
      *           2)   sort[0] = 5headline........-
      *           3)   sort[0][headline........]=d&sort[0][limit]=5
      */
-    function AA_Set($slices=null, $conds=null, $sort=null, $bins=AA_BIN_ACTIVE) {
+    function __construct($slices=null, $conds=null, $sort=null, $bins=AA_BIN_ACTIVE) {
         $this->clear();
         if ( !is_null($conds) ) {
             if (is_object($conds)) {
@@ -858,8 +858,13 @@ function GetWhereExp( $field, $operator, $querystring ) {
         return '1=0';
     }
 
+    // normalize operator
+    // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
+    // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
+    $operator = str_replace(array('#:',':','&gt;','&lt;'),array('','','>','<'), trim($operator));   // #: - fix mistaken escaping of d#:>...
+
     if ($operator == '==') {
-        return " ($field = '". str_replace("'","\'",$querystring) ."') ";            // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
+        return " ($field = '". str_replace("'","\'",$querystring) ."') ";         // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
     }
 
     // query string could be slashed - sometimes :-(
@@ -874,9 +879,9 @@ function GetWhereExp( $field, $operator, $querystring ) {
 
     // search operator for functions (some operators can be in function:operator
     // fomat - the function is called to $querystring (good for date transform ...)
-    if ( $pos = strpos($operator,":") ) {  // not ==
-        $func = substr($operator,0,$pos);
-        $operator = substr($operator,$pos+1);
+    if ( in_array($operator[0],array('d','e','m')) ) {
+        $func        = $operator[0];
+        $operator    = substr($operator,1);
         $querystring = trim($querystring, '"');
 
         switch( $func ) {
@@ -1348,8 +1353,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
         // get the fields for the first slice (used as template and we expect that
         // all slices in the query has the same structure
-        if ( !empty($slices) AND ($slice  = AA_Slices::getSlice(reset($slices)))) {
-            // @todo convert whole $slices to AA_Slices
+        if ( !empty($slices) AND ($slice  = AA_Slice::getModule(reset($slices)))) {
+            // @todo convert whole $slices to AA_Slice
             // access the fields through slice - it is better for caching of values
             $fields = $slice->getFields();
         } else {
@@ -1413,7 +1418,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                             if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>";
                             continue;            // bad field_id or not defined condition - skip
                         }
-                        $cond_field  = AA_Slices::getSlice($rel_f_slice)->getField($cond_flds);
+                        $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cond_flds);
                         if (!is_object($cond_field)) {
                             if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>";
                             continue;            // bad field_id or not defined condition - skip
@@ -1450,7 +1455,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         list($rel_slice_id, $rel_fld_id)   = explode('/',$rel_combi);
 
 
-                        $rel_slice   = AA_Slices::getSlice($rel_slice_id);
+                        $rel_slice   = AA_Slice::getModule($rel_slice_id);
                         if (!is_object($rel_slice)) {
                             if (AA::$debug) echo "Skipping $fid in conds[]: $rel_slice_id is not slice.<br>";
                             continue;            // bad field_id or not defined condition - skip
