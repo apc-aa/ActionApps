@@ -401,7 +401,15 @@ array("name"=>_m("Multiple Text Field"),
         array("name"=>_m("Row count"),
         "desc"=>_m("Number of rows (values) displayed at once"),
         "type"=>"INT",
-        "example"=>"6")
+        "example"=>"6"),
+        array("name"=>_m("max characters"),
+        "desc"=>_m("max count of characters entered (maxlength parameter)"),
+        "type"=>"INT",
+        "example"=>"254"),
+        array("name"=>_m("width"),
+        "desc"=>_m("width of the field in characters (size parameter)"),
+        "type"=>"INT",
+        "example"=>"30")
         ));
 
 $INPUT_TYPES["items"]["sel"]=

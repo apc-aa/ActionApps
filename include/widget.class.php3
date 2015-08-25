@@ -107,7 +107,7 @@ class AA_Form_Array {
         if (!$module_id) {
             return '';
         }
-        $slice = AA_Slices::getSlice($module_id);
+        $slice = AA_Slice::getModule($module_id);
         return $slice->getCharset();
     }
 
@@ -216,11 +216,11 @@ class AA_Widget extends AA_Components {
                     return array(); //  = array();
                 }
             }
-            $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
-            $set              = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
+            $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $set             = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
 
             if ($searchterm) {
-                $sf = AA_Slices::getField($sid, $slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
+                $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
                 $set->addCondition(new AA_Condition($sf, 'RLIKE', "\"$searchterm\""));
             }
             return GetFormatedItems( $set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
@@ -711,7 +711,7 @@ class AA_Widget_Fld extends AA_Widget {
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  30)
+            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60)
             );
     }
 }
@@ -741,7 +741,9 @@ class AA_Widget_Mfl extends AA_Widget {
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'),
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10)
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
+            'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
+            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60)
             );
     }
 
@@ -759,6 +761,9 @@ class AA_Widget_Mfl extends AA_Widget {
         $row_count     = (int)$this->getProperty('row_count', 6);
         //$show_buttons  = $this->getProperty('show_buttons', 'MDAC');
 
+        $max_characters = $this->getProperty('max_characters', 254);
+        $width          = $this->getProperty('width', 60);
+
         $value         = $content->getAaValue($aa_property->getId());
         $widget        = '';
         // display at least one option
@@ -767,12 +772,12 @@ class AA_Widget_Mfl extends AA_Widget {
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
             $required     = ($aa_property->isRequired() AND ($i==0)) ? 'required' : '';
-            $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+            $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
         }
         $widget           = "<div id=\"allrows$base_id\">$widget</div>";
 
        $img               = GetAAImage('icon_new.gif', _m('new'), 17, 17);
-       $widget           .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input type=text name=\'$base_name"."[mfl][]\' value=\'\'></div>'); return false;\">$img</a>";
+       $widget           .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input type=text name=\'$base_name"."[mfl][]\' value=\'\' size=\'$width\' maxlength=\'$max_characters\' ></div>'); return false;\">$img</a>";
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
@@ -829,7 +834,7 @@ class AA_Widget_Pre extends AA_Widget {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'max_characters'         => new AA_Property( 'max_characters',         _m("max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'                  => new AA_Property( 'width',                  _m("width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  30),
+            'width'                  => new AA_Property( 'width',                  _m("width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60),
             'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
             'use_name'               => new AA_Property( 'use_name',               _m("Use name"),             'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'),
             'adding'                 => new AA_Property( 'adding',                 _m("Adding"),               'bool', false, true, 'bool', false, _m("adding the selected items to input field comma separated"), '', '0'),
