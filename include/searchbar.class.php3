@@ -87,7 +87,7 @@ class AA_Searchbar_Row extends AA_Storable {
      * @param $condition
      * @param $readonly
      */
-    function AA_Searchbar_Row($condition=null, $readonly=false) {
+    function __construct($condition=null, $readonly=false) {
         $this->condition = $condition;
         $this->readonly  = $readonly;
     }
@@ -189,7 +189,7 @@ class AA_Searchbar extends AA_Storable {
      * @param $hint
      * @param $hint_url
      */
-    function AA_Searchbar($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show='aa_default', $hint='', $hint_url='') {
+    function __construct($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show='aa_default', $hint='', $hint_url='') {
         $this->fields               = $fields;
         $this->show                 = (((string)$show == 'aa_default') ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show);
         $this->hint                 = $hint;
@@ -741,7 +741,7 @@ class AA_Bookmarks {
     /** AA_Bookmarks function
      * constructor
      */
-    function AA_Bookmarks() {
+    function __construct() {
         global $auth, $slice_id;
         $this->profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 

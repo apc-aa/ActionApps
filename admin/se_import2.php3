@@ -42,7 +42,7 @@ $catVS       = new Cvarset();
 $expVS       = new Cvarset();
 
 $p_slice_id = q_pack_id($slice_id);
-$slice      = AA_Slices::getSlice($slice_id);
+$slice      = AA_Slice::getModule($slice_id);
 
 // update export_to_all switch
 if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
