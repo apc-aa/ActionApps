@@ -81,7 +81,7 @@ function varname4form($fid, $type='normal') {
  */
 function GetInputFormTemplate() {
      global $slice_id;
-     $slice = AA_Slices::getSlice($slice_id);
+     $slice = AA_Slice::getModule($slice_id);
      //           inputform($inputform_settings);
      $form  = new inputform();
      // ItemContent in getForm passed by reference
@@ -97,6 +97,7 @@ function getHtmlareaJavascript($slice_id) {
     // showHTMLAreaLink(name) - displays "edit in htmarea" link
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
 
+    /*
     $retval = getFrmJavascript('
                 // global variables used in HTMLArea (xinha)
                 // You must set _editor_url to the URL (including trailing slash) where
@@ -111,11 +112,13 @@ function getHtmlareaJavascript($slice_id) {
                 aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
                 );
 
+    */
+
     // HtmlArea scripts should be loaded allways - we use Dialog() function
     // from it ...
-    $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
+    //$retval .= getFrmJavascriptFile('misc/ckeditor/ckeditor.js?v='.time());
+    $retval .= getFrmJavascriptFile('misc/ckeditor/ckeditor.js');
     //    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
-    $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
 
     return $retval;
 }
@@ -405,7 +408,7 @@ class inputform {
         $jscode .= $this->js_proove_fields;
 
         // field javascript feature - triggers (see /include/javascript.php3)
-        $javascript = AA_Slices::getSliceProperty($slice_id, 'javascript');
+        $javascript = AA_Slice::getModule($slice_id)->getProperty('javascript');
 
         if ($javascript) {
             $jscode .= $javascript;
@@ -422,12 +425,12 @@ class inputform {
 
         $retval .= getFrmJavascriptFile('javascript/constedit.js');
 
-        if ($this->show_func_used['txt'] || $this->show_func_used['edt']) {
-            $retval .= getFrmJavascript('
-                window.onload   = xinha_init;
-                window.onunload = HTMLArea.flushEvents;'
-            );
-        }
+//      if ($this->show_func_used['txt'] || $this->show_func_used['edt']) {
+//          $retval .= getFrmJavascript('
+//                window.onload   = ckeditor_init;'
+//                window.onunload = HTMLArea.flushEvents;'
+//          );
+//      }
 
         if ($javascript) {
             $retval .= getFrmJavascriptFile('javascript/fillform.js' );
@@ -521,7 +524,7 @@ class AA_Inputfield {
      * @param $morehlp
      * @param $arr
      */
-    function AA_Inputfield($value='', $html_flag=true, $mode='normal',
+    function __construct($value='', $html_flag=true, $mode='normal',
                           $varname="", $name="", $add=false, $required=false,
                           $hlp="", $morehlp="", $arr=null) {
         $this->clear();
@@ -615,7 +618,7 @@ class AA_Inputfield {
             $this->valid         = $field["input_validate"];
 
             if ($field["multiple"] & 2) {   // translation
-                $this->translations = AA_Slices::getSlice(unpack_id($field["slice_id"]))->getTranslations();
+                $this->translations = AA_Slice::getModule(unpack_id($field["slice_id"]))->getTranslations();
             }
             if ( isset($field["const_arr"]) ) {
                 $this->const_arr  = $field["const_arr"];
@@ -680,7 +683,7 @@ class AA_Inputfield {
                     $slice_field = 'publish_date....';
                 }
             }
-            $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
+            $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
             $zids            = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormatedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
@@ -863,7 +866,7 @@ class AA_Inputfield {
                                                 get_if($this->param[1],60)); // fieldsize
                                break;
             case 'anonym_mfl':
-            case 'normal_mfl': list($actions, $rows) = $this->param;
+            case 'normal_mfl': list($actions, $rows, $max_characters, $width) = $this->param;
                                $actions = get_if($actions, 'MDAC'); // move, delete, add, change
                                $this->varname_modify('[]');         // use slightly modified varname
 
@@ -1407,6 +1410,8 @@ class AA_Inputfield {
             $rows += 8;
         }
 
+        $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
+
         if ($this->translations) {
             $first = true;
             $parts = array();
@@ -1430,11 +1435,9 @@ class AA_Inputfield {
                 $parts["part$id2"] = array($lang, $classes);
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
-                $widg .= "<textarea id=\"$id2\" name=\"$name2\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
                 $widg .= "</label>";
-                if ($showhtmlarea) {
-                    $widg .= getFrmJavascript( "htmlareas[htmlareas.length] = '$id2'");
-                } elseif ( $showrich_href ) {
+                if (!$showhtmlarea AND $showrich_href ) {
                     $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
                 }
                 $first = false;
@@ -1447,10 +1450,8 @@ class AA_Inputfield {
             $rows     = max($rows, min(substr_count($value,"\n")+1, 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
-            if ($showhtmlarea) {
-                $widg .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
-            } elseif ( $showrich_href ) {
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+            if (!$showhtmlarea AND $showrich_href ) {
                 $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
             }
         }
@@ -1535,6 +1536,7 @@ class AA_Inputfield {
             if (! $ncols) {
                 $this->echovar( implode('', $records) );
             } else {
+                $height    = (int)$height;
                 $nrows     = ceil( count($records) / $ncols);
                 if ($height > 0) {
                     $this->echoo("<div style=\"max-height:${height}px; overflow:auto;\">");
@@ -2283,6 +2285,9 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
     $html  = false;   // it was in parameter, but was never used in the code /honzam 05/15/2004
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    if ($showrich_href) {
+        $input->html_rb_show = true;
+    }
     $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
     $input->print_result();
 }
@@ -2891,6 +2896,13 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                         echo "&nbsp;&nbsp;";
                     }
                     break;
+                case 'close':
+                    echo '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="window.close();">&nbsp;';
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+                    break;
                 case 'reset':
                     echo '&nbsp;<input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' ">&nbsp;';
                     if ($properties['help'] != '') {
@@ -2943,12 +2955,11 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
 /** getFrmTabRow function
  * @param $row
  */
-function getFrmTabRow( $row ) {
+function getFrmTabRow( $row, $mode='td') {
    if ( isset($row) AND is_array($row) ) {
         $ret .= "\n <tr>";
         foreach ( $row as $col ) {
-            $ret .= ( !is_array($col) ? "<td>$col</td>" :
-                        '<td ' .$col['attr']. '>'. $col['text'] .'</td>');
+            $ret .= ( !is_array($col) ? "<$mode>$col</$mode>" : "<$mode " .$col['attr']. '>'. $col['text'] ."</$mode>");
         }
         $ret .= "</tr>";
     }
@@ -2992,14 +3003,17 @@ function FrmTabs( $tabs, $tabsId ) {
 /** GetHtmlTable function
  * Returns table based on config array
  * @param $content
+ * @param $mode = td | th
  */
-function GetHtmlTable( $content ) {
+function GetHtmlTable( $content, $mode='td' ) {
     if ( !(isset($content) AND is_array($content)) ) {
         return "";
     }
     $ret = '<table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG .'">';
+    $first = true;
     foreach ($content as $row) {
-        $ret .= getFrmTabRow( $row );
+        $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');
+        $first = false;
     }
     return  $ret . '</table>';
 }

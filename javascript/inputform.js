@@ -1,6 +1,5 @@
 // array of listboxes where all selection should be selected
 var listboxes = [];
-var htmlareas = [];
 var myform    = document.inputform;
 var relatedwindow;  // window for related stories
 var urlpickerwindow; // window for local URL picking
@@ -252,4 +251,36 @@ function sb_ClearField(field) {
     field.value='';
 }
 //END// Local URL Picker | Omar/Jaime | 11-06-2005
+
+
+// APC-AA javascript 3 functions for HTMLArea -- was in htmlarea/aafunc.js
+function switchHTML(name) {
+    elem = $$('input[name="'+name+"html"+'"]');
+    //elem = document.inputform.eval(name+"html");
+    if ( elem != null ) {
+        for (i=0; i<elem.length; i++) {
+            if (elem[i].value == "h") {
+                elem[i].checked = true;
+            }
+        }
+    }
+    if (CKEDITOR.env.isCompatible) {
+        $("htmlplainspan"+name).hide();
+    }
+}
+
+function showHTMLAreaLink(name) {
+    if (CKEDITOR.env.isCompatible) {
+        elem = document.getElementById("arealinkspan"+name);
+        if( elem && (elem != null) ) {
+            elem.style.display = "inline";
+        }
+    }
+}
+
+function openHTMLAreaFullscreen(name, session) {    // open HTMLArea in popupwindow
+    switchHTML(name);
+    CKEDITOR.replace(name);
+}
+
 
