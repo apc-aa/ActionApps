@@ -77,6 +77,7 @@ function GetCommonMenu($profile) {
 
         "header9"     =>_m("Misc"),
         "te_cron"     => array("label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=cron"),
+        "toexecute"   => array("label"=>_m("Scheduled Tasks"), "cond"=>IsSuperadmin(),        "href"=>"admin/aa_toexecute.php3"),
         "log"         => array("label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_log.php3"),
         "searchlog"   => array("label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_searchlog.php3"),
         "aafinder"    => array("label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php3"),
