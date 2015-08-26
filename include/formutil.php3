@@ -117,7 +117,8 @@ function getHtmlareaJavascript($slice_id) {
     // HtmlArea scripts should be loaded allways - we use Dialog() function
     // from it ...
     //$retval .= getFrmJavascriptFile('misc/ckeditor/ckeditor.js?v='.time());
-    $retval .= getFrmJavascriptFile('misc/ckeditor/ckeditor.js');
+//    $retval .= getFrmJavascriptFile('misc/ckeditor/ckeditor.js');
+    $retval .= getFrmJavascriptFile('misc/htmleditor/ckeditor.js');
     //    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
 
     return $retval;
