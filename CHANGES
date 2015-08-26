@@ -1,3 +1,7 @@
+15-08-26 - each Planed Task is now executed under the slice, in which the Task was created, so you can use it for {newitem} in those slices
+(honzam) - new possibility to display AA -> Scheduled Tasks which is currently planned for execution
+         - the length of admin pages with the listings of database tables or objects is increased to 100 items by default
+         - fix for new CKEditor' include/formutil.php3
 15-08-25 - CKEditor used as WYSIWYG editor insted of Xinha
 (honzam) - new {newitem:<template_long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
            which creates new item. The new item  it is based on template item,
@@ -57,7 +61,9 @@
            content is based also on domain name
              - enviro.example.org, culture.example.org, ... )
          - the length of Login timeout is now configurable by AA_LOGIN_TIMEOUT
-           (in minutes) constant (default 200 minutes)
+           (in minutes) constant (default 200 minutes). Just add following line
+           to config.php3:
+             define("AA_LOGIN_TIMEOUT", 60);  // one hour
          - updated phplib,
          - speed optimalization
 15-05-22 - new <persistent-id> parameter in

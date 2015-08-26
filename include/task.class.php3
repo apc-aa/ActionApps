@@ -102,6 +102,7 @@ class AA_Plannedtask extends AA_Object {
                 return;
             }
         }
+        AA::$slice_id = $this->getOwnerId();
         AA_Stringexpand::unalias($this->task, '', is_long_id($this->item_id) ? AA_Items::getItem(new zids($this->item_id, 'l')) : null);
     }
 
@@ -139,8 +140,6 @@ class AA_Plannedtask extends AA_Object {
         $aa_set->addCondition(new AA_Condition('event', '=', $event_id));
 
         $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
-
-        $GLOBALS['ddd'] = true;
 
         foreach ($zids as $id) {
             $task = AA_Object::load($id, 'AA_Plannedtask');
