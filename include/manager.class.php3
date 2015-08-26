@@ -134,9 +134,8 @@ class AA_Manager extends AA_Storable {
         $this->bin = isset($settings['bin']) ? $settings['bin'] : 'app';
 
         // create page scroller -----------------------------------------------
-        $scroller = new AA_Scroller('st',sess_return_url($_SERVER['PHP_SELF']));
         // could be redefined by view (see ['itemview']['manager_vid'])
-        $scroller->metapage = $settings['scroller']['listlen'];
+        $scroller = new AA_Scroller('st', sess_return_url($_SERVER['PHP_SELF']), $settings['scroller']['listlen']);
 //        $scroller->addFilter("slice_id", "md5", $this->module_id);
         $this->scroller = $scroller;
 
@@ -162,7 +161,7 @@ class AA_Manager extends AA_Storable {
                                         $aliases,
                                         false,   // no item ids yet
                                         0,       // first item
-                                        $this->scroller->metapage,
+                                        $this->scroller->getListlen(),
                                         '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
                                         '',      // no discussion settings
                                         $settings['itemview']['get_content_funct']);

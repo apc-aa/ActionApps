@@ -76,13 +76,13 @@ class AA_Scroller extends AA_Storable {
      * @param $ulr
      * @param $pgcnt is the number of pages to scroll
      */
-    function __construct($id = "", $url = "", $pgcnt = 0) {
+    function __construct($id = "", $url = "", $listlen = 10) {
         $this->id         = $id;
-        $this->pgcnt      = $pgcnt;
         $this->urldefault = $url;
+        $this->metapage   = $listlen;
+        $this->pgcnt      = 0;
         $this->filters    = array();
         $this->current    = 1;
-        $this->metapage   = 10;
         $this->visible    = 1;
     }
 
@@ -114,6 +114,11 @@ class AA_Scroller extends AA_Storable {
         }
     }
 
+    /** getListlen function    */
+    function getListlen() {
+        return $this->metapage;
+    }
+
     /** countPages function
      *  adjust number of pages depends on item count and metapage
      * @param $itmcnt
@@ -123,6 +128,7 @@ class AA_Scroller extends AA_Storable {
         $this->checkBounds();
         $this->itmcnt = $itmcnt;
     }
+
     /** go2page function
      * @param $page
      */

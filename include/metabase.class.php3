@@ -1046,7 +1046,7 @@ class AA_Metabase {
                  'function'             => false  // name of function for aditional action hooked on standard filter action
                                  ),
              'scroller'  => array(
-                 'listlen'              => EDIT_ITEM_COUNT
+                 'listlen'              => 100
                                  ),
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
