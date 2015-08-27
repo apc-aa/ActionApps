@@ -42,6 +42,7 @@ if ( !IsSuperadmin() ) {
 
 $metabase         = AA_Metabase::singleton();
 $manager_settings = $metabase->getManagerConf('toexecute');
+$manager_settings['searchbar']['default_sort'] =  array( 0 => array('execute_after' => 'a'));
 
 $manager = new AA_Manager('toexecute', $manager_settings);
 $manager->performActions();

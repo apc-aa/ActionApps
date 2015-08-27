@@ -428,6 +428,7 @@ function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
  * @return array
  */
 function getViewFields() {
+    $VIEW_FIELDS = array();
     // se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
                                                  // $validate, $insert,  $type,   $input,  $value
@@ -858,6 +859,7 @@ function getViewTypes() {
  * @return array
  */
 function getViewTypesInfo() {
+    $VIEW_TYPES_INFO = array();
     // modification - options for modification field of views
     // alias  - which aliases to show
     // order  - 'easy' - show just Ascending/Descending
@@ -949,6 +951,8 @@ define("MGR_ACTIONS",       2);  // show actions
 define("MGR_SB_SEARCHROWS", 4);  // show search rows in searchbar
 define("MGR_SB_ORDERROWS",  8);  // show order rows in searchbar
 define("MGR_SB_BOOKMARKS", 16);  // show bookmarks in searchbar
+define("MGR_SB_ALLTEXT"  , 32);  // show '-- any text field --' option in search fieds
+define("MGR_SB_ALLNUM"   , 64);  // show '-- any numeric field --' option in search fieds
 
 /** constants for bins, used in new QueryZIDS function */
 define("AA_BIN_ACTIVE",   1);

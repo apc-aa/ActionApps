@@ -253,9 +253,19 @@ class AA_MbC {
 
     function getAlias() {
         switch ($this->c[0]) {
+            case 'created':
+            case 'execute_after':
             case 'time': return GetAliasDef( "f_d:Y-m-d H:i", $this->c[0], $this->c[0]);
         }
+        switch ($this->_getBaseType()) {
+            case 'timestamp' : return GetAliasDef( "f_d:Y-m-d H:i", $this->c[0], $this->c[0]);
+            case 'mediumtext':
+            case 'mediumblob':
+            case 'longblob':
+            case 'longtext'  : //return GetAliasDef( "f_t:{expandable:{".$this->c[0]."}:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
+        }
         return GetAliasDef( "f_1", $this->c[0], $this->c[0]);
+        // return GetAliasDef( "f_t:{expandable:_#this:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
     }
 
     function getFieldDef() {

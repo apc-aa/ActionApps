@@ -199,10 +199,15 @@ class AA_Searchbar extends AA_Storable {
 
         if ( isset($fields) AND is_array($fields) ) {
             // add "all fields" search
-            $this->search_fields['all_fields']            = _m('-- any text field --');
-            $this->search_operators['all_fields']         = 'text';
-            $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
-            $this->search_operators['all_fields_numeric'] = 'numeric';
+            if ($this->show & MGR_SB_ALLTEXT) {
+                $this->search_fields['all_fields']            = _m('-- any text field --');
+                $this->search_operators['all_fields']         = 'text';
+            }
+            if ($this->show & MGR_SB_ALLNUM) {
+                $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
+                $this->search_operators['all_fields_numeric'] = 'numeric';
+            }
+            
 
             uasort ($fields, "searchfields_cmp");
             $last_pri = false;

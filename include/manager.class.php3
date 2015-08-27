@@ -128,6 +128,8 @@ class AA_Manager extends AA_Storable {
             $this->searchbar_funct = $settings['searchbar']['function'];
             if ( isset($settings['searchbar']['default_bookmark']) ) {
                 $this->searchbar->setFromBookmark($settings['searchbar']['default_bookmark']);
+            } elseif ( isset($settings['searchbar']['default_sort']) ) {
+                $this->searchbar->addOrder($settings['searchbar']['default_sort']);
             }
         }
 

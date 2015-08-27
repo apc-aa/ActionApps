@@ -1,3 +1,7 @@
+15-08-27 - fixed logout function for sitemodules client authentication - now
+(honzam)   works also with multidomain logins (see change 15-07-13)
+         - better sortorder and serchfieds presets in AA -> Log and
+           AA -> Sheduled Tasks
 15-08-26 - each Planed Task is now executed under the slice, in which the Task was created, so you can use it for {newitem} in those slices
 (honzam) - new possibility to display AA -> Scheduled Tasks which is currently planned for execution
          - the length of admin pages with the listings of database tables or objects is increased to 100 items by default
