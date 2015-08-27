@@ -320,13 +320,13 @@ class AA_Client_Auth {
             $arr = $response->getResponse();
             $session_id  = $arr[0];
             $myauth      = $arr[1];
-            
+
             if ($myauth->auth['uname'] AND $myauth->auth['uid'] AND (trim($myauth->auth['uid']) != 'nobody')) {
                 $x                  = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
                 $y                  = setcookie('AA_Uid', $myauth->auth['uname'], $this->_cookie_lifetime, '/');
                 $_COOKIE['AA_Sess'] = $session_id;
                 $_COOKIE['AA_Uid']  = $myauth->auth['uname'];  // we need it for current page as well
-                $this->_auth        = $myauth; 
+                $this->_auth        = $myauth;
                 return true;
             }
         }
@@ -343,6 +343,10 @@ class AA_Client_Auth {
     }
 
     function logout() {
+        $request  = new AA_Request('Logout');
+        $params   = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
+        $response = $request->ask($this->_aa_responder_script, $params);
+
         // both is necessary - one for current page, one for next page
         setcookie('AA_Sess', "", time() - 3600, '/');
         $_COOKIE['AA_Sess'] = '';

@@ -54,6 +54,26 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     }
 }
 
+/** Used for autentication
+ *  @return Session ID
+ */
+class AA_Responder_Logout extends AA_Responder {
+
+    function __construct($param=null) {}
+
+    /** every authenticated user can get his/her session_id */
+    function isPerm() { return true; }
+
+    function run() {
+        global $sess, $auth;
+        $ret = array('sessid'=>$sess->id, 'command' => $GLOBALS['request']->getCommand());
+        if (is_object($sess)) {
+            $sess->delete();
+        }
+        return new AA_Response($ret);
+    }
+}
+
 /** @return array of informations about AA - org_name, domaun */
 class AA_Responder_Get_Aaname extends AA_Responder {
     function __construct($param=null) {}
@@ -333,7 +353,10 @@ if (!$responder->isPerm()) {
 }
 
 $response = $responder->run();
-page_close();
+
+if ($request->getCommand() != 'Logout') {
+    page_close();
+}
 
 $response->respond();
 exit;
