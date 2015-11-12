@@ -901,6 +901,7 @@ class AA_Metabase {
      * @param array $zids array if ids to get from database
      * @return array - Abstract Data Structure containing the links data
      *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+     * @static
      */
     function getContent($settings, $zids) {
         $content = array();
@@ -976,7 +977,7 @@ class AA_Metabase {
         $SQL   .= ($where ? "WHERE (1=1) $where" : '');
         $SQL   .= MakeSQLOrderBy($fields, $sort, $join_tables);
 
-        return GetZidsFromSQL($SQL, $key);
+        return GetZidsFromSQL($SQL, $key, 'z');
     }
 
     function queryCount($settings, $set) {
