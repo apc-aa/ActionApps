@@ -39,9 +39,8 @@ require_once AA_INC_PATH."hitcounter.class.php3";
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST);  // $_GET is already in $_SERVER['REQUEST_URI']; *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES
+$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST, $_GET);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
 //AA::$debug && AA::$dbg->info('site', PageCache::globalKeyArray(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
-
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
@@ -87,7 +86,7 @@ is_object( $db ) || ($db = getDB());
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 $host = ltrim($_SERVER['HTTP_HOST'],'w.');
-AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url',array("http://$host/", "https://$host/",)))));
+AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url',array("http://$host/", "https://$host/","http://www.$host/","https://www.$host/")))));
 
 if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
     echo "<br>Error: no 'site_id' or 'site_id' is invalid";
@@ -166,7 +165,16 @@ if ($lang_file) {
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }
 
-$cacheentry = new AA_Cacheentry($module->getSite( $apc_state ), AA::getHeaders(), $hit_lid);
+
+$page_content = $module->getSite( $apc_state );
+
+// AJAX check
+if((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    $page_content = ConvertCharset::singleton()->Convert($page_content, AA::$encoding, 'utf-8');
+    AA::$headers['encoding'] = 'utf-8';
+}
+
+$cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid);
 $cacheentry->processPage();
 
 // In $slices4cache array MUST be listed all (unpacked) slice ids (and other
