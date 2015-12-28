@@ -204,7 +204,7 @@ function AA_Response(method, resp_params, ok_func, err_func) {
 //     });
 // }
 
-function displayInput(valdivid, item_id, fid) {
+function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     // already editing ?
     switch ($(valdivid).readAttribute('data-aa-edited')) {
        case '1': return;
@@ -216,7 +216,7 @@ function displayInput(valdivid, item_id, fid) {
     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
 
     $(valdivid).update(AA_Config.loader);
-    AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(responseText) {
+    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties}, function(responseText) {
             $(valdivid).update(responseText);  // new value
             $(valdivid).setAttribute('data-aa-edited', '1');
             var firstElement = $(valdivid).select('input','select', 'textarea')[0];
@@ -630,16 +630,94 @@ function AA_Rotator(id, interval, max, speed, effect) {
 
     AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
 }
+/* text - string or url (begins with '/')
+ * type - err | ok | info | [text]
+ */
+function AA_Message(text, type) {
+    var attrs = {'id': 'aa-message-box', 'onclick': '$(this).hide()'};
+    switch(type) {
+      case 'err':  attrs['class'] = 'aa-err';  break;
+      case 'ok':   attrs['class'] = 'aa-ok'; break;
+      case 'info': attrs['class'] = 'aa-info'; break;
+      default:     attrs['class'] = 'aa-text';
+                   type = 'text';
+    }
+    if (text.charAt(0)=='/') {
+        AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in"></div>');
+        AA_Ajax('aa-message-box-in', text);
+    } else {
+        AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in">'+text+'</div>');
+    }
+    if (type != 'text') {
+        setTimeout(function() { $('aa-message-box').hide(); }, 5000);
+    }
+}
 
-// function AA_Message(text, type) {
-//     var box = (typeof $('aa-message-box') != "undefined") ? $('aa-message-box') : new Element('div', {'id': 'aa-message-box', 'class': 'aa-ok'});
-//     box.update('<div>'+text+'</div>');
-// }
+function AA__systemDiv(id, attrs, text) {
+    var box = $(id);
+    if (!box) {
+        box = new Element('div', attrs);
+        document.body.appendChild(box);
+    }
+    box.update(text);
+    if (!text) {
+        box.hide();
+    } else {
+        if (!$('aa-bottom-toolbar')) {
+            AA_Toolbar(''); // we need toolbar defined, we need it to test styles
+            if (AA_GetStyle('aa-bottom-toolbar', 'position')!='fixed') {
+                AA_LoadCss(AA_Config.AA_INSTAL_PATH + 'css/aa-system.css');
+            }
+        }
+        box.show();
+    }
+}
 
+function AA_Toolbar(text) {
+    AA__systemDiv('aa-bottom-toolbar', {'id': 'aa-bottom-toolbar'}, text);
+}
 
+function AA_LoadJs(condition, callback, url) {
+    if (condition) {
+        callback();
+    } else {
+        var script = document.createElement("script")
+        script.type = "text/javascript";
+
+        if (script.readyState) { //IE
+            script.onreadystatechange = function () {
+                if (script.readyState == "loaded" || script.readyState == "complete") {
+                    script.onreadystatechange = null;
+                    callback();
+                }
+            };
+        } else { //Others
+            script.onload = function () {
+                callback();
+            };
+        }
+
+        script.src = url;
+        document.getElementsByTagName("head")[0].appendChild(script);
+    }
+}
+
+function AA_LoadCss(url) {
+   var link  = document.createElement('link');
+   link.type = 'text/css';
+   link.rel  = 'stylesheet';
+   link.href = url;
+   document.getElementsByTagName('head')[0].appendChild(link);
+   return link;
+}
+
+/* function to check the computed value of a style element */
+function AA_GetStyle(id, name) {
+    var element = document.getElementById(id);
+    return element.currentStyle ? element.currentStyle[name] : window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(name) : null;
+}
 
 /* Cookies */
-
 function SetCookie(name, value, plustime) {
    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
    var expires = new Date();
