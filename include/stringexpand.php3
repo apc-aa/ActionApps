@@ -88,23 +88,33 @@ if (ini_get('pcre.backtrack_limit') < 1000000) {
 
 /** creates array form JSON array or returns single value array if not valid json */
 function json2arr($string, $do_not_filter=false) {
-    if ($string[0] == '[') {
-        if ( ($values = json_decode($string)) == null) {
-            if (substr($string, -1)==']' AND (json_last_error() == JSON_ERROR_UTF8)) {
-                // kind of hack - decode JSON for non UTF-8 charsets
-                // the JSON must be in this exact form: ["val1","val2",...]
-                // could be solved also by iconv...
-                $values = explode('","', trim($string,'"[]'));
-            } else {
-                $values = ($string=='[]') ? array() : array($string);
-            }
-        }
-    } else {
+    if ($string{0} != '[') {
         $values = array($string);
+    } elseif (AA::$encoding AND (AA::$encoding != 'utf-8')) {
+        if ( ($arr = json_decode(AA_Stringexpand_Convert::expand($string,AA::$encoding))) == null) {
+            return array();
+        }
+        $values = array_map(function($value) { return AA_Stringexpand_Convert::expand($value,'utf-8',AA::$encoding); }, $arr);
+    } else {
+        $values = json_decode($string) ?: array();
     }
     return $do_not_filter ? $values : array_filter($values, 'strlen');  // strlen in order we do not remove "0"
 }
 
+
+/** creates array form JSON array or returns single value array if not valid json */
+function json2asoc($string) {
+    if ($string{0} != '{') {
+       return array();
+    }
+    if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
+        if ( ($arr = json_decode(AA_Stringexpand_Convert::expand($string,AA::$encoding),true)) == null) {
+            return array();
+        }
+        return array_map(function($value) { return AA_Stringexpand_Convert::expand($value,'utf-8',AA::$encoding); }, $arr);
+    }
+    return json_decode($string,true) ?: array();
+}
 
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
@@ -139,7 +149,7 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
             }
             $val = trim($twos[$i]);
             // Note you can't use !$val, since this will match a pattern of exactly "0"
-            if ( ($val=="") OR ereg($val, $condition) ) {    // Note that $string, might be expanded {headline.......} or {m}
+            if ( ($val=="") OR preg_match('`'.str_replace('`','\`',$val).'`', $condition) ) {    // Note that $string, might be expanded {headline.......} or {m}
                 $ret = $twos[$i+1];
                 break;
             }
@@ -971,7 +981,11 @@ function calculate($exp) {
     if (strspn($exp, '0123456789.+-*/%()') != strlen($exp)) {
         return 'wrong characters';
     }
-    $ret = @eval("return $exp;");
+    try {
+        $ret = @eval("return $exp;");
+    } catch (ParseError $e) {
+        return "Math Err: $exp";
+    }
     return ($ret===false) ? "Math Err: $exp" : $ret;
 }
 
@@ -2307,7 +2321,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @param $parameter
      */
     function expand($function, $ids_string, $expression=null, $parameter=null) {
-        if ( !in_array($function, array('sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter')) ) {
+        if ( !in_array($function, array('sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_contain')) ) {
             return '';
         }
         $ids     = explode('-', $ids_string);
@@ -2339,7 +2353,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 $ret = min(str_replace(',', '.', $results));
                 break;
             case 'avg':
-                array_walk($results, create_function('$a', 'return (float)str_replace(",", ".", $a);'));
+                array_walk($results, function($a) {return (float)str_replace(',', '.', $a);});
                 $ret = (count($results) > 0) ? array_sum($results)/count($results) : '';
                 break;
             case 'concat':
@@ -2364,6 +2378,16 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 $parameter = (string)$parameter;
                 foreach ($results as $k => $v) {
                     if ((string)$v == $parameter) {
+                        $arr[] = $k;
+                    }
+                }
+                $ret = join('-',$arr);
+                break;
+            case 'filter_contain':
+                $arr       = array();
+                $parameter = (string)$parameter;
+                foreach ($results as $k => $v) {
+                    if (strpos((string)$v, $parameter) !== false) {
                         $arr[] = $k;
                     }
                 }
@@ -2490,7 +2514,7 @@ class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
      * @param $expression - expression for ordering
      * @param $type   - numeric | rnumeric | string | rstring | locale | rlocale
      */
-    function expand($ids=null, $expression=null, $type=null) {
+    function expand($ids=null, $expression='publish_date....', $type=null) {
         return AA_Stringexpand_Aggregate::expand('order', $ids, $expression, $type);
     }
 }
@@ -2510,8 +2534,12 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
      * @param $ids    - dash separated item ids
      * @param $expression - expression for ordering
      * @param $equals     - numeric | rnumeric | string | rstring | locale | rlocale
+     * @param $operator   - = | contain
      */
-    function expand($ids=null, $expression=null, $equals=null) {
+    function expand($ids=null, $expression=null, $equals=null, $operator=null) {
+        if ($operator == 'contain' ) {
+            return AA_Stringexpand_Aggregate::expand('filter_contain', $ids, $expression, $equals);
+        }
         return AA_Stringexpand_Aggregate::expand('filter', $ids, $expression, $equals);
     }
 }
@@ -2597,7 +2625,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
      * @param $relation_field   - tree relation field (default relation........)
      * @param $reverse          - 1 for reverse trees (= child->parent relations)
      * @param $sort_string      - order of tree leaves (currently works only for reverse trees. @todo)
-     * @param $slices           - traverse only listed slices (some times usefull if your tree contain more than on slice and you want to count only with a subtree)
+     * @param $slices           - traverse only listed slices (some times usefull if your tree contain more than one slice and you want to count only with a subtree)
      */
     function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
         return AA_Stringexpand_Treestring::treefunc('getTreeString', $item_id, $relation_field, $reverse, $sort_string, $slices);
@@ -2899,20 +2927,18 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
         $ret      = '';
         $selected = (string)$selected;
         if ($group[0] == '[') {
-            $constants = json_decode($group, true);
-            if (is_array($constants)) {
-                foreach ($constants as $v) {
-                    if (is_array($v)) {
-                        $k     = $v[0];
-                        $khtml = "value=\"$k\"";
-                        $v     = $v[1];
-                    } else {
-                        $k     = $v;
-                    }
-
-                    $sel  = ((string)$k == $selected) ? ' selected' : '';
-                    $ret .= "\n  <option $khtml $sel>".safe($v)."</option>";
+            $constants = json2arr($group, true);
+            foreach ($constants as $v) {
+                if (is_array($v)) {
+                    $k     = $v[0];
+                    $khtml = "value=\"$k\"";
+                    $v     = $v[1];
+                } else {
+                    $k     = $v;
                 }
+
+                $sel  = ((string)$k == $selected) ? ' selected' : '';
+                $ret .= "\n  <option $khtml $sel>".safe($v)."</option>";
             }
         } else {
             $constants = GetConstants(trim($group));
@@ -3155,7 +3181,7 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
     function expand() {
         $arg_list  = func_get_args();   // must be asssigned to the variable
         $delimiter = array_shift($arg_list);
-        return join($delimiter, array_filter($arg_list, create_function('$str', 'return strlen(trim($str))>0;')));
+        return join($delimiter, array_filter($arg_list, function($str) {return strlen(trim($str))>0;}));
     }
 }
 
@@ -3293,19 +3319,26 @@ class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
     }
 }
 
-/** Allows on-line editing of field content */
+/** Allows on-line editing of field content
+ *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........}
+ *    {input:36fd8c4501d7a8b9e9505dc323d24321:text..........23:::::2}
+ *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
+ */
 class AA_Stringexpand_Input extends AA_Stringexpand_Field {
     /** expand function
      * @param $item_id
      * @param $field_id
      * @param $required
      * @param $widget_type
+     * @param $widget_properties - {"name":"My Category","input_help":"check the categories, please","columns":"1"}
+     * @param $preset_value      - not yet implemented
+     * @param $item_index        - used to identify number of the item - aa[n1_...], aa[n2_...]
      */
-     function expand($slice_id, $field_id, $required=null, $widget_type=null) {
+     function expand($slice_id, $field_id, $required=null, $widget_type=null, $widget_properties=null, $preset_value=null, $item_index=null) {
          if ( !($field = $this->_getField($slice_id, $field_id))) {
              return '';
          }
-         return $field->getWidgetNewHtml($required==1, $widget_type);
+         return $field->getWidgetNewHtml($required==1, null, $widget_type, json2asoc($widget_properties), null, $item_index);
      }
 }
 
@@ -3331,8 +3364,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
      * @param $field_id
      * @param $show_alias
      * @param $onsuccess
+     * @param $widget_type       - not yet implemented
+     * @param $widget_properties - not yet implemented
      */
-    function expand($item_id, $field_id, $show_alias='', $onsuccess='') {
+    function expand($item_id, $field_id, $show_alias='', $onsuccess='', $widget_type=null, $widget_properties=null) {
         $ret = '';
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
@@ -3340,10 +3375,11 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                 $alias_name  = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
                 $repre_value = ($show_alias == '') ? $item->f_h($field_id, ', ') : $item->subst_alias($show_alias);
                 $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
+                $widget_properties = str_replace(array("'", '"',"\r\n", "\r", "\n"), array("\'", "&quot;", " ", " ", " "), $widget_properties);
                 $iid         = $item->getItemID();
                 $input_name  = AA_Form_Array::getName4Form($field_id, $item);
                 $input_id    = AA_Form_Array::formName2Id($input_name);
-                $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">";
+                $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block\">";
                 $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
                 $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                 $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
@@ -3379,6 +3415,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
      * @param $required
      * @param $function
      * @param $widget_type
+     * @param $widget_properties - not yet implemented
      */
     function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
         $ret = '';
@@ -3405,10 +3442,43 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
     }
 }
 
+
+
+
+/** Allows on-line editing of field content in HTML Editor
+ *    {editable:<item_id>:<field_id>}
+ */
+class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getID();
+    }
+
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     * @param $required
+     * @param $function
+     * @param $widget_type
+     */
+    function expand($item_id, $field_id) {
+        $ret = '';
+
+        if (!$field_id OR empty($item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item)) {
+            return '';
+        }
+        return AA_Stringexpand::unalias('<div contenteditable=true id="'. str_replace('.','_', "au-$item_id-$field_id")."\" data-aa-id=\"$item_id\" data-aa-field=\"$field_id\">{". $field_id ."}</div>", '', $item);
+    }
+}
+
 /** Creates new item based on the template item
  *    {newitem:<template_long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
  *
- * The new item  it is based on template item, which is normal item which you
+ * The new item is based on template item, which is normal item which you
  * can put in HoldingBin/TrashBin... and the default values for the new item is
  * taken from the item except seo............. and status_code...... fields
  * Then you can modify the field values for the new item:
@@ -4082,7 +4152,7 @@ class AA_Unalias_Callback {
             }
             // tried to change to preg_match, but there was problem with multiple lines
             //   used: '/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/'
-            elseif ( (substr($out, 0, 5)=='alias') AND isset($this->item) AND ereg('^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$', $out, $parts) ) {
+            elseif ( (substr($out, 0, 5)=='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/', $out, $parts) ) {
                 // call function (called by function reference (pointer))
                 // like f_d("start_date......", "m-d")
                 if ($parts[1] && !$this->item->isField($parts[1])) {
@@ -4189,9 +4259,9 @@ class AA_Unalias_Callback {
         else {
             // Don't warn if { followed by non alphabetic, e.g. in Javascript
             // Fix javascript to avoid this warning, typically add space after {
-            if ($errcheck && ereg("^[a-zA-Z_]",$out)) {
-                huhl("Couldn't expand: \"{$out}\"");
-            }
+            // if ($errcheck && preg_match("/^[a-zA-Z_]/",$out)) {
+            //     huhl("Couldn't expand: \"{$out}\"");
+            // }
             return QuoteColons("{" . $out . "}");
         }
     }
@@ -4363,30 +4433,33 @@ class AA_Stringexpand {
         // Note ereg was 15 seconds on one multi-line example cf .002 secs
         //    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
-        // to speeedup the process we check, if we have to look for {( ... )} pairs
-        if (strpos($text, '{(') !== false) {
-            // replace all {(.....)} with {var:...}, which will be expanded into {...}
-            // this alows to write expressions like
-            //   {item:6625:{(some text {headline........}...etc.)}}
-            // /{\(((?:.(?!{\())*)\)}/sU  - the expression is complicated because it
-            //                              solves also nesting - like:
-            //                              see {( some {( text )} which )} could {( be )} nested
-            $last_replacements = 1;
+        $quotecolons_partly = 0;
+        // to speeedup the process we check, if we have to look for {} pairs
+        if (strpos($text, '{') !== false) {
+            $last_replacements  = 0;
+            // to speeedup the process we check, if we have to look for {( ... )} pairs
+            if (strpos($text, '{(') !== false) {
+                // replace all {(.....)} with {var:...}, which will be expanded into {...}
+                // this alows to write expressions like
+                //   {item:6625:{(some text {headline........}...etc.)}}
+                // /{\(((?:.(?!{\())*)\)}/sU  - the expression is complicated because it
+                //                              solves also nesting - like:
+                //                              see {( some {( text )} which )} could {( be )} nested
+                do {
+                    if (is_null($text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
+                        echo "Error: preg_replace_callback";
+                    }
+                } while($last_replacements);
+            }
+
+            $last_replacements  = 0;
+            $callback = array(new AA_Unalias_Callback($item, $itemview), ($debugtime>2) ? 'expand_bracketed_timedebug' : 'expand_bracketed');
             do {
-                if (is_null($text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
+                if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', $callback, $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
                     echo "Error: preg_replace_callback";
                 }
+                $quotecolons_partly += $last_replacements;
             } while($last_replacements);
-        }
-
-        $quotecolons_partly = false;
-        $callback = new AA_Unalias_Callback($item, $itemview);
-        while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
-            // it just means, we need to unquote colons
-            $quotecolons_partly = true;
-            if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback, ($debugtime>2) ? 'expand_bracketed_timedebug' : 'expand_bracketed'), $text))) {  //s for newlines, U for nongreedy
-                echo "Error: preg_replace_callback";
-            }
         }
 
         if (is_object($item)) {
@@ -4718,7 +4791,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             $image = str_replace(AA_HTTP_DOMAIN, '', $image);
         }
         if (substr($image,0,4)=="http") {
-            $image = ereg_replace("http://(www\.)?(.+)\.([a-z]{1,6})/(.+)", "\\4", $image);
+            $image = preg_replace("~http://(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\4", $image);
         }
 
         return array( AA_INSTAL_URL. "img.php?src=/$image&amp;$phpthumb_params", AA_INSTAL_PATH. "img.php?src=/$image&amp;$phpthumb_params");
@@ -5168,6 +5241,8 @@ class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
 }
 
 /** Array - experimental
+ *  {array:mygrp:joinset:{_#GRP_INDX}:_#HEADLINE}
+ *  {array:mygrp:get:{_#GRP_INDX}}
  */
 class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters ($val and $param could begin with space) */
@@ -5245,7 +5320,9 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
 }
 
 /**
- * {header}
+ * Sends HTTP header
+ * {header:404}
+ * {header:{ifset:{xid}::404}}   - good example - never use something like {ifset:{xid}::{header:404}}!!!
  */
 class AA_Stringexpand_Header extends AA_Stringexpand {
     function expand($header=null) {
@@ -5256,8 +5333,8 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
                     break;
         case 'svg': AA::$headers['type']   = 'image/svg+xml';
                     break;
-        return '';
         }
+        return '';
     }
 }
 
@@ -5466,6 +5543,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
  *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
  *    {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>)}}
+ *    {foreach:{ids:478598ab745a65f1478598ab745a65f1}:{({_:Editor_document:_#1:{id..............}})}}
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
 
@@ -5538,11 +5616,10 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Sends e-mail conditionaly
- *  Be careful - it can send mail on every page load!
+/**
  *  Use as:
- *    {mailform:<to>:<subject>:<html-inputs>:<ok-text>:<body>:<lang>:<from>}
- *    {mailform:honza.malik@ecn.cz:test mail:Your note <input name="note">:You posted<br>_#1<br>Regards<br>ActionApps:utf-8:actionapps@ecn.cz}
+ *    {mailform:<to>:<subject>:<html-inputs>:<body>:<ok-text>:<lang>:<from>}
+ *    {mailform:honza.malik@ecn.cz:test mail:Your note <input name="note">:You posted<br>_#1<br>Regards<br>ActionApps:sent OK:utf-8:actionapps@ecn.cz}
  */
 class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
 
@@ -5557,7 +5634,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         $form_id  = 'form'.new_id();
         $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);
 
-        $ret = "<form id=\"$form_id\" onsubmit=\"AA_AjaxSendForm('$form_id', '/mail.php'); return false;\">
+        $ret = "<form id=\"$form_id\" onsubmit=\"AA_AjaxSendForm('$form_id', '".AA_INSTAL_PATH."/mail.php'); return false;\">
         <input type=hidden name=aa_mailconf value=\"$mailconf\">
         <style type=\"text/css\">
            div.skryto { display:none };
@@ -5603,7 +5680,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $extrahightdiv = ($effect == 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
 
         $div_id = 'rot'.get_hash($ids, $code, $interval, $speed, $effect);
-        return "<div id=\"$div_id\" style=\"position:relative\"'>".join("\n",$frames).$extrahightdiv."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
+        return "<div id=\"$div_id\" style=\"position:relative\">".join("\n",$frames).$extrahightdiv."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
     }
 }
 
@@ -5791,6 +5868,26 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
         }
         //return $form->getAjaxHtml($ret_code);
         return $form->getAjaxHtml();
+    }
+}
+
+class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function
+     * @param $text
+     */
+    function expand($form_id='', $item_id='') {
+        if (!$form_id OR !($form = AA_Object::load($form_id, 'AA_Form'))) {
+            return '';
+        }
+        if (!is_object($item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null))) {
+            return '';
+        }
+        $form->setObject('AA_Item', $item_id, $item->getOwnerId());
+
+        return $form->getEditFormHtml('ajax');
     }
 }
 
