@@ -57,7 +57,7 @@ $varset = new Cvarset();
  * @param $alias=""
  * @param $separate=false
  */
-function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $separate=false) {
+function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $alias="", $separate=false, $analyze=false) {
     global $sess;
     $name = safe($name); $pri=safe($pri);
 
@@ -81,6 +81,16 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $sep
     $alias_list = (is_array($alias) ? join($alias," ") : '');
     echo "<td class=\"tabhlp\">$alias_list</td>";
     echo "</tr>\n";
+
+    if ($analyze AND ($type!='in_item_tbl')) {
+        $items       = DB_AA::select1('SELECT count(*) as cnt FROM item','cnt', array(array('item.slice_id',$slice_id, 'l')));
+        $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT item_id) as cntitm  FROM content INNER JOIN item ON content.item_id = item.id','', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id)));
+        $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('(content.flag & 64)',64,'i')));
+        $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('(content.flag & 64)',0,'i')));
+        $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('text','')));
+        //huhl($items_field);
+        echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small title=\"Distinct values\">Distinct values:$items_field[cntval]</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">Empty fields:$empty</small></td></tr>";
+    }
 }
 
 /** ShowNewField function
@@ -197,7 +207,7 @@ if ($update) {
 
         if (count($err) <= 1) {
             $Msg = MsgOK(_m("Fields update successful"));
-            $update = false;   // displyas fields from database instead of posted values (next in the code) 
+            $update = false;   // displyas fields from database instead of posted values (next in the code)
             }
     } while (false);           //in order we can use "break;" statement
 }
@@ -247,7 +257,7 @@ FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess
 
 <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
-$form_buttons = array("update", "cancel"=>array("url"=>"se_fields.php3"));
+$form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
 FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);
 ?>
 <tr>
@@ -266,9 +276,9 @@ if ( isset($s_fields) and is_array($s_fields)) {
         $type = ( $v['in_item_tbl'] ? "in_item_tbl" : "" );
 
         if ( $update ) { // get values from form
-            ShowField($v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false);
+            ShowField($slice_id, $v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false, $analyze);
         } else {
-            ShowField($v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false);
+            ShowField($slice_id, $v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false, $analyze);
         }
     }
 }
