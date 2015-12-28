@@ -474,9 +474,7 @@ function AA_LoadCss(url) {
    link.href = url;
    document.getElementsByTagName('head')[0].appendChild(link);
    return link;
- }
-
-
+}
 
 
 /* Cookies */

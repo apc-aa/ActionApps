@@ -196,7 +196,7 @@ if ( $template['W'] ) {
                            );
 }
 
-HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 FrmJavascript('
     function ModeditSubmit() {

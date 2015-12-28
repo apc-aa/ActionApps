@@ -792,6 +792,7 @@ class AA_Object extends AA_Storable implements iEditable {
         $aliases["_#AA_NAME_"] = GetAliasDef( "f_h", 'aa_name', 'aa_name');
         $aliases["_#AA_ID___"] = GetAliasDef( "f_h", 'aa_id',   'aa_id');
         $aliases["_#AA_OWNER"] = GetAliasDef( "f_h", 'aa_owner','aa_owner');
+        $aliases["_#AA_OW_NM"] = GetAliasDef( "f_t:{modulefield:{_#AA_OWNER}:name}", 'aa_owner','aa_owner');
         return $aliases;
     }
 
@@ -870,6 +871,7 @@ class AA_Object extends AA_Storable implements iEditable {
                  'order_row_count_min'  => 1,
                  'add_empty_search_row' => true,
                  'function'             => false  // name of function for aditional action hooked on standard filter action
+//                 'default_sort'         => array( 0 => array('time' => 'd'))  // it would be nice to add default sort, but we di not have creation_time or something like that
                                  ),
              'scroller'  => array(
                  'listlen'              => 100

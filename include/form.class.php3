@@ -34,8 +34,12 @@ class AA_Formrow extends AA_Storable {
     function getRowProperty() {}
     function getWidget()      {}
 
-    function getHtml($content) {
+    function getRowHtml($content, $type='') {
         $widget = $this->getWidget();
+        switch ($type) {
+            case 'ajax': return $widget->getAjaxHtml($this->getRowProperty(), $content);
+            case 'live': return $widget->getliveHtml($this->getRowProperty(), $content);
+        }
         return $widget->getHtml($this->getRowProperty(), $content);
     }
 
@@ -57,7 +61,7 @@ class AA_Formrow_Text extends AA_Formrow {
     function __construct($text=null) { // default values are needed for AA_Storable's construction
         $this->text = $text;
     }
-    function getHtml($content) {
+    function getRowHtml($content, $type='') {
         return '<div>'.$this->text.'</div>';
     }
 }
@@ -287,13 +291,30 @@ class AA_Form extends AA_Object {
         return $html;
     }
 
+    /** Edit item form
+     *  @param $type  ajax|live
+     */
+    function getEditFormHtml($type='live') {
+        if (!$this->object_id) {
+            return '';
+        }
+        $content = $this->_getContent();
+
+        $html  = "\n  <fieldset id=\"form".$this->object_id."\">";
+        $html .= $this->_getRowsHtml($content, $type);
+        $html .= "\n  </fieldset>";
+
+        return $html;
+    }
+
     /** @todo write permission function, which modifies the form based on the
      *        actual user's permissions and profile
+     *  @param $type  normal|ajax|live
      */
-    private function _getRowsHtml($content) {
+    private function _getRowsHtml($content, $type='') {
         $ret = '';
         foreach($this->rows as $row) {
-            $ret .= $row->getHtml($content);
+            $ret .= $row->getRowHtml($content, $type);
         }
         return $ret;
     }

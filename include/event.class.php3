@@ -152,7 +152,7 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',   'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
-        $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
+//        $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
         $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmPruzkum',array('type' => 'ITEM_NEW',         'slice'        => '63e7f6ee3d20167df1663444a9d828c2'));  // NSZM - pruzkum
         $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
@@ -736,7 +736,7 @@ function Event_ItemUpdated_Profem( $type, $slice, $slice_type, &$ret_params, $pa
     return SendFilledItem($ret_params, 64);
 }
 
-
+/* // now managed by Planed Task feature
 function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id  = $ret_params->getValue('short_id........');              // item's short_id is in params
     $akce_id   = trim($ret_params->getValue('unspecified.....'));              // akce_id
@@ -752,6 +752,7 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
     }
     return false;
 }
+*/
 
 /** Event_ItemAfterInsert_NszmPruzkum function
  * @param $type

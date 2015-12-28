@@ -1,3 +1,61 @@
+15-12-28 - AA now works with PHP7, tested on production server already
+(honzam) - new {editable:<item_id>:<field_id>} allows on-line editing of field
+           content in HTML Editor (CKEditor) (aajslib.php required at this
+           moment - the jquery version will be soon)
+         - improved {ajax} and {input:...} command - now you can redefine not
+           only widget type, but also field name, helptext and other widget
+           parameters like rows, ...:
+             {input:36fd8c4501d7a8b9e9505dc323d24321:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
+           you can also specify, to which item the field belongs in case you are
+           filling more than one item at once:
+             {input:36fd8c4501d7a8b9e9505dc323d24321:text..........23:::::2}
+             - generates aa[n2_...] instead of aa[n1_...], ...
+         - you can define widget type and set its properties also for
+             {ajax:<item>:<field>:<alias>:<onsucces>:<widget-type>:<widget-properties>}
+         - new {aggregate:filter_contain:<ids>:_#SOME_ALS:OK} which returns only
+           <ids> containing OK in evaluater _#SOME_ALS
+         - new optional parametr <operator> for
+           {filter:<ids>:<expression>:<equeals>:<operator>} which could be
+           "contain", so the filter is not on equal, but on substring
+         - fixed bug (path to mail.php) in mailform autogenerator - now works:
+             {mailform:<to>:<subject>:<html-inputs>:<body>:<ok-text>:<lang>:<from>}
+         - fixed {header:...} - now sends good character encoding for 404 HTTP
+           status
+         - new {formedit:<form-id>:<item-id>} - displays ajax editing form for the item
+         - new possibility to group items in view by "all characters before ~ character"
+         - new possibility to restrict max_characters for textarea widget
+         - text Field widget allows display of textarea(s) when you specify
+           the (new) Rows parameter
+         - fixed problem with wrong language used
+         - better parsing of JSON values - used standard parsing when possible
+         - slice export now allows export also unpublished items
+           (in holding bin and trash bin)
+         - you can use {var:aa_event_for} variable in Planed Tasks which holds
+           the item-id of modified of inserted item
+           (in case the Task is reaction to ADD of UPDATE item event)
+         - new experimental possibility to analyze field content and display
+           some statistics on "Slice Adsmin -> Fields"
+         - better external authentication (for ajax/filler) - unused AA_Uid removed from cookies
+         - phpThumb used for {img:...} resizing,... updated to latest version compatible with PHP7
+         - fixed compatibility with PHP7 - all ereg* replaced with preg*
+         - new AA_Message(text, type) js function which displays html message
+           in "popup". Types are [text]|err|ok|info. It loads necessary AA css
+           automaticaly
+         - new AA_Toolbar(text) js function - similar to AA_Message() but
+           displayed on the bottom
+         - new AA_LoadCss(), AA_LoadJs() fro dynamic CSS and JS loading from
+           javascript
+         - improved a bit look of Admin interface for admin-ecn style
+         - the output of view.php3 and site.php3 is automaticaly converted
+           to utf-8 if called from AJAX (which you always need). No need to add
+           convertto=utf-8 parameter
+         - better display of history of item on AA -> Finder
+15-12-07 - fixed bug with sitemodue caching with different site modules on the
+(honzam)   same ulr (mobile version through ModRewrite)
+         - automatic conversion to utf-8, when sitemodule is called by AJAX
+           (SERVER[HTTP_X_REQUESTED_WITH] == xmlhttprequest
+15-11-12 - fixed bug with polls administration - no polls shown
+(honzam)
 15-08-27 - fixed logout function for sitemodules client authentication - now
 (honzam)   works also with multidomain logins (see change 15-07-13)
          - better sortorder and serchfieds presets in AA -> Log and
@@ -856,7 +914,7 @@
            expiry_date..... field is not shown. It also sets the field's default
            to that value. (fixes suboptimal setting of exiry date in old slices)
          - allow to add polls into site module modules
-         - new {mailform:<to>:<subject>:<html-inputs>:<ok-text>:<body>:<lang>:<from>}
+         - new {mailform:<to>:<subject>:<html-inputs>:<body>:<ok-text>:<lang>:<from>}
            displays form with your own inputs which is after submition send
            to e-mail (uses AJAX)
              Ussage:
@@ -876,7 +934,6 @@
            #anchor them in url
 12-03-23 - fixed problem with multiple checkboxes, when used with slice items
 (honzam)   more times in one form
->>>>>>> .r3081
 12-03-01 - show item history in menu AA ("Get all informations about the ITEM")
 12-01-10 - small fixes and cleanup - alerts, mailman sync, view
 (honzam)

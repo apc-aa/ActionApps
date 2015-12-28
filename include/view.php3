@@ -889,9 +889,11 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             $slice                     = AA_Slice::getModule($slice_id);
             $view_param['convertfrom'] = $slice->getCharset();
         }
-        require_once AA_INC_PATH."convert_charset.class.php3";
-        $encoder = ConvertCharset::singleton();
-        $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
+        if ($view_param['convertto'] != $view_param['convertfrom'] ) {
+            require_once AA_INC_PATH."convert_charset.class.php3";
+            $encoder = ConvertCharset::singleton();
+            $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
+        }
     }
     AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
     return $return_with_slice_ids ? array($ret, $cache_sid) : $ret;

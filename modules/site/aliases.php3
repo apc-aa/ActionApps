@@ -49,6 +49,7 @@ if (!IfSlPerm(PS_MODW_SETTINGS)) {
 $module_id = $slice_id;
 
 $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('modules/site/aliases.php3'));
+//$manager_settings['searchbar']['default_sort'] =  array( 0 => array('aa_name' => 'a'));
 
 $manager = new AA_Manager('aliases'.$module_id, $manager_settings);
 $manager->performActions();

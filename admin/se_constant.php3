@@ -91,8 +91,8 @@ function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
 
     echo "
     <tr>
-      <td><input type=\"text\" name=\"name[$id]\" size=\"30\" maxlength=\"149\" value=\"$name\"></td>
-      <td><input type=\"text\" name=\"value[$id]\" size=\"30\" maxlength=\"255\" value=\"$value\">
+      <td><input type=\"text\" name=\"name[$id]\" size=\"60\" maxlength=\"149\" value=\"$name\"></td>
+      <td><input type=\"text\" name=\"value[$id]\" size=\"60\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
       <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
       <td class=\"tabtxt\">$count<input type=\"hidden\" name=\"used[$id]\" value=\"".str_pad($count, 7, "0", STR_PAD_LEFT)."\"></td>";
@@ -326,7 +326,7 @@ if ($group_id) {
 
     echo "
       <tr><td><b>"._m("Constants used in slice")."</b></td>
-        <td colspan=\"3\">". join('<br>', array_map(create_function('$arr','return $arr["sname"]." (".$arr["fname"].")";'), $using_slices_arr)) ."</td>
+        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return $arr['sname']." (".$arr['fname'].")";}, $using_slices_arr)) ."</td>
       </tr>";
 }
 
