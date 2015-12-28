@@ -173,9 +173,10 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
     * @param $akce_param  - not used
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
+        $sid = $manager->getModuleId();
 
-        $zids = AA_Manageraction::getZidsSanitized($item_arr, $manager->getModuleId());
-        $grabber = new AA_Grabber_Slice(null, $zids);
+        $zids = AA_Manageraction::getZidsSanitized($item_arr, $sid);
+        $grabber = new AA_Grabber_Slice( new AA_Set(array($sid),null,null,AA_BIN_ALL), $zids);
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
         $saver   = new AA_Saver($grabber, null, null, 'insert_if_new', 'new');
         $saver->run();
