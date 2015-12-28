@@ -189,7 +189,7 @@ FrmJavascriptCached("
   SelectViewSlice();", 'view_list');
 
 
-$viewuri = ereg_replace("/admin/.*", "/view.php3", $_SERVER['PHP_SELF']); //include help
+$viewuri = preg_replace("~/admin/.*~", "/view.php3", $_SERVER['PHP_SELF']); //include help
 echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri .
          '?vid=<i>ID</i>&quot;--&gt;</pre>';
 HtmlPageEnd();

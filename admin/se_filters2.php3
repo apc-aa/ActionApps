@@ -49,7 +49,7 @@ if (!IfSlPerm(PS_FEEDING)) {
  * @return parsed string
  */
 function ParseIdA($param,&$app) {
-   if (ERegI("([0-9a-f]{1,32}|0)-([01])", $param, $parse)) {  // slice_id or 0
+   if (preg_match("/([0-9a-f]{1,32}|0)-([01])/i", $param, $parse)) {  // slice_id or 0
       $app = $parse[2];
       return $parse[1];
    }

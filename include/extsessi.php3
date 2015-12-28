@@ -157,8 +157,8 @@ class AA_SL_Session extends Session {
             break;
         case "get":
             if ( isset($_SERVER['QUERY_STRING']) ) {
-                $_SERVER['QUERY_STRING'] = ereg_replace(
-                    "(^|&)".quotemeta(urlencode($this->name))."=".$id.'(&|$)',
+                $_SERVER['QUERY_STRING'] = preg_replace(
+                    "`(^|&)".str_replace('`','\`',quotemeta(urlencode($this->name))."=".$id).'(&|$)`',
                     "\\1", $_SERVER['QUERY_STRING']);
             }
             break;

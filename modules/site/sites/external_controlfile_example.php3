@@ -1,4 +1,8 @@
 <?php
+
+// This file is no longer needed - use AA_Router_Seo - in site moduule settings
+// Honza 2015-12-13
+
 /**
  * Example of external site module control file
  *
@@ -95,8 +99,9 @@ function new_state(&$new_state, $x, $p, $d, $t, $scrl) {
 function ApcStr2Arr($varnames, $str, $strdef, $reg) {
     if (!$str) { $str = $strdef; }
     $varout = array();
-    if (!(ereg($reg, $str, $vars))) {
-        if (!(ereg($reg, $strdef, $vars))) {
+    $reg    = '`'.str_replace('`','\`',$reg).'`';
+    if (!(preg_match($reg, $str, $vars))) {
+        if (!(preg_match($reg, $strdef, $vars))) {
             print("Error initial string $strdef doesn't match regexp $reg\n<br>");
         }
     }

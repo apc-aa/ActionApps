@@ -889,9 +889,9 @@ function GetWhereExp( $field, $operator, $querystring ) {
                 $querystring = strtotime($querystring);
                 break;
             case 'e': // european datum style (like 24. 12. 2001)
-                if ( !ereg("^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$", $querystring, $part)) {
-                    if ( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$", $querystring, $part)) {
-                        if ( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $querystring, $part)) {
+                if ( !preg_match("/^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$/", $querystring, $part)) {
+                    if ( !preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$/", $querystring, $part)) {
+                        if ( !preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$/", $querystring, $part)) {
                             $querystring = time();
                             break;
                         }
@@ -1438,7 +1438,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         }
                         $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
                         if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
-                            $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                            $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                         }
                         $select_conds[] = $cur_cond;
                         $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
@@ -1487,7 +1487,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         }
                         $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
                         if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
-                            $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                            $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                         }
                         $select_conds[] = $cur_cond;
                         $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
@@ -1510,7 +1510,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                     case 'id..............':
                     case 'slice_id........':
                         // replace unpaced ids with the packed ones
-                        $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                        $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                         break;
                     case 'expiry_date.....':
                         $ignore_expiry_date = true;

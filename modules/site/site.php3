@@ -225,8 +225,9 @@ function ModW_id2item($id,$use_short_ids="false") {
 function ModW_str2arr($varnames, $str, $strdef, $reg) {
     if (!$str) { $str = $strdef; }
     $varout = array();
-    if (!(ereg($reg, $str, $vars))) {
-        if (!(ereg($reg, $strdef, $vars))) {
+    $reg    = '`'.str_replace('`','\`',$reg).'`';
+    if (!(preg_match($reg, $str, $vars))) {
+        if (!(preg_match($reg, $strdef, $vars))) {
             print("Error initial string $strdef doesn't match regexp $reg\n<br>");
         }
     }

@@ -287,7 +287,7 @@ class Action {
             }
             case "removestring": {
                 $v =  $itemContent->GetValue($from);
-                $fvalues[]['value'] = $this->params ? ereg_replace($this->params, "", $v) :$v;
+                $fvalues[]['value'] = $this->params ? preg_replace('`'.str_replace('`','\`',$this->params).'`', "", $v) :$v;
                 break;
             }
             case "formatdate": {

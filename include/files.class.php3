@@ -1444,7 +1444,7 @@ class AA_Directory_Wrapper {
         if ($this->reg_file_filter) {
             $return_array = array();
             foreach ($all_file_names as $file_name) {
-                if (eregi($this->reg_file_filter, $file_name)) {
+                if (preg_match('`'.str_replace('`','\`',$this->reg_file_filter).'`i', $file_name)) {
                     $return_array[] = $file_name;
                 }
             }

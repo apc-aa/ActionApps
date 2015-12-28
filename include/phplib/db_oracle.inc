@@ -318,7 +318,7 @@ class DB_Oracle {
     $curs=ora_open($this->Link_ID);
 
     ## this is the important part and it is also the HACK!
-    if (eregi("^[[:space:]]*SELECT[[:space:]]",$this->lastQuery) ) {
+    if (preg_match("/^[[:space:]]*SELECT[[:space:]]/i",$this->lastQuery) ) {
       $from_pos = strpos(strtoupper($this->lastQuery),"FROM");
       $q = "SELECT count(*) ". substr($this->lastQuery, $from_pos);
 

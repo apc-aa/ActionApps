@@ -337,11 +337,11 @@ function map1field($value,$item,$channel) {
     if ($debugfeed >= 8) {
         print("\n<br>xmlclient:map1field:$value");
     }
-    if (ereg("(.*)\|(.*)",$value,$vals)) {  // Process alternatives, first if non-blank else second
+    if (preg_match("/(.*)\|(.*)/",$value,$vals)) {  // Process alternatives, first if non-blank else second
         $try1 = map1field($vals[1],$item,$channel);
         if ($try1[0]['value']) { return $try1; }
         return map1field($vals[2],$item,$channel);
-    } elseif (ereg("^DATE\((.*)\)$",$value,$vals)) { // Postprocess to turn into unix
+    } elseif (preg_match("/^DATE\((.*)\)$/",$value,$vals)) { // Postprocess to turn into unix
         $try1 = map1field($vals[1],$item,$channel);
         if ($debugfeed >= 9) {
             huhl($try1);
@@ -361,11 +361,11 @@ function map1field($value,$item,$channel) {
         return $try1;
     } elseif ($value == "NOW") {
         return array(0 => array('value' => time(), 'flag' => 0));
-    } elseif (ereg("CHANNEL/(.*)",$value,$vals)) {
+    } elseif (preg_match("~CHANNEL/(.*)~",$value,$vals)) {
         return array ( 0 => field2arr($channel[$vals[1]]));
-    } elseif (ereg("ITEM/(.*)",$value,$vals)) {
+    } elseif (preg_match("~ITEM/(.*)~",$value,$vals)) {
         return array ( 0 => field2arr($item[$vals[1]]));
-    } elseif (ereg("DC/(.*)",$value,$vals)) {
+    } elseif (preg_match("~DC/(.*)~",$value,$vals)) {
         // Dont believe DC fields can be HTML
         return array(0 => array('value' => $item['dc'][$vals[1]], 'flag' => 0));
     } elseif ($value == "CONTENT") {

@@ -46,11 +46,11 @@ function add_vars($query_string="") {
       $lvalue = substr($a[$i],0,$pos);
       $value  = urldecode (DeBackslash(substr($a[$i],$pos+1)));
     }  
-    if (!ERegI("^(.+)\[(.*)\]", $lvalue, $c))   // is it array variable[]
+    if (!preg_match("/^(.+)\[(.*)\]/i", $lvalue, $c))   // is it array variable[]
       $GLOBALS[urldecode (DeBackslash($lvalue))]= $value;   # normal variable
     else {
       $index1 = urldecode (DeBackslash($c[2]));
-      if (ERegI("^(.+)\[(.*)\]", $c[1], $d)) { // for double array variable[][]
+      if (preg_match("/^(.+)\[(.*)\]/i", $c[1], $d)) { // for double array variable[][]
         $index2  = urldecode (DeBackslash($d[2]));
         $varname = urldecode (DeBackslash($d[1]));  
       } else 

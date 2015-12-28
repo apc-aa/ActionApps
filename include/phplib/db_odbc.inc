@@ -534,7 +534,7 @@ The function halt()s if a lock cannot be obtained.
             $res[$i]["php_subtype"]="";
             break;
         }
-        if ( ereg("(unique_key|primary_key)",$res[$i]["flags"]) ) {
+        if ( preg_match("/(unique_key|primary_key)/",$res[$i]["flags"]) ) {
             $uniq[]=$res[$i]["name"];
         }
       }

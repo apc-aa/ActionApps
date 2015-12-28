@@ -20,7 +20,7 @@ class DB_USql extends DB_Sql {
 //--------------------------------------------------------------
   function import_record_vars() {
     while (list($key, $val) = each($this->Record))
-    if (ereg("[A-Za-z][A-Za-z0-9_]*", $key)) {
+    if (preg_match("/[A-Za-z][A-Za-z0-9_]*/", $key)) {
       $field_name = strtoupper($key); 
 	  global $$field_name;
 	  $$field_name=$val;
@@ -55,13 +55,13 @@ class DB_USql extends DB_Sql {
     $fields="";
 	$values="";
     while (list($key, $val) = each($this->Record))
-    if (ereg("[A-Za-z][A-Za-z0-9_]*", $key)) {
+    if (preg_match("/[A-Za-z][A-Za-z0-9_]*/", $key)) {
       $field_name = strtoupper($key);
 	  if (!empty($val)) 
 	  if (strstr( $filter, $field_name )=="") {
 	    $fields.="$field_name ,";
-		$val=ereg_replace("'","''",$val);
-		$val=ereg_replace("\"","\\\"",$val);
+		$val=str_replace("'","''",$val);
+		$val=str_replace("\"","\\\"",$val);
 		//addslashes($val);
 	    $values.="'$val' ,";
 	  };

@@ -1,4 +1,8 @@
 <?php
+
+// This file is no longer needed - use AA_Router_Seo - in site moduule settings
+// Honza 2015-12-13
+
 // site definition file for Econnect's site (http://ecn.cz)
 // This is just an example of site file. For more details on sites see FAQ:
 // http://apc-aa.sourceforge.net/faq/
@@ -112,7 +116,7 @@ if ( !$apc ) {
   else $apc = 'zzvx--';
 }  
 
-if ( ereg( "^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)", $apc, $vars )) 
+if ( preg_match( "/^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)/", $apc, $vars )) 
   list($old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = $vars;
  else 
   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t) = array( 'z', 'z', 'v', 'x', '-', '-');

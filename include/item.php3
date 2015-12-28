@@ -854,7 +854,7 @@ class AA_Item {
     function f_g($col, $param="") {    // image height
         global $out;
         if ( !$this->getval($col) ) {
-            $out = ERegI_Replace( "height[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete height = x
+            $out = preg_replace( "/height[[:space:]]*=[[:space:]]*[\"]?^/i", "", $out );  // delete height = x
             return false;
         }
         return myspecialchars($this->getval($col));
@@ -869,7 +869,7 @@ class AA_Item {
     function f_w($col, $param="") {    // image width
         global $out;
         if ( !$this->getval($col) ) {
-            $out = ERegI_Replace( "width[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete width = x
+            $out = preg_replace( "/width[[:space:]]*=[[:space:]]*[\"]?^/i", "", $out );  // delete width = x
             return false;
         }
         return myspecialchars($this->getval($col));
@@ -1474,7 +1474,7 @@ class AA_Item {
         for ( $i=0; $i < $to; ++$i ) {
             $first  = $i*2;
             $second = $first +1;
-            if ( ($p[$first] != '') AND ereg( $p[$first] , $colvalue ) ) {
+            if ( ($p[$first] != '') AND preg_match('`'.str_replace('`','\`',$p[$first]).'`' , $colvalue ) ) {
                 return $p[$second];
             }
         }

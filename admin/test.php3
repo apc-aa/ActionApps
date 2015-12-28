@@ -13,7 +13,7 @@ if (extension_loaded('gd')) {
 require_once "../include/config.php3";
 
 function checkdir($name,$dir,$mustendslash) {
-    if ($mustendslash && ! Ereg("/$",$dir)) {
+    if ($mustendslash && ! preg_match('`/$`',$dir)) {
         print("<li><font color=\"red\">$name=$dir should end in a slash</font></li>\n");
     }
     if (! is_dir($dir)) {

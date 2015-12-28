@@ -87,7 +87,7 @@ function decode($v) {
  */
 function nsName2abbrevname($name) {
     global $module2abbrev; // Static array above
-    ereg("(.+):([^:]+)",$name,$nameparts);
+    preg_match("/(.+):([^:]+)/",$name,$nameparts);
     if ($ab = $module2abbrev[$nameparts[1]]) {
         return $ab.":".$nameparts[2];
     }

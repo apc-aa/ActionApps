@@ -309,7 +309,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
     // Create file
     else if ($cmd=='createfile') {
-        if ( !EReg("^[0-9a-zA-Z_.]*$", $arg)) {
+        if ( !preg_match("/^[0-9a-zA-Z_.]*$/", $arg)) {
             $err[] = _m("Wrong file name.");
             return;
         }
@@ -332,7 +332,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
     // Create directory
     else if ($cmd=='createdir') {
-        if ( !EReg("^[0-9a-zA-Z_]*$", $arg)) {
+        if ( !preg_match("/^[0-9a-zA-Z_]*$/", $arg)) {
             $err[] = _m("Wrong directory name.");
             return;
         }

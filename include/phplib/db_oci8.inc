@@ -125,7 +125,7 @@ class DB_OCI8 {
       }
       if ($this->autoCount) {
         /* need to repeat the query to count the returned rows from a "select" statement. */
-        if (eregi("SELECT", $Query_String)) {
+        if (preg_match("/SELECT/i", $Query_String)) {
           /* On $this->num_rows I'm storing the returned rows of the query. */
           $this->num_rows = OCIFetchStatement($this->Parse, $aux);
           OCIExecute($this->Parse, OCI_DEFAULT);
@@ -168,7 +168,7 @@ class DB_OCI8 {
       $query_id = $this->Parse;
     }
     if ($query_id && $this->last_query_text != "") {
-      if (eregi("^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?", $this->last_query_text[$query_id], $tablename)) {
+      if (preg_match("/^(INSERT{1}|^INSERT INTO{1})[[:space:]][\"]?([a-zA-Z0-9\_\-]+)[\"]?/i", $this->last_query_text[$query_id], $tablename)) {
         $query = "SELECT ".$tablename[2]."_id_seq.CURRVAL FROM DUAL";
         $temp_q_id =  @OCIParse($this->db, $query);
         @OCIExecute($temp_q_id, OCI_DEFAULT);

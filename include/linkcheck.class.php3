@@ -99,9 +99,9 @@ class linkcheck
     function check_url($url) {
         $return = array();
         $time   = time();
-        if (!eregi("^http://", $url)) {
-            if (eregi("^mailto:", $url)) {
-                $url = trim(eregi_replace("^mailto:(.+)", "\\1", $url));
+        if (!preg_match("~^http://~i", $url)) {
+            if (preg_match("/^mailto:/i", $url)) {
+                $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
                 list($brugernavn, $host) = explode("@", $url);
                 $dnsCheck = checkdnsrr($host,"MX");
                 if ($dnsCheck) {

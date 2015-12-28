@@ -708,10 +708,10 @@ class htmlMimeMail {
     {
         preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
         foreach ($matches[1] as $value) {
-            $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+            //$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+            $replacement = preg_replace_callback('/([\x20\x80-\xFF])/', function ($ms) { return '='.strtoupper(dechex(ord($ms[0]))); }, $value);
             $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
         }
-
         return $input;
     }
 

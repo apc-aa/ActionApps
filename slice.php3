@@ -186,7 +186,7 @@ if ($slicetext) {
 // url posted command to display another file ----------------------------------
 if ( $inc ) {                   // this section must be after add_vars()
     //  StoreVariables(array("inc")); // store in session
-    if ( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
+    if ( !preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc) ) {
         echo _m("Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"). " $inc";
         ExitPage();
     } else {

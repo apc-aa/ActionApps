@@ -332,26 +332,26 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
           if ($ftk == "slice_id") {
               continue;
           }
-          if ( EReg("^[0-9]*$", $ftk)) {
+          if ( preg_match("/^[0-9]*$/", $ftk)) {
               continue;
           }
           if ($ftv == $fm[$ftk]) {
               continue; // They match
           }
-          if (EReg("^input_",$ftk) && ($ftv == $fm[$ftk] . ":")) {
+          if (preg_match("/^input_/",$ftk) && ($ftv == $fm[$ftk] . ":")) {
               continue;
           }
-          if (EReg("^input_",$ftk) && ($ftv . ":" == $fm[$ftk])) {
+          if (preg_match("/^input_/",$ftk) && ($ftv . ":" == $fm[$ftk])) {
               continue;
           }
           // If alias or alias2 or alias3 not defined, then dont care about subsiduaries
-          if (EReg("^alias_",$ftk) && (! $ft["alias"])) {
+          if (preg_match("/^alias_/",$ftk) && (! $ft["alias"])) {
               continue;
           }
-          if (EReg("^alias2_",$ftk) && (! $ft["alias2"])) {
+          if (preg_match("/^alias2_/",$ftk) && (! $ft["alias2"])) {
               continue;
           }
-          if (EReg("^alias3_",$ftk) && (! $ft["alias3"])) {
+          if (preg_match("/^alias3_/",$ftk) && (! $ft["alias3"])) {
               continue;
           }
           if (!$opened && $pr) {
@@ -406,13 +406,13 @@ function compareSliceTableFields($st,$sm,$pr) {
           || ($ftk == "created_by")) {
                continue;    // Fields we expect to be different
           }
-          if (EReg("format",$ftk)) {
+          if (preg_match("/format/",$ftk)) {
               $hf = 1;
           }
           if ($ftk == "owner") {
               $unp=1;
           }
-          if ( EReg("^[0-9]*$", $ftk)) {
+          if ( preg_match("/^[0-9]*$/", $ftk)) {
               continue;
           }
           if ($ftv == $fm[$ftk]) {
