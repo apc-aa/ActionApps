@@ -219,7 +219,7 @@ function ParamImplode($param) {
     if (!is_array($param)) {
         return (string)$param;
     }
-    array_walk($param, create_function('&$v,$k', '$v = str_replace(":", "#:", $v);'));
+    array_walk($param, function (&$v) {$v = str_replace(':', '#:', $v);});
     return implode(":", $param);
 }
 
@@ -1125,28 +1125,22 @@ function safe( $var ) {
  * @param bool   $js_lib      if true, includes js_lib.js javascript
  * @param $lang
  */
-function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
+function HtmlPageBegin($js_lib=false, $lang=null) {
     AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang ?: get_mgettext_lang()];
     AA::sendHeaders(AA::getHeaders());
-    
-    if ($stylesheet == "default") {
-        $stylesheet = AA_INSTAL_PATH .ADMIN_CSS;
-    }
     echo
 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
   <html>
     <head>
-      <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">';
-    if ($stylesheet) {
-        echo '
-      <link rel="stylesheet" href="'.$stylesheet.'" type="text/css" media="all">
+      <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
+      <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'" type="text/css" media="all">
+      <link rel="stylesheet" href="'.AA_INSTAL_PATH. '/css/aa-system.css" type="text/css" media="all">
       <style type="text/css" media="print">
         .noprint, .aa_manager_actions { display: none; }
         body, #hlavnitbl { background-color: #FFFFFF;  }
       </style>
       ';
-    }
 
     echo "<!--$lang-->";
     echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".AA::$encoding."\">\n";

@@ -194,7 +194,7 @@ class inputform {
         $page_title = get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_title' : 'add_title'), $this->page_title);
 
         if ( $this->display_aa_begin_end ) {
-            HtmlPageBegin('default', false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+            HtmlPageBegin(false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
             // get validation and gui javascripts for used fields
             // getFormJavascript must be called after getForm since
@@ -3010,7 +3010,7 @@ function GetHtmlTable( $content, $mode='td' ) {
     if ( !(isset($content) AND is_array($content)) ) {
         return "";
     }
-    $ret = '<table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG .'">';
+    $ret = '<table border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG .'">';
     $first = true;
     foreach ($content as $row) {
         $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');

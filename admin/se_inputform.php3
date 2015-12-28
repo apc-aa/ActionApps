@@ -297,7 +297,7 @@ if ( !$update ) {      // load defaults
     $translation  = $fld["multiple"] & 2;
 }
 
-HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <title><?php echo _m("Admin - configure Fields");?></title>
 <script language="JavaScript"><!--

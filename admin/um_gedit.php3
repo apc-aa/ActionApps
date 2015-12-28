@@ -106,7 +106,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.js javascript library
-HtmlPageBegin('default', true);
+HtmlPageBegin(true);
 ?>
  <title><?php echo _m("User management - Groups");?></title>
 <script Language="JavaScript"><!--

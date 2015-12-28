@@ -45,7 +45,7 @@ $fields      = $slice->fields('record');
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.js javascript library
-HtmlPageBegin('default', true);
+HtmlPageBegin(true);
 ?>
 <title><?php echo _m("Editor window - item manager"); echo " - "._m("select constants window");  ?></title>
 <script type="text/javascript">

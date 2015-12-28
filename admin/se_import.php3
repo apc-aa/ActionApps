@@ -81,7 +81,7 @@ $export_to_all = GetTable2Array($SQL, 'aa_first', 'export_to_all');
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.js javascript library
-HtmlPageBegin('default', true);
+HtmlPageBegin(true);
 ?>
  <title><?php echo _m("Slice Administration");?></title>
 

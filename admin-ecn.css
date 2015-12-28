@@ -311,6 +311,165 @@ TD.sel_title {
      border-top: none;
 }
 
+
+td.navbar a, input[type="submit"], input[type="button"] {
+     display: inline-block;
+     background-color: #D5C2A4;
+     text-decoration: none;
+     padding: 5px 15px;
+     border-radius: 5px;
+     box-shadow: 0 0 1px #000;
+     border: none;
+}
+
+td.navbar a:hover, input[type="submit"]:hover, input[type="button"]:hover {
+     background-color: #B39E7D;
+}
+
+.leftmenu a {
+     text-decoration: none;
+     display: inline-block;
+     padding: 4px 2px;
+     border-bottom: solid 1px #CAB594;
+     border-radius: 5px;
+     margin: 3px 0;
+     width: 104px;
+}
+
+.leftmenu a img {
+     margin-right: 2px;
+     vertical-align: bottom;
+}
+
+.leftmenu a:hover {
+     color: #7F4351;
+}
+.nbenable {
+     color: #414141;
+}
+.navbar a span.nbactive {
+     background-color: transparent;
+     color: #7F4351;
+}
+
+td.slicehead {
+     font-family: calibri, arial, sans-serif;
+     font-size: 30px;
+     font-weight: normal;
+     color: #7F4351;
+     padding-bottom: 10px;
+}
+
+td.navbar {
+     padding-bottom: 7px;
+}
+
+input[type="text"], select {
+     border: 1px solid #BAB4AB;
+     margin: 2px;
+}
+
+tr.leftmenuy a {
+     text-decoration: none;
+     font-size: 11px;
+     background-color: #F2E4CB;
+     padding: 1px 7px;
+     box-shadow: 0 0 1px;
+     border-radius: 5px;
+     display: inline-block;
+     color: #61454A;
+     height: 15px;
+}
+tr.leftmenuy a:hover {
+     background-color: #D5C2A4;
+}
+
+/* -- */
+
+td.navbar a, input[type="submit"], input[type="button"] {
+     display: inline-block;
+     background-color: #D5C2A4;
+     text-decoration: none;
+     padding: 5px 15px;
+     border-radius: 5px;
+     box-shadow: 0 0 1px #000;
+     border: none;
+}
+
+td.navbar a:hover, input[type="submit"]:hover, input[type="button"]:hover {
+     background-color: #B39E7D;
+}
+
+.leftmenu a {
+     text-decoration: none;
+     display: inline-block;
+     padding: 1px 2px;
+     border-bottom: solid 1px #CEBCA0;
+     margin: 0;
+     width: 104px;
+}
+.leftmenua {
+     background: #F5F0E7;
+     border-radius: 5px 5px 0 0;
+}
+
+.leftmenu a img {
+     margin-right: 2px;
+     vertical-align: bottom;
+}
+
+.leftmenu a:hover {
+     color: #7F4351;
+}
+.nbenable {
+     color: #414141;
+}
+.navbar a span.nbactive {
+     background-color: transparent;
+     color: #7F4351;
+}
+
+td.slicehead {
+     font-family: calibri, arial, sans-serif;
+     font-size: 30px;
+     font-weight: normal;
+     color: #7F4351;
+     padding-bottom: 10px;
+}
+
+td.navbar {
+     padding-bottom: 7px;
+}
+
+#aa_content a:visited {
+     color: #81658C;
+}
+
+a {
+     color: #2F3D99;
+}
+
+input[type="text"], select {
+     border: 1px solid #BAB4AB;
+     margin: 2px;
+}
+
+tr.leftmenuy a {
+     text-decoration: none;
+     font-size: 11px;
+     background-color: #F2E4CB;
+     padding: 1px 7px;
+     box-shadow: 0 0 1px;
+     border-radius: 5px;
+     display: inline-block;
+     color: #61454A;
+     height: 15px;
+}
+tr.leftmenuy a:hover {
+     background-color: #D5C2A4;
+}
+
+
 /* -------------------- Sitemodule CSS - begin --------------------------- */
 #sitetree {
     font-size: 8pt;

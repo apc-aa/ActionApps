@@ -84,7 +84,7 @@ if ($_POST['copy']) {
     $sync_defs  = true;
 }
 
-HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
 
 ?>
