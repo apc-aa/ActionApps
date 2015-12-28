@@ -215,7 +215,7 @@ function EnableClick(cond,what) {
   echo "<br>"."";
   echo "</td></tr>
   <tr><td>&nbsp;</td><td>";
-  FrmSelectEasy("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $gb_header);
+  FrmSelectEasy("gb_header", getViewGroupFunctions(), $gb_header);
   FrmSelectEasy("gb_direction", array( '2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")  ),
                 $gb_direction);
   PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );

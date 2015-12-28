@@ -158,7 +158,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
     if ( $group ) {
-        FrmSelectEasy("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $vw_data['gb_header']);
+        FrmSelectEasy("gb_header", getViewGroupFunctions(), $vw_data['gb_header']);
     }
     PrintMoreHelp(DOCUMENTATION_URL);
     //  PrintHelp($hlp);
@@ -450,7 +450,7 @@ FrmTabEnd();
 echo "</form><br>";
 
 if ( $view_id ) {
-  $ssiuri = ereg_replace("/admin/.*", "/view.php3", $_SERVER['PHP_SELF']);
+  $ssiuri = preg_replace("~/admin/.*~", "/view.php3", $_SERVER['PHP_SELF']);
   echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
        "?vid=$view_id&quot;--&gt;</pre>";
 }

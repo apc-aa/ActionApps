@@ -484,6 +484,21 @@ function getViewFields() {
     return $VIEW_FIELDS;
 }
 
+function getViewGroupFunctions() {
+    return array ('0'   => _m("Whole text"),
+                  '1'   => _m("1st letter"),
+                  '2'   => '2 '._m("letters"),
+                  '3'   => '3 '._m("letters"),
+                  '4'   => '4 '._m("letters"),
+                  '5'   => '5 '._m("letters"),
+                  '6'   => '6 '._m("letters"),
+                  '7'   => '7 '._m("letters"),
+                  '8'   => '8 '._m("letters"),
+                  '9'   => '9 '._m("letters"),
+                  '127' => _m("all before "). '~'   // we could add 126, 125,...
+                  );
+}
+
 /** getViewTypes function
 *       View types is an array. The basic format is
 *       view_type => array (

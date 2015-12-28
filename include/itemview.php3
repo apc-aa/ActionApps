@@ -659,7 +659,11 @@ class itemview {
                     }
                 }
                 if ($this->slice_info['gb_header']) {
-                    $catname = substr($catname, 0, $this->slice_info['gb_header']);
+                    if ($this->slice_info['gb_header'] == 127) {  // all before ~
+                        $catname = strtok($catname, '~');
+                    } else {
+                        $catname = substr($catname, 0, $this->slice_info['gb_header']);
+                    }
                 }
             }
 
