@@ -355,7 +355,11 @@ array("name"=>_m("Text Area"),
         array("name"=>_m("row count"),
         "desc"=>"",
         "type"=>"INT",
-        "example"=>"20")));
+        "example"=>"20"),
+        array("name"=>_m("max characters"),
+        "desc"=>"max count of characters entered (maxlength parameter)",
+        "type"=>"INT",
+        "example"=>"500")));
 $INPUT_TYPES["items"]["edt"]=
 array("name"=>_m("Rich Edit Area"),
     "desc"=>_m("Rich edit text area. This operates the same way as Text Area in browsers which don't support the Microsoft TriEdit library. In IE 5.0 and higher and in Netscape 4.76 and higher (after installing the necessary features) it uses the TriEdit to provide an incredibly powerful HTML editor.<br><br>\nAnother possibility is to use the <b>iframe</b> version which should work in IE on Windows and Mac (set the 3rd parameter to \"iframe\").<br><br>\nThe code for this editor is taken from the Wysiwyg open project (http://www.unica.edu/uicfreesoft/) and changed to fullfill our needs. See http://www.unica.edu/uicfreesoft/wysiwyg_web_edit/Readme_english.txt on details how to prepare Netscape.<br><br>\nThe javascript code needed to provide the editor is saved in two HTML files, so that the user doesn't have to load it every time she reloads the Itemedit web page."),
@@ -409,7 +413,11 @@ array("name"=>_m("Multiple Text Field"),
         array("name"=>_m("width"),
         "desc"=>_m("width of the field in characters (size parameter)"),
         "type"=>"INT",
-        "example"=>"30")
+        "example"=>"30"),
+        array("name"=>_m("rows"),
+        "desc"=>_m("if 1 (default), textfield used; for rows>1 textareas are used"),
+        "type"=>"INT",
+        "example"=>"1")
         ));
 
 $INPUT_TYPES["items"]["sel"]=

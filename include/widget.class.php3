@@ -60,7 +60,7 @@ class AA_Form_Array {
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
-    static public function getName4Form($property_id, $content) {
+    static public function getName4Form($property_id, $content, $item_index) {
         $form_field_id = self::getVarFromFieldId($property_id);
 
         $oid = $content->getId();
@@ -72,7 +72,8 @@ class AA_Form_Array {
         if ( !$oowner ) {
             throw new Exception('No owner specifield for '. $form_field_id);
         }
-        return "aa[n1_$oowner][$form_field_id]";
+        $item_index = is_numeric($item_index) ? (int)$item_index : 1;
+        return "aa[n${item_index}_$oowner][$form_field_id]";
     }
 
     static public function formName2Id($name) {
@@ -153,6 +154,12 @@ class AA_Widget extends AA_Components {
     /** $parameters - Array of AA_Property used for the widget
     *   inherited from AA_Components
     */
+
+    /** when widget is used for new item, this variable is used to identify number of the item - aa[n1_...], aa[n2_...]
+     *  Good for inserting of multiple items in one form
+     */
+    var $item_index = 1;
+
     /** name function
      *
      */
@@ -163,6 +170,11 @@ class AA_Widget extends AA_Components {
     //function assignConstants($arr) {
     //    $this->_const_arr = (array)$arr;
     //}
+
+    /** set index of the item in new-item form */
+    public function setIndex($item_index=null) {
+        $this->item_index = is_numeric($item_index) ? (int)$item_index : 1;
+    }
 
     /** returns array(ids => formated text) for the current widget based on
      *  the widget settings
@@ -178,11 +190,13 @@ class AA_Widget extends AA_Components {
         // $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
         $ids_arr = false;
 
-        $constgroup   = $this->getProperty('const');
+        $constgroup      = $this->getProperty('const');
                         // $restrict_zids could be removed from this check. Honza 2015-06-11
-        $filter_conds = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds');
-        $sort_by      = $this->getProperty('sort_by');
-        $slice_field  = $this->getProperty('slice_field');
+        $filter_conds    = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds');
+        // filter_conds_rw - changeable conditions - could come as paremeter widget_properties
+        $filter_conds_rw = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
+        $sort_by         = $this->getProperty('sort_by');
+        $slice_field     = $this->getProperty('slice_field');
 
         if ( !$this->getProperty('const')) {  // no constants or slice defined
             return;                           //  = array();
@@ -193,8 +207,9 @@ class AA_Widget extends AA_Components {
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
         if ( is_object($content) ) {
-            $filter_conds = $content->unalias($filter_conds);
-            $sort_by      = $content->unalias($sort_by);
+            $filter_conds    = $content->unalias($filter_conds);
+            $filter_conds_rw = $content->unalias($filter_conds_rw);
+            $sort_by         = $content->unalias($sort_by);
         }
 
         // "#sLiCe-" prefix indicates select from items
@@ -218,6 +233,9 @@ class AA_Widget extends AA_Components {
             }
             $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $set             = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
+            if ($filter_conds_rw) {
+                $set->addCondsFromString($filter_conds_rw);
+            }
 
             if ($searchterm) {
                 $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
@@ -384,7 +402,7 @@ class AA_Widget extends AA_Components {
     }
 
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $aa_property->isRequired() ? 'required' : '';
         $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
@@ -578,27 +596,28 @@ class AA_Widget_Txt extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties() {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int', false, '', '', 20)
+        return array (                   //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'rows'              => new AA_Property( 'rows',              _m("Rows"),            'int',  false, true, 'int', false, '', '', 20),
+            'max_characters'    => new AA_Property( 'max_characters',    _m("Max characters"),  'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', '')
             );
-
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content);
-        $base_id      = AA_Form_Array::formName2Id($base_name);
-        $widget_add  = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
-        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
+        $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id        = AA_Form_Array::formName2Id($base_name);
+        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
+        $widget_add2    = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
 
-        $widget      = '';
+        $widget         = '';
 
-        $delim       = '';
-        $row_count   = $this->getProperty('row_count', 4);
-        $required    = $aa_property->isRequired() ? 'required' : '';
-        $value       = $content->getAaValue($aa_property->getId());
+        $delim          = '';
+        $rows           = $this->getProperty('rows', 4);
+        $max_characters = (int)$this->getProperty('max_characters', 0);
+        $required       = $aa_property->isRequired() ? 'required' : '';
+        $value          = $content->getAaValue($aa_property->getId());
 
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty textarea at least
@@ -606,7 +625,7 @@ class AA_Widget_Txt extends AA_Widget {
         $value->fixTranslations($aa_property->getTranslations());
         foreach ($value as $i => $val) {
             $input_name   = $base_name ."[$i]";
-            $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $row_count, $widget_add, $widget_add2, $required);
+            $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required);
             $delim        = "\n<br />";
             $required     = ''; // only one is required
         }
@@ -617,11 +636,12 @@ class AA_Widget_Txt extends AA_Widget {
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-     private function _getOneInput($input_name, $i, $val, $row_count, $widget_add, $widget_add2, $required) {
+     private function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
          $input_id     = AA_Form_Array::formName2Id($input_name);
          $input_value  = myspecialchars($val);
+         $maxlength    = $max_characters ? " maxlength=\"$max_characters\"" : '';
 
-         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
+         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
          if ($lang = AA_Content::getLangId($i)) {
              $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
          }
@@ -650,8 +670,8 @@ class AA_Widget_Tpr extends AA_Widget {
      */
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
-            'column_count'           => new AA_Property( 'column_count',           _m("Column count"),         'int',  false, true, 'int',  false, '', '', 70),
+            'rows'                   => new AA_Property( 'rows',                   _m("Rows"),            'int',  false, true, 'int',  false, '', '', 10),
+            'cols'                   => new AA_Property( 'cols',                   _m("Columns"),         'int',  false, true, 'int',  false, '', '', 70),
             'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
             );
@@ -679,8 +699,8 @@ class AA_Widget_Edt extends AA_Widget {
      */
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
-            'column_count'           => new AA_Property( 'column_count',           _m("Column count"),         'int',  false, true, 'int',  false, '', '', 70),
+            'rows'                   => new AA_Property( 'rows',                   _m("Rows"),            'int',  false, true, 'int',  false, '', '', 10),
+            'cols'                   => new AA_Property( 'cols',                   _m("Columns"),         'int',  false, true, 'int',  false, '', '', 70),
             'area_type'              => new AA_Property( 'area_type',              _m("Type"),                 'string', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class')
             );
     }
@@ -743,7 +763,8 @@ class AA_Widget_Mfl extends AA_Widget {
             'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'),
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
             'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60)
+            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60),
+            'rows'                   => new AA_Property( 'rows',                   _m("Rows"),                 'int',  false, true, 'int',  false, _m("if 1 (default), textfield used. for rows>1 textareas are used"), '', 1)
             );
     }
 
@@ -751,7 +772,7 @@ class AA_Widget_Mfl extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_name_add = $base_name . '[mfl]';
 
         $base_id       = AA_Form_Array::formName2Id($base_name);
@@ -759,6 +780,7 @@ class AA_Widget_Mfl extends AA_Widget {
         // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
         $row_count     = (int)$this->getProperty('row_count', 6);
+        $rows          = (int)$this->getProperty('rows', 1);
         //$show_buttons  = $this->getProperty('show_buttons', 'MDAC');
 
         $max_characters = $this->getProperty('max_characters', 254);
@@ -772,12 +794,21 @@ class AA_Widget_Mfl extends AA_Widget {
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
             $required     = ($aa_property->isRequired() AND ($i==0)) ? 'required' : '';
-            $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+            if ($rows > 1) {
+                $widget      .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required >$input_value</textarea></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+            } else {
+                $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+            }
         }
         $widget           = "<div id=\"allrows$base_id\">$widget</div>";
+        $img              = GetAAImage('icon_new.gif', _m('new'), 17, 17);
+        if ($rows > 1) {
+            $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><textarea name=\'$base_name"."[mfl][]\' rows=\'$rows\' ></textarea></div>'); return false;\">$img</a>";
+        } else {
+            $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input type=text name=\'$base_name"."[mfl][]\' value=\'\' size=\'$width\' maxlength=\'$max_characters\' ></div>'); return false;\">$img</a>";
+        }
 
-       $img               = GetAAImage('icon_new.gif', _m('new'), 17, 17);
-       $widget           .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input type=text name=\'$base_name"."[mfl][]\' value=\'\' size=\'$width\' maxlength=\'$max_characters\' ></div>'); return false;\">$img</a>";
+
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
@@ -881,6 +912,7 @@ class AA_Widget_Sel extends AA_Widget {
             'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
             'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
+            'filter_conds_rw'        => new AA_Property( 'filter_conds_rw',        _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-headline........-RLIKE-A"),
             );
     }
 }
@@ -935,7 +967,7 @@ class AA_Widget_Rio extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id       = AA_Form_Array::formName2Id($base_name);
 
         $required    = $aa_property->isRequired() ? 'required' : '';
@@ -995,7 +1027,7 @@ class AA_Widget_Dte extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[dte]';
         $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
@@ -1089,7 +1121,7 @@ class AA_Widget_Chb extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id       = AA_Form_Array::formName2Id($base_name);
         // we use extended version, because of ajax and live widget and the fact
         // the checbox do not send nothing if unslected (so we add [chb][def]
@@ -1222,7 +1254,7 @@ class AA_Widget_Mch extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[mch]';
         $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
@@ -1442,7 +1474,7 @@ class AA_Widget_Fil extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id        = AA_Form_Array::formName2Id($base_name);
         $widget_add     = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
 
@@ -1563,7 +1595,7 @@ class AA_Widget_Tag extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id      = AA_Form_Array::formName2Id($base_name);
 
         $input_name   = $base_name.'[tag][]';
@@ -1647,19 +1679,19 @@ class AA_Widget_Iso extends AA_Widget {
      */
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count in the list"),'int',  false, true, 'int',  false, '', '', 15),
-            'show_actions'           => new AA_Property( 'show_actions',           _m("Actions to show"),      'string', false, true, 'string', false, _m("Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."), '', 'AMB'),
-            'admin_design'           => new AA_Property( 'admin_design',           _m("Admin design"),         'bool', false, true, 'bool', false, _m("If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."), '' , '0'),
-            'tag_prefix'             => new AA_Property( 'tag_prefix',             _m("Tag Prefix"),           'string', false, true, 'string', false, _m("Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."), '', 'AMB'),
-            'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."), '', 'MDR'),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'filter_conds_changeable'=> new AA_Property( 'filter_conds_changeable',_m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items in related items window. This conds user can change."), '', "conds[0][source..........]=Econnect"),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
+            'const'                => new AA_Property( 'const',                _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
+            'row_count'            => new AA_Property( 'row_count',            _m("Row count in the list"),'int',  false, true, 'int',  false, '', '', 15),
+            'show_actions'         => new AA_Property( 'show_actions',         _m("Actions to show"),      'string', false, true, 'string', false, _m("Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."), '', 'AMB'),
+            'admin_design'         => new AA_Property( 'admin_design',         _m("Admin design"),         'bool', false, true, 'bool', false, _m("If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."), '' , '0'),
+            'tag_prefix'           => new AA_Property( 'tag_prefix',           _m("Tag Prefix"),           'string', false, true, 'string', false, _m("Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."), '', 'AMB'),
+            'show_buttons'         => new AA_Property( 'show_buttons',         _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."), '', 'MDR'),
+            'bin_filter'           => new AA_Property( 'bin_filter',           _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'         => new AA_Property( 'filter_conds',         _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'filter_conds_rw'      => new AA_Property( 'filter_conds_rw',      _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items in related items window. This conds user can change."), '', "conds[0][source..........]=Econnect"),
+            'slice_field'          => new AA_Property( 'slice_field',          _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'sort_by'              => new AA_Property( 'sort_by',              _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
+            'additional_slice_pwd' => new AA_Property( 'additional_slice_pwd', _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
+            'const_arr'            => new AA_Property( 'const_arr',            _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
             );
     }
 }
@@ -1730,7 +1762,7 @@ class AA_Widget_Hco extends AA_Widget {
 
 
     //function _getRawHtml($aa_property, $content, $type='normal') {
-    //    $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+    //    $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
     //    $base_id     = AA_Form_Array::formName2Id($base_name);
     //    $required    = $aa_property->isRequired() ? 'required' : '';
     //    $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_HcoDisplaySub(); AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
@@ -1791,7 +1823,7 @@ class AA_Widget_Pwd extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id     = AA_Form_Array::formName2Id($base_name);
 
         $required    = $aa_property->isRequired() ? 'required' : '';
@@ -1873,7 +1905,7 @@ class AA_Widget_Hid extends AA_Widget {
 
     function getHtml($aa_property, $content, $function=null) {
         $property_id  = $aa_property->getId();
-        $input_name   = AA_Form_Array::getName4Form($property_id, $content)."[0]";
+        $input_name   = AA_Form_Array::getName4Form($property_id, $content, $this->item_index)."[0]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
         $input_value  = myspecialchars($content->getValue($property_id));
         return        "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
@@ -1909,7 +1941,7 @@ class AA_Widget_Inf extends AA_Widget {
     function _getRawHtml($aa_property, $content, $type='normal') {
         $property_id  = $aa_property->getId();
         $widget       = myspecialchars($content->getValue($property_id));
-        $base_name    = AA_Form_Array::getName4Form($property_id, $content);
+        $base_name    = AA_Form_Array::getName4Form($property_id, $content, $this->item_index);
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $input_name   = $base_name."[0]";
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
@@ -2124,7 +2156,7 @@ class AA_Property extends AA_Storable {
     /** called before StoreItem to fill the field with correct data */
     function  complete4Insert($new_value, $profile) {
         $fid           = $this->getId();
-        $profile_value = $profile->getProperty('hide&fill',$fid) || $profile->getProperty('fill',$fid);
+        $profile_value = $profile->getProperty('hide&fill',$fid) ?: $profile->getProperty('fill',$fid);
         if ($profile_value) {
             $new_value = $profile->parseContentProperty($profile_value);
         }
