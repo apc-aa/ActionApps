@@ -51,7 +51,7 @@ class AA_Plannedtask extends AA_Object {
             'event'     => new AA_Property( 'event',     _m("Event to run"), 'string',  true,  true, array('enum',array('ITEM_NEW'=> _m('New Item'), 'ITEM_UPDATED'=> _m('Item Updated'))), false,  _m('Event, when the task shoud be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify "+ seconds" parameter or set it to 0, then the task is executed directly. If the "+ seconds" offset is set, then the task is planed to execute once after x seconds.')),
             'time'      => new AA_Property( 'time',      _m("Time to run"),  'string',  false, true, '', false, _m('Specify the time, when the task shoud be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="http://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>"Monday 10:00" - runs every Monday at 16:00<br>"first day of this month 10:00"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.')),
             'shift'     => new AA_Property( 'shift',     _m("+ seconds"),    'int',     false, true, '', false, _m('Optionaly specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)')),
-            'item_id'   => new AA_Property( 'item_id',   _m("Item ID"),      'string',  false, true, 'id', false, _m('Optionaly specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. For "event" tasks (Item updated/new) is always filled with id of modified item.'))
+            'item_id'   => new AA_Property( 'item_id',   _m("Item ID"),      'string',  false, true, 'id', false, _m('Optionaly specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For "event" tasks (Item updated/new) is always filled with id of modified item.'))
             );
     }
 
@@ -65,7 +65,7 @@ class AA_Plannedtask extends AA_Object {
          '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Task'), _m('Condition'), _m('ID'))).'</th>
+              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Task'), _m('Condition'), _m('ID'), _m('Module'))).'</th>
             </tr>
             ';
     }
@@ -82,6 +82,7 @@ class AA_Plannedtask extends AA_Object {
              <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
              <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
              <td><small>_#AA_ID___</small></td>
+             <td><small title="_#AA_OWNER">_#AA_OW_NM</small></td>
            </tr>
            ';
    }
@@ -95,6 +96,10 @@ class AA_Plannedtask extends AA_Object {
     }
 
     function toexecutelater() {
+        AA::$slice_id = $this->getOwnerId();
+        if (is_long_id($this->item_id)) {
+            AA_Stringexpand::unalias('{define:aa_event_for:'.$this->item_id.'}');
+        }
         $condition = trim($this->condition);
         if (strlen($condition)) {
             $condition_res = trim(AA_Stringexpand::unalias($condition));
@@ -102,8 +107,11 @@ class AA_Plannedtask extends AA_Object {
                 return;
             }
         }
-        AA::$slice_id = $this->getOwnerId();
-        AA_Stringexpand::unalias($this->task, '', is_long_id($this->item_id) ? AA_Items::getItem(new zids($this->item_id, 'l')) : null);
+        if (is_long_id($this->item_id)) {
+            AA_Stringexpand::unalias($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
+        } else {
+            AA_Stringexpand::unalias($this->task);
+        }
     }
 
     /** method called after save */
