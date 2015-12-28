@@ -361,7 +361,7 @@ class AA_Content {
         if ( AA::$site_id ) {
             $def_lang = AA_Modules::getModule(AA::$site_id)->getDefaultLang();
         } else {
-            $def_lang = AA_Modules::getModule($this->getOwnerId())->getDefaultLang() || strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
+            $def_lang = AA_Modules::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
         return ($def_lang_num = AA_Content::getLangNumber($def_lang)); // array of prefered languages in priority order.
     }
@@ -385,7 +385,7 @@ class AA_Content {
      * @param $field_id
      */
     function getValuesArray($field_id) {
-        return empty($this->content[$field_id]) ? array() : array_map( create_function('$val', 'return $val["value"];'), $this->content[$field_id] );
+        return empty($this->content[$field_id]) ? array() : array_map( function($val) {return $val['value'];}, $this->content[$field_id] );
     }
 
     function diff($object2compare) {
@@ -1346,7 +1346,7 @@ function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
 
-    if ($newcontent4id->storeItem( 'update', array($invalidate, false))) {    // invalidatecache, not feed
+    if ($newcontent4id->storeItem( 'update', array($invalidate, false, true))) {    // invalidatecache, not feed
         $updated_items = 1;
     }
     return $updated_items;
