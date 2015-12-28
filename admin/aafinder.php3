@@ -260,7 +260,6 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
         echo "<br>_#HEADLINE: ". $item->unalias($format);
         echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
         echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
-        echo "<pre>";
         echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
         print_r($item->content4id);
         echo "</pre>";
@@ -295,9 +294,12 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
         }
 
         $changes = AA_ChangesMonitor::singleton();
-        echo '<h3>'. _m('History') .'</h3><pre>';
-        print_r($changes->getHistory(array($long_id)));
-        echo "</pre>";
+        echo '<h3>'. _m('History') .'</h3>';
+        //echo "<pre>";
+        //print_r($changes->getHistory(array($long_id)));
+        //echo "</pre>";
+
+        $changes->display(array($long_id));
       //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
       //  print_r($changes->getProposals(array($long_id)));
       //  echo "</pre>";

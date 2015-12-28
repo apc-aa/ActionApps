@@ -779,6 +779,41 @@ class AA_ChangesMonitor {
         return $garr;
     }
 
+
+    /** experimental display function - prints the table with all changes  */
+    function display($resource_ids, $type='h') {
+        $garr = new AA_GeneralizedArray();
+        if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
+            return array();
+        }
+
+        $ids4sql = sqlin("`change`.resource_id", $resource_ids);
+
+        $arr = DB_AA::select(array(), "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE $ids4sql
+                                AND `change`.type='$type'
+                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority");
+
+        echo "<table><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
+        $chid = '';
+        foreach($arr as $change) {
+            if ($chid != $change['change_id']) {
+                echo "<tr><th colspan=6>". date('Y-m-d H:i:s', $change['time']). ' -'.perm_username( $change['user'])." <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
+                $chid = $change['change_id'];
+            }
+            echo "<tr><td>&nbsp;</td><td>$change[selector]</td><td>$change[value]</td><td>$change[priority]</td><td>$change[chtype]</td><td>$change[resource_id]</td></tr>";
+        }
+        echo "</table>";
+
+
+
+       //    print_r(array_keys(reset($arr)));
+       //    array_unshift($arr, array_keys(reset($arr)));
+       //    echo GetHtmlTable($arr, 'th');
+    }
+
+
     /** getProposalByID function
      * @param $change_id
      */
