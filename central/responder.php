@@ -164,10 +164,14 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
 class AA_Responder_Get_Widget extends AA_Responder {
     var $field_id;
     var $item_id;
+    var $widget_type;
+    var $widget_properties;
 
     function __construct($param=null) {
-        $this->field_id   = $param['field_id'];
-        $this->item_id    = $param['item_id'];
+        $this->field_id             = $param['field_id'];
+        $this->item_id              = $param['item_id'];
+        $this->widget_type          = $param['widget_type'];
+        $this->widget_properties    = $param['widget_properties'];
     }
 
     function isPerm() { return true; }
@@ -185,7 +189,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 
         $field = $slice->getField($this->field_id);
-        $widget_html = $field ? $field->getWidgetAjaxHtml($iid) : '';
+        $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
 
         $encoder = new ConvertCharset;
         $ret     =  $encoder->Convert($widget_html, $slice->getCharset(), 'utf-8');

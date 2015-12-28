@@ -101,7 +101,7 @@ class AA_Field {
      *                       usualy not used - right now we use it just for constants_sel.php3
      * @param $properties  - array of properties to redefine for $widget_type
      */
-    function & getWidget($widget_type=null, $properties=array()) {
+    function &getWidget($widget_type=null, $properties=array()) {
         if ( is_null($this->widget) ) {
    //        function setFromField(&$field) {
    //            if (isset($field) AND is_array($field)) {
@@ -121,7 +121,6 @@ class AA_Field {
    //                }
    //            }
    //        }
-            //huhl($this->data);
 
             // $this->widget = AA_Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
             $params       = AA_Widget::parseClassProperties($this->data['input_show_func']);
@@ -131,6 +130,8 @@ class AA_Field {
             }
             $this->widget = AA_Object::factory($widget_class, $params);
             if ($properties) {
+                // for security reasons we do not want to redefine const (Constants/Slices)
+                unset($properties['const'], $properties['bin_filter'], $properties['filter_conds']);
                 $this->widget->setProperties($properties);
             }
         }
@@ -210,7 +211,7 @@ class AA_Field {
     * @param $required   - not usual, but sometimes we want to redefine it required for ajax...
     * @todo create validator on input_validate
     */
-    function getAaProperty($multiple=null, $required=null) {
+    function getAaProperty($multiple=null, $required=null, $name=null, $input_help=null) {
         if (is_null($multiple)) {
             $multiple = $this->getWidget()->multiple();
         }
@@ -218,13 +219,13 @@ class AA_Field {
 
         // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
         return new AA_Property( $this->getId(),
-                                $this->getName(),
+                                $name ?: $this->getName(),
                                 $this->getProperty('text_stored') ? 'text' : 'int',
                                 $multiple,
                                 false,                   // persistent @todo
                                 AA_Validate::factoryByString($this->data['input_validate']), // null,              // $validator - @todo create validator
                                 $required ? true : $this->required(),
-                                $this->getProperty('input_help'),
+                                $input_help ?: $this->getProperty('input_help'),
                                 $this->getProperty('input_morehlp'),
                                 null,               // $example;
                                 $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
@@ -247,7 +248,7 @@ class AA_Field {
     function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
         $widget      = $this->getWidget($widget_type, $widget_properties);
         $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple(), $required);
+        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
         return $widget->getAjaxHtml($aa_property, $item, $function);
     }
 
@@ -257,14 +258,12 @@ class AA_Field {
     * @param $function    - js function to call after the update
     * @param $widget_type - wi2|sel|...
     *                       used, when we want to use another widget, than the default one
-    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1)
+    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1, 'name' => 'My Category', 'input_help' => 'check the categories, please',  )
     */
     function getWidgetLiveHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
         $widget      = $this->getWidget($widget_type, $widget_properties);
         $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple(), $required);
-
-        // huhl($this, $aa_property);
+        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
         return $widget->getLiveHtml($aa_property, $item, $function);
     }
 
@@ -276,17 +275,21 @@ class AA_Field {
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
      * @param $widget_properties  - array of properties to redefine for $widget_type
+     * @param $item_index  - used to identify number of the item - aa[n1_...], aa[n2_...]
      *
      * Ussage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
      */
-    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null) {
+    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null, $item_index=null) {
         $widget  = $this->getWidget($widget_type, $widget_properties);
+        if ($item_index) {
+            $widget->setIndex($item_index);
+        }
         $content = new AA_Content();
         $content->setOwnerId($this->getSliceId());
         if (is_object($preset_value)) {
             $content->setAaValue($this->getId(), $preset_value);
         }
-        $aa_property = $this->getAaProperty($widget->multiple(), $required);
+        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
 
         return $widget->getHtml($aa_property, $content, $function);
     }
@@ -565,45 +568,46 @@ class AA_Fields implements Iterator {
      * @param $type
      */
     function createSliceField($type) {
-        $varset = new CVarset();
+        //todo
 
-//todo
-
-        // copy fields
-                // use the same setting for new field as template in AA_Core_Fields..
-                $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
-                $varset->setFromArray($field_types[$type]);   // from template for this field
-
-                // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
-                // identifiers (without dots!) by default. However if user add new
-                // "template" field to the AA_Core_Fields.. slice, then the identifier
-                // is full (it contains dots). We need base identifier, for now.
-                // Also we will add underscore for all "slice fields" - the ones
-                // which are not set for items, but rather for slice (settings)
-                $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($type);
-
-                // get new field id
-                $SQL = "SELECT id FROM field
-                        WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
-                $max = -1;  // Was 0
-                $db->query($SQL);   // get all fields with the same type in this slice
-                while ( $db->next_record() ) {
-                    $max = max( $max, AA_Fields::getFieldNo($db->f('id')), 0);
-                }
-                $max++;
-                //create name like "time...........2"
-                $fieldid = AA_Fields::createFieldId($ftype_base, $max);
-
-                $varset->set("slice_id", $slice_id, "unpacked" );
-                $varset->set("id", $fieldid, "quoted" );
-                $varset->set("name",  $val, "quoted");
-                $varset->set("input_pri", $pri[$key], "number");
-                $varset->set("required", ($req[$key] ? 1 : 0), "number");
-                $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
-                if (!$varset->doInsert('field')) {
-                    $err["DB"] .= MsgErr("Can't copy field");
-                    break;
-                }
+    //    $varset = new CVarset();
+    //
+    //
+    //    // copy fields
+    //            // use the same setting for new field as template in AA_Core_Fields..
+    //            $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
+    //            $varset->setFromArray($field_types[$type]);   // from template for this field
+    //
+    //            // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
+    //            // identifiers (without dots!) by default. However if user add new
+    //            // "template" field to the AA_Core_Fields.. slice, then the identifier
+    //            // is full (it contains dots). We need base identifier, for now.
+    //            // Also we will add underscore for all "slice fields" - the ones
+    //            // which are not set for items, but rather for slice (settings)
+    //            $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($type);
+    //
+    //            // get new field id
+    //            $SQL = "SELECT id FROM field
+    //                    WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
+    //            $max = -1;  // Was 0
+    //            $db->query($SQL);   // get all fields with the same type in this slice
+    //            while ( $db->next_record() ) {
+    //                $max = max( $max, AA_Fields::getFieldNo($db->f('id')), 0);
+    //            }
+    //            $max++;
+    //            //create name like "time...........2"
+    //            $fieldid = AA_Fields::createFieldId($ftype_base, $max);
+    //
+    //            $varset->set("slice_id", $slice_id, "unpacked" );
+    //            $varset->set("id", $fieldid, "quoted" );
+    //            $varset->set("name",  $val, "quoted");
+    //            $varset->set("input_pri", $pri[$key], "number");
+    //            $varset->set("required", ($req[$key] ? 1 : 0), "number");
+    //            $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
+    //            if (!$varset->doInsert('field')) {
+    //                $err["DB"] .= MsgErr("Can't copy field");
+    //                break;
+    //            }
     }
 
     /** Iterator interface */
