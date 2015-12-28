@@ -127,22 +127,27 @@ class AA_Http {
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
     function postRequest($url, $data = array(), $headers=array() ) {
-        $data = http_build_query($data);
-        $params = array('http' => array(
-                            'method' => 'POST',
-                            'content' => $data
-                                        )
-                        );
-        if (!empty($headers)) {
-            $header = '';
-            foreach ($headers as $k => $v) {
-                $header .= "$k: $v\r\n";
+
+        if (empty($data)) {
+            $fp = @fopen($url, 'rb', false);
+        } else {
+            $data = http_build_query($data);
+            $params = array('http' => array(
+                                'method' => 'POST',
+                                'content' => $data
+                                           )
+                           );
+            if (!empty($headers)) {
+                $header = '';
+                foreach ($headers as $k => $v) {
+                    $header .= "$k: $v\r\n";
+                }
+                $params['http']['header'] = $header;
             }
-            $params['http']['header'] = $header;
+            $ctx = stream_context_create($params);
+            $fp  = @fopen($url, 'rb', false, $ctx);
         }
 
-        $ctx = stream_context_create($params);
-        $fp = @fopen($url, 'rb', false, $ctx);
         if (!$fp) {
            AA_Http::lastErr(1, "Can't open url: $url");  // set error code
            return false;
@@ -256,18 +261,15 @@ class AA_Request {
 //       }
         $result = AA_Http::postRequest($url, $ask_arr);
 
-//        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-//            huhl('xx', $result);
-//            exit;
-//        }
+//        print_r($ask_arr);
+//        print_r($result);
+//        exit;
         if ( $result === false ) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
         }
-        $response  = unserialize($result);
-        if ( $response == false ) {
-            //echo "<br>Error - Bad response on request: $url:";
-            //print_r($result);
+        $response  = unserialize(trim($result));
+        if ( $response === false ) {
             return new AA_Response("Bad response", 3);
         }
         return $response;
@@ -283,12 +285,18 @@ class AA_Client_Auth {
      *  is valid just for current browser session, 63072000 for two years */
     var $_cookie_lifetime;
 
+    /** caches remote auth object */
+    var $_auth = null;
+
+    protected $_reader_slices = array();
+
     function __construct($options=array()) {
         if (!is_array($options)) {
             $options = array();
         }
         $this->_aa_responder_script = $options['aa_url'] . 'central/responder.php';
-        $this->_cookie_lifetime    = isset($options['cookie_lifetime']) ? (time() + $options['cookie_lifetime']) : 0;
+        $this->_cookie_lifetime     = isset($options['cookie_lifetime']) ? (time() + $options['cookie_lifetime']) : 0;
+        $this->_reader_slices       = isset($options['reader_slices'])   ? $options['reader_slices'] : array();
     }
 
     function checkAuth() {
@@ -301,34 +309,49 @@ class AA_Client_Auth {
             $params = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
         }
         else {
+            $this->logout();
             return false;
         }
 
         $response = $request->ask($this->_aa_responder_script, $params);
 
         if ( !$response->isError() ) {
-            $session_id = $response->getResponse();
-            setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
-            $_COOKIE['AA_Sess'] = $session_id;
-            if ($_REQUEST['username']) {
-                setcookie('AA_Uid', $_REQUEST['username'], $this->_cookie_lifetime, '/');
-                $_COOKIE['AA_Uid']  = $_REQUEST['username'];  // we need it for current page as well
+
+            $arr = $response->getResponse();
+            $session_id  = $arr[0];
+            $myauth      = $arr[1];
+
+            if ($myauth->auth['uname'] AND $myauth->auth['uid'] AND (trim($myauth->auth['uid']) != 'nobody')) {
+                $x                  = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
+                //$y                  = setcookie('AA_Uid', $myauth->auth['uname'], $this->_cookie_lifetime, '/');
+                $_COOKIE['AA_Sess'] = $session_id;
+                //$_COOKIE['AA_Uid']  = $myauth->auth['uname'];  // we need it for current page as well
+                $this->_auth        = $myauth;
+                return $myauth->auth['uname'];
             }
-            return true;
         }
+        $this->logout();
         return false;
     }
 
-    function getUid() {
-        return isset($_COOKIE['AA_Uid']) ? $_COOKIE['AA_Uid'] : false;
+    // function getUid() {
+    //     return isset($_COOKIE['AA_Uid']) ? $_COOKIE['AA_Uid'] : false;
+    // }
+
+    function getRemoteAuth() {
+        return $this->_auth;
     }
 
     function logout() {
+        $request  = new AA_Request('Logout');
+        $params   = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
+        $response = $request->ask($this->_aa_responder_script, $params);
+
         // both is necessary - one for current page, one for next page
         setcookie('AA_Sess', "", time() - 3600, '/');
         $_COOKIE['AA_Sess'] = '';
-        setcookie('AA_Uid', "", time() - 3600, '/');
-        $_COOKIE['AA_Uid']  = '';
+        // setcookie('AA_Uid', "", time() - 3600, '/');
+        // $_COOKIE['AA_Uid']  = '';
     }
 }
 

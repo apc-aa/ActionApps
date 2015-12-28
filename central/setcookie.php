@@ -27,7 +27,7 @@ http://www.apc.org/
  *   <img src="//www.example-two.org/apc-aa/central/setcookie.php?s={cookie:AA_Sess}">
  * This will set the auth cookie in example-two.org.
  */
-setcookie("AA_Sess", $_GET['s'], 0, '/', $_SERVER['HTTP_HOST']);
+setcookie("AA_Sess", $_GET['s'], 0, '/');
 header('Content-Type: image/gif');
 //pixel blank
 echo "\x47\x49\x46\x38\x37\x61\x1\x0\x1\x0\x80\x0\x0\xfc\x6a\x6c\x0\x0\x0\x2c\x0\x0\x0\x0\x1\x0\x1\x0\x0\x2\x2\x44\x1\x0\x3b";

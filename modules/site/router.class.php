@@ -257,9 +257,9 @@ class AA_Router_Seo extends AA_Router {
                 $client_auth->logout();
                 $this->apc['xuser'] = '';
             }
-            elseif ($client_auth->checkAuth()) {
+            elseif ( $usr = $client_auth->checkAuth()) {
                 // $auth = $client_auth->getRemoteAuth();
-                $this->apc['xuser'] = $client_auth->getUid();
+                $this->apc['xuser'] = $usr;
 
                 // Redirect to page. If not specified, then it continues to display
                 // normal page as defined in "action" attribute of <form>

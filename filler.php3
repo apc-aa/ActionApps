@@ -172,7 +172,7 @@ function SendErrorPage($txt) {
     }
     if ( !$_REQUEST["err_url"] ) {
         if ($GLOBALS['debugfill']) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$_REQUEST["err_url"] );
-        echo HtmlPageBegin("");
+        echo HtmlPageBegin();
         echo "</head><body>";
         if (is_array($txt)) {
             PrintArray($txt);
@@ -306,15 +306,14 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         );
         // $client_auth - global - used in AA_Generator_Uid
         $client_auth = new AA_Client_Auth($options);
-        if ($client_auth->checkAuth()) {
+        if ($usr = $client_auth->checkAuth()) {
             $auth = $client_auth->getRemoteAuth();
-            $GLOBALS['apc_state']['xuser'] = $client_auth->getUid();
+            $GLOBALS['apc_state']['xuser'] = $usr;
         }
     } elseif ($_REQUEST['AA_CP_Session']) {
         page_open(array("sess" => "AA_CP_Session"));
         // this defines $auth object so, the "Last Changed By" is set to correct user
     }
-
 
     $grabber = new AA_Grabber_Form();
     $translations = null;

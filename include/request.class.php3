@@ -323,20 +323,20 @@ class AA_Client_Auth {
 
             if ($myauth->auth['uname'] AND $myauth->auth['uid'] AND (trim($myauth->auth['uid']) != 'nobody')) {
                 $x                  = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
-                $y                  = setcookie('AA_Uid', $myauth->auth['uname'], $this->_cookie_lifetime, '/');
+                //$y                  = setcookie('AA_Uid', $myauth->auth['uname'], $this->_cookie_lifetime, '/');
                 $_COOKIE['AA_Sess'] = $session_id;
-                $_COOKIE['AA_Uid']  = $myauth->auth['uname'];  // we need it for current page as well
+                //$_COOKIE['AA_Uid']  = $myauth->auth['uname'];  // we need it for current page as well
                 $this->_auth        = $myauth;
-                return true;
+                return $myauth->auth['uname'];
             }
         }
         $this->logout();
         return false;
     }
 
-    function getUid() {
-        return isset($_COOKIE['AA_Uid']) ? $_COOKIE['AA_Uid'] : false;
-    }
+    // function getUid() {
+    //     return isset($_COOKIE['AA_Uid']) ? $_COOKIE['AA_Uid'] : false;
+    // }
 
     function getRemoteAuth() {
         return $this->_auth;
@@ -350,8 +350,8 @@ class AA_Client_Auth {
         // both is necessary - one for current page, one for next page
         setcookie('AA_Sess', "", time() - 3600, '/');
         $_COOKIE['AA_Sess'] = '';
-        setcookie('AA_Uid', "", time() - 3600, '/');
-        $_COOKIE['AA_Uid']  = '';
+        // setcookie('AA_Uid', "", time() - 3600, '/');
+        // $_COOKIE['AA_Uid']  = '';
     }
 }
 
