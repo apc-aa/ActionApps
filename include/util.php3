@@ -199,19 +199,6 @@ function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
 }
 
-/** ParamExplode function
- * explodes $param by ":". The "#:" means true ":" - don't separate
- * @param $param
- * @return array
- */
-function ParamExplode($param) {
-    // replace all "#:" and <http>"://" with dumy string,
-    // convert separators to ##Sx
-    // change "#:" to ":" and change back "://" - then split by separation string
-    // replaces in order
-    return explode('##Sx', str_replace(array('#:', 'tp://', ':', '~@|_'), array('~@|_', 'tp~@|_//', '##Sx', ':'), $param));
-}
-
 /** ParamImplode function
  * @param $param
  */
@@ -308,15 +295,6 @@ function array_merge_append(&$array, $newValues) {
     return $array;
 }
 
-/** quote function
- * function to double backslashes and apostrofs
- * @param $str
- */
-function quote($str) {
-    return addslashes($str);
-}
-
-
 /** AddslashesArray function
  * function addslashes enhanced by array processing
  * @param $val
@@ -398,23 +376,6 @@ function string2id($str) {
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
     return $id;
-}
-
-/** pack_id function
- * @param $unpacked_id
- * @return packed md5 id, not quoted !!!
- * Note that pack_id is used in many places where it is NOT 128 bit ids.
- */
-function pack_id($unpacked_id) {
-    return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
-}
-
-/** unpack_id
- * @param $packed_id
- * @return unpacked md5 id
- */
-function unpack_id($packed_id=''){
-    return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
 }
 
 /** now function
@@ -614,50 +575,6 @@ function GetSliceInfo($slice_id) {
     return GetModuleInfo($slice_id,'S');
 }
 
-/** GetTable2Array function
- *  function converts table from SQL query to array
- * @param $SQL
- * @param $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
- * @param $values - return array's val - 'aa_all' |
- *                                 'aa_mark' |
- *                                 'aa_fields' |
- *                                 <database_column> |
- *                                 'unpack:<database_column>' |
- *                                 true
- */
-function GetTable2Array($SQL, $key="id", $values='aa_all') {
-    $db = getDB();
-    $db->tquery($SQL);
-
-    while ($db->next_record()) {
-        if ($values == 'aa_all') {
-            $val = $db->Record;
-        } elseif ($values == 'aa_mark') {
-            $val = true;
-        } elseif (substr($values,0,7) == 'unpack:') {
-            $val = unpack_id($db->f(substr($values,7)));
-        } elseif (is_string($values) AND array_key_exists( $values, $db->Record )) {
-            $val = $db->Record[$values];
-        } else {  // true or 'aa_fields'
-            $val = $db->Record;
-            // $val = DBFields($db);  // I changed the mysql_fetch_array($this->Query_ID, MYSQL_ASSOC) in db_mysql by adding MYSQL_ASSOC, so DBFields is no longer needed
-        }
-
-        if ( $key == 'aa_first' ) {
-            freeDB($db);
-            return $val;
-        } elseif ( ($key == "NoCoLuMn") OR !$key ) {
-            $arr[] = $val;
-        } elseif ( substr($key,0,7) == 'unpack:' ) {
-            $arr[unpack_id($db->f(substr($key,7)))] = $val;
-        } else {
-            $arr[$db->f($key)] = $val;
-        }
-    }
-    freeDB($db);
-    return isset($arr) ? $arr : false;
-}
-
 // -------------------------------------------------------------------------------
 
 /** CreateBinCondition function
@@ -826,6 +743,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
         // proove permissions for password-read-protected slices
         $unpack_id                  = unpack_id($row['id']);
+
+        // this row leads to creation second database connection db2 - for the first_child itwem in slice @todo - do something about it, Honza 2015-12-28
         $reading_permitted          = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id($row['slice_id']), $crypted_additional_slice_pwd);
         $item_permitted[$row['id']] = $reading_permitted;
 
@@ -1116,6 +1035,16 @@ function myspecialchars( $var, $double_encode=true) {
  */
 function safe( $var ) {
     return htmlspecialchars( magic_strip($var), ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
+}
+
+/** Base64url version of base64 */
+function bin2url($data) {
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+/** reverse Base64url version of base64 */
+function url2bin($data) {
+    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
 }
 
 /** HtmlPageBegin function
@@ -1582,30 +1511,6 @@ class contentcache {
 // end of contentcache class
 }
 
-
-function get_hash() {
-    $arg_list = func_get_args();   // must be asssigned to the variable
-    // return md5(json_encode($arg_list));
-    // return md5(var_export($arg_list, true));
-    // return md5(serialize($arg_list));
-    return hash('md5', serialize($arg_list));  // quicker than md5()
-}
-
-/*
-function get_hash() {
-    global $md5serial;
-    $arg_list = func_get_args();   // must be asssigned to the variable
-    // return md5(json_encode($arg_list));
-    //$md5serial = '';
-    array_walk_recursive($arg_list, 'test_print');
-    return md5($md5serial);
-}
-
-function test_print($item, $key) {
-    global $md5serial;
-    $md5serial .= md5("$item:$key");
-}
-*/
 
 /** get_if function
  *  If $value is set, returns $value - else $else

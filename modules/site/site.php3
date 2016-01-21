@@ -21,9 +21,14 @@ http://www.apc.org/
 
 $timestart = microtime(true);
 
+// supress PHP notices
+error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
+
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
-require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."zids.php3";
+require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."hitcounter.class.php3";
 
@@ -57,9 +62,10 @@ if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
     }
     exit;
 }
+
 // -- /CACHE ------------------------------------------------------------------
 
-
+require_once AA_INC_PATH."util.php3";
 
 function IsInDomain( $domain ) {
     return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
@@ -82,7 +88,10 @@ if ( get_magic_quotes_gpc() ) {
 }
 
 require_once AA_BASE_PATH."modules/site/router.class.php";
-is_object( $db ) || ($db = getDB());
+
+// we tried to remove all global $db, so let's try to comment out following global object
+// honza 2015-12-30
+// is_object( $db ) || ($db = getDB());
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 $host = ltrim($_SERVER['HTTP_HOST'],'w.');
@@ -96,6 +105,7 @@ if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
 $lang_file    = $module->getProperty('lang_file');
 AA::$encoding = $module->getCharset();
 
+// @deprecated - use AA_Router_Seo instead
 // There are two possibilities, how to control the apc_state variable. It could
 // be se in ./modules/site/sites/site_...php control file. The control file
 // could be managed only by people, who have the access to the AA sources on the
@@ -111,14 +121,15 @@ AA::$encoding = $module->getCharset();
 //                                     'site_id'      => 'ae54378beac7c7e8a998e7de8a998e7a'
 //                                    ));
 //    readfile($url);
+// /@deprecated - use AA_Router_Seo instead
 
 $hit_lid = null;
 if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
-    $slices4cache = $module->getRelatedSlices();
+    $seo_slices = $module->getRelatedSlices();
     //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
     // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
-    $home         = AA_Stringexpand::unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
-    $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
+    $home       = AA_Stringexpand::unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
+    $router     = AA_Router::singleton('AA_Router_Seo', $seo_slices, $home);
 
     // use REDIRECT_URL for homepage redirects:
     //    RewriteRule ^/?$ /en/home [QSA]
@@ -139,9 +150,6 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 } elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$module->getProperty('state_file');
-    if (!is_array($slices4cache)) {
-        $slices4cache = $module->getRelatedSlices();
-    }
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
 }
@@ -177,21 +185,16 @@ if((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && !empty
 $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid);
 $cacheentry->processPage();
 
-// In $slices4cache array MUST be listed all (unpacked) slice ids (and other
-// modules), which is used in the site. If you mention the slice in this array,
-// cache is cleared on any change of the slice (item addition) - the page
-// is regenerated, then.
-// UPDATE: there is no need to add alse site module itself, since it
-// is added automaticaly - Honza 2005-06-16
-
-// the cache should be always cleared, if the site is changed
-if (!in_array(AA::$site_id, (array)$slices4cache)) {
-    $slices4cache[] = AA::$site_id;
+// changed the way, how to get $slices4cache - now we ask for module ids realy
+// used during page generation. Honza 2015-12-29
+if (empty($slices4cache = AA_Module::getUsedModules())) {
+    // probably not necessary
+    $slices4cache = array(AA::$site_id);
 }
 
 AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
 
-if (is_array($slices4cache) && !$site_nocache) {
+if (!$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
     $GLOBALS['pagecache']->storePage($cache_key, $cacheentry, $str2find);
 }
@@ -202,6 +205,7 @@ if ($debugtime) {
     echo '<br>Page generation time: '. (microtime(true) - $timestart);
     echo '<br>Dababase instances: '. DB_AA::$_instances_no;
     echo '<br>  (spareDBs): '. count($spareDBs);
+    echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
     AA::$dbg->duration_stat();
 }
 

@@ -36,6 +36,8 @@ require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 /** Defines class for inserting and updating database fields */
 require_once AA_INC_PATH."varset.php3";
+/** */
+require_once AA_INC_PATH."util.php3";
 
 //require_once AA_INC_PATH."item.php3";
 //require_once AA_INC_PATH."view.php3";

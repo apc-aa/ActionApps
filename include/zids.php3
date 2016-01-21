@@ -61,7 +61,7 @@
  *
  */
 
-require_once AA_INC_PATH."util.php3";  // quote
+//require_once AA_INC_PATH."util.php3";  // quote
 
 class zids implements Iterator, ArrayAccess, Countable {
     var $a;     // Array of ids of type specified in $t
@@ -581,8 +581,60 @@ function is_short_id($id)  { return guesstype($id)=='s'; }
 function is_long_id($id)   { return guesstype($id)=='l'; }
 function is_packed_id($id) { return guesstype($id)=='p'; }
 
+
+/** ParamExplode(), unpack_id() and get_hash() functions moved here from
+ *  util.php3 because we do not want to include util.php3 file for cached pages,
+ *  but, we still need zids.php3 and those 3 functions for cache
+ */
+
+/** ParamExplode function
+ * explodes $param by ":". The "#:" means true ":" - don't separate
+ * @param $param
+ * @return array
+ */
+function ParamExplode($param) {
+    // replace all "#:" and <http>"://" with dumy string,
+    // convert separators to ##Sx
+    // change "#:" to ":" and change back "://" - then split by separation string
+    // replaces in order
+    return explode('##Sx', str_replace(array('#:', 'tp://', ':', '~@|_'), array('~@|_', 'tp~@|_//', '##Sx', ':'), $param));
+}
+
+function get_hash() {
+    $arg_list = func_get_args();   // must be asssigned to the variable
+    // return md5(json_encode($arg_list));
+    // return md5(var_export($arg_list, true));
+    // return md5(serialize($arg_list));
+    return hash('md5', serialize($arg_list));  // quicker than md5()
+}
+
+/** pack_id function
+ * @param $unpacked_id
+ * @return packed md5 id, not quoted !!!
+ * Note that pack_id is used in many places where it is NOT 128 bit ids.
+ */
+function pack_id($unpacked_id) {
+    return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
+}
+
+/** unpack_id
+ * @param $packed_id
+ * @return unpacked md5 id
+ */
+function unpack_id($packed_id=''){
+    return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
+}
+
+/** quote function
+ * function to double backslashes and apostrofs
+ * @param $str
+ */
+function quote($str) {
+    return addslashes($str);
+}
+
 /** q_pack_id function
- * returns packed and quoted md5 id
+ * returns packed and quoted id
  * @param $unpacked_id
  */
 function q_pack_id($unpacked_id){

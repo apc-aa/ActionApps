@@ -204,6 +204,10 @@ class AA_Module {
     function getDefaultLang() {
         return $this->getLang();
     }
+
+    static function getUsedModules() {
+        return array_keys(static::$_modules);
+    }
 }
 
 class AA_Slice extends AA_Module {
