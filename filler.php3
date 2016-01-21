@@ -224,12 +224,22 @@ function SendOkPage($txt, $new_ids = array()) {
     //    DO NOT correspond with nXXX in aa[n100_536366d6ee723][..]
     //    there are new ids as well as updated (aa[u6376353533...]) - the new ones
     //    goes first, then updated
-    if ($_REQUEST["ok_url"] AND (false !== strpos($_REQUEST["ok_url"],'_#N'))) {
-        $new_als = array();
-        foreach ($new_ids as $k => $v) {
-            $new_als[] = '_#N'.($k+1).'_ID___';
+    if ($_REQUEST["ok_url"]) {
+        // you can use aliases in ok_url which is then computed from the (first) inserted item.
+        // It is better to use extra # in it, in order it is not expanded when the form is displayed:
+        // use _##ITEM_ID_ instead of _#ITEM_ID_, ...
+        $_REQUEST["ok_url"] = str_replace('_##', '_#', $_REQUEST["ok_url"]);
+        if (false !== strpos($_REQUEST["ok_url"],'_#N')) {
+            $new_als = array();
+            foreach ($new_ids as $k => $v) {
+                $new_als[] = '_#N'.($k+1).'_ID___';
+            }
+            $_REQUEST["ok_url"] = str_replace($new_als, $new_ids, $_REQUEST["ok_url"]);
         }
-        $_REQUEST["ok_url"] = str_replace($new_als, $new_ids, $_REQUEST["ok_url"]);
+        if (false !== strpos($_REQUEST["ok_url"], '_#')) {
+            $item = AA_Item::getItem(new zids(reset($new_ids), 'l'));
+            $_REQUEST["ok_url"] = AA_Stringexpand::unalias($_REQUEST["ok_url"], '', $item);
+        }
     }
     if ($_REQUEST["inline"]) {
         if ($_REQUEST["ok_url"]) {
