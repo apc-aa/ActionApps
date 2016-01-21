@@ -164,7 +164,15 @@ function DisplayAaResponse(div_id, method, params) {
 }
 
 function AA_Response(method, resp_params, ok_func, err_func) {
-    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
+    var sess='';
+    if (AA_Config.SESS_NAME != '') {
+        sess = AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID;
+    } else if (GetCookie('AA_Sess')) {
+        sess = 'AA_CP_Session=' + GetCookie('AA_Sess');
+    } else {
+        sess = 'free=nobody';
+    }
+
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {
          parameters: resp_params,
          onSuccess: function(transport) {
@@ -731,8 +739,9 @@ function SetCookie(name, value, plustime) {
 
 function getCookieVal(offset) {
     var endstr = document.cookie.indexOf(";", offset);
-    if (endstr == -1)
+    if (endstr == -1) {
         endstr = document.cookie.length;
+    }
     return unescape(document.cookie.substring(offset, endstr));
 }
 
@@ -743,8 +752,9 @@ function GetCookie(name) {
     var i = 0;
     while (i < clen) {
         var j = i + alen;
-        if (document.cookie.substring(i, j) == arg)
-        return getCookieVal(j);
+        if (document.cookie.substring(i, j) == arg) {
+            return getCookieVal(j);
+        }
         i = document.cookie.indexOf(" ", i) + 1;
         if (i == 0) break;
     }
@@ -759,10 +769,11 @@ function DeleteCookie(name) {
 }
 
 function ToggleCookie(name,val) {
-    if ( GetCookie(name) != val )
+    if ( GetCookie(name) != val ) {
         SetCookie(name,val);
-    else
+    } else {
         DeleteCookie(name);
+    }
 }
 
 /* ----------------------------------------------------------
