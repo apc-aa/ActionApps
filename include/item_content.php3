@@ -755,7 +755,7 @@ class ItemContent extends AA_Content {
     function storeToDB($slice_id, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
         require_once AA_INC_PATH."varset.php3";
         require_once AA_INC_PATH."itemfunc.php3";
-        global $db, $err, $varset, $itemvarset, $error, $ok;
+        global $err, $varset, $itemvarset, $error, $ok;
 
         $id = $this->getValue("id..............");
         if ($id == "new id") {	    // if the item has no id => set up an unique new id
@@ -763,7 +763,7 @@ class ItemContent extends AA_Content {
             $insert = true;
         } else {
             // Check duplicity
-            $insert = (false===DB_AA::select1('SELECT id FROM `item`', 'id', array(array('id',$id, 'l'))));
+            $insert = (false===DB_AA::test('item', array(array('id',$id, 'l'))));
         }
         if ($insert == false) {	    // if the item is already in the DB :
             switch ($actionIfItemExists) {
@@ -1108,20 +1108,29 @@ class ItemContent extends AA_Content {
             }
 
             // computed field?
-            if ($fnc["fnc"]=='com') {
-                $expand_string = $fnc["param"];
-                unset($expand_insert,$expand_update,$expand_delimiter, $recompute);
-            }
-            elseif ($fnc["fnc"]=='co2') {
-                list($expand_insert,$expand_update,$expand_delimiter,$recompute) = ParamExplode($fnc["param"]);
-                $expand_string = $update ? $expand_update : $expand_insert;
-            } else {
-                continue;
+            switch ($fnc["fnc"]) {
+                case 'seo':
+                    $seo_alias     = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
+                    $slice_charset = $slice->getCharset();
+                    $seo_charset   = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
+                    $expand_string = '{ifset:{'.$fid.'}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
+                    unset($expand_insert,$expand_update,$expand_delimiter, $recompute);
+                    break;
+                case 'com':
+                    $expand_string = $fnc["param"];
+                    unset($expand_insert,$expand_update,$expand_delimiter, $recompute);
+                    break;
+                case 'co2':
+                    list($expand_insert,$expand_update,$expand_delimiter,$recompute) = ParamExplode($fnc["param"]);
+                    $expand_string = $update ? $expand_update : $expand_insert;
+                    break;
+                default:
+                    continue 2;  // next field
             }
             if (strlen($expand_string)<=0) {
                 continue;
             }
-            // the code, which (unaliased!) should be stored in the field
+            // the code, which (unaliased!) should be stored in the field {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:windows-1250}}
             // is in parameter
             if ($computed_field_exist === false) {
                 $computed_field_exist = true;
@@ -1317,12 +1326,7 @@ class ItemContent extends AA_Content {
  * @param $item_id
  */
 function itemIsDuplicate($item_id) {
-    $db = getDB();
-    $SQL="SELECT * FROM item WHERE id='".q_pack_id($item_id)."'" ;
-    $db->query($SQL);
-    $ret = $db->next_record();
-    freeDB($db);
-    return $ret ? true : false;
+    return DB_AA::test('item', array(array('id', $item_id, 'l')));
 }
 
 /** field_content is AA_Value object

@@ -164,6 +164,17 @@ array ("name" => _m("Computed field for INSERT/UPDATE"),
                              )
                        )
        );
+$INSERT_TYPES["items"]["seo"] =
+array ("name" => _m("SEO Name"),
+"desc" => _m("If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in 'Uses slices' settings. Basically the SEO Name alias is shortcut for comuted field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}"),
+       "params"=>array(
+                        array("name"=>_m("Alias to compute from"),
+                              "desc"=>_m("if not specified, the _#HEADLINE is used"),
+                              "type"=>"STR",
+                              "example"=>"_#HEADLINE"
+                             )
+                       )
+       );
 
 // --------------------------------------------------------------------------------
 

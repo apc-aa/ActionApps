@@ -331,7 +331,6 @@ class AA_Field_Writer {
                          WHERE item_id = '". q_pack_id($reverse_id) ."'
                            AND field_id = '". $field["id"] ."'
                            AND ". ($field["text_stored"] ? "text" : "number") ."= '". $value['value'] ."'";
-                $db  = getDB();
                 $db->query( $SQL );
                 if (!$db->next_record()) { // not found
                     $this->_store($reverse_id, $field, $value, $param);
@@ -386,7 +385,7 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
-        $this->_store($item_id, $field, array("value"=>now()), $param, $additional);
+        $this->_store($item_id, $field, array("value"=>time()), $param, $additional);
     }
 
     /** insert_fnc_co2 function - Computed field for INSERT/UPDATE
@@ -414,6 +413,18 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
+        $this->insert_fnc_co2($item_id, $field, $value, $param, $additional);
+        return;
+    }
+
+    /** insert_fnc_com function - SEO Name
+     * @param $item_id
+     * @param $field
+     * @param $value
+     * @param $param
+     * @param $additional
+     */
+    function insert_fnc_seo($item_id, $field, $value, $param, $additional='') {
         $this->insert_fnc_co2($item_id, $field, $value, $param, $additional);
         return;
     }
@@ -568,7 +579,7 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_unq($item_id, $field, $value, $param, $additional='') {
-        $value['value'] = AA_Stringexpand_Finduniq::expand($value['value'], $field["id"], empty($unique_slices) ? $GLOBALS["slice_id"] : $unique_slices, $item_id);
+        $value['value'] = StrExpand('AA_Stringexpand_Finduniq', array($value['value'], $field["id"], empty($unique_slices) ? $GLOBALS["slice_id"] : $unique_slices, $item_id));
         $this->_store($item_id, $field, $value, $param, $additional);
     }
 
