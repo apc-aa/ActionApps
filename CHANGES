@@ -1,3 +1,38 @@
+16-01-21 - much improved AA pagecache - the cache for sitemodule page now knows,
+(honzam)   which slices was used during its generation, so only changes in those
+           slices deletes the cache for the page and not the changes in any
+           slice mentioned in sitemodule, as it was previously
+         - new SEO Name item insert function which comutes the SEO name from
+           _#HEADLINE alias (or another if specified), so you no longer need
+           to copy expression for computed field
+         - you can use aliases in ok_url parameter to filler.php3 which is then
+           computed from the (first) inserted item. It is better to use extra #
+           in it, in order it is not expanded when the form is displayed:
+             use _##ITEM_ID_ instead of _#ITEM_ID_, ...
+         - new {bin2url:Mojžíš} and reverse {url2bin:...} could be used for
+           transfering binary data as URL parameter (base64url encoding used)
+             example: id={bin2url:{encrypt:{id..............}:password}}
+         - new parameter "url" in {encrypt} and {decrypt}, which produces the
+           string usable as url parameter:
+             {encrypt:text:passwd:url}, {decrypt:encryptedtext:passwd:url}
+         - {live} now works also with Multiple text field
+         - fixed {ajax} with field for file upload when user are not logged.
+           Responder now works for not logged users.
+         - call view from AJAX no longer adds convertto paramer - view check it
+           automaticaly, if called uding AJAX
+         - fixed check for empty values in {date:..} - older dates than 1970
+           are no longer considered empty
+         - better default help texts for default fields (mainly empty texts
+           used, _#UNDEFINE alies removed, ...)
+         - AA_Message('some message', 'info') and AA_Toolbar(text) now
+           implemented also for jQuery aajslib-jquery
+         - last fixes for running on PHP7
+         - optimized database access - no global $db, reduced the number
+           of necessary database connection for the page, mailnly the one served
+           from AA pagecache
+         - optimized includes - only necessary files are included - mainly
+           for pages served from AA pagecache
+         - simplified session handling in preparison to switch to standard $_SESSIONs
 15-12-28 - AA now works with PHP7, tested on production server already
 (honzam) - new {editable:<item_id>:<field_id>} allows on-line editing of field
            content in HTML Editor (CKEditor) (aajslib.php required at this

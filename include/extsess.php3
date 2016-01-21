@@ -95,33 +95,19 @@ class AA_CP_Session extends Session {
     /** start function
      */
     function start() {
-        $name = $this->that_class;
-        $this->that = new $name;
-        $this->that->ac_start();
+      $this->set_container();
+      $this->set_tokenname();
+      //$this->put_headers();
+      //$this->release_token();
+        
+        
+        
+        //$name = $this->that_class;
+        //$this->that = new $name;
+        //$this->that->ac_start();
+        //
+        //$this->name = $this->cookiename==""?$this->classname:$this->cookiename;
 
-        $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
-
-        if (isset($this->fallback_mode)
-            && ("get" == $this->fallback_mode )
-            && ("cookie" == $this->mode )
-            && (!isset($_COOKIE[$this->name]))) {
-
-            if (isset($_GET[$this->name])) {
-                $this->mode = $this->fallback_mode;
-            } else {
-                header("HTTP/1.1 Status: 302 Moved Temporarily");
-                $this->get_id();
-                $this->mode = $this->fallback_mode;
-                if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-                    // You will need to fix suexec as well, if you use Apache and CGI PHP
-                    $PROTOCOL='https';
-                } else {
-                    $PROTOCOL='http';
-                }
-                header("Location: ". $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$this->self_url());
-                exit;
-            }
-        }
 
         // Allowing a limited amount of caching, as suggested by
         // Padraic Renaghan on phplib@shonline.de.

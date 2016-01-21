@@ -564,6 +564,14 @@ class Session {
           header("Cache-Control: max-age=" . $this->allowcache_expire * 60, false);
           header("Cache-Control: pre-check=" . $this->allowcache_expire * 60, false);
           break;
+      
+      case 'no':
+          header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+          header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+          header("Cache-Control: no-cache");
+          header("Cache-Control: must-revalidate");
+          header("Pragma: no-cache");
+          break;
 
       default:
           header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
