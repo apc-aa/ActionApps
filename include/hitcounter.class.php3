@@ -89,7 +89,7 @@ class AA_Hitcounter {
         }
 
         $varset = new CVarset;
-        $varset->add('time', 'number', now());
+        $varset->add('time', 'number', time());
         $varset->add('agent', 'text', $_SERVER["HTTP_USER_AGENT"]);
         $varset->add('info', 'text', $_SERVER["REQUEST_URI"]);
 
@@ -108,17 +108,17 @@ class AA_Hitcounter {
 
             $display_counter  = new AA_Hitcounter_Update();
             $toexecute        = new AA_Toexecute;
-            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 300);  // run it once in 5 minutes
+            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, time() + 300);  // run it once in 5 minutes
 
             require_once AA_INC_PATH.  "task.class.php3";
 
             $planned_task_scheduler = new AA_Plannedtask_Schedule();
-            $toexecute->laterOnce($planned_task_scheduler, array(), 'AA_Plannedtask_Schedule', 100, now() + 120);  // run it once in 2 minutes
+            $toexecute->laterOnce($planned_task_scheduler, array(), 'AA_Plannedtask_Schedule', 100, time() + 120);  // run it once in 2 minutes
 
             $computedfields_updater = new AA_Computedfields_Updater;
             $computedfields_updater->plan();
 
-//            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 3000);  // run it once in 50 minutes
+//            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, time() + 3000);  // run it once in 50 minutes
         }
         return;
     }
@@ -139,7 +139,7 @@ class AA_Hitcounter_Update {
 
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.
-        $time = now() - 2;
+        $time = time() - 2;
 
         $counts = array();
 
@@ -206,7 +206,7 @@ class AA_Hitcounter_Update {
                 // hit_1  (day)   plan +/- 50   minutes later
                 // hit_7  (week)  plan +/- 350  minutes later (5,8 hours)
                 // hit_30 (month) plan +/- 1500 minutes later (25 hours)
-                $time2execute   = now() + ($stats_counter->getDays() * 300 * (10 + $timeshift++));
+                $time2execute   = time() + ($stats_counter->getDays() * 300 * (10 + $timeshift++));
                 $toexecute->laterOnce($stats_counter, array(), "Count_". $count_slice_id.'_'.$field_id, 100, $time2execute);
             }
         }
@@ -231,7 +231,7 @@ class AA_Hitcounter_Stats {
 
     function toexecutelater() {
         $days        = $this->getDays();
-        $time        = now() - ($days * 86400);
+        $time        = time() - ($days * 86400);
         $qp_slice_id = q_pack_id($this->slice_id);
         $hits        = GetTable2Array("SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
                                         WHERE hit_archive.time > $time AND item.slice_id = '$qp_slice_id' GROUP BY hit_archive.id", 'id', 'count');
@@ -294,7 +294,7 @@ class AA_Hitcounter_Group {
         // run for all the days from $oldest to week ago
         $no_task = 0;
         for ($begin = $grouping_start; $begin + $step >= $oldest; $begin = $begin - $step) {
-            $toexecute->laterOnce($this, array($begin, $step), "AA_Hitcounter_Group_$begin", 40, now() + 60*60*24); // once a day
+            $toexecute->laterOnce($this, array($begin, $step), "AA_Hitcounter_Group_$begin", 40, time() + 60*60*24); // once a day
 
             // by default we plan all the task
             if (++$no_task == $max_task) {
@@ -359,7 +359,7 @@ class AA_Computedfields_Updater {
         $item_updater = new AA_ComputedfieldsItem_Updater();
         $toexecute    = new AA_Toexecute;
         foreach ($chunks as $k => $ids) {
-            $toexecute->laterOnce($item_updater, array($sid, $ids), "AA_ComputedfieldsItem_Updater_". $sid.'_'.$k, 40, now()+10);
+            $toexecute->laterOnce($item_updater, array($sid, $ids), "AA_ComputedfieldsItem_Updater_". $sid.'_'.$k, 40, time()+10);
         }
     }
 }

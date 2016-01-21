@@ -95,6 +95,7 @@ class AA_Router {
 
         $nav_arr = $this->_scrollerArray($page, $max);
         $add     = $this->getParam('scroller_add');
+        $arr     = array();
 
         foreach ( $nav_arr as $k => $v) {
             if ( $v ) {
@@ -140,6 +141,8 @@ class AA_Router {
         $mp       = floor(($page - 1) / $scrl_len);  // current means current page
         $from     = max(1, $mp * $scrl_len);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to       = min(($mp + 1) * $scrl_len + 1, $max);
+        $arr      = array();
+
         if ($page > 1) {
             $arr[$this->getParam('scroller_previous')] = $this->go2url($variable.'='.($page-1));
         }
@@ -170,7 +173,7 @@ class AA_Router {
     }
 
     // should be refined in subclass
-    function xid($param='') { return ''; }
+    function xid($param='')   { return ''; }
 
     // should be refined in subclass
     function xuser($param='') { return ''; }
@@ -452,7 +455,7 @@ class AA_Router_Seo extends AA_Router {
     //         if (is_null($_seoslices)) {
     //             $_seoslices = join('-',$this->_getSeoSlices());
     //         }
-    //         $this->_seocache[$seo_string] = substr(AA_Stringexpand_Seo2ids::expand($_seoslices, $seo_string),0,32);
+    //         $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', array($_seoslices, $seo_string)),0,32);
     //     }
     //     return $this->_seocache[$seo_string];
     // }
@@ -465,7 +468,7 @@ class AA_Router_Seo extends AA_Router {
         // Q: Is the cache needed, when AA_Stringexpand_Seo2ids is already cached? Honza 2015-07-16
         // A: Yes - based on mesures it seams to be much quicker. Honza 2015-07-16
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = substr(AA_Stringexpand_Seo2ids::expand(join('-',$this->slices), $seo_string),0,32);
+            $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', array(join('-',$this->slices), $seo_string)),0,32);
         }
         return $this->_seocache[$seo_string];
     }

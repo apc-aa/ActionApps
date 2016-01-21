@@ -832,7 +832,7 @@ class AA_Item {
         if ( !in_array($ptype, array('width', 'height', 'imgtype', 'mime', 'html', 'htmlb')) ) {
             $ptype = 'hw';
         }
-        return AA_Stringexpand_Img::expand($this->getval($col), '', $ptype);
+        return StrExpand('AA_Stringexpand_Img', array($this->getval($col), '', $ptype));
     }
 
     /** f_n function
@@ -898,7 +898,7 @@ class AA_Item {
         }
 
         if ($pparagraph) {
-            $shorted_text = AA_Stringexpand_Shorten::expand(get_if($value, $pfield), $plength);
+            $shorted_text = StrExpand('AA_Stringexpand_Shorten', array(get_if($value, $pfield), $plength));
         } else {
             $shorted_text = substr($value, 0, $plength);
         }
@@ -1207,7 +1207,7 @@ class AA_Item {
             case "csv":
                 return $this->f_t($col,":".$p[0]);
             case "slice_info":
-                return AA_Stringexpand_Modulefield::expand(get_if($this->getSliceID(),$GLOBALS['slice_id']), $col);
+                return StrExpand('AA_Stringexpand_Modulefield', array(get_if($this->getSliceID(),$GLOBALS['slice_id']), $col));
             case "link_edit":
                 return (($p[1]=='anonym') ?
                 get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
@@ -1501,7 +1501,7 @@ class AA_Item {
      * @param $param
      */
     function f_z($col, $param="") {
-        return AA_Stringexpand_Fileinfo::expand($this->getval($col),$param);
+        return StrExpand('AA_Stringexpand_Fileinfo', array($this->getval($col),$param));
     }
 
     /** l_b function

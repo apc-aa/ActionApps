@@ -308,7 +308,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
         AA_Hitcounter::hit($zid);
     }
     elseif ( $seo ) {
-        $zid = new zids(explode('-', AA_Stringexpand_Seo2ids::expand($slice_id, $seo)), 'l');
+        $zid = new zids(explode('-', StrExpand('AA_Stringexpand_Seo2ids', array($slice_id, $seo))), 'l');
         AA_Hitcounter::hit($zid);
     }
     elseif ( $o ) {
