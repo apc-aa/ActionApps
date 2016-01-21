@@ -72,15 +72,17 @@ echo $Msg;
 $slice = AA_Slice::getModule($slice_id);
 if (! $slice->getProperty("mailman_field_lists")) {
     echo _m('First set Mailman Lists Field in Slice Settings.');
-    HtmlPageEnd(); page_close(); exit;
+    HtmlPageEnd();
+    page_close();
+    exit;
 }
 
-$db->query("SELECT field.input_show_func, field.name FROM field
-    WHERE slice_id='".q_pack_id($slice_id)."' AND id='"
-    .$slice->getProperty("mailman_field_lists")."'");
+$db = getDB();
+$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='" .$slice->getProperty("mailman_field_lists")."'");
 $db->next_record();
 $field_name = $db->f("name");
 list (,$groupid) = explode(":", $db->f("input_show_func"));
+freeDB($db);
 
 if ($create_list && $admin_email && $list_name && $admin_password) {
     add_mailman_list();
@@ -90,22 +92,24 @@ if ($create_list && $admin_email && $list_name && $admin_password) {
  * @return none on error
  */
 function add_mailman_list() {
-    global $admin_email, $list_name, $admin_password, $groupid, $db;
-    $db->query ("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."'
-        AND name='".$list_name."'");
+    global $admin_email, $list_name, $admin_password, $groupid;
+
+    $db = getDB();
+    $db->query ("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."' AND name='".$list_name."'");
     if ($db->next_record()) {
         echo _m("Error: This list name is already used.");
+        freeDB($db);
         return;
     }
     $db->query ("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='".addslashes($groupid)."'");
     $db->next_record();
     $pri = $db->f("max_pri") + 100;
-    if (! $db->query ("INSERT INTO constant (id, group_id, name, value, pri)
-        VALUES ('".q_pack_id(new_id())."', '".addslashes($groupid)."',
-        '$list_name', '$list_name', $pri)")) {
+    if (! $db->query ("INSERT INTO constant (id, group_id, name, value, pri) VALUES ('".q_pack_id(new_id())."', '".addslashes($groupid)."', '$list_name', '$list_name', $pri)")) {
         echo "Internal Error with DB.";
+        freeDB($db);
         return;
     }
+    freeDB($db);
 
     global $MAILMAN_SYNCHRO_DIR;
     endslash ($MAILMAN_SYNCHRO_DIR);

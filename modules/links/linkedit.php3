@@ -36,8 +36,7 @@ function printChange($field, $change_arr, $original_value="") {
             $accept     = " <a href=\"javascript:AcceptChange('$field','$hidden_field')\">"._m('Accept').'</a>';
             $changed_by = $created_by_change[$key] ? ' ('.$created_by_change[$key].')' : '';
             $new_val    = get_if( trim($val), '-- '. _m('unfilled'). ' --');
-            FrmStaticText( MarkChanged( _m('Change') ), MarkChanged( $new_val ) .$changed_by .$accept,
-                           false, "", "", false);
+            FrmStaticText( MarkChanged( _m('Change') ), MarkChanged( $new_val ) .$changed_by .$accept, false, "", "", false);
         }
     }
 }
@@ -366,7 +365,7 @@ $r_state['cat_id'] = get_if( $r_state['cat_id'], $_GET['cid'] );   // used for a
 HtmlPageBegin();
 echo '<title>'. _m('ActionApps') ." - $pagename</title>";
 
-$tree = new cattree( $db, $select_start, false, ' > ');
+$tree = new cattree($select_start, false, ' > ');
 FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);

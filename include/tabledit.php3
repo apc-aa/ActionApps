@@ -175,7 +175,6 @@ class tabledit {
      * @param $where
      */
     function view($where = "(1=1)") {
-        global $db;
 
         /*
         echo "<table width='100%'><tr><td width='50%'>&nbsp;</td><td align=right class=tabtxt><span class=te_help_link>";
@@ -188,6 +187,7 @@ class tabledit {
         $this->SetViewDefaults();
         $where = $this->GetWhere($where);
 
+        $db = getDB();
         $db->query("SELECT COUNT(*) AS mycount FROM ".$this->getSelectFrom()." WHERE ".$where);
         $db->next_record();
         $rowcount = $db->f("mycount");
@@ -288,6 +288,7 @@ class tabledit {
                 $records[] = "new";
                 $all_keys[] = $GLOBALS['new_key'];
             }
+            freeDB($db);
 
             reset($records);
             reset($all_keys);

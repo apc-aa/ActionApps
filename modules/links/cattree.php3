@@ -58,7 +58,6 @@ class catassignment {
  * cattree class - handles tree of categories
  */
 class cattree {
-    var $db;             // database handler
     var $treeStart;      // where to start - category root
     var $go_to_empty;    // boolean - should we go to the empty subcategories?
     var $path_delimiter; // string to show between categories in path
@@ -72,8 +71,7 @@ class cattree {
     var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x');
 
     // constructor
-    function cattree($db="", $treeStart=-1, $go_to_empty=false, $path_delimiter=' > ') {
-        $this->db             = get_if( $db, getDB());  // not necessary to use global $db, now
+    function __construct($treeStart=-1, $go_to_empty=false, $path_delimiter=' > ') {
         $this->treeStart      = $treeStart;
         $this->go_to_empty    = $go_to_empty;
         $this->path_delimiter = $path_delimiter;
@@ -111,7 +109,7 @@ class cattree {
     }
 
     function update() {
-        $db = $this->db;
+        $db = getDB();
         unset( $this->catnames );
         unset( $this->catpaths );
         unset( $this->catnolinks );
@@ -143,6 +141,9 @@ class cattree {
                                         $db->f('base')=='n' ? '@' : ' ',
                                         $this->STATES_CODING[$db->f('state')]);
         }
+
+        freeDB($db);
+
         $this->sort_categories();
         foreach ($this->assignments as $idx => $assig ) {
             $this->ancesors_idx[$assig->getFrom()][] = $idx;
@@ -520,9 +521,7 @@ class linkcounter {
         $count = $zids->count();
         // now update database
         if ($update) {
-            $db = getDB();
-            $db->tquery("UPDATE links_categories SET link_count='$count' WHERE path='$cpath'");
-            freeDB($db);
+            DB_AA::sql("UPDATE links_categories SET link_count='$count' WHERE path='$cpath'");
         }
         return $count;
     }

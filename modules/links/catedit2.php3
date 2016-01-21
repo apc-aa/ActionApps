@@ -16,118 +16,95 @@ unset($r_err);
 // (for deletion, so it does not count links in trash and it also do not count
 //  proposals) - It is question is we haven't to count proposals
 function IsCatEmpty($category_id) {
-  global $db;
-//  $path = GetCategoryPath($category_id);
-//  $app_zids  = Links_QueryZIDs($path, '', '', true, 'app');
-//  $hold_zids = Links_QueryZIDs($path, '', '', true, 'folder2');
-//  $cat_zids  = Links_QueryCatZIDs($path, '', '', true, 'app');
+    //  $path = GetCategoryPath($category_id);
+    //  $app_zids  = Links_QueryZIDs($path, '', '', true, 'app');
+    //  $hold_zids = Links_QueryZIDs($path, '', '', true, 'folder2');
+    //  $cat_zids  = Links_QueryCatZIDs($path, '', '', true, 'app');
 
-  $SQL = " SELECT links_links.id
-           FROM links_link_cat, links_links
-          WHERE links_link_cat.what_id = links_links.id
-            AND links_link_cat.category_id = $category_id
-            AND links_links.folder < 3
-            AND NOT (links_link_cat.state = 'hidden')
-            AND links_link_cat.proposal = 'n'";
+    $SQL = " SELECT links_links.id
+                FROM links_link_cat, links_links
+                WHERE links_link_cat.what_id = links_links.id
+                AND links_link_cat.category_id = $category_id
+                AND links_links.folder < 3
+                AND NOT (links_link_cat.state = 'hidden')
+                AND links_link_cat.proposal = 'n'";
 
+    $db = getDB();
+    $db->query($SQL);
+    if ( $db->next_record() ) {
+        freeDB($db);
+        return false;
+    }
 
-  $db->query($SQL);
-  if ( $db->next_record() )
-    return false;
+    $SQL = "SELECT what_id FROM links_cat_cat WHERE (category_id = $category_id)";
+    $db->query($SQL);
+    $ret = !$db->next_record();
 
-  $SQL = "SELECT what_id FROM links_cat_cat
-                         WHERE (category_id = $category_id)";
-  $db->query($SQL);
-  return !($db->next_record());
+    freeDB($db);
+    return $ret;
 }
 
 // Delete one category assignment
 function DeleteCatAssignment($parent, $child) {
-  global $db;
-  $SQL = "DELETE FROM links_cat_cat
-           WHERE what_id = $child
-             AND category_id =$parent";
-
-  $db->query( $SQL );
+    DB_AA::delete('links_cat_cat', array(array('what_id', $child, 'i'), array('category_id', $parent, 'i')));
 }
 
 // Delete one category
 function DeleteCategory($catId) {
-  global $db;
-
-  $SQL = "DELETE FROM links_link_cat
-           WHERE category_id = $catId";
-  $db->tquery( $SQL );
-
-  $SQL = "DELETE FROM links_cat_cat
-           WHERE category_id = $catId";
-  $db->tquery( $SQL );
-
-  $SQL = "DELETE FROM links_categories
-           WHERE id = $catId";
-  $db->tquery( $SQL );
+    DB_AA::delete('links_link_cat',   array(array('category_id', $catId, 'i')));
+    DB_AA::delete('links_cat_cat',    array(array('category_id', $catId, 'i')));
+    DB_AA::delete('links_categories', array(array('id', $catId, 'i')));
 }
 
 function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name) {
-    global $db;
-
     // General categories have its own priorities
     $new_pri = Links_GlobalCatPriority($name);
-    if ( $new_pri ) $pri = $new_pri;
-    $SQL = "UPDATE links_cat_cat SET priority=$pri, state='$state'
-              WHERE category_id = $category_id
-                    AND what_id = $insertedId";
-
-    $db->query( $SQL );
+    if ( $new_pri ) {
+        $pri = $new_pri;
+    }
+    DB_AA::sql("UPDATE links_cat_cat SET priority=$pri, state='$state' WHERE category_id = $category_id AND what_id = $insertedId");
 }
 
 function ChangeCatState($category_id, $insertedId, $state) {
-    global $db;
-
     // General categories have its own priorities
-    $SQL = "UPDATE links_cat_cat SET state='$state'
-              WHERE category_id = $category_id
-                    AND what_id = $insertedId";
-
-    $db->query( $SQL );
+    DB_AA::sql("UPDATE links_cat_cat SET state='$state' WHERE category_id = $category_id AND what_id = $insertedId");
 }
 
 // Moves this category to another subtree or delete (if clear and no link to it)
 function UnassignBaseCategory($parent, $child) {
-    global $db, $r_msg, $r_err;
+    global $r_msg, $r_err;
+
+    $db = getDB();
 
     // get all categories, where this is subcategory
-    $SQL = "SELECT category_id, base FROM links_cat_cat
-                         WHERE (what_id = $child)";
+    $SQL = "SELECT category_id, base FROM links_cat_cat WHERE (what_id = $child)";
 
     $db->query($SQL);
 
     while ( $db->next_record() ) {  // this base category is linked to another
-        if ( $db->f('category_id') == $parent )  // this we unasign => skip it
+        if ( $db->f('category_id') == $parent ) { // this we unasign => skip it
             continue;
+        }
 
         $newParent = $db->f('category_id');
 
         // make first as base
-        $SQL = "UPDATE links_cat_cat SET base='y'
-             WHERE what_id = $child
-               AND category_id = $newParent";
+        $SQL = "UPDATE links_cat_cat SET base='y' WHERE what_id = $child AND category_id = $newParent";
 
         $db->query( $SQL );
 
         // we have to change path to this category
-        $SQL = "SELECT path FROM links_categories
-             WHERE id = $newParent";
+        $SQL = "SELECT path FROM links_categories WHERE id = $newParent";
         $db->query( $SQL );
-        if ( $db->next_record() )
-          $newPath = $db->f('path');
+        if ( $db->next_record() ) {
+            $newPath = $db->f('path');
+        }
 
-
-        $SQL = "SELECT path FROM links_categories
-             WHERE id = $child";
+        $SQL = "SELECT path FROM links_categories WHERE id = $child";
         $db->query( $SQL );
-        if ( $db->next_record() )
-          $oldPath = $db->f('path');
+        if ( $db->next_record() ) {
+            $oldPath = $db->f('path');
+        }
 
         if ($newPath && $oldPath) {
             $SQL = "UPDATE links_categories
@@ -136,6 +113,7 @@ function UnassignBaseCategory($parent, $child) {
             $db->query( $SQL );
         } else {
             huhl("Something very strange in UnassignBaseCategory() in catedit2.php3");
+            freeDB($db);
             exit;
         }
 
@@ -144,8 +122,11 @@ function UnassignBaseCategory($parent, $child) {
         ChangeCatPermAsIn($child, $newParent);
 
         $r_msg[] = MsgOK(_m('Category reassigned'));
+        freeDB($db);
         return;
     }
+
+    freeDB($db);
     // category is not linked to another => delete if clear
     if ( IsCatEmpty($child) ) {
         DeleteCategory($child);

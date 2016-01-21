@@ -119,7 +119,7 @@ function Links_GoBookmark($value, $param) {
 
 /** Handler for DeleteTrash switch - removes links from trash */
 function Links_DeleteTrash($value, $param) {
-    global $db;
+    $db = getDB();
 
     // first delete the trashed links
     $SQL = 'DELETE links_links FROM links_links WHERE links_links.folder=3';
@@ -146,6 +146,8 @@ function Links_DeleteTrash($value, $param) {
     // and now remove all category assignments for deleted links
     $SQL = 'DELETE links_link_cat FROM links_link_cat LEFT JOIN links_links ON links_link_cat.what_id = links_links.id WHERE links_links.id IS NULL';
     $db->tquery($SQL);
+
+    freeDB($db);
 }
 
 /** Function corresponding with 'actions' (see below) - returns true if user
@@ -181,7 +183,7 @@ function Links_IsActionPerm($action) {
 }
 
 function Links_CountLinkInBins($cat_path) {
-    global $db;
+    $db = getDB();
     // unasigned
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
@@ -253,7 +255,7 @@ function Links_CountLinkInBins($cat_path) {
     while ( $db->next_record() ) {
         $ret['folder'.($db->f('folder'))] = $db->f('count');
     }
-
+    freeDB($db);
     return $ret;
 }
 
@@ -385,7 +387,7 @@ $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 // still in <head>
 // js needed for category selection
 
-$tree = new cattree( $db, $links_info['start_id'], true, '<br> - ');
+$tree = new cattree( $links_info['start_id'], true, '<br> - ');
 FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['start_id'],1,true);

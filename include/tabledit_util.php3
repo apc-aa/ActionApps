@@ -142,7 +142,6 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
  * @param $default_readonly
  */
 function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", $default_readonly=false, $primary="") {
-    global $db;
     $primary_aliases = array();
 
     // set column defaults and find all tables used in $columns
@@ -165,6 +164,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         $tables [$column["table"]] = 1;
     }
 
+    $db = getDB();
     foreach ($tables as $table => $foo) {
         // Special table name - not real name - used for not database columns
         if ( $table == 'aa_notable' ) {
@@ -240,6 +240,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
             setDefault($cprop["view"]["size"]["cols"], $_cols);
         }
     }
+    freeDB($db);
 }
 
 // -----------------------------------------------------------------------------------
@@ -255,24 +256,30 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
  * @param $be_cautious
  */
 function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
-    global $db, $err;
+    global $err;
     $varset = new CVarset;
     $vals = GetKeyValues($key, $primary_aliases[$table], $columns);
     reset ($vals);
-    while (list ($column, $val) = each ($vals))
+    while (list ($column, $val) = each ($vals)) {
         $varset->addkey($column, "text", $val);
+    }
+
+    $db = getDB();
     if ($be_cautious) {
         $db->query($varset->makeSELECT ($table));
         if ($db->num_rows() != 1) {
-            $err[] = $error_msg ? $error_msg :
-                "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
+            $err[] = $error_msg ? $error_msg : "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
+            freeDB($db);
             return false;
         }
     }
-    if (! callTrigger($triggers, "BeforeDelete", $varset))
+    if (! callTrigger($triggers, "BeforeDelete", $varset)) {
+        freeDB($db);
         return false;
+    }
     $retval = $db->query($varset->makeDELETE ($table));
     callTrigger($triggers, "AfterDelete", $varset);
+    freeDB($db);
     return $retval;
 }
 
@@ -292,7 +299,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
  * @return true if successfull, false if not
  */
 function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers = "", $be_cautious=1) {
-    global $db, $err;
+    global $err;
 
     if (!ProoveVals($val, $columns))
         return false;
@@ -325,6 +332,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
         }
     }
 
+    $db = getDB();
     // run varsets
     reset ($varsets);
     while (list ($table) = each ($varsets)) {
@@ -333,15 +341,18 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
             $db->query($varset->makeSELECT ($table));
             if ($db->num_rows() != 1) {
                 $err[] = $error_msg ? $error_msg : "Error in TableUpdate ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 1.";
+                freeDB($db);
                 return false;
             }
         }
         if (! callTrigger($triggers, "BeforeUpdate", $varset)) {
+            freeDB($db);
             return false;
         }
         $db->query($varset->makeUPDATE($table));
         callTrigger($triggers, "AfterUpdate", $varset);
     }
+    freeDB($db);
 
     $GLOBALS["Msg"] = _m("Update was successfull.");
     return true;
@@ -363,10 +374,11 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
  * @param $be_cautious
  */
 function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
-    global $db, $err;
+    global $err;
 
-    if (!ProoveVals($val, $columns))
+    if (!ProoveVals($val, $columns)) {
         return "";
+    }
 
     // prepare varsets with primary key values
     reset ($primary_aliases);
@@ -396,6 +408,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
         }
     }
 
+    $db = getDB();
     // run varsets
     reset ($varsets);
     while (list ($table) = each ($varsets)) {
@@ -411,10 +424,12 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
             $db->query($varset->makeSELECT($table));
             if ($db->num_rows() > 0) {
                 $err[] = $error_msg ? $error_msg : "Error in TableInsert ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 0.";
+                freeDB($db);
                 return "";
             }
         }
         if (! callTrigger($triggers, "BeforeInsert", $varset)) {
+            freeDB($db);
             return "";
         }
         $db->query($varset->makeINSERT($table));
@@ -425,6 +440,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
             $where = $varset->makeWHERE($table);
         }
     }
+    freeDB($db);
 
     $GLOBALS["Msg"] = _m("Insert was successfull.");
     return $newkey;

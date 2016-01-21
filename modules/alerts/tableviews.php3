@@ -44,13 +44,15 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         return $tableview;
     }
 
-    global $auth, $db;
+    global $auth;
     global $attrs_edit, $attrs_browse;
 
     // ------------------------------------------------------------------------------------
 
     if ($viewID == "acf") {
         global $collectionid;
+
+        $db = getDB();
         $db->query("SELECT AF.description, AF.id FROM alerts_filter AF");
         if ($db->num_rows()) {
             while ($db->next_record())
@@ -82,6 +84,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             }
             $filters[$db->f("filterid")] = $txt;
         }
+        freeDB($db);
 
         return  array (
         "table" => "alerts_collection_filter",
@@ -277,7 +280,7 @@ function FindAlertsFilterPermissions() {
 // ----------------------------------------------------------------------------------
 
 function FindAlertsUserPermissions() {
-    global $Tab, $db, $collectionid;
+    global $Tab, $collectionid;
     $now = time();
     switch ($Tab) {
         case 'appb': $where = "status_code = 1 AND start_date > $now"; break;
@@ -289,6 +292,7 @@ function FindAlertsUserPermissions() {
             AND expiry_date >= $now"; break;
     }
 
+    $db = getDB();
     $db->query("SELECT userid
         FROM alerts_user_collection
         WHERE collectionid='$collectionid' AND $where");
@@ -296,6 +300,7 @@ function FindAlertsUserPermissions() {
     while ($db->next_record()) {
         $retval[] = $db->f("userid");
     }
+    freeDB($db);
     return $retval;
 }
 

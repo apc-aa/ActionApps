@@ -65,7 +65,7 @@ $tree_to_begin = ($links_info['select_start'] ?
                     min($links_info['select_start'], $links_info['tree_start']) :
                     $links_info['tree_start']);
 
-$tree = new cattree( $db, $tree_to_begin, true, ' > ');
+$tree = new cattree($tree_to_begin, true, ' > ');
 
 // count links in all subtree
 $linkcounter = new linkcounter;

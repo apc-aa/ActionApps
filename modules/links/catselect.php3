@@ -24,7 +24,7 @@ $cpath = GetCategoryPath( $cid );
 HtmlPageBegin();
 echo '<title>'. _m('ActionApps - Select Category'). '</title>';
 
-$tree = new cattree( $db, $tree_start, true, ' > ');
+$tree = new cattree($tree_start, true, ' > ');
 FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);

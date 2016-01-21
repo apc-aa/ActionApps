@@ -217,6 +217,12 @@ class DB_AA extends DB_Sql {
 
     /* public: constructor */
     function __construct($query = "") {
+        //if ($_GET['debugtime']=='24') {
+        //    echo "\n<br>\n";
+        //    $e = new Exception;
+        //    print_r($e->getTraceAsString());
+        //    echo "\n<br>\n";
+        //}
         self::$_instances_no++;
         parent::__construct($query);
     }
@@ -346,6 +352,11 @@ class DB_AA extends DB_Sql {
         return DB_AA::sql("DELETE FROM `$table`", $where);
     }
 
+    /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
+    static function test($table, $where) {
+        return (false !== DB_AA::select1("SELECT ".($where[0][0])." FROM `$table`", '', $where));
+    }
+
     /** makeWHERE function
      *  [[field_name, value, type], ...]   type:  i - integer, l - longid, q - quoted, s - string (default)
      *                                     value: singlevalue or array
@@ -358,8 +369,6 @@ class DB_AA extends DB_Sql {
         foreach ( $varlist as $vardef) {
             // $vardef is array(varname, type, value)
             list($name, $value, $type) = $vardef;
-
-            //huhl($vardef);
 
             if (!is_array($value)) {
                 switch ( $type ) {
@@ -385,7 +394,6 @@ class DB_AA extends DB_Sql {
             }
             $delim = " AND";
         }
-        //huhl($where);
         return $where ? "WHERE $where" : '';
     }
 
@@ -472,7 +480,7 @@ class DB_AA extends DB_Sql {
 // to use
 // Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
 //
-$spareDBs = array();
+$spareDBs     = array();
 /** getDB function
  *
  */
@@ -502,7 +510,49 @@ function tryQuery($SQL) {
     return $res;
 }
 
+/** @deprecated GetTable2Array function
+ *  function converts table from SQL query to array
+ * @param $SQL
+ * @param $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
+ * @param $values - return array's val - 'aa_all' |
+ *                                 'aa_mark' |
+ *                                 'aa_fields' |
+ *                                 <database_column> |
+ *                                 'unpack:<database_column>' |
+ *                                 true
+ */
+function GetTable2Array($SQL, $key="id", $values='aa_all') {
+    $db = getDB();
+    $db->tquery($SQL);
 
+    while ($db->next_record()) {
+        if ($values == 'aa_all') {
+            $val = $db->Record;
+        } elseif ($values == 'aa_mark') {
+            $val = true;
+        } elseif (substr($values,0,7) == 'unpack:') {
+            $val = unpack_id($db->f(substr($values,7)));
+        } elseif (is_string($values) AND array_key_exists( $values, $db->Record )) {
+            $val = $db->Record[$values];
+        } else {  // true or 'aa_fields'
+            $val = $db->Record;
+            // $val = DBFields($db);  // I changed the mysql_fetch_array($this->Query_ID, MYSQL_ASSOC) in db_mysql by adding MYSQL_ASSOC, so DBFields is no longer needed
+        }
+
+        if ( $key == 'aa_first' ) {
+            freeDB($db);
+            return $val;
+        } elseif ( ($key == "NoCoLuMn") OR !$key ) {
+            $arr[] = $val;
+        } elseif ( substr($key,0,7) == 'unpack:' ) {
+            $arr[unpack_id($db->f(substr($key,7)))] = $val;
+        } else {
+            $arr[$db->f($key)] = $val;
+        }
+    }
+    freeDB($db);
+    return isset($arr) ? $arr : false;
+}
 
 class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
     var $database_class = "DB_AA";           // Which database to connect...

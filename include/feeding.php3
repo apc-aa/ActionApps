@@ -189,7 +189,7 @@ function FeedJoin($columns, $fields, $params, &$result) {
  * @param $content
  */
 function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory=0, $content="") {
-    global $db, $varset, $itemvarset;
+    global $varset, $itemvarset;
 
     if ( $destination_id == $from_slice_id ) { // don't feed into the same slice
         return false;
@@ -213,11 +213,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     $catfieldid  = $fields->getCategoryFieldId();
 
     if ( $catfieldid AND ( (string)$tocategory != "0" ) ) {
-        $SQL = "SELECT value FROM constant WHERE id='".q_pack_id($tocategory)."'";
-        $db->query($SQL);
-        if ( $db->next_record() ) {
-            $destinationcat = $db->f('value');
-        }
+        $destinationcat = DB_AA::select1('SELECT value FROM constant', 'value', array(array('id',$tocategory, 'l')));
     }
 
     $varset     = new Cvarset;
@@ -326,8 +322,6 @@ function WhereFed($item_id) {
  */
 
 function CreateFeedTree($sl_id, $from_category_id) {
-    global $db;
-
     $slice_queue[$sl_id] = array('approved'=>"y", 'category'=>$from_category_id);
 
     while (list($sl_id, $val) = each($slice_queue)) {
@@ -337,6 +331,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
                 $p_from_cat_id = pack_id($from_category_id);
             }
 
+            $db = getDB();
             $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
                            feeds.to_approved, feeds.to_category_id
                      FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
@@ -357,6 +352,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
                     $slice_queue[$to_id] = $tree[$sl_id][$to_id] = array( 'approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id')));
                 }
             }
+            freeDB($db);
         }
     }
     return $tree;

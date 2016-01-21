@@ -84,10 +84,9 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
 
-// it must be here as we are using functions like GetCategoryGroup() where
-// we still use
-//     global $db;
-is_object( $db ) || ($db = getDB());
+// we tried to remove all global $db, so let's try to comment out following global object
+// honza 2015-12-30
+// is_object( $db ) || ($db = getDB());
 
 if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);

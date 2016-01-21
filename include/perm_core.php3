@@ -346,11 +346,11 @@ function FilemanPerms($slice_id) {
     global $sess, $errcheck;
     // Sets the fileman_dir var:
     global $fileman_dir;
-    $db = getDB();
     if (! $slice_id) {
         if ($errcheck)  huhl("Warning: Calling perm_core without a slice-id defined");
         $perms_ok = false;
     } else {
+        $db = getDB();
         $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
 
         if ($db->num_rows() != 1) {
@@ -373,8 +373,8 @@ function FilemanPerms($slice_id) {
                 }
             }
         }
+        freeDB($db);
     }
-    freeDB($db);
     return $perms_ok;
 }
 
@@ -812,7 +812,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @param $pattern - already quoted!!!
      */
     private function _findUserPattern($pattern) {
-        global $db;
+        $db = getDB();
         $db->tquery("SELECT content.text AS name, content.item_id AS id
                        FROM slice
                  INNER JOIN item ON slice.id = item.slice_id
@@ -824,11 +824,12 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         while ($db->next_record()) {
             $users[unpack_id($db->f('id'))] = array('name' => $db->f('name'));
         }
+        freeDB($db);
         return $users;
     }
 
     public function findGroups($pattern) {
-        global $db;
+        $db = getDB();
         $db->tquery("SELECT module.id,module.name FROM slice,module
                       WHERE slice.type = 'ReaderManagement'
                         AND slice.id   = module.id
@@ -839,6 +840,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         while ($db->next_record()) {
             $groups[unpack_id($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
         }
+        freeDB($db);
 
         // get all ReaderSets
         $prefix = _m('Reader Set');

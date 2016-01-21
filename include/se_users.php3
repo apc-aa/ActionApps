@@ -48,7 +48,7 @@ function CanChangeRole($user_perm, $editor_perm, $role_perm) {
  *
  */
 function ChangeRole() {
-    global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;
+    global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles;
 
     if ( $UsrAdd ) {
         if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, $perms_roles[$role]['perm']) ) {

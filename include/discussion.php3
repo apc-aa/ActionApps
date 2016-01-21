@@ -335,10 +335,7 @@ function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
  * @param $d_id
  */
 function DeleteTree(&$tree, $d_id) {
-    global $db;
-
-    $p_d_id = q_pack_id($d_id);
-    $db->tquery("DELETE FROM discussion WHERE id='$p_d_id'");
+    DB_AA::delete('discussion', array(array('id', $d_id, 'l')));
     if (!($nodes = $tree[$d_id])) {
         return;
     }
@@ -373,16 +370,14 @@ function GetParent(&$tree, $d_id) {
  * @param $d_id
  */
 function DeleteNode(&$tree, &$d_content, $d_id) {
-    global $db;
-    $db->tquery("DELETE FROM discussion WHERE id='".q_pack_id($d_id)."'");
-
+    DB_AA::delete('discussion', array(array('id', $d_id, 'l')));
     if (!$tree[$d_id]) {
         return;
     }
     $parent = $d_content[$d_id]["d_parent........"][0]['value'];
 
     while (list($child, ) = each($tree[$d_id])) {
-        $db->tquery("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
+        DB_AA::sql("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
     }
 }
 
@@ -394,12 +389,12 @@ function DeleteNode(&$tree, &$d_content, $d_id) {
  * @param $slice_id
  */
 function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
-    global $db;
     $p_item_id = q_pack_id($item_id);
 
     // 99999 - just unused number (state is 0-shown or 1-hidden)
     $where = ($state == 99999) ? '' : " AND state = '".($state ? 1 : 0)."'";
 
+    $db = getDB();
     // check perms -  if the item is in the right slice
     $SQL = "SELECT slice_id FROM item WHERE id='$p_item_id'";
     $db->tquery($SQL);
@@ -407,6 +402,7 @@ function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
     if (unpack_id($db->f('slice_id')) == $slice_id) {
         $db->tquery("DELETE FROM discussion WHERE item_id='".q_pack_id($item_id)."' $where");
     }
+    freeDB($db);
 }
 
 /** updateDiscussionCount function
@@ -415,10 +411,9 @@ function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
  * @param $item_id
  */
 function updateDiscussionCount($item_id) {
-    global $db;
-
     $all       = $hide = 0;
     $p_item_id = q_pack_id($item_id);
+    $db = getDB();
     $SQL       = "SELECT * FROM discussion WHERE item_id='$p_item_id'";
     $db->tquery($SQL);
     while ($db->next_record()) {
@@ -430,6 +425,7 @@ function updateDiscussionCount($item_id) {
 
     $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id='$p_item_id'";
     $db->tquery($SQL);
+    freeDB($db);
 }
 
 // -----------------------------------------------------------------------------------------
@@ -456,7 +452,7 @@ function GetDiscussion2MailAliases() {
  * @param $new_id
  */
 function send2mailList($d_item_id, $new_id) {
-    global $db;
+    $db = getDB();
     $db->tquery("SELECT content.text FROM
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
@@ -487,6 +483,7 @@ function send2mailList($d_item_id, $new_id) {
                 $mail_id = substr($vid,1);
                 $mails   = explode(',', str_replace(' ','',$maillist));
                 AA_Mail::sendTemplate($mail_id, $mails, $CurItem);
+                freeDB($db);
                 return;
             }
             $db->tquery("SELECT * FROM view WHERE id=$vid");
@@ -537,6 +534,7 @@ function send2mailList($d_item_id, $new_id) {
             } //view found
         } // vid present
     } // DiscussionMailList Field present
+    freeDB($db);
 }
 
 ?>

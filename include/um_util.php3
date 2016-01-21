@@ -85,8 +85,6 @@ function GetFiltered($type, $filter, $to_much, $none) {
  * @param $slice_id
  */
 function PrintModulePermModificator($selected_user, $form_buttons='') {
-    global $db;
-
     FrmTabSeparatorNoHidden( _m("Permissions"), $form_buttons );
     ?>
 
@@ -100,6 +98,8 @@ function PrintModulePermModificator($selected_user, $form_buttons='') {
             <td><b>'. _m("Revoke") .'</b></td></tr>';
 
     $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
+
+    $db = getDB();
     $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
     $db->query($SQL);
     $i=0;
@@ -115,6 +115,7 @@ function PrintModulePermModificator($selected_user, $form_buttons='') {
             $mod_types .= GetModuleLetter($db->f('type'));  // string for javascript
         }                       // to know, what type of module the $mod_2B_add is
     }
+    freeDB($db);
     FrmTabSeparator(_m("Assign new permissions"));
     ?>
    <tr><td>

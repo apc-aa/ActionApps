@@ -128,7 +128,8 @@ class AA_Toexecute {
      *  are the same
      */
     function laterOnce( &$object, $params, $selector, $priority=100, $time=null ) {
-        if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
+        if ( !DB_AA::select1("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0")) {
+        //if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
             $this->later($object, $params, $selector, $priority, $time);
         }
     }
@@ -175,7 +176,7 @@ class AA_Toexecute {
         // If the priority is 0, we consider this task as unpossible to execute,
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
-        while ($task = DB_AA::select1("SELECT * FROM `toexecute` WHERE execute_after < ".now()." AND priority > 0 ORDER by priority DESC")) {
+        while ($task = DB_AA::select1("SELECT * FROM `toexecute` WHERE execute_after < ".time()." AND priority > 0 ORDER by priority DESC")) {
             $task_type     = get_if($task['selector'],'aa_unspecified');
             $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
             $task_start    = microtime(true);
@@ -225,7 +226,8 @@ class AA_Toexecute {
         $execute_start = microtime(true);
         if (is_array($tasks)) {
             foreach ($tasks as $task_id) {
-                $task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
+                $task = DB_AA::select1('SELECT * FROM toexecute', '', array(array('id', $task_id, 'i')));
+                //$task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
 
                 $task_type     = get_if($task['selector'],'aa_unspecified');
                 $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second

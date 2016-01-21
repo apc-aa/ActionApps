@@ -22,7 +22,9 @@ http://www.apc.org/
 require_once AA_INC_PATH."mail.php3";
 require_once AA_INC_PATH."mgettext.php3";
 
-is_object( $db ) || ($db = getDB());
+// we tried to remove all global $db, so let's try to comment out following global object
+// honza 2015-12-30
+//is_object( $db ) || ($db = getDB());
 
 function GetCollection($slice_id) {
     $SQL =  "SELECT AC.*, module.name, module.lang_file, module.slice_url

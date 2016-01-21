@@ -78,11 +78,9 @@ function getSliceEncoding($slice_id) {
  *                      already
  */
 function GetExternalCategories($feed_id, $add_other=false) {
-    global $db;
+    $db = getDB();
     $ext_categs = array();
-    $db->query("SELECT category_id, category, category_name, target_category_id, approved
-                  FROM ef_categories
-                 WHERE feed_id='$feed_id' ORDER BY category_name");
+    $db->query("SELECT category_id, category, category_name, target_category_id, approved FROM ef_categories WHERE feed_id='$feed_id' ORDER BY category_name");
     while ($db->next_record()) {
         $ext_categs[unpack_id($db->f('category_id'))] = array(
             "value"              => $db->f('category'),
@@ -90,6 +88,7 @@ function GetExternalCategories($feed_id, $add_other=false) {
             "approved"           => $db->f('approved'),
             "target_category_id" => unpack_id($db->f('target_category_id')));
     }
+    freeDB($db);
     if ( $add_other AND (count($ext_categs)>0) AND !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
         $ext_categs[UNPACKED_AA_OTHER_CATEGOR] = array(
             "value"              => 'AA_Other_Categor',
@@ -124,13 +123,11 @@ function UseAllCategoriesOption( &$ext_categs ) {
  *  @param $r_slice_id
  */
  function GetExternalMapping($l_slice_id, $r_slice_id) {
-     global $db;
      $map_to   = array();
      $map_from = array();
 
-     $db->query("SELECT * FROM feedmap WHERE from_slice_id='".q_pack_id($r_slice_id)."'
-                 AND to_slice_id='".q_pack_id($l_slice_id)."'
-                 ORDER BY from_field_name");
+     $db = getDB();
+     $db->query("SELECT * FROM feedmap WHERE from_slice_id='".q_pack_id($r_slice_id)."' AND to_slice_id='".q_pack_id($l_slice_id)."' ORDER BY from_field_name");
      while ($db->next_record()) {
          switch ($f = $db->f('flag')) {
              case FEEDMAP_FLAG_EXTMAP :
@@ -145,7 +142,7 @@ function UseAllCategoriesOption( &$ext_categs ) {
          }
          $map_from[$db->f('to_field_id')] = array("feedmap_flag"=>$f,"value"=>$v,"from_field_name"=>$db->f('from_field_name'));
      }
-
+     freeDB($db);
      return array($map_to,$map_from);
  }
 
@@ -175,13 +172,13 @@ function GetBaseFieldId( &$fields, $ftype ) {
  *  @param $slice_id
  */
 function GetGroupConstants($slice_id) {
-    global $db;
     $cat_ids   = array();
     $cat_group = GetCategoryGroup($slice_id);
     if (!$cat_group) {
         return false;
     }
 
+    $db = getDB();
     $SQL = "SELECT id, name, value, class FROM constant WHERE group_id = '$cat_group' ORDER BY pri";
     $db->query($SQL);         // get all categories
     while ($db->next_record()) {
@@ -189,6 +186,7 @@ function GetGroupConstants($slice_id) {
                                                      "value"    => $db->f('value'),
                                                      "parent_id"=> $db->f('class'));
     }
+    freeDB($db);
     return $cat_ids;
 }
 /** MapDefaultCategory function

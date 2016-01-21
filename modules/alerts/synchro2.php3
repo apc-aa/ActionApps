@@ -107,9 +107,10 @@ function get_alerts_specific_fields($collectionid) {
 *   @param string $slice_id	long ID of Reader Management Slice
 *	@return string Message about the number of field added. */
 function add_fields_2_slice($collectionid, $slice_id) {
-    global $db, $field_defaults;
+    global $field_defaults;
     $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
 
+    $db = getDB();
     // find current Alerts Name
     $db->query ("
         SELECT module.name FROM alerts_collection AC
@@ -190,6 +191,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         }
         $db->query($varset->makeINSERTorUPDATE("field"));
     }
+    freeDB($db);
     return _m("%1 field(s) added", array ($nadded));
 }
 
@@ -198,12 +200,13 @@ function add_fields_2_slice($collectionid, $slice_id) {
 /** Deletes Alerts-specific fields from slice, including constant groups.
 *   Negates add_fields_2_slice() doings. */
 function delete_fields_from_slice($collectionid, $slice_id) {
-    global $db;
     $ndeleted_groups        = 0;
     $ndeleted               = 0;
     $alerts_specific_fields = get_alerts_specific_fields($collectionid);
     $varset = new CVarset;
     $varset->addkey ("slice_id", "unpacked", $slice_id);
+
+    $db = getDB();
     foreach ($alerts_specific_fields as $field_id => $foo) {
         $varset->addkey("id", "text", $field_id);
 
@@ -217,6 +220,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
             $varset->doDelete("field");
         }
     }
+    freeDB($db);
     return _m("%1 field(s) and %2 constant group(s) deleted", array($ndeleted+0, $ndeleted_groups+0));
 }
 
@@ -225,7 +229,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
 /** Returns array (unpacked_slice_id => name) of slices which contain
 *   all fields listed in $required_fields_in_reader_management. */
 function getReaderManagementSlices () {
-    global $db, $slice_id, $collectionprop;
+    global $slice_id, $collectionprop;
 
     $slices = GetUserSlices();
     $SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement'
@@ -239,11 +243,15 @@ function getReaderManagementSlices () {
         }
         $SQL .= " AND id IN (".$where.")";
     }
+    $db = getDB();
     $db->query ($SQL);
-    while ($db->next_record())
+    while ($db->next_record()) {
         $retval [unpack_id ($db->f("id"))] = $db->f("name");
-    if ($collectionprop["slice_id"])
+    }
+    if ($collectionprop["slice_id"]) {
         $retval[""] = _m("not set");
+    }
+    freeDB($db);
     return $retval;
 }
 ?>

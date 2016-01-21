@@ -31,7 +31,9 @@
 
 require_once AA_INC_PATH."util.php3";
 
-is_object( $db ) || ($db = getDB());
+// we tried to remove all global $db, so let's try to comment out following global object
+// honza 2015-12-30
+// is_object( $db ) || ($db = getDB());
 
 class AA_Mysqlauth {
 
@@ -215,8 +217,7 @@ class AA_Mysqlauth {
      * @param $username
      */
     function deleteReader($username) {
-        global $db;
-        $db->query("DELETE FROM auth_user WHERE username='".addslashes($username)."'");
+        DB_AA::delete('auth_user', array(array('username', $username)));
         AA_Mysqlauth::updateGroups($username);
     }
 
@@ -227,9 +228,7 @@ class AA_Mysqlauth {
      * @param $groups
      */
     function updateReader($username, $password, $groups) {
-        global $db;
-        $db->query("REPLACE INTO auth_user (username, passwd, last_changed)
-            VALUES ('".addslashes($username)."', '".addslashes($password)."', ".time().")");
+        DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES ('".addslashes($username)."', '".addslashes($password)."', ".time().")");
         AA_Mysqlauth::updateGroups($username, $groups);
     }
 
@@ -255,9 +254,7 @@ class AA_Mysqlauth {
     *   @param $groups
     */
     function updateGroups($username, $groups = array()) {
-        global $db;
-        $username = addslashes($username);
-        $db->query("DELETE FROM auth_group WHERE username='$username'");
+        DB_AA::delete('auth_group', array(array('username', $username)));
 
         $final_groups = array();
         foreach( (array)$groups as $group_string ) {
@@ -265,7 +262,7 @@ class AA_Mysqlauth {
         }
         foreach (array_unique($final_groups) as $group) {
             if ( $group ) {
-                $db->query("INSERT INTO auth_group (username, groups, last_changed) VALUES ('$username','".addslashes($group)."',".time().")");
+                DB_AA::sql("INSERT INTO auth_group (username, groups, last_changed) VALUES ('$username','".addslashes($group)."',".time().")");
             }
         }
     }

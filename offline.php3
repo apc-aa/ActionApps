@@ -69,29 +69,24 @@ define("WDDX_BAD_PACKET", 2);
 /** IsDuplicated function
  *  is packet already stored in database?
  * @param $packet
- * @param $db
  */
-function IsDuplicated( $packet, $db ) {
+function IsDuplicated( $packet ) {
     if ( is_array($packet) || is_object($packet)) {
         $packet = serialize($packet);
     }
-    $SQL = "SELECT * FROM offline WHERE digest='". md5($packet) ."'";
-    $db->query($SQL);
-    return ( $db->next_record() ? 1 : 0 );
+    return DB_AA::test('offline', array(array('digest', md5($packet))))
 }
 
 /** RegisterItem function
  *  is packet already stored in database?
  * @param $id
  * @param $packet
- * @param $db
  */
-function RegisterItem( $id, $packet, $db ) {
+function RegisterItem($id, $packet) {
     if (is_array($packet) || is_object($packet)) {
         $packet = serialize($packet);
     }
-    $SQL = "INSERT INTO offline ( id, digest, flag ) VALUES ( '$id', '". md5($packet) ."', '' )";
-    $db->query($SQL);
+    DB_AA::sql("INSERT INTO offline ( id, digest, flag ) VALUES ( '$id', '". md5($packet) ."', '' )");
 }
 
 /** StoreWDDX2DB function
@@ -102,9 +97,8 @@ function RegisterItem( $id, $packet, $db ) {
  * @param $bin2fill
  */
 function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
-    global $db;
 
-    if (IsDuplicated($packet, $db)) {
+    if (IsDuplicated($packet)) {
         return WDDX_DUPLICATED;
     }
 
@@ -164,7 +158,7 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 
     StoreItem($id, $slice_id, $content4id, true, true, true);
                                       // insert, invalidatecache, feed
-    RegisterItem(q_pack_id($id), $packet, $db);
+    RegisterItem(q_pack_id($id), $packet);
     return WDDX_OK;
 }
 
@@ -181,11 +175,9 @@ function SendOkPage($txt) {
 }
 
   // init used objects
-is_object( $db ) || ($db = getDB());
-
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-$itemvarset = new Cvarset();
+$varset      = new Cvarset();
+$itemvarset  = new Cvarset();
 
 if ( !$slice_id ) {
     SendErrorPage(_m("Slice ID not defined"));

@@ -133,7 +133,7 @@ function GetLabel($profile, $property, $selector, $default_text) {
  *
  */
 function PrintModuleSelection() {
-    global $slice_id, $g_modules, $sess, $db, $MODULES;
+    global $slice_id, $g_modules, $sess, $MODULES;
     global $auth; // for profiles
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
@@ -148,6 +148,7 @@ function PrintModuleSelection() {
 
         $js = "
             var modulesOptions = ''\n";
+        $db = getDB();
         $db->query("SELECT module.id, module.type, slice.type AS slice_type, module.name
                       FROM module LEFT JOIN slice ON module.id=slice.id $slice_ids
                       ORDER BY module.priority, module.name");
@@ -172,6 +173,7 @@ function PrintModuleSelection() {
             //if (! $module_types[$db->f("type")]) { echo $db->f("type")."!!"; exit; }
             $modules[$order][$db->f("id")] = $db->f("name");
         }
+        freeDB($db);
         // count($modules) - count of module types
         $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
 
@@ -226,7 +228,7 @@ function PrintModuleSelection() {
  * @param $showSub -- show the submenu (left navigation bar) ?
  */
 function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
-    global $slice_id, $useOnLoad, $sess, $db, $auth;
+    global $slice_id, $useOnLoad, $sess, $auth;
     global $menu_function;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings

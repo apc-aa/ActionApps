@@ -171,7 +171,7 @@ class aaevent {
      * @param $selector
      */
     function get_handlers_newwwwww($type, $class, $selector) {
-        $db = getDB();
+        $db  = getDB();
         $SQL = "SELECT reaction, params FROM event WHERE type='".quote($type)."'";
         if ($class) {
             $SQL .= " AND class='".quote($class)."'";
@@ -531,7 +531,7 @@ function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldv
  * @param string  $params2     - old (previous) global category name or false
  */
 function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    global $db, $LINK_TYPE_CONSTANTS;
+    global $LINK_TYPE_CONSTANTS;
 
     // quite Econnectonous code
     $name    = $params;              // name of general category is in params
@@ -543,6 +543,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
         return false;
     }
 
+    $db = getDB();
     // get all informations about general categories
     $SQL = "SELECT pri, description, name FROM constant
              WHERE group_id='$LINK_TYPE_CONSTANTS'
@@ -551,9 +552,11 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     if ( $db->next_record() ) {
         $general_cat = $db->Record;
     } else {
+        freeDB($db);
         return false;    // not general category - do not modify category set
     }
 
+    freeDB($db);
     // category translations are stored in 'description' field of constants
     // the format of translations are: 1,2-1,2,1224:1,2,4-1,2,4,42:...
     // which means - do not store to category 1,2 but to the category 1,2,1224
@@ -625,7 +628,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
         return false;       // no category to assign - seldom case
     }
 
-    $tree = new cattree( $db );
+    $tree = new cattree();
 
     // we have $subcat_translated[] AND $ret_params[] already prefilled
     foreach ( $subcat_translated as $cid => $path ) {

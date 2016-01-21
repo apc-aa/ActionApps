@@ -59,11 +59,9 @@ $varset      = new Cvarset();
 
 // Check permissions
 if ( $group_id ) {
-    $SQL = "SELECT * FROM constant_slice INNER JOIN slice ON constant_slice.slice_id = slice.id WHERE group_id='$group_id'";
-    $db->tquery($SQL);
-
-    if ($db->next_record() && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("slice_id")), PS_FIELDS)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$db->f("name").")", "admin");
+    $row = DB_AA::select1('SELECT slice_id, name FROM constant_slice INNER JOIN slice ON constant_slice.slice_id = slice.id','', array(array('group_id',$group_id)));
+    if ($row && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($row["slice_id"]), PS_FIELDS)) {
+        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$row['name'].")", "admin");
         exit;
     }
 }
@@ -106,11 +104,15 @@ function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
  *   @param $oldvalue
  */
 function propagateChanges($constant_id, $newvalue, $oldvalue) {
-    global $db, $group_id, $Msg, $event, $slice_id;
+    global $group_id, $Msg, $event, $slice_id;
 
     if ($oldvalue == $newvalue) return;
 
     $event->comes('CONSTANT_BEFORE_UPDATE', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
+
+    $cnt = 0;
+    $items2update = array();
+    $db = getDB();
 
     if ($oldvalue) {
         // we have to join also item table in order we make sure field is in right slice
@@ -123,21 +125,20 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
            AND (field.input_show_func LIKE '___:$group_id:%'
             OR  field.input_show_func LIKE '___:$group_id')
            AND content.text = '$oldvalue'");
-    }
-    $cnt = 0;
-    $items2update = array();
-    while ($db->next_record()) {
-        ++$cnt;
-        if ( !$items2update[$db->f("field_id")] ) {
-            $items2update[$db->f("field_id")] = new zids( null, 'p');
+        while ($db->next_record()) {
+            ++$cnt;
+            if ( !$items2update[$db->f("field_id")] ) {
+                $items2update[$db->f("field_id")] = new zids( null, 'p');
+            }
+            $items2update[$db->f("field_id")]->add($db->f("item_id"));
         }
-        $items2update[$db->f("field_id")]->add($db->f("item_id"));
     }
     foreach ( $items2update as $field => $zids ) {
-        $SQL = "UPDATE content SET text='$newvalue' WHERE ". $zids->sqlin('item_id') ."
-                AND field_id='".addslashes($field)."' AND text='$oldvalue'";
+        $SQL = "UPDATE content SET text='$newvalue' WHERE ". $zids->sqlin('item_id') ." AND field_id='".addslashes($field)."' AND text='$oldvalue'";
         $db->tquery($SQL);
     }
+    freeDB($db);
+
     if ($cnt) {
         $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
     }

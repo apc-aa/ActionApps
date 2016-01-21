@@ -132,18 +132,6 @@ function Error($str) {
     exit();
 }
 
-/** CheckNameAndPassword function
- * Check the node_name and password against the nodes table's data
- * @param $node_name
- * @param $password
- * @return bool
- */
-function CheckNameAndPassword( $node_name, $password ) {
-    global $db;
-    $db->query("SELECT password FROM nodes WHERE name='$node_name'");
-    return ($db->next_record() AND ($db->f('password') == $password));
-}
-
 /** GetFeedingSlices function
  * Find correct feeding slices
  * @param $node_name
@@ -151,13 +139,12 @@ function CheckNameAndPassword( $node_name, $password ) {
  * @return array of slice ids
  */
 function GetFeedingSlices( $node_name, $user) {
-    global $db;
-
-    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='')
-                                                    AND (user='$user' OR user='')");
+    $db = getDB();
+    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='') AND (user='$user' OR user='')");
     while ($db->next_record()) {
         $slices[] = unpack_id($db->f(slice_id));
     }
+    freeDB($db);
     return $slices;
 }
 
@@ -170,12 +157,9 @@ function GetFeedingSlices( $node_name, $user) {
   * @return next_record from db of permissions
   */
 function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
-    global $db;
-    $db->query("SELECT slice_id FROM ef_permissions WHERE slice_id='".q_pack_id($slice_id)."'
-                                                      AND (node='$node_name' OR node='')
-                                                      AND (user='$user' OR user='')");
-    return $db->next_record();
+    return (bool)DB_AA::select1("SELECT slice_id FROM ef_permissions WHERE slice_id='".q_pack_id($slice_id)."' AND (node='$node_name' OR node='') AND (user='$user' OR user='')", 'slice_id');
 }
+
 /** GetXMLFields function
  * @param $slice_id
  * @param $slice_fields (by link)
@@ -202,12 +186,12 @@ function GetXMLFields( $slice_id, &$slice_fields, &$xml_fields_refs, &$xml_field
  * @return modified vars above
  */
 function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
-    global $db;
-
     $group_id = GetCategoryGroup($slice_id);
     if (!$group_id) {
         return;
     }
+
+    $db = getDB();
     $SQL = "SELECT id, name, value, class FROM constant WHERE group_id='$group_id'";
     $db->query($SQL);
 
@@ -223,7 +207,9 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
         $xml_categories_refs .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."cat/$id\"/>\n";
     }
     $xml_categories_refs.="\t</rdf:Bag></aa:categories>\n";
+    freeDB($db);
 }
+
 /** GetXMLChannel function
  * @param $slice_id
  * @param $xml_fields_refs (by link)
@@ -465,10 +451,8 @@ function RestrictIdsByCategory( &$ids, &$categories, $slice_id, &$content, $cat_
 
 //------------------------------------------------------------------------------
 
-is_object( $db ) || ($db = getDB());
-
 // check the node_name and password against the nodes table's data
-if (!CheckNameAndPassword($node_name, $password)) {
+if (!DB_AA::test("nodes", array(array('name',$node_name),array('password',$password)))) {
     Error(ERR_PASSWORD);
 }
 
@@ -558,6 +542,7 @@ if ($ids) {
                  AND $cond2";
     // AND (externally_fed='' OR externally_fed IS NULL)
 
+    $db = getDB();
     $db->query($SQL);
 
     $ids  = "";
@@ -566,6 +551,8 @@ if ($ids) {
         $ids[] = unpack_id($db->f(id));
         $time  = max( $time, $db->f('publish_date'), $db->f('last_edit'));   // save time of the newest item
     }
+    freeDB($db);
+
     $time = unixstamp_to_iso8601($time);
 
     if ($ids) {

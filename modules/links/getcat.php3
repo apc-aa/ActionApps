@@ -38,7 +38,7 @@ function PrintCategory( $id, $name, $base, $state, $parent, $level ) {
 if ( !isset($_GET['start']) )
     $start = 1;
 
-$tree = new cattree( $db, $start );
+$tree = new cattree( $start );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

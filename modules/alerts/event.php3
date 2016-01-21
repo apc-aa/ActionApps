@@ -74,8 +74,7 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
 *   as daily, weekly or monthly alerts.
 */
 function AlertsSendInstantAlert( $item_id, $slice_id ) {
-    global $db;
-
+    $db = getDB();
     $db->query ("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id = '".q_pack_id($item_id)."'");
 
     if ($db->next_record() && $db->f("moved2active") && time() >= $db->f("publish_date") && time() <= $db->f("expiry_date")) {
@@ -95,6 +94,7 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
             $db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");
         }
     }
+    freeDB($db);
 }
 
 ?>

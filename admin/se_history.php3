@@ -96,10 +96,6 @@ function GetHistoryAliases() {  // function - we need trnslate _m() on use (not 
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */
 function GetHistoryContent($zids) {
-    global $db;
-
-    $db = getDB();
-
     if (!$zids OR $zids->count()<1) {
         return false;
     }
@@ -141,7 +137,7 @@ function QueryHistoryZIDs($slice_id, $conds, $sort="") {
     $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record, item
               WHERE change.id = change_record.change_id AND item.id = UNHEX(change.resource_id) AND item.slice_id = '". q_pack_id($slice_id)."'
               AND change.type = 'h'";
-              
+
 //    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record WHERE change.id = change_record.change_id AND change.resource_id = '$slice_id' ";
 
     $SQL .=  $where_sql . $order_by_sql;

@@ -14,24 +14,28 @@ function Links_CountAllLinks() {
  *  and returns array[category]=link_count
  *  It is just helper function - it do not respect proposals, trash folders, ...
  */
-function CountLinks4Each() {
-  global $db;
-  $SQL= " SELECT category_id, count(*) as links_count FROM links_link_cat
-    WHERE links_link_cat.proposal = 'n'
-    GROUP BY category_id";
-  $db->query($SQL);
+ function CountLinks4Each() {
+     $db = getDB();
+     $SQL= " SELECT category_id, count(*) as links_count FROM links_link_cat
+                 WHERE links_link_cat.proposal = 'n'
+                 GROUP BY category_id";
+     $db->query($SQL);
 
-  while ($db->next_record())
-    $links_count[$db->f('category_id')] = $db->f('links_count');
-  return  $links_count;
+     while ($db->next_record()) {
+         $links_count[$db->f('category_id')] = $db->f('links_count');
+     }
+     freeDB($db);
+     return  $links_count;
 }
 
 // Get all informations about link
 function GetLinkInfo( $lid ) {
-  global $db;
-  $SQL = "SELECT * FROM links_links WHERE id = '$lid'";
-  $db->query($SQL);
-  return ( $db->next_record() ? $db->Record : "");
+     $db = getDB();
+     $SQL = "SELECT * FROM links_links WHERE id = '$lid'";
+     $db->query($SQL);
+     $ret = $db->next_record() ? $db->Record : "";
+     freeDB($db);
+     return $ret;
 }
 
 // Get path from category id
