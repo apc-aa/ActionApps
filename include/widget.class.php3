@@ -598,7 +598,7 @@ class AA_Widget_Txt extends AA_Widget {
     static function getClassProperties() {
         return array (                   //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'rows'              => new AA_Property( 'rows',              _m("Rows"),            'int',  false, true, 'int', false, '', '', 20),
-            'max_characters'    => new AA_Property( 'max_characters',    _m("Max characters"),  'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', '')
+            'max_characters'    => new AA_Property( 'max_characters',    _m("Max characters"),  'int',  false, true, 'int', false, _m("max count of characters entered (maxlength parameter)"), '', '')
             );
     }
 
@@ -787,6 +787,10 @@ class AA_Widget_Mfl extends AA_Widget {
         $width          = $this->getProperty('width', 60);
 
         $value         = $content->getAaValue($aa_property->getId());
+
+        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
+        $widget_add2    = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
+        
         $widget        = '';
         // display at least one option
         for ( $i=0, $ino=max(1,$row_count,$value->count()); $i<$ino; ++$i) {
@@ -795,9 +799,9 @@ class AA_Widget_Mfl extends AA_Widget {
             $input_value  = myspecialchars($value->getValue($i));
             $required     = ($aa_property->isRequired() AND ($i==0)) ? 'required' : '';
             if ($rows > 1) {
-                $widget      .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required >$input_value</textarea></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $widget      .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_add>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             } else {
-                $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required $widget_add></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
         }
         $widget           = "<div id=\"allrows$base_id\">$widget</div>";
@@ -1561,7 +1565,7 @@ class AA_Widget_Fil extends AA_Widget {
 }
 
 
-/** Tag input - in fact the result is wery similar to related item window - it adds related items */
+/** Tag input - in fact the result is very similar to related item window - it adds related items */
 class AA_Widget_Tag extends AA_Widget {
 
     /** - static member functions
