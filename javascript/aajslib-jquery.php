@@ -411,6 +411,53 @@ function AA_Rotator(id, interval, max, speed, effect) {
     AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
 }
 
+/* text - string or url (begins with '/')
+ * type - err | ok | info | [text]
+ */
+function AA_Message(text, type) {
+    var attrs = {'id': 'aa-message-box', 'onclick': '$(this).hide()'};
+    switch(type) {
+      case 'err':  attrs['class'] = 'aa-err';  break;
+      case 'ok':   attrs['class'] = 'aa-ok';   break;
+      case 'info': attrs['class'] = 'aa-info'; break;
+      default:     attrs['class'] = 'aa-text';
+                   type = 'text';
+    }
+    if (text.charAt(0)=='/') {
+        AA__systemDiv('aa-message-box', attrs, '<div id="aa-message-box-in"></div>');
+        AA_Ajax('aa-message-box-in', text);
+    } else {
+        AA__systemDiv('aa-message-box', attrs, text.length ? '<div id="aa-message-box-in">'+text+'</div>' : '');
+    }
+    if (type != 'text') {
+        setTimeout(function() { $('aa-message-box').hide(); }, 5000);
+    }
+}
+
+function AA__systemDiv(id, attrs, text) {
+    var box = $(jqid(id));
+    if (!box.length) {
+        $('<div/>',attrs).appendTo('body');
+        box = $(jqid(id));
+    }
+    box.html(text);
+    if (!text) {
+        box.hide();
+    } else {
+        if (!$('#aa-bottom-toolbar').length) {
+            AA_Toolbar(''); // we need toolbar defined, we need it to test styles
+            if (AA_GetStyle('aa-bottom-toolbar', 'position')!='fixed') {
+                AA_LoadCss(AA_Config.AA_INSTAL_PATH + 'css/aa-system.css');
+            }
+        }
+        box.show();
+    }
+}
+
+function AA_Toolbar(text) {
+    AA__systemDiv('aa-bottom-toolbar', {'id': 'aa-bottom-toolbar'}, text);
+}
+
 /** indicator of changed / updating data */
 function AA_StateChange(id, state) {
     var outstyle = {};
@@ -474,8 +521,13 @@ function AA_LoadCss(url) {
    link.href = url;
    document.getElementsByTagName('head')[0].appendChild(link);
    return link;
-}
+ }
 
+/* function to check the computed value of a style element */
+function AA_GetStyle(id, name) {
+    var element = document.getElementById(id);
+    return element.currentStyle ? element.currentStyle[name] : window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(name) : null;
+}
 
 /* Cookies */
 function SetCookie(name, value, plustime) {
