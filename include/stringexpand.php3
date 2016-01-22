@@ -836,7 +836,10 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters (the $add parameter could contain space) */
     function doTrimParams() { return false; }
 
-    function expand($text, $length, $mode=2, $add='') {
+    function expand($text, $length=49, $mode=2, $add='') {
+        if ($mode==='') {
+            $mode = 2;
+        }
         $mode   = (int)$mode;
         $length = (int)$length;
         if (strlen($text) <= $length) {
@@ -853,7 +856,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>');
         if ($mode == 3) {
-            $text = strip_tags($text);
+            $text = trim(strip_tags($text));
             $ret  = substr($text, 0, $length/2-1).'...';
             return $ret. substr($text, strlen($ret)-$length). $text_add;
         }
@@ -877,7 +880,8 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
                 } // no dot, no space - leave the text length long
             }
         }
-        return strip_tags( $shorted_text ) . $text_add;
+        $shorted_text = trim(strip_tags( $shorted_text ));
+        return strlen($shorted_text) ? $shorted_text . $text_add : '';
     }
 }
 
@@ -2643,17 +2647,27 @@ class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:sort[0][headline........]=a&sort[1][publish_date....]=d}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:headline........:35615a6d5fdfeb23d36d1c94be3cd9b4}
+ *  <nav><ul>{itree:{treestring:{ids:b485d20843c0afe29d3e9ce773195635:d-relation........-ISNULL-1-switch.........1-=-0:number..........}::1:number..........}:<li id="menu-_#SEO_____">_#MENULINK<ul>:<li id="menu-_#SEO_____">_#MENULINK</li>::</ul></li>}</ul></nav>
  */
 class AA_Stringexpand_Treestring extends AA_Stringexpand {
     /** expand function
-     * @param $item_id          - item id of the tree root (short or long)
+     * @param $item_ids         - item id (or ids) of the tree root (short or long)
      * @param $relation_field   - tree relation field (default relation........)
      * @param $reverse          - 1 for reverse trees (= child->parent relations)
      * @param $sort_string      - order of tree leaves (currently works only for reverse trees. @todo)
      * @param $slices           - traverse only listed slices (some times usefull if your tree contain more than one slice and you want to count only with a subtree)
      */
-    function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
-        return AA_Stringexpand_Treestring::treefunc('getTreeString', $item_id, $relation_field, $reverse, $sort_string, $slices);
+    function expand($item_ids, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
+        if (strpos( $item_ids, '-') === false ) {
+            // just for speedup
+            return AA_Stringexpand_Treestring::treefunc('getTreeString', $item_ids, $relation_field, $reverse, $sort_string, $slices);
+        }
+        $ret = array();
+        $ids = explode('-',$item_ids);
+        foreach ($ids as $id) {
+            $ret[] = AA_Stringexpand_Treestring::treefunc('getTreeString', $id, $relation_field, $reverse, $sort_string, $slices);
+        }
+        return join('-', array_filter($ret,'strlen'));
     }
 
     function treefunc($func, $item_id, $relation_field, $reverse, $sort_string, $slices) {
@@ -3492,7 +3506,11 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
     function expand($item_id, $field_id) {
         $ret = '';
 
-        if (!$field_id OR empty($item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item)) {
+        if (!$field_id) {
+            return '';
+        }
+        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
+        if (empty($item)) {  // can't be combined empty() and assignment = for php 5.3
             return '';
         }
         return AA_Stringexpand::unalias('<div contenteditable=true id="'. str_replace('.','_', "au-$item_id-$field_id")."\" data-aa-id=\"$item_id\" data-aa-field=\"$field_id\">{". $field_id ."}</div>", '', $item);
@@ -4364,7 +4382,9 @@ class AA_Stringexpand {
         /** math function log() */
         'log'              => 'log',                // old  AA_Stringexpand_Log
         'unpack'           => 'unpack_id',          // old  AA_Stringexpand_Unpack
+     // 'packid'           => 'packid',             // see  AA_Stringexpand_Packid
         'string2id'        => 'string2id',          // old  AA_Stringexpand_String2id
+        'base64'           => 'base64_encode',      // old  AA_Stringexpand_Base64
 
         /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
          *  {version[:aa|svn]}
@@ -4582,7 +4602,7 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
     function expand($search='', $replace='', $text='') {
         $search  = json2arr($search,true);
-        $replace = json2arr($replace,true);
+        $replace =  ($replace[0] == '[') ? json2arr($replace,true) : $replace; // the replace could be string (which then replaces all the occurences of $searches)
         return str_replace($search, $replace, $text);
     }
 }
