@@ -187,7 +187,8 @@ $cacheentry->processPage();
 
 // changed the way, how to get $slices4cache - now we ask for module ids realy
 // used during page generation. Honza 2015-12-29
-if (empty($slices4cache = AA_Module::getUsedModules())) {
+$slices4cache = AA_Module::getUsedModules();
+if (empty($slices4cache)) {    // can't be combined empty() and assignment = for php 5.3
     // probably not necessary
     $slices4cache = array(AA::$site_id);
 }
