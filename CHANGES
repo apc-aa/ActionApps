@@ -1,3 +1,20 @@
+16-01-22 - fixed problem with backward compatibility with PHP 5.3 and PHP 5.4
+(honzam) - {treestring:<ids>:...} now accepts list of root ids instead of just
+           single id. Could be used for menu generator, for example:
+             <nav>
+               <ul>
+                 {itree:
+                   {treestring:{ids:b485d20843c0afe29d3e9ce773195635:d-relation........-ISNULL-1-switch.........1-=-0:number..........}::1:number..........}:
+                   <li id="menu-_#SEO_____">_#MENULINK<ul>:
+                   <li id="menu-_#SEO_____">_#MENULINK</li>::</ul></li>
+                 }
+               </ul>
+             </nav>'
+         - improved {shorten:..} removed trims spaces, when shortened, so the
+           additional text (say "...") is placed just atfer the text
+         - new {base64:text} for encoding the string to standard base64. I would
+           recommend to use rather {bin2url:..} and {url2bin:..} which uses
+           base64url variant of base64 which is friendly for url
 16-01-21 - much improved AA pagecache - the cache for sitemodule page now knows,
 (honzam)   which slices was used during its generation, so only changes in those
            slices deletes the cache for the page and not the changes in any
