@@ -21,11 +21,11 @@ function BeforeSubmit() {
 }
 
 
-function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, relwind_url) {
+function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, slice_field, relwind_url) {
     if ((relatedwindow != null) && (!relatedwindow.closed)) {
         relatedwindow.close()    // in order to preview go on top after open
     }
-    var url = GetUrl(relwind_url, ["sid=" + sid, "var_id=" + varname, "mode=" + mode, "design=" + design, "frombins=" + frombins, "showcondsro=" + conds, "showcondsrw=" + condsrw]);
+    var url = GetUrl(relwind_url, ["sid=" + sid, "var_id=" + varname, "mode=" + mode, "design=" + design, "frombins=" + frombins, "showcondsro=" + conds, "showcondsrw=" + condsrw, "slice_field=" + slice_field]);
     relatedwindow = open( url, "relatedwindow", "scrollbars=1, resizable=1, width=570");
 }
 

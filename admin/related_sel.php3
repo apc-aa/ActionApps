@@ -52,13 +52,14 @@ require_once AA_INC_PATH . "manager.class.php3";
 /* use stored values from session, if we call related window
    for secnd time (eg. after search or filtering data) */
 if ( isset($r_state) && !$sid)  {
-//  $sid      = $r_state['related']['sid'];
-    $mode     = $r_state['related']['mode'];
-    $var_id   = $r_state['related']['var_id'];
-    $design   = $r_state['related']['design'];
-    $frombins = $r_state['related']['frombins'];
-//  $conds_ro = $r_state['related']['conds_ro'];
-//  $conds_rw = $r_state['related']['conds_rw'];
+//  $sid         = $r_state['related']['sid'];
+    $mode        = $r_state['related']['mode'];
+    $var_id      = $r_state['related']['var_id'];
+    $design      = $r_state['related']['design'];
+    $frombins    = $r_state['related']['frombins'];
+//  $conds_ro    = $r_state['related']['conds_ro'];
+//  $conds_rw    = $r_state['related']['conds_rw'];
+    $slice_field = $r_state['related']['slice_field'];
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
@@ -72,13 +73,12 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 $slice       = AA_Slice::getModule($module_id);
 
 /* prepare view format for manager class */
-if (!$mode ) {
-    $mode='AMB';
-}
+if (!$mode )        { $mode        ='AMB'; }
+if (!$slice_field ) { $slice_field ='_#HEADLINE'; }
 
 for ( $i=0, $ino=strlen($mode); $i<$ino; ++$i) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{_#JS_HEAD_}}')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{$slice_field}}')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }
 
 $aliases = $slice->aliases();
@@ -106,6 +106,11 @@ if ($design) {
         $format['compact_top']     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">';
         $format['compact_bottom']  = '</table>';
     }
+} else {  // '' or '0'
+    $format['odd_row_format']  = '<tr class="tabtxt"><td>_#PUB_DATE&nbsp;</td><td>{'.$slice_field.'}</td><td>_#AA_ACTIO</td></tr>';
+    $format['compact_top']     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
+                <tr><th>'._m("Publish date").'</th><th>'._m("Headline").'</th><th>'._m("Actions").'</th></tr>';
+    $format['compact_bottom']  = '</table>';
 }
 
 $conds_ro = String2Conds( rawurldecode($showcondsro) );
@@ -113,7 +118,7 @@ $conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
 $manager_settings = array(
      'module_id' => $module_id,
-     'show'       =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,
+     'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar'  => array(
          'fields'               => $slice->fields('search'),
          'search_row_count_min' => 1,
@@ -135,7 +140,6 @@ $manager_settings = array(
          'title'       => _m("Editor window - item manager, related selection window")
                          )
          );
-
 
 $manager = new AA_Manager('related'. $module_id, $manager_settings);
 if ((isset($conds_ro)) && (isset($showcondsro))) {
@@ -162,7 +166,7 @@ if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['sid'] != $modu
     $r_state['related']['frombins']  = $frombins;
 //    $r_state['related']['conds_ro'] = $conds_ro;
 //    $r_state['related']['conds_rw'] = $conds_rw;
-
+    $r_state['related']['slice_field'] = $slice_field;
 }
 
 if ($r_state['related']['manager'] ) {        // do not set state for the first time calling
