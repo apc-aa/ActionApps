@@ -578,7 +578,7 @@ function guesstype($str) {
 
 /** type validating functions */
 function is_short_id($id)  { return guesstype($id)=='s'; }
-function is_long_id($id)   { return guesstype($id)=='l'; }
+function is_long_id($id)   { return ((strlen($id)==32) AND (strspn($id, "0123456789abcdefABCDEF") == 32)); }
 function is_packed_id($id) { return guesstype($id)=='p'; }
 
 
@@ -617,6 +617,12 @@ function pack_id($unpacked_id) {
     return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
 }
 
+// better version of pack_id()
+function xpack_id($id) {
+    // must be 32 character long hexadecimal number
+    return is_long_id($id) ? "0x$id" : '0';
+}
+
 /** unpack_id
  * @param $packed_id
  * @return unpacked md5 id
@@ -641,12 +647,7 @@ function q_pack_id($unpacked_id){
     $foo = pack_id($unpacked_id);
     return quote($foo);
 }
-/** qq_pack_id function
- * @param $str
- */
-function qq_pack_id($str) {
-    return "'".q_pack_id($str)."'";
-}
+
 /** qquote function
  * @param $str
  */
