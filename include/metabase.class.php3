@@ -938,6 +938,13 @@ class AA_Metabase {
 
         //AA::$debug && AA::$dbg->groupend('meta');
 
+        // unpack packed fields, if there are some
+        $packed_columns = AA_Metabase::getPacked($tablename);
+        foreach ($packed_columns as $column) {
+            foreach ($ret as $k => $v) {
+                $ret[$k][$column][0]['value'] = unpack_id($v[$column][0]['value']);
+            }
+        }
         return $ret;
     }
 
@@ -1048,7 +1055,7 @@ class AA_Metabase {
         $search_fields = $this->getSearchArray($tablename);
 
         $manager_settings = array(
-             'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+             'show'      =>  MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM),
              'searchbar' => array(
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,
@@ -1110,6 +1117,11 @@ class AA_MetabaseTableEdit {
             $property->addPropertyFormrows($form);
         }
         return $form;
+    }
+
+    /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
+    public static function defaultGetClassProperties($tablename) {
+        return AA_Metabase::singleton()->getColumnProperies($tablename);
     }
 
     /** helps other classes to implement iEditable method factoryFromForm - creates Object from the form data */
