@@ -14,7 +14,7 @@ function Links_CountAllLinks() {
  *  and returns array[category]=link_count
  *  It is just helper function - it do not respect proposals, trash folders, ...
  */
- function CountLinks4Each() {
+function CountLinks4Each() {
      $db = getDB();
      $SQL= " SELECT category_id, count(*) as links_count FROM links_link_cat
                  WHERE links_link_cat.proposal = 'n'
@@ -30,51 +30,44 @@ function Links_CountAllLinks() {
 
 // Get all informations about link
 function GetLinkInfo( $lid ) {
-     $db = getDB();
-     $SQL = "SELECT * FROM links_links WHERE id = '$lid'";
-     $db->query($SQL);
-     $ret = $db->next_record() ? $db->Record : "";
-     freeDB($db);
-     return $ret;
+    $db = getDB();
+    $SQL = "SELECT * FROM links_links WHERE id = '$lid'";
+    $db->query($SQL);
+    $ret = $db->next_record() ? $db->Record : "";
+    freeDB($db);
+    return $ret;
 }
 
 // Get path from category id
 function GetCategoryPath( $cid ) {
-  global $db;
-  $db->query("SELECT path FROM links_categories WHERE id=$cid");
-  return ( $db->next_record() ? $db->f('path') : "");
+    $db = getDB();
+    $db->query("SELECT path FROM links_categories WHERE id=$cid");
+    $ret = ( $db->next_record() ? $db->f('path') : "");
+    freeDB($db);
+    return $ret; 
 }
 
 // Get category id from path
 function GetCategoryFromPath( $path ) {
-  if ( strrchr ($path, ",") )
-    return   substr (strrchr ($path, ","), 1);
-  return $path;
+    return strrchr($path, ",") ? substr( strrchr($path, ","), 1) : $path;
 }
 
 /** Assign category to given parent category */
 function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $state='visible') {
-    global $db;
-
-    $SQL = "INSERT INTO links_cat_cat
-           (category_id, what_id, base, state, priority, proposal, proposal_delete)
-    VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')";
-
-    $db->query( $SQL );
+    DB_AA::sql("INSERT INTO links_cat_cat (category_id, what_id, base, state, priority, proposal, proposal_delete) VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')");
 }
 
 /** Add new category, copies parents permissions
  *  @returns id of new category
  */
 function Links_AddCategory($name, $parent, $parentpath) {
-    global $db;
-    $SQL = "INSERT INTO links_categories  ( name ) VALUES ('$name')";
-    $db->query( $SQL );
+    $db = getDB();
+    $db->query( "INSERT INTO links_categories  ( name ) VALUES ('$name')" );
     $res =  $db->last_insert_id();
 
     // correct path
-    $SQL = "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res";
-    $db->query( $SQL );
+    $db->query( "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res" );
+    freeDB($db);
 
     ChangeCatPermAsIn($res, $parent);
     return $res;
@@ -82,20 +75,23 @@ function Links_AddCategory($name, $parent, $parentpath) {
 
 // Get specified column for base category of specified link
 function Links_GetBaseCategoryColumn( $lid, $col ) {
-  global $db;
-  $db->query("SELECT $col as retcol FROM links_categories, links_link_cat
+    $db = getDB();
+    $db->query("SELECT $col as retcol FROM links_categories, links_link_cat
                WHERE links_categories.id = links_link_cat.category_id
                  AND what_id='$lid'
                  AND links_link_cat.base='y'");
-  return ( $db->next_record() ? $db->f('retcol') : "");
+    $ret = ( $db->next_record() ? $db->f('retcol') : "");
+    freeDB($db);
+    return $ret;
 }
 
 
 function Links_GetCategoryColumn( $cid, $col ) {
-  global $db;
-  $db->query("SELECT $col as retcol FROM links_categories
-               WHERE id='$cid'");
-  return ( $db->next_record() ? $db->f('retcol') : "");
+    $db = getDB();
+    $db->query("SELECT $col as retcol FROM links_categories WHERE id='$cid'");
+    $ret = ( $db->next_record() ? $db->f('retcol') : "");
+    freeDB($db);
+    return $ret;
 }
 
 // Get base path from link id
@@ -150,49 +146,54 @@ function AHrefImg($url, $src, $width="", $height="", $alt="") {
 
 // returns url of requested file
 function ThisFileName() {
-    if ( $_SERVER['SERVER_PROTOCOL']=='INCLUDED' ) {
-        return $_SERVER['DOCUMENT_URI'];
-    }
-    return $_SERVER['PHP_SELF'];
+    return ($_SERVER['SERVER_PROTOCOL']=='INCLUDED') ? $_SERVER['DOCUMENT_URI'] : $_SERVER['PHP_SELF'];
 }
 
 function FillCategoryInfo($category) {
-    global $db, $r_category_id, $r_category_path;
-    $SQL= "SELECT * FROM links_categories WHERE id = $category";
-    $db->query($SQL);
+    global $r_category_id, $r_category_path;
+    $db = getDB();
+    $db->query("SELECT * FROM links_categories WHERE id = $category");
     if ($db->next_record()) {
         $r_category_id       = $db->f('id');
         $r_category_path     = $db->f('path');
     }
+    freeDB($db);
 }
 
 // get information from profile table, where user setting are stored
 function GetProfileInfo($uid) {
-    global $db;
-
-  if ( !$uid )
-    $uid = "nobody";
-
-    $SQL = "SELECT * FROM links_profiles WHERE uid = '$uid'";
-    $db->query($SQL);
-    if ($db->next_record())
-    return $db->Record;
-
-  // if user not exist - get nobody's settings
-    $SQL = "SELECT * FROM links_profiles WHERE uid = 'nobody'";
-    $db->query($SQL);
-    if ($db->next_record())
-    return $db->Record;
+    if ( !$uid ) {
+        $uid = "nobody";
+    }
+    
+    $db = getDB();
+    $db->query("SELECT * FROM links_profiles WHERE uid = '$uid'");
+    if ($db->next_record()) {
+        $ret = $db->Record;
+        freeDB($db);
+        return $ret;
+    }
+    
+    // if user not exist - get nobody's settings
+    $db->query("SELECT * FROM links_profiles WHERE uid = 'nobody'");
+    if ($db->next_record()) {
+        $ret = $db->Record;
+        freeDB($db);
+        return $ret;
+    }
+    freeDB($db);
     return false;
 }
 
 function TestBaseCat($ctg, $base_cat, $ctg_path) {
     $cats = explode(",", $ctg_path);
-    for ($found = false, reset($cats); current($cats); next($cats))
+    for ($found = false, reset($cats); current($cats); next($cats)) { 
         if (current($cats) == $base_cat) {
-            $found = true; break;
+            $found = true; 
+            break;
         }
-
+    }
+    
     return ($found ? $ctg : $base_cat);
 }
 
@@ -239,9 +240,9 @@ function Links_GetLinkContent($zids) {
         $changes_map[$db->f('proposal_link_id')] = $db->f('changed_link_id');
     }
 
-    if ( isset($changes_ids) AND is_array($changes_ids) )
-        $changes_where = ' OR id '. (count($changes_ids)>1 ?
-        'IN ('. implode( ",", $changes_ids ). ')' : "='". $changes_ids[0] ."'");
+    if ( isset($changes_ids) AND is_array($changes_ids) ) {
+        $changes_where = ' OR id '. (count($changes_ids)>1 ? 'IN ('. implode( ",", $changes_ids ). ')' : "='". $changes_ids[0] ."'");
+    }
 
     // get link data (including data of link changes)
     $SQL = "SELECT * FROM links_links WHERE id $sel_in $changes_where";
@@ -325,9 +326,7 @@ function Links_GetCategoryContent($zids) {
  */
 function Links_IsPublic() {
     global $perms_roles;
-
-    return $GLOBALS['perms_roles']['AUTHOR']['perm'] ==
-           $GLOBALS['permission_to']["slice"][$GLOBALS['slice_id']];
+    return $GLOBALS['perms_roles']['AUTHOR']['perm'] == $GLOBALS['permission_to']["slice"][$GLOBALS['slice_id']];
 }
 
 /**
@@ -345,11 +344,7 @@ function Links_GetFolder($type) {
  *  Helper function which writes link assignment into database
  */
 function Links_AssignLink($cat_id, $link_id, $base='y', $state='visible',$prop='n',$prop_del='n') {
-    global $db;
-    $SQL = "INSERT INTO links_link_cat
-    (category_id, what_id, base, state, priority, proposal, proposal_delete)
-    VALUES ($cat_id,    $link_id, '$base','$state', 1.0,   '$prop',    '$prop_del')";
-    $db->query($SQL);
+    DB_AA::sql("INSERT INTO links_link_cat (category_id, what_id, base, state, priority, proposal, proposal_delete) VALUES ($cat_id,    $link_id, '$base','$state', 1.0,   '$prop',    '$prop_del')");
 }
 
 
@@ -360,7 +355,6 @@ function Links_AssignLink($cat_id, $link_id, $base='y', $state='visible',$prop='
  *  @param bool $proposal     if the link is just proposal to change
  */
 function Links_Assign2Category($lid, $categs, $proposal=false) {
-
     if ( !isset($categs) ) {
         return;
     }

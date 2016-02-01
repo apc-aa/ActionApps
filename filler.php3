@@ -326,8 +326,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     }
 
     $grabber = new AA_Grabber_Form();
-    $translations = null;
-    $saver        = new AA_Saver($grabber, $translations, null, 'by_grabber');
+    $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
     $saver->run();
     SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
     exit;

@@ -174,8 +174,7 @@ class AA_Feed {
      */
     function feed() {
         if ( $this->fire = 'write' ) {
-            $translations = null;
-            $saver        = new AA_Saver($this->grabber, $translations, $this->destination_slice_id, 'by_grabber', 'by_grabber');
+            $saver        = new AA_Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
             $saver->run();
         }
     }

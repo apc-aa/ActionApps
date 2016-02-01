@@ -103,7 +103,7 @@ class Actions {
      * @param $params
      * @param $globalParams
      */
-    function Actions($actions, $inFields, $html, $params, $globalParams="") {
+    function __construct($actions, $inFields, $html, $params, $globalParams="") {
         foreach ( $actions as $f_id => $action) {
             $this->actions[$f_id] = array( "from"=>$inFields[$f_id],
                                            "action"=>new Action($action,$html[$f_id],stripslashes($params[$f_id])));
@@ -234,7 +234,7 @@ class Action {
      * @param $html
      * @param $params
      */
-    function Action($action, $html, $params) {
+    function __construct($action, $html, $params) {
         $this->action = $action;
         $this->html = ($html ? FLAG_HTML : 0);
         $this->params = $params;

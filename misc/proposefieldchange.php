@@ -173,8 +173,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         }
 
         $grabber      = new AA_Grabber_Assignmentform();
-        $translations = null;
-        $saver        = new AA_Saver($grabber, $translations, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
+        $saver        = new AA_Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
         $saver->run();
 
         $pagecache->invalidateFor("slice_id=de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values

@@ -1,3 +1,21 @@
+16-02-01 - two Boxes widget now uses Multiple checkbox widget as fallback
+(honzam)   (in {ajax} and {live})
+         - new operators in Manager (and any other searches in AA):
+             REGEXP - match (RegExp),
+             NOTREGEXP - not match (RegExp),
+             ISMAIL - is e-mail,
+             NOTMAIL - not e-mail
+         - better default html for Related selection wondow widget
+         - fixed bug in "Show users" for mass item actions - the html design is
+           remembered correctly
+         - fix "MySQL server has gone away" problem, when the script computes
+           something too long (Alerts sending) and then tries to use database
+           (for logs, ...). AA now tries to reconnect the database once.
+         - internal changes in manager searchfield constants names
+         - more ussage of 0x6a46a6a7b9.. hexadecimal notation for MySQL instead
+           of packing ids to binary (no db change, just the SQL notation which
+           is easier to read and debug)
+         - small changes, speedups and fixes (php7, ...)
 16-01-22 - fixed problem with backward compatibility with PHP 5.3 and PHP 5.4
 (honzam) - {treestring:<ids>:...} now accepts list of root ids instead of just
            single id. Could be used for menu generator, for example:

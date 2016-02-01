@@ -299,8 +299,7 @@ function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
     $slice_id = unpack_id($feed['slice_id']);
     if ( $fire=='write' ) {
         $grabber      = new AA_Grabber_Aarss($feed_id, $feed, $fire);
-        $translations = null;
-        $saver        = new AA_Saver($grabber, $translations, $slice_id);
+        $saver        = new AA_Saver($grabber, null, $slice_id);
         $saver->run();
     }
     if ($debugfeed >= 8) {

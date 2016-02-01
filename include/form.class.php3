@@ -212,7 +212,8 @@ class AA_Form extends AA_Object {
      */
     static function getClassProperties() {
         return array (          //           id       name       type        multi  persist validator, required, help, morehelp, example
-            'rows'     => new AA_Property( 'rows', _m("Rows"),  'AA_Formrow', true, true)
+            'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true),
+            'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)
             );
     }
 
@@ -265,7 +266,8 @@ class AA_Form extends AA_Object {
 
     /** Add item form */
     function getAjaxHtml($ret_code) {
-        $this->setObject('AA_Item', '', $this->getOwnerId());  // slice_id is the same as the slice_id of the form (where it is defined)
+        if (!isset($this->object_type)) { $this->object_type = 'AA_Item'; } // older forms stored in database do not have this field set
+        $this->object_owner = $this->getOwnerId();                          // slice_id is the same as the slice_id of the form (where it is defined)
 
         $id  = get_if($this->object_id, new_id());
         $content = $this->_getContent();
@@ -324,7 +326,7 @@ class AA_Form extends AA_Object {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);
         } else {
-            $contents = AA_Object::getContent(array('class'=>$this->object_type), new zids($this->object_id, 'l'));
+            $contents = AA_Object::getContent(array('class'=>$this->object_type), new zids($this->object_id));
             $content = $contents[$this->object_id];
         }
         $content->setAaValue('aa_type', new AA_Value($this->object_type));
@@ -346,6 +348,7 @@ class AA_Form extends AA_Object {
         $object->setId($content->getId());
         $object->setOwnerId($oowner);
         $object->setName($content->getName());
+        $object->setObject('AA_Item', '', $oowner);
 
         $fields2show = $content->getValuesArray('rows');
         foreach ($fields2show as $field) {

@@ -91,9 +91,6 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $form       = AA_Form::factoryForm($otype, $oid, $oowner);
 
-//huhl($form, $ret_url);
-
-
 $form_state = $form->process($_POST['aa']);
 
 if ($form_state == AA_Form::SAVED) {
@@ -116,7 +113,6 @@ showMenu($aamenus, "sliceadmin", "forms");
 echo "<h1><b>" . _m("Admin - Object Edit") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
-
 
 $form_buttons = array ("update",
                        "cancel" =>array("url"=>$ret_url),

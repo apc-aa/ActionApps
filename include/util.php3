@@ -139,7 +139,7 @@ function self_server() {
     // by javascript, it is possible that the new window will be opened in other
     // location than window.opener. That's  bad because accessing window.opener
     // then leads to access denied javascript error (in IE at least)
-    $sname = ($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']);
+    $sname = $_SERVER['HTTP_HOST'] ?: $_SERVER['SERVER_NAME'];
     return("$PROTOCOL://$sname$port");
 }
 

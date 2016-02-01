@@ -833,9 +833,6 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     }
 }
 
-/** Testing if relation table contain records, where values in both columns are
- *  identical (which was bug fixed in Jan 2006)
- */
 class AA_Transformation_CopyField extends AA_Transformation {
 
     var $field2copy;
