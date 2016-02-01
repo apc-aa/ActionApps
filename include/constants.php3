@@ -962,12 +962,13 @@ define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store eve
 define ("LINKS_VALIDATION_COUNT", 100);
 
 /** constants for manager class used in $manager->show */
-define("MGR_ACTIONS",       2);  // show actions
-define("MGR_SB_SEARCHROWS", 4);  // show search rows in searchbar
-define("MGR_SB_ORDERROWS",  8);  // show order rows in searchbar
-define("MGR_SB_BOOKMARKS", 16);  // show bookmarks in searchbar
-define("MGR_SB_ALLTEXT"  , 32);  // show '-- any text field --' option in search fieds
-define("MGR_SB_ALLNUM"   , 64);  // show '-- any numeric field --' option in search fieds
+define("MGR_ACTIONS",        2);  // show actions
+define("MGR_SB_SEARCHROWS",  4);  // show search rows in searchbar
+define("MGR_SB_ORDERROWS",   8);  // show order rows in searchbar
+define("MGR_SB_BOOKMARKS",  16);  // show bookmarks in searchbar
+define("MGR_SB_ALLTEXT"  ,  32);  // show '-- any text field --' option in search fieds
+define("MGR_SB_ALLNUM"   ,  64);  // show '-- any numeric field --' option in search fieds
+define("MGR_ALL",          127);  // show all
 
 /** constants for bins, used in new QueryZIDS function */
 define("AA_BIN_ACTIVE",   1);

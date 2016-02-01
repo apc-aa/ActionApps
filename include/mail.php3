@@ -37,7 +37,45 @@ require_once AA_INC_PATH."validate.php3";
 require_once AA_INC_PATH."toexecute.class.php3";
 
 
-class AA_Mail extends htmlMimeMail implements iEditable {
+class AA_Mailtemplate implements iEditable {
+    protected $record;
+
+    function __construct($id=null) {
+        $this->record = array();
+        if ($id and is_numeric($id)) {
+            $template = AA_Metabase::getContent( array('table'=>'email'), new zids($id, 's') );
+            if ($template[$id]) {
+                $this->record = $template[$id];
+            }
+        }
+    }
+
+    public function getName()                                { return $this->record['description']; }
+    public function getId()                                  { return $this->record['id']; }
+    public function getOwnerId()                             { return $this->record['owner_module_id']; }
+    public function getProperty($property_id, $default=null) { return $this->record[$property_id]; }
+
+        /** iEditable method - adds Object's editable properties to the $form */
+    public static function addFormrows($form) {
+         AA_MetabaseTableEdit::defaultAddFormrows('email', $form);
+    }
+
+    public static function getClassProperties()  {
+         return AA_MetabaseTableEdit::defaultGetClassProperties('email');
+    }
+
+    public static function load($id, $type=null) {
+        return new AA_Mailtemplate($id);
+    }
+
+
+    /** iEditable method - creates Object from the form data */
+    public static function factoryFromForm($oowner, $otype=null) {}
+    /** iEditable method - save the object to the database */
+    public        function save() {}
+}
+
+class AA_Mail extends htmlMimeMail {
 
     /** static getTemplate */
     function getTemplate($mail_id) {
@@ -239,16 +277,6 @@ class AA_Mail extends htmlMimeMail implements iEditable {
         }
         return $mail_count;
     }
-
-    /** iEditable method - adds Object's editable properties to the $form */
-    public static function addFormrows($form) {
-         AA_MetabaseTableEdit::defaultAddFormrows('email', $form);
-    }
-    /** iEditable method - creates Object from the form data */
-    public static function factoryFromForm($oowner, $otype=null) {}
-    /** iEditable method - save the object to the database */
-    public        function save() {}
-
 };
 
 /** html2text function

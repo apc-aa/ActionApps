@@ -158,7 +158,7 @@ $slice       = AA_Slice::getModule($module_id);
 
 $manager_settings = array(
      'module_id' => $slice_id,
-     'show'      =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => GetHistoryFields(),
          'search_row_count_min' => 1,

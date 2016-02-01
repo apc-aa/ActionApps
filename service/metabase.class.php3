@@ -1037,7 +1037,7 @@ class AA_Metabase {
         $search_fields = $this->getSearchArray($tablename);
 
         $manager_settings = array(
-             'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+             'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
              'searchbar' => array(
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,

@@ -497,7 +497,7 @@ class AA_Object extends AA_Storable implements iEditable {
      * @param $type   - object class - like 'AA_Form'
      * @static
      */
-    function &load($id, $type=null) {
+    static function load($id, $type=null) {
         // @todo optimize the load
         //    - get used tables from properties,
         //    - load object from database in one step using aa_subobjects property of the objects
@@ -808,6 +808,7 @@ class AA_Object extends AA_Storable implements iEditable {
             $content = new AA_Content;
 
             $obj     = $class::load($id);
+
             if (is_null($obj)) {
                 throw new Exception('object not loaded: '. $id);
                 continue;
@@ -816,9 +817,9 @@ class AA_Object extends AA_Storable implements iEditable {
                 // @todo - make alias field type aware
                 $content->setAaValue($prop_id, AA_Value::factory($obj->getProperty($prop_id)));
             }
-            $content->setAaValue('aa_name',  new AA_Value( $obj->getProperty('aa_name') ));
-            $content->setAaValue('aa_id',    new AA_Value( $obj->getProperty('aa_id') ));
-            $content->setAaValue('aa_owner', new AA_Value( $obj->getProperty('aa_owner') ));
+            $content->setAaValue('aa_name',  new AA_Value( $obj->getName() ));
+            $content->setAaValue('aa_id',    new AA_Value( $obj->getId() ));
+            $content->setAaValue('aa_owner', new AA_Value( $obj->getOwnerId() ));
 
             $ret[$id] = $content;
         }
@@ -864,7 +865,7 @@ class AA_Object extends AA_Storable implements iEditable {
         $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
         $manager_settings = array(
-             'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+             'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
              'searchbar' => array(
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,
@@ -976,7 +977,7 @@ class AA_Components extends AA_Object {
      *  static function
      * @param $mask
      */
-    function getClassNames($mask) {
+    static function getClassNames($mask) {
         $right_classes = array();
 
         // php4 returns classes all in lower case :-(
@@ -995,7 +996,7 @@ class AA_Components extends AA_Object {
      * @param $input_id
      * @param $params
      */
-    function getSelectionCode($mask, $input_id, &$params) {
+    static function getSelectionCode($mask, $input_id, &$params) {
         $options      = array('AA_Empty' => _m('select ...'));
         $html_options = array('AA_Empty' => '');
         foreach (AA_Components::getClassNames($mask) as $selection_class) {

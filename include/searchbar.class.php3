@@ -189,9 +189,9 @@ class AA_Searchbar extends AA_Storable {
      * @param $hint
      * @param $hint_url
      */
-    function __construct($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show='aa_default', $hint='', $hint_url='') {
+    function __construct($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show=null, $hint='', $hint_url='') {
         $this->fields               = $fields;
-        $this->show                 = (((string)$show == 'aa_default') ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show);
+        $this->show                 = is_null($show) ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show;
         $this->hint                 = $hint;
         $this->hint_url             = $hint_url;
         $this->search_fields        = array();
@@ -207,7 +207,6 @@ class AA_Searchbar extends AA_Storable {
                 $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
                 $this->search_operators['all_fields_numeric'] = 'numeric';
             }
-            
 
             uasort ($fields, "searchfields_cmp");
             $last_pri = false;

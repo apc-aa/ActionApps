@@ -132,7 +132,7 @@ $switches->addAction(new AA_Manageraction_Item_GoBookmark(   'GoBookmark'));
 
 
 $profile       = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
-$show_settings = MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM;
+$show_settings = MGR_ALL;
 if ($profile->getProperty('ui_manager_hide', 'mgr_actions'))       { $show_settings -= MGR_ACTIONS; }
 if ($profile->getProperty('ui_manager_hide', 'mgr_sb_searchrows')) { $show_settings -= MGR_SB_SEARCHROWS; }
 if ($profile->getProperty('ui_manager_hide', 'mgr_sb_orderrows'))  { $show_settings -= MGR_SB_ORDERROWS; }
