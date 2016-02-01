@@ -1362,7 +1362,7 @@ class AA_Widget_Mse extends AA_Widget {
 }
 
 /** Two Boxes widget */
-class AA_Widget_Wi2 extends AA_Widget {
+class AA_Widget_Wi2 extends AA_Widget_Mch {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
