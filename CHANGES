@@ -5,6 +5,9 @@
              NOTREGEXP - not match (RegExp),
              ISMAIL - is e-mail,
              NOTMAIL - not e-mail
+         - improved a bit "Save & preview" in Item edit - now works with
+           _#SEO_URL_ if definned. There is still problem with mixed content
+           problem - http vs. https, however
          - better default html for Related selection wondow widget
          - fixed bug in "Show users" for mass item actions - the html design is
            remembered correctly

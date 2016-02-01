@@ -45,18 +45,31 @@ if (empty($slice)) {
      exit;
 }
 
-$preview_url = $slice->getProperty('_url_preview....');
-if (empty($preview_url)) {
-    $preview_url = con_url($r_slice_view_url, "sh_itm=$sh_itm");
-} else {
-    $item = AA_Item::getItem(new zids($sh_itm, 'l'));
-    if ($item) {
-        $preview_url = $item->unalias($preview_url);
-    }
+$item = AA_Item::getItem(new zids($sh_itm, 'l'));
+if (empty($item)) {
+     echo _m("Wrong item_id.");
+     exit;
 }
 
+//header("Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval'");
+//header("Content-Security-Policy: frame-src 'self' http://svetelnykoren.cz/");
+//header("Strict-Transport-Security: max-age=0");
+
+if ($preview_url = $slice->getProperty('_url_preview....')) {
+    $preview_url = $item->unalias($preview_url);
+} elseif ('_#SEO_URL_' != ($preview_url = $item->unalias('_#SEO_URL_')))  {
+    // Contain _#SEO_URL_ already server?
+    // we are really looking for the begining of the string - pos = 0
+    if ( (0!==strpos($preview_url,'http://')) AND (0!==strpos($preview_url,'https://')) AND (0!==strpos($preview_url,'//')) ) {
+        $preview_url = rtrim($r_slice_view_url,'/').'/'.ltrim($preview_url,'/');
+    }
+} else {
+    $preview_url = con_url($r_slice_view_url, "sh_itm=$sh_itm");
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+// <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'">
 ?>
 </head>
 <!-- frames -->
