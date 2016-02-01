@@ -960,7 +960,7 @@ class AA_Inputfield {
                                    $this->value_modified = $this->implodeVal('<br>');
                                    $this->staticText();
                                } else {
-                                   $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw);
+                                   $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field);
                                }
                                break;
             case 'anonym_hco':
@@ -977,7 +977,7 @@ class AA_Inputfield {
                                    $this->value_modified = $this->implodeVal('<br>');
                                    $this->staticText();
                                } else {
-                                   $this->inputRelation(5, $sid, MAX_RELATED_COUNT, 'A', '', 'DR', $whichitems, $conds, $condsrw);
+                                   $this->inputRelation(5, $sid, MAX_RELATED_COUNT, 'A', '', 'DR', $whichitems, $conds, $condsrw, $slice_field);
                                }
                                break;
             case 'anonym_wi2':
@@ -1677,7 +1677,7 @@ class AA_Inputfield {
     * @param $conds
     * @param $condsrw
     */
-    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='') {
         list($name,$val,$add) = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
@@ -1719,7 +1719,7 @@ class AA_Inputfield {
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">\n");
         if (strpos($actions,'R') !== false) {
-            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>\n");
+            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php3')."\" )'>\n");
         }
         if (strpos($actions,'N') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
@@ -1757,82 +1757,82 @@ class AA_Inputfield {
      * @param $conds
      * @param $condsrw
      */
-    function inputRelation2($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
-        list($name,$val,$add) = $this->prepareVars('multi');
-        $rows                 = get_if($rows, 6);
-        if ( $whichitems < 1 ) {
-            $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        }
-
-        $this->field_name('plus');
-
-        $new_version = true;
-        if ( $new_version ) {
-            $varname = $this->varname;  // name without ending []
-            $var_code = '
-            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="formtable" id="rel'.$varname.'">
-              <tr>
-                <th>'._m('Item').'</th>
-                <th>'._m('Actions').'</th>
-              </tr>';
-            $i=0;
-            foreach ( (array)$this->const_arr as $id => $text) {
-                $tr_id     = 'rel'.$varname.'old'.($i++);
-                $var_code .= '<tr id="'.$tr_id.'">
-                <td>'.myspecialchars($text).'<input type="hidden" name="'.$name.'" value="'.myspecialchars($id).'"></td>
-                <td>'.
-                  GetAAImage("edit.gif", _m('Edit'), 16, 16).
-                  GetAAImage("delete.gif", _m('Delete'), 16, 16).
-                  '<a href="javascript:MoveRowUp(\''.$tr_id.'\')">'. GetAAImage("up.gif", _m('Move up'), 16, 16). '</a>'.
-                  '<a href="javascript:MoveRowDown(\''.$tr_id.'\')">'. GetAAImage("down.gif", _m('Move down'), 16, 16). '</a>'.
-                '</td>
-              </tr>';
-            }
-            $var_code .= '</table>';
-            $this->echovar( $var_code );
-            $var_code = '
-            <div>
-              <input type="button" value="'. _m("Add") ."\" onclick=\"OpenRelated('".$this->varname."', '$sid', '$mode', '$design', '$whichitems','".rawurlencode($conds)."','".rawurlencode($condsrw)."','".get_admin_url('related_sel.php3')."' )\">
-            </div>
-            ";
-            $this->echovar( $var_code, 'buttons' );
-        } else {
-            $ret       = "<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
-            $ret      .= $this->get_options( $this->const_arr, false, false, 'all', false);
-            $option_no = count($this->const_arr) + ($this->required ? 0:1);
-            // add blank rows if asked for
-            while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
-                $ret .= AA_WIDTHTOR;
-            }
-            $ret .= "</select>";
-
-            $this->echoo('<table border="0" cellspacing="0"><tr>');
-            if ($movebuttons) {
-                $this->echoo("\n <td rowspan=\"2\">");
-            } else {
-                $this->echoo("\n <td>");
-            }
-            $this->echovar( $ret );
-            $this->echoo("</td>\n");
-            if ($movebuttons) {
-                 $this->echoo("<td valign=\"top\">");
-                 $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
-                 " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
-                 $this->echoo('</td></tr>');
-                 $this->echoo('<tr><td valign="bottom">');
-                 $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
-                 " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
-                 $this->echoo("</td>");
-            }
-            $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">
-              <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
-              &nbsp;&nbsp;");
-            $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
-            $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
-            $this->echoo("</td></tr></table>\n");
-        }
-        $this->helps('plus');
-    }
+    //function inputRelation2($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+    //    list($name,$val,$add) = $this->prepareVars('multi');
+    //    $rows                 = get_if($rows, 6);
+    //    if ( $whichitems < 1 ) {
+    //        $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+    //    }
+    //
+    //    $this->field_name('plus');
+    //
+    //    $new_version = true;
+    //    if ( $new_version ) {
+    //        $varname = $this->varname;  // name without ending []
+    //        $var_code = '
+    //        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="formtable" id="rel'.$varname.'">
+    //          <tr>
+    //            <th>'._m('Item').'</th>
+    //            <th>'._m('Actions').'</th>
+    //          </tr>';
+    //        $i=0;
+    //        foreach ( (array)$this->const_arr as $id => $text) {
+    //            $tr_id     = 'rel'.$varname.'old'.($i++);
+    //            $var_code .= '<tr id="'.$tr_id.'">
+    //            <td>'.myspecialchars($text).'<input type="hidden" name="'.$name.'" value="'.myspecialchars($id).'"></td>
+    //            <td>'.
+    //              GetAAImage("edit.gif", _m('Edit'), 16, 16).
+    //              GetAAImage("delete.gif", _m('Delete'), 16, 16).
+    //              '<a href="javascript:MoveRowUp(\''.$tr_id.'\')">'. GetAAImage("up.gif", _m('Move up'), 16, 16). '</a>'.
+    //              '<a href="javascript:MoveRowDown(\''.$tr_id.'\')">'. GetAAImage("down.gif", _m('Move down'), 16, 16). '</a>'.
+    //            '</td>
+    //          </tr>';
+    //        }
+    //        $var_code .= '</table>';
+    //        $this->echovar( $var_code );
+    //        $var_code = '
+    //        <div>
+    //          <input type="button" value="'. _m("Add") ."\" onclick=\"OpenRelated('".$this->varname."', '$sid', '$mode', '$design', '$whichitems','".rawurlencode($conds)."','".rawurlencode($condsrw)."','".get_admin_url('related_sel.php3')."' )\">
+    //        </div>
+    //        ";
+    //        $this->echovar( $var_code, 'buttons' );
+    //    } else {
+    //        $ret       = "<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
+    //        $ret      .= $this->get_options( $this->const_arr, false, false, 'all', false);
+    //        $option_no = count($this->const_arr) + ($this->required ? 0:1);
+    //        // add blank rows if asked for
+    //        while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+    //            $ret .= AA_WIDTHTOR;
+    //        }
+    //        $ret .= "</select>";
+    //
+    //        $this->echoo('<table border="0" cellspacing="0"><tr>');
+    //        if ($movebuttons) {
+    //            $this->echoo("\n <td rowspan=\"2\">");
+    //        } else {
+    //            $this->echoo("\n <td>");
+    //        }
+    //        $this->echovar( $ret );
+    //        $this->echoo("</td>\n");
+    //        if ($movebuttons) {
+    //             $this->echoo("<td valign=\"top\">");
+    //             $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
+    //             " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
+    //             $this->echoo('</td></tr>');
+    //             $this->echoo('<tr><td valign="bottom">');
+    //             $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
+    //             " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
+    //             $this->echoo("</td>");
+    //        }
+    //        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">
+    //          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
+    //          &nbsp;&nbsp;");
+    //        $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
+    //        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
+    //        $this->echoo("</td></tr></table>\n");
+    //    }
+    //    $this->helps('plus');
+    //}
 
 
     /** hierarchicalConstant function
@@ -3163,7 +3163,7 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
     $out .= "<td>";
     if ((string)$value != (string)"testuser") {
         $grp = $value;
-        $js = "OpenUsershowPopup('".get_admin_url("usershow.php3")."&sid=$slice_id&group=$grp&type=$list_type')";
+        $js = "OpenUsershowPopup('".get_admin_url("usershow.php3")."&slice_id=$slice_id&group=$grp&type=$list_type')";
         $out .= "<a href=\"javascript:$js;\">$list_text</a>";
     }
     $out .=  "</td>

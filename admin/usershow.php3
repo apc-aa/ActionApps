@@ -62,6 +62,9 @@ if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
+if ( $r_userstate['type'] ) {
+    $type = $r_userstate['type'];
+}
 
 switch( $type ) {
     case 'users':
@@ -118,11 +121,11 @@ if ( !isset($r_userstate) OR isset($group) OR isset($items)) {
     if ( $items ) {   // store items to sessions
         $r_userstate['items'] = $items;
     }
+    $r_userstate['type'] = $type;
 }
 
 //echo "<pre>"; print_r($r_userstate['usershowmanager']); echo "</pre>";
-
-// echo "<pre>"; print_r($manager); echo "</pre>";
+//echo "<pre>"; print_r($manager); echo "</pre>";
 
 
 if ( $r_userstate['usershowmanager'] ) {        // do not set state for the first time calling
