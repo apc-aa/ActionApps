@@ -126,8 +126,18 @@ class DB_Sql {
 
         //$this->Query_ID = @mysqli_query($this->Link_ID,$Query_String, MYSQLI_USE_RESULT);
         $this->Query_ID = @mysqli_query($this->Link_ID,$Query_String);
+
+        // solution for "MySQL server has gone away" Eroor - Try to reconnect
+        if (2006 == ($this->Errno = @mysqli_errno($this->Link_ID))) {
+            mysqli_close($this->Link_ID);
+            $this->Link_ID = 0;
+            if ($this->connect()) {
+                $this->Query_ID = @mysqli_query($this->Link_ID,$Query_String);
+            }
+            $this->Errno = @mysqli_errno($this->Link_ID);
+        }
+
         $this->Row   = 0;
-        $this->Errno = @mysqli_errno($this->Link_ID);
         $this->Error = @mysqli_error($this->Link_ID);
         if (!$this->Query_ID) {
             $this->halt("Invalid SQL: ".$Query_String);
@@ -136,6 +146,9 @@ class DB_Sql {
         // Will return nada if it fails. That's fine.
         return $this->Query_ID;
     }
+
+
+
 
     /* public: walk result set */
     function next_record() {
@@ -246,6 +259,24 @@ class DB_Sql {
         return $res;
     }
 
+    function ping() {
+        if (0 == $this->Link_ID) {
+            $this->connect();
+            return;
+        }
+
+        // New query, discard previous result.
+        if ($this->Query_ID) {
+            $this->free();
+        }
+
+        $this->Query_ID = @mysqli_query($this->Link_ID, 'SELECT LAST_INSERT_ID()');  // any cheap query (maybe there is even quicker query)
+        if (mysqli_errno($this->Link_ID) == 2006) {
+            mysqli_close($this->Link_ID);
+            $this->Link_ID = 0;
+            $this->connect();
+        }
+    }
 
     /* public: evaluate the result (size, width) */
     function affected_rows() {
