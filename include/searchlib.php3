@@ -28,6 +28,7 @@ require_once AA_INC_PATH."sql_parser.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."pagecache.php3";
 
+define('AA_REGEXP_MAIL', '[a-z0-9!#$%&1*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&1*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)');
 
 class AA_Operators {
 
@@ -36,49 +37,53 @@ class AA_Operators {
      *
      */
     function getEnum() {
-        return array('enum', array('LIKE'    => _m('contains'),
-                                   'RLIKE'   => _m('begins with'),
-                                   'LLIKE'   => _m('LLIKE'),
-                                   'XLIKE'   => _m('XLIKE'),
-                                   'BETWEEN' => _m('BETWEEN'),
-                                   'ISNULL'  => _m('not set'),
-                                   'NOTNULL' => _m('is set'),
-                                   '=='      => '==',         // exact match - no SQL parsing
-                                   '='       => '=',
-                                   '<'       => '<',
-                                   '>'       => '>',
-                                   '<>'      => '<>',
-                                   '!='      => '<>',
-                                   '<='      => '<>',
-                                   '>='      => '<>',
-                                   'd:<'     => 'd:<',
-                                   'd:>'     => 'd:>',
-                                   'd:<='    => 'd:<=',
-                                   'd:>='    => 'd:>=',
-                                   'd:='     => 'd:=',
-                                   'd:!='    => 'd:!=',
-                                   'd:<>'    => 'd:<>',
-                                   'e:<'     => 'e:<',
-                                   'e:>'     => 'e:>',
-                                   'e:<='    => 'e:<=',
-                                   'e:>='    => 'e:>=',
-                                   'e:='     => 'e:=',
-                                   'e:!='    => 'e:!=',
-                                   'e:<>'    => 'e:<>',
-                                   'm:<'     => 'm:<',
-                                   'm:>'     => 'm:>',
-                                   'm:<='    => 'm:<=',
-                                   'm:>='    => 'm:>=',
-                                   'm:='     => 'm:=',
-                                   'm:!='    => 'm:!=',
-                                   'm:<>'    => 'm:<>',
-                                   '-:<'     => '-:<',
-                                   '-:>'     => '-:>',
-                                   '-:<='    => '-:<=',
-                                   '-:>='    => '-:>=',
-                                   '-:='     => '-:=',
-                                   '-:!='    => '-:!=',
-                                   '-:<>'    => '-:<>',
+        return array('enum', array('LIKE'      => _m('contains'),
+                                   'RLIKE'     => _m('begins with'),
+                                   'LLIKE'     => _m('LLIKE'),
+                                   'XLIKE'     => _m('XLIKE'),
+                                   'BETWEEN'   => _m('BETWEEN'),
+                                   'ISNULL'    => _m('not set'),
+                                   'NOTNULL'   => _m('is set'),
+                                   'ISMAIL'    => _m('is e-mail'),
+                                   'NOTMAIL'   => _m('not e-mail'),
+                                   'REGEXP'    => _m('match (RegExp)'),
+                                   'NOTREGEXP' => _m('not match (RegExp)'),
+                                   '=='        => '==',         // exact match - no SQL parsing
+                                   '='         => '=',
+                                   '<'         => '<',
+                                   '>'         => '>',
+                                   '<>'        => '<>',
+                                   '!='        => '<>',
+                                   '<='        => '<>',
+                                   '>='        => '<>',
+                                   'd:<'       => 'd:<',
+                                   'd:>'       => 'd:>',
+                                   'd:<='      => 'd:<=',
+                                   'd:>='      => 'd:>=',
+                                   'd:='       => 'd:=',
+                                   'd:!='      => 'd:!=',
+                                   'd:<>'      => 'd:<>',
+                                   'e:<'       => 'e:<',
+                                   'e:>'       => 'e:>',
+                                   'e:<='      => 'e:<=',
+                                   'e:>='      => 'e:>=',
+                                   'e:='       => 'e:=',
+                                   'e:!='      => 'e:!=',
+                                   'e:<>'      => 'e:<>',
+                                   'm:<'       => 'm:<',
+                                   'm:>'       => 'm:>',
+                                   'm:<='      => 'm:<=',
+                                   'm:>='      => 'm:>=',
+                                   'm:='       => 'm:=',
+                                   'm:!='      => 'm:!=',
+                                   'm:<>'      => 'm:<>',
+                                   '-:<'       => '-:<',
+                                   '-:>'       => '-:>',
+                                   '-:<='      => '-:<=',
+                                   '-:>='      => '-:>=',
+                                   '-:='       => '-:=',
+                                   '-:!='      => '-:!=',
+                                   '-:<>'      => '-:<>',
                                    ));
     }
     /** getJsDefinition function
@@ -89,8 +94,8 @@ class AA_Operators {
             var operator_names  = new Array();
             var operator_values = new Array();
             // text
-            operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ");
-            operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=",              "ISNULL",              "NOTNULL");
+            operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m('match (RegExp)').' ", " '._m('not match (RegExp)').' ", " '._m('is e-mail').' ", " '._m('not e-mail').' ");
+            operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=",              "ISNULL",              "NOTNULL",              "REGEXP",                    "NOTREGEXP",                       "ISMAIL",               "NOTMAIL");
             // numeric
             operator_names[1]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ");
             operator_values[1] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL");
@@ -98,8 +103,8 @@ class AA_Operators {
             operator_names[2]  = new Array(" < (m/d/y)"," > (m/d/y)", " '._m('not set').' ", " '._m('is set').' ", " = (timestamp) "," < (timestamp) "," > (timestamp) ", " <> (timestamp) ");
             operator_values[2] = new Array("d:<","d:>",         "ISNULL",             "NOTNULL"    ,  "=" ,              "<" ,            ">" ,         "<>" );
             // constants
-            operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
-            operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",            "select");
+            operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m('match (RegExp)').' ", " '._m('not match (RegExp)').' ", " '._m("select ...").' ");
+            operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",                "REGEXP",                    "NOTREGEXP",                    "select");
             // numconstants
             operator_names[4]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
             operator_values[4] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL",            "select");
@@ -229,9 +234,13 @@ class AA_Condition extends AA_Object {
     function _compare($field_value) {
         switch( $this->operator ) {
             case 'LIKE':
-            case 'XLIKE':   return (strpos($field_value, $this->value) === false) ? false : true;
-            case 'RLIKE':   return (strpos($field_value, $this->value) === 0)     ? true  : false;
-            case 'LLIKE':   return  strpos($field_value, $this->value) == (strlen($field_value)-strlen($this->value));
+            case 'XLIKE':      return (strpos($field_value, $this->value) === false) ? false : true;
+            case 'RLIKE':      return (strpos($field_value, $this->value) === 0)     ? true  : false;
+            case 'LLIKE':      return  strpos($field_value, $this->value) == (strlen($field_value)-strlen($this->value));
+            case 'REGEXP':     return  preg_match('/'. str_replace('/', '\/', $this->value) .'/', $field_value);
+            case 'NOTREGEXP':  return !preg_match('/'. str_replace('/', '\/', $this->value) .'/', $field_value);
+            case 'ISMAIL':     return  preg_match('/'. str_replace('/', '\/', AA_REGEXP_MAIL) .'/', $field_value);
+            case 'NOTMAIL':    return !preg_match('/'. str_replace('/', '\/', AA_REGEXP_MAIL) .'/', $field_value);
             case 'BETWEEN':
                 $arr = explode( ",", $this->value );
                 return (((int)$field_value >= (int)$arr[0]) AND ((int)$field_value <= (int)$arr[1]));
@@ -552,7 +561,7 @@ class AA_Set extends AA_Object {
                     $conds[$k]['operator'] = $defaultCondsOperator;
                 }
             }
-            if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL')) {
+            if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL') AND !($cond['operator'] == 'ISMAIL') AND !($cond['operator'] == 'NOTMAIL')) {
                 // The value could be empty for ISNULL or NOTNULL operators
                 if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) {
                     // For other operators we should remove all conditions without value
@@ -941,8 +950,14 @@ function GetWhereExp( $field, $operator, $querystring ) {
         case 'BETWEEN':
             $arr = explode( ",", quote($querystring) );
             return  " (($field >= $arr[0]) AND ($field <= $arr[1])) ";
-        case 'ISNULL':   return " (($field IS NULL) OR ($field='')) ";
-        case 'NOTNULL':  return " (($field IS NOT NULL) AND ($field<>'')) ";
+        case 'ISNULL':    return " (($field IS NULL) OR ($field='')) ";
+        case 'NOTNULL':   return " (($field IS NOT NULL) AND ($field<>'')) ";
+        case 'ISMAIL':    $querystring = AA_REGEXP_MAIL;
+                          // continue!
+        case 'REGEXP':    return " ($field REGEXP '". quote($querystring). "') ";
+        case 'NOTMAIL':   $querystring = AA_REGEXP_MAIL;
+                          // continue!
+        case 'NOTREGEXP': return " ($field NOT REGEXP '". quote($querystring). "') ";
 //      case '<=>':  //MySQL know this operator, but we do not use it in AA
         case '<>' :
         case '!=' :
@@ -1066,7 +1081,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
                     $conds[$k]['operator'] = $defaultCondsOperator;
                 }
             }
-            if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL')) {
+            if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL') AND !($cond['operator'] == 'ISMAIL') AND !($cond['operator'] == 'NOTMAIL')) {
                 // The value could be empty for ISNULL or NOTNULL operators
                 if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) {
                     // For other operators we should remove all conditions without value
@@ -1674,7 +1689,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     $SQL .= ' WHERE ';                                         // slice ----------
 
     if ( !empty($slices) ) {
-        $slices_SQL = join(",", array_map( "qq_pack_id", $slices));
+        $slices_SQL = join(",", array_map( "xpack_id", $slices));
         $SQL .= 'item.slice_id' . ((count($slices) == 1) ? " = $slices_SQL AND " :
                                                            " IN ($slices_SQL) AND ");
     }
@@ -1896,7 +1911,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
             WHERE ";
 
     if ( is_array($slices) AND (count($slices) > 0) ) {
-        $slices_SQL = join(",", array_map( "qq_pack_id", $slices));
+        $slices_SQL = join(",", array_map( "xpack_id", $slices));
         $SQL .= ' item.slice_id' . ((count($slices) == 1) ? " = $slices_SQL AND " :
                                                            " IN ($slices_SQL) AND ");
     }
