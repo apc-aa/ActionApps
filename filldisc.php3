@@ -137,14 +137,37 @@ foreach ($discussion_fields as $field => $tolerance) {
 // test if the sender IP is not blocked by special slice
 $ip_address         = $_SERVER['REMOTE_ADDR'];
 $ip_banned_slice_id = $slice->getProperty('_ip_banned......');
+$found_evil         = false;
 if ($ip_banned_slice_id) {
     $subnet_ip_address = substr($ip_address,0,strrpos($ip_address, '.'));
     $aa_set = new AA_Set($ip_banned_slice_id, new AA_Condition('ip..............', '=', "\"$ip_address\" OR \"$subnet_ip_address\""));
     $zids   = $aa_set->query();
     if ($zids AND ($zids->count() > 0)) {
+        $found_evil = $zids->slice(0);
+    } else {
+        // try text analysis
+        // test all phrases from all keywords........ fields in $ip_banned_slice_id slice
+        // (keywords........ could be multi-field)
+
+        $format  = "{@keywords........:_AA_DeLiM_}";
+        $set     = new AA_Set($ip_banned_slice_id, new AA_Condition('keywords........', 'NOTNULL', '1'));
+        $kw_item = GetFormatedItems($set->query(), $format);
+
+        $teststring = join('_AA~#^',array($_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']));
+        foreach ( $kw_item as $kw_id => $kw_string ) {
+            $bad_phrases = array_filter(explode('_AA_DeLiM_', $kw_string));
+            foreach ($bad_phrases as $bph) {
+                if (strpos($teststring,$bph) !== false) {
+                    $found_evil = $kw_id;
+                    break 2;
+                }
+            }
+        }
+    }
+    if ($found_evil) {
         $ban_msg = $slice->getProperty('_msg_banned.....');
         if ($ban_msg) {
-            $discitem = AA_Item::getItem($zids->slice(0));
+            $discitem = AA_Item::getItem($found_evil);
             echo $discitem ? $discitem->unalias($ban_msg) : $ban_msg;
         } else {
             echo _m("Not accepted, your IP address is banned.");

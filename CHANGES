@@ -1,3 +1,11 @@
+16-04-06 - new possibility to stop SPAM when posting comments to discussion
+           based on stop-phrases, which you can fill in the keywords........
+           field in "IP banned" slice - see _ip_banned...... slice field.
+           keywords........ could be multi-field
+           The stop-phrases are searched in all text fields of discussions and
+           we are looking for exact match of whole phrase somewhere inside
+           the posted texts. If the phrase is found, the _msg_spam....... is
+           displayed and the comment is not stored.
 16-02-01 - two Boxes widget now uses Multiple checkbox widget as fallback
 (honzam)   (in {ajax} and {live})
          - new operators in Manager (and any other searches in AA):
@@ -107,7 +115,7 @@
            the item-id of modified of inserted item
            (in case the Task is reaction to ADD of UPDATE item event)
          - new experimental possibility to analyze field content and display
-           some statistics on "Slice Adsmin -> Fields"
+           some statistics on "Slice Admin -> Fields"
          - better external authentication (for ajax/filler) - unused AA_Uid removed from cookies
          - phpThumb used for {img:...} resizing,... updated to latest version compatible with PHP7
          - fixed compatibility with PHP7 - all ereg* replaced with preg*
@@ -2086,7 +2094,7 @@
            better planed - the clenup is done once for 5 minutes, now
          - Counting of hit_1...., hit_7...., hit_30.... and display_count fields
            are counted asynchronicaly from toexecute queue (table)
-         - The hits statistisc are now compacted automaticaly (from toexecute
+         - The hits statistics are now compacted automaticaly (from toexecute
            queue) - hits for one item is grouped for one day (for hits older
            than 8 days). It makes the hit_archive table much smaller
          - little improved UI of user administration
