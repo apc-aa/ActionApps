@@ -1277,4 +1277,76 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     }
 }
 
+
+/** Change module ID to new one
+ *  Used sometimes if you clone database or copy slices to another database
+ *  for another client and do not want to use the same ids )
+ */
+class AA_Optimize_Change_Module_Id extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Change current module ID to new one");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You need probably want to do it for all slices and site module");
+    }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
+
+    /** Test function
+    * @return true
+    */
+    function test() {
+        return true;
+    }
+
+    /** Repair function
+    * repairs tables
+    * @return true
+    */
+    function repair() {
+        $module_fields = AA_Metabase::getModuleFields();
+
+        // additional fields to change
+        $module_fields['object_text'] = 'value';
+
+        $current_id   = AA::$module_id;
+        $p_current_id = xpack_id($current_id);
+
+        $new_id       = new_id();
+        $p_new_id     = xpack_id($new_id);
+
+        $this->message(_m('Going to change module_id %1 -> %2 (%3 -> %4)', array($current_id, $new_id, $p_current_id, $p_new_id)));
+        $converted = 0;
+        foreach($module_fields as $table => $field) {
+            if (AA_Metabase::isPacked($table, $field)) {
+                $SQL = "UPDATE `$table` SET $field=$p_new_id WHERE $field=$p_current_id";
+            } else {
+                $SQL = "UPDATE `$table` SET $field='$new_id' WHERE $field='$current_id'";
+            }
+            $this->message(_m('Changing ID for table %1 (%2)', array($table, $field)));
+            $this->message($SQL);
+            $this->query($SQL);
+            $converted++;
+        }
+       //$this->message(_m('Changing ID for table %1 (%2)', array($table, $field)));
+       //$SQL = "UPDATE `object_text` SET value='$new_id' WHERE value='$current_id'";
+       //$this->message($SQL);
+       //$this->query($SQL);
+       //$converted++;
+
+        $this->message(_m('Converted %1 tables', array($converted)));
+        return true;
+    }
+}
+
+
 ?>

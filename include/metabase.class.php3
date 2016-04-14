@@ -579,7 +579,7 @@ class AA_Metabase {
     }
 
     /** static method */
-    function getModuleField($tablename) {
+    static function getModuleFields() {
         static $MODULE_KEYS = array(
                                      'alerts_collection'   => 'module_id',
                                      'constant_slice'      => 'slice_id',
@@ -601,10 +601,14 @@ class AA_Metabase {
                                      'slice'               => 'id',
                                      'view'                => 'slice_id'
             );
-        return $MODULE_KEYS[$tablename];
+        return $MODULE_KEYS;
     }
 
-
+    /** static method */
+    function getModuleField($tablename) {
+        $fields = self::getModuleFields();
+        return $fields[$tablename];
+    }
 
     /** static method
      *  @todo - would be probably better to move it to AA_MbT
