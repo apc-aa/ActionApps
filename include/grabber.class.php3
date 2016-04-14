@@ -38,14 +38,14 @@
  *                            into destination item
  */
 class AA_Saver {
-    var $grabber;                  /** the object which deliveres the data */
-    var $transformations;          /** describes, what to do with data before storing */
-    var $slice_id;                 /** id of destination slice */
-    var $store_mode;               /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
-    var $id_mode;                  /** id-policy    - how to construct id - old | new | combined */
+    protected $grabber;            /** the object which deliveres the data */
+    protected $transformations;    /** describes, what to do with data before storing */
+    protected $slice_id;           /** id of destination slice */
+    protected $store_mode;         /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
+    protected $id_mode;            /** id-policy    - how to construct id - old | new | combined */
 
-    var       $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
-    var       $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
+    private   $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
+    private   $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
     protected $_messages = array();
 
 
@@ -194,6 +194,13 @@ class AA_Saver {
 class AA_Grabber {
     protected $_messages = array();
 
+    /** */
+    static function factoryFromFile($file) {
+        $grabbers = AA_Components::getClassNames('AA_Grabber');
+        huhl($grabbers, $file);
+        exit;
+    }
+
     /** name function
      *  Name of the grabber - used for grabber selection box
      */
@@ -312,19 +319,20 @@ class AA_Grabber_Csv {
 
 
 class AA_Grabber_Aarss extends AA_Grabber {
-    var $feed_id;
-    var $feed;
-    var $name;
-    var $slice_id;
-    var $aa_rss;
-    var $channel;
-    var $map;
-    var $cat_field_id;
-    var $status_code_id;
-    var $ext_categs;
-    var $l_categs;
-    var $r_slice_id;
-    var $fire;
+    protected $feed_id;
+    protected $feed;
+    protected $name;
+    protected $slice_id;
+    protected $aa_rss;
+    protected $channel;
+    protected $map;
+    protected $cat_field_id;
+    protected $status_code_id;
+    protected $ext_categs;
+    protected $l_categs;
+    protected $r_slice_id;
+    protected $fire;
+
     /** AA_Grabber_Aarss function
      * @param $feed_id
      * @param $feed
@@ -687,8 +695,8 @@ class AA_Grabber_Aarss extends AA_Grabber {
 *   is called to grab the value (or multivalues) from the submitted form
 */
 class AA_Grabber_Form {
-    var $_items;
-    var $_last_store_mode;
+    private   $_items;
+    private   $_last_store_mode;
 
     function __construct() {
         $_items = array();
@@ -888,8 +896,8 @@ class AA_Grabber_Form {
 *   is called to grab the value (or multivalues) from the submitted form
 */
 class AA_Objectgrabber_Form {
-    private $_content          = array();
-    private $_last_store_mode;
+    private   $_content          = array();
+    private   $_last_store_mode;
 
     function __construct() {}
 
@@ -1036,8 +1044,8 @@ class AA_Objectgrabber_Form {
  */
 class AA_Grabber_Iekis_Xml extends AA_Grabber {
 
-    var $dir;                   /** directory, where teh files are */
-    var $_files;                /** list if files to grab - internal array */
+    protected $dir;                   /** directory, where teh files are */
+    private   $_files;                /** list if files to grab - internal array */
 
     function __construct($dir) {
         $this->dir = $dir;
@@ -1149,11 +1157,11 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
  */
 class AA_Grabber_Slice extends AA_Grabber {
 
-    var $set;                 /** AA_Set specifies the slice, conds and sort */
-    var $restrict_zids;       /** possible subset of ids grabbed */
-    var $_longids;            /** list if files to grab - internal array */
-    var $_content_cache;      /**  */
-    var $_index;              /**  */
+    protected $set;                 /** AA_Set specifies the slice, conds and sort */
+    protected $restrict_zids;       /** possible subset of ids grabbed */
+    private   $_longids;            /** list if files to grab - internal array */
+    private   $_content_cache;      /**  */
+    private   $_index;              /**  */
 
     function __construct($set, $restrict_zids=null) {
         $this->set            = $set;
@@ -1219,10 +1227,10 @@ class AA_Grabber_Slice extends AA_Grabber {
  */
 class AA_Grabber_Discussion extends AA_Grabber {
 
-    var $set;                 /** AA_Set specifies the slice, conds and sort */
-    var $_longids;            /** list if files to grab - internal array */
-    var $_content_cache;      /**  */
-    var $_index;              /**  */
+    protected $set;                 /** AA_Set specifies the slice, conds and sort */
+    private   $_longids;            /** list if files to grab - internal array */
+    private   $_content_cache;      /**  */
+    private   $_index;              /**  */
 
     function __construct($set) {
         $this->set            = $set;
@@ -1287,11 +1295,11 @@ class AA_Grabber_Discussion extends AA_Grabber {
  */
 class AA_Grabber_Ical extends AA_Grabber {
 
-    var $url;                   /** URL of .ics file */
-    var $ical;                  /** instance iCalFile */
-    var $vCalPos;               /** pointer of vCalendar */
-    var $vComponentsTypePos;    /** pointer of type components */
-    var $vComponentsPos;        /** pointer of components */
+    protected $url;                   /** URL of .ics file */
+    protected $ical;                  /** instance iCalFile */
+    protected $vCalPos;               /** pointer of vCalendar */
+    protected $vComponentsTypePos;    /** pointer of type components */
+    protected $vComponentsPos;        /** pointer of components */
 
 
     function __construct($url){
@@ -1392,9 +1400,9 @@ class AA_Grabber_Ical extends AA_Grabber {
  */
 class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
 
-    var $file;                /** list if files to grab - internal array */
-    var $_items;
-    var $_last_store_mode;
+    protected $file;                /** list if files to grab - internal array */
+    private   $_items;
+    private   $_last_store_mode;
 
     function __construct($file) {
         $this->file = $file;
@@ -1490,8 +1498,8 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
  */
 class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
 
-    var $file;                /** list if files to grab - internal array */
-    var $_items;
+    protected $file;                /** list if files to grab - internal array */
+    private   $_items;
 
     function __construct($file) {
         $this->file = $file;
@@ -1546,4 +1554,86 @@ class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
     }
 
 }
+
+
+/** AA_Grabber_CTK - Imports items from CTK xml export
+ */
+class AA_Grabber_CTK extends AA_Grabber {
+
+    protected $file;                /** list if files to grab - internal array */
+    private   $_items;
+
+    function __construct($file) {
+        $this->file = $file;
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('CTK - xml import'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('Process import xml file xported from CTK'); }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        #$data = file_get_contents($this->file);
+        #$xml  = simplexml_load_string($data);
+        $xml = simplexml_load_file($this->file);
+
+        $this->_items = array();
+        //$items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
+        foreach($xml->NewsItem as $v) {
+           $this->_items[] = $v;
+        }
+
+    }
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        if (!($polozka = current($this->_items))) {
+            return false;
+        }
+        next($this->_items);
+
+        $domicil = '';
+        foreach ($polozka->DescriptiveMetadata->Location->Property as $prop) {
+          switch((string) $prop['FormalName']) { // Get attributes as element indices
+          case 'City':
+            $domicil = (string)$prop['Value'];
+            break;
+          }
+        }
+
+#print_r((array)$polozka->xpath('//Property[@FormalName=\'City\']'));
+
+        $ftext = '';
+        foreach($polozka->ContentItem->DataContent->body->p as $f) {
+          #$ftext .= '<p>'.(string)$f.'</p>'."\n";
+          $ftext .= $f->asXML()."\n";
+        };
+
+        $item = new ItemContent();
+        $item->setItemId(new_id());
+        $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Název
+        $item->setValue('place..........3', iconv('UTF-8', 'windows-1250', mb_strtoupper($domicil, 'UTF-8')));                          // Domicil
+        $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveøejnìní - 20160127T145301+01:00
+        $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveøejnìní
+        $item->setValue('full_text......1', iconv('UTF-8', 'windows-1250', $ftext));                                                    // Plný text
+        $item->setValue('source.........1', 'ÈTK');                                                                                     // Zdroj
+        $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
+        $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
+
+#print_r($item);
+#exit;
+        return $item;
+/*
+*/
+
+    }
+
+}
+
 ?>
