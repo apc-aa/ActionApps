@@ -1049,8 +1049,13 @@ class ItemContent extends AA_Content {
             }
         }
 
+        $zid = new zids($id,'l');
+
         // invalidate from inner cache
-        AA_Items::invalidateItem(new zids($id, 'l'));
+        // AA_Items::invalidateItem(new zids($id, 'l'));
+
+        // renew content if the item in the cache - we will use it in Planned tasks, ... where we do not know slice password...
+        AA_Items::getItem($zid, $slice->getProperty('reading_password'), true);
 
         if ($feed) {
             FeedItem($id);
