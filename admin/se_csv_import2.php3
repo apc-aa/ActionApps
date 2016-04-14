@@ -107,7 +107,7 @@ class AA_Csv_Importer {
         $this->itemIdMappedActions = $_REQUEST['itemIdMappedActions'];
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
-        $this->addParams           = unserialize(base64_decode($_REQUEST['addParamsSerial']));
+        $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']));
         $this->auth_uid            = $auth->auth["uid"];
     }
 
@@ -338,7 +338,7 @@ class AA_Csv_Importer {
                                                           "value"     => _m("Load"),
                                                           "accesskey" => "L"),
                               "fileName"        => array( "value"     => $this->fileName ),
-                              "addParamsSerial" => array( "value"     => base64_encode(serialize($this->addParams)))
+                              "addParamsSerial" => array( "value"     => bin2url(serialize($this->addParams)))
                              );
 
 

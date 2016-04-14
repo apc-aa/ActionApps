@@ -133,7 +133,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .urlencode(base64_encode(serialize($addParams))));
+    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .bin2url(serialize($addParams)));
 }
 
 require_once AA_INC_PATH."formutil.php3";
@@ -220,7 +220,7 @@ function InitPage() {}
                             'text' => _m('Text')
                            );
 
-     echo getSelectWithParam('dataType', $options, "", $html_options);
+     //echo getSelectWithParam('dataType', $options, "", $html_options);
      ?>
       </table>
     </td></tr>
