@@ -75,7 +75,7 @@ if ($cancel) {
     if ($anonymous) { // anonymous login
         go_url( $r_slice_view_url, '', $encap );
     } else {
-        go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
+        go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
     }
 }
 
@@ -112,7 +112,7 @@ if ( $update AND (count($err)<=1) AND is_array($prifields) ) {
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );
         } else {
-            go_return_or_url(self_base() . "index.php3",1,1);
+            go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
         }
     }
 }
@@ -129,7 +129,7 @@ if ($edit) {
     if ( !is_array($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         // do not quit - just go back.
-        go_return_or_url(self_base() . "index.php3",1,1);
+        go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
     }
 
     // fill content array from item and content tables

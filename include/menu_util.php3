@@ -183,7 +183,7 @@ function PrintModuleSelection() {
             if ( $display_modtypes ) {
                 foreach ($module_types as $module_type) {
                     if ($module_type[0] == $order) {
-                        $js .= $option_begin . '" class="sel_title">*** '.$module_type[1]." ***'\n";
+                        $js .= $option_begin . '" class="sel_title">*** '.$module_type[1]." ***'\n";   // &#x1f464;&#x1f468; men symbol
                     }
                 }
             }
@@ -208,7 +208,7 @@ function PrintModuleSelection() {
             $js .= "document.write('". str_replace("'","\\'", $switch_text) ."');\n";
         }
         $js .= "\n
-        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url(''),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
+        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"?change_id=\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
         document.write('</select>');\n";
         FrmJavascriptCached($js, 'modules');

@@ -186,429 +186,511 @@ class CT_Sql {
 /**
  * $Id$
  */
-
+/**
+* PHPLib Sessions using PHP 4 built-in Session Support.
+*
+* WARNING: code is untested!
+*
+* @copyright 1998,1999 NetUSE AG, Boris Erdmann, Kristian Koehntopp
+*            2000 Teodor Cimpoesu <teo@digiro.net>
+* @author    Teodor Cimpoesu <teo@digiro.net>, Ulf Wendel <uw@netuse.de>, Maxim Derkachev <kot@books.ru
+* @version   $Id$
+* @access    public
+* @package   PHPLib
+*/
 class Session {
-  var $classname = "Session";         // Needed for object serialization.
 
-  // Define the parameters of your session by either overwriting
-  // these values or by subclassing session (recommended).
+    /**
+    * Session name
+    *
+    */
+    var $classname = "Session";
 
-  var $magic = "";                    // Some string you should change.
-  var $mode = "cookie";               // We propagate session IDs with cookies
-  var $fallback_mode;                 // If this doesn't work, fall back...
-  var $lifetime = 0;                  // 0 = do session cookies, else minutes
-  var $cookiename = "";               // Defaults to classname
-  var $cookie_path = "/";             // The path for which the session cookie is set.
-  var $cookie_domain = "";            // If set, the domain for which the
-                                      // session cookie is set.
+    /**
+    * Current session id.
+    *
+    * @var  string
+    * @see  id(), Session()
+    */
+    var $id = "";
 
-  var $gc_time  = 1440;               // Purge all session data older than 1440 minutes.
-  var $gc_probability = 1;            // Garbage collect probability in percent
+    /**
+    * [Current] Session name.
+    *
+    * @var  string
+    * @see  name(), Session()
+    */
+    var $name = "";
 
-  var $auto_init = "";                // Name of the autoinit-File, if any.
-  var $secure_auto_init = 1;          // Set to 0 only, if all pages call
-                                      // page_close() guaranteed.
+    /**
+    *
+    * @var  string
+    */
+    var $cookie_path = '/';
 
-  var $allowcache = "no";             // "passive", "no", "private" or "public"
-  var $allowcache_expire = 1440;      // If you allowcache, data expires in this
-                                      // many minutes.
-  var $block_alien_sid  = false;      // do not accept IDs in URL for session creation
 
-  var $that_class = "";               // Name of data storage container
+    /**
+    *
+    * @var  strings
+    */
+    var $cookiename = "";
 
-  //
-  // End of parameters.
-  //
 
-  var $name;                          // Session name
-  var $id;                            // Unique Session ID
-  var $newid;                         // Newly Generated ID Flag
-  var $that;
+    /**
+    *
+    * @var  int
+    */
+    var $lifetime = 0;
 
-  var $pt = array();                  // This Array contains the registered things
-  var $in = 0;                        // Marker: Did we already include the autoinit file?
 
-  // register($things):
-  //
-  // call this function to register the things that should become persistent
+    /**
+    * If set, the domain for which the session cookie is set.
+    *
+    * @var  string
+    */
+    var $cookie_domain = '';
 
-  function register($things) {
-      $things = explode(",",$things);
-      foreach ($things as $thing) {
-          $thing = trim($thing);
-          if ( $thing ) {
-              $this->pt[$thing] = true;
-          }
-      }
-  }
 
-  function is_registered($name) {
-      return (isset($this->pt[$name]) && $this->pt[$name] == true);
-  }
+    /**
+    * Propagation mode is by default set to cookie
+    * The other parameter, fallback_mode, decides wether
+    * we accept ONLY cookies, or cookies and eventually get params
+    * in php4 parlance, these variables cause a setting of either
+    * the php.ini directive session.use_cookie or session.use_only_cookie
+    * The session.use_only_cookie possibility was introdiced in PHP 4.2.2, and
+    * has no effect on previous versions
+    *
+    * @var    string
+    * @deprec $Id$
+    */
+    var $mode = "cookie";               // We propagate session IDs with cookies
 
-  function unregister($things) {
-      $things = explode(",", $things);
-      foreach ($things as $thing) {
-          $thing = trim($thing);
-          if ($thing) {
-              unset($this->pt[$thing]);
-          }
-      }
-  }
+    /**
+    * If fallback_mode is set to 'cookie', php4 will impose a cookie-only
+    * propagation policy, which is a safer  propagation method that get mode
+    *
+    * @var    string
+    * @deprec $Id$
+    */
+    var $fallback_mode;                 // if fallback_mode is also 'cookie'
+                                        // we enforce session.use_only_cookie
 
-  // get_id():
-  //
-  // Propagate the session id according to mode and lifetime.
-  // Will create a new id if necessary.
+    /**
+    * See the session_cache_limit() options
+    *
+    * @var  string
+    */
+    var $allowcache = 'nocache';
 
-  function get_id() {
-      $this->name  = $this->cookiename=="" ? $this->classname : $this->cookiename;
-      $this->newid = false;
-      switch ($this->mode) {
-      case "get":
-          if ("" == ($id = isset($_GET[$this->name]) ? $_GET[$this->name] : "")) {
-              $id = isset($_POST[$this->name]) ? $_POST[$this->name] : "";
-          }
-          break;
-      case "cookie":
-          $id = isset($_COOKIE[$this->name]) ? $_COOKIE[$this->name] : "";
-          break;
-      default:
-          die("This has not been coded yet.");
-          break;
-      }
+    /**
+    * Do we need session forgery check?
+    * This check prevents from exploiting SID-in-request vulnerability.
+    * We check the user's last IP, and start a new session if the user
+    * has no cookie with the SID, and the IP has changed during the session.
+    * We also start a new session with the new id, if the session does not exists yet.
+    * We don't check cookie-enabled clients.
+    * @var boolean
+    */
+    var $forgery_check_enabled = false;
 
-      // if not valid id, then reset it
-      if ( (strlen($id) != 32) OR (strspn($id, "0123456789abcdefABCDEF") != strlen($id))) {
-          $id = '';
-      }
+    /**
+    * the name of the variable to hold the IP of the session
+    * @see $forgery_check_enabled
+    * @var string
+    */
+    var $session_ip = '__session_ip';
 
-      // do not accept user provided ids for creation
-      if ($id != "" && $this->block_alien_sid) {   // somehow an id was provided by the user
-          if($this->that->ac_get_value($id, $this->name) == "") {
-              // no - the id doesn't exist in the database: Ignore it!
-              $id = "";
-          }
-      }
 
-      if ( "" == $id ) {
-          $this->newid = true;
-          $id          = $this->that->ac_newid();
-      }
+    /**
+    * Sets the session name before the session starts.
+    *
+    * Make sure that all derived classes call the constructor
+    *
+    * @see  name()
+    */
+    function __construct() {
+        $this->name($this->name);
+    } // end constructor
 
-      switch ($this->mode) {
-      case "cookie":
-          if ( $this->newid && ( 0 == $this->lifetime ) ) {
-              SetCookie($this->name, $id, 0, $this->cookie_path, $this->cookie_domain);
-          }
-          if ( 0 < $this->lifetime ) {
-              SetCookie($this->name, $id, time()+$this->lifetime*60, $this->cookie_path, $this->cookie_domain);
-          }
+    /**
+    * Register the variable(s) that should become persistent.
+    *
+    * @param   mixed String with the name of one or more variables seperated by comma
+    *                 or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
+    * @access public
+    */
+    function register($var_names) {
+        if (!is_array($var_names)) {
+            // spaces spoil everything
+            $var_names = trim($var_names);
+            $var_names=explode(",", $var_names);
+        }
 
-          // Remove session ID info from QUERY String - it is in cookie
-          if ( isset($_SERVER["QUERY_STRING"]) && ("" != $_SERVER["QUERY_STRING"]) ) {
-              // subst *any* preexistent sess
-              $_SERVER["QUERY_STRING"] = preg_replace("/(^|&)".preg_quote(urlencode($this->name),'/')."=(.)*(&|$)/", "\\1", $_SERVER["QUERY_STRING"]);
-          }
-          break;
-      case "get":
-          //we don't trust user input; session in url doesn't
-          //mean cookies are disabled
-          if ($this->newid &&( 0 == $this->lifetime ))  {   // even if not a newid
-              SetCookie($this->name, $id, 0, $this->cookie_path, $this->cookie_domain);
-          }
-          if ( 0 < $this->lifetime ) {
-              SetCookie($this->name, $id, time()+$this->lifetime*60, $this->cookie_path, $this->cookie_domain);
-          }
-
-          if ( isset($_SERVER["QUERY_STRING"]) && ("" != $_SERVER["QUERY_STRING"]) ) {
-              // subst *any* preexistent sess
-              $_SERVER["QUERY_STRING"] = preg_replace("/(^|&)".preg_quote(urlencode($this->name),'/')."=(.)*(&|$)/", "\\1", $_SERVER["QUERY_STRING"]);
-          }
-          break;
-      default:
-          ;
-          break;
-      }
-      $this->id = $id;
-  }
-
-  // put_id():
-  //
-  // Stop using the current session id (unset cookie, ...) and
-  // abandon a session.
-  function put_id() {
-      switch ($this->mode) {
-      case "cookie":
-          $this->name = $this->cookiename == "" ? $this->classname : $this->cookiename;
-          SetCookie($this->name, "", 0, $this->cookie_path, $this->cookie_domain);
-          $_COOKIE[$this->name] = "";
-          break;
-
-      default:
-          // do nothing. We don't need to die for modes other than cookie here.
-          break;
-      }
-  }
-
-  // delete():
-  //
-  // Delete the current session record and put the session id.
-
-  function delete() {
-      $this->that->ac_delete($this->id, $this->name);
-      $this->put_id();
-  }
-
-  // url($url):
-  //
-  // Helper function: returns $url concatenated with the current
-  // session $id.
-
-  function url($url) {
-
-     // huhl($url);
-    // Remove existing session info from url
-    // We clean any(also bogus) sess in url
-
-    $url = preg_replace("/([&?])".preg_quote(urlencode($this->name), '/')."=[^&]*(&|$)/", "\\1", $url);
-    // Remove trailing ?/& if needed
-    $url = rtrim($url, "&?");
-    if ($this->mode == 'get') {
-        $url .= ( strpos($url, "?") !== false ?  "&" : "?" ). urlencode($this->name)."=".$this->id;
+        // If register_globals is off -> store session variables values
+        foreach ($var_names as $key => $value ) {
+            if (!isset($_SESSION[$value])) {
+                $_SESSION[$value]= $GLOBALS[$value];
+            }
+        }
     }
-    // Encode naughty characters in the URL
-    $url = str_replace(array("<", ">", " ", "\"", "'"), array("%3C", "%3E", "+", "%22", "%27"), $url);
-    return $url;
-  }
 
-  function self_url() {
+    /**
+    * see if a variable is registered in the current session
+    *
+    * @param  $var_name a string with the variable name
+    * @return false if variable not registered true on success.
+    * @access public
+    */
+    function is_registered($var_name) {
+        $var_name = trim($var_name);  // to be sure
+        return isset($_SESSION[$var_name]);
+    }
+
+
+
+    /**
+    * Recall the session registration for named variable(s)
+    *
+    * @param	  mixed   String with the name of one or more variables seperated by comma
+    *                   or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
+    * @access public
+    */
+    function unregister($var_names) {
+        $ok = true;
+        foreach (explode (',', $var_names) as $var_name) {
+            $var_name=trim($var_name);
+            unset($_SESSION[$var_name]);  // unset is no more a function in php4
+        }
+        return $ok;
+    }
+
+    /**
+    * @brother id()
+    * @deprec  $Id$
+    * @access public
+    */
+    function get_id($sid = '') {
+        return $this->id($sid);
+    } // end func get_id
+
+
+
+
+
+
+    /**
+    * Delete the cookie holding the session id.
+    *
+    * RFC: is this really needed? can we prune this function?
+    * 		 the only reason to keep it is if one wants to also
+    *		 unset the cookie when session_destroy()ing,which PHP
+    *		 doesn't seem to do (looking @ the session.c:940)
+    * uw: yes we should keep it to remain the same interface, but deprec.
+    *
+    * @deprec $Id$
+    * @access public
+    */
+    function put_id() {
+        if (get_cfg_var('session.use_cookies') == 1) {
+            $cookie_params = session_get_cookie_params();
+            setCookie($this->name, '', 0, $cookie_params['path'], $cookie_params['domain']);
+            $_COOKIE[$this->name] = "";
+        }
+
+    } // end func put_id
+
+    /**
+    * Delete the current session destroying all registered data.
+    *
+    * Note that it does more but the PHP 4 session_destroy it also
+    * throws away a cookie is there's one.
+    *
+    * @return boolean session_destroy return value
+    * @access public
+    */
+    function delete() {
+        $this->put_id();
+        return session_destroy();
+    } // end func delete
+
+
+    /**
+    * Helper function: returns $url concatenated with the current session id
+    *
+    * Don't use this function any more. Please use the PHP 4 build in
+    * URL rewriting feature. This function is here only for compatibility reasons.
+    *
+    * @param	$url	  URL to which the session id will be appended
+    * @return string  rewritten url with session id included
+    * @deprec $Id$
+    * @access public
+    */
+    function url($url) {
+        return $url;
+    } // end func url
+
+    /**
+    * Get current request URL.
+    *
+    * WARNING: I'm not sure with the $this->url() call. Can someone check it?
+    * WARNING: Apache variable $REQUEST_URI used -
+    * this it the best you can get but there's warranty the it's set beside
+    * the Apache world.
+    *
+    * @return string
+    * @global $REQUEST_URI
+    * @access public
+    */
+    function self_url() {
       if ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) {
           $qs = substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?'));
       } else {
           $qs = (isset($_SERVER["QUERY_STRING"]) AND ("" != $_SERVER["QUERY_STRING"])) ? '?' . $_SERVER["QUERY_STRING"] : '';
       }
       return $this->url($_SERVER["PHP_SELF"] . $qs);
-  }
+    }
 
-  function get_hidden_session() {
-      return sprintf("<input type=\"hidden\" name=\"%s\" value=\"%s\">\n", $this->name, $this->id);
-  }
+    /**
+    * Stores session id in a hidden variable (part of a form).
+    *
+    * @return string
+    * @access public
+    */
+    function get_hidden_session() {
+        return "";
+    }
 
-  function hidden_session() {
-      print $this->get_hidden_session();
-  }
+    /**
+    * @brother  get_hidden_session
+    * @return   void
+    */
+    function hidden_session() {
+        print $this->get_hidden_session();
+    } // end func hidden_session
 
-  // serialize($var,&$str):
-  //
-  // appends a serialized representation of $$var
-  // at the end of $str.
-  //
-  // To be able to serialize an object, the object must implement
-  // a variable $classname (containing the name of the class as string)
-  // and a variable $persistent_slots (containing the names of the slots
-  // to be saved as an array of strings).
 
-  function serialize($var, &$str) {
-      static $t,$l,$k;
 
-      // Determine the type of $$var
-      eval("\$t = gettype(\$$var);");
-      switch ( $t ) {
+    /**
+    * Sets or returns the name of the current session
+    *
+    * @param  string  If given, sets the session name
+    * @return string  session_name() return value
+    * @access public
+    */
+    function name($name = '') {
 
-      case "array":
-          // $$var is an array. Enumerate the elements and serialize them.
-          eval("reset(\$$var); \$l = gettype(list(\$k)=each(\$$var));");
-          $str .= "\$$var = array(); ";
-          while ( "array" == $l ) {
-              // Structural recursion
-              $this->serialize($var."['".preg_replace("/([\\'])/", "\\\\1", $k)."']", $str);
-              eval("\$l = gettype(list(\$k)=each(\$$var));");
-          }
+        if ($name = (string)$name) {
+            $this->name = $name;
+            $ok = session_name($name);
+        } else {
+            $ok = session_name();
+        }
+        return $ok;
+    } // end func name
 
-          break;
-      case "object":
-          // $$var is an object. Enumerate the slots and serialize them.
-          eval("\$k = \$${var}->classname; \$l = reset(\$${var}->persistent_slots);");
-          $str.="\$$var = new $k; ";
-          while ( $l ) {
-              // Structural recursion.
-              $this->serialize($var."->".$l, $str);
-              eval("\$l = next(\$${var}->persistent_slots);");
-          }
 
-          break;
-      default:
-          // $$var is an atom. Extract it to $l, then generate code.
-          eval("\$l = \$$var;");
-          $str.="\$$var = '".preg_replace("/([\\'])/", "\\\\1", $l)."'; ";
-          break;
-      }
-  }
+    /**
+    * Returns the session id for the current session.
+    *
+    * If id is specified, it will replace the current session id.
+    *
+    * @param  string  If given, sets the new session id
+    * @return string  current session id
+    * @access public
+    */
+    function id($sid = '') {
+        if (!$sid) {
+            $sid = ("" == $this->cookiename) ? $this->classname : $this->cookiename;
+        }
 
-  function get_lock() {
-      $this->that->ac_get_lock();
-  }
+        if ($sid = (string)$sid) {
+            $this->id = $sid;
+            $ok = session_id($sid);
+        } else {
+            $ok = session_id();
+        }
 
-  function release_lock() {
-      $this->that->ac_release_lock();
-  }
+        return $ok;
+    } // end func id
 
-  // freeze():
-  //
-  // freezes all registered things ( scalar variables, arrays, objects ) into
-  // a database table
 
-  function freeze() {
-      $str="";
+    /**
+    * Get the serialized string of session variables
+    *
+    * Note that the serialization format is different from what it
+    * was in session3.inc. So clear all session data when switching
+    * to the PHP 4 code, it's not possible to load old session.
+    *
+    * @return string
+    */
+    function serialize() {
+        return session_encode();
+    } // end func serialze
 
-      $this->serialize("this->in", $str);
-      $this->serialize("this->pt", $str);
 
-      reset($this->pt);
-      while ( list($thing) = each($this->pt) ) {
-          $thing=trim($thing);
-          if ( $thing ) {
-              $this->serialize("GLOBALS['".$thing."']", $str);
-          }
-      }
+    /**
+    * Import (session) variables from a string
+    *
+    * @param  string
+    *
+    * @return boolean
+    */
+    function deserialize (&$data_string) {
+        return session_decode($data_string);
+    } // end func deserialize
 
-      $r = $this->that->ac_store($this->id, $this->name, $str);
-      $this->release_lock();
+    /**
+    * freezes all registered things ( scalar variables, arrays, objects )
+    * by saving all registered things to $_SESSION.
+    *
+    * @access public
+    *
+    *
+    */
+    function freeze() {
+        // If register_globals is off -> store session variables values
+        reset($_SESSION);
 
-      if (!$r) $this->that->ac_halt("Session: freeze() failed.");
-  }
+        while(list($key,) = each($_SESSION)) {
+            // foreach ($_SESSION as $key => $value) {
+            $_SESSION[$key] = $GLOBALS[$key];
+        }
+    }
 
-  // thaw:
-  //
-  // Reload frozen variables from the database and microwave them.
+    /**
+    * ?
+    *
+    */
+    function set_tokenname(){
 
-  function thaw() {
-      $this->get_lock();
+        $this->name = ("" == $this->cookiename) ? $this->classname : $this->cookiename;
+        session_name ($this->name);
 
-      $vals = $this->that->ac_get_value($this->id, $this->name);
-      eval(sprintf(";%s",$vals));
-  }
+        if (!$this->cookie_domain) {
+            $this->cookie_domain = get_cfg_var ("session.cookie_domain");
+        }
 
-  //
-  // All this is support infrastructure for the start() method
-  //
+        if (!$this->cookie_path && get_cfg_var('session.cookie_path')) {
+            $this->cookie_path = get_cfg_var('session.cookie_path');
+        } elseif (!$this->cookie_path) {
+            $this->cookie_path = "/";
+        }
 
-  function set_container() {
-      $name = $this->that_class;
-      $this->that = new $name;
-      $this->that->ac_start();
-  }
+        if ($this->lifetime > 0) {
+            //$lifetime = time()+$this->lifetime*60; //this is incorrect
+            $lifetime = $this->lifetime*60;
+        } else {
+            $lifetime = 0;
+        }
 
-  function set_tokenname() {
-      $this->name = $this->cookiename=="" ? $this->classname : $this->cookiename;
-  }
+        session_set_cookie_params($lifetime, $this->cookie_path, $this->cookie_domain);
+    } // end func set_tokenname
 
-  function release_token() {
-      // set the  mode for this run
-      if ( isset($this->fallback_mode) && ("get" == $this->fallback_mode) && ("cookie" == $this->mode) && (! isset($_COOKIE[$this->name])) ) {
-          $this->mode = $this->fallback_mode;
-      }
 
-      if ($this->mode=="get") {   // now it catches also when primary mode is get
+    /**
+    * ?
+    *
+    */
+    function put_headers() {
+        // set session.cache_limiter corresponding to $this->allowcache.
 
-          $this->get_id();
-          if ($this->newid) {
+        switch ($this->allowcache) {
 
-              // You will need to fix suexec as well, if you
-              // use Apache and CGI PHP
-              $PROTOCOL = ( isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ) ? 'https' : 'http';
-              $this->freeze();
-              header("Status: 302 Moved Temporarily");
-              header("Location: " . $PROTOCOL . "://" . $_SERVER["HTTP_HOST"] . $this->self_url());
-              exit;
-          }
-      }
-  }
+        case "passive":
+        case "public":
+            session_cache_limiter ("public");
+            break;
 
-  function put_headers() {
-      // Allowing a limited amount of caching, as suggested by
-      // Padraic Renaghan on phplib@lists.netuse.de.
-      //
-      // Note that in HTTP/1.1 the Cache-Control headers override the Expires
-      // headers and HTTP/1.0 ignores headers it does not recognize (e.g,
-      // Cache-Control). Mulitple Cache-Control directives are split into
-      // mulitple headers to better support MSIE 4.x.
-      //
-      // Added pre- and post-check for MSIE 5.x as suggested by R.C.Winters,
-      // see http://msdn.microsoft.com/workshop/author/perf/perftips.asp#Use%20Cache-Control%20Extensions
-      // for details
-      switch ($this->allowcache) {
+        case "private":
+            session_cache_limiter ("private");
+            break;
 
-      case "passive":
-          $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-          header("Last-Modified: " . $mod_gmt);
-          // possibly ie5 needs the pre-check line. This needs testing.
-          header("Cache-Control: post-check=0, pre-check=0");
-          break;
+        default:
+            session_cache_limiter ("nocache");
+            break;
+        }
+    } // end func put_headers
 
-      case "public":
-          $exp_gmt = gmdate("D, d M Y H:i:s", time() + $this->allowcache_expire * 60) . " GMT";
-          $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-          header("Expires: " . $exp_gmt);
-          header("Last-Modified: " . $mod_gmt);
-          header("Cache-Control: public");
-          header("Cache-Control: max-age=" . $this->allowcache_expire * 60, false);
-          break;
+    /**
+    * Start a new session or recovers from an existing session
+    *
+    * @return boolean   session_start() return value
+    * @access public
+    */
+    function start() {
 
-      case "private":
-          $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-          header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-          header("Last-Modified: " . $mod_gmt);
-          header("Cache-Control: private");
-          header("Cache-Control: max-age=" . $this->allowcache_expire * 60, false);
-          header("Cache-Control: pre-check=" . $this->allowcache_expire * 60, false);
-          break;
-      
-      case 'no':
-          header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-          header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-          header("Cache-Control: no-cache");
-          header("Cache-Control: must-revalidate");
-          header("Pragma: no-cache");
-          break;
+        if ( $this->mode=="cookie" && $this->fallback_mode=="cookie")  {
+            ini_set ("session.use_only_cookies","1");
+        }
 
-      default:
-          header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-          header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-          header("Cache-Control: no-cache");
-          header("Cache-Control: post-check=0, pre-check=0", false);
-          header("Pragma: no-cache");
-          break;
-      }
-  }
+        $this->set_tokenname();
+        $this->put_headers();
 
-  //
-  // Garbage collection
-  //
-  // Destroy all session data older than this
-  //
-  function gc() {
-      if (mt_rand(0,100) < $this->gc_probability) {
-          $this->that->ac_gc($this->gc_time, $this->name);
-      }
-  }
+        $ok = session_start();
+        $this->id = session_id();
 
-  //
-  // Initialization
-  //
+        if($this->forgery_check_enabled && $this->session_ip) {
+            $sess_forged = false;
+            $mysid = $this->name.'='.$this->id;
 
-  function start() {
-      $this->set_container();
-      $this->set_tokenname();
-      $this->put_headers();
-      $this->release_token();
-      $this->get_id();
-      $this->thaw();
-      $this->gc();
-  }
+            // check cookies first.
+            if(!isset($_COOKIE[$this->name]) &&  (strpos($_SERVER['REQUEST_URI'],$mysid) || $_POST[$this->name])) {
+                if(isset($_SESSION[$this->session_ip]) && $_SESSION[$this->session_ip] <> $_SERVER['REMOTE_ADDR']) {
+                    // we have no session cookie, a SID in the request,
+                    // the session exists, but the saved IP is
+                    $sess_forged = true;
+                    session_write_close();
 
-}
+                } elseif (!isset($_SESSION[$this->session_ip])) {
+                    // session does not exist.
+                    $sess_forged = true;
+                    session_destroy();
+                }
+            }
+            if ($sess_forged) {
+                /* we redirect only if SID in the path part of the URL,
+                to make sure they'll never hit again.
+                We don't redirect when SID is in QUERY_STRING only,
+                cause it will disappear with the next request
+                */
+                if(strpos($_SERVER['PHP_SELF'], $mysid)) {
+                    // cut session info from PHP_SELF // and QUERY_STRING, for sure
+                    $new_qs = 'http://'.$_SERVER['SERVER_NAME']. str_replace($mysid, '', $_SERVER['PHP_SELF']) .(($_SERVER['QUERY_STRING']) ? '?'.str_replace($mysid, '', $_SERVER['QUERY_STRING']) : '');
+
+                    // clear new cookie, if set
+                    $cprm = session_get_cookie_params();
+                    setcookie($sname, '', time() - 3600, $cprm['path'], $cprm['domain'], $cprm['secure']);
+                    header('Location: '.$new_qs);
+                    exit();
+                }
+
+                // maybe should seed better?
+                $this->id(md5(uniqid(rand())));
+                $ok = session_start();
+            }
+        }
+
+        // restore session variables to global scope
+        if (is_array($_SESSION)) {
+            foreach ($_SESSION as $key => $value) {
+                $GLOBALS[$key] = $value;
+            }
+        }
+
+        if ($this->forgery_check_enabled && $this->session_ip) {
+            // save current IP
+            $GLOBALS[$this->session_ip] = $_SERVER['REMOTE_ADDR'];
+            if (!$this->is_registered($this->session_ip)) {
+                $this->register($this->session_ip);
+            }
+        }
+
+        return $ok;
+    } // end func start
+
+
+
+} // end func session
 
 /**
  * $Id$
@@ -875,3 +957,4 @@ function page_close() {
     }
 }
 ?>
+

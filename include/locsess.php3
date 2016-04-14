@@ -189,6 +189,7 @@ class AA {
     public static $lang;       // two letters small caps - cz / es / en / ...
     public static $langnum;    // array of prefered language numbers - > 10000000
     public static $headers;    // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
+    public static $module_id;  // for admin pages - replace of older $slice_id
 
     static function getHeaders() {
         $ret = array('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ));

@@ -43,8 +43,8 @@
  *   call showMenu() afterwards.
  */
 function menu_include() {
-    global $MODULES, $g_modules, $slice_id;
-    $menu = $MODULES[$g_modules[$slice_id]["type"]]["menu"];
+    global $MODULES, $g_modules;
+    $menu = $MODULES[$g_modules[AA::$module_id]["type"]]["menu"];
     return AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
 }
 
@@ -95,8 +95,12 @@ require_once AA_INC_PATH. "locauth.php3";
 require_once AA_INC_PATH. "scroller.php3";
 require_once AA_INC_PATH. "searchbar.class.php3";  // search_row is stored to session, so we need to have definition already loaded
 
-// save before getting the session stored variables
-$pass_sliceid = $change_id ? $change_id : $slice_id;
+// Save before getting the session stored variables
+// Now it should not be in session so mayby the $pass_sliceid is not necessary and we van use just slice_id
+// At least it do sanity check.
+if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
+    AA::$module_id = '';
+}
 
 // Load the session stored variables.
 if ( $encap ) { // we can't use AA_CP_Session - it uses more Header information
@@ -119,14 +123,11 @@ if ($nobody) {
 // relogin if requested
 $auth->relogin_if($relogin);
 
-$last_slice_id = $slice_id;
-
-if ( $pass_sliceid ) {
-    $slice_id = $pass_sliceid;
-}
+$slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
 
 if ( $no_slice_id ) {
     unset($slice_id);
+    unset(AA::$module_id);
 }
 
 require_once AA_INC_PATH. "util.php3";  // must be after language include because of lang constants in util.php3
@@ -137,9 +138,9 @@ require_once AA_INC_PATH. "event.class.php3";
    that all Admin Panel modules send $slice_id each time, we leave it here.
    But if a script sends slice_id, the session-stored one is overrided
    (see $pass_sliceid above). */
-$sess->register("slice_id");
+// $sess->register("slice_id");
 // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
-$sess->register("r_hidden");
+$sess->register(array('r_hidden','r_last_module_id' ));
 
 // sometimes we need not to unset hidden - popup for related stories ...
 // only acceptor can read values. For others they are destroyed.
@@ -147,13 +148,11 @@ $my_document_uri = $_SERVER['DOCUMENT_URI'] ? $_SERVER['DOCUMENT_URI'] : $_SERVE
 if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri)) {
     unset( $r_hidden );
 }
-
-
-$after_login = !$no_slice_id && !$slice_id;
+$after_login = !$no_slice_id && !AA::$module_id;
 $perm_slices = GetUserSlices();
 
-if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slice::getModuleName($slice_id));
+if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[AA::$module_id] AND !$after_login ) {
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 
@@ -173,23 +172,28 @@ while ($db->next_record()) {
     }
 }
 
+
+
 if (!$no_slice_id) {
     if (!is_array($g_modules)) {
         MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"));
         exit;
     }
 
-    if ($after_login OR !$g_modules[$slice_id]) {
+
+    if ($after_login OR !$g_modules[AA::$module_id]) {
                         // slice was just deleted, thus is not in $g_modules
         reset($g_modules);
-        $slice_id = key($g_modules);
+        AA::$module_id = key($g_modules);
         // skip AA Core Field slice, if possible
-        if (($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules)) {
-            $slice_id = key($g_modules);
+        if ((AA::$module_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules)) {
+            AA::$module_id = key($g_modules);
         }
     }
 
-    $p_slice_id = q_pack_id($slice_id);
+
+    $p_slice_id = q_pack_id(AA::$module_id);
+    $slice_id   = AA::$module_id;
 
     $db->query("SELECT * FROM module WHERE id='$p_slice_id'");
     $db->next_record();
@@ -197,11 +201,10 @@ if (!$no_slice_id) {
     // These variables have names of $r_ but are not session stored
     // because this is unnecessary: their evaluation is very fast.
     $r_lang_file      = $db->f('lang_file');
-    $r_slice_view_url = $db->f('slice_url') ? $db->f('slice_url')
-        : $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false";
+    $r_slice_view_url = $db->f('slice_url');
 
-    $module_type         = $g_modules[$slice_id]['type'];
-    $module_type_changed = $after_login || $g_modules[$last_slice_id]['type'] != $module_type;
+    $module_type         = $g_modules[AA::$module_id]['type'];
+    $module_type_changed = $after_login || ($g_modules[$r_last_module_id]['type'] != $module_type);
 
 /* If we switch to another module type, we try whether the requested file
    exists in the module direcory and if not, we go to module's index.php3 page.
@@ -230,6 +233,7 @@ $mgettext_file = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_fil
 bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
 AA::$lang     = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
 AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang)); // array of prefered languages in priority order.
-AA::$slice_id = $slice_id; // array of prefered languages in priority order.
+AA::$slice_id = AA::$module_id;
+$r_last_module_id = AA::$module_id;
 
 ?>

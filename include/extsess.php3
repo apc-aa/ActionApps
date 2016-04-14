@@ -25,17 +25,53 @@
  *
 */
 
-
 class AA_SL_Session extends Session {
-    var $classname = "AA_SL_Session";
 
-    var $cookiename     = "";                // defaults to classname
-    var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "get";             // We propagate session IDs via cookie method
-    var $fallback_mode  = "get";             // If cookie not possible, then via get method
-    var $lifetime       = 0;                 // 0 = do session cookies, else minutes
-    var $that_class     = "AA_CT_Sql";       // name of data storage container
-    var $gc_probability = 5;
+    var $classname = "AA_SL_Session"; // Session name
+ // var $id = "";                     // Current session id
+ // var $name = "";                   // [Current] Session name
+ // var $cookie_path = '/';
+ // var $cookiename = "";
+ // var $lifetime = 0;
+ // var $cookie_domain = '';          // If set, the domain for which the session cookie is set.
+
+    /**
+    * Propagation mode is by default set to cookie
+    * The other parameter, fallback_mode, decides wether
+    * we accept ONLY cookies, or cookies and eventually get params
+    * in php4 parlance, these variables cause a setting of either
+    * the php.ini directive session.use_cookie or session.use_only_cookie
+    * The session.use_only_cookie possibility was introdiced in PHP 4.2.2, and
+    * has no effect on previous versions
+    *
+    * @var    string
+    * @deprec $Id$
+    */
+ // var $mode = "cookie";               // We propagate session IDs with cookies
+
+    /**
+    * If fallback_mode is set to 'cookie', php4 will impose a cookie-only
+    * propagation policy, which is a safer  propagation method that get mode
+    *
+    * @var    string
+    * @deprec $Id$
+    */
+ // var $fallback_mode;                 // if fallback_mode is also 'cookie'
+                                        // we enforce session.use_only_cookie
+
+ // var $allowcache = 'nocache';   // See the session_cache_limit() options
+
+    /**
+    * Do we need session forgery check?
+    * This check prevents from exploiting SID-in-request vulnerability.
+    * We check the user's last IP, and start a new session if the user
+    * has no cookie with the SID, and the IP has changed during the session.
+    * We also start a new session with the new id, if the session does not exists yet.
+    * We don't check cookie-enabled clients.
+    * @var boolean
+    */
+ // var $forgery_check_enabled = false;
+
 
     /** MyUrl function
      * @param $SliceID
@@ -60,6 +96,9 @@ class AA_SL_Session extends Session {
         }
 
         switch ($this->mode) {
+
+
+            // not executed - mode is cookie. Could be removed (Honza 16-03-31)
             case "get":
                 if (!$noquery) {
                     $foo .= "?slice_id=$SliceID";
@@ -77,55 +116,14 @@ class AA_SL_Session extends Session {
 class AA_CP_Session extends Session {
     var $classname = "AA_CP_Session";
 
-    var $cookiename     = "";                // defaults to classname
-    var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "get";          // We propagate session IDs via cookie method
-    // we still can't use cookie, since it is still not possible (or at least
-    // recommended) to use two windows with the same session ID - we do not
-    // store there only the session ID, but also slice_id, ... so it is possible
-    // to mix the data.
-    //    var $mode           = "cookie";          // We propagate session IDs via cookie method
-    var $fallback_mode  = "get";             // If cookie not possible, then via get method
-    var $lifetime       = 0;                 // 0 = do session cookies, else minutes
-    var $that_class     = "AA_CT_Sql";       // name of data storage container
-    var $gc_probability = 5;
-    var $auto_init;                          // auto init
-    var $allowcache     = "no";              // Control caching of session pages, if set to no (also the default), the page is not cached under HTTP/1.1 or HTTP/1.0; if set to public , the page is publically cached under HTTP/1.1 and HTTP/1.0; if set to private , the page is privately cached under HTTP/1.1 and not cached under HTTP/1.0
-    var $allowcache_expire = 1;              // When caching is allowed, the pages can be cached for this many minutes.
-    /** start function
-     */
-    function start() {
-      $this->set_container();
-      $this->set_tokenname();
-      //$this->put_headers();
-      //$this->release_token();
-        
-        
-        
-        //$name = $this->that_class;
-        //$this->that = new $name;
-        //$this->that->ac_start();
-        //
-        //$this->name = $this->cookiename==""?$this->classname:$this->cookiename;
+    // add module_id=... to url. It is better to use StateUrl() directly, but we already use $sess->url() from older versions of $session management
+    function url($url) {
+        return StateUrl($url);
+    }
 
-
-        // Allowing a limited amount of caching, as suggested by
-        // Padraic Renaghan on phplib@shonline.de.
-        // Note that in HTTP/1.1 the Cache-Control headers override the Expires
-        // headers and HTTP/1.0 ignores headers it does not recognize (e.g,
-        // Cache-Control). Mulitple Cache-Control directives are split into
-        // mulitple headers to better support MSIE 4.x.
-        // switch ($this->allowcache) {
-
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-cache");
-        header("Cache-Control: must-revalidate");
-        header("Pragma: no-cache");
-
-        $this->get_id();
-        $this->thaw();
-        $this->gc();   // Garbage collect, if necessary
+    // get <input name="module_id"... . It is better to use StateHidden() directly, but we already use $sess->hidden_session() from older versions of $session management
+    function get_hidden_session() {
+        return StateHidden();
     }
 }
 

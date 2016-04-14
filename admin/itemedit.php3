@@ -141,7 +141,7 @@ if ($cancel) {
         // Used for adding item to another slice from itemedit's popup.
         CloseDialog();
     } else {
-        go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
+        go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
     }
 }
 
@@ -223,7 +223,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
         } elseif ($go_edit) {   // if go_edit - continue to edit again
             go_url( Inputform_url(false, $added_to_db, '', '', null, null, false) );
         } else {
-            go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
+            go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
         }
     }
 }

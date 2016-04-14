@@ -68,16 +68,30 @@ function HttpGetParameters($parameters) {
     return $param_string;
 }
 
+function StateUrl($url='') {
+    return ((strpos($url, 'module_id=')===false) AND is_long_id(AA::$module_id)) ? get_url($url, array('module_id'=>AA::$module_id)) : $url;
+}
+
+function StateHidden() {
+    return is_long_id(AA::$module_id) ? '<input type=hidden name=module_id value="'.AA::$module_id.'">' : '';
+}
+
+
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
  *  using apropriate ? or &. */
 function get_url($url, $params='') {
     if (empty($params)) {
         return $url;
     }
-    list($path, $fragment) = explode( '#', $url, 2 );
 
+    // be carefull - sometimes we pass url with aliases (like oedit.php3?oid=_#AA_ID___...)
     $param_string = HttpGetParameters($params);
-    return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
+    if (($pos = strpos($url, '?')) !== false)  { return substr_replace($url, "?$param_string&", $pos, 1); }
+    if (($pos = strpos($url, '&')) !== false)  { return substr_replace($url, "&$param_string&", $pos, 1); }
+    if (($pos = strrpos($url, '#')) !== false) { return substr_replace($url, "?$param_string#", $pos, 1); }
+    return "$url?$param_string";
+    // list($path, $fragment) = explode( '#', $url, 2 );
+    // return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
 
 
@@ -85,18 +99,17 @@ function get_url($url, $params='') {
  * @param $href
  * @param $session
  */
-function get_aa_url($href, $params='', $session=true) {
-    global $sess;
+function get_aa_url($href, $params='', $state=true) {
     $url = get_url(AA_INSTAL_PATH.$href, $params);
-    return ($session AND is_object($sess)) ? $sess->url($url) : $url;
+    return $state ? StateUrl($url) : $url;
 }
 
 /** get_admin_url function
  * @param $href
  * @param $session
  */
-function get_admin_url($href, $params='', $session=true) {
-    return get_aa_url("admin/$href", $params, $session);
+function get_admin_url($href, $params='', $state=true) {
+    return get_aa_url("admin/$href", $params, $state);
 }
 
 /** get_help_url function
@@ -121,12 +134,12 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
         page_close();
     }
     if ($add_param != "") {
-        $url = get_url( $url, rawurlencode($add_param));
+        $url = get_url($url, $add_param);
     }
     if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']=='INCLUDED')) { // SSI included
        echo '
         <script language="JavaScript" type="text/javascript"> <!--
-            document.location = "'.$url.'";
+            document.location = "'.rawurlencode($url).'";
           //-->
         </script>
        ';

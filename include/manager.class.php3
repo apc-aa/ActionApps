@@ -56,6 +56,7 @@ class AA_Manager extends AA_Storable {
     var $show;            // what controls show (scroller, searchbar, ...)
     var $bin;             // stores the bin in which we are - string
     var $module_id;       // for which module is manager used (slice_id, ...)
+    var $managed_class;   // name of the class which are managed / edited
     var $_manager_id;     // ID of manager
 
     var $msg;             // stores return code from action functions
@@ -99,9 +100,14 @@ class AA_Manager extends AA_Storable {
     function __construct($manager_id, $settings) {
         global $r_state, $sess, $auth;
 
-        $this->show        = isset($settings['show']) ? $settings['show'] : ( MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS );
+        $this->show        = isset($settings['show']) ? $settings['show'] : MGR_ALL ;
         $this->module_id   = $settings['module_id'];
         $this->_manager_id = $manager_id;
+
+        if ($manager_id =='email') {
+            //huhl('ooo1', $settings);
+            //huhl('ooo2', $this->module_id);
+        }
 
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
@@ -113,6 +119,7 @@ class AA_Manager extends AA_Storable {
         if ( $settings['switches'] ) {      // define switches, if we have to
             $this->switches = $settings['switches'];
         }
+            //huhl('ooo3', $this->module_id);
 
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
@@ -133,7 +140,9 @@ class AA_Manager extends AA_Storable {
             }
         }
 
-        $this->bin = isset($settings['bin']) ? $settings['bin'] : 'app';
+        $this->bin           = isset($settings['bin']) ? $settings['bin'] : 'app';
+        $this->managed_class = isset($settings['managed_class']) ? $settings['managed_class'] : '';
+            //huhl('ooo4', $this->module_id);
 
         // create page scroller -----------------------------------------------
         // could be redefined by view (see ['itemview']['manager_vid'])
@@ -148,6 +157,7 @@ class AA_Manager extends AA_Storable {
                   get_if($settings['itemview']['format']['noitem_msg'],
                   _m('No item found'));
         }
+            //huhl('ooo5', $this->module_id);
 
         // create itemview ----------------------------------------------------
 
@@ -167,6 +177,7 @@ class AA_Manager extends AA_Storable {
                                         '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
                                         '',      // no discussion settings
                                         $settings['itemview']['get_content_funct']);
+            //huhl('ooo6', $this->module_id);
 
         // r_state array holds all configuration of Manager
         // the configuration then could be Bookmarked
@@ -185,6 +196,8 @@ class AA_Manager extends AA_Storable {
         } elseif ($r_state['manager']) {        // do not set state for the first time calling
             $this->setFromState($r_state['manager']);
         }
+            //huhl('ooo7', $this->module_id);
+
     }
 
     /** setDesing function
@@ -488,7 +501,14 @@ class AA_Manager extends AA_Storable {
 
         showMenu($aamenus, $menu_top, $menu_left);
 
-        $this->display($zids);
+        if ($_GET['id'] AND $this->managed_class) {
+            //huhl('sss1',$this->module_id);
+            $form = AA_Form::factoryForm($this->managed_class, $_GET['id'], $this->module_id);
+            huhl($form);
+            echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
+        } else {
+            $this->display($zids);
+        }
 
         $r_state['manager']    = $this->getState();
         $r_state['manager_id'] = $this->_manager_id;
@@ -523,9 +543,7 @@ class AA_Manager extends AA_Storable {
      * with printSearchbarEnd() function
      */
     function printSearchbarBegin() {
-        global $sess;
-        echo '<form name="filterform" action="'.$_SERVER['PHP_SELF'].'" class="noprint">';
-        $sess->hidden_session();
+        echo '<form name="filterform" action="'.StateUrl().'" class="noprint">'.StateHidden();
         if ( isset($this->searchbar) ) {
             $this->searchbar->printBar();
         }
@@ -543,9 +561,7 @@ class AA_Manager extends AA_Storable {
      * @param $zids
      */
     function printItems($zids) {
-        global $sess;
-        echo '<form name="itemsform" id="itemsform" method="post" action="'. $_SERVER['PHP_SELF'] .'">';
-        $sess->hidden_session();
+        echo '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {

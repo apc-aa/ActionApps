@@ -78,12 +78,13 @@ function expand_return_url($session=true) {
  * @param $session
  * @param $add_param
  */
-function go_return_or_url($url, $usejs, $session, $add_param="") {
+function go_return_or_url($url, $usejs=false, $session=false) {
     global $return_url,$sess;
+
     if ($return_url) {
-        go_url(expand_return_url($session), $add_param, $usejs);
+        go_url(expand_return_url($session), '', $usejs);
     } elseif ($url) {
-        go_url($sess->url($url), $add_param);
+        go_url($sess->url($url));
     }
     // Note if no $url or $return_url then drops through - this is used in index.php3
 }
