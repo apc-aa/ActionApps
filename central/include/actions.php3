@@ -59,21 +59,20 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
         if (count($item_ids)<1) {
             return false;                                     // OK - no error
         }
-        $db  = getDB();
-        $SQL = "SELECT * FROM central_conf WHERE id IN ('".join_and_quote("','",$item_ids)."')";
-        $db->tquery($SQL);
-
         $results   = array();
-        $results[] = array('<b>'._m('AA (Organization)').'</b>', '<b>'._m('URL').'</b>', '<b>'._m('Status code').'</b>', '<b>'._m('Description').'</b>');
-        $linkcheck = new linkcheck();
+        $results[] = array('<b>'._m('AA (Organization)').'</b>', '<b>'._m('URL').'</b>', '<b>'._m('Status code').'</b>', '<b>'._m('Description').'</b>', '<b>'._m('Auth').'</b>');
+        $linkcheck = new AA_Linkcheck;
 
-        while ($db->next_record()) {
-            $url       = $db->f('AA_HTTP_DOMAIN'). $db->f('AA_BASE_DIR'). "view.php3";
+        foreach ($item_ids as $aa_id) {
+            $aa        = AA_Actionapps::getActionapps($aa_id);
+            $url       = $aa->getComunicatorUrl();
             $status    = $linkcheck->check_url($url);
-            $results[] = array($db->f('ORG_NAME'), $url, $status['code'], $status['comment']);
+            $resp =     $aa->_authenticate();
+            $results[] = array($aa->getName(), $url, $status['code'], $status['comment'], print_r($resp,true));
+            // $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
         }
 
-        freeDB($db);
+
         return GetHtmlTable($results). "<br>";                                     // OK - no error
     }
 
