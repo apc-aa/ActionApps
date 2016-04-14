@@ -116,6 +116,24 @@ function json2asoc($string) {
     return json_decode($string,true) ?: array();
 }
 
+/** @return JSON array form string where values are delimited by $delimiter.
+ *  Input text mut be in utf8
+ */
+class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters ($delimiter could be space) */
+    function doTrimParams() { return false; }
+
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text
+     * @param $delimiter...
+     */
+    function expand($text, $delimiter='') {
+        return json_encode(explode(($delimiter ?: '-'), $text));
+    }
+}
+
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
@@ -2993,7 +3011,8 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
 }
 
 /** Sequence - returns sequence of values in JSON Array (could be used with {options}, for example)
- *    {seqence:num:min:limit:step}
+ *    {sequence:num:min:max:step:delimiter}
+ *    {options:{sequence:num:1998:2012}:{date:Y}}
  */
 class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -3220,10 +3239,10 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
     function expand() {
         $arg_list  = func_get_args();   // must be asssigned to the variable
         $delimiter = array_shift($arg_list);
-        return join($delimiter, array_filter($arg_list, function($str) {return strlen(trim($str))>0;}));
+        $ret       = array_filter($arg_list, function($str) {return strlen(trim($str))>0;});
+        return ($delimiter=='json') ? json_encode($ret) : join($delimiter, $ret);
     }
 }
-
 
 /** Expand URL by adding session
  *  Example: {sessurl:<url>}
@@ -3527,7 +3546,7 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
  *
  * {newitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
  *
- * c239cb267837a25b4efb5892ca4f4324 is ID on template item
+ * c239cb267837a25b4efb5892ca4f4324 is ID of the template item
  * The values could be single (for headline........), or multiple - written in JSON format.
  */
 class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
@@ -5582,6 +5601,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
  *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
  *    {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>)}}
+ *    {foreach:{sequence:num:1999:17}:<th>_#1</th>}
  *    {foreach:{ids:478598ab745a65f1478598ab745a65f1}:{({_:Editor_document:_#1:{id..............}})}}
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
