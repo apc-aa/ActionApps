@@ -466,7 +466,7 @@ class AA_Router_Seo extends AA_Router {
 
     function _xseo2id($seo_string) {
         // Q: Is the cache needed, when AA_Stringexpand_Seo2ids is already cached? Honza 2015-07-16
-        // A: Yes - based on mesures it seams to be much quicker. Honza 2015-07-16
+        // A: Yes - based on measures it seams to be much quicker. Honza 2015-07-16
         if (!isset($this->_seocache[$seo_string])) {
             $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', array(join('-',$this->slices), $seo_string)),0,32);
         }

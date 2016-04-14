@@ -261,9 +261,6 @@ class AA_Request {
 //       }
         $result = AA_Http::postRequest($url, $ask_arr);
 
-//        print_r($ask_arr);
-//        print_r($result);
-//        exit;
         if ( $result === false ) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);

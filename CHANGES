@@ -1,5 +1,26 @@
+16-04-14 - AA COULD NOT BE PRODUCTION READY right now from svn
+(honzam) - quite big internal change - phplib session system switched to
+           standard $_SESSIONs. With this change we also have to switch to
+           cookies based sessions, so the AA_CP_Sess is no longer in URL. For
+           this reason we do can not to store slice_id/module_id in the sessions
+           - so we have to put it in URL all the time in admin interface. This
+           is long awaited and good change - this allow us to be logged once and
+           work with different modules/slices. It also brings more security and
+           allows also to use image uploader in wywsiwyg editor (later)
+         - url safe base64 encoding used for base64 data passed by url
+         - started rewrite of communication with external AAs - trying to avoid
+           storing remote credentials in AA
+         - better variable protection in grabber (private/protected)
+         - e-mail notification and Planned task reaction to "NEW_ITEM" could be
+           used wit password protected slices, now
+         - Linkchecker now supprots https sites
+         - new experimental Optimize funct - Change current module ID to new one
+         - new {jsonarray:<text>:<delimiter>} which returns JSON array form text
+           where values are delimited by $delimiter ("-" by default)
+         - new possibility to generate {sequence} as JSON array
+           (use "json" as delimiter)
 16-04-06 - new possibility to stop SPAM when posting comments to discussion
-           based on stop-phrases, which you can fill in the keywords........
+(honzam)   based on stop-phrases, which you can fill in the keywords........
            field in "IP banned" slice - see _ip_banned...... slice field.
            keywords........ could be multi-field
            The stop-phrases are searched in all text fields of discussions and
