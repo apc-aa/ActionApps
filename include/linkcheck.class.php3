@@ -13,7 +13,7 @@
  *
  *  arrays:
  *
- *      $http_error_codes - associates comment and weight to http error code
+ *      $self::$HTTP_ERROR_CODES - associates comment and weight to http error code
  *
  * PHP versions 4 and 5
  *
@@ -41,10 +41,10 @@
 */
 
 
-class linkcheck
-{
+class AA_Linkcheck {
+
     // http codes, error names and their weight
-    var $http_error_codes = array (
+    private static $HTTP_ERROR_CODES = array (
     // first 3 are for checking domain from email
         'N/A' => array ("comment" => "Non HTTP", "weight" => "5"),
         'OK'  => array ("comment" => "Valid hostname", "weight" => "0"),
@@ -99,7 +99,7 @@ class linkcheck
     function check_url($url) {
         $return = array();
         $time   = time();
-        if (!preg_match("~^http://~i", $url)) {
+        if (!preg_match("~^https?://~i", $url)) {
             if (preg_match("/^mailto:/i", $url)) {
                 $url = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
                 list($brugernavn, $host) = explode("@", $url);
@@ -143,8 +143,8 @@ class linkcheck
                 flush();
              }
         }
-        $return["comment"]   = $this->http_error_codes[$return["code"]]["comment"];
-        $return["weight"]    = $this->http_error_codes[$return["code"]]["weight"];
+        $return["comment"]   = self::$HTTP_ERROR_CODES[$return["code"]]["comment"];
+        $return["weight"]    = self::$HTTP_ERROR_CODES[$return["code"]]["weight"];
         $return["timestamp"] = $time;
         return $return;
     }
@@ -233,10 +233,10 @@ class linkcheck
         $num = 0;
         for ($i=0; $i<$count; ++$i) {
             /* exponential function - too fast near zero :(
-            // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*$this->http_error_codes[$arr[$i]["code"]]["weight"];
+            // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"];
             */
             // linear function
-            $n1 = ($this->http_error_codes[$arr[$i]["code"]]["weight"]/($i+1));
+            $n1 = (self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"]/($i+1));
             $num = $num + $n1;
         }
         // returned number - 1000 is the biggest number, with worst error codes, we want to return
@@ -246,6 +246,6 @@ class linkcheck
         return $ret;
     }
 
-} // end - class linkcheck
+} // end - class AA_Linkcheck
 
 ?>

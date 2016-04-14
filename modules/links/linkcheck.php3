@@ -37,7 +37,7 @@ is_object( $db ) || ($db = getDB());
 
 require_once AA_INC_PATH."linkcheck.class.php3";
 
-$check_links = new linkcheck;
+$check_links = new AA_Linkcheck;
 
 $check_links->checking();
 
