@@ -192,7 +192,7 @@ class AA {
     public static $module_id;  // for admin pages - replace of older $slice_id
 
     static function getHeaders() {
-        $ret = array('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ));
+        $ret = array('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]));
         if (isset(AA::$headers['status'])) {
             $ret[] = AA::$headers['status'];
         }
@@ -262,6 +262,7 @@ class DB_AA extends DB_Sql {
      *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');                    -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
      *                   DB_AA::select(array('id'=>1), 'SELECT id FROM `change`');                   -> [[id1=>1], [id2=>1], ...]
      *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
+     *                   DB_AA::select(array('id'=>'+other'), 'SELECT id,other FROM `change`');      -> [[id1=>[other1a,other1b], [id2=>[other2]], ...]  // good for multivalues
      *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
      *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
@@ -309,11 +310,18 @@ class DB_AA extends DB_Sql {
                         }
                     } elseif (!is_array($values)) {
                         if (is_string($values)) {
-                            while ($db->next_record()) {
-                                 $ret[$db->Record[$key]] = $db->Record[$values];
+                            if ($values[0] == '+') {                              // array('id'=>'+other')
+                                $values = substr($values,1);
+                                while ($db->next_record()) {
+                                     $ret[$db->Record[$key]][] = $db->Record[$values];
+                                }
+                            } else {                                              // array('id'=>'other')  - we do not expect multivalues
+                                while ($db->next_record()) {
+                                     $ret[$db->Record[$key]] = $db->Record[$values];
+                                }
                             }
                         } else {
-                            while ($db->next_record()) {
+                            while ($db->next_record()) {                          // array('id'=>1)
                                  $ret[$db->Record[$key]] = $values;
                             }
                         }
@@ -350,18 +358,28 @@ class DB_AA extends DB_Sql {
 
     /** used as: DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
     static function delete($table, $where=null) {
-        return DB_AA::sql("DELETE FROM `$table`", $where);
+        return DB_AA::sql("DELETE FROM `$table` ", $where);
+    }
+
+    /** LOW PRIORITY version of DB_AA::delete() */
+    static function delete_low_priority($table, $where=null) {
+        //huhl( "<br>\nDELETE LOW_PRIORITY FROM `$table` ". (is_null($where) ? '' : DB_AA::makeWhere($where)));
+        return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
     /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
     static function test($table, $where) {
-        return (false !== DB_AA::select1("SELECT ".($where[0][0])." FROM `$table`", '', $where));
+        return (false !== DB_AA::select1("SELECT ".($where[0][0])." FROM `$table` ", '', $where));
     }
 
     /** makeWHERE function
-     *  [[field_name, value, type], ...]   type:  i - integer, l - longid, q - quoted, s - string (default)
-     *                                     value: singlevalue or array
-     *  array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))
+     *  [[field_name, value, type], ...]
+     *     type                    used operator    value              example
+     *     s   - string (default)  =                single or array    array('field_id',$id)
+     *     i   - integer           =                single or array    array('id', $task_id, 'i')
+     *     l   - longid            =                single or array    array('item_id', $ids_arr, 'l')
+     *     set - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
+     *
      * @param $tablename
      */
     static protected function makeWHERE($varlist) {
@@ -373,24 +391,23 @@ class DB_AA extends DB_Sql {
 
             if (!is_array($value)) {
                 switch ( $type ) {
-                    case "i": $part = (int)$value; break;
-                    case "l": $part = q_pack_id($value); break;
-                    case "q": $part = $value; break;
+                    case "i":   $where .= "$delim $name = ". (int)$value; break;
+                    case "l":   $where .= "$delim $name = ". xpack_id($value); break;
+                    case "set": $value  = (int)$value;
+                                $where .= "$delim (($name & $value) = $value)"; break;
                     //default:  $part = DB_AA::quote($value);
-                    default:  $part = addslashes($value);
+                    default:    $where .= "$delim $name = ". qquote($value);
                 }
-                $where .= "$delim $name = '$part'";
             } else {
                 switch ( $type ) {
-                    case "i": $arr = array_map('intval', $value); break;
-                    case "l": $arr = array_map('q_pack_id', $value); break;
-                    case "q": $arr = $value; break;
-                    default:  $arr = array_map('addslashes', $value);
+                    case "i": $arr = array_map('intval',   $value); break;
+                    case "l": $arr = array_map('xpack_id', $value); break;
+                    default:  $arr = array_map('qquote',   $value);
                 }
                 switch (count($arr)) {
-                case 0:  $where .= "$delim 2=1"; break;
-                case 1:  $where .= "$delim $name = '". reset($arr) ."'"; break;
-                default: $where .= "$delim $name IN ('". join("','", $arr) ."')";
+                    case 0:  $where .= "$delim 2=1"; break;
+                    case 1:  $where .= "$delim $name = ". reset($arr); break;
+                    default: $where .= "$delim $name IN (". join(',', $arr) .")";
                 }
             }
             $delim = " AND";
