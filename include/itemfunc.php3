@@ -60,6 +60,17 @@ class AA_Generator_Now extends AA_Generator {
     function generate()    { return new AA_Value(now()); }
 }
 
+/** AA_Generator_Never - the biggest date possible */
+class AA_Generator_Never extends AA_Generator {
+
+    /** Name of the component for selection */
+    static function name() { return _m("Never, i.e. maximum date");  }
+
+    /** generate() - main function for generating the value */
+    function generate()    { return new AA_Value(2145826800); }
+}
+
+
 /** AA_Generator_Uid - User ID */
 class AA_Generator_Uid extends AA_Generator {
 
@@ -99,8 +110,8 @@ class AA_Generator_Dte extends AA_Generator {
             );
     }
 
-    /** generate() velue of currrent timestamp */
-    function generate()    {  return new AA_Value(mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y")));  }
+    /** generate() value of currrent timestamp */    // checks maximum date bounds
+    function generate()    {  return new AA_Value(min(2145826800, mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y"))));  }
 }
 
 /** AA_Generator_Txt - Text from 'Parameter' */
