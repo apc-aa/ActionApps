@@ -591,8 +591,6 @@ class AA_Metabase {
                                      'item'                => 'slice_id',
                                      'links'               => 'id',
                                      'module'              => 'id',
-                                     'mysql_auth_group'    => 'slice_id',
-                                     'mysql_auth_userinfo' => 'slice_id',
                                      'polls'               => 'module_id',
                                      'profile'             => 'slice_id',
                                      'rssfeeds'            => 'slice_id',
@@ -635,8 +633,6 @@ class AA_Metabase {
                   'jump'                => array('slice_id', 'dest_slice_id'),
                   'links'               => array('id'),             // special meaning of first characters - category!!!
                   'module'              => array('id', 'owner'),
-                  'mysql_auth_group'    => array('slice_id'),
-                  'mysql_auth_userinfo' => array('slice_id'),
                   'offline'             => array('id'),
                   'polls'               => array('module_id'),
                   'polls_design'        => array('module_id'),
@@ -667,8 +663,7 @@ class AA_Metabase {
                   'event', 'external_feeds', 'groups', 'item', 'jump', 'links',
                   'links_cat_cat', 'links_categories', 'links_languages',
                   'links_link_cat', 'links_links', 'links_regions', 'log',
-                  'module', 'mysql_auth_user', 'mysql_auth_userinfo', 'nodes',
-                  'offline', 'object_float', 'object_integer', 'object_text',
+                  'module', 'nodes', 'offline', 'object_float', 'object_integer', 'object_text',
                   'pagecache', 'pagecache_str2find', 'polls', 'polls_answer', 'polls_design',
                   'polls_log', 'post2shtml', 'profile', 'rssfeeds', 'searchlog',
                   'site', 'site_spot', 'slice', 'slice_owner', 'toexecute',
@@ -697,9 +692,7 @@ class AA_Metabase {
                   'ef_categories', 'ef_permissions', 'email_notify', 'feedmap', 'feedperms',
                   'hit_archive', 'hit_long_id', 'hit_short_id', 'links_changes',
                   'links_link_lang', 'links_link_reg', 'membership',
-                  'mysql_auth_group', 'mysql_auth_user_group',
-                  'mysql_auth_userlog', 'perms', 'polls_ip_lock',
-                  'relation', 'subscriptions');
+                  'perms', 'polls_ip_lock', 'relation', 'subscriptions');
         return $UNSUPPORTED_TABLES;
     }
 
