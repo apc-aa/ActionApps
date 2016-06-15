@@ -685,6 +685,15 @@ class AA_ChangesMonitor {
         }
         return true;
     }
+
+    // array of unpacked ids
+    static public function deleteChanges($resources_long_ids) {
+        $changes_ids = DB_AA::select('id', 'SELECT id FROM `change`', array(array('resource_id', $resources_long_ids)));
+        DB_AA::delete_low_priority('change_record', array(array('change_id', $changes_ids)));
+        DB_AA::delete_low_priority('change', array(array('resource_id', $resources_long_ids)));
+        return true;
+    }
+
     /** deleteProposal
      * @param $change_id
      */

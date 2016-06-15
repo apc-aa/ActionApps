@@ -415,18 +415,27 @@ class AA_Object extends AA_Storable implements iEditable {
      *  Deletes the object from the database including all the subobjects
      */
     function delete() {
-        $to_delete = array( $this->getId() );
+        AA_Object::deleteObjects(array($this->getId()));
+    }
 
-        // we have to ask database for subobjects, because it gives us the ids
-        // as stored in database, not the ids of current subobjects, which could
-        // be different. The $this->_getSubObjects() do not help us here!
-        $to_delete = array_merge($to_delete, explode(',',$this->loadProperty($to_delete[0], 'aa_subobjects')));
-        $varset    = new CVarset;
+    // array of unpacked ids
+    static public function deleteObjects($object_ids) {
+        // objects consists from object itself and subobjects
+        $subobjects_props = AA_Object::loadProperties($object_ids, 'aa_subobjects');
+        foreach ($subobjects_props as $arr) {
+           $object_ids = array_merge($object_ids, $arr);
+        }
+        if (count($object_ids = array_unique($object_ids))) {
+            DB_AA::delete_low_priority('object_text',    array(array('object_id', $object_ids)));
+            DB_AA::delete_low_priority('object_integer', array(array('object_id', $object_ids)));
+            DB_AA::delete_low_priority('object_float',   array(array('object_id', $object_ids)));
+        }
+        return true;
+    }
 
-        $sqlin     = Cvarset::sqlin('object_id', $to_delete);
-        $varset->doDeleteWhere('object_text',    $sqlin);
-        $varset->doDeleteWhere('object_integer', $sqlin);
-        $varset->doDeleteWhere('object_float',   $sqlin);
+    // get all Owners objects (for deletion)
+    static public function getOwnersObjects($owner_id) {
+        return is_long_id($owner_id) ? DB_AA::select( '', 'SELECT object_id FROM `object_text`', array(array('property', 'aa_owner'), array('value', $owner_id))) : array();
     }
 
     /** _getSubObjects function
@@ -480,9 +489,11 @@ class AA_Object extends AA_Storable implements iEditable {
         return GetTable2Array("SELECT value FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'value');
     }
 
-    /** static called as AA_Object::loadProperties($ids, 'name') */
+    /** static called as AA_Object::loadProperties($ids, 'name')
+     *  @return properties always in array   ['obj1'=>[valA,valB,...], 'obj2'=>[valC], ...]
+     */
     function loadProperties($ids, $property) {
-        return DB_AA::select( array('object_id'=> 'value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids, 's'), array('property', $property, 's')));
+        return DB_AA::select( array('object_id'=> '+value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids), array('property', $property)));
     }
 
     /** getObjectType

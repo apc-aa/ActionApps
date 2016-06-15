@@ -1737,6 +1737,21 @@ class AA_Items {
         return $item ? $item->getAaValue($field) : null;
     }
 
+    // array of unpacked ids
+    static public function deleteItems($zids) {
+        $ids_arr = $zids->longids(); // unpacked ids
+        DB_AA::delete_low_priority('item',       array(array('id',             $ids_arr, 'l')));
+        DB_AA::delete_low_priority('content',    array(array('item_id',        $ids_arr, 'l')));
+        DB_AA::delete_low_priority('discussion', array(array('item_id',        $ids_arr, 'l')));
+        DB_AA::delete_low_priority('offline',    array(array('id',             $ids_arr, 'l')));
+        DB_AA::delete_low_priority('relation',   array(array('source_id',      $ids_arr, 'l'), array('flag', REL_FLAG_FEED, 'set')));
+        DB_AA::delete_low_priority('relation',   array(array('destination_id', $ids_arr, 'l'), array('flag', REL_FLAG_FEED, 'set')));
+
+        AA_ChangesMonitor::deleteChanges($ids_arr);
+
+        // we should delete also hit_ tables (but it is based on short ids)
+    }
+
     /** Invalidate item cache */
     function invalidate() {
         $items = AA_Items::singleton();

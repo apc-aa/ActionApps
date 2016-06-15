@@ -72,19 +72,63 @@ class AA_Module {
     }
 
     /** get module - called as:
-     *   $site  = AA_Module_Site::getModule($module_id)
-     *   $slice = AA_Slice::getModule($module_id)
-     * @param $module_id
+     *   $site        = AA_Module_Site::getModule($module_id)
+     *   $slice       = AA_Slice::getModule($module_id)
+     *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usualy knot, which module it should be
+     *  @param $module_id
      */
     static public function getModule($module_id) {
         if (!is_long_id($module_id)) {
             return null;
         }
         if (!isset(static::$_modules[$module_id])) {
-            $class = get_called_class();
+            if (($class = get_called_class()) == 'AA_Module') {
+                // tyhis is not usual case - use it just if you do not know what module is it
+                $class = AA_Module::getModuleType($module_id);
+            }
+            if (!$class) {
+                return null;
+            }
             static::$_modules[$module_id] =  new $class($module_id);
         }
         return static::$_modules[$module_id];
+    }
+
+    /** AA_Module::getModuleType function
+     * @param $module_id
+     */
+    static public function getModuleType($module_id) {
+        $type  = DB_AA::select1('SELECT type FROM `module`', 'type', array(array('id',$module_id, 'l')));
+        switch ($type) {
+            case 'W':       return 'AA_Module_Site';
+            case 'S':       return 'AA_Slice';
+            case 'Alerts':  return 'AA_Module_Alerts';
+            case 'J':       return '';                 // @todo - create AA_Module_Jump
+            case 'P':       return '';                 // @todo - create AA_Module_Polls
+            case 'Links':   return 'AA_Module_Links'; 
+        }
+        return '';
+    }
+
+    /** AA_Module::deleteModule function
+     * @param $module_id
+     */
+    static public function deleteModules($module_ids) {
+        foreach ($module_ids as $module_id) {
+            if (!is_long_id($module_id) OR !($class = AA_Module::getModuleType($module_id))) {
+                return false;     // _m("No such module.")
+            }
+            if (!$class::_deleteModules(array($module_id))) {
+                return false;
+            }
+
+            AA_Object::deleteObjects(AA_Object::getOwnersObjects($module_id));
+
+            // delete module from module table
+            DB_AA::delete_low_priority('module', array(array('id', $module_id, 'l')));
+            DelPermObject($module_id, "slice");   // delete module from permission system
+        }
+        return true;
     }
 
     /** getModuleProperty function
@@ -323,6 +367,35 @@ class AA_Slice extends AA_Module {
      */
     function type() {
         return $this->getProperty('type');
+    }
+
+    /** AA_Slice::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+     *  @param $module_id
+     */
+    static public function _deleteModules($module_ids) {
+        if (!is_array($module_ids) OR !count($module_ids)) {
+            return false;     // _m("No such module.")
+        }
+        // deletes from content, offline and relation tables
+        AA_Items::deleteItems(new zids(DB_AA::select('id', 'SELECT id FROM `item`', array(array('slice_id', $module_ids, 'l'))),'p'));
+
+        // now performed in AA_Items::deleteItems
+        // DB_AA::delete_low_priority('item',  array(array('slice_id', $module_ids, 'l')));
+
+        DB_AA::delete_low_priority('feedmap',   array(array('from_slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedmap',   array(array('to_slice_id',   $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedperms', array(array('from_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedperms', array(array('to_id',   $module_ids, 'l')));
+        DB_AA::delete_low_priority('email_notify',  array(array('slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('field',  array(array('slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('view',  array(array('slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('email',  array(array('owner_module_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('profile',  array(array('slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('rssfeeds',  array(array('slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('constant_slice',  array(array('slice_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('slice',  array(array('id', $module_ids, 'l')));
+
+        return true;
     }
 
     /** unpacked_id function - removed - use getId()  */
@@ -591,6 +664,178 @@ class AA_Slice extends AA_Module {
     }
 }
 
+class AA_Module_Site extends AA_Module {
+    const SETTING_CLASS = 'AA_Modulesettings_Site';
+    const SETTING_TABLE = 'site';
+
+    /** for translated fields - if not translated, use default language of the module */
+    function getDefaultLang() {
+        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModule($translate_slice)->getProperty('translations'))) {
+            return $translations[0];
+        }
+        return $this->getLang();
+    }
+
+    function getSite($apc_state) {
+        global $show_ids; // @todo - convert to object variable
+
+        $tree        = unserialize($this->getProperty('structure'));   // new sitetree();
+        $show_ids    = array();
+        $out         = '';
+
+        // it fills $show_ids array
+        $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
+        if (count($show_ids)<1) {
+            exit;
+        }
+
+        $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $this->module_id, 'l'), array('spot_id', $show_ids, 'i')));
+
+        foreach ( $show_ids as $v ) {
+            $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA_Stringexpand::unalias($spots[$v]['content'], '', $apc_state['item']));
+        }
+        return $out;
+    }
+
+    function getRelatedSlices() {
+        return GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($this->module_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+    }
+
+    /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+     *  @param $module_id
+     */
+    static public function _deleteModules($module_ids) {
+        if (!is_array($module_ids) OR !count($module_ids)) {
+            return false;     // _m("No such module.")
+        }
+
+        DB_AA::delete_low_priority('site_spot',   array(array('site_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('site',        array(array('id', $module_ids, 'l')));
+        return true;
+    }
+}
+
+class AA_Module_Alerts extends AA_Module {
+    // const SETTING_CLASS = 'AA_Modulesettings_Site';
+    const SETTING_TABLE = 'alerts_collection';
+
+    /** AA_Module_Alerts::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+     *  @param $module_id
+     */
+    static public function _deleteModules($module_ids) {
+        if (!is_array($module_ids) OR !count($module_ids)) {
+            return false;     // _m("No such module.")
+        }
+
+        if ( !count($collectionids = DB_AA::select('', 'SELECT id FROM `alerts_collection`', array(array('module_id', $module_ids, 'l'))))) {
+            DB_AA::delete_low_priority('alerts_collection',                                  array(array('module_id', $module_ids, 'l')));
+            return true;
+        }
+        DB_AA::delete_low_priority('alerts_collection_filter',   array(array('collectionid', $collectionids)));
+        DB_AA::delete_low_priority('alerts_collection_howoften', array(array('collectionid', $collectionids)));
+        DB_AA::delete_low_priority('alerts_collection',          array(array('id', $collectionids)));
+        return true;
+    }
+}
+
+class AA_Module_Links extends AA_Module {
+    // const SETTING_CLASS = 'AA_Modulesettings_Site';
+    // const SETTING_TABLE = 'alerts_collection';
+
+    /** AA_Module_Links::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+     *  @param $module_id
+     */
+    static public function _deleteModules($module_ids) {
+        if (!is_array($module_ids) OR !count($module_ids)) {
+            return false;     // _m("No such module.")
+        }
+        DB_AA::delete_low_priority('links',   array(array('id', $module_ids, 'l')));
+        return true;
+    }
+}
+
+class AA_Module_Polls extends AA_Module {
+    // const SETTING_CLASS = 'AA_Modulesettings_Site';
+    // const SETTING_TABLE = 'alerts_collection';
+
+    /** AA_Module_Links::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+     *  @param $module_id
+     */
+    static public function _deleteModules($module_ids) {
+        if (!is_array($module_ids) OR !count($module_ids)) {
+            return false;     // _m("No such module.")
+        }
+        
+        if ( !count($pollids = DB_AA::select('', 'SELECT id FROM `polls`', array(array('module_id', $module_ids, 'l'))))) {
+            DB_AA::delete_low_priority('polls',                            array(array('module_id', $module_ids, 'l')));
+            return true;
+        }
+        DB_AA::delete_low_priority('polls_ip_lock', array(array('poll_id',   $pollids)));
+        DB_AA::delete_low_priority('polls_answer',  array(array('poll_id',   $pollids)));
+        DB_AA::delete_low_priority('polls_design',  array(array('module_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('polls',         array(array('module_id', $module_ids, 'l')));
+        return true;
+    }
+}
+
+/** Slice settings */
+class AA_Modulesettings_Slice extends AA_Object {
+
+    // must be protected or public - AA_Object needs to read it
+    protected $translations;
+
+    /** do not display Name property on the form by default */
+    const USES_NAME = false;
+
+    /** check, if the $prop is the property of this object */
+    static function isProperty($prop) {
+        return in_array($prop, array('translations'));
+    }
+
+    /** allows storing object in database
+     *  AA_Object's method
+     */
+    static function getClassProperties() {
+        return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
+            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true,  true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...'))
+            );
+    }
+}
+
+/** Slice settings */
+class AA_Modulesettings_Site extends AA_Object {
+
+    // must be protected or public - AA_Object needs to read it
+    protected $translation_slice;
+    protected $additional_aliases;
+
+    /** do not display Name property on the form by default */
+    const USES_NAME = false;
+
+
+    /** check, if the $prop is the property of this object */
+    static function isProperty($prop) {
+        return in_array($prop, array('translate_slice', 'add_aliases'));
+    }
+
+    /** allows storing object in database
+     *  AA_Object's method
+     */
+    static function getClassProperties() {
+        return array ( //                             id             name                                 type     multi  persist validator, required, help, morehelp, example
+            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"), 'string', false, true, array('enum', AA_Modules::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
+            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum', AA_Modules::getUserModules('W')), false, _m('select sitemodule, where we have to look for additional {_:...} aliases'))
+            );
+    }
+}
+
+
+
+
+
+
+
+
 // deprecated - @todo - remove it - move to AA_Module
 class AA_Modules {
 
@@ -660,96 +905,6 @@ class AA_Modules {
             $this->a[$module_id] = new AA_Module($module_id);
         }
         return $this->a[$module_id];
-    }
-}
-
-class AA_Module_Site extends AA_Module {
-    const SETTING_CLASS = 'AA_Modulesettings_Site';
-    const SETTING_TABLE = 'site';
-
-    /** for translated fields - if not translated, use default language of the module */
-    function getDefaultLang() {
-        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModule($translate_slice)->getProperty('translations'))) {
-            return $translations[0];
-        }
-        return $this->getLang();
-    }
-
-    function getSite($apc_state) {
-        global $show_ids; // @todo - convert to object variable
-
-        $tree        = unserialize($this->getProperty('structure'));   // new sitetree();
-        $show_ids    = array();
-        $out         = '';
-
-        // it fills $show_ids array
-        $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
-        if (count($show_ids)<1) {
-            exit;
-        }
-
-        $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $this->module_id, 'l'), array('spot_id', $show_ids, 'i')));
-
-        foreach ( $show_ids as $v ) {
-            $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA_Stringexpand::unalias($spots[$v]['content'], '', $apc_state['item']));
-        }
-        return $out;
-    }
-
-    function getRelatedSlices() {
-        return GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($this->module_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
-    }
-}
-
-
-/** Slice settings */
-class AA_Modulesettings_Slice extends AA_Object {
-
-    // must be protected or public - AA_Object needs to read it
-    protected $translations;
-
-    /** do not display Name property on the form by default */
-    const USES_NAME = false;
-
-    /** check, if the $prop is the property of this object */
-    static function isProperty($prop) {
-        return in_array($prop, array('translations'));
-    }
-
-    /** allows storing object in database
-     *  AA_Object's method
-     */
-    static function getClassProperties() {
-        return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
-            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true,  true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...'))
-            );
-    }
-}
-
-/** Slice settings */
-class AA_Modulesettings_Site extends AA_Object {
-
-    // must be protected or public - AA_Object needs to read it
-    protected $translation_slice;
-    protected $additional_aliases;
-
-    /** do not display Name property on the form by default */
-    const USES_NAME = false;
-
-
-    /** check, if the $prop is the property of this object */
-    static function isProperty($prop) {
-        return in_array($prop, array('translate_slice', 'add_aliases'));
-    }
-
-    /** allows storing object in database
-     *  AA_Object's method
-     */
-    static function getClassProperties() {
-        return array ( //                             id             name                                 type     multi  persist validator, required, help, morehelp, example
-            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"), 'string', false, true, array('enum', AA_Modules::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
-            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum', AA_Modules::getUserModules('W')), false, _m('select sitemodule, where we have to look for additional {_:...} aliases'))
-            );
     }
 }
 

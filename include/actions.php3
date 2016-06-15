@@ -395,48 +395,28 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
             return _m("You have not permissions to remove items");
         }
 
-        $wherein = '';
-
         // restrict the deletion only to selected items
         if ($this->selected == 'selected') {
             $zids = new zids;
-            $zids->setFromItemArr($item_arr);
-
-            if ($zids->count() < 1) {
+            if ($zids->setFromItemArr($item_arr)->count()< 1) {
                 return false;     // OK
             }
-
-            $wherein = " AND ". $zids->sqlin('id');
+            $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', array(array('status_code', 3), array('slice_id', $slice_id, 'l'), array('id', $zids->longids(), 'l'))),'p');
+        } else {
+            $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', array(array('status_code', 3), array('slice_id', $slice_id, 'l'))),'p');
         }
 
-        $db = getDB();
-        // now we ask, which items we have to delete. We are checking the items even
-        // it is specified in $item_arr - for security reasons - we can delete only
-        // items in current slice and in trash
-        $db->query("SELECT id FROM item
-                   WHERE status_code=3 AND slice_id = '". q_pack_id($slice_id) ."' $wherein");
-        $items_to_delete = array();
-        while ( $db->next_record() ) {
-            $items_to_delete[] = $db->f("id");
-        }
-        if (count($items_to_delete) < 1) {
-            freeDB($db);
+        if ($items_to_delete->count() < 1) {
             return false;     // OK
         }
 
         // mimo enabled -- problem?
-        $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
+        $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete->longids());
 
         // delete content of all fields
-        // don't worry about fed fields - content is copied
-        $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
-        $db->query("DELETE FROM discussion WHERE item_id ".$wherein);
-        $db->query("DELETE FROM content WHERE item_id ".$wherein);
-        $db->query("DELETE FROM item WHERE id ".$wherein);
+        AA_Items::deleteItems($items_to_delete);
 
         $pagecache->invalidateFor("slice_id=$slice_id");
-        freeDB($db);
-
         return false;     // OK
     }
 
