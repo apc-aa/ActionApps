@@ -1043,7 +1043,7 @@ class ItemContent extends AA_Content {
 
         // look for computed fields and update it (based on the stored item)
         if (!$silent) {
-            if ( $itemContent->updateComputedFields($id, $fields, $mode) ) {
+            if ( $itemContent->updateComputedFields($fields, $mode) ) {
                 // if computed fields are updated, reread the content
                 $itemContent->setByItemID($id,true); // ignore reading password
             }
@@ -1079,11 +1079,16 @@ class ItemContent extends AA_Content {
     } // end of storeItem()
 
     /** updateComputedFields function
-     * @param $id
      * @param $fields
+     * @param $mode
+     * @param $restict_fields
      */
-    function updateComputedFields($id, $fields=null, $mode='update', $restict_fields=null) {
+    function updateComputedFields($fields=null, $mode='update', $restict_fields=null) {
         global $itemvarset; // set by insert_fnc_qte function
+
+        if (!($id = $this->getItemID()) OR $this->is_empty()) {  // the recomputed item is already deleted, probably
+            return false;
+        }
 
         $itemvarset   = new CVarset();
         $field_writer = new AA_Field_Writer;
@@ -1092,7 +1097,9 @@ class ItemContent extends AA_Content {
         $computed_field_exist = false;
 
         // could be called also from outside to recompute fields
-        $slice        = AA_Slice::getModule($this->getSliceID());
+        if (! ($slice = AA_Slice::getModule($this->getSliceID())) ) {
+            return false;
+        }
         if (!$fields) {
             $fields   = $slice->fields('record');
         }

@@ -78,7 +78,7 @@ class PageCache  {
      *  Return string to use in keystr for cache if could do a stringexpand
      *  Returns part of keystring
      */
-    function globalKeyArray() {
+    static function globalKeyArray() {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
         $ks = array('host' => ltrim($_SERVER['HTTP_HOST'],'w.'));
         if (isset($GLOBALS['apc_state'])) {

@@ -368,7 +368,7 @@ class AA_ComputedfieldsItem_Updater {
     function toexecutelater($sid, $ids) {
         foreach ($ids as $item_id) {
             $item = new ItemContent($item_id);
-            $item->updateComputedFields($item_id);
+            $item->updateComputedFields();
         }
         $GLOBALS['pagecache']->invalidateFor("slice_id=$sid");
     }

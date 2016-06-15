@@ -1,3 +1,18 @@
+16-06-15 - AA COULD NOT BE PRODUCTION READY right now from svn (still)
+(honzam) - more standard modules - delete and other actions of polls, alerts,
+           links  ... are based on the same base
+         - improved deletion of module records/items
+         - new default value for date fields - "Never, i.e. maximum date"
+           - fills current maximum date, (2037-12-31) which is treated as never
+           - will be increased in future, probably
+         - default relative value for date now checks max date boundary value
+           and in such case fills the maximum allowed value
+         - updated list of registered TLD domains
+         - removed definition of unused tables mysql_auth_*
+         - new version of select command which is good for multivalues
+           DB_AA::select(array("id"=>"+other"), "SELECT id,other FROM `change`")
+             -> [[id1=>[other1a,other1b], [id2=>[other2]], ...]
+         - where clausule of DB::select now works also with bitfields
 16-04-14 - AA COULD NOT BE PRODUCTION READY right now from svn
 (honzam) - quite big internal change - phplib session system switched to
            standard $_SESSIONs. With this change we also have to switch to

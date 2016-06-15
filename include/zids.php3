@@ -133,6 +133,7 @@ class zids implements Iterator, ArrayAccess, Countable {
                 $this->a[] = substr($it_id,1);      // remove initial 'x'
             }
         }
+        return $this;
     }
 
     /** clear function
