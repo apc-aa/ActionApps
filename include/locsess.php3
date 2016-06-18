@@ -33,7 +33,7 @@ $db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
 require_once(AA_INC_PATH.'phplib/'. $db_type_filename);
 require_once(AA_INC_PATH.'phplib/phplib.php');
 
-function __autoload ($class_name) {
+spl_autoload_register(function ($class_name) {
     $PAIRS = array(
         'AA_Perm'            => 'include/perm_core.php3',
         'AA_Permsystem_Sql'  => 'include/perm_sql.php3',
@@ -44,6 +44,7 @@ function __autoload ($class_name) {
         'AA_Form_Array'      => 'include/widget.class.php3',
         'AA_Mysqlauth'       => 'include/auth.php3',
         'AA_Scroller'        => 'include/scroller.php3',
+        'AA_Actionapps'      => 'central/include/actionapps.class.php',
         'AA_Mailman'         => 'include/mailman.php3'
         );
 
@@ -94,7 +95,7 @@ function __autoload ($class_name) {
             }
         }
     }
-}
+});
 
 class AA_Debug {
     protected $_starttime;
@@ -125,6 +126,7 @@ class AA_Debug {
         $group = array_shift($v);
         $this->_do('log', $v);
         $this->_logtime($group);
+        $this->duration($group,microtime(true) - $this->_starttime[$group]);
         $this->_groupend($group);
         return true;
     }
@@ -205,7 +207,7 @@ class AA {
 }
 
 AA::$debug = $_GET['debug'];
-AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug());
+AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
 
 class DB_AA extends DB_Sql {
     var $Host      = DB_HOST;
@@ -218,12 +220,6 @@ class DB_AA extends DB_Sql {
 
     /* public: constructor */
     function __construct($query = "") {
-        //if ($_GET['debugtime']=='24') {
-        //    echo "\n<br>\n";
-        //    $e = new Exception;
-        //    print_r($e->getTraceAsString());
-        //    echo "\n<br>\n";
-        //}
         self::$_instances_no++;
         parent::__construct($query);
     }
