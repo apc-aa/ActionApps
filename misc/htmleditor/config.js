@@ -39,11 +39,11 @@ CKEDITOR.editorConfig = function( config ) {
     // Honza's changes
     config.entities = false;
 
-    //config.filebrowserBrowseUrl = '/aaa/misc/filebrowser/browse.php?opener=ckeditor&type=files';
-    //config.filebrowserImageBrowseUrl = '/aaa/misc/filebrowser/browse.php?opener=ckeditor&type=images';
-    //config.filebrowserFlashBrowseUrl = '/aaa/misc/filebrowser/browse.php?opener=ckeditor&type=flash';
-    //config.filebrowserUploadUrl = '/aaa/misc/filebrowser/upload.php?opener=ckeditor&type=files';
-    //config.filebrowserImageUploadUrl = '/aaa/misc/filebrowser/upload.php?opener=ckeditor&type=images';
-    //config.filebrowserFlashUploadUrl = '/aaa/misc/filebrowser/upload.php?opener=ckeditor&type=flash';
+    config.filebrowserBrowseUrl      = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&type=files';
+    config.filebrowserImageBrowseUrl = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&type=images';
+    config.filebrowserFlashBrowseUrl = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&type=flash';
+    config.filebrowserUploadUrl      = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=files';
+    config.filebrowserImageUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=images';
+    config.filebrowserFlashUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=flash';
 
 };
