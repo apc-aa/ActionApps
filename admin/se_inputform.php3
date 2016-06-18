@@ -37,20 +37,20 @@ require_once AA_INC_PATH."msgpage.php3";
  * @return result of the con_url function
  */
 function EditConstantURL() {
-    global $fld, $sess;
+    global $fld;
     if (substr($fld['id'],0,8)== "category") {
-        return con_url($sess->url(self_base(). "se_constant.php3"), 'categ=1');
+        return get_admin_url('se_constant.php3', array('categ' => 1));
     } else {
         // we are adding foo parameter in order we can add other parameters by
         // & in javascript (and do not care about '?' or '&'
-        return con_url($sess->url(self_base(). "se_constant.php3"), 'foo=1');
+        return get_admin_url('se_constant.php3', array('foo' => 1));
     }
 }
 
 if ($upd_edit) {
-    $back_admin_url = $sess->url(self_base(). "./se_inputform.php3?fid=$fid");
+    $back_admin_url = get_admin_url('se_inputform.php3', array('fid'=>$fid));
 } else {
-    $back_admin_url = $sess->url(self_base(). "./se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1': ''));
+    $back_admin_url = get_admin_url('se_fields.php3', (AA_Fields::isSliceField($fid) ? array('slice_fields'=>1) : array()));
 }
 
 if ($cancel) {
@@ -58,7 +58,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    MsgPageMenu(get_admin_url("index.php3"), _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -321,7 +321,7 @@ HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, styl
   */
   function CallParamWizard(list, combo_list, text_param ) {
     combo_list_el = document.f.elements[combo_list];
-    page = GetUrl("<?php echo $sess->url(self_base()."param_wizard.php3")?>", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.options[combo_list_el.selectedIndex].value]);
+    page = GetUrl("<?php echo get_admin_url('param_wizard.php3'); ?>", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.options[combo_list_el.selectedIndex].value]);
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }

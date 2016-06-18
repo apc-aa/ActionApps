@@ -39,13 +39,6 @@ function DeBackslash2($txt) {
 class AA_SL_Session extends Session {
     var $classname = "AA_SL_Session";
 
-    var $cookiename     = "";                // defaults to classname
-    var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "get";             // We propagate session IDs via cookie method
-    var $fallback_mode  = "get";             // If cookie not possible, then via get method
-    var $lifetime       = 0;                 // 0 = do session cookies, else minutes
-    var $that_class     = "AA_CT_Sql"; // name of data storage container
-    var $gc_probability = 5;
 
     /** MyUrl function
      * rewriten to return URL of shtml page that includes this script instead to return self url of this script.
@@ -88,117 +81,6 @@ class AA_SL_Session extends Session {
         return $foo;
     }
 
-    /** expand_getvars function
-     *  adds variables passesd by QUERY_STRING_UNESCAPED to $_GET
-     *  SSI patch - passes variables to SSIed script
-     */
-    function expand_getvars() {
-        if (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])) {
-            $varstring = $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
-            // $REDIRECT_QUERY_STRING_UNESCAPED
-            //  - necessary for cgi version compiled with --enable-force-cgi-redirect
-        } elseif ( isset($_SERVER['QUERY_STRING_UNESCAPED']) ) {
-          $varstring = $_SERVER['QUERY_STRING_UNESCAPED'];
-        } else {
-          $url_parsed = parse_url($_SERVER['REQUEST_URI']);
-          $varstring = $url_parsed['query'];
-        }
-
-        $a = explode("&",$varstring);
-        $i = 0;
-
-        while ($i < count ($a)) {
-            $b    = explode ('=', $a [$i]);
-            $b[0] = DeBackslash2($b[0]);
-            $b[1] = DeBackslash2($b[1]);
-            $_GET[urldecode($b[0])]= urldecode($b[1]);
-            $i++;
-        }
-        return $i;
-    }
-    /** get_id function
-     * @param $id
-     */
-    function get_id() {
-
-        $this->name = $this->cookiename=="" ? $this->classname : $this->cookiename;
-        $newid = false;
-        switch ($this->mode) {
-        case "get":
-            $this->expand_getvars(); // ssi patch
-            $id = isset($_GET[$this->name]) ? $_GET[$this->name] : "";
-            break;
-        case "cookie":
-            $id = isset($_COOKIE[$this->name]) ? $_COOKIE[$this->name] : "";
-            break;
-        default:
-            die("This has not been coded yet.");
-            break;
-        }
-
-        ## if not valid id, then reset it
-        if ( (strlen($id) != 32) OR (strspn($id, "0123456789abcdefABCDEF") != strlen($id))) {
-            $id = '';
-        }
-
-        if ("" == $id) {
-            $newid = true;
-            $id    = $this->that->ac_newid();
-        }
-
-        switch ($this->mode) {
-        case "cookie":
-            if ( $newid && ( 0 == $this->lifetime ) ) {
-                SetCookie($this->name, $id, 0, "/");
-            }
-            if ( 0 < $this->lifetime ) {
-                SetCookie($this->name, $id, time()+$this->lifetime*60, "/");
-            }
-            break;
-        case "get":
-            if ( isset($_SERVER['QUERY_STRING']) ) {
-                $_SERVER['QUERY_STRING'] = preg_replace(
-                    "`(^|&)".str_replace('`','\`',quotemeta(urlencode($this->name))."=".$id).'(&|$)`',
-                    "\\1", $_SERVER['QUERY_STRING']);
-            }
-            break;
-        default:
-            break;
-        }
-
-        $this->id = $id;
-    }
-
-    /** start function
-     * @param $sid
-     */
-    function start() {
-        $this->expand_getvars(); // ssi patch
-        $name = $this->that_class;
-        $this->that = new $name;
-        $this->that->ac_start();
-
-        $this->name = $this->cookiename=="" ? $this->classname : $this->cookiename;
-
-        if (isset($this->fallback_mode) && ("get" == $this->fallback_mode ) && ("cookie" == $this->mode ) && (!isset($_COOKIE[$this->name]))) {
-
-            if (isset($_GET[$this->name])) {
-                $this->mode = $this->fallback_mode;
-            } else {
-                //header("Status: 302 Moved Temporarily");
-                $this->get_id();
-                $this->mode = $this->fallback_mode;
-                    // You will need to fix suexec as well, if you use Apache and CGI PHP
-                //$PROTOCOL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-                //header("Location: ". $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$this->self_url());
-                exit;
-            }
-        }
-
-        $this->get_id();
-        $this->thaw();
-        $this->gc();   // Garbage collect, if necessary
-    }
 }
 
 ?>

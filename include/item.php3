@@ -256,9 +256,9 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     $param      = array();
 
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
-    $url2go = isset($sess) ?
-                     $sess->url($admin_path)	:
-                     ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+    //$url2go = isset($sess) ? $sess->url($admin_path) : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+    $url2go = isset($sess) ? $admin_path : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+
     // return_url is used for non AA Admin interface filling - writen by Settu
     // Not sure, if it is functional. Honza 2006-01-07
     $return_url = make_return_url($ret_url);
@@ -1727,12 +1727,11 @@ class AA_Items {
         return $ret;
     }
 
-    /** getModuleProperty function
-     *  static function
-     * @param $slice_id
+    /** getItemProperty function
+     * @param $item_zid
      * @param $field
      */
-    function getItemProperty($item_zid, $field) {
+    static function getItemProperty($item_zid, $field) {
         $item = AA_Items::getItem($item_zid);
         return $item ? $item->getAaValue($field) : null;
     }
