@@ -163,6 +163,11 @@ if ($add) {
 
 // link from public pages sometimes do not contain slice_id
 if ( $id ) {
+    if ((strlen($id)==33) AND strpos(' xyz', $id{0})) {
+        // x, y, z prefixed ids for new added related items
+        $id = substr($id,1);
+    }
+
     $content4id = new ItemContent($id);
     $slice_id   = $content4id->getSliceID();
     // we need just slice_id of current item - we can unset the content4id
