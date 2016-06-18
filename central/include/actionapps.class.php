@@ -294,19 +294,41 @@ class AA_Module_Definition {
         // should be overloaded in childs
     }
 
-    function planModuleImport($aa) {
-        $no_sync_tasks = 0;
+    /** used when you want to export module to another AA
+        - could be used for the same AA as well, but we insted now have
+        moduleImport() method, which do not need special http requests and is
+        quicker. Also there was some problem when there was different encoding
+        in the modules.
+    */
+    function planModuleImport($aa, $replaces=null) {
+        $chunks    = $this->_getChunks($replaces);
         $toexecute = new AA_Toexecute;
+        foreach ($chunks as $chunk) {
+            $import_task = new AA_Task_Import_Module_Chunk($chunk, $aa);
+            $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module_Chunk');
+        }
+        return count($chunks);
+    }
+
+    /** special import - to this AA - no need to plan, no need to chunk */
+    function moduleImport($replaces=null) {
+        $chunks = $this->_getChunks($replaces);
+        foreach ($chunks as $chunk) {
+            $chunk->importModuleChunk();
+        }
+        return count($chunks);
+    }
+
+    protected function _getChunks($replaces) {
+        $chunks = array();
+        if (is_array($replaces)) {
+            $this->data = recursive_array_replace(array_keys($replaces), array_values($replaces), $this->data);
+        }
 
         foreach ($this->data as $table => $rows) {
-            $chunks = AA_Module_Definition_Chunk::factoryArray($this->module_id, $table, $rows);
-            foreach ($chunks as $chunk) {
-                $import_task = new AA_Task_Import_Module_Chunk($chunk, $aa);
-                $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module_Chunk');
-            }
-            $no_sync_tasks += count($chunks);
+            $chunks = array_merge($chunks, AA_Module_Definition_Chunk::factoryArray($this->module_id, $table, $rows));
         }
-        return $no_sync_tasks;
+        return $chunks;
     }
 }
 
