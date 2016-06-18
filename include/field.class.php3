@@ -103,24 +103,6 @@ class AA_Field {
      */
     function &getWidget($widget_type=null, $properties=array()) {
         if ( is_null($this->widget) ) {
-   //        function setFromField(&$field) {
-   //            if (isset($field) AND is_array($field)) {
-   //                $this->id            = $field['id'];
-   //                $this->varname       = varname4form($this->id);
-   //                $this->name          = $field['name'];
-   //                $this->input_before  = $field['input_before'];
-   //                $this->required      = $field['required'];
-   //                $this->input_help    = $field['input_help'];
-   //                $this->input_morehlp = $field['input_morehlp'];
-   //                $funct = ParamExplode($field["input_show_func"]);
-   //                $this->input_type    = AA_Stringexpand::unalias($funct[0]);
-   //                $this->param         = array_slice( $funct, 1 );
-   //                $this->html_rb_show  = $field["html_show"];
-   //                if ( isset($field["const_arr"]) ) {
-   //                    $this->const_arr  = $field["const_arr"];
-   //                }
-   //            }
-   //        }
 
             // $this->widget = AA_Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
             $params       = AA_Widget::parseClassProperties($this->data['input_show_func']);
@@ -304,6 +286,12 @@ class AA_Field {
         }
         // prefix indicates select from items
         return (substr($showfunc['const'],0,7) == "#sLiCe-") ? array('relation', substr($showfunc['const'],7)) : array('constants', $showfunc['const']);
+    }
+
+    function cloneWithId($id) {
+        $new = clone $this;
+        $new->data['id']=$id;
+        return $new;
     }
 }
 
