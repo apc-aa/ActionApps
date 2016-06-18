@@ -61,7 +61,6 @@ require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."convert_charset.class.php3";
 
 define("WDDX_DUPLICATED", 1);
 define("WDDX_BAD_PACKET", 2);

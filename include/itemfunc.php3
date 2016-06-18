@@ -833,11 +833,11 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
  * @param array $notshown is an optional array ("field_id"=>1,...) of fields
  *                          not shown in the anonymous form
  */
-//./admin/itemedit.php3:                               ValidateContent4Id($err, $slice, $action, $id);
-//./misc/file2slice/tab2slice_php/file_import.php3:    ValidateContent4Id($err, $slice, "insert", 0, ! $notvalidate);
-//./filler.php3:                                       ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown)
-function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $notshown="")
-{
+//./admin/itemedit.php3:       ValidateContent4Id($err, $slice, $action, $id);
+//./admin/slicefieldsedit.php3:ValidateContent4Id($err, $slice, $action, $id);
+//./filler.php3:               ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
+
+function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {
     global $oldcontent4id, $auth;
 
     $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings

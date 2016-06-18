@@ -54,11 +54,6 @@ abstract class AA_Transformation {
      */
     function transform()    {}
 
-    /** parameters function
-     * @return array
-     */
-    function parameters()   { return array(); }
-
     /** _getVarname function
      *  Construct name of input form variable
      *  It consist of classname, so we are able to guess which variable
@@ -142,86 +137,9 @@ abstract class AA_Transformation {
      * @param $input_prefix
      * @param $params
      */
-    function htmlSetting($input_prefix, $params) {
-        ob_start();
-        FrmTabCaption();
-        FrmStaticText('', self::description());
-
-        foreach (self::parameters() as $parameter_id => $setting) {
-            $varname = AA_Transformation::_getVarname($parameter_id, $input_prefix, __CLASS__);
-            $aainput = new AA_Inputfield(magic_strip($_GET[$varname]));
-            $aainput->setFromField($setting);
-            echo $aainput->get();
-        }
-
-        FrmTabEnd();
-        return ob_get_clean();
-    }
+    function htmlSetting($input_prefix, $params) { }
 }
 
-/** The result is single-value (not multivalue), which is created as result of
- *  normal AA expression using source item. You can use
- *  {switch({category.......1})Bio:...} and such expressions as well as normal
- *  text.
- */
-/*  New approach - not fully functional, yet
-class AA_Transformation_Value extends AA_Transformation {
-
-    function __construct($param) {
-        $this->parameters    = array();
-        $this->parameters['new_flag']    = getAAField(array('varname'=>'new_flag',    'name'=>_m('Mark as'),     'required'=>true, 'value' => array( 0 => array( 'value' => $param['new_flag']))));
-        $this->parameters['new_content'] = getAAField(array('varname'=>'new_content', 'name'=>_m('New content'), 'value' => array( 0 => array( 'value' => $param['new_content'])), 'input_help' => _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK')));
-    }
-
-    function name() {
-        return _m("Fill by value");
-    }
-
-    function description() {
-        return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {switch()...}, ...");
-    }
-
-    function parameters() {
-        return array ('new_flag' =>
-                          array ( 'id'              => 'new_flag',
-                                  'name'            => _m('Mark as'),
-                                  'required'        => true,
-                                  'input_help'      => '',
-                                  'input_morehlp'   => '',
-                                  'input_before'    => '',
-                                  'input_show_func' => '',
-                                  'html_show'       => '',
-                                  'const_arr'       => array('h' => _m('HTML'), 't' => _m('Plain text'), 'u' => _m('Unchanged'))
-                                ),
-                      'new_content' =>
-                          array ( 'id'       => 'new_content',
-                                  'name'     => _m('New content'),
-                                  'required' => false,
-                                  'input_help' => _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
-                                  'input_morehlp' => '',
-                                  'input_before' => '',
-                                  'input_show_func' => '',
-                                  'html_show' => ''
-                                )
-                     );
-    }
-
-    function transform($field_id, &$content4id) {
-        $slice = AA_Slice::getModule($content4id->getSliceID());
-        $item = new AA_Item($content4id->getContent(),$slice->aliases());
-
-        $text = $item->subst_alias($this->getParam('new_content'));
-
-        switch ($this->getParam('new_flag')) {
-            case 'u': $flag = $item->getFlag($field_id); break;
-            case 'h': $flag = $item->getFlag($field_id) | FLAG_HTML; break;
-            case 't': $flag = $item->getFlag($field_id) & ~FLAG_HTML; break;
-        }
-
-        return new AA_Value($text,$flag);
-    }
-}
-*/
 class AA_Transformation_Value extends AA_Transformation {
 
     var $new_flag;

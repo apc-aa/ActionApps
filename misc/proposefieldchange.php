@@ -27,7 +27,6 @@ require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."itemfunc.php3";
-require_once AA_INC_PATH."convert_charset.class.php3";
 require_once AA_INC_PATH."grabber.class.php3";
 
 //error_reporting(E_ERROR | E_PARSE);

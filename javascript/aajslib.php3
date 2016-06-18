@@ -776,6 +776,23 @@ function ToggleCookie(name,val) {
     }
 }
 
+function AA_NewId() {
+    // Private array of chars to use
+    var chars = '0123456789abcdefgh'.split('');
+
+    var uuid = [];
+
+    // we do not want to have 0 as the first char in pair
+    for (var i = 0; i < 16; i++) {
+        uuid[2*i]   = chars[0 | (Math.random()*15+1)];
+        uuid[2*i+1] = chars[0 | (Math.random()*16)];
+    }
+    return uuid.join('');
+}
+
+
+
+
 /* ----------------------------------------------------------
 prototypeUtils.js from http://jehiah.com/
 Licensed under Creative Commons.

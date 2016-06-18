@@ -890,7 +890,6 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             $view_param['convertfrom'] = $slice->getCharset();
         }
         if ($view_param['convertto'] != $view_param['convertfrom'] ) {
-            require_once AA_INC_PATH."convert_charset.class.php3";
             $encoder = ConvertCharset::singleton();
             $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
         }

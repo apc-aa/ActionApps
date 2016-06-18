@@ -957,4 +957,3 @@ function page_close() {
     }
 }
 ?>
-

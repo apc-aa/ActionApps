@@ -127,7 +127,7 @@ $slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
 
 if ( $no_slice_id ) {
     unset($slice_id);
-    unset(AA::$module_id);
+    AA::$module_id = null; // unset is_a not allowed for static variables
 }
 
 require_once AA_INC_PATH. "util.php3";  // must be after language include because of lang constants in util.php3

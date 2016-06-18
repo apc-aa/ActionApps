@@ -295,7 +295,6 @@ class AA_Poll {
         }
 
         if ($request['convertto'] OR $request['convertfrom'] ) {
-            require_once AA_INC_PATH."convert_charset.class.php3";
             $encoder = ConvertCharset::singleton();
             $ret     = $encoder->Convert($ret, $request['convertfrom'], $request['convertto']);
         }
