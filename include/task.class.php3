@@ -65,22 +65,23 @@ class AA_Plannedtask extends AA_Object {
          '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Task'), _m('Condition'), _m('ID'), _m('Module'))).'</th>
+              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module'))).'</th>
             </tr>
             ';
     }
 
     /** Manager row HTML  */
    protected static function getManagerRowHtml($fields, $aliases, $links) {
-      // huhl($aliases);exit;
        return '
            <tr>
              <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
              <td>_#AA_NAME_</td>
              <td>_#EVENT___</td>
              <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>
+              <td>{internal:'.get_class().':computedtime}</td>
+              <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
+              <td>{internal:'.get_class().':scheduledto}</td>
              <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
-             <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
              <td><small>_#AA_ID___</small></td>
              <td><small title="_#AA_OWNER">_#AA_OW_NM</small></td>
            </tr>
@@ -95,7 +96,29 @@ class AA_Plannedtask extends AA_Object {
         return strtotime($this->getProperty('time')) + (int)$this->getProperty('shift');
     }
 
+    /** The possibility, how to implement internal aliases for Admin interface
+     *  Such aliases then could be called as {internal:AA_Planedtask:lastrun:...},
+     *  where AA_Planedtask is AA class, which has internal_expand() method.
+     *  Such function should never leak potentionaly sensitive data, since
+     *  anyone could call it (althrough we will try to do it callable just form
+     *  internal AA admin interface). It should not be called outside and
+     *  results are not guarranted.
+     */
+    static function internal_expand($content, $info) {
+        $params  = func_get_args();
+        $task_id = $content->getId();
+        switch ($info) {
+            case 'scheduledto':  $time = AA_Toexecute::scheduledTime(self::toexecuteSelector($task_id));
+                                 return  '<span title="task.id:'.AA_Toexecute::scheduledTaskId(self::toexecuteSelector($task_id)).'">'. ($time ? date('Y-m-d H:i:s', $time) : '--').'</span>';
+            case 'computedtime': $task = AA_Object::load($task_id, 'AA_Plannedtask');
+                                 $time = $task->nexttime();
+                                 return  $time ? date('Y-m-d H:i:s', $time) : '--';
+        }
+        return '';
+    }
+
     function toexecutelater() {
+        $ret = $this->task;
         AA::$slice_id = $this->getOwnerId();
         if (is_long_id($this->item_id)) {
             AA_Stringexpand::unalias('{define:aa_event_for:'.$this->item_id.'}');
@@ -104,20 +127,25 @@ class AA_Plannedtask extends AA_Object {
         if (strlen($condition)) {
             $condition_res = trim(AA_Stringexpand::unalias($condition));
             if (!strlen($condition_res) OR ((string)$condition_res==='0')) {
-                return;
+                return $ret. "- Cond not met: $condition ($condition_res)";
             }
         }
         if (is_long_id($this->item_id)) {
-            AA_Stringexpand::unalias($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
+            $ret .= '='.AA_Stringexpand::unalias($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
         } else {
-            AA_Stringexpand::unalias($this->task);
+            $ret .= '='.AA_Stringexpand::unalias($this->task);
         }
+        return $ret;
     }
+
+    static function toexecuteSelector($id) {
+        return "Plannedtask_$id";
+}
 
     /** method called after save */
     function aftersave() {
         $toexecute = new AA_Toexecute;
-        $toexecute->cancel_all('Plannedtask_'. $this->getId());
+        $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
         $this->schedule();
     }
 
@@ -126,8 +154,9 @@ class AA_Plannedtask extends AA_Object {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
             $toexecute = new AA_Toexecute;
-            $toexecute->laterOnce($this, array(), 'Plannedtask_'. $this->getId(). (is_long_id($this->item_id) ? ('_'.$this->item_id) : ''), 100, $time);
+            $toexecute->laterOnce($this, array(), self::toexecuteSelector($this->getId()), 100, $time);
         }
+        return "$time>=".time().' ';
     }
 
     static function getForm($oid=null, $owner=null, $otype=null) {
@@ -171,16 +200,22 @@ class AA_Plannedtask_Schedule {
 
     function toexecutelater() {
 
+        $ret = '';
         $aa_set = new AA_Set();
         //$aa_set->setModules($module_id);
         //$aa_set->addCondition(new AA_Condition('time', 'NOTNULL', 1));
 
         $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
 
+        $ret .= $zids->count(). ';';
+
         foreach ($zids as $id) {
+            $ret .= $id. ';';
             $task = AA_Object::load($id, 'AA_Plannedtask');
-            $task->schedule();
+            $ret .= get_class($task). ';';
+            $ret .= $task->schedule(). ';';
         }
+        return $ret;
     }
 }
 

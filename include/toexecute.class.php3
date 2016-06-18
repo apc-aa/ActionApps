@@ -128,10 +128,20 @@ class AA_Toexecute {
      *  are the same
      */
     function laterOnce( &$object, $params, $selector, $priority=100, $time=null ) {
-        if ( !DB_AA::select1("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0")) {
+        if ( !self::scheduledTime($selector)) {
         //if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
             $this->later($object, $params, $selector, $priority, $time);
         }
+    }
+
+    /** returns scheduled time or false */
+    static function scheduledTime($selector) {
+        return DB_AA::select1("SELECT execute_after FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'execute_after');
+    }
+
+    /** returns id of scheduled task */
+    static function scheduledTaskId($selector) {
+        return DB_AA::select1("SELECT id FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'id');
     }
 
     /** User task queue - we use it for spliting one long task (which would take
@@ -160,52 +170,27 @@ class AA_Toexecute {
 
         // set_time_limit( 360 );   // try to set 360 seconds to run
         $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
-
-
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
         $execute_times = array();
-
         $this->clear_report();
         $execute_start = microtime(true);
+        $count   = 0;
+        $started = 0;
 
-        $count = 0;
         // get just ids - the task itself we will grab later, since the objects
         // in the database could be pretty big, so we want to grab it one by one
         // If the priority is 0, we consider this task as unpossible to execute,
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
-        while ($task = DB_AA::select1("SELECT * FROM `toexecute` WHERE execute_after < ".time()." AND priority > 0 ORDER by priority DESC")) {
-            $task_type     = get_if($task['selector'],'aa_unspecified');
-            $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
-            $task_start    = microtime(true);
+        $SQL = "SELECT * FROM `toexecute` WHERE execute_after < ".time()." AND priority > 0 ORDER by priority DESC";
 
-            // can we run next task? Does it (most probably) fit in allowed_time?
-            if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
-                break;
-            }
-            $varset = new Cvarset( array( array('priority', max( $task['priority']-1, 0 ))));
-            $varset->addkey('id', 'number', $task['id']);
-            // We lower the priority for this task before the execution, so
-            // if the task is not able to finish, then other tasks with the same
-            // priority is called before this one (next time)
-            $varset->doUpdate('toexecute');
-
-            $object  = unserialize($task['object']);
-            if ( $GLOBALS['debug'] ) {
-                huhl($task, $object);
-            }
-            $retcode = $this->execute_one($object, unserialize($task['params']));
-            $this->message($retcode);
-
-            // Task is done - remove it from queue
-            $varset->doDelete('toexecute');
-            $execute_times[$task_type] = microtime(true) - $task_start;
-            ++$count;
-            AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:$count:".$task['params'], get_class($object));
+        while ($task = DB_AA::select1($SQL)) {
+            ++$started;
+            $count += $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
         }
-        AA_Log::write('TOEXECUTE', "finished ".(microtime(true) - $execute_start));
+        AA_Log::write('TOEXECUTE', "finished $count/$started in ".(microtime(true) - $execute_start)."/$allowed_time", 'AA_Toexecute');
     }
 
     /** Executes as many tasks from the $tasks array as time allows
@@ -213,60 +198,67 @@ class AA_Toexecute {
      */
     function executeTask($tasks) {
 
+        if (!is_array($tasks) OR !count($tasks)) {
+            return;
+        }
+
         set_time_limit( 360 );   // try to set 360 seconds to run
         $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
-
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
         $execute_times = array();
-
         $this->clear_report();
-
         $execute_start = microtime(true);
-        if (is_array($tasks)) {
-            foreach ($tasks as $task_id) {
-                $task = DB_AA::select1('SELECT * FROM toexecute', '', array(array('id', $task_id, 'i')));
-                //$task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
+        $count   = 0;
+        $started = 0;
 
-                $task_type     = get_if($task['selector'],'aa_unspecified');
-                $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
-                $task_start    = microtime(true);
-
-                // can we run next task? Does it (most probably) fit in allowed_time?
-                if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
-                    break;
-                }
-                $varset = new Cvarset( array( array('priority', max( $task['priority']-1, 0 ))));
-                $varset->addkey('id', 'number', $task['id']);
-                // We lower the priority for this task before the execution, so
-                // if the task is not able to finish, then other tasks with the same
-                // priority is called before this one (next time)
-                $varset->doUpdate('toexecute');
-
-                $object = unserialize($task['object']);
-                //huhl($object);
-                if ( $GLOBALS['debug'] ) {
-                    huhl($object);
-                }
-                $retcode = $this->execute_one($object, unserialize($task['params']));
-                $this->message($retcode);
-
-                // Task is done - remove it from queue
-                $varset->doDelete('toexecute');
-                $execute_times[$task_type] = microtime(true) - $task_start;
-                AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:".$task['params'], get_class($object));
-            }
+        foreach ($tasks as $task_id) {
+            $task  = DB_AA::select1('SELECT * FROM toexecute', '', array(array('id', $task_id, 'i')));
+            ++$started;
+            $count += $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
         }
+        AA_Log::write('TOEXECUTE', "finished $count/$started in ".(microtime(true) - $execute_start)."/$allowed_time", 'AA_Toexecute');
+    }
+
+    function _exeOne($task, &$execute_times, $execute_start, $allowed_time) {
+        $task_type     = get_if($task['selector'],'aa_unspecified');
+        $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
+        $task_start    = microtime(true);
+
+        // can we run next task? Does it (most probably) fit in allowed_time?
+        if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
+            return 0;
+        }
+        $varset = new Cvarset( array( array('priority', max( $task['priority']-1, 0 ))));
+        $varset->addkey('id', 'number', $task['id']);
+        // We lower the priority for this task before the execution, so
+        // if the task is not able to finish, then other tasks with the same
+        // priority is called before this one (next time)
+        $varset->doUpdate('toexecute');
+
+        $object  = unserialize($task['object']);
+        if (is_object($object)) {
+            $retcode = $this->execute_one($object, unserialize($task['params']));
+            $this->message($retcode);
+        } else {
+            $this->message('AA_Toexecute:execute - unserialize err:'. $task['object']);
+        }
+
+        // Task is done - remove it from queue
+        $varset->doDelete('toexecute');
+        $execute_times[$task_type] = microtime(true) - $task_start;
+        AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:$count:".$task['params'], get_class($object) .(method_exists($object,'getId') ? ":".$object->getId() : ''));
+        return 1;
     }
 
     /** execute_one function
      * @param $object
      * @param $params
      */
-    function execute_one(&$object, $params) {
+    function execute_one($object, $params) {
         if ( !is_object($object) ) {
-            return 'No object: '. serialize($object); // Error
+            return 'AA_Toexecute:execute_one: No object: '. serialize($object); // Error
         }
         set_time_limit(max(30,ini_get('max_execution_time')));   // 30 seconds (at least) for each task
         return call_user_func_array(array($object, 'toexecutelater'), (array)$params);
