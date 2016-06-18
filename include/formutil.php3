@@ -97,22 +97,19 @@ function getHtmlareaJavascript($slice_id) {
     // showHTMLAreaLink(name) - displays "edit in htmarea" link
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
 
-    /*
     $retval = getFrmJavascript('
-                // global variables used in HTMLArea (xinha)
+                // global variables used in CKEDITOR (HTMLArea (xinha))
                 // You must set _editor_url to the URL (including trailing slash) where
                 // where xinha is installed, it\'s highly recommended to use an absolute URL
                 //  eg: _editor_url = "/path/to/xinha/";
                 // You may try a relative URL if you wish]
                 //  eg: _editor_url = "../";
-                _editor_url        = "'.get_aa_url("misc/htmlarea/", '', false).'";
-                _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
+                _aa_url        = "'.get_aa_url("", '', false).'";
+                // _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
                 aa_slice_id        = "'.$slice_id.'";
-                aa_session         = "'.$sess->id.'";
-                aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
+                // aa_session         = "'.$sess->id.'";
+                // aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
                 );
-
-    */
 
     // HtmlArea scripts should be loaded allways - we use Dialog() function
     // from it ...
@@ -354,8 +351,7 @@ class inputform {
             // ----- collect all field_* parameters in order we can call display function
 
             // field_mode - how to display the field
-            $field_mode = !IsEditable($content4id->getValues($pri_field_id), $f, $profile) ?
-                          'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
+            $field_mode = !IsEditable($content4id->getValues($pri_field_id), $f, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
 
             if ( $edit ) {
                 $field_value     = $content4id->getValues($pri_field_id);
@@ -603,7 +599,7 @@ class AA_Inputfield {
      *  Sets object variables according to field setting
      * @param $field
      */
-    function setFromField(&$field) {
+    function setFromField($field) {
         if (isset($field) AND is_array($field)) {
             $this->id            = $field['id'];
             $this->varname       = varname4form($this->id);
@@ -612,8 +608,12 @@ class AA_Inputfield {
             $this->required      = $field['required'];
             $this->input_help    = $field['input_help'];
             $this->input_morehlp = $field['input_morehlp'];
-            $funct = ParamExplode($field["input_show_func"]);
-            $this->input_type    = AA_Stringexpand::unalias($funct[0]);
+
+            //$funct = ParamExplode($field["input_show_func"]);
+            //$this->input_type    = AA_Stringexpand::unalias($funct[0]);
+            $funct = array_values(AA_Widget::parseClassProperties($field["input_show_func"]));
+            $this->input_type    = substr(strtolower($funct[0]),10);
+
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
             $this->valid         = $field["input_validate"];
@@ -621,9 +621,10 @@ class AA_Inputfield {
             if ($field["multiple"] & 2) {   // translation
                 $this->translations = AA_Slice::getModule(unpack_id($field["slice_id"]))->getTranslations();
             }
-            if ( isset($field["const_arr"]) ) {
-                $this->const_arr  = $field["const_arr"];
-            }
+            // romoved - const_arr should be in input_show_func param
+            // if ( isset($field["const_arr"]) ) {
+            //     $this->const_arr  = $field["const_arr"];
+            // }
         }
     }
 
@@ -715,18 +716,6 @@ class AA_Inputfield {
         return get_if($this->varname_modified, $this->varname);
     }
 
-    /** get_inputtype function
-     * input_type manipulation functions
-     */
-    function get_inputtype() {
-        return $this->input_type;
-    }
-    /** set_inputtype function
-     * @param $type
-     */
-    function set_inputtype($type) {
-        $this->input_type = $type;
-    }
     /** getDbfield function
      *
      */
@@ -898,11 +887,11 @@ class AA_Inputfield {
                                $this->inputSelect($usevalue);
                                break;
             case 'anonym_rio':
-            case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+            case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
                                if ( !is_null($item) ) {
                                    $conds_str = $item->unalias($conds_str);
                                }
-                               $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
+                               $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
                                break;
             case 'anonym_mch':
             case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
@@ -1184,9 +1173,9 @@ class AA_Inputfield {
      */
     function getRadioButtonTag(&$k, &$v, $add='') {
         $name = $this->varname();
-        $ret  = "<input type='radio' name='$name' value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret  = "<label><input type=radio name='$name' value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
-        $ret .= ">".myspecialchars($v);
+        $ret .= '>'.myspecialchars($v).'</label>';
         return $ret;
     }
 
@@ -1199,9 +1188,9 @@ class AA_Inputfield {
     function getOneChBoxTag(&$k, &$v, $add='', $id = '') {
         $id_attr = empty($id) ? '' : " id='$id'";
         $name    = $this->varname();
-        $ret = "\n<input type='checkbox' name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret = "\n<label><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
-        $ret .= ">".myspecialchars($v);
+        $ret .= '>'.myspecialchars($v).'</label>';
         return $ret;
     }
 
@@ -1210,9 +1199,9 @@ class AA_Inputfield {
         $ret = '';
         if (count($parts)>1) {
             $ret .= "<div class=\"aa-langswitch\">";
-            $ret .= "\n  <input type=\"button\" value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
+            $ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
             foreach ($parts as $id => $prop) {
-                $ret .= "\n     <input type=\"button\" value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"$('$id').toggle();$('aa-but$id').toggleClassName('aa-open')\">";
+                $ret .= "\n     <input type=button value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"$('$id').toggle();$('aa-but$id').toggleClassName('aa-open')\">";
             }
             $ret .= "\n</div>";
         }
@@ -1278,7 +1267,7 @@ class AA_Inputfield {
     *                     (and perhaps BUTTON and SUBMIT also, but I do not see
     *                      any usage) - added by Jakub, 28.1.2003
     */
-    function inputText($maxsize=255, $size=25, $type="text") {
+    function inputText($maxsize=255, $size=25, $type="text", $placeholder='') {
         list($name,$val,$add) = $this->prepareVars('multi');
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
@@ -1293,6 +1282,9 @@ class AA_Inputfield {
         }
         if (!$input_type) {
             $input_type     = 'type="text"';
+        }
+        if ($placeholder) {
+            $input_type .= ' placeholder="'.myspecialchars($placeholder).'"';
         }
 
         $this->field_name('plus');
@@ -1485,7 +1477,7 @@ class AA_Inputfield {
     * @param $conds_str
     * @param $sort_str
     */
-    function inputRadio($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false) {
+    function inputRadio($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false, $const_arr='') {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
@@ -1927,7 +1919,7 @@ class AA_Inputfield {
             $accepts = '*/*';
         }
         $val  = myspecialchars($val);
-        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', true) : '';
 
         $this->field_name('plus');
         $this->echovar( "<input type=text name=\"$name\" size=60". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">&nbsp;$link" );
@@ -2213,10 +2205,10 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
  *                     (and perhaps BUTTON and SUBMIT also, but I do not see
  *                      any usage) - added by Jakub, 28.1.2003
  */
-function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text") {
+function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text", $placeholder='') {
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->inputText($maxsize, $size, $type);
+    $input->inputText($maxsize, $size, $type, $placeholder);
     $input->print_result();
 }
 
