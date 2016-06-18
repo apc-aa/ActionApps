@@ -92,7 +92,7 @@ if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
-(AA::$debug OR $debugtime) && AA::$dbg->group("view", "Start");
+(AA::$debug OR $debugtime) && AA::$dbg->group("/view.php3", "Start");
 
 // Need to be able to set content-type for RSS, cannot do it in the view
 // because the cache wont reflect this
@@ -123,11 +123,23 @@ if ($convertto) {
     $view_param['convertto']   = 'utf-8';
 }
 
-$ret = GetView($view_param);
-AA::sendHeaders(AA::getHeaders());
-echo $ret;
+//create keystring from values, which exactly identifies resulting content
+$cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
-(AA::$debug OR $debugtime) && AA::$dbg->groupend("view", "Completed view");
+if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
+    $cacheentry->processPage();
+} else {
+    list($page_content, $cache_sid) = GetViewFromDB($view_param, true);
+    $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
+    $cacheentry->processPage();
+
+    if (!$nocache) {
+        $str2find = new CacheStr2find($cache_sid, 'slice_id');
+        $pagecache->storePage($cache_key, $cacheentry, $str2find);
+    }
+}
+
+(AA::$debug OR $debugtime) && AA::$dbg->groupend("/view.php3", "Completed view");
 
 if ($debugtime) {
     AA::$dbg->duration_stat();

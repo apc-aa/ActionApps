@@ -96,6 +96,8 @@ if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
+(AA::$debug OR $debugtime) && AA::$dbg->group("/jsview.php3", "Start");
+
 $view_param = ParseViewParameters();
 
 if ($convertfrom) {
@@ -105,8 +107,33 @@ if ($convertto) {
     $view_param['convertto']   = $convertto;
 }
 
-// get view content; backslash quotes, remove newlines, escape </script, which will make the code broken
-echo 'document.write(\''. escape4js(GetView($view_param)) .'\');';           // print it as javascript
+//create keystring from values, which exactly identifies resulting content
+$cache_key = get_hash($view_param, PageCache::globalKeyArray());
+
+if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
+    $cacheentry->processPage();
+} else {
+    list($page_content, $cache_sid) = GetViewFromDB($view_param, true);
+
+    // special for jsview - print it as javascript!!!
+    // backslash quotes, remove newlines, escape </script, which will make the code broken
+    $page_content = 'document.write(\''. escape4js($page_content) .'\');';
+
+    $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
+    $cacheentry->processPage();
+
+    if (!$nocache) {
+        $str2find = new CacheStr2find($cache_sid, 'slice_id');
+        $pagecache->storePage($cache_key, $cacheentry, $str2find);
+    }
+}
+
+(AA::$debug OR $debugtime) && AA::$dbg->groupend("/jsview.php3", "Completed view");
+
+if ($debugtime) {
+    AA::$dbg->duration_stat();
+}
+
 exit;
 
 ?>
