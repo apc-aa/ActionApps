@@ -68,7 +68,6 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."csn_util.php3";
-require_once AA_INC_PATH."convert_charset.class.php3";
 require_once AA_INC_PATH."slice.class.php3";
 
 //-------------------------- Constants -----------------------------------------

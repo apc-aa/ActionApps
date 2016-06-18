@@ -98,11 +98,6 @@ require_once AA_INC_PATH."util.php3";
 // not sure if the line bellow works...
 $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
 
-function ConvertEncodingDeep($value, $from=null, $to=null) {
-    $encoder = ConvertCharset::singleton($from, $to);
-    return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
-}
-
 if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
 } elseif ($_REQUEST['inline']) {
