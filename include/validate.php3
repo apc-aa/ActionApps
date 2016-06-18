@@ -91,6 +91,7 @@ class AA_Validate extends AA_Serializable {
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(array('min'=>0));           break;
                 case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^_#[0-9_#a-zA-Z]{8}$/')); break;
                 case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[-.0-9a-zA-Z_]+$/')); break;
+                case 'regexp':   $standard_validators[$sv_key] = new AA_Validate_Regexp($parameters); break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);  break;
                 case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd($parameters);    break;
                 case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique($parameters); break;
@@ -241,7 +242,7 @@ class AA_Validate_Number extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=text pattern="[0-9]*"'
+        return 'type=number pattern="[0-9]*"'
                . (is_numeric($this->min) ? ' min='.$this->min : '')
                . (is_numeric($this->max) ? ' max='.$this->max : '')
                . (is_numeric($this->step) AND ($this->step > 1) ? ' step='.$this->step : '');
@@ -306,8 +307,9 @@ class AA_Validate_Regexp extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $max = ($this->maxlength > 0) ? ' maxlength='.(int)$this->maxlength : '';
-        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"'.$max : $max;  // we need to convert /^[a-z]*$/ to ^[a-z]*$
+        $add  = ($this->maxlength > 0) ? ' maxlength='.(int)$this->maxlength : '';
+        $add .= (($this->maxlength > 0) AND ($this->maxlength < 60)) ? ' size='.((int)$this->maxlength+2) : '';
+        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"'.$add : $add;  // we need to convert /^[a-z]*$/ to ^[a-z]*$
     }
 }
 
