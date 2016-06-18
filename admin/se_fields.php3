@@ -95,7 +95,7 @@ function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $ali
 
 /** ShowNewField function
  */
-function ShowNewField($from_slice) {
+function ShowNewField($from_slice, $slice_id) {
     $id       = 'New_Field';
     $name     = '';
     $show     = true;
@@ -108,7 +108,9 @@ function ShowNewField($from_slice) {
           <td colspan=\"8\">". _m('Slice') .' ';
           $template_id = unpack_id('AA_Core_Fields..');
           $from_slice  = get_if($from_slice, $template_id);
-          $slice_array = array_merge( array($template_id => 'Action Aplication Core'), AA_Modules::getUserModules('S'));
+          $slice_array = AA_Modules::getUserModules('S');
+          unset($slice_array[$template_id], $slice_array[$slice_id]);
+          $slice_array = array_merge( array($template_id => '* Action Aplication Core', $slice_id => '* '.AA_Slice::getModuleName($slice_id)._m(' (this)')), $slice_array);
           FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
     echo "\n</td>
           </tr>
