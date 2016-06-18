@@ -571,6 +571,68 @@ class AA_Widget extends AA_Components {
         }
         return new AA_Value($fld_value_arr, $flag);
     }
+
+    /** propertiesShop - repository of all used properties of Widgets
+     *  ussage:  return AA_Widget::propertiesShop(array('rows','max_characters'));
+     *  most of widgets uses this shop (to coordinate labels and helps), but there is no problem, if you use your own properties in widget, however
+     */
+    static function propertiesShop($props=array()) {
+        $ret = array();
+        foreach ($props as $pid) {
+            switch ($pid) {  //  id                                                    name                                    type   multi  persist validator, required, help, morehelp, example
+                case 'rows':                   $ret[$pid] = new AA_Property( $pid, _m("Rows"),                                 'int', false, true, 'int',    false, '', '', 10); break;
+                case 'max_characters':         $ret[$pid] = new AA_Property( $pid, _m("Max characters"),                       'int', false, true, 'int',    false, _m("max count of characters entered (maxlength parameter)"), '', 254); break;
+                case 'cols':                   $ret[$pid] = new AA_Property( $pid, _m("Columns"),                              'int', false, true, 'int',    false, '', '', 70); break;
+                case 'const':                  $ret[$pid] = new AA_Property( $pid, _m("Constants or slice"),                'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")); break;
+                case 'const_arr':              $ret[$pid] = new AA_Property( $pid, _m("Values array"),                      'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")); break;
+                case 'area_type':              $ret[$pid] = new AA_Property( $pid, _m("Type"),                              'string', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class'); break;
+                case 'width':                  $ret[$pid] = new AA_Property( $pid, _m("Width"),                                'int', false, true, 'int',    false, _m("width of the field in characters (size parameter)"),     '',  60); break;
+                case 'show_buttons':           $ret[$pid] = new AA_Property( $pid, _m("Buttons to show"),                   'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'); break;
+                case 'row_count':              $ret[$pid] = new AA_Property( $pid, _m("Row count"),                            'int', false, true, 'int',    false, '', '', 10); break;
+                case 'slice_field':            $ret[$pid] = new AA_Property( $pid, _m("slice field"),                       'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'); break;
+                case 'use_name':               $ret[$pid] = new AA_Property( $pid, _m("Use name"),                            'bool', false, true, 'bool',   false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'); break;
+                case 'adding':                 $ret[$pid] = new AA_Property( $pid, _m("Adding"),                              'bool', false, true, 'bool',   false, _m("adding the selected items to input field comma separated"), '', '0'); break;
+                case 'second_field':           $ret[$pid] = new AA_Property( $pid, _m("Second Field"),                      'string', false, true, 'string', false, _m("field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"), '', "source_href....."); break;
+                case 'add2constant':           $ret[$pid] = new AA_Property( $pid, _m("Add to Constant"),                     'bool', false, true, 'bool',   false, _m("if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"), '', "0"); break;
+                case 'bin_filter':             $ret[$pid] = new AA_Property( $pid, _m("Show items from bins"),                 'int', false, true, 'int',    false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'); break;
+                case 'filter_conds':           $ret[$pid] = new AA_Property( $pid, _m("Filtering conditions"),              'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"); break;
+                case 'sort_by':                $ret[$pid] = new AA_Property( $pid, _m("Sort by"),                           'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"); break;
+                case 'additional_slice_pwd':   $ret[$pid] = new AA_Property( $pid, _m("Slice password"),                    'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'); break;
+                case 'filter_conds_rw':        $ret[$pid] = new AA_Property( $pid, _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-source..........-RLIKE-Econnect"); break;
+                case 'columns':                $ret[$pid] = new AA_Property( $pid, _m("Columns"),                              'int', false, true, 'int',    false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3); break;
+                case 'move_right':             $ret[$pid] = new AA_Property( $pid, _m("Move right"),                          'bool', false, true, 'bool',   false, _m("Should the function move right or down to the next value?"), '', "1"); break;
+                case 'start_year':             $ret[$pid] = new AA_Property( $pid, _m("Starting Year"),                        'int', false, true, 'int',    false, _m("The (relative) start of the year interval"), '', "1"); break;
+                case 'end_year':               $ret[$pid] = new AA_Property( $pid, _m("Ending Year"),                          'int', false, true, 'int',    false, _m("The (relative) end of the year interval"), '', "10"); break;
+                case 'relative':               $ret[$pid] = new AA_Property( $pid, _m("Relative"),                            'bool', false, true, 'bool',   false, _m("If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."), '', "1"); break;
+                case 'show_time':              $ret[$pid] = new AA_Property( $pid, _m("Show time"),                           'bool', false, true, 'bool',   false, _m("show the time box? (1 means Yes, undefined means No)"), '', "1"); break;
+                case 'height':                 $ret[$pid] = new AA_Property( $pid, _m("Height"),                               'int', false, true, 'int',    false, _m("Max height of the widget in pixels")); break;
+                case 'offer_label':            $ret[$pid] = new AA_Property( $pid, _m("Title of \"Offer\" selectbox"),      'string', false, true, 'string', false, '','', _m("Our offer")); break;
+                case 'selected_label':         $ret[$pid] = new AA_Property( $pid, _m("Title of \"Selected\" selectbox"),   'string', false, true, 'string', false, '','', _m("Selected")); break;
+                case 'add_form':               $ret[$pid] = new AA_Property( $pid, _m("Add Form"),                          'string', false, true, 'string', false, _m("(for slices only) ID of the form for adding items into related slice"), '', '6f466be8fdf38d67ae8b4973f7c95761'); break;
+                case 'allowed_ftypes':         $ret[$pid] = new AA_Property( $pid, _m("Allowed file types"),                'string', false, true, 'string', false, '', '', "image/*"); break;
+                case 'label':                  $ret[$pid] = new AA_Property( $pid, _m("Label"),                             'string', false, true, 'string', false, _m("To be printed before the file upload field"), '', _m("File: ")); break;
+                case 'hint':                   $ret[$pid] = new AA_Property( $pid, _m("Hint"),                              'string', false, true, 'string', false, _m("appears beneath the file upload field"), '', _m("You can select a file ...")); break;
+                case 'display_url':            $ret[$pid] = new AA_Property( $pid, _m("Display URL"),                          'int', false, true, 'int',    false, _m("0 - show, 1 - show if not empty, 2 - do not show"), '', 0); break;
+                case 'show_actions':           $ret[$pid] = new AA_Property( $pid, _m("Actions to show"),                   'string', false, true, 'string', false, _m("Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."), '', 'AMB'); break;
+                case 'admin_design':           $ret[$pid] = new AA_Property( $pid, _m("Admin design"),                        'bool', false, true, 'bool',   false, _m("If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."), '' , '0'); break;
+                case 'tag_prefix':             $ret[$pid] = new AA_Property( $pid, _m("Tag Prefix"),                        'string', false, true, 'string', false, _m("Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."), '', 'AMB'); break;
+                case 'show_buttons':           $ret[$pid] = new AA_Property( $pid, _m("Buttons to show"),                   'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."), '', 'MDR'); break;
+                case 'level_count':            $ret[$pid] = new AA_Property( $pid, _m("Level count"),                          'int', false, true, 'int',    false, _m("Count of level boxes"), '', "3"); break;
+                case 'box_width':              $ret[$pid] = new AA_Property( $pid, _m("Box width"),                            'int', false, true, 'int',    false, _m("Width in characters"), '', "60"); break;
+                case 'target_size':            $ret[$pid] = new AA_Property( $pid, _m("Size of target"),                       'int', false, true, 'int',    false, _m("Lines in the target select box"), '', '5'); break;
+                case 'horizontal':             $ret[$pid] = new AA_Property( $pid, _m("Horizontal"),                          'bool', false, true, 'bool',   false, _m("Show levels horizontally"), '', '1'); break;
+                case 'first_selectable_level': $ret[$pid] = new AA_Property( $pid, _m("First selectable"),                     'int', false, true, 'int',    false, _m("First level which will have a Select button"), '', '0'); break;
+                case 'level_names':            $ret[$pid] = new AA_Property( $pid, _m("Level names"),                       'string', false, true, 'string', false, _m("Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."), '', _m("Top level~Second level~Keyword")); break;
+                case 'change_label':           $ret[$pid] = new AA_Property( $pid, _m("Label for Change Password"),         'string', false, true, 'string', false, _m("Replaces the default 'Change Password'"), '', _m("Change your password")); break;
+                case 'retype_label':           $ret[$pid] = new AA_Property( $pid, _m("Label for Retype New Password"),     'string', false, true, 'string', false, _m("Replaces the default \"Retype New Password\""), '', _m("Retype the new password")); break;
+                case 'delete_label':           $ret[$pid] = new AA_Property( $pid, _m("Label for Delete Password"),         'string', false, true, 'string', false, _m("Replaces the default \"Delete Password\""), '', _m("Delete password (set to empty)")); break;
+                case 'change_hint':            $ret[$pid] = new AA_Property( $pid, _m("Help for Change Password"),          'string', false, true, 'string', false, _m("Help text under the Change Password box (default: no text)"), '', _m("To change password, enter the new password here and below")); break;
+                case 'retype_hint':            $ret[$pid] = new AA_Property( $pid, _m("Help for Retype New Password"),      'string', false, true, 'string', false, _m("Help text under the Retype New Password box (default: no text)"), '', _m("Retype the new password exactly the same as you entered into \"Change Password\".")); break;
+                case 'url':                    $ret[$pid] = new AA_Property( $pid, _m("URL"),                               'string', false, true, 'string', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml")); break;
+            }
+        }
+        return $ret;
+    }
 }
 
 /** Textarea widget */
@@ -596,10 +658,7 @@ class AA_Widget_Txt extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties() {
-        return array (                   //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'rows'              => new AA_Property( 'rows',              _m("Rows"),            'int',  false, true, 'int', false, '', '', 20),
-            'max_characters'    => new AA_Property( 'max_characters',    _m("Max characters"),  'int',  false, true, 'int', false, _m("max count of characters entered (maxlength parameter)"), '', '')
-            );
+        return AA_Widget::propertiesShop(array('rows','max_characters'));
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -669,12 +728,7 @@ class AA_Widget_Tpr extends AA_Widget {
      * Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'rows'                   => new AA_Property( 'rows',                   _m("Rows"),            'int',  false, true, 'int',  false, '', '', 10),
-            'cols'                   => new AA_Property( 'cols',                   _m("Columns"),         'int',  false, true, 'int',  false, '', '', 70),
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        return AA_Widget::propertiesShop(array('rows','cols','const', 'const_arr'));
     }
 }
 
@@ -698,11 +752,7 @@ class AA_Widget_Edt extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'rows'                   => new AA_Property( 'rows',                   _m("Rows"),            'int',  false, true, 'int',  false, '', '', 10),
-            'cols'                   => new AA_Property( 'cols',                   _m("Columns"),         'int',  false, true, 'int',  false, '', '', 70),
-            'area_type'              => new AA_Property( 'area_type',              _m("Type"),                 'string', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class')
-            );
+        return AA_Widget::propertiesShop(array('rows','cols','area_type'));
     }
 }
 
@@ -729,10 +779,7 @@ class AA_Widget_Fld extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60)
-            );
+        return AA_Widget::propertiesShop(array('max_characters', 'width'));
     }
 }
 
@@ -759,13 +806,9 @@ class AA_Widget_Mfl extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'),
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
-            'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60),
-            'rows'                   => new AA_Property( 'rows',                   _m("Rows"),                 'int',  false, true, 'int',  false, _m("if 1 (default), textfield used. for rows>1 textareas are used"), '', 1)
-            );
+        $ret = AA_Widget::propertiesShop(array('show_buttons','row_count','max_characters','width','rows'));
+        $ret['rows']->setHelp(_m("if 1 (default), textfield used. for rows>1 textareas are used"))->setExample(1);
+        return $ret;
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -790,7 +833,7 @@ class AA_Widget_Mfl extends AA_Widget {
 
         $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
         $widget_add2    = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
-        
+
         $widget        = '';
         // display at least one option
         for ( $i=0, $ino=max(1,$row_count,$value->count()); $i<$ino; ++$i) {
@@ -801,7 +844,14 @@ class AA_Widget_Mfl extends AA_Widget {
             if ($rows > 1) {
                 $widget      .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_add>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             } else {
-                $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required $widget_add></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $input_type     = 'type=text';
+                if (is_object($aa_property->validator)) {
+                    $input_type = $aa_property->validator->getHtmlInputAttr();
+                }
+                if (!$input_type) {
+                    $input_type     = 'type=text';
+                }
+                $widget      .= "<div><input $input_type name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required $widget_add></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
         }
         $widget           = "<div id=\"allrows$base_id\">$widget</div>";
@@ -809,7 +859,8 @@ class AA_Widget_Mfl extends AA_Widget {
         if ($rows > 1) {
             $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><textarea name=\'$base_name"."[mfl][]\' rows=\'$rows\' ></textarea></div>'); return false;\">$img</a>";
         } else {
-            $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input type=text name=\'$base_name"."[mfl][]\' value=\'\' size=\'$width\' maxlength=\'$max_characters\' ></div>'); return false;\">$img</a>";
+            $input_type = str_replace('"','&quot;',$input_type);
+            $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input $input_type name=\'$base_name"."[mfl][]\' value=\'\' size=\'$width\' maxlength=\'$max_characters\' ></div>'); return false;\">$img</a>";
         }
 
 
@@ -866,21 +917,7 @@ class AA_Widget_Pre extends AA_Widget {
      * Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'max_characters'         => new AA_Property( 'max_characters',         _m("max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'                  => new AA_Property( 'width',                  _m("width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  60),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'use_name'               => new AA_Property( 'use_name',               _m("Use name"),             'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'),
-            'adding'                 => new AA_Property( 'adding',                 _m("Adding"),               'bool', false, true, 'bool', false, _m("adding the selected items to input field comma separated"), '', '0'),
-            'second_field'           => new AA_Property( 'second_field',           _m("Second Field"),         'string', false, true, 'string', false, _m("field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"), '', "source_href....."),
-            'add2constant'           => new AA_Property( 'add2constant',           _m("Add to Constant"),      'bool', false, true, 'bool', false, _m("if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"), '', "0"),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        return AA_Widget::propertiesShop(array('const','max_characters','width','slice_field','use_name','adding','second_field','add2constant','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr'));
     }
 }
 
@@ -907,17 +944,7 @@ class AA_Widget_Sel extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'use_name'               => new AA_Property( 'use_name',               _m("Use name"),             'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            'filter_conds_rw'        => new AA_Property( 'filter_conds_rw',        _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-headline........-RLIKE-A"),
-            );
+        return AA_Widget::propertiesShop(array('const','slice_field','use_name','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr', 'filter_conds_rw'));
     }
 }
 
@@ -944,26 +971,16 @@ class AA_Widget_Rio extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'columns'                => new AA_Property( 'columns',                _m("Columns"),              'int',  false, true, 'int',  false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3),
-            'move_right'             => new AA_Property( 'move_right',             _m("Move right"),           'bool', false, true, 'bool', false, _m("Should the function move right or down to the next value?"), '', "1"),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        return AA_Widget::propertiesShop(array('const','columns', 'move_right', 'slice_field','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr'));
     }
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
     function getRadioButtonTag($option, $input_name, $input_id, $add='') {
-        $ret  = "\n<input type=radio name=\"$input_name\" id=\"$input_id\" value='". myspecialchars($option['k']) ."' $add";
+        $ret  = "\n<label><input type=radio name=\"$input_name\" id=\"$input_id\" value='". myspecialchars($option['k']) ."' $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
-        $ret .= ">".myspecialchars($option['v']);
+        $ret .= ">".myspecialchars($option['v']).'</label>';
         return $ret;
     }
 
@@ -1019,12 +1036,7 @@ class AA_Widget_Dte extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'start_year'             => new AA_Property( 'start_year',             _m("Starting Year"),        'int',  false, true, 'int',  false, _m("The (relative) start of the year interval"), '', "1"),
-            'end_year'               => new AA_Property( 'end_year',               _m("Ending Year"),          'int',  false, true, 'int',  false, _m("The (relative) end of the year interval"), '', "10"),
-            'relative'               => new AA_Property( 'relative',               _m("Relative"),             'bool', false, true, 'bool', false, _m("If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."), '', "1"),
-            'show_time'              => new AA_Property( 'show_time',              _m("Show time"),            'bool', false, true, 'bool', false, _m("show the time box? (1 means Yes, undefined means No)"), '', "1")
-            );
+        return AA_Widget::propertiesShop(array('start_year','end_year', 'relative', 'show_time'));
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -1230,18 +1242,7 @@ class AA_Widget_Mch extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'columns'                => new AA_Property( 'columns',                _m("Columns"),              'int',  false, true, 'int',  false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3),
-            'move_right'             => new AA_Property( 'move_right',             _m("Move right"),           'bool', false, true, 'bool', false, _m("Should the function move right or down to the next value?"), '', "1"),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            'height'                 => new AA_Property( 'height',                 _m("Height"),               'int',    false, true, 'int',    false, _m("Max height of the widget in pixels"))
-            );
+        return AA_Widget::propertiesShop(array('const','columns', 'move_right', 'slice_field','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr','height'));
     }
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
@@ -1348,16 +1349,7 @@ class AA_Widget_Mse extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        return AA_Widget::propertiesShop(array('const','row_count', 'slice_field','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr'));
     }
 }
 
@@ -1384,19 +1376,7 @@ class AA_Widget_Wi2 extends AA_Widget_Mch {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
-            'offer_label'            => new AA_Property( 'offer_label',            _m("Title of \"Offer\" selectbox"), 'string', false, true, 'string', false, '','', _m("Our offer")),
-            'selected_label'         => new AA_Property( 'selected_label',         _m("Title of \"Selected\" selectbox"), 'string', false, true, 'string', false, '','', _m("Selected")),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'add_form'               => new AA_Property( 'add_form',               _m("Add Form"),             'string', false, true, 'string', false, _m("(for slices only) ID of the form for adding items into related slice"), '', '6f466be8fdf38d67ae8b4973f7c95761'),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        return AA_Widget::propertiesShop(array('const','row_count','offer_label','selected_label','slice_field','bin_filter','filter_conds','sort_by','add_form','additional_slice_pwd','const_arr'));
     }
 }
 
@@ -1423,12 +1403,7 @@ class AA_Widget_Fil extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'allowed_ftypes'         => new AA_Property( 'allowed_ftypes',         _m("Allowed file types"),   'string', false, true, 'string', false, '', '', "image/*"),
-            'label'                  => new AA_Property( 'label',                  _m("Label"),                'string', false, true, 'string', false, _m("To be printed before the file upload field"), '', _m("File: ")),
-            'hint'                   => new AA_Property( 'hint',                   _m("Hint"),                 'string', false, true, 'string', false, _m("appears beneath the file upload field"), '', _m("You can select a file ...")),
-            'display_url'            => new AA_Property( 'display_url',            _m("Display URL"),          'int',    false, true, 'int',    false, _m("0 - show, 1 - show if not empty, 2 - do not show"), '', 0)
-            );
+        return AA_Widget::propertiesShop(array('allowed_ftypes','label', 'hint','display_url'));
     }
 
     /** @return AA_Value for the data send by the widget
@@ -1585,14 +1560,7 @@ class AA_Widget_Tag extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            );
+        return AA_Widget::propertiesShop(array('const','bin_filter','filter_conds','slice_field','sort_by','additional_slice_pwd'));
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -1682,21 +1650,9 @@ class AA_Widget_Iso extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                => new AA_Property( 'const',                _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'row_count'            => new AA_Property( 'row_count',            _m("Row count in the list"),'int',  false, true, 'int',  false, '', '', 15),
-            'show_actions'         => new AA_Property( 'show_actions',         _m("Actions to show"),      'string', false, true, 'string', false, _m("Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."), '', 'AMB'),
-            'admin_design'         => new AA_Property( 'admin_design',         _m("Admin design"),         'bool', false, true, 'bool', false, _m("If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."), '' , '0'),
-            'tag_prefix'           => new AA_Property( 'tag_prefix',           _m("Tag Prefix"),           'string', false, true, 'string', false, _m("Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."), '', 'AMB'),
-            'show_buttons'         => new AA_Property( 'show_buttons',         _m("Buttons to show"),      'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."), '', 'MDR'),
-            'bin_filter'           => new AA_Property( 'bin_filter',           _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
-            'filter_conds'         => new AA_Property( 'filter_conds',         _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-            'filter_conds_rw'      => new AA_Property( 'filter_conds_rw',      _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items in related items window. This conds user can change."), '', "conds[0][source..........]=Econnect"),
-            'slice_field'          => new AA_Property( 'slice_field',          _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-            'sort_by'              => new AA_Property( 'sort_by',              _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-            'additional_slice_pwd' => new AA_Property( 'additional_slice_pwd', _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-            'const_arr'            => new AA_Property( 'const_arr',            _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        $ret = AA_Widget::propertiesShop(array('const','row_count','show_actions','admin_design','tag_prefix','show_buttons','bin_filter','filter_conds','filter_conds_rw','slice_field','sort_by','additional_slice_pwd','const_arr'));
+        $ret['filter_conds_rw']->setHelp(_m("Conditions for filtering items in related items window. This conds user can change."));
+        return $ret;
     }
 }
 
@@ -1747,21 +1703,7 @@ class AA_Widget_Hco extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
-            'level_count'            => new AA_Property( 'level_count',            _m("Level count"),          'int',  false, true, 'int',  false, _m("Count of level boxes"), '', "3"),
-            'box_width'              => new AA_Property( 'box_width',              _m("Box width"),            'int',  false, true, 'int',  false, _m("Width in characters"), '', "60"),
-            'target_size'            => new AA_Property( 'target_size',            _m("Size of target"),       'int',  false, true, 'int',  false, _m("Lines in the target select box"), '', '5'),
-            'horizontal'             => new AA_Property( 'horizontal',             _m("Horizontal"),           'bool', false, true, 'bool', false, _m("Show levels horizontally"), '', '1'),
-            'first_selectable_level' => new AA_Property( 'first_selectable_level', _m("First selectable"),     'int',  false, true, 'int',  false, _m("First level which will have a Select button"), '', '0'),
-            'level_names'            => new AA_Property( 'level_names',            _m("Level names"),          'string', false, true, 'string', false, _m("Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."), '', _m("Top level~Second level~Keyword")),
-    //      'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
-    //      'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
-    //      'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
-    //      'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
-    //      'relation_field'         => new AA_Property( 'relation_field',         _m("Relation field"),       'string', false, true, 'string', false, _m("(for slices only) Field id of the field which defines the relations in the slice. relation........ is default"), '', 'relation........'),
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
-            );
+        return AA_Widget::propertiesShop(array('const','level_count', 'box_width','target_size','horizontal','first_selectable_level','level_names','const_arr'));
     }
 
 
@@ -1870,14 +1812,7 @@ class AA_Widget_Pwd extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'width'                  => new AA_Property( 'width',                  _m("Width"),                         'int',  false, true, 'int',  false, _m("width of the three fields in characters (size parameter)"),     '',  60),
-            'change_label'           => new AA_Property( 'change_label',           _m("Label for Change Password"),     'string', false, true, 'string', false, _m("Replaces the default 'Change Password'"), '', _m("Change your password")),
-            'retype_label'           => new AA_Property( 'retype_label',           _m("Label for Retype New Password"), 'string', false, true, 'string', false, _m("Replaces the default \"Retype New Password\""), '', _m("Retype the new password")),
-            'delete_label'           => new AA_Property( 'delete_label',           _m("Label for Delete Password"),     'string', false, true, 'string', false, _m("Replaces the default \"Delete Password\""), '', _m("Delete password (set to empty)")),
-            'change_hint'            => new AA_Property( 'change_hint',            _m("Help for Change Password"),      'string', false, true, 'string', false, _m("Help text under the Change Password box (default: no text)"), '', _m("To change password, enter the new password here and below")),
-            'retype_hint'            => new AA_Property( 'retype_hint',            _m("Help for Retype New Password"),  'string', false, true, 'string', false, _m("Help text under the Retype New Password box (default: no text)"), '', _m("Retype the new password exactly the same as you entered into \"Change Password\".")),
-            );
+        return AA_Widget::propertiesShop(array('width','change_label', 'retype_label','delete_label','change_hint','retype_hint'));
     }
 }
 
@@ -1975,9 +1910,7 @@ class AA_Widget_Lup extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'url'                    => new AA_Property( 'url',                    _m("URL"),                  'string', false, true, 'string', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml"))
-            );
+        return AA_Widget::propertiesShop(array('url'));
     }
 }
 
@@ -2121,40 +2054,22 @@ class AA_Property extends AA_Storable {
     }
 
 
-    /** getId function */
-    function getId() {
-        return $this->id;
-    }
+    /** getters */
+    function getId()           { return $this->id;           }
+    function getName()         { return $this->name;         }
+    function getType()         { return $this->type;         }
+    function getHelp()         { return $this->input_help;   }
+    function getConstants()    { return $this->const_arr;    }
+    function getTranslations() { return $this->translations; }
 
-    /** getName function */
-    function getName() {
-        return $this->name;
-    }
-
-    /** getType function */
-    function getType() {
-        return $this->type;
-    }
-
-    /** getHelp function */
-    function getHelp() {
-        return $this->input_help;
-    }
-
-    /** getConstants function */
-    function getConstants() {
-        return $this->const_arr;
-    }
-
-    /** getTranslations function */
-    function getTranslations() {
-        return $this->translations;
-    }
+    /** setters */
+    function setHelp($val)     { $this->input_help = (string)$val; return $this; }
+    function setExample($val)  { $this->example    =         $val; return $this; }
 
     /** set the Values array and also the validator */
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
-        $this->validator = new AA_Validate_Enum($this->const_arr);
+        $this->validator = new AA_Validate_Enum($this->const_arr); // does it work? it should be in ['possible_values'=>[]] format, no? Honza 2016-05-11
     }
 
     /** called before StoreItem to fill the field with correct data */
