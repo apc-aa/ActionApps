@@ -52,7 +52,7 @@ function AafinderSliceLink($slice_id) {
 }
 
 function AafinderSiteLink($spot_id, $slice_id) {
-    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Modules::getModuleProperty($slice_id,'name') .")");
+    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Modules::getModuleProperty($slice_id,'name') .")");
 }
 
 if (!IsSuperadmin()) {
