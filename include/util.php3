@@ -53,9 +53,10 @@ function with($object) {
  * @param $url
  * @param $txt
  */
-function a_href($url, $txt, $class='') {
-    $class = $class ? " class=\"$class\"" : '';
-    return '<a href="'.myspecialchars($url) ."\"$class>$txt</a>";
+function a_href($url, $txt, $class='', $blank=false) {
+    $add  = $class ? " class=\"$class\"" : '';
+    $add .= $blank ? ' target=_blank' : '';
+    return '<a href="'.myspecialchars($url) ."\"$add>$txt</a>";
 }
 
 /** expand_return_url function
@@ -218,6 +219,12 @@ function PhpFloat($value) {
     return str_replace(',', '.',(float)str_replace(',', '.', trim($value)));
 }
 
+function ConvertEncodingDeep($value, $from=null, $to=null) {
+    $encoder = ConvertCharset::singleton($from, $to);
+    return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
+}
+
+
 /** add_vars function
  *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
  *   to GLOBALS.
@@ -294,6 +301,18 @@ function array_merge_append(&$array, $newValues) {
         }
     }
     return $array;
+}
+
+
+function recursive_array_replace($find, $replace, $array) {
+    if (!is_array($array)) {
+        return str_replace($find, $replace, $array);
+    }
+    $newArray = array();
+    foreach ($array as $key => $value) {
+        $newArray[$key] = recursive_array_replace($find, $replace, $value);
+    }
+    return $newArray;
 }
 
 /** AddslashesArray function
@@ -1076,6 +1095,8 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
     echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".AA::$encoding."\">\n";
     if ($js_lib) {
         FrmJavascriptFile( 'javascript/js_lib.js' );
+        FrmJavascriptFile( 'javascript/jquery.min.js' );
+        FrmJavascriptFile( 'javascript/aajslib-jquery.php' );
     }
 }
 
@@ -1528,7 +1549,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version($format='full') {
-    $version = '2.51.0';
+    $version = '2.90.0';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.phpversion();
     switch ($format) {
         case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);

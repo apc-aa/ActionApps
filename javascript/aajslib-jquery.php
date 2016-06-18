@@ -107,6 +107,10 @@ function AA_AjaxCss(selector, url, param, onload) {
     $(selector).load(url, param, onload);
 }
 
+function AA_InsertHtml(into_id, code) {
+   $(jqid(into_id)).append(code);
+}
+
 /** selector_update is optional and is good for updating table rows, where we want to show/hide tr, but update td */
 function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, url, selector_update) {
     var link = jqid(link_id);
