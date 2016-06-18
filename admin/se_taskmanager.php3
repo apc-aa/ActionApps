@@ -82,6 +82,7 @@ $manager_settings['itemview']['format']['compact_top'] = '
                                               <th>aa_user</th>
                                               <th>priority</th>
                                               <th>selector</th>
+                                              <th>object</th>
                                               <th>params</th>
                                             </tr>';
 $manager_settings['itemview']['format']['odd_row_format'] = '
@@ -91,6 +92,7 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
                                         <td>_#AA_USER_</td>
                                         <td>_#PRIORITY</td>
                                         <td>_#SELECTOR</td>
+                                        <td>_#OBJECT__</td>
                                         <td>_#PARAMS__</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 
