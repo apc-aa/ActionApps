@@ -66,6 +66,7 @@ class AA_Router {
     protected $apc;
     protected $slices;
     protected $home;
+    protected $web_languages;
 
     // Store the single instance of Database
     private static $_instance;
@@ -73,13 +74,21 @@ class AA_Router {
     function __construct($slices=null, $home='') {
         $this->slices = is_array($slices) ? $slices : array();
         $this->home   = $home;
+        $this->web_languages = array();
     }
 
-    public static function singleton($type, $slices=null, $home='') {
+    public static function singleton($type, $slices=null, $home='', $web_languages=null) {
         if (!isset(self::$_instance)) {
             self::$_instance = new $type($slices, $home);
         }
+        if (is_array($web_languages)) {
+            self::$_instance->setWebLangs($web_languages);
+        }
         return self::$_instance;
+    }
+
+    protected function setWebLangs(array $web_languages) {
+        $this->web_languages = $web_languages;
     }
 
     /** view scroller function
@@ -231,7 +240,7 @@ class AA_Router_Seo extends AA_Router {
     protected $_seocache;
 
     function parse($url) {
-        $this->apc          = self::parseApc($url, $this->home);
+        $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
         $this->apc['state'] = self::getState($this->apc);
 
         /** Login From Ussage:
@@ -277,17 +286,31 @@ class AA_Router_Seo extends AA_Router {
     }
 
     /** static function - caling from outside is not necessary, now */
-    function parseApc($apc, $home='') {
-        if (!trim($apc,' \t/')) {
-            $apc = $home;
+    function parseApc($apc, $home='', $langs=array()) {
+        $parsed_url = parse_url(trim($apc,' \t/') ? $apc : $home);
+        $arr        = explode('/', trim($parsed_url['path'],'/'));
+        $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
+
+        $matches    = array();
+        if (!(preg_match("/($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
+            return array();
         }
-        $parsed_url = parse_url($apc);
-        $arr = explode('/', trim($parsed_url['path'],'/'));
-        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],trim($home,'/'));
+
+        $ret        = array();
+        foreach (array('xlang','xpage','xflag','xcat') as $key => $varname) {
+            $ret[$varname] = $matches[$key+1];
+        }
 
         // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
-        if (count($arr) < 2) {
-            $arr = explode('/', trim( parse_url($home, PHP_URL_PATH),'/'));
+        // if (count($arr) < 2) {
+        if ( count($arr) < 2) {
+            if ( (substr(trim($apc),-1)=='/') OR ($arr[0]==$ret['xlang']) OR !count($langs)) {
+                                                                              // the last OR with $lang is_a used for backward compatibility - the slash rule will be applied
+                                                                              // only to newer sites, where you set web_languages.
+                                                                              // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
+                                                                              // (and should be rewritten to /cz2/ or better /cz2/page )
+                $arr = explode('/', trim( parse_url($home, PHP_URL_PATH),'/'));
+            }
         }
 
         for ($i=1, $ino=count($arr); $i<$ino; ++$i) {
@@ -312,7 +335,16 @@ class AA_Router_Seo extends AA_Router {
             $ret .= $apc_state['xseo'.$i]. '/';
             $i++;
         }
-        $ret = rtrim($ret,"/");
+        // the state should be direcory-like: /cz/, /en2/, ... not /cz, /en2 - the reason is we want to report the /entropy url as 404, not as xlang=en, xflag=tropy
+        // which could happen when site.php is called like:
+        //   RewriteEngine on
+        //   RewriteRule ^$ /apc-aa/modules/site/site.php3 [L,QSA]
+        //   RewriteCond %{REQUEST_FILENAME} !-f
+        //   RewriteCond %{REQUEST_FILENAME} !-d
+        //   RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]
+        if ($i>1) {
+            $ret = rtrim($ret,"/");
+        }
 
         // add querystring
         if ($apc_state['xqs']) {
@@ -410,7 +442,7 @@ class AA_Router_Seo extends AA_Router {
      */
     function xid($param=null, $url=null) {
 
-        $apc = empty($url) ? $this->apc : self::parseApc($url);
+        $apc = empty($url) ? $this->apc : self::parseApc($url, $this->home, $this->web_languages);
 
         if (empty($param)) {
             // current item id
@@ -471,20 +503,6 @@ class AA_Router_Seo extends AA_Router {
             $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', array(join('-',$this->slices), $seo_string)),0,32);
         }
         return $this->_seocache[$seo_string];
-    }
-
-    /** $varnames - array()! of varnames */
-    function _parseRegexp($varnames, $regexp, $str, $strdef='') {
-        if (!$str) { $str = $strdef; }
-        $ret     = array();
-        $matches = array();
-        if (!(preg_match($regexp, $str, $matches))) {
-            print("Error initial string $strdef doesn't match regexp $regexp\n<br>");
-        }
-        foreach ($varnames as $key => $varname) {
-            $ret[$varname] = $matches[$key+1];
-        }
-        return $ret;
     }
 
     function _maxKey($arr, $prefix) {

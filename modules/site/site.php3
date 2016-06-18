@@ -74,6 +74,16 @@ function IsInDomain( $domain ) {
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
+
+function Die404($page=null) {
+    function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
+    if (is_null($page)) {
+        echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>';
+    } else {
+        echo AA_Stringexpand::unalias($page);
+    }
+    exit;
+}
 // ----------------- function definition end -----------------------------------
 
 
@@ -94,11 +104,16 @@ require_once AA_BASE_PATH."modules/site/router.class.php";
 // is_object( $db ) || ($db = getDB());
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-$host = ltrim($_SERVER['HTTP_HOST'],'w.');
-AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url',array("http://$host/", "https://$host/","http://www.$host/","https://www.$host/")))));
+if (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) {
+    $host2      = substr($host,4);
+} else {
+    $host2      = 'www.'.$host;
+}
+$domain_arr = array("http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2");
+AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url', $domain_arr))));
 
 if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
-    echo "<br>Error: no 'site_id' or 'site_id' is invalid";
+    Die404();
     exit;
 }
 
@@ -129,7 +144,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
     // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
     $home       = AA_Stringexpand::unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
-    $router     = AA_Router::singleton('AA_Router_Seo', $seo_slices, $home);
+    $router     = AA_Router::singleton('AA_Router_Seo', $seo_slices, $home, $module->getProperty('web_languages'));
 
     // use REDIRECT_URL for homepage redirects:
     //    RewriteRule ^/?$ /en/home [QSA]
@@ -146,7 +161,19 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     $lang_file    = substr_replace($lang_file, $apc_state['xlang'], 0, 2);
 
     // count hit for current page - deffered after the page is sent to user
-    $hit_lid = $router->xid();
+    if (!($hit_lid = $router->xid())) {
+        if ($module->getProperty('page404') == '2') {
+            Die404();
+            exit;
+        }
+        if ($module->getProperty('page404') == '3') {
+            Die404($module->getProperty('page404_code'));
+            exit;
+        }
+        // else - older behavior - site cares
+    }
+    //    } elseif( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
+    //        $apc_state = $router->parse("/$lang_file/_404-not-found");
 } elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$module->getProperty('state_file');
@@ -155,7 +182,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 }
 
 if ( !isset($apc_state) )  {
-    echo "<br>Error: no 'state_file' nor 'apc_state' variable defined";
+    Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null);
     exit;
 }
 

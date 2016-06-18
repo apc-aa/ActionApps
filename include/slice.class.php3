@@ -789,7 +789,7 @@ class AA_Modulesettings_Slice extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, array('translations'));
+        return in_array($prop, array('translations', 'autofields'));
     }
 
     /** allows storing object in database
@@ -797,7 +797,8 @@ class AA_Modulesettings_Slice extends AA_Object {
      */
     static function getClassProperties() {
         return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
-            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true,  true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...'))
+            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
+            'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.'))
             );
     }
 }
@@ -815,7 +816,7 @@ class AA_Modulesettings_Site extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, array('translate_slice', 'add_aliases'));
+        return in_array($prop, array('translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code'));
     }
 
     /** allows storing object in database
@@ -824,7 +825,13 @@ class AA_Modulesettings_Site extends AA_Object {
     static function getClassProperties() {
         return array ( //                             id             name                                 type     multi  persist validator, required, help, morehelp, example
             'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"), 'string', false, true, array('enum', AA_Modules::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
-            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum', AA_Modules::getUserModules('W')), false, _m('select sitemodule, where we have to look for additional {_:...} aliases'))
+            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum',   AA_Modules::getUserModules('W')), false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
+            'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),    'string', true,  true, array('regexp', array('pattern'=>'/^[a-z]{2}$/','maxlength'=>2)), false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apca-aa/modules/site/site.php3 [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]<br>')),
+            'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),    'string', false, true, array('enum',   array('1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below'))), false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
+            'page404_code'    => new AA_Property( 'page404_code',     _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
+            'sitemap_alias'   => new AA_Property( 'sitemap_alias',    _m("sitemap.xml alias"),       'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias shoud in each slice generate full url of the item. For private/hidden items it shopuld generate empty string in order the URL is not shown.')),
+            'perm_alias'      => new AA_Property( 'perm_alias',       _m("Permission alias"),        'string', false, true, '', false, _m('You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word "Valid", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule.')),
+            'loginpage_code'  => new AA_Property( 'loginpage_code',   _m("HTML code for \"Login page\""), 'text', false, true)
             );
     }
 }
