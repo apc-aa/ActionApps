@@ -220,13 +220,10 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
     $slices4cache = array(AA::$site_id);
 }
 
-AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
-
 if (!$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
     $GLOBALS['pagecache']->storePage($cache_key, $cacheentry, $str2find);
 }
-AA::$debug && AA::$dbg->warn(__FILE__."-".__LINE__);
 
 if ($debugtime) {
     echo '<br><br>Site cache MIS!!!';

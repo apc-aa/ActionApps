@@ -1,18 +1,40 @@
-16-06-19 - new possibility to extend sitemodule ussage by redirecting all 
-(honzam)   request to AA (excluding existing files like img, css), so you can 
-           set the Appache like: 
+16-06-30 - THIS VERSION IS USED ON PRODUCTION SERVER AGAIN
+(honzam) - new experimental feature to allow "Fields defined by items" in slice
+            - you can use special slice for additional fields definition.
+            There is slice option, where you can write IDs if items, which
+            defines the fields, or better something like
+              {ids:ac4940d37d6601ce969dc9a7e41826fc}.
+            Could be used for data slice, which stores values for user created
+            forms.
+         - new possibility for item delimiter - jsonasoc. It creates
+           JSON asociative array (object) using -> operator - just like:
+             {item:{@relation........:-}:_#KEY_____->_#VALUE___:jsonasoc}
+           It could be used for creation of JSON properties for {input} widget
+           properties, for example
+         - profile links in slice permission settings now displays number
+           of added rules for that profile (if any)
+         - fix AJAX calls, buggy links, filler, redirection - all broken with
+           switch to new php5+ session management
+         - fixed validators and right input types (size/maxlength) for widgets
+         - speedup of admin pages rendering by:
+            - async + defer cached javascript load
+            - removal of document.write() for cached js
+         - fixed sitemodule behavior for domain.org/?... links
+16-06-19 - new possibility to extend sitemodule ussage by redirecting all
+(honzam)   request to AA (excluding existing files like img, css), so you can
+           set the Appache like:
              RewriteEngine on
              RewriteRule ^$ /apc-aa/modules/site/site.php3 [L,QSA]
-             RewriteCond %{REQUEST_FILENAME} !-f 
+             RewriteCond %{REQUEST_FILENAME} !-f
              RewriteCond %{REQUEST_FILENAME} !-d
              RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]
            The requests for non existing files and dirs are redirected to AA, so
            there we can handle NotFound page, as well as sitemap.xml, robots.txt
-           etc. in future. There are three importatnt settings in the sitemodule 
+           etc. in future. There are three importatnt settings in the sitemodule
            for this: "Page not Found (404)", "Languages on website" and "URL".
-           All should be filled if you want to use upper method. Url allows AA 
-           to find the sitemodule to be called, Languages shoud list all the 
-           languages used in the sitemodue, and 404 defines the reaction to 
+           All should be filled if you want to use upper method. Url allows AA
+           to find the sitemodule to be called, Languages shoud list all the
+           languages used in the sitemodue, and 404 defines the reaction to
            "Not Found" item.
          - new sitemodule options:
             - Languages on website - list of used languages (see above)
@@ -21,53 +43,49 @@
             - sitemap.xml alias - not implemented, yet
             - Permission alias - not implemented, yet
             - HTML code for "Login page" - not implemented, yet
-         - new {rotator} possibility to display switching dots or headlines 
+         - new {rotator} possibility to display switching dots or headlines
            using last parameterli_code:
              {rotator:{ids:fee40b67dfd922cebb39bb3d2060f5c3:::::4}:_#ARTICLEO::::o}
          - new {jsonasoc:key1:val1:key2:val2:...} which creates JSON object
          - improved JSON calls - better conversion to utf8
-         - new possibility to display hit statistic not only for "days", 
+         - new possibility to display hit statistic not only for "days",
            "months", "years", but also for  "dayhours", "weeks" and "weekdays":
              {hitcounter:weeks:24457-24474}
          - new typesize parameter: {fileinfo:{file............}:typesize}
             - returns &nbsp;<span class="fileinfo"> [TXT, 3kB]</span>
-         - new {internal:class_name:params} - internal AA possibility, how to 
-           inject text form internal class to Manager item view (like in Planed 
+         - new {internal:class_name:params} - internal AA possibility, how to
+           inject text form internal class to Manager item view (like in Planed
            Task for sheduled time). It returns output of class->internal_expand() method.
-         - better https support - the scripts, ... are called through https, 
+         - better https support - the scripts, ... are called through https,
            wherever possible
          - CKEditor now uses filemanager for images and files
-         - fixed bug in Related Item Window input type - editing of newly added 
+         - fixed bug in Related Item Window input type - editing of newly added
            related items works
-         - easier duplicate of the field in the same slice - (this) slice is 
+         - easier duplicate of the field in the same slice - (this) slice is
            on the top of the list
-         - No need to add current AA in the central if we want to copy the 
+         - No need to add current AA in the central if we want to copy the
            slice/site there. The copy to the same AA is now much quicker. The
            Ids of the slices/sites/alerts are changed, now, during the copy,
-           so new slices will not share the same Id with the source. 
+           so new slices will not share the same Id with the source.
          - new Never default value for Date field - Never, i.e. maximum date
-         - new possibility of slice - Automatic field creation - If checked, 
-           slice allows storing values to text....* field, even if the 
+         - new possibility of slice - Automatic field creation - If checked,
+           slice allows storing values to text....* field, even if the
            appropriate text....* is not defined in the slice. The field will be
            created using field text............ as template.
          - a bit improved input types - added <label> tag for radio and checkbox,
-           Textfield can use placeholder, numeric uses number input, the size 
+           Textfield can use placeholder, numeric uses number input, the size
            of textfield is modified for short texts, ...
          - debug outputs now uses browser console
          - Planed Tasks now shows currently sheduled time of the task and next time
          - more information about each object in taskmanager
-         - jQuery 3.0.0 now included in sitemodule Admin, which allows use mode 
+         - jQuery 3.0.0 now included in sitemodule Admin, which allows use mode
            widgets. jQuery is bundled in AA, now in javascript dir
          - new Regexp validator
          - (js)view.php3 is now cached and handles character set better.
-         - all widget parameters conerted to standard - shared - params. All 
+         - all widget parameters conerted to standard - shared - params. All
            are parsed the same way, internaly
          - character encoder class is autoloaded, when is needed
          - fixes for php5 type session handling
-           
-           
-           
-           
 16-06-15 - AA COULD NOT BE PRODUCTION READY right now from svn (still)
 (honzam) - more standard modules - delete and other actions of polls, alerts,
            links  ... are based on the same base

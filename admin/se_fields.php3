@@ -287,7 +287,7 @@ if ( isset($s_fields) and is_array($s_fields)) {
 $form_buttons['slice_fields'] = array('value' => ($slice_fields ? 1 : 0));
 
 // one row for possible new field
-ShowNewField($from_slice);
+ShowNewField($from_slice, $slice_id);
 FrmTabEnd( $form_buttons, $sess, $slice_id);
 
 echo '</form>';
