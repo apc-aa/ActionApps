@@ -99,8 +99,11 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id_enc&role=EDITOR"), _m("Editor"));
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php3?UsrAdd=$usr_id_enc&role=ADMINISTRATOR"), _m("Administrator"));
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
+
     // show profile button also for groups
-    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\" onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
+    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', array(array('slice_id', $GLOBALS['slice_id'], 'l'),array('uid', $usr_id)))) ? " ($cnt)" : '';
+
+    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
     echo "</tr>\n";
 }
 
@@ -152,9 +155,11 @@ if ( $continue ) {
         PrintUser($prm, $usr_id, $editor_perms);
     }
 
+    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', array(array('slice_id', $GLOBALS['slice_id'], 'l'),array('uid', '*')))) ? " ($cnt)" : '';
+
     echo "<tr><td class=\"tabtxt\">&nbsp;</td>
               <td class=\"tabtxt\" colspan=\"8\">". _m("Default user profile") ."</td>
-              <td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\"
+              <td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\"
            onclick=\"document.location='". $sess->url("se_profile.php3?uid=*") ."'\"></td>\n";
   echo "</tr>\n";
 
