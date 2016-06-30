@@ -428,17 +428,16 @@ class AA_Widget extends AA_Components {
             $widget   .= "</select>";
         } else {
             $delim          = '';
-            $width          = $this->getProperty('width', 60);
-            $max_characters = $this->getProperty('max_characters', 254);
             $value          = $content->getAaValue($aa_property->getId());
 
-            $input_type     = 'type=text';
+            $attrs = array('type'=>'text');
             if (is_object($aa_property->validator)) {
-                $input_type = $aa_property->validator->getHtmlInputAttr();
+                $attrs = array_merge($attrs, $aa_property->validator->getHtmlInputAttr());
             }
-            if (!$input_type) {
-                $input_type     = 'type=text';
-            }
+            $attrs['size']      = get_if($this->getProperty('width'),          $attrs['size'], 60);
+            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
+
+            $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
 
             if ($value->isEmpty()) {
                 $value->addValue('');   // display empty field at least
@@ -446,7 +445,7 @@ class AA_Widget extends AA_Components {
             $value->fixTranslations($aa_property->getTranslations());  // modify for tranclations if needed
             foreach ($value as $i => $val) {
                 $input_name   = $base_name ."[$i]";
-                $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $input_type, $width, $max_characters, $autofocus, $base_id, $type, $widget_add, $required);
+                $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required);
                 $delim        = "\n<br />";
                 $required     = ''; // only one is required
                 $autofocus    = '';
@@ -459,11 +458,11 @@ class AA_Widget extends AA_Components {
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-     private function _getOneInput($input_name, $i, $val, $input_type, $width, $max_characters, $autofocus, $base_id, $type, $widget_add, $required) {
+     private function _getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required) {
          $input_id    = AA_Form_Array::formName2Id($input_name);
          $input_value = myspecialchars($val);
          $link        = ((substr($input_value,0,7)==='http://') OR (substr($input_value,0,8)==='https://')) ? '&nbsp;'.a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-         $ret         =  "<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live', 'right', $link ? 16 : 0);
+         $ret         =  "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live', 'right', $link ? 16 : 0);
          if ($lang = AA_Content::getLangId($i)) {
              $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
          }
@@ -826,13 +825,31 @@ class AA_Widget_Mfl extends AA_Widget {
         $rows          = (int)$this->getProperty('rows', 1);
         //$show_buttons  = $this->getProperty('show_buttons', 'MDAC');
 
-        $max_characters = $this->getProperty('max_characters', 254);
-        $width          = $this->getProperty('width', 60);
-
         $value         = $content->getAaValue($aa_property->getId());
 
-        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
-        $widget_add2    = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
+
+        $attrs = array('type'=>'text');
+        if (is_object($aa_property->validator)) {
+            $attrs = array_merge($attrs, $aa_property->validator->getHtmlInputAttr());
+        }
+
+        AA::$debug && AA::$dbg->log('mfl',$aa_property,$attrs,$this->getProperty('width'));
+
+
+        $attrs['size']      = get_if($this->getProperty('width'),          $attrs['size'], 60);
+        $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
+        $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
+
+        $widget_add2 = '';
+        $widget_add  = $attrs['size'] ? '' : 'style="width:100%"';
+        if ($type == 'live') {
+            $widget_add = "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"";
+            $widget_add2 = '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">';
+        }
+
+
+        AA::$debug && AA::$dbg->log($attrs,$attr_string,$rows);
+
 
         $widget        = '';
         // display at least one option
@@ -841,29 +858,21 @@ class AA_Widget_Mfl extends AA_Widget {
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
             $required     = ($aa_property->isRequired() AND ($i==0)) ? 'required' : '';
+
             if ($rows > 1) {
-                $widget      .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_add>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $widget .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_add>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             } else {
-                $input_type     = 'type=text';
-                if (is_object($aa_property->validator)) {
-                    $input_type = $aa_property->validator->getHtmlInputAttr();
-                }
-                if (!$input_type) {
-                    $input_type     = 'type=text';
-                }
-                $widget      .= "<div><input $input_type name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" size=\"$width\" maxlength=\"$max_characters\" $required $widget_add></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+                $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add></div>$widget_add2";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
         }
-        $widget           = "<div id=\"allrows$base_id\">$widget</div>";
-        $img              = GetAAImage('icon_new.gif', _m('new'), 17, 17);
+        $widget          = "<div id=\"allrows$base_id\">$widget</div>";
+        $img             = GetAAImage('icon_new.gif', _m('new'), 17, 17);
         if ($rows > 1) {
-            $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><textarea name=\'$base_name"."[mfl][]\' rows=\'$rows\' ></textarea></div>'); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><textarea name=\'$base_name"."[mfl][]\' rows=\'$rows\' ></textarea></div>'); return false;\">$img</a>";
         } else {
-            $input_type = str_replace('"','&quot;',$input_type);
-            $widget  .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input $input_type name=\'$base_name"."[mfl][]\' value=\'\' size=\'$width\' maxlength=\'$max_characters\' ></div>'); return false;\">$img</a>";
+            $attr_string = str_replace('"','&quot;',$attr_string);
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input $attr_string name=\'$base_name"."[mfl][]\' value=\'\'></div>'); return false;\">$img</a>";
         }
-
-
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
@@ -2069,7 +2078,7 @@ class AA_Property extends AA_Storable {
     /** set the Values array and also the validator */
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
-        $this->validator = new AA_Validate_Enum($this->const_arr); // does it work? it should be in ['possible_values'=>[]] format, no? Honza 2016-05-11
+        $this->validator = new AA_Validate_Enum(array('possible_values'=>array_keys($this->const_arr))); 
     }
 
     /** called before StoreItem to fill the field with correct data */

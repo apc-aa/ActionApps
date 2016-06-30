@@ -186,7 +186,7 @@ class AA_Validate extends AA_Serializable {
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some more attributtes (like min, max, step, pattern, ...) */
     function getHtmlInputAttr() {
-        return '';
+        return array();
     }
 
 }
@@ -242,10 +242,11 @@ class AA_Validate_Number extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=number pattern="[0-9]*"'
-               . (is_numeric($this->min) ? ' min='.$this->min : '')
-               . (is_numeric($this->max) ? ' max='.$this->max : '')
-               . (is_numeric($this->step) AND ($this->step > 1) ? ' step='.$this->step : '');
+        $ret = array('type'=>'number', 'pattern'=>'[0-9]*');
+        if (is_numeric($this->min))                        { $ret['min']  = $this->min; }
+        if (is_numeric($this->max))                        { $ret['max']  = $this->max; }
+        if (is_numeric($this->step AND ($this->step > 1))) { $ret['step'] = $this->step; }
+        return $ret;
     }
 }
 
@@ -299,7 +300,6 @@ class AA_Validate_Regexp extends AA_Validate {
     }
 
     function varempty($var) {
-        //huhl($this->empty_expression, $var, preg_match($this->empty_expression, $var));
         return preg_match($this->empty_expression, $var);
     }
 
@@ -307,9 +307,11 @@ class AA_Validate_Regexp extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $add  = ($this->maxlength > 0) ? ' maxlength='.(int)$this->maxlength : '';
-        $add .= (($this->maxlength > 0) AND ($this->maxlength < 60)) ? ' size='.((int)$this->maxlength+2) : '';
-        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"'.$add : $add;  // we need to convert /^[a-z]*$/ to ^[a-z]*$
+        $ret = array('type'=>'text');
+        if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
+        if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
+        if (strlen($this->pattern) > 2)                         { $ret['pattern']    = substr($this->pattern, 1, -1); } // we need to convert /^[a-z]*$/ to ^[a-z]*$
+        return $ret;
     }
 }
 
@@ -326,7 +328,7 @@ class AA_Validate_Url extends AA_Validate_Regexp {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=url pattern="http(s?)\://\S+"';
+        return array('type'=> 'url', 'pattern'=>"http(s?)\://\S+");
     }
 }
 
@@ -342,7 +344,7 @@ class AA_Validate_Email extends AA_Validate_Regexp {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=email';
+        return array('type'=>'email');
     }
 }
 
@@ -361,7 +363,7 @@ class AA_Validate_Id extends AA_Validate_Regexp {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=text pattern="[0-9a-f]{32}"';
+        return array('type'=>'text', 'pattern'=>'[0-9a-f]{32}');
     }
 }
 
@@ -443,7 +445,7 @@ class AA_Validate_Login extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=text pattern="[a-zA-Z0-9]{3,32}"';
+        return array('type'=>'text', 'pattern'=>'[a-zA-Z0-9]{3,32}');
     }
 }
 
@@ -469,7 +471,7 @@ class AA_Validate_Pwd extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=password min=5';
+        return array('type'=>'password', 'min'=>'5');
     }
 }
 
@@ -496,7 +498,7 @@ class AA_Validate_Unique extends AA_Validate {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
-            'item_id'  => array( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
+            'item_id'  => array( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
             );
     }
 
@@ -572,7 +574,8 @@ class AA_Validate_Eunique extends AA_Validate {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
             return false;
         }
-        $validator = new AA_Validate_Unique($this->scope, $this->field_id, $this->item_id);
+        
+        $validator = new AA_Validate_Unique(array('field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id));
         return $validator->validate($var, $default);
     }
 }

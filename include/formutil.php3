@@ -1269,23 +1269,22 @@ class AA_Inputfield {
     */
     function inputText($maxsize=255, $size=25, $type="text", $placeholder='') {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $maxsize = get_if( $maxsize, 254 );
-        $size    = get_if( $size   , 25 );
+
+        $attrs = array('type'=>'text');
+        if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
+            $attrs = array_merge($attrs, $validator->getHtmlInputAttr());
+        }
 
         if (in_array($type, array('password','search', 'email', 'url', 'tel', 'number', 'range', 'date', 'month', 'week', 'time', 'datetime', 'datetime-local', 'color'))) {
-            $input_type = "type=$type";
-        } else {
-            $input_type = 'type="text"';
-            if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
-                $input_type = $validator->getHtmlInputAttr();
-            }
-        }
-        if (!$input_type) {
-            $input_type     = 'type="text"';
+            $attrs['type'] = $type;
         }
         if ($placeholder) {
-            $input_type .= ' placeholder="'.myspecialchars($placeholder).'"';
+            $attrs['placeholder'] = myspecialchars($placeholder);
         }
+        $attrs['size']      = get_if($size, $attrs['size'], 25);
+        $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
+
+        $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
 
         $this->field_name('plus');
         $this->html_radio();
@@ -1314,9 +1313,9 @@ class AA_Inputfield {
 
 
                 $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-                $widg .= "<input $input_type id=\"$id2\" name=\"$name2\" size=\"$size\"". (($this->required AND $first) ? " required": '').
+                $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required AND $first) ? " required": '').
                                 $GLOBALS['mlxFormControlExtra'].
-                                " maxlength=\"$maxsize\" value=\"$value\"".getTriggers("input",$name).">$link";
+                                " value=\"$value\"".getTriggers("input",$name).">$link";
                 $widg .= "</label>";
                 $first = false;
             }
@@ -1327,9 +1326,9 @@ class AA_Inputfield {
             $value     = myspecialchars($val[0]['value']);
             $link    = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
 
-            $widg =  "<input $input_type name=\"$name\" size=\"$size\"". ($this->required ? " required": '').
+            $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": '').
                             $GLOBALS['mlxFormControlExtra'].
-                            " maxlength=\"$maxsize\" value=\"$value\"".getTriggers("input",$name).">$link";
+                            "  value=\"$value\"".getTriggers("input",$name).">$link";
         }
 
         $this->echovar($widg);
@@ -1929,7 +1928,7 @@ class AA_Inputfield {
         $this->input_help = $hlp;
         $this->field_name('secrow');
         $file_field_name = $name.'x';
-        $this->echovar( "<input type=\"file\" name=\"$file_field_name\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
+        $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
         $this->helps('plus');
     }
 
@@ -1956,7 +1955,7 @@ class AA_Inputfield {
         $this->field_name('plus');
         $this->html_radio();
 
-        $this->echovar("<input type=\"Text\" name=\"$name\" size=\"$size\" maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">");
+        $this->echovar("<input type=text name=\"$name\" size=\"$size\" maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">");
         $out = "<select name=\"foo_$name\"";
         if ($secondfield) {
             $out .= " onchange=\"$name.value=this.options[this.selectedIndex].text;";
@@ -2026,8 +2025,8 @@ class AA_Inputfield {
         $this->echovar( $out, 'unselected' );
 
         $this->echoo("</td>
-            <td rowspan=\"2\">&nbsp;&nbsp;<input type=\"button\" value=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$offername.",document.inputform['".$name."'])\" align=\"center\">
-              <br><br>&nbsp;&nbsp;<input type=\"button\" value=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."'],document.inputform.".$offername.")\" align=\"center\">&nbsp;&nbsp;</td>
+            <td rowspan=\"2\">&nbsp;&nbsp;<input type=button value=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$offername.",document.inputform['".$name."'])\" align=\"center\">
+              <br><br>&nbsp;&nbsp;<input type=button value=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."'],document.inputform.".$offername.")\" align=\"center\">&nbsp;&nbsp;</td>
             <td align=\"center\" valign=\"top\" rowspan=\"2\">");
 
         // varname - name without []
@@ -2051,9 +2050,9 @@ class AA_Inputfield {
 
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("\n      </td>");
-        $this->echoo("\n      <td valign=\"top\"><input type=\"button\" value=\" &#9650; \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
+        $this->echoo("\n      <td valign=\"top\"><input type=button value=\" &#9650; \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
         $this->echoo("\n      </tr>");
-        $this->echoo("<tr><td valign=\"bottom\"><input type=\"button\" value=\" &#9660; \" onClick=\"moveItem(document.inputform['".$name."'], 'down');\"></td></tr>");
+        $this->echoo("<tr><td valign=\"bottom\"><input type=button value=\" &#9660; \" onClick=\"moveItem(document.inputform['".$name."'], 'down');\"></td></tr>");
 
         if (!empty($addform) AND !empty($sid)) {
             $this->echoo("\n<tr><td colspan=\"4\">");
@@ -3014,8 +3013,8 @@ function GetHtmlTable( $content, $mode='td' ) {
 /** getFrmJavascriptFile function
  * @param $src
  */
-function getFrmJavascriptFile( $src ) {
-    return "\n <script type=\"text/javascript\" src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
+function getFrmJavascriptFile( $src, $add='') {
+    return "\n <script type=\"text/javascript\" $add src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
 }
 /** getFrmJavascript function
  * @param $code
@@ -3047,7 +3046,7 @@ function getFrmJavascriptCached( $jscode, $name ) {
         $str2find = new CacheStr2find($name, 'js');
         $pagecache->store($key, $jscode, $str2find, true);
     }
-    return getFrmJavascriptFile( 'cached.php3?keystr='.$key );
+    return getFrmJavascriptFile( 'cached.php3?keystr='.$key, 'async defer' );
 }
 
 /** getFrmCSS function
@@ -3070,8 +3069,8 @@ function FrmJavascript( $jscode ) {
 /** FrmJavascriptFile function
  * @param $src
  */
-function FrmJavascriptFile( $src ) {
-    echo getFrmJavascriptFile( $src );
+function FrmJavascriptFile( $src, $add='' ) {
+    echo getFrmJavascriptFile( $src, $add );
 }
 /** FrmJavascriptCached function
  * @param $jscode
