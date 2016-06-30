@@ -249,7 +249,7 @@ class AA_Request {
      *  @param $url - url of remote AA
      *  @param $parameters - optional array of additional url parameters 'k'=>'v'
      */
-    function ask($url, $parameters=array()) {
+    function ask($url, $parameters=array(), $headers=array()) {
         $ask_arr = $this->_requestArr();
         if (is_array($parameters)) {
             $ask_arr = array_merge($ask_arr, $parameters);
@@ -259,7 +259,7 @@ class AA_Request {
 //           $r = unserialize($ask_arr['request']);
 //           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
 //       }
-        $result = AA_Http::postRequest($url, $ask_arr);
+        $result = AA_Http::postRequest($url, $ask_arr, $headers);
 
         if ( $result === false ) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
@@ -298,19 +298,21 @@ class AA_Client_Auth {
 
     function checkAuth() {
         // we are trying to login
-        $request  = new AA_Request('Get_Sessionid');
+        $request = new AA_Request('Get_Sessionid');
+        $params  = array();
+        $headers = array();
         if ($_REQUEST['username']) {
             $params = array('free' => $_REQUEST['username'], 'freepwd' =>$_REQUEST['password']);
         }
         elseif ($_COOKIE['AA_Sess']) {
-            $params = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
+            $headers = array('Cookie' => 'AA_CP_Session='.$_COOKIE['AA_Sess']);
         }
         else {
             $this->logout();
             return false;
         }
 
-        $response = $request->ask($this->_aa_responder_script, $params);
+        $response = $request->ask($this->_aa_responder_script, $params, $headers);
 
         if ( !$response->isError() ) {
 
