@@ -137,9 +137,10 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
         $url = get_url($url, $add_param);
     }
     if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']=='INCLUDED')) { // SSI included
+
        echo '
-        <script language="JavaScript" type="text/javascript"> <!--
-            document.location = "'.rawurlencode($url).'";
+        <script type="text/javascript"> <!--
+            document.location = "'.$url.'";
           //-->
         </script>
        ';
