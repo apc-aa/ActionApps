@@ -137,7 +137,7 @@ class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
 }
 
 /** @return JSON object of key-value pairs {jsonasoc:key1:val1:key2:val2:...}
- *  usage: 
+ *  usage:
  *    {jsonasoc:name:{headline........}:input_help:{subtitle........}}
  *    {input:82d37e966fcdc9d1cac49a7e49406601:text............:1:fld:{jsonasoc:name:Surname:input_help:just surname, please}}
  *  params text must be in utf8
@@ -2403,7 +2403,18 @@ class AA_Treecache {
                 }
             }
         }
-        return ($this->delim == 'json') ? json_encode($results) : join($this->delim,$results);
+        switch ($this->delim) {
+            case 'json':
+                return json_encode($results);
+            case 'jsonasoc':
+                $res = array();
+                foreach ($results as $v) {
+                    $foo = explode('->',$v);
+                    $res[$foo[0]] = $foo[1];
+                }
+                return json_encode($res);
+        }
+        return join($this->delim,$results);
     }
 
     function _get_item($item_id, $expression) {
@@ -3458,6 +3469,8 @@ class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........}
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:text..........23:::::2}
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
+ *    {input:36fd8c4501d7a8b9e9505dc323d24321:category........::sel:{"const_arr":{"0":"yes","1":"no"}}}          (1)
+ *    {input:36fd8c4501d7a8b9e9505dc323d24321:category........::sel:{"const_arr":{jsonasoc:0:yes:1:no}}}         (2)
  */
 class AA_Stringexpand_Input extends AA_Stringexpand_Field {
     /** expand function
@@ -3477,7 +3490,13 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
                  return '';
              }
          }
-         return $field->getWidgetNewHtml($required==1, null, $widget_type, json2asoc($widget_properties), $preset_value, $item_index);
+         // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
+         $widget_prop = json2asoc($widget_properties);
+         if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (substr($widget_prop['const_arr'],0,2) == '{"')) {
+             $widget_prop['const_arr'] = json2asoc($widget_prop['const_arr']);
+         }
+
+         return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index);
      }
 }
 
