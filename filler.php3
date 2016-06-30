@@ -270,6 +270,7 @@ function SendOkPage($txt, $new_ids = array()) {
         }
         exit;
     }
+
     if (!$_REQUEST["ok_url"]) {
         go_url($_SERVER['HTTP_REFERER']);
     } elseif (!$_REQUEST["use_post2shtml"]) {
@@ -302,6 +303,7 @@ if (is_numeric($_REQUEST['respuesta'])) {
 //      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
 if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
+
     if ($_COOKIE['AA_Sess']) {
         require_once AA_INC_PATH."request.class.php3";
         require_once AA_BASE_PATH."modules/site/router.class.php";
@@ -315,7 +317,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
             $auth = $client_auth->getRemoteAuth();
             $GLOBALS['apc_state']['xuser'] = $usr;
         }
-    } elseif ($_REQUEST['AA_CP_Session']) {
+    } elseif ($_SESSION['AA_CP_Session']) {
         page_open(array("sess" => "AA_CP_Session"));
         // this defines $auth object so, the "Last Changed By" is set to correct user
     }
