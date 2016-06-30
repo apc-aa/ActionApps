@@ -226,7 +226,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
         } elseif ($preview) {
             go_url( $preview_url );
         } elseif ($go_edit) {   // if go_edit - continue to edit again
-            go_url( Inputform_url(false, $added_to_db, '', '', null, null, false) );
+            go_url( Inputform_url(false, $added_to_db, $slice_id, '', null, null, false) );
         } else {
             go_return_or_url(self_base() . "index.php3?slice_id=$slice_id",true,true);
         }
