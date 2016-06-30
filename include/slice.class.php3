@@ -105,7 +105,7 @@ class AA_Module {
             case 'Alerts':  return 'AA_Module_Alerts';
             case 'J':       return '';                 // @todo - create AA_Module_Jump
             case 'P':       return '';                 // @todo - create AA_Module_Polls
-            case 'Links':   return 'AA_Module_Links'; 
+            case 'Links':   return 'AA_Module_Links';
         }
         return '';
     }
@@ -765,7 +765,7 @@ class AA_Module_Polls extends AA_Module {
         if (!is_array($module_ids) OR !count($module_ids)) {
             return false;     // _m("No such module.")
         }
-        
+
         if ( !count($pollids = DB_AA::select('', 'SELECT id FROM `polls`', array(array('module_id', $module_ids, 'l'))))) {
             DB_AA::delete_low_priority('polls',                            array(array('module_id', $module_ids, 'l')));
             return true;
@@ -798,7 +798,8 @@ class AA_Modulesettings_Slice extends AA_Object {
     static function getClassProperties() {
         return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
             'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
-            'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.'))
+            'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
+            'fielditems'   => new AA_Property( 'fielditems',   _m("Fields defined by items"),  'text',   false, true, '', false, _m('You can use special slice for additional fields definition. There you can write IDs if items, which defines the fields, or better something like {ids:ac4940d37d6601ce969dc9a7e41826fc}.<br>Could be used for data slice, which stores values for user created forms.'))
             );
     }
 }
