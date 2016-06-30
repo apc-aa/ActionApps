@@ -257,6 +257,7 @@ class AA_Router_Seo extends AA_Router {
          *   </form>
          */
         $this->apc['xuser'] = '';
+
         if ( $_COOKIE['AA_Sess'] OR $_REQUEST['username'] ) {
             require_once AA_INC_PATH."request.class.php3";
             $options = array(
@@ -271,6 +272,8 @@ class AA_Router_Seo extends AA_Router {
             }
             elseif ( $usr = $client_auth->checkAuth()) {
                 // $auth = $client_auth->getRemoteAuth();
+
+
                 $this->apc['xuser'] = $usr;
 
                 // Redirect to page. If not specified, then it continues to display
@@ -287,6 +290,10 @@ class AA_Router_Seo extends AA_Router {
 
     /** static function - caling from outside is not necessary, now */
     function parseApc($apc, $home='', $langs=array()) {
+        // manage links like example.org/?filter=22
+        if (substr($apc,0,2)=='/?') {  // maybe also "#"
+            $apc = $home.$apc;
+        }
         $parsed_url = parse_url(trim($apc,' \t/') ? $apc : $home);
         $arr        = explode('/', trim($parsed_url['path'],'/'));
         $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
@@ -305,7 +312,7 @@ class AA_Router_Seo extends AA_Router {
         // if (count($arr) < 2) {
         if ( count($arr) < 2) {
             if ( (substr(trim($apc),-1)=='/') OR ($arr[0]==$ret['xlang']) OR !count($langs)) {
-                                                                              // the last OR with $lang is_a used for backward compatibility - the slash rule will be applied
+                                                                              // the last OR with $lang is used for backward compatibility - the slash rule will be applied
                                                                               // only to newer sites, where you set web_languages.
                                                                               // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
                                                                               // (and should be rewritten to /cz2/ or better /cz2/page )
