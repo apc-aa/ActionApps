@@ -146,8 +146,6 @@ function PrintModuleSelection() {
             $slice_ids = "WHERE module.id IN ($slice_ids) ";
         }
 
-        $js = "
-            var modulesOptions = ''\n";
         $db = getDB();
         $db->query("SELECT module.id, module.type, slice.type AS slice_type, module.name
                       FROM module LEFT JOIN slice ON module.id=slice.id $slice_ids
@@ -177,40 +175,37 @@ function PrintModuleSelection() {
         // count($modules) - count of module types
         $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
 
-        $option_begin = "\t+'<option value=\"";
+        $options      = '';
+        $option_begin = '<option value="';
         ksort ($modules);
         foreach ($modules as $order => $mods) {
             if ( $display_modtypes ) {
                 foreach ($module_types as $module_type) {
                     if ($module_type[0] == $order) {
-                        $js .= $option_begin . '" class="sel_title">*** '.$module_type[1]." ***'\n";   // &#x1f464;&#x1f468; men symbol
+                        $options .= $option_begin . '" class="sel_title">*** '.$module_type[1].' ***';   // &#x1f464;&#x1f468; men symbol
                     }
                 }
             }
             //        asort ($mods);
             foreach ($mods as $id => $name) {
-                $js .= $option_begin . myspecialchars(unpack_id($id))."\"";
+                $options .= $option_begin . myspecialchars(unpack_id($id)).'"';
                 if ($slice_id == unpack_id($id)) {
-                    $js .= " selected";
+                    $options .= ' selected';
                 }
-                $js .= ">". str_replace("'","`",safe($name)) . "'\n";
+                $options .= '>'. str_replace("'","`",safe($name));
             }
         }
 
         if ( !$slice_id ) {   // new slice
-            $js .= "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
+            $options .= '<option value="new" selected>'. _m("New slice");
         }
+        
+        $ret  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
+        $ret .= '<select name=slice_id onChange="if (this.options[this.selectedIndex].value != \'\') document.location=\'?change_id=\'+this.options[this.selectedIndex].value">';
+        $ret .= $options;
+        $ret .= '</select>';
 
-        $js .= ";\n";
-        $switch_text = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-
-        if ($switch_text) {
-            $js .= "document.write('". str_replace("'","\\'", $switch_text) ."');\n";
-        }
-        $js .= "\n
-        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"?change_id=\"+this.options[this.selectedIndex].value\\'>');
-        document.write(modulesOptions);
-        document.write('</select>');\n";
+        $js = "document.getElementById('aanbform').innerHTML = '".str_replace("'", "\\'", $ret)."';";
         FrmJavascriptCached($js, 'modules');
     } else {
         echo GetLabel($profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
@@ -331,7 +326,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         echo '
               </td>
               <td class="navbar" align="right" valign="bottom">
-                <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($_SERVER['PHP_SELF']) .'" style="display:inline">
+                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. $sess->url($_SERVER['PHP_SELF']) .'" style="display:inline">
                 &nbsp; ';
         echo "\n";
         PrintModuleSelection();
