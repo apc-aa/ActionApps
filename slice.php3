@@ -150,6 +150,10 @@ $slice_starttime = microtime(true);
 //MLX stuff
 require_once AA_INC_PATH."mlx.php";
 
+// session is not working right now with PHP5 style sessions. It should not be
+// needed. We are testing the code, and if all will be OK, we remove sessions
+// from slice.php3 completely. It doesn-t work because of Cookies vs. SSI.
+//    Honza 2016-07-12
 page_open(array("sess" => "AA_SL_Session"));
 
 $sess->register('r_packed_state_vars');
@@ -370,41 +374,6 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
 }
 
 // compact view ----------------------------------------------------------------
-if (!is_object($scr)) {
-    $sess->register('scr');
-    if ( isset($als) AND is_array($als)) {
-        $scr_als_param = '&amp;'. htmlentities(HttpGetParameters(array('als'=>$als)));
-    }
-    $scr_url_param = ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap)).$scr_als_param."&amp;";
-    $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], 0);
-}
-// display 'All' option in scroller
-if ($all_scr) { $scr->setShowAll($all_scr); }
-
-// change number of listed items
-if ($listlen) { $scr->setMetapage($listlen); }
-
-// default start page = 1
-if (!$scr_go) { $scr_go = 1; }
-
-// $scrl comes from easy_scroller
-if ($scrl)    { $scr->update(); }
-
-/** Add scroller aliases - page number, listlen */
-$scr_aliases['_#PAGE_NO_'] = GetAliasDef( 'f_s:'. $scr->current,  '', _m('number of current page (on pagescroller)'));
-$scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->metapage, '', _m('page length (number of items)'));
-// aliases array have two form (quite stupid - will be changed in future - TODO)
-// depending on listing for one slice or many slices
-if (!is_array($slices)) {
-    array_add($scr_aliases, $aliases);
-} else {
-    foreach ($slices as $sid) {
-        // hack for searching in multiple slices. This is not so nice part
-        // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
-        // it is needed by itemview::set_column() (see include/itemview.php3)
-        array_add($scr_aliases, $aliases[q_pack_id($sid)]);
-    }
-}
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *         Parse parameters posted by query form and from $slice_info
@@ -527,6 +496,40 @@ if (isMLXSlice($slice_info)) {
     $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id);
 }
 
+
+if (!is_object($scr)) {
+    $sess->register('scr');
+    $scr_url_param = get_url(($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap)), is_array($als) ? array('als'=>$als) : '');
+    $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
+}
+// display 'All' option in scroller
+if ($all_scr) { $scr->setShowAll($all_scr); }
+
+// change number of listed items
+if ($listlen) { $scr->setMetapage($listlen); }
+
+// default start page = 1
+if (!$scr_go) { $scr_go = 1; }
+
+// $scrl comes from easy_scroller
+if ($scrl)    { $scr->update(); }
+
+/** Add scroller aliases - page number, listlen */
+$scr_aliases['_#PAGE_NO_'] = GetAliasDef( 'f_s:'. $scr->current,  '', _m('number of current page (on pagescroller)'));
+$scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->metapage, '', _m('page length (number of items)'));
+// aliases array have two form (quite stupid - will be changed in future - TODO)
+// depending on listing for one slice or many slices
+if (!is_array($slices)) {
+    array_add($scr_aliases, $aliases);
+} else {
+    foreach ($slices as $sid) {
+        // hack for searching in multiple slices. This is not so nice part
+        // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
+        // it is needed by itemview::set_column() (see include/itemview.php3)
+        array_add($scr_aliases, $aliases[q_pack_id($sid)]);
+    }
+}
+
 if ( !$scrl ) {
     $scr->current = $scr_go;
 }
@@ -539,7 +542,6 @@ if ( !$srch AND !$encap AND !$easy_query ) {
 
 
 if ($zids->count() > 0) {
-    $scr->countPages( $zids->count() );
 
     $itemview = new itemview($slice_info, $fields, $aliases, $zids, $scr->metapage * ($scr->current - 1),
                              ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
