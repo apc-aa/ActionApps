@@ -777,7 +777,8 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             }
 */
             if ($view_info['type'] == 'rss') {
-                header("Content-type: text/xml");
+                AA::$headers['type'] = 'text/xml';
+                //header("Content-type: text/xml");
             }
 
             if (! $conds ) {        // conds could be defined via cmd[]=d command
@@ -890,8 +891,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             $view_param['convertfrom'] = $slice->getCharset();
         }
         if ($view_param['convertto'] != $view_param['convertfrom'] ) {
-            $encoder = ConvertCharset::singleton();
-            $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
+            $encoder                 = ConvertCharset::singleton();
+            $ret                     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
+            AA::$headers['encoding'] = $view_param['convertto'];
         }
     }
     AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
