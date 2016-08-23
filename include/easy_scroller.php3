@@ -69,9 +69,10 @@ class easy_scroller {
      *  of current position
      *  @param $pages
      */
-    function Relative($pages) {
-        return urlencode("scr_{$this->id}_Mv") . "=" . urlencode($pages);
-    }
+    //  --- no longer used
+    //function Relative($pages) {
+    //    return urlencode("scr_{$this->id}_Mv") . "=" . urlencode($pages);
+    //}
 
     /** Absolute function
      *  Return part of a query string for move to absolute position $page
@@ -113,16 +114,8 @@ class easy_scroller {
      *  Process query string and execute commands for this scroller
      *  Query string is taken from global variables
      *  (based on $itmcnt)
-     * @param $url
-     * @param $itmcnt
      */
-    function update($url = "", $itmcnt = "") {
-        if ($itmcnt) {
-            $this->countPages($itmcnt);
-        }
-        if ($url) {
-            $this->urldefault = $url;
-        }
+    function update() {
         if ($GLOBALS["scr_{$this->id}_Go"]) {
             $this->current = $GLOBALS["scr_{$this->id}_Go"];
         }
@@ -142,8 +135,9 @@ class easy_scroller {
         $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
         $from  = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to    = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
+        $arr   = array();
         if ($this->current > 1) {
-            $arr[_m("Previous")]     = $this->Relative(-1);
+            $arr[_m("Previous")]     = $this->Absolute($this->current-1);
         }
         if ($from > 1) {
             $arr["1"]   = $this->Absolute(1);
@@ -161,7 +155,7 @@ class easy_scroller {
             $arr[(string)$pgcnt] = $this->Absolute($pgcnt);
         }
         if ($this->current < $pgcnt) {
-            $arr[_m("Next")] = $this->Relative(1);
+            $arr[_m("Next")] = $this->Absolute($this->current+1);
         }
         if ($this->show_all) {
             $arr[_m("All")] = 'listlen=10000';
@@ -172,12 +166,9 @@ class easy_scroller {
     /** pnavbar function
      *  Convert array provided by navarray into HTML code
      *  Commands are added to $url
-     * @param $url
      */
-    function pnavbar($url = "") {
-        if (!$url) {
-            $url = $this->urldefault;
-        }
+    function pnavbar() {
+        $url = con_url($this->urldefault,array('scrl'=>1));
         $i   = 0;
         $arr = $this->navarray();
         if ( count($arr) > 0 ) {
@@ -187,7 +178,7 @@ class easy_scroller {
                     echo " | ";
                 }
                 if ($v) {
-                    echo "<a href=\"". $url. "scrl=1&amp;". $v. "\" class=\"scroller\">$k</a>";
+                    echo "<a href=\"". $url. "&amp;". $v. "\" class=\"scroller\">$k</a>";
                 } else {
                     echo "<span class=\"scroller_actual\">$k</span>";
                 }
