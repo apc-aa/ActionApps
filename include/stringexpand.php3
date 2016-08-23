@@ -3537,7 +3537,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                 $iid         = $item->getItemID();
                 $input_name  = AA_Form_Array::getName4Form($field_id, $item);
                 $input_id    = AA_Form_Array::formName2Id($input_name);
-                $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block\">";
+                $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
                 $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
                 $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                 $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
@@ -4320,9 +4320,8 @@ class AA_Unalias_Callback {
 
                 return QuoteColons($value);
             }
-            // tried to change to preg_match, but there was problem with multiple lines
-            //   used: '/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/'
-            elseif ( (substr($out, 0, 5)=='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/', $out, $parts) ) {
+            // s - multiline - without it it does not work for expressions across multiple lines
+            elseif ( (substr($out, 0, 5)=='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
                 // call function (called by function reference (pointer))
                 // like f_d("start_date......", "m-d")
                 if ($parts[1] && !$this->item->isField($parts[1])) {
