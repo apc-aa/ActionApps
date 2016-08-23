@@ -23,6 +23,10 @@ $timestart = microtime(true);
 
 // supress PHP notices
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
+if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
+  $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
+  $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_X_FORWARDED_SERVER'];
+}
 
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
@@ -86,7 +90,6 @@ function Die404($page=null) {
 }
 // ----------------- function definition end -----------------------------------
 
-
 // change the state
 add_vars();                 // get variables pased to stm page
 
@@ -139,6 +142,7 @@ AA::$encoding = $module->getCharset();
 // /@deprecated - use AA_Router_Seo instead
 
 $hit_lid = null;
+
 if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     $seo_slices = $module->getRelatedSlices();
     //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
@@ -154,7 +158,6 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     //    RewriteEngine on
     //    RewriteRule ^/?$  /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
     //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
-
 
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);
