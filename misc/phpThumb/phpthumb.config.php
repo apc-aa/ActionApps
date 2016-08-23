@@ -38,6 +38,7 @@ $PHPTHUMB_CONFIG['document_root'] = AA_SITE_PATH;
 
 // * Security configuration
 $PHPTHUMB_CONFIG['disable_debug']            = true;   // prevent phpThumb from displaying any information about your system. If true, phpThumbDebug and error messages will be disabled
+//$PHPTHUMB_CONFIG['disable_debug']            = false;   // prevent phpThumb from displaying any information about your system. If true, phpThumbDebug and error messages will be disabled
 $PHPTHUMB_CONFIG['high_security_enabled']    = false;   // if enabled, requires 'high_security_password' set to be set and requires the use of phpThumbURL() function (at the bottom of phpThumb.config.php) to generate hashed URLs
 $PHPTHUMB_CONFIG['high_security_password']   = '';      // required if 'high_security_enabled' is true, and must be at complex (uppercase, lowercase, numbers, punctuation, etc -- punctuation is strongest, lowercase is weakest; see PasswordStrength() in phpThumb.php). You can use a password generator like http://silisoftware.com/tools/password-random.php to generate a strong password
 
@@ -65,7 +66,9 @@ $PHPTHUMB_CONFIG['additional_allowed_dirs']     = array(); // array of additiona
 $PHPTHUMB_CONFIG['cache_disable_warning'] = false; // If [cache_directory] is non-existant or not writable, and [cache_disable_warning] is false, an error image will be generated warning to either set the cache directory or disable the warning (to avoid people not knowing about the cache)
 /** AA change by Honza 14.1.2009 - default setting did not work for sites, where aa is located outside of site path */
 //$PHPTHUMB_CONFIG['cache_directory'] = IMG_UPLOAD_PATH.'phpThumbcache/';
-$PHPTHUMB_CONFIG['cache_directory'] = IMG_UPLOAD_PATH;
+//$PHPTHUMB_CONFIG['cache_directory'] = IMG_UPLOAD_PATH;
+$PHPTHUMB_CONFIG['cache_directory'] = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
+$PHPTHUMB_CONFIG['cache_directory'] .= '/thumbCache' ;
 
 
 $PHPTHUMB_CONFIG['cache_directory_depth'] = 4; // If this larger than zero, cache structure will be broken into a broad directory structure based on cache filename. For example "cache_src012345..." will be stored in "/0/01/012/0123/cache_src012345..." when (cache_directory_depth = 4)
@@ -236,7 +239,8 @@ $PHPTHUMB_CONFIG['http_follow_redirect']            = true; // if true (default)
 
 
 // * Speed optimizations configuration
-$PHPTHUMB_CONFIG['allow_local_http_src']         = false; // If true, 'src' parameter can be "http://<thishostname>/path/image.ext" instead of just "/path/image.ext"; if false then display warning message to encourage more efficient local-filename calling.
+$PHPTHUMB_CONFIG['allow_local_http_src']         = true; // s false to nejak blblo na ekowatt.cz - 23.6.2016 - Jirka
+#$PHPTHUMB_CONFIG['allow_local_http_src']         = false; // If true, 'src' parameter can be "http://<thishostname>/path/image.ext" instead of just "/path/image.ext"; if false then display warning message to encourage more efficient local-filename calling.
 $PHPTHUMB_CONFIG['use_exif_thumbnail_for_speed'] = false; // If true, and EXIF thumbnail is available, and is larger or equal to output image dimensions, use EXIF thumbnail rather than actual source image for generating thumbnail. Benefit is only speed, avoiding resizing large image.
 
 /* END USER CONFIGURATION SECTION */

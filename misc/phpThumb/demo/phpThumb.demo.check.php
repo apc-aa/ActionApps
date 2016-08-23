@@ -15,6 +15,8 @@
 
 die('For security reasons, this demo is disabled by default. Please comment out line '.__LINE__.' in '.basename(__FILE__));
 
+require_once "../../../include/config.php3";
+
 $ServerInfo['gd_string']  = 'unknown';
 $ServerInfo['gd_numeric'] = 0;
 //ob_start();
@@ -28,7 +30,8 @@ if (!include_once('../phpthumb.class.php')) {
 }
 //ob_end_clean();
 $phpThumb = new phpThumb();
-if (include_once('../phpThumb.config.php')) {
+#if (include_once('../phpThumb.config.php')) {
+if (include_once('../phpthumb.config.php')) {
 	foreach ($PHPTHUMB_CONFIG as $key => $value) {
 		$keyname = 'config_'.$key;
 		$phpThumb->setParameter($keyname, $value);
