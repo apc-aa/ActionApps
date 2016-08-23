@@ -477,9 +477,9 @@ class AA_Manager extends AA_Storable {
     function display($zids) {
         global $r_err, $r_msg;          // @todo - check if it is still needed
 
-        if ($this->messages['title']) {
-            echo '<h1>'. $this->messages['title'] .'</h1>';
-        }
+        // if ($this->messages['title']) {
+        //     echo '<h1>'. $this->messages['title'] .'</h1>';
+        // }
         if ($this->messages['about']) {
             echo '<div class="aa-about"><small>'. $this->messages['about'] .'<br><br></small></div>';
         }

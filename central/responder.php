@@ -309,6 +309,15 @@ class AA_Responder_Tags extends AA_Responder {
     }
 }
 
+// from aaa@vona - honza 16-06-14--
+//  if (isset($_POST['AA_CP_Session']) OR isset($_GET['AA_CP_Session'])) {
+//      unset($_COOKIE['AA_CP_Session']);
+//  }
+//  unset($sess);
+//  unset($auth);
+// /--
+
+
 page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 if ($nobody) {

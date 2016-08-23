@@ -1,3 +1,21 @@
+16-08-22 - CKeditor upgraded to 4.5.10
+(honzam)   - allowed justify, undo
+           - content filter is turn off' misc/htmleditor
+         - fix page scroller in slice.php3 to not use sessions
+           Sessions in slice.php3 is not working when called as SSI (PHP5 style
+           sessions do not allow to use sessions in SSI directly). The sessions
+           in slice.php3 is not needed for most of the sites. The slice.php3 is
+           no longer used for new sites (modern sites are built with site.php3
+           in AA), so we will try to not write special workaround for
+           the slice.php3 sites which using sessions. But if you need it, just
+           let us know.
+         - better sizing of {ajax:...} widgets
+         - fixed parsing of multiline {alias:...}
+         - fixed character encoding for cached view.php3
+         - fixed problem with apostrophs in Related Item Window input type
+         - use system tmp directory for phpThumb cache
+         - site module webs work behind proxy
+         - jQuery updated from 3.0.0 to 3.1.0
 16-06-30 - THIS VERSION IS USED ON PRODUCTION SERVER AGAIN
 (honzam) - new experimental feature to allow "Fields defined by items" in slice
             - you can use special slice for additional fields definition.

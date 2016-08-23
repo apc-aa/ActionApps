@@ -795,6 +795,11 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
     }
 
     $email1   = trim($ret_params->getValue('con_email.......'));
+    $post_date = trim($ret_params->getValue('post_date.......'));
+ 
+    if ((date('U')-$post_date) > 2592000) {  // starsi 30 dni - neposilame - pravdepodobne editace starych dotazů
+        return false;
+    }
 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
