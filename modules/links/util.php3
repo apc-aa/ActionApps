@@ -44,7 +44,7 @@ function GetCategoryPath( $cid ) {
     $db->query("SELECT path FROM links_categories WHERE id=$cid");
     $ret = ( $db->next_record() ? $db->f('path') : "");
     freeDB($db);
-    return $ret; 
+    return $ret;
 }
 
 // Get category id from path
@@ -165,7 +165,7 @@ function GetProfileInfo($uid) {
     if ( !$uid ) {
         $uid = "nobody";
     }
-    
+
     $db = getDB();
     $db->query("SELECT * FROM links_profiles WHERE uid = '$uid'");
     if ($db->next_record()) {
@@ -173,7 +173,7 @@ function GetProfileInfo($uid) {
         freeDB($db);
         return $ret;
     }
-    
+
     // if user not exist - get nobody's settings
     $db->query("SELECT * FROM links_profiles WHERE uid = 'nobody'");
     if ($db->next_record()) {
@@ -187,13 +187,13 @@ function GetProfileInfo($uid) {
 
 function TestBaseCat($ctg, $base_cat, $ctg_path) {
     $cats = explode(",", $ctg_path);
-    for ($found = false, reset($cats); current($cats); next($cats)) { 
+    for ($found = false, reset($cats); current($cats); next($cats)) {
         if (current($cats) == $base_cat) {
-            $found = true; 
+            $found = true;
             break;
         }
     }
-    
+
     return ($found ? $ctg : $base_cat);
 }
 
@@ -203,7 +203,7 @@ function TestBaseCat($ctg, $base_cat, $ctg_path) {
  * @returns packed slice id
  */
 function Links_Category2SliceID($cid) {
-    return unpack_id(substr( $cid.'Links'.q_pack_id(AA_ID), 0, 16 ));
+    return unpack_id(substr( $cid.'Links'.pack_id(AA_ID), 0, 16 ));
 }
 
 /** Get base category from slice id (reverse to Links_Category2SliceID())  */
@@ -502,8 +502,7 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     // zarazeno v kategorii
     $out = "";
     if ( $links_zids->count() != 0 ) {
-        $itemview = new itemview($format_strings, '', GetLinkAliases(),
-                              $links_zids, 0, 100, '', '', 'Links_GetLinkContent' );
+        $itemview = new itemview($format_strings, '', GetLinkAliases(), $links_zids, 0, 100, '', '', 'Links_GetLinkContent' );
         $out = $itemview->get_output("view");
     }
     return $out;
