@@ -1,3 +1,23 @@
+16-10-04 - allow specify "-- any text field --" as condition for view.php3
+(honzam) - new {livesearch:<viev_param>[:<placeholder>[:<dafault_phrase>]]}
+           Displays live search (search field and the list of matching articles)
+           on html page. Requires jQuery and aajslib-jquery.php. Ussage:
+             {livesearch:3650}
+             {livesearch:3650:search...:DoNotDisplayAnythingByDefault}
+             {livesearch:3650&cmd[3650]=c-1-%22AA_LS_QUERY%22-2-publications:search for pubs...}
+           <view_param>  - just view ID or whole view parameters. If whole
+             parameters used, then you have to use AA_LS_QUERY constant on the
+             place, where you want to put search phrase
+           <placeholder> - placeholder text to search field
+           <default>     - the phrase to search if the search field is empty.
+             It is not necessary to fill it, if you want to see first
+             the results by defaut. You can put there some nonsence value,
+             if you want to see the item list empty by default
+         - allow subscript and superscript buttons in CKEditor
+         - fixed http / https validation for input type url
+         - fixed link to alert modules from AA admin left menu
+         - new debug function warn which logs program backtrack (for AA programmers)
+         - jquery updated to 3.1.1
 16-08-22 - CKeditor upgraded to 4.5.10
 (honzam)   - allowed justify, undo
            - content filter is turn off' misc/htmleditor
