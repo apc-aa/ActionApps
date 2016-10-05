@@ -338,7 +338,7 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
     $lookup_fields += $field_func();
 } else {
-    $lookup_fields = GetFields4Select($slice_id, false, 'name', true);
+    $lookup_fields = GetFields4Select($slice_id, false, 'name', true, true);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

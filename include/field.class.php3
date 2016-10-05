@@ -641,7 +641,7 @@ function GetSliceFields($slice_id, $slice_fields = false) {
  * @param $order
  * @param $add_empty
  */
-function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false) {
+function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false, $add_all=false) {
     $p_slice_id = q_pack_id($slice_id);
     $db = getDB();
     if ($slice_fields == 'all') {
@@ -661,6 +661,9 @@ function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $ad
     }
     while ($db->next_record()) {
         $lookup_fields[$db->f('id')] = $db->f('name');
+    }
+    if ($add_all) {
+        $lookup_fields['all_fields'] = _m('-- any text field --');
     }
     freeDB($db);
     return $lookup_fields;
