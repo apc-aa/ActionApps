@@ -892,6 +892,45 @@ $INPUT_TYPES["items"]["pwd"]=
             ."\"Change Password\".")),
    ));
 
+
+$INPUT_TYPES["items"]["rim"]=
+array("name"=>_m("Related Item Manager"),
+    "desc"=>_m(""),
+    "params"=>array(
+        array("name"=>_m("slice field"),
+        "desc"=>_m("field (or format string) that will be displayed in box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"),
+        "type"=>"STRID",
+        "example"=>_m("_#HEADLINE")),
+        array("name"=>_m("row design"),
+        "desc"=>_m("If set (=1), each item is on seperate line."),
+        "type"=>"BOOL",
+        "example"=>_m("1")),
+        array("name"=>_m("Show items from bins"),
+        "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+                   "Active bin - '%1'<br>".
+                   "Pending bin - '%2'<br>".
+                   "Expired bin - '%3'<br>".
+                   "Holding bin - '%4'<br>".
+                   "Trash bin - '%5'<br>".
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+        "type" => "INT",
+        "example" => "3"),
+        array("name"=>_m("Filtering conditions"),
+        "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+        "type"=>"STR",
+        "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+        array("name"=>_m("Sort by"),
+        "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+        "type"=>"STR",
+        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+        array("name"=>_m("Slice password"),
+        "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+        "type"=>"STR",
+        "example"=>"")
+        ));
+
+
 $INPUT_TYPES["items"]["nul"]=
 array("name"=>_m("Do not show"),
     "desc"=>_m("This option hides the input field"));
@@ -967,7 +1006,7 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         "type"=>"STR",
         "example"=>_m("target=_blank")),
         array("name"=>_m("no session id"),
-        "desc"=>_m("If 1, the session id (AA_SL_Session=...) is not added to url"),
+        "desc"=>_m("If 1, the session id (AA_Session=...) is not added to url"),
         "type"=>"BOOL",
         "example"=>"1"))),
 "f_c"=>array("name"=>_m("condition"),
@@ -1034,7 +1073,7 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         "type"=>"STR",
         "example"=>_m("http#://www.ecn.cz/articles/solar.shtml")),
         array("name"=>_m("no session id"),
-        "desc"=>_m("If 1, the session id (AA_SL_Session=...) is not added to url"),
+        "desc"=>_m("If 1, the session id (AA_Session=...) is not added to url"),
         "type"=>"BOOL",
         "example"=>"1"))),
 "f_g"=>array("name"=>_m("image height"),

@@ -238,8 +238,8 @@ class AA_Widget extends AA_Components {
             }
 
             if ($searchterm) {
-                $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
-                $set->addCondition(new AA_Condition($sf, 'RLIKE', "\"$searchterm\""));
+                // $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
+                $set->addCondition(new AA_Condition('all_fields', 'LIKE', "\"$searchterm\""));
             }
             return GetFormatedItems( $set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
         }
@@ -479,16 +479,26 @@ class AA_Widget extends AA_Components {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
-    function _finalizeHtml($winfo, $aa_property) {
+    /** @return just widget HTML for using in form - without label...
+     *  @param  $aa_property - the variable
+     *  @param  $content     - contain the value of property to display
+     *                       - never empty - it contain at least aa_owner for
+     *                         new objects
+     */
+    function getEditHtml($aa_property, $content, $function=null) {
+        return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
+    }
+
+    function _finalizeHtml($winfo, $aa_property, $widget_only=false) {
         $base_name   = $winfo['base_name'];
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $winfo['required'];
         $help        = $aa_property->getHelp();
 
-        $ret  = "<div class=\"aa-widget\"".($required ? ' data-aa-required':'')." id=\"widget-$base_id\">\n";
-        $ret .= "  <label for=\"". AA_Form_Array::formName2Id($winfo['last_input_name']) ."\">".$aa_property->getName()."</label>\n";
+        $ret  = "<div class=\"aa-widget\"".($required ? ' data-aa-required':'')." id=\"widget-$base_id\" data-aa-basename=\"$base_name\">\n";
+        $ret .= $widget_only ? '' : "  <label for=\"". AA_Form_Array::formName2Id($winfo['last_input_name']) ."\">".$aa_property->getName()."</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";
-        $ret .=      $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $ret .=      $winfo['html']. (($help AND !$widget_only) ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $ret .= "  </div>\n";
         $ret .= "</div>\n";
 
@@ -530,6 +540,11 @@ class AA_Widget extends AA_Components {
         $widget_html  = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $ret          = "<div class=\"aa-widget\"".($winfo['required'] ? ' data-aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html. "</div>";
         return $ret;
+    }
+
+    /** function which offers filtered selections for current widget */
+    function getFilterSelection($searchstring) {
+        return '';
     }
 
     /** @return AA_Value for the data send by the widget
@@ -827,7 +842,6 @@ class AA_Widget_Mfl extends AA_Widget {
 
         $value         = $content->getAaValue($aa_property->getId());
 
-
         $attrs = array('type'=>'text');
         if (is_object($aa_property->validator)) {
             $attrs = array_merge($attrs, $aa_property->validator->getHtmlInputAttr());
@@ -849,7 +863,6 @@ class AA_Widget_Mfl extends AA_Widget {
 
 
         AA::$debug && AA::$dbg->log($attrs,$attr_string,$rows);
-
 
         $widget        = '';
         // display at least one option
@@ -1665,6 +1678,120 @@ class AA_Widget_Iso extends AA_Widget {
     }
 }
 
+
+/** Related Item Manager widget */
+class AA_Widget_Rim extends AA_Widget {
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Related Item Manager');   // widget name
+    }
+
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     */
+    static function getClassProperties()  {
+        return AA_Widget::propertiesShop(array('const','slice_field','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr', 'filter_conds_rw'));
+        return $ret;
+    }
+
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id       = AA_Form_Array::formName2Id($base_name);
+        $base_name_add = $base_name . '[rim]';
+        //$widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+        //$use_name     = $this->getProperty('use_name', false);
+        //$height       = (int)$this->getProperty('height');
+        //if ($height < 1) {
+        //    $height = 400;
+        //}
+
+        $widget          = '<article class="aa-rim relactionitem flex">
+                              <section class="itemgroup">';
+
+
+        $options     = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
+
+        $input_name  = $base_name_add ."[]";
+        $i = 0;
+        foreach ($options as $k => $v) {
+            $input_id   = AA_Form_Array::formName2Id($input_name."[$i]");
+            ++$i;
+            $widget    .= '<article class="item">
+                             <section class="iteminfo">
+                               '. $v .'
+                             </section>
+                             <section class="icogroup">
+                               <input type="hidden" name="'.$input_name.'" id="'.$input_id.'" value="'.safe($k).'">
+
+                               <!--article><i class="ico edit">edit</i></article-->
+                               <article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>
+                             </section>
+                           </article>
+                           ';
+        }
+
+        // default value - in order something is send when no chbox is checked
+        $input_name   = $base_name_add ."[def]";
+        $input_id     = AA_Form_Array::formName2Id($input_name);
+
+        // <input type="text" id="finduser" name="finduser" onkeyup="PlanSearch($('#finduser').val()+$('#prispeluser').val(), ReloadUserTable,500)" placeholder="hledej...">
+
+        $def_field_id = $aa_property->getId();
+        $def_slice_id = $content->getOwnerId();
+
+
+        $widget      .= <<<HTML
+                       </section>
+                       <footer>
+                         <input type="hidden" name="$input_name" id="$input_id" value="">
+                         <article><i class="ico insert">přidat</i><input type=search value onkeyup="DisplayAaResponse('flt$input_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})"></article>
+                         <article><i class="ico megainsert">přetánout</i></article>
+                         <article><i class="ico new">nový</i></article>
+                       </footer>
+                       <section class="itemselect" id=flt$input_id>
+                       </section>
+                     </article>
+HTML;
+
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+    /** function which offers filtered selections for current widget */
+    function getFilterSelection($searchstring) {
+        $options     = $this->getFormattedOptions(null, false, $searchstring);
+        $ret = '';
+        foreach ($options as $k => $v) {
+            $ret    .= '<article class="item">
+                             <section class="iteminfo">
+                               '. $v .'
+                             </section>
+                             <section class="icogroup">
+                               <input type="hidden" name="" value="'.safe($k).'"><article class="select" onclick="this.previousSibling.name=AA_up(this, \'.aa-widget\').getAttribute(\'data-aa-basename\')+\'[rim][]\'; AA_up(this, \'.aa-widget\').querySelector(\'.itemgroup\').appendChild(this.parentNode.parentNode);"><i class="ico select">+</i></article>
+                               <article class="delete" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>
+                             </section>
+                           </article>
+                           ';
+        }
+        return $ret;
+    }
+
+    function getValue($data4field) {
+        return AA_Widget_Mch::getValue($data4field);
+    }
+}
+
+
+
 /** Do not show widget */
 class AA_Widget_Nul extends AA_Widget {
 
@@ -2058,7 +2185,7 @@ class AA_Property extends AA_Storable {
             'content_type_switch_default' => new AA_Property( 'content_type_switch_default', _m('content_type_switch_default'), 'string',   false),
             'perm'                        => new AA_Property( 'perm'                       , _m('perm'                       ), 'string',   false),
             'const_arr'                   => new AA_Property( 'const_arr'                  , _m('const_arr'                  ), 'string',   true),
-            'default'                     => new AA_Property( 'default'                   , _m('default'                     ), 'AA_Value', true)
+            'default'                     => new AA_Property( 'default'                    , _m('default'                    ), 'AA_Value', true)
             );
     }
 
@@ -2078,7 +2205,7 @@ class AA_Property extends AA_Storable {
     /** set the Values array and also the validator */
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
-        $this->validator = new AA_Validate_Enum(array('possible_values'=>array_keys($this->const_arr))); 
+        $this->validator = new AA_Validate_Enum(array('possible_values'=>array_keys($this->const_arr)));
     }
 
     /** called before StoreItem to fill the field with correct data */
