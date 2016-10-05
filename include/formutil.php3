@@ -85,7 +85,7 @@ function GetInputFormTemplate() {
      //           inputform($inputform_settings);
      $form  = new inputform();
      // ItemContent in getForm passed by reference
-     return $form->getForm(new ItemContent(), $slice, false, $slice_id);
+     return $form->getForm(new ItemContent(), $slice);
 }
 
 /** getHtmlareaJavascript() */
@@ -133,7 +133,6 @@ class inputform {
     var $show_preview_button;
     var $cancel_url;
     var $messages;
-    var $result_mode;
 
     var $template;        // if you want to display alternate form design,
                           // template holds view_id of such template
@@ -153,7 +152,7 @@ class inputform {
      *  Constructor - initializes inputform
      * @param $settings
      */
-    function inputform($settings=array()) {
+    function __construct($settings=array()) {
         $this->display_aa_begin_end = $settings['display_aa_begin_end'];
         $this->page_title           = $settings['page_title'];
         $this->form_action          = $settings['form_action'];
@@ -161,7 +160,6 @@ class inputform {
         $this->show_preview_button  = $settings['show_preview_button'];
         $this->cancel_url           = $settings['cancel_url'];
         $this->messages             = $settings['messages'];
-        $this->result_mode          = $settings['result_mode'];  // if not supplied, standard form is used
         $this->template             = $settings['template'];
         $this->formheading          = $settings['formheading']; //aded for MLX
         $this->hidden               = $settings['hidden'];      // array of hidden fields to be added to the form
@@ -180,7 +178,7 @@ class inputform {
      * @param $slice_fields - true, if we want to edit "slice setting fields"
      *                         which are stored in content table
      */
-    function printForm($content4id, &$slice, $edit, $slice_fields=false) {
+    function printForm($content4id, $slice, $edit, $slice_fields=false) {
         global $sess, $auth;
 
         // Get the default form and FILL CONTENTCACHE with fields
@@ -314,7 +312,7 @@ class inputform {
      *                (packed field id => 1) of fields to show
      * @param $slice_fields
      */
-    function getForm(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
+    function getForm($content4id, $slice, $edit=false, $show='', $slice_fields=false) {
         global $auth;
 
         $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
@@ -382,7 +380,7 @@ class inputform {
             $aainput->setFromField($f);
 
             // do not return template for anonymous form wizard
-            $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template', $item);
+            $ret .= $aainput->get($item, $slice->getId());
             unset($aainput);
         }
         $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
@@ -398,7 +396,7 @@ class inputform {
     function getFormJavascript() {
         global $slice_id, $sess;
 
-        $retval  = getFrmJavascriptFile( 'javascript/inputform.js' );
+        $retval  = getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
         $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
         $retval .= getFrmJavascriptFile( 'javascript/aajslib.php3' );
 
@@ -494,13 +492,11 @@ class AA_Inputfield {
 
     // --- private ---
     var $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
-    var $result_mode;      // expand | template | cache
+    var $result_mode;      // expand | template
                            // expand   - input fields are normally printed;
                            // template - field is printed as alias
                            //            {inputfield:...} and content is stored
                            //            into contentcache
-                           // cache    - no result printed - only
-                           //            the contentcache is filled
     var $value_modified;   // sometimes we have to modify value before output
     var $selected;         // helper array used for quick search, if specified
                            // value is selected (manily for multivalues)
@@ -729,7 +725,7 @@ class AA_Inputfield {
       * @param $valtype
       */
     function prepareVars($valtype='first') {
-        if     (isset($this->value_modified)) {
+        if (isset($this->value_modified)) {
             $val = $this->value_modified;
         } elseif ($valtype == 'first') {
             $val = $this->value[0]['value'];
@@ -741,11 +737,10 @@ class AA_Inputfield {
 
     /** echoo function
      *  Echo wrapper - prints output to string insted of to output
-     *  If result_mode is cache, no result is printed - only the cache is filled
      * @param $txt
      */
     function echoo($txt) {
-        if ( $this->result_mode != 'cache' ) $this->result .= $txt;
+        $this->result .= $txt;
     }
 
     /** echovar function
@@ -810,189 +805,165 @@ class AA_Inputfield {
      * @param $result_mode
      * @param $item
      */
-    function get( $result_mode='expand', $item=null ) {
+    function get( $item, $slice_id ) {
         // @todo check, how to do it better - this do not work if
         // "slice_field" parameter uses {subst...} for examle
         AA_Stringexpand::unaliasArray($this->param);
-        $this->result_mode = $result_mode;
+        $this->result_mode = 'template';
         $this->echoo($this->input_before);
-        switch ($this->mode. '_'. $this->input_type) {
-            case 'freeze_chb': $this->value_modified = $this->value[0]['value'] ? _m("set") : _m("unset");
-                               $this->staticText();       break;
-            case 'freeze_wi2':
-            case 'freeze_tag':
-            case 'freeze_mse':
-            case 'freeze_mfl':
-            case 'freeze_mch': $this->value_modified = $this->implodeVal();
-                               $this->staticText();       break;
-            case 'freeze_pwd': $this->value_modified = $this->value[0] ? "*****" : "";
-                               $this->staticText();       break;
-            case 'freeze_dte': $datectrl = new datectrl($this->varname());
-                               $datectrl->setdate_int($this->value[0]['value']);
-                               $this->value_modified = $datectrl->get_datestring();
-                               $this->staticText();       break;
-            case 'freeze_txt':
-            case 'freeze_hid':
-            case 'freeze_edt':
-            case 'freeze_fld':
-            case 'freeze_rio':
-            case 'freeze_sel':
-            case 'freeze_pre':
-            case 'freeze_tpr':
-            case 'freeze_inf':
-            case 'anonym_inf':
-            case 'normal_inf':
-            case 'freeze_fil': $this->staticText();       break;
-            case 'freeze_nul': break;
+        if ($this->mode == 'freeze') {
+            switch ($this->input_type) {
+                case 'chb': $this->value_modified = $this->value[0]['value'] ? _m("set") : _m("unset");
+                            $this->staticText();       break;
+                case 'lup':     // Local URL Picker | Omar/Jaime | 11-06-2005
+                case 'iso': $this->value_modified = $this->implodeVal('<br>');
+                            $this->staticText();       break;
+                case 'pwd': $this->value_modified = $this->value[0] ? "*****" : "";
+                            $this->staticText();       break;
+                case 'dte': $datectrl = new datectrl($this->varname());
+                            $datectrl->setdate_int($this->value[0]['value']);
+                            $this->value_modified = $datectrl->get_datestring();
+                            $this->staticText();       break;
+                case 'nul': break;
+                case 'txt':
+                case 'hid':
+                case 'edt':
+                case 'fld':
+                case 'rio':
+                case 'sel':
+                case 'pre':
+                case 'tpr':
+                case 'inf':
+                case 'fil': $this->staticText();       break;
+                case 'wi2':
+                case 'tag':
+                case 'mse':
+                case 'mfl':
+                case 'mch':
+                default:    $this->value_modified = $this->implodeVal();
+                            $this->staticText();       break;
 
-            case 'anonym_nul':
-            case 'normal_nul': break;
-            case 'anonym_chb':
-            case 'normal_chb': $this->inputChBox();       break;
-            case 'anonym_hid':
-            case 'normal_hid': $this->hidden();           break;
-            case 'anonym_fld':
-            case 'normal_fld': $this->inputText(get_if($this->param[0],255), // maxlength
-                                                get_if($this->param[1],60)); // fieldsize
-                               break;
-            case 'anonym_mfl':
-            case 'normal_mfl': list($actions, $rows, $max_characters, $width) = $this->param;
-                               $actions = get_if($actions, 'MDAC'); // move, delete, add, change
-                               $this->varname_modify('[]');         // use slightly modified varname
+            }
+        } elseif (($this->mode == 'anonym') OR ($this->mode == 'normal')) {
+            switch ($this->input_type) {
+                case 'inf': $this->staticText();       break;
 
-                               // prepare value array for selectbox
-                               foreach ( $this->value as $content ) {
-                                   $this->const_arr[$content['value']] = $content['value'];
-                               }
-                               $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
-                               break;
+                case 'nul': break;
+                case 'chb': $this->inputChBox();       break;
+                case 'hid': $this->hidden();           break;
+                case 'fld': $this->inputText(get_if($this->param[0],255), // maxlength
+                                                    get_if($this->param[1],60)); // fieldsize
+                                   break;
+                //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
+                //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
+                //            $this->varname_modify('[]');         // use slightly modified varname
+                //
+                //            // prepare value array for selectbox
+                //            foreach ( $this->value as $content ) {
+                //                $this->const_arr[$content['value']] = $content['value'];
+                //            }
+                //            $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
+                //            break;
+                case 'txt': $this->textarea(get_if($this->param[0],4), 60);
+                            break;
+                case 'edt': $this->richEditTextarea(
+                                       get_if($this->param[0],10),       // rows
+                                       get_if($this->param[1],70),       // cols
+                                       get_if($this->param[2],'class')); // type
+                            $GLOBALS['list_fnc_edt'][] = $this->varname();
+                            break;
+                case 'sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                            if ( !is_null($item) ) {
+                                $conds_str = $item->unalias($conds_str);
+                            }
+                            if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);  // if we fill it there, it is not refilled in inputSel()
+                            $this->inputSelect($usevalue);
+                            break;
+                case 'rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
+                            if ( !is_null($item) ) {
+                                $conds_str = $item->unalias($conds_str);
+                            }
+                            $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
+                            break;
+                case 'mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
+                            if ( !is_null($item) ) {
+                                $conds_str = $item->unalias($conds_str);
+                            }
+                            $this->varname_modify('[]');         // use slightly modified varname
+                            $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
+                            break;
+                case 'mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                            if ( !is_null($item) ) {
+                                $conds_str = $item->unalias($conds_str);
+                            }
+                            $rows = ($rows < 1) ? 5 : $rows;
+                            $this->varname_modify('[]');         // use slightly modified varname
+                            $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
+                            break;
+                case 'fil': list($accepts, $text, $hlp) = $this->param;
+                            $this->inputFile($accepts, $text, $hlp);
+                            break;
+                case 'dte': if ( strstr($this->param[0], "'")) {     // old format
+                                $this->param = explode("'",$this->param[0]);
+                            }
+                            list($y_range_minus, $y_range_plus, $from_now, $display_time) = $this->param;
+                            $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_time);
+                            break;
+                case 'pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str) = $this->param;
+                            // add2constant is used in insert_fnc_qte - adds new value to constant table
+                            if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+                            $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
+                            break;
+                case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
+                                                     get_if($this->param[2],60));  // cols
+                            break;
+                case 'iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field) = $this->param;
+                            $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
+                            $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
+                            $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
+                                         ( isset($GLOBALS['apc_state']['tps'][$tp]) ? $GLOBALS['apc_state']['tps'][$tp] :
+                                                                                     null ));
+                            if ( is_null($tagprefix) ) {
+                                $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
+                            }
+                            $this->varname_modify('[]');         // use slightly modified varname
+                            $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
+                            $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field);
+                            break;
+                case 'hco': list($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
+                            $this->varname_modify('[]');         // use slightly modified varname
+                            $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
+                            break;
+                case 'tag': $this->inputWidget($item, $slice_id);
+                            // list($constgroup, $slice_field, $whichitems, $conds, $sort, $addform, $add_slice_pwd) = $this->param;
+                            // // we do not use all the settings here (sort, addform, slicepwd) - we use it for ajax input
+                            // $this->varname_modify('[]');         // use slightly modified varname
+                            // $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value);  // if we fill it there, it is not refilled in inputSel()
+                            // $this->inputRelation(5, $sid, MAX_RELATED_COUNT, 'A', '', 'DR', $whichitems, $conds, $condsrw, $slice_field);
+                            break;
+                case 'wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd) = $this->param;
+                            if ( !is_null($item) ) {
+                                $conds_str = $item->unalias($conds_str);
+                            }
+                            $this->varname_modify('[]');         // use slightly modified varname
+                            $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
+                            break;
+                case 'pwd':  // handled in passwordModify
+                            list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
+                            $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
+                            break;
+                            //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
+                case 'lup': list($url) = $this->param;
+                            $this->inputLocalURLPick($url);
+                            break;
+                            //END// Local URL Picker | Omar/Jaime | 11-06-2005
+                case 'mfl':
+                case 'rim':
+                default:    $this->inputWidget($item, $slice_id);
 
-            case 'anonym_txt':
-            case 'normal_txt': $this->textarea(get_if($this->param[0],4), 60);
-                               break;
-            case 'anonym_edt':
-            case 'normal_edt': $this->richEditTextarea(
-                                          get_if($this->param[0],10),       // rows
-                                          get_if($this->param[1],70),       // cols
-                                          get_if($this->param[2],'class')); // type
-                               $GLOBALS['list_fnc_edt'][] = $this->varname();
-                               break;
-            case 'anonym_sel':
-            case 'normal_sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
-                               if ( !is_null($item) ) {
-                                   $conds_str = $item->unalias($conds_str);
-                               }
-                               if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);  // if we fill it there, it is not refilled in inputSel()
-                               $this->inputSelect($usevalue);
-                               break;
-            case 'anonym_rio':
-            case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
-                               if ( !is_null($item) ) {
-                                   $conds_str = $item->unalias($conds_str);
-                               }
-                               $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
-                               break;
-            case 'anonym_mch':
-            case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
-                               if ( !is_null($item) ) {
-                                   $conds_str = $item->unalias($conds_str);
-                               }
-                               $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
-                               break;
-            case 'anonym_mse':
-            case 'normal_mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
-                               if ( !is_null($item) ) {
-                                   $conds_str = $item->unalias($conds_str);
-                               }
-                               $rows = ($rows < 1) ? 5 : $rows;
-                               $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
-                               break;
-            case 'anonym_fil':
-            case 'normal_fil': list($accepts, $text, $hlp) = $this->param;
-                               $this->inputFile($accepts, $text, $hlp);
-                               break;
-            case 'anonym_dte':
-            case 'normal_dte': if ( strstr($this->param[0], "'")) {     // old format
-                                   $this->param = explode("'",$this->param[0]);
-                               }
-                               list($y_range_minus, $y_range_plus, $from_now, $display_time) = $this->param;
-                               $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_time);
-                               break;
-            case 'anonym_pre':
-            case 'normal_pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str) = $this->param;
-                               // add2constant is used in insert_fnc_qte - adds new value to constant table
-                               if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
-                               $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
-                               break;
-            case 'anonym_tpr':
-            case 'normal_tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
-                                                        get_if($this->param[2],60));  // cols
-                               break;
-            case 'anonym_iso':
-            case 'normal_iso':
-            case 'freeze_iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field) = $this->param;
-                               $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
-                               $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
-                               $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
-                                            ( isset($GLOBALS['apc_state']['tps'][$tp]) ? $GLOBALS['apc_state']['tps'][$tp] :
-                                                                                        null ));
-                               if ( is_null($tagprefix) ) {
-                                   $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
-                               }
-                               $this->varname_modify('[]');         // use slightly modified varname
-                               $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
-                               if ( $this->mode == 'freeze' ) {
-                                   $this->value_modified = $this->implodeVal('<br>');
-                                   $this->staticText();
-                               } else {
-                                   $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field);
-                               }
-                               break;
-            case 'anonym_hco':
-            case 'normal_hco': list($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
-                               $this->varname_modify('[]');         // use slightly modified varname
-                               $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
-                               break;
-            case 'anonym_tag':
-            case 'normal_tag': list($constgroup, $slice_field, $whichitems, $conds, $sort, $addform, $add_slice_pwd) = $this->param;
-                               // we do not use all the settings here (sort, addform, slicepwd) - we use it for ajax input
-                               $this->varname_modify('[]');         // use slightly modified varname
-                               $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value);  // if we fill it there, it is not refilled in inputSel()
-                               if ( $this->mode == 'freeze' ) {
-                                   $this->value_modified = $this->implodeVal('<br>');
-                                   $this->staticText();
-                               } else {
-                                   $this->inputRelation(5, $sid, MAX_RELATED_COUNT, 'A', '', 'DR', $whichitems, $conds, $condsrw, $slice_field);
-                               }
-                               break;
-            case 'anonym_wi2':
-            case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd) = $this->param;
-                               if ( !is_null($item) ) {
-                                   $conds_str = $item->unalias($conds_str);
-                               }
-                               $this->varname_modify('[]');         // use slightly modified varname
-                               $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
-                               break;
-            case 'anonym_pwd':  // handled in passwordModify
-            case 'normal_pwd': list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
-                               $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
-                               break;
-        //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
-            case 'anonym_lup':
-            case 'normal_lup':
-            case 'freeze_lup': list($url) = $this->param;
-                               if ( $this->mode == 'freeze' ) {
-                                   $this->value_modified = $this->implodaval('<br>');
-                                   $this->staticText();
-                               } else {
-                                   $this->inputLocalURLPick($url);
-                               }
-                               break;
-        //END// Local URL Picker | Omar/Jaime | 11-06-2005
+            }
         }
         return $this->result;
     }
@@ -1904,6 +1875,15 @@ class AA_Inputfield {
         $this->helps('plus');
     }
 
+    function inputWidget($item, $slice_id) {
+        $this->field_name('plus');
+        if (is_null($item)) {
+            $this->echoo('{input:'.$slice_id.':'.$this->id.'}');
+        } else {
+            $this->echoo('{edit:'.$item->getId().':'.$this->id.'}');
+        }
+        $this->helps('plus');
+    }
 
     /** inputFile function
     * Prints html tag <input type=file .. to 2-column table

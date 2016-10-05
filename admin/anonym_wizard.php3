@@ -68,7 +68,10 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     // $form->getFormStart(), $form->getFormJavascript
     $inputform_settings = array('form_action' => AA_INSTAL_URL.'filler.php3');
     $form               = new inputform($inputform_settings);
-    $form_code          = $form->getForm(new ItemContent, $slice, false, $show);
+    $content4id         = new ItemContent;
+    $form_code          = $form->getForm($content4id, $slice, false, $show);
+    $CurItem    = new AA_Item($content4id, $slice->aliases(), $form_code);   // just prepare
+    $form_code  = $CurItem->get_item();
 
     $ret .= $form->getFormStart();
 
