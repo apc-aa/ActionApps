@@ -40,6 +40,7 @@ require_once AA_INC_PATH."go_url.php3";
 require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."widget.class.php3";
 require_once AA_INC_PATH."field.class.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 /** identity function - used for chaining with constructor
  *  Ussage: with(new AA_Some_Object())->set(something);
@@ -220,10 +221,21 @@ function PhpFloat($value) {
 }
 
 function ConvertEncodingDeep($value, $from=null, $to=null) {
-    $encoder = ConvertCharset::singleton($from, $to);
-    return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
+    array_walk_recursive(
+        $value,
+        function (&$entry) use ($from, $to) {
+            $entry = iconv($from, "$to//TRANSLIT", $entry);
+        }
+    );
+
+    // mb_convert_variables($to, $from, $value);   // does not work with windows-1250
+    return $value;
 }
 
+function ConvertEncoding($str, $from, $to='UTF-8') {
+    //return function_exists('mb_convert_encoding') ? mb_convert_encoding($str, $to, $from) : iconv($from, "$to//TRANSLIT",$str);  // does not work with windows-1250
+    return iconv($from, "$to//TRANSLIT",$str);
+}
 
 /** add_vars function
  *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
@@ -390,7 +402,7 @@ function is_marked_by($id, $mark) {
  */
 function string2id($str) {
     do {
-        $id  = md5($str);
+        $id  = hash('md5',$str);
         $str = $str . " ";
     } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
@@ -403,9 +415,7 @@ function string2id($str) {
  *  @param $step - time could be returned in steps (good for database query speedup)
  */
 function now($step=false) {
-    return (($step!='step') ?
-        time() :
-        ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
+    return (($step!='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
 
 /** debug function
@@ -452,13 +462,6 @@ if ( !$timestart ) {
  * Debug function to print debug messages recursively - handles arrays
  */
 function huhl() {
-    global $debugtimes,$debugtimestart;
-    if ($debugtimes) {
-       if (! $debugtimestart) {
-            $debugtimestart = microtime(true);
-        }
-        AA::$dbg->log("Time: ".(microtime(true) - $debugtimestart)."\n");
-    }
     $vars = func_get_args();
     foreach ($vars as $var) {
         AA::$dbg->log($var);
@@ -675,7 +678,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 /** GetItemContent function
  * Basic function to get item content. Use this function, not direct SQL queries.
  * @param $zids
- * @param $use_short_ids
+ * @param $unused_use_short_ids // no longer used
  *   @param bool  $ignore_reading_password
  *       Use carefully only when you are sure the data is used safely and not viewed
  *       to unauthorized persons.
@@ -684,26 +687,23 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
  *       is not so big)
  *       like: array('headline........', 'category.......1')
  */
-function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
+function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
-    $time = microtime(true);
 
     // construct WHERE clause
     if ( !is_object($zids) ) {
-        $zids = new zids( $zids, $use_short_ids ? 's' : 'l' );
+        $zids = new zids( $zids, 'l' );
     }
 
-    if ($zids->count()) {
-        $sel_in = $zids->sqlin('');
-    } else {
+    if (!$zids->count()) {
         return null;
     }
 
-    $db = getDB();
+    AA::$debug&32 && AA::$dbg->tracestart('GetItemContent', $zids->count());
 
     // get content from item table
 
-    $use_short_ids = (($zids_type = $zids->onetype()) == 's');
+    $use_short_ids = ($zids->onetype() == 's');
     $metabase      = AA_Metabase::singleton();
 
     // if the output fields are restricted, restrict also item fields
@@ -729,6 +729,10 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         if ( !in_array('id', $item_fields) ) {
             $item_fields[] = 'id';
         }
+        if ( $use_short_ids AND !in_array('short_id', $item_fields) ) {
+            $item_fields[] = 'short_id';
+        }
+
         // we need slice_id for each item, if we have to count with slice permissions
         if ( !$ignore_reading_password AND !in_array('slice_id', $item_fields) ) {
             $item_fields[] = 'slice_id';
@@ -740,71 +744,79 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         $real_item_fields2get = $metabase->getColumnNames('item');
     }
 
-    $id_column = ($use_short_ids ? "short_id" : "id");
-    $SQL       = "SELECT $item_fields_sql FROM item WHERE $id_column $sel_in";
+    $SQL = "SELECT $item_fields_sql FROM item WHERE ". $zids->sqlin();
 
     // when we contruct tree, we want to use only current item, for example
     if (!is_null($bin)) {
         $SQL .= ' AND '. CreateBinCondition($bin, 'item');
     }
-    $db->tquery($SQL);
+    $db = getDB();
+    $db->query($SQL);
 
     $n_items = 0;
 
-    $credentials = AA_Credentials::singleton();
     // returned ids (possibly removed items in trash, ...)
-    $ids            = array();
-    $item_permitted = array();
-    $translate      = array();
-    $content        = array();
+    $packed_ids  = array();
+    $unpermitted = array();
+    $slices      = array();
+    $content     = array();
+
     while ( $db->next_record() ) {
 
         $row = $db->Record;
 
         // proove permissions for password-read-protected slices
         $unpack_id                  = unpack_id($row['id']);
+        $unpack_slice_id            = unpack_id($row['slice_id']);
+        $packed_ids[]               = $row['id'];
+        $slices[$unpack_slice_id]   = true;   // mark slice for perm check
 
-        // this row leads to creation second database connection db2 - for the first_child itwem in slice @todo - do something about it, Honza 2015-12-28
-        $reading_permitted          = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id($row['slice_id']), $crypted_additional_slice_pwd);
-        $item_permitted[$row['id']] = $reading_permitted;
+        // add special fields to all items (zids)
+        // slice_id... and id... is packed  - add unpacked variant now
+        $content[$unpack_id]['u_slice_id......'] = array(array('value' => $unpack_slice_id));
+        $content[$unpack_id]['unpacked_id.....'] = array(array('value' => $unpack_id));
 
-        $ids[]                      = $row['id'];
-        $n_items                    = $n_items+1;
-
-        if ( $use_short_ids ) {
-            $foo_id = $row['short_id'];
-            $translate[$unpack_id] = $foo_id; // id -> short_id
-        } else {
-            $foo_id = $unpack_id;
+        // if ($ignore_reading_password OR $credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
+           // this row leads to creation second database connection db2 - for the first_child item in slice @todo - do something about it, Honza 2015-12-28
+           //   (we should test it after this while cycle - once for slice)
+           // Solved 2016-08-24 Honza
+        foreach ($real_item_fields2get as $item_fid) {
+            // FLAG_HTML do not means in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
+            // we do not need to call txt2html() to any of the item table fields
+            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $row[$item_fid], "flag"  => FLAG_HTML);
         }
+    }
+    freeDB($db);
 
-        // Note that it stores into the $content[] array based on the id being used which
-        // could be either shortid or longid, but is NOT tagged id.
-        if ($reading_permitted) {
-            foreach ($real_item_fields2get as $item_fid) {
-                // FLAG_HTML do not means in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
-                // we do not need to call txt2html() to any of the item table fields
-                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $row[$item_fid], "flag"  => FLAG_HTML);
+    if (!$ignore_reading_password) {
+        $credentials = AA_Credentials::singleton();
+        foreach ($slices as $unpack_slice_id => $foo) {
+            if (!$credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
+                // it should be rare
+
+                // mark all items from this slice as unpermitted
+                $ERR_VALUE = array(array("value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML));
+                foreach ($content as $unpack_id => $c4id) {
+                    $unpermitted[$unpack_id] = true;
+                    foreach ($c4id as $fid) {
+                        // at least id and slice_id should be correct.............. for AA_Items::getItems()
+                        if (($fid != 'id..............') OR ($fid != 'slice_id........')) {
+                            $content[$unpack_id][$fid] = $ERR_VALUE;
+                        }
+                    }
+                }
             }
-        } else {
-            $error_msg = _m("Error: Missing Reading Password");
-            foreach ($real_item_fields2get as $item_fid) {
-                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $error_msg, "flag"  => FLAG_HTML);
-            }
-            // fill at least following fields with correct values - we need id.............. for AA_Items::getItems()
-            $content[$foo_id]['id..............'][0]['value'] =  $row['id'];
-            $content[$foo_id]['slice_id........'][0]['value'] =  $row['slice_id'];
         }
     }
 
     // Skip the rest if no items found
-    if ($n_items == 0) {
-        freeDB($db);
+    if (empty($content)) {
+        AA::$debug&32 && AA::$dbg->traceend('GetItemContent', '');
         return null;
     }
 
     // If its a tagged id, then set the "idtag..........." field
-    if ($zids_type == 't') {
+    if ( $zids->onetype() == 't') {
         $tags = $zids->gettags();
         while ( list($k,$v) = each($tags)) {
             $content[$k]["idtag..........."][] = array("value" => $v);
@@ -812,9 +824,9 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     // construct WHERE query to content table
-    $new_sel_in = sqlin('item_id', $ids);
+    $new_sel_in = sqlin('item_id', $packed_ids);
 
-    if ( isset( $fields2get ) AND is_array( $fields2get ) ) {
+    if ( is_array( $fields2get ) ) {
         switch ( count($content_fields) ) {
             case 0:  // we want just some item fields
                      $restrict_cond = '1=0';
@@ -834,65 +846,56 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     // do we want any content field?
     if ( $restrict_cond != '1=0' ) {
-
+        $db = getDB();
         $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY item_id, number"; // usable just for multivalues
-
-        $db->tquery($SQL);
+        $db->query($SQL);
 
         while ( $db->next_record() ) {
 
-            $row = $db->Record;
+            $row       = $db->Record;
+            $unpack_id = unpack_id($row['item_id']);
 
-            $item_id = $row['item_id'];
-            $fooid   = ($use_short_ids ? $translate[unpack_id($item_id)] : unpack_id($item_id) );
-
-            if ( !$item_permitted[$item_id] ) {
-                $content[$fooid][$row['field_id']][0] = array( "value" => _m("Error: Missing Reading Password"));
+            if ( $unpermitted[$unpack_id] ) {
+                $content[$unpack_id][$row['field_id']] = $ERR_VALUE;
                 continue;
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
             if ( ($row['flag'] & FLAG_TEXT_STORED) OR (strlen($row['text'])>0)) {
-                if (is_array($content[$fooid][$row['field_id']][0]) AND ($content[$fooid][$row['field_id']][0]['value'] == $row['text'])) {
+                if (is_array($content[$unpack_id][$row['field_id']][0]) AND ($content[$unpack_id][$row['field_id']][0]['value'] == $row['text'])) {
                     // ignore content duplicates (there could be more that two values for field
                     // with the same number (=NULL) - the ones which cames from "add value to field" operation)
                     continue;
                 }
                 if ($row['number'] > 999999) {  // translations
-                    $content[$fooid][$row['field_id']][$row['number']] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                    $content[$unpack_id][$row['field_id']][$row['number']] = array( "value" => $row['text'], "flag"  => $row['flag']);
                 } else {
-                    $content[$fooid][$row['field_id']][] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                    $content[$unpack_id][$row['field_id']][] = array( "value" => $row['text'], "flag"  => $row['flag']);
                 }
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
                 // if speeds the item->f_h() function a bit
-                $content[$fooid][$row['field_id']][] = array( "value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML));
+                $content[$unpack_id][$row['field_id']][] = array( "value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML));
             }
+        }
+        freeDB($db);
+    }
+
+    if ($use_short_ids) {
+        // if $zids->onetype() == 's' we should return $content constructed using short_id (to be backward compatible)
+        // it is deprecated, so maybe rather update calling code to accept $content with unpacked_id keys
+        // (there is problem with calling after zids->short_or_longids - say: view.php3?vid=26&cmd[26]=x-26-23074  ) Honza 2016-09-30
+        $content_long = $content;
+        $content = array();
+        foreach ($content_long as $c4id) {
+            $content[$c4id['short_id........'][0]['value']] = $c4id;
         }
     }
 
-    // add special fields to all items (zids)
-    foreach ($content as $iid => $foo ) {
-        // slice_id... and id... is packed  - add unpacked variant now
-        $content[$iid]['u_slice_id......'][] =
-            array('value' => unpack_id($content[$iid]['slice_id........'][0]['value']));
-        $content[$iid]['unpacked_id.....'][] =
-            array('value' => unpack_id($content[$iid]['id..............'][0]['value']));
-    }
 
-    freeDB($db);
-
-    ($GLOBALS['debugtime'] > 2) && AA::$dbg->duration('GetItemContent-'.$zids->count().'-'.count($content), microtime(true)-$time);
+    AA::$debug&32 && AA::$dbg->traceend('GetItemContent', $content);
 
     return $content;   // Note null returned above if no items found
-}
-
-/** GetItemContent_Short function
- *  fills content arr with current content of $sel_in items (comma separated short ids)
- * @param $ids
- */
-function GetItemContent_Short($ids) {
-    GetItemContent($ids, true);
 }
 
 /** GetItemContentMinimal function
@@ -1103,6 +1106,13 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
     AA::$debug && AA::$dbg->info('time: '. (microtime(true) - $GLOBALS['timestart']));
+    if (AA::$debug&16) {
+        echo '<br>Page generation time: '. (microtime(true) - $timestart);
+        echo '<br>Dababase instances: '. DB_AA::$_instances_no;
+        echo '<br>  (spareDBs): '. count($spareDBs);
+        echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
+        AA::$dbg->duration_stat();
+    }
 
   echo "
             </td>
@@ -1449,7 +1459,7 @@ class AA_Credentials {
  */
 class contentcache {
     // used for global cache of contents
-    var $content;
+    protected $content;   // array of cache entry - 'key'=>[result, generation_time, uses, identification]
 
     /** global_instance function
      *  "class function" obviously called as contentcache::global_instance();
@@ -1482,18 +1492,38 @@ class contentcache {
      *                     only on its parameters, but also on some (global?) variable
      */
     function get_result( $function, $params=array(), $additional_params='' ) {
-        $key = get_hash(func_get_args());
-        return $this->get_result_by_id($key, $function, $params);
+        return $this->_get_result(get_hash(func_get_args()), $function, $params, $function);
     }
 
+    ///** sometimes it is quicker to not count the key automaticaly (in case of object call) */
+    //function get_result_by_id($key, $function, $params) {
+    //    if ( isset( $this->content[$key]) ) {
+    //        $this->content[$key][2]++;
+    //        return $this->content[$key][0];
+    //    }
+    //    $time = microtime(true);
+    //    $val = call_user_func_array($function, (array)$params);
+    //    $this->content[$key] = array($val, microtime(true)-$time, 0);
+    //    return $val;
+    //}
+
+
     /** sometimes it is quicker to not count the key automaticaly (in case of object call) */
-    function get_result_by_id($key, $function, $params) {
+    function _get_result($key, $function, $params, $ident) {
         if ( isset( $this->content[$key]) ) {
-            return $this->content[$key];
+            $this->content[$key][2]++;
+            return $this->content[$key][0];
         }
+        $time = microtime(true);
         $val = call_user_func_array($function, (array)$params);
-        $this->content[$key] = $val;
+        $this->content[$key] = array($val, microtime(true)-$time, 0, $ident);
         return $val;
+    }
+
+
+    /** sometimes it is quicker to not count the key automaticaly (in case of object call) */
+    function get_result_4_object($function, $params, $classname_hint, $add) {
+        return $this->_get_result(get_hash($classname_hint, $params, $add), $function, $params, $classname_hint);
     }
 
     /** set function
@@ -1501,8 +1531,8 @@ class contentcache {
      * @param $access_code
      * @param $val
      */
-    function set($access_code, &$val) {
-        $this->content[md5($access_code)] = $val;
+    function set($access_code, $val) {
+        $this->content[hash('md5', $access_code)] = array($val,0,0);
     }
 
     /** get function
@@ -1511,9 +1541,9 @@ class contentcache {
      *  @return false if the value is not cached for the $access_code (use ===)
      */
     function get($access_code) {
-        $key = md5($access_code);
+        $key = hash('md5', $access_code);
         if ( isset($this->content[$key]) ) {
-            return $this->content[$key];
+            return $this->content[$key][0];
         }
         return false;
     }
@@ -1530,6 +1560,32 @@ class contentcache {
         }
     }
 
+    function duration_stat() {
+        echo "<br><b>contentcache</b> (".count($this->content)." rows)<br>";
+        echo '<br><table><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
+        foreach($this->content as $c) {
+           echo '<tr><td>'.safe($c[3]).'</td><td>'.(1000*$c[1]).'</td><td>'.safe(substr($c[0],0,20)).' ('.strlen($c[0]).')</td><td>'.$c[2].'</td></tr>';
+        }
+        echo '</table>';
+
+        $stat = array();
+        foreach($this->content as $c) {
+            if ( !isset($stat[$c[3]]) ) {
+                $stat[$c[3]] = array();
+            }
+            $stat[$c[3]]['cases']++;
+            $stat[$c[3]]['unused']+=($c[2] ? 0 : 1);
+            $stat[$c[3]]['gentime']+=1000*$c[1];
+            $stat[$c[3]]['length']+=strlen($c[0]);
+            $stat[$c[3]]['hits']+=$c[2];
+            $stat[$c[3]]['saved']+=$c[2]*1000*$c[1];
+        }
+        echo '<br><table><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
+        foreach($stat as $key=>$c) {
+           echo '<tr><td>'.safe($key).'</td><td>'.$c['cases'].'</td><td>'.$c['unused'].'</td><td>'.$c['gentime'].'</td><td>'.$c['length'].'</td><td>'.$c['hits'].'</td><td>'.$c['saved'].'</td></tr>';
+        }
+        echo '</table>';
+    }
 // end of contentcache class
 }
 
@@ -1657,5 +1713,4 @@ function IsSpamText($text, $tolerance=4) {
 function IsAlias($identifier) {
     return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND is_numeric(substr($identifier,3)))));
 }
-
 ?>
