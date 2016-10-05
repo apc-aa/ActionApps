@@ -42,6 +42,7 @@ CKEDITOR.editorConfig = function( config ) {
 
     // Honza's changes
     config.entities = false;
+    config.extraPlugins = 'confighelper';  // for placeholder of editor
     //config.extraAllowedContent = 'span;*[id];a[rel];*(*);*{*}'; // any class and any inline style...
     config.allowedContent = true;   // disable filtering at all - toto je poslední možnost
 
@@ -56,5 +57,4 @@ CKEDITOR.editorConfig = function( config ) {
     config.filebrowserUploadUrl      = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=files';
     config.filebrowserImageUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=images';
     config.filebrowserFlashUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=flash';
-
 };

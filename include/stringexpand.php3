@@ -82,8 +82,15 @@ if (defined('AA_CUSTOM_DIR')) {
 }
 
 // we need it for preg_replace_callback when unalias sometimes gives empty results (empty spots in site, ...)
-if (ini_get('pcre.backtrack_limit') < 1000000) {
-    ini_set('pcre.backtrack_limit', 1000000);
+if (ini_get('pcre.backtrack_limit') < 10000000) {
+    ini_set('pcre.backtrack_limit', 10000000);
+}
+if (ini_get('pcre.recursion_limit') < 10000000) {
+    ini_set('pcre.recursion_limit', 10000000);
+}
+
+if (ini_get('pcre.jit') == 1) {
+    ini_set('pcre.jit', 0);
 }
 
 /** creates array form JSON array or returns single value array if not valid json */
@@ -91,7 +98,7 @@ function json2arr($string, $do_not_filter=false) {
     if ($string{0} != '[') {
         $values = array($string);
     } elseif (AA::$encoding AND (AA::$encoding != 'utf-8')) {
-        if ( ($arr = json_decode(StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)))) == null) {
+        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding))) == null) {
             return array();
         }
         $values = ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
@@ -107,8 +114,23 @@ function json2asoc($string) {
     if ($string{0} != '{') {
        return array();
     }
+
+    if ($_GET['dd']==1) {
+        //huhl(json_encode('hrhrhrjjddjjd'));
+        //huhl(json_encode('hrhrhr"jjddjjd'));
+        //huhl(json_encode('hrhrhr"jjd
+        //    djjd'));
+        //huhl(json_encode('hrh\'rhr"jjddjjd'));
+        //huhl(json_encode('řčžščýšášhrhrhrjjddjjd'));
+        //huhl(json_encode('řčžščýšášhrhrhr"jjddjjd'));
+        //huhl(json_encode('řčžščýšášhrhrhr"jjd
+        //    djjd'));
+        //huhl(json_encode('řčžščýšášhrh\'rhr"jjddjjd'));
+//        huhl($string, AA::$encoding, StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)), json_decode(StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)),true));
+    }
+
     if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
-        if ( ($arr = json_decode(StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)),true)) == null) {
+        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),true)) == null) {
             return array();
         }
         $values = ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
@@ -266,8 +288,6 @@ class AA_Stringexpand_User extends AA_Stringexpand {
     }
 }
 
-
-
 /** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
 *   @param $field - field to show ('headline........', '_#SURNAME_' ...).
 *                   empty for username (of curent logged user)
@@ -321,7 +341,6 @@ class AA_Stringexpand_Internal extends AA_Stringexpand_Nevercache {
         //return ($this AND is_object($item) AND $item->isField($text)) ? $item->getval($text) : join(':', $params);
     }
 }
-
 
 /** Returns name or other info about user (usable for posted_by, edited_by, ...)
  *   {userinfo:<user>[:<property>]}
@@ -1855,7 +1874,7 @@ class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
      */
     function expand($string='') {
         if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
-            return json_encode(StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)));
+            return json_encode(ConvertEncoding($string, AA::$encoding));
         }
         return json_encode($string);
     }
@@ -2117,8 +2136,7 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
      * @param $text
      */
     function expand($text, $from, $to='') {
-        $encoder = new ConvertCharset;
-        return $encoder->Convert($text, trim($from), trim($to));
+        return ConvertEncoding($text, trim($from), trim($to));
     }
 }
 
@@ -2247,14 +2265,14 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  *   {item:171055:_#HEADLINE}
  *
  * You can also display it for more than one item and use the delimeter
- *   {item:53443-54322-53553:_HEADLINE:, }
+ *   {item:53443-54322-53553:_#HEADLINE:, }
  *
  * You can also use it to display item in tree. In fact, the {item} with
  * trees works exactly the same way, as {itree}, but {itree} has more logical
  * parameter order (due to backward compatibility), so you are encouraged to use
  * {itree} - @see {itree} for more info on tree string representation.
  **/
-class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Item extends AA_Stringexpand {
 
     /** Do not trim all parameters (at least the $delimiter parameter could contain space) */
     function doTrimParams() { return false; }
@@ -2270,14 +2288,17 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
      */
     function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null) {
 
-        $ids_string = trim(strtolower($ids_string));
-        $id_type    = guesstype($ids_string);
+        if (!($ids_string = trim(strtolower($ids_string)))) {
+            return '';
+        }
 
-        // for speedup - single items evaluate here
-        if ( $ids_string AND (($id_type == 's') OR ($id_type == 'l'))) {
-            if ($item = AA_Items::getItem(new zids($ids_string,$id_type))) {
-                return $item->subst_alias($content);
-            }
+        $zids = new zids(array_filter(explode('-',str_replace(array('(',')',' ',"\n"),array('-','-','-','-'),$ids_string))));
+
+        // load all mentioned items in one step
+        AA_Items::preload($zids);
+
+        if (strpos($ids_string,'(')===false) {
+            return AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $content), $delim);
         }
 
         // sanity input
@@ -2293,6 +2314,22 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
         $ret = $tree_cache->get_concat($ids_string);
 
         return $ret;
+    }
+
+    static function itemJoin($arr, $delim) {
+        $arr = array_filter($arr,'strlen');
+        switch ($delim) {
+            case 'json':
+                return json_encode($arr);
+            case 'jsonasoc':
+                $ret = array();
+                foreach ($arr as $v) {
+                    $foo = explode('->',$v);
+                    $ret[$foo[0]] = $foo[1];
+                }
+                return json_encode($ret);
+        }
+        return join($delim,$arr);
     }
 }
 
@@ -2439,24 +2476,10 @@ class AA_Treecache {
         $results = array();
         if ( is_array($ids) ) {
             foreach ( $ids as $item_id ) {
-                $c = $this->_get_item($item_id, $this->content);
-                if (strlen($c) > 0) {  // assignment
-                    $results[] = $c;
-                }
+                $results[] = $this->_get_item($item_id, $this->content);
             }
         }
-        switch ($this->delim) {
-            case 'json':
-                return json_encode($results);
-            case 'jsonasoc':
-                $res = array();
-                foreach ($results as $v) {
-                    $foo = explode('->',$v);
-                    $res[$foo[0]] = $foo[1];
-                }
-                return json_encode($res);
-        }
-        return join($this->delim,$results);
+        return AA_Stringexpand_Item::itemJoin($results, $this->delim);
     }
 
     function _get_item($item_id, $expression) {
@@ -2465,15 +2488,7 @@ class AA_Treecache {
             return $this->_cache[$item_id];
         }
 
-        $id_type = guesstype($item_id);
-        if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
-            $item = AA_Items::getItem(new zids($item_id,$id_type));
-            // do not show trashed/expired/... items
-            if ($item AND $item->isActive()) {
-                return $item->subst_alias($expression);
-            }
-        }
-        return '';
+        return reset(AA_Items::getFormatted(new zids($item_id), $expression));
     }
 }
 
@@ -2501,6 +2516,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         if ( !in_array($function, array('sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_contain')) ) {
             return '';
         }
+
         $ids     = explode('-', $ids_string);
         $results = array();
         $count   = 0;
@@ -3378,7 +3394,7 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
  *  Example: {sessurl:<url>}
  *  Example: {sessurl}         - returns session_id
  *  Example: {sessurl:hidden}  - special case for <input hidden...
- *  Example: {sessurl:param}   - special case for AA_CP_Session=6252412...
+ *  Example: {sessurl:param}   - special case for AA_Session=6252412...
  */
 class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3543,6 +3559,52 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
 }
 
 /** Allows on-line editing of field content
+ *    {edit:{_#ITEM_ID_}:headline........}
+ *    {edit:{_#ITEM_ID_}:text..........23:::::2}
+ *    {edit:{_#ITEM_ID_}:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
+ *    {edit:{_#ITEM_ID_}:category........::sel:{"const_arr":{"0":"yes","1":"no"}}}          (1)
+ *    {edit:{_#ITEM_ID_}:category........::sel:{"const_arr":{jsonasoc:0:yes:1:no}}}         (2)
+ */
+class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getID();
+    }
+
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     * @param $show_alias
+     * @param $onsuccess
+     * @param $widget_type       - not yet implemented
+     * @param $widget_properties - not yet implemented
+     */
+    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
+        $ret = '';
+        if ( $field_id) {
+            $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
+            if (!empty($item)) {
+                $iid   = $item->getItemID();
+                $slice = AA_Slice::getModule($item->getSliceId());
+
+                // Use right language (from slice settings) - languages are used for button texts, ...
+                $lang  = $slice->getLang();
+                //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
+                mgettext_bind($lang, 'output');
+
+                $field = $slice->getField($field_id);
+                $ret   = $field ? $field->getWidgetEditHtml($iid, ($required==1) ? true : null, $function, $widget_type) : '';
+            }
+        }
+        return $ret;
+    }
+}
+
+/** Allows on-line editing of field content
  *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
  *  {ajax:{_#ITEM_ID_}:category........}
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
@@ -3645,7 +3707,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
 
 
 /** Allows on-line editing of field content in HTML Editor
- *    {editable:<item_id>:<field_id>}
+ *    {editable:<item_id>:<field_id>:<placeholder-text>}
  */
 class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3660,22 +3722,21 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $item_id
      * @param $field_id
-     * @param $required
-     * @param $function
-     * @param $widget_type
+     * @param $placeholder
      */
-    function expand($item_id, $field_id) {
+    function expand($item_id, $field_id, $placeholder) {
         $ret = '';
 
         if (!$field_id) {
             return '';
         }
+        $placeholdertext = strlen($placeholder) ? 'placeholder="'.safe($placeholder).'"' : '';
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
         if (empty($item)) {  // can't be combined empty() and assignment = for php 5.3
             return '';
         }
         $item_id = $item->getID();
-        return AA_Stringexpand::unalias('<div contenteditable=true id="'. str_replace('.','_', "au-$item_id-$field_id")."\" data-aa-id=\"$item_id\" data-aa-field=\"$field_id\">{". $field_id ."}</div>", '', $item);
+        return AA_Stringexpand::unalias("<div contenteditable=true $placeholdertext id=\"". str_replace('.','_', "au-$item_id-$field_id")."\" data-aa-id=\"$item_id\" data-aa-field=\"$field_id\">{". $field_id ."}</div>", '', $item);
     }
 }
 
@@ -4233,9 +4294,9 @@ class AA_Unalias_Callback {
 
     function expand_bracketed_timedebug($match) {
         $func = current(explode(':',substr($match[1],0,16),2));
-        $time = microtime(true);
+        AA::$dbg->tracestart($func, $match[1]);
         $ret  = $this->expand_bracketed($match);
-        AA::$dbg->duration($func, microtime(true)-$time);
+        AA::$dbg->traceend($func, $ret);
         return $ret;
     }
 
@@ -4296,6 +4357,11 @@ class AA_Unalias_Callback {
                        *           {ifset:{_#ABSTRACT}:{-<div style="color:red">_#1</div>}}
                        */
             case '-': return QuoteColons(substr($out,1));
+            case '@': return QuoteColons(parseLoop($out, $this->item));
+            case ' ':
+            case "\n":
+            case "\t":
+                      return QuoteColons("{" . $out . "}");
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                       if ($out[1] == "#") {
                           if (isset($als[substr($out,2)])) {
@@ -4315,6 +4381,7 @@ class AA_Unalias_Callback {
                           //     return ($this->_localcache[$loccache_id] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
                           // }
                       }
+                      break;
         }
 
         if (($outlen == 16) AND isset($this->item)) {
@@ -4346,7 +4413,7 @@ class AA_Unalias_Callback {
         }
 
         // if in_array - for speedup
-        if (in_array(substr($out, 0, 5), array('const', 'alias', 'math(', 'inclu', 'view.', 'dequo'))) {
+        if (in_array(substr($out, 0, 5), array('const', 'alias', 'math(', 'inclu', 'view.', 'dequo', 'list:'))) {
             // look for {const_*:} for changing viewing type of constants
             if ((substr($out, 0, 6) == "const_") AND isset($this->item)) {
                 // $what - name of column (eg. from const_name we get name)
@@ -4377,6 +4444,9 @@ class AA_Unalias_Callback {
                 // replace math
                 return QuoteColons( parseMath(DeQuoteColons(AA_Stringexpand::unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
+            elseif( substr($out, 0, 5) == "list:" ) {
+                return QuoteColons(parseLoop($out, $this->item));
+            }
             elseif( substr($out, 0, 8) == "include(" ) {
                 // include file
                 if ( !($pos = strpos($out,')')) ) {
@@ -4391,7 +4461,7 @@ class AA_Unalias_Callback {
                 $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), substr($out,10));
                 $view_param = ParseViewParameters(DeQuoteColons($param));
                 // do not store in the pagecache, but store into contentcache
-                return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param)));
+                return QuoteColons($contentcache->get_result('GetViewFromDB', array($view_param)));
             }
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
@@ -4435,13 +4505,6 @@ class AA_Unalias_Callback {
         elseif (isset($als[$out])) {
             return QuoteColons(AA_Stringexpand::unalias($als[$out], '', $this->item, false, $this->itemview));
         }
-        //    elseif (isset($aliases[$out])) {   // look for an alias (this is used by mail)
-        //        return QuoteColons($aliases[$out]);
-        //    }
-        // first char of alias is @ - make loop to view all values from field
-        elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
-            return QuoteColons(parseLoop($out, $this->item));
-        }
         elseif (substr($out,0,8) == "mlx_view") {
             if(!$GLOBALS['mlxView']) {
                 return "$out";
@@ -4469,8 +4532,7 @@ function StrExpand($class_name, $params, $context_arr=array(), $allow_quote_colo
     global $contentcache;
     $stringexpand = new $class_name($context_arr);
     if ( $stringexpand->doCache() ) {
-        $key = get_hash($class_name, $params, $stringexpand->additionalCacheParam());
-        $res = $contentcache->get_result_by_id($key, array($stringexpand, 'expand'), $params);
+        $res = $contentcache->get_result_4_object(array($stringexpand, 'expand'), $params, $class_name, $stringexpand->additionalCacheParam());
     } else {
         $res = call_user_func_array( array($stringexpand,'expand'), $params);
     }
@@ -4621,7 +4683,6 @@ class AA_Stringexpand {
      * @param $itemview
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
-        global $debugtime;
 
         if (++AA_Stringexpand::$recursion_count > 5000) {
             --AA_Stringexpand::$recursion_count;
@@ -4650,19 +4711,36 @@ class AA_Stringexpand {
                 //                              see {( some {( text )} which )} could {( be )} nested
                 do {
                     if (is_null($text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
-                        echo "Error: preg_replace_callback";
+                        //huhl( "Error: preg_replace_callback", '/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements);
+                        echo "Error: preg_replace_callback - make_reference_callback";
+                        print_r($text);
+                        print_r($last_replacements);
                     }
                 } while($last_replacements);
             }
 
             $last_replacements  = 0;
-            $callback = array(new AA_Unalias_Callback($item, $itemview), ($debugtime>2) ? 'expand_bracketed_timedebug' : 'expand_bracketed');
+            AA::$debug&4 && AA::$dbg->tracestart('unalias', $text);
+            $callback = array(new AA_Unalias_Callback($item, $itemview), AA::$debug&8 ? 'expand_bracketed_timedebug':'expand_bracketed');
             do {
-                if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', $callback, $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
-                    echo "Error: preg_replace_callback";
+                $oldtext = $text;
+                if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', $callback, $text, 1, $last_replacements))) {  //s for newlines, U for nongreedy
+                    //huhl( "Error: preg_replace_callback", '/[{]([^{}]+)[}]/s', $callback, $text, -1, $last_replacements);
+                    echo "Error ". preg_last_error().": preg_replace_callback - 2\n";
+                    echo array_flip(get_defined_constants(true)['pcre'])[preg_last_error()];
+                    print_r($oldtext);
+                    print_r($callback);
+                    print_r($last_replacements);
+                    echo ini_get('pcre.backtrack_limit');
+                    echo "\n.\n";
+                    echo ini_get('pcre.recursion_limit');
+                    echo "\n.\n";
+                    echo ini_get('pcre.jit');
+                    $text = 'preg_replace_callback Error '.preg_last_error();
                 }
                 $quotecolons_partly += $last_replacements;
             } while($last_replacements);
+            AA::$debug&4 && AA::$dbg->traceend('unalias', "$quotecolons_partly - $text");
         }
 
         if (is_object($item)) {
@@ -4741,7 +4819,7 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
 
 
 /** trims whitespaces form begin and end of the string */
-class AA_Stringexpand_Trim extends AA_Stringexpand {
+class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters ($chars could contain space) */
     function doTrimParams() { return false; }
 
@@ -5761,7 +5839,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *    {foreach:{sequence:num:1999:17}:<th>_#1</th>}
  *    {foreach:{ids:478598ab745a65f1478598ab745a65f1}:{({_:Editor_document:_#1:{id..............}})}}
  */
-class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Foreach extends AA_Stringexpand {
 
     /** Do not trim all parameters ($outputdelimiter could begin with space) */
     function doTrimParams() { return false; }
@@ -5781,14 +5859,20 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
         if (!strlen($valdelimiter)) {
            $valdelimiter = '-';
         }
-        $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, trim($values));
+        $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, $values);
+        $arr = array_filter(array_map('trim', $arr), 'strlen');
         $ret= array();
+
         foreach($arr as $str) {
-            if (strlen(trim($str))) {
-                $ret[] = AA_Stringexpand::unalias(str_replace('_#1',$str,$text),'',$item);
-            }
+            $ret[] = AA_Stringexpand::unalias(str_replace('_#1',$str,$text),'',$item);
         }
         return join($outputdelimiter, $ret);
+
+        //$arr = array_filter(array_map('trim', $arr), 'strlen');
+        //array_walk($arr, function(&$value, $key, $param) {
+        //    $value = AA_Stringexpand::unalias(str_replace('_#1',$value,$param[1]),'',$param[0]);
+        //}, array($item, $text));
+        //return join($outputdelimiter, $arr);
     }
 }
 
