@@ -33,36 +33,40 @@ require_once(AA_INC_PATH. "perm_core.php3"); // allways included!
 // PERM_LIB is defined in config.php3
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 
-// message for AA_CP_Auth
-define ('AA_AUTH_NOBODY', $GLOBALS['nobody'] ? true : false);
-
-class AA_CP_Auth extends Auth {
+class AA_Auth extends Auth {
 
     function __construct() {
-        $this->classname = "AA_CP_Auth";
+        $this->classname = __CLASS__;
         $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 200;   // 200 minutes
-        $this->nobody    = AA_AUTH_NOBODY;
+        $this->nobody    = false;
+    }
+
+    function set_nobody($state=true) {
+        $this->nobody = $state;
     }
 
     /** relogin_if function
      * @param $t
      */
-    function relogin_if($t) {
-        if ( $t )  {
-            printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
-            $this->unauth();
-            $this->start();
-        }
+    function relogin() {
+        $this->unauth();
+        $this->start();
     }
+
     /** auth_loginform
      *
      */
-    function auth_loginform() {
+    function auth_loginform($login_msg='') {
         global $sess, $_PHPLIB, $anonymous_user;
         $username = $_POST["username"];  // there was problem with variables
         $password = $_POST["password"];  // in cookies - if someone writes
                                                   // to cookies username, then the
                                                   // cookies username is used - error
+        if ( !$login_msg AND $username )  {
+            $login_msg  = '<div style="color:red;"><b>'. _m("Either your username or your password is not valid.") .'</b></div>';
+            $login_msg .= '<div>'. _m("Please try again!") .'</div>';
+            $login_msg .= '<div>'. _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", array(ERROR_REPORTING_EMAIL)) .'</div>';
+        }
 
         require_once (AA_INC_PATH . "loginform.inc");
     }
@@ -74,17 +78,34 @@ class AA_CP_Auth extends Auth {
         $password = $_POST["password"];  // in cookies - if someone writes
                                                 // to cookies username, then the
                                                 // cookies username is used - error
+
+        // is this necessary? Honza 2016-09-21
         if (isset($username)){
             $this->auth["uname"]=$username;
         }
 
-        $user=$username;
-        $uid = AA::$perm->authenticateUsername($user, $password);
+        $uid = $this->_validatelogin($username, $password);
 
         AA_Log::write('LOGIN', $uid, $username);
 
         return $uid;
     }
-};
 
+    protected function _validatelogin($username, $password) {
+        if ($uid = AA::$perm->authenticateUsername($username, $password)) {
+            $this->auth['uname']=$username;
+        }
+        return $uid;
+    }
+
+    function auth_preauth() {
+        if (isset($_POST['username']) AND isset($_POST['password'])) {
+            return $this->_validatelogin($_POST['username'], $_POST['password']);
+        }
+        if (isset($_GET['username']) AND isset($_GET['password'])) {
+            return $this->_validatelogin($_GET['username'], $_GET['password']);
+        }
+        return false;
+    }
+};
 ?>

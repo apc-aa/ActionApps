@@ -28,11 +28,5 @@ http://www.apc.org/
 */
 require_once dirname(__FILE__). "/../../include/init_page.php3";
 require_once AA_INC_PATH."go_url.php3";
-
-$session = $AA_CP_Session ? "AA_CP_Session=$AA_CP_Session" : "AA_SL_Session=$AA_SL_Session";
-$goto = AA_INSTAL_PATH
-    ."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-    .$slice_id."]=1&slice_id=$slice_id&".$session;
-//echo $goto; exit;
-go_url($goto);
+go_url(AA_INSTAL_PATH ."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .$slice_id."]=1&slice_id=$slice_id");
 ?>

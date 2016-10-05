@@ -42,7 +42,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
     return $differences;
 }
 
-page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+pageOpen();
 
 if (!IsSuperadmin()) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");

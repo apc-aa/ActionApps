@@ -103,11 +103,7 @@ if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_
 }
 
 // Load the session stored variables.
-if ( $encap ) { // we can't use AA_CP_Session - it uses more Header information
-    page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
-} else {
-    page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
-}
+pageOpen($nobody ? 'nobody':'');
 
 // anonymous login
 if ($nobody) {
@@ -121,7 +117,9 @@ if ($nobody) {
 }
 
 // relogin if requested
-$auth->relogin_if($relogin);
+if ($_GET['relogin']) {
+    $auth->relogin();
+}
 
 $slice_id      = AA::$module_id;   // @deprecated - use AA::$module_id instead
 
@@ -176,6 +174,9 @@ while ($db->next_record()) {
 
 if (!$no_slice_id) {
     if (!is_array($g_modules)) {
+        $auth->auth_loginform('<div style="color:red;"><b>'._m("No slice found for you").'</b></div>');
+        //$auth->relogin();
+        exit;
         MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"));
         exit;
     }

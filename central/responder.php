@@ -35,7 +35,7 @@ class AA_Responder extends AA_Object {
     /** by default only superadmins are allowed to perform remote operations */
     function isPerm() { return IsSuperadmin(); }
 
-    function name()   { return str_replace('AA_Responder_', '', __CLASS__); }
+    function name()   { return str_replace('AA_Responder_', '', get_class($this)); }
 }
 
 /** Used for autentication
@@ -94,7 +94,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
 
     function run() {
         $type_sql = (count($this->types) == 0) ? '' : CVarset::sqlin('type', $this->types) . ' AND ';
-        $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted != '1' ORDER BY type, priority, name", "unpack:id", 'name');
+        $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted=0  ORDER BY type, priority, name", "unpack:id", 'name');
         return new AA_Response($modules);
     }
 }
@@ -174,7 +174,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $this->widget_properties    = $param['widget_properties'];
     }
 
-    function isPerm() { return true; }
+    function isPerm() { return true; }  //return true;
 
     function run() {
 
@@ -190,10 +190,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
-
-        $encoder = new ConvertCharset;
-        $ret     =  $encoder->Convert($widget_html, $slice->getCharset(), 'utf-8');
-        return new AA_Response($ret);
+        return new AA_Response(ConvertCharset::singleton()->Convert($widget_html, $slice->getCharset(), 'utf-8'));
     }
 }
 
@@ -245,7 +242,6 @@ class AA_Responder_Get_Fields extends AA_Responder {
     function isPerm() { return IfSlPerm(PS_FIELDS); }
 
     function run() {
-        require_once AA_INC_PATH."convert_charset.class.php3";
         $encoder = new ConvertCharset;
 
         // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
@@ -273,8 +269,8 @@ class AA_Responder_Tags extends AA_Responder {
     function  __construct($param=null) {
         // the slice id and the field id defines the field, where the widget is DEFINED
         $this->slice_id = $param['s'];
-        $this->input    = $param['q'];
         $this->field_id = $param['f'];
+        $this->input    = $param['q'];
     }
 
     function isPerm() { return true; }
@@ -309,29 +305,66 @@ class AA_Responder_Tags extends AA_Responder {
     }
 }
 
-// from aaa@vona - honza 16-06-14--
-//  if (isset($_POST['AA_CP_Session']) OR isset($_GET['AA_CP_Session'])) {
-//      unset($_COOKIE['AA_CP_Session']);
-//  }
-//  unset($sess);
-//  unset($auth);
-// /--
+/** @return html selectbox of fields in given slice */
+class AA_Responder_Widget_Selection extends AA_Responder {
+    /** array of module types to get */
+    var $slice_id;
+    var $input;
+    var $field;
 
+    function  __construct($param=null) {
+        // the slice id and the field id defines the field, where the widget is DEFINED
+        $this->slice_id = $param['s'];
+        $this->field_id = $param['f'];
+        $this->input    = $param['q'];
+    }
 
-page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+    function isPerm() { return true; }
 
-if ($nobody) {
-    $_POST['username'] = $_POST['free'];
-    $_POST['password'] = $_POST['freepwd'];
-    $auth->auth["uid"] = $auth->auth_validatelogin();
-
-// anonymous login
-// removed by Honza - nobody is allowed as well (for AA_Responder_Tags for example) - we have to check the permissions inside the AA_Responder_...s
-//    if ( !$auth->auth["uid"] ) {
-//        AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
-//        exit;
-//    }
+    function run() {
+        $ret   = '';
+        $slice = AA_Slice::getModule($this->slice_id);
+        if ($slice AND ($widget = $slice->getWidget($this->field_id))) {
+            $ret = $widget->getFilterSelection($this->input);
+        }
+        return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));
+    }
 }
+
+//print_r($auth);
+//print_r($sess);
+//page_open(array("sess" => "AA_CP_Session", "auth" => "AA_Responder_Auth"));
+
+//echo "ok";
+
+pageOpen('nobody');
+
+
+//$sess = new AA_CP_Session;
+//$sess->start();
+
+//print_r($_SESSION);
+//exit;
+
+//if (!is_object($auth)) {
+//    $auth = new AA_Responder_Auth;
+//}
+//$auth->start();
+
+
+
+// if ($nobody) {
+//     $_POST['username'] = $_POST['free'];
+//     $_POST['password'] = $_POST['freepwd'];
+//     $auth->auth["uid"] = $auth->auth_validatelogin();
+//
+// // anonymous login
+// // removed by Honza - nobody is allowed as well (for AA_Responder_Tags for example) - we have to check the permissions inside the AA_Responder_...s
+// //    if ( !$auth->auth["uid"] ) {
+// //        AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
+// //        exit;
+// //    }
+// }
 
 // in order {xuser:id} alias wors in widgets, for example
 $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];

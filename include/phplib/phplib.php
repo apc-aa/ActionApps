@@ -200,11 +200,8 @@ class CT_Sql {
 */
 class Session {
 
-    /**
-    * Session name
-    *
-    */
-    var $classname = "Session";
+    /** Session name */
+    var $classname;
 
     /**
     * Current session id.
@@ -310,6 +307,7 @@ class Session {
     */
     function __construct() {
         $this->name($this->name);
+        $this->classname = get_class($this);
     } // end constructor
 
     /**
@@ -342,8 +340,7 @@ class Session {
     * @access public
     */
     function is_registered($var_name) {
-        $var_name = trim($var_name);  // to be sure
-        return isset($_SESSION[$var_name]);
+        return isset($_SESSION[trim($var_name)]);
     }
 
 
@@ -356,12 +353,11 @@ class Session {
     * @access public
     */
     function unregister($var_names) {
-        $ok = true;
         foreach (explode (',', $var_names) as $var_name) {
             $var_name=trim($var_name);
             unset($_SESSION[$var_name]);  // unset is no more a function in php4
         }
-        return $ok;
+        return true;
     }
 
     /**
@@ -697,131 +693,69 @@ class Session {
  */
 
 class Auth {
-  var $classname = "Auth";
-  var $persistent_slots = array("auth");
+    var $classname = "Auth";
+    var $persistent_slots = array("auth");
 
-  var $lifetime = 15;             // Max allowed idle time before
-                                  // reauthentication is necessary.
-                                  // If set to 0, auth never expires.
+    var $lifetime = 15;             // Max allowed idle time before
+                                    // reauthentication is necessary.
+                                    // If set to 0, auth never expires.
 
-  var $refresh = 0;               // Refresh interval in minutes.
-                                  // When expires auth data is refreshed
-                                  // from db using auth_refreshlogin()
-                                  // method. Set to 0 to disable refresh
+    var $refresh = 0;               // Refresh interval in minutes.
+                                    // When expires auth data is refreshed
+                                    // from db using auth_refreshlogin()
+                                    // method. Set to 0 to disable refresh
 
-  //  var $mode = "log";              // "log" for login only systems,
-                                      // "reg" for user self registration
+    //  var $mode = "log";          // "log" for login only systems,
+                                    // "reg" for user self registration
 
-  var $magic = "";                // Used in uniqid() generation
+    var $nobody = false;            // If true, a default auth is created...
 
-  var $nobody = false;            // If true, a default auth is created...
+    // var $cancel_login = "cancel_login"; // The name of a button that can be
+    //                                     // used to cancel a login form
+    //
+    // End of user qualifiable settings.
 
-  var $cancel_login = "cancel_login"; // The name of a button that can be
-                                      // used to cancel a login form
+    var $auth = array();            // Data array
 
-  // End of user qualifiable settings.
+    //
+    // Initialization
+    //
+    function start() {
+        global $sess;
 
-  var $auth = array();            // Data array
-  var $in   = false;
-
-  //
-  // Initialization
-  //
-  function start() {
-    global $sess;
-
-    // This is for performance, I guess but I'm not sure if it could
-    // be safely removed -- negro
-    if (! $this->in) {
-      $sess->register("auth");
-      $this->in = true;
-    }
-
-    // Check current auth state. Should be one of
-    //  1) Not logged in (no valid auth info or auth expired)
-    //  2) Logged in (valid auth info)
-    //  3) Login in progress (if $this->cancel_login, revert to state 1)
-    if ($this->is_authenticated()) {
-      $uid = $this->auth["uid"];
-      switch ($uid) {
-        case "form":
-          // Login in progress
-          if ((isset($_POST[$this->cancel_login]) && $_POST[$this->cancel_login]) or
-              (isset($_GET[$this->cancel_login]) && $_GET[$this->cancel_login])) {
-            // If $this->cancel_login is set, delete all auth info and set
-            // state to "Not logged in", so eventually default or automatic
-            // authentication may take place
-            $this->unauth();
-            $state = 1;
-          } else {
-            // Set state to "Login in progress"
-            $state = 3;
-          }
-          break;
-        default:
-          // User is authenticated and auth not expired
-          $state = 2;
-          break;
-      }
-    } else {
-      // User is not (yet) authenticated
-      $this->unauth();
-      $state = 1;
-    }
-
-    switch ($state) {
-      case 1:
-        // No valid auth info or auth is expired
+        $sess->register("auth");
 
         // Check for user supplied automatic login procedure
         if ( $uid = $this->auth_preauth() ) {
-          $this->auth["uid"] = $uid;
-          $this->auth["exp"] = time() + (60 * $this->lifetime);
-          $this->auth["refresh"] = time() + (60 * $this->refresh);
-          return true;
+            $this->auth["uid"] = $uid;
+            $this->auth["exp"] = time() + (60 * $this->lifetime);
+            $this->auth["refresh"] = time() + (60 * $this->refresh);
+            return;
         }
 
-        if ($this->nobody) {
-          // Authenticate as nobody
-          $this->auth["uid"] = "nobody";
-          // $this->auth["uname"] = "nobody";
-          $this->auth["exp"] = 0x7fffffff;
-          $this->auth["refresh"] = 0x7fffffff;
-          return true;
-        } else {
-          // Show the login form
-          $this->auth_loginform();
-          $this->auth["uid"] = "form";
-          $this->auth["exp"] = 0x7fffffff;
-          $this->auth["refresh"] = 0x7fffffff;
-          $sess->freeze();
-          exit;
-        }
-        break;
-      case 2:
-        // Valid auth info
-        // Refresh expire info
-        // DEFAUTH handling: do not update exp for nobody.
-        if ($uid != "nobody") {
-          $this->auth["exp"] = time() + (60 * $this->lifetime);
-        }
-        break;
-      case 3:
-        // Login in progress, check results and act accordingly
-        if ( $uid = $this->auth_validatelogin() ) {
-          $this->auth["uid"] = $uid;
-          $this->auth["exp"] = time() + (60 * $this->lifetime);
-          $this->auth["refresh"] = time() + (60 * $this->refresh);
-          return true;
-        } else {
-            if ($this->nobody) {
-                $this-> unauth();
-                // Authenticate as nobody
-                $this->auth["uid"] = "nobody";
-                $this->auth["exp"] = 0x7fffffff;
-                $this->auth["refresh"] = 0x7fffffff;
-                return true;
-            } else {
+
+        // Check current auth state. Should be one of
+        //  1) Not logged in (no valid auth info or auth expired)
+        //  2) Logged in (valid auth info)
+        //  3) Login in progress (if $this->cancel_login, revert to state 1)
+        if ($this->is_authenticated()) {
+            if ( 'form' == ($uid = $this->auth["uid"]) ) {
+                // Set state to "Login in progress"
+                // Login in progress, check results and act accordingly
+                if ( $uid = $this->auth_validatelogin() ) {
+                    $this->auth["uid"] = $uid;
+                    $this->auth["exp"] = time() + (60 * $this->lifetime);
+                    $this->auth["refresh"] = time() + (60 * $this->refresh);
+                    return;
+                }
+                if ($this->nobody) {
+                    $this->unauth();
+                    // Authenticate as nobody
+                    $this->auth["uid"] = "nobody";
+                    $this->auth["exp"] = 0x7fffffff;
+                    $this->auth["refresh"] = 0x7fffffff;
+                    return;
+                }
                 $this->auth_loginform();
                 $this->auth["uid"] = "form";
                 $this->auth["exp"] = 0x7fffffff;
@@ -829,16 +763,37 @@ class Auth {
                 $sess->freeze();
                 exit;
             }
+            // User is authenticated and auth not expired
+
+            // Valid auth info
+            // Refresh expire info
+            // DEFAUTH handling: do not update exp for nobody.
+            if ($uid != "nobody") {
+                $this->auth["exp"] = time() + (60 * $this->lifetime);
+            }
+            return;
         }
-        break;
-      default:
-        // This should never happen. Complain.
-        echo "Error in auth handling: invalid state reached.\n";
+        // User is not (yet) authenticated
+        $this->unauth();
+
+        // No valid auth info or auth is expired
+
+        if ($this->nobody) {
+            // Authenticate as nobody
+            $this->auth["uid"] = "nobody";
+            // $this->auth["uname"] = "nobody";
+            $this->auth["exp"] = 0x7fffffff;
+            $this->auth["refresh"] = 0x7fffffff;
+            return;
+        }
+        // Show the login form
+        $this->auth_loginform();
+        $this->auth["uid"] = "form";
+        $this->auth["exp"] = 0x7fffffff;
+        $this->auth["refresh"] = 0x7fffffff;
         $sess->freeze();
         exit;
-        break;
     }
-  }
 
   function login_if( $t ) {
     if ( $t ) {
@@ -914,15 +869,10 @@ class Auth {
   //
   // Authentication dummies. Must be overridden by user.
   //
-
-  function auth_loginform() { ; }
-
+  function auth_loginform($msg='') { ; }
   function auth_validatelogin() { ; }
-
   function auth_refreshlogin() { ; }
-
   function auth_registerform() { ; }
-
   function auth_doregister() { ; }
 }
 

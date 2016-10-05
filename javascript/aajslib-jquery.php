@@ -50,8 +50,6 @@ header('Content-Type: application/x-javascript');
 // usage: $(div_id_2).update(AA_Config.loader);
 var AA_Config = {
   AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
-  SESS_NAME:      '<?php echo isset($_GET['sess_name']) ? $_GET['sess_name'] : ''; ?>',
-  SESS_ID:        '<?php echo isset($_GET['sess_id'])   ? $_GET['sess_id']   : ''; ?>',
   loader:         '<img src="<?php echo AA_INSTAL_PATH; ?>images/loader.gif" border="0" width="16" height="16">',
   icon_new:       '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_new.gif" border="0" width="17" height="17">',
   icon_close:     '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_close.gif" border="0" width="17" height="17">'
@@ -154,13 +152,11 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
  *     echo '<div id="fieldselection"></div>';
  **/
 function DisplayAaResponse(div_id, method, params) {
-    var sess = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
-    AA_AjaxCss(jqid(div_id), AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {parameters: params});
+    AA_AjaxCss(jqid(div_id), AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, {parameters: params});
 }
 
 function AA_Response(method, resp_params, ok_func, err_func) {
-    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
-    $.post(AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, resp_params, function(data) {
+    $.post(AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, resp_params, function(data) {
         if ( data.substring(0,5) == 'Error' ) {
             if (typeof err_func != "undefined") {
                 err_func(data);

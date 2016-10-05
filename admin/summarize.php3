@@ -120,48 +120,44 @@ function sliceshortcuts($ign) {
  * @return string
  */
 function editsliceinfo($sid) {
-    global $AA_CP_Session;
-    return "<a href=\"slicedit.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\">Edit slice info</a>";
+    return "<a href=\"slicedit.php3?change_id=$sid\">Edit slice info</a>";
 }
 /** editslicefields function
  * @param $sid
  * @return string
  */
 function editslicefields($sid) {
-    global $AA_CP_Session;
-    return "<a href=\"se_fields.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\"> Edit fields </a>";
+    return "<a href=\"se_fields.php3?change_id=$sid\"> Edit fields </a>";
 }
 /** url_slicefieldcopy function
  * @param $field
  * @return string
  */
 function url_slicefieldcopy($field) {
-    global $AA_CP_Session,$nearest;
-    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$nearest&slicefieldcopy=$field\"> -> </a>";
+    global $nearest;
+    return "<a href=\"summarize.php3?nearest=$nearest&slicefieldcopy=$field\"> -> </a>";
 }
 /** url_copyfield function
  * @param $field
  * @return string
  */
 function url_copyfield($field) {
-    global $AA_CP_Session,$nearest;
-    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$nearest&copyfield=$field\"> Copy Field </a>";
+    global $nearest;
+    return "<a href=\"summarize.php3?nearest=$nearest&copyfield=$field\"> Copy Field </a>";
 }
 /** url_showfield function
  * @param $field
  * @return string
  */
 function url_showfield($field) {
-    global $AA_CP_Session;
-    return "not shown <a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&showfield=$field\"> (show it) </a>";
+    return "not shown <a href=\"summarize.php3?showfield=$field\"> (show it) </a>";
 }
 /** comparewith function
  * @param $sid
  * @return string
  */
 function comparewith($sid) {
-    global $AA_CP_Session;
-    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid\"> Compare </a>";
+    return "<a href=\"summarize.php3?nearest=$sid\"> Compare </a>";
 }
 /** mapslice function
  *
@@ -320,7 +316,7 @@ function compareSlices($st,$sm,$pr) {
  * @param $sm
  */
 function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
-    global $scoreUnshown,$AA_CP_Session;
+    global $scoreUnshown;
     $score = 0;
     $opened = 0;
     if ((($ft["input_show"] == 0) && ($ft["required"] == 0)) && (($fm["input_show"] == 1) || ($fm["required"] == 1))) {
@@ -365,7 +361,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
           $score++;
       }
       if ($opened) {
-        $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
+        $u1 = "se_inputform.php3?fid=$fn&update=1&onlyupdate=1&return_url=summarize.php3";
         print("<li><a href=\"" . $u1
         . "&change_id=" . $st->getId()
         . $fixert ."\">Fix this slice</a>");

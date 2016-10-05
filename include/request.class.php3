@@ -273,7 +273,7 @@ class AA_Request {
     }
 }
 
-
+/** @todo - should be updated for new php5 sessions - Honza 2016-09-29 */
 class AA_Client_Auth {
     /** path to AA auth script - like: http://example.org/apc-aa/auth.php */
     var $_aa_responder_script;

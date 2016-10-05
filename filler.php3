@@ -110,7 +110,10 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
         $charset = AA_Form_Array::getCharset($_REQUEST['aa']);
     }
     if ($charset AND ($charset != 'utf-8')) {
-        $_POST   = ConvertEncodingDeep($_POST, 'utf-8', $charset);
+        //print_r($_POST);
+        $_POST   = ConvertEncodingDeep($_POST, 'UTF-8', $charset);
+        //print_r($_POST);
+        //exit;
     }
 }
 
@@ -304,22 +307,24 @@ if (is_numeric($_REQUEST['respuesta'])) {
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
 if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
 
-    if ($_COOKIE['AA_Sess']) {
-        require_once AA_INC_PATH."request.class.php3";
-        require_once AA_BASE_PATH."modules/site/router.class.php";
-        $options = array(
-            'aa_url'          => AA_INSTAL_URL,
-            'cookie_lifetime' => 60*60*24*365  // one year
-        );
-        // $client_auth - global - used in AA_Generator_Uid
-        $client_auth = new AA_Client_Auth($options);
-        if ($usr = $client_auth->checkAuth()) {
-            $auth = $client_auth->getRemoteAuth();
-            $GLOBALS['apc_state']['xuser'] = $usr;
-        }
-    } elseif ($_SESSION['AA_CP_Session']) {
-        page_open(array("sess" => "AA_CP_Session"));
+    if ($_COOKIE['AA_Session']) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
+        pageOpen('nobody');
+    } elseif ($_COOKIE['AA_Sess']) {
+        // old unused approach
+
+        // require_once AA_INC_PATH."request.class.php3";
+        // require_once AA_BASE_PATH."modules/site/router.class.php";
+        // $options = array(
+        //     'aa_url'          => AA_INSTAL_URL,
+        //     'cookie_lifetime' => 60*60*24*365  // one year
+        // );
+        // // $client_auth - global - used in AA_Generator_Uid
+        // $client_auth = new AA_Client_Auth($options);
+        // if ($usr = $client_auth->checkAuth()) {
+        //     $auth = $client_auth->getRemoteAuth();
+        //     $GLOBALS['apc_state']['xuser'] = $usr;
+        // }
     }
 
     $grabber = new AA_Grabber_Form();

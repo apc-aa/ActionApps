@@ -141,7 +141,7 @@ function HtmlEnd() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-page_open(array("sess" => "AA_SL_Session"));
+pageOpen('noauth');
 
 is_object( $db ) || ($db = getDB());
 

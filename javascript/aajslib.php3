@@ -34,18 +34,14 @@ http://www.apc.org/
 // include config in order we can define AA_Config variables for javascript
 require_once "../include/config.php3";
 
-
-// cache disabled - there we use $_GET['sess_id'], so the content varies - it is uncecheable, Honza 2012
-/*
-  headers copied from include/extsess.php3 file
-  $allowcache_expire = 24*3600; // 1 day
-  $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
-  $mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-  header('Expires: '       . $exp_gmt);
-  header('Last-Modified: ' . $mod_gmt);
-  header('Cache-Control: public');
-  header('Cache-Control: max-age=' . $allowcache_expire);
-*/
+// headers copied from include/extsess.php3 file
+$allowcache_expire = 24*3600; // 1 day
+$exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
+$mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
+header('Expires: '       . $exp_gmt);
+header('Last-Modified: ' . $mod_gmt);
+header('Cache-Control: public');
+header('Cache-Control: max-age=' . $allowcache_expire);
 header('Content-Type: application/x-javascript');
 
 $dir = dirname(__FILE__). '/prototype/';
@@ -64,8 +60,6 @@ $dir = dirname(__FILE__). '/prototype/';
 // usage: $(div_id_2).update(AA_Config.loader);
 var AA_Config = {
   AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
-  SESS_NAME:      '<?php echo isset($_GET['sess_name']) ? $_GET['sess_name'] : ''; ?>',
-  SESS_ID:        '<?php echo isset($_GET['sess_id'])   ? $_GET['sess_id']   : ''; ?>',
   loader:         '<img src="<?php echo AA_INSTAL_PATH; ?>images/loader.gif" border="0" width="16" height="16">',
   icon_new:       '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_new.gif" border="0" width="17" height="17">',
   icon_close:     '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_close.gif" border="0" width="17" height="17">'
@@ -159,21 +153,11 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
  **/
 function DisplayAaResponse(div_id, method, params) {
     $(div_id).update(AA_Config.loader);
-    var sess = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
-    new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {parameters: params});
+    new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, {parameters: params});
 }
 
 function AA_Response(method, resp_params, ok_func, err_func) {
-    var sess='';
-    if (AA_Config.SESS_NAME != '') {
-        sess = AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID;
-    } else if (GetCookie('AA_Sess')) {
-        sess = 'AA_CP_Session=' + GetCookie('AA_Sess');
-    } else {
-        sess = 'free=nobody';
-    }
-
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, {
          parameters: resp_params,
          onSuccess: function(transport) {
              if( transport.responseText.substring(0,5) == 'Error' ) {
@@ -371,6 +355,9 @@ function AA_Refresh(id,inside,ok_func) {
     });
 }
 
+/*return first element up the DOM tree matching css */
+function AA_up(el, css) { return $(el).up(css); }
+
 /** Send the form by AJAX and on success displays the ok_html text
  *  @param id        - form id
  *  @param loader_id - id of the html element, where you want to display the loader gif
@@ -407,11 +394,10 @@ function AA_AjaxSendAddForm(id) {
 function AA_SendWidgetAjax(id) {
     var valdivid   = 'ajaxv_' + id;
     var code = Form.serialize(valdivid);
-    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
     var alias_name = $(valdivid).readAttribute('data-aa-alias');
     $(valdivid).insert(AA_Config.loader);
 
-    code += '&' + sess + '&inline=1&ret_code_enc='+alias_name;
+    code += '&inline=1&ret_code_enc='+alias_name;
 
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         parameters: code,
@@ -452,7 +438,6 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
     AA_StateChange(id, 'updating');
 
     var valdivid   = 'widget-' + id;
-    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
 
     // browser supports HTML5 validation
     if (typeof liveinput.checkValidity == 'function') {
@@ -463,7 +448,7 @@ function AA_SendWidgetLive(id, liveinput, fnc) {
     }
 
     var code = Form.serialize(valdivid);
-    code += '&' + sess + '&inline=1';  // do not send us whole page as result
+    code += '&inline=1';  // do not send us whole page as result
 
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         parameters: code,

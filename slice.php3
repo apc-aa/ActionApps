@@ -145,6 +145,46 @@ require_once AA_INC_PATH."slice.php3";
 
 require_once AA_INC_PATH."locsess.php3";
 
+/** MyUrl function - was in sessions before, but now it is used just in this script, so moved here and rewritten to handle encap (=shtml)/not encap version
+ *  rewriten to return URL of shtml page that includes this script instead to return self url of this script.
+ */
+// function MyUrl($sliceID, $encap=false, $noquery=false) {   //If noquery parameter is true, session id is not added
+function MyUrl($sliceID, $encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function in extsess.php3
+    $ret  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+    $ret .= '://'. $_SERVER['HTTP_HOST'];
+
+    if( $scr_url ) {  // if included into php script
+        $ret .= $scr_url;
+    } elseif ($encap) {
+        if (isset($_SERVER['REDIRECT_DOCUMENT_URI'])) {  // CGI --enable-force-cgi-redirect
+            $ret .= $_SERVER['REDIRECT_DOCUMENT_URI'];
+        } elseif (isset($_SERVER['DOCUMENT_URI'])) {
+            $ret .= $_SERVER['DOCUMENT_URI'];
+        } elseif (isset($_SERVER['REQUEST_URI'])) {
+            $url_parsed = parse_url($_SERVER['REQUEST_URI']);
+            $ret .= $url_parsed['path'];
+        } else {
+            $ret .= $_SERVER['SCRIPT_URL'];
+        }
+    } elseif (isset($_SERVER['REDIRECT_SCRIPT_NAME'])) {
+        $ret .= $_SERVER['REDIRECT_SCRIPT_NAME'];
+    } else {
+        $ret .= $_SERVER['SCRIPT_NAME'];
+    }
+
+    // // not executed - mode is cookie. Could be removed (Honza 16-03-31)
+    // if ( ($this->mode == 'get') AND (!$noquery) ) {
+    //    if ($encap) {
+    //        $ret .= "?".urlencode($this->name)."=".$this->id;
+    //    } else {
+    //        $ret .= "?slice_id=$sliceID" . ($encap?"":"&encap=false"). "&".urlencode($this->name)."=".$this->id;
+    //    }
+    // }
+
+    return $ret;
+}
+
+
 $slice_starttime = microtime(true);
 
 //MLX stuff
@@ -154,7 +194,7 @@ require_once AA_INC_PATH."mlx.php";
 // needed. We are testing the code, and if all will be OK, we remove sessions
 // from slice.php3 completely. It doesn-t work because of Cookies vs. SSI.
 //    Honza 2016-07-12
-page_open(array("sess" => "AA_SL_Session"));
+pageOpen('noauth');
 
 $sess->register('r_packed_state_vars');
 $sess->register('slices');
@@ -323,7 +363,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset ($hideFulltext)) {
-        $itemview = new itemview($slice_info, $fields, $aliases, $zid, 0, 1, $sess->MyUrl($slice_id, $encap));
+        $itemview = new itemview($slice_info, $fields, $aliases, $zid, 0, 1, MyUrl($slice_id, $encap, $scr_url));
         echo $itemview->get_output_cached("fulltext");
     }
 
@@ -349,7 +389,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format  = GetDiscussionFormat($view_info);
             $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
-            $itemview = new itemview($format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
+            $itemview = new itemview($format, "", $aliases, null,"", "", MyUrl($slice_id, $encap, $scr_url), $disc);
             echo $itemview->get_output("discussion");
             // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice
@@ -368,7 +408,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
     $zids     = new zids($ids,"l");
-    $itemview = new itemview($slice_info, $fields, $aliases, $zids, 0,$zids->count(), $sess->MyUrl($slice_id, $encap));
+    $itemview = new itemview($slice_info, $fields, $aliases, $zids, 0,$zids->count(), MyUrl($slice_id, $encap, $scr_url));
     echo $itemview->get_output_cached("itemlist");
     ExitPage();
 }
@@ -499,7 +539,7 @@ if (isMLXSlice($slice_info)) {
 
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = get_url(($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap)), is_array($als) ? array('als'=>$als) : '');
+    $scr_url_param = get_url(($scr_url ? $sess->url("$scr_url") : MyUrl($slice_id, $encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
     $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
 }
 // display 'All' option in scroller
@@ -537,7 +577,8 @@ if ( !$scrl ) {
 
 if ( !$srch AND !$encap AND !$easy_query ) {
     $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
-    pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
+    //     pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
+    pCatSelector($sess->name, $sess->id, MyUrl($slice_id, $encap, $scr_url), $cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
 }
 
 
@@ -545,7 +586,7 @@ if ($zids->count() > 0) {
 
     $itemview = new itemview($slice_info, $fields, $aliases, $zids, $scr->metapage * ($scr->current - 1),
                              ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
-                             $sess->MyUrl($slice_id, $encap) );
+                             MyUrl($slice_id, $encap, $scr_url) );
 
     echo $itemview->get_output_cached("view");
 

@@ -65,8 +65,7 @@ if ($code) {
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8">
           <tr><td align="center" valign="middle" bgcolor=#D2E2E8>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;
 &nbsp;<input type="hidden" name="update" value="1">&nbsp;
-&nbsp;<input type="button" name="cancel" value=" Cancelar " onclick="document.location='se_fields.php3?slice_id=5abf7d2c73d7294cb105505a45e97762&AA_CP_Session=e755ffbe019124c6cfdb89e3352cc8a2'">&nbsp;
-<input type="hidden" name="AA_CP_Session" value="<?php echo $AA_CP_Session ?>">
+&nbsp;<input type="button" name="cancel" value=" Cancelar " onclick="document.location='se_fields.php3?slice_id=5abf7d2c73d7294cb105505a45e97762'">&nbsp;
 <input type="hidden" name="slice_id" value="<?php echo $slice_id ?>"></td></tr></table></td></tr>
       <tr>
         <td>

@@ -220,8 +220,8 @@ function make_return_url($r1="") {
     } elseif ($return_url) {
         return $return_url;
     } elseif (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
-        // but remove any left over AA_CP_Session, it will be re-added if needed
-        return preg_match("/(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)/",$_SERVER['REQUEST_URI'],$parts) ? ($parts[1]. $parts[2]. $parts[3]) : $_SERVER['REQUEST_URI'];
+        // but remove any left over AA_Session, it will be re-added if needed
+        return preg_match("/(.*)([?&])AA_Session=[0-9a-f]{32}(.*)/",$_SERVER['REQUEST_URI'],$parts) ? ($parts[1]. $parts[2]. $parts[3]) : $_SERVER['REQUEST_URI'];
     }
     return '';
 }
@@ -247,7 +247,7 @@ function Links_admin_url($script, $add) {
  * @param $var
  */
 function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null, $safe=true) {
-    global $sess, $AA_CP_Session, $profile;
+    global $sess, $profile;
 
     // $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
     // changed back to relative address - in order we stay within the same
@@ -257,7 +257,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
 
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
     //$url2go = isset($sess) ? $sess->url($admin_path) : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
-    $url2go = isset($sess) ? $admin_path : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+    $url2go = $admin_path;
 
     // return_url is used for non AA Admin interface filling - writen by Settu
     // Not sure, if it is functional. Honza 2006-01-07
@@ -309,7 +309,8 @@ function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $
 
     // following code is just for tagged ids
     // (I hope it works, but I can't test it, since I do not want to use it.)
-    // I think tagged IDs is bad idea and will be removed in future
+    // I think the design of tagged IDs is bad and will be probably
+    // removed in future
 
     // Honza 8/27/04
 
@@ -1697,7 +1698,21 @@ class AA_Items {
     }
 
     /** @return array(long_id -> AA_Item) */
-    function & getItems($zids, $crypted_additional_slice_pwd=null) {
+    static function & getItems($zids, $crypted_additional_slice_pwd=null) {
+        AA_Items::preload($zids, $crypted_additional_slice_pwd);
+        $items = AA_Items::singleton();
+
+        // all is cached, we get all the items in RIGHT ORDER
+        $ret = array();
+        for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
+            $item = $items->_getFromCache($zids->zid($i));
+            $ret[$item->getItemId()] = $item;       // long item id
+        }
+        return $ret;
+    }
+
+    /** @return array(long_id -> AA_Item) */
+    static function preload($zids, $crypted_additional_slice_pwd=null) {
         $items = AA_Items::singleton();
 
         // check for already cached items
@@ -1717,14 +1732,19 @@ class AA_Items {
                 $items->_store(GetItemFromContent(new ItemContent($content[$zids2get->short_or_longids($i)])));
             }
         }
+        return;
+    }
 
-        // all is cached, we get all the items in RIGHT ORDER
-        $ret = array();
+    // returns output of Active items
+    static function getFormatted($zids, $expression) {
+        $res = array();
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
-            $item = $items->_getFromCache($zids->zid($i));
-            $ret[$item->getItemId()] = $item;       // long item id
+            $item = AA_Items::getItem($zids->zid($i));
+            if ($item AND $item->isActive()) {
+                $res[$item->getItemId()] = $item->subst_alias($expression);       // long item id
+            }
         }
-        return $ret;
+        return $res;
     }
 
     /** getItemProperty function

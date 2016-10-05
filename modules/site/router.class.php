@@ -256,35 +256,58 @@ class AA_Router_Seo extends AA_Router {
          *     <input type="submit" value="Login" style="margin-left:200px;">
          *   </form>
          */
-        $this->apc['xuser'] = '';
 
-        if ( $_COOKIE['AA_Sess'] OR $_REQUEST['username'] ) {
-            require_once AA_INC_PATH."request.class.php3";
-            $options = array(
-                'aa_url'          => AA_INSTAL_URL,
-                'cookie_lifetime' => 60*60*24*365  // one year
-            );
-            $client_auth = new AA_Client_Auth($options);
+        pageOpen('nobody');
+        $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
 
-            if (isset($_GET['logout'])) {
-                $client_auth->logout();
-                $this->apc['xuser'] = '';
-            }
-            elseif ( $usr = $client_auth->checkAuth()) {
-                // $auth = $client_auth->getRemoteAuth();
+        if (isset($_GET['logout'])) {
+            $GLOBALS['auth']->logout(false);
+            $GLOBALS['sess']->delete();
+            $this->apc['xuser'] = '';
+        }
 
+        if ( $_REQUEST['username'] ) {
+            $GLOBALS['auth']->relogin();
+            $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
 
-                $this->apc['xuser'] = $usr;
-
-                // Redirect to page. If not specified, then it continues to display
-                // normal page as defined in "action" attribute of <form>
-                if ($_REQUEST["ok_url"]) {
-                    go_url($_REQUEST["ok_url"]);
-                }
-            } elseif ($_REQUEST["err_url"]) {
+            if ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["ok_url"]) {
+                go_url($_REQUEST["ok_url"]);
+            } elseif ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["err_url"]) {
                 go_url($_REQUEST["err_url"]);
             }
         }
+
+
+
+        //huhl($GLOBALS['auth'], $GLOBALS['sess']);
+
+        //if ( $_COOKIE['AA_Sess'] OR $_REQUEST['username'] ) {
+        //    require_once AA_INC_PATH."request.class.php3";
+        //    $options = array(
+        //        'aa_url'          => AA_INSTAL_URL,
+        //        'cookie_lifetime' => 60*60*24*365  // one year
+        //    );
+        //    $client_auth = new AA_Client_Auth($options);
+        //
+        //    if (isset($_GET['logout'])) {
+        //        $client_auth->logout();
+        //        $this->apc['xuser'] = '';
+        //    }
+        //    elseif ( $usr = $client_auth->checkAuth()) {
+        //        // $auth = $client_auth->getRemoteAuth();
+        //
+        //
+        //        $this->apc['xuser'] = $usr;
+        //
+        //        // Redirect to page. If not specified, then it continues to display
+        //        // normal page as defined in "action" attribute of <form>
+        //        if ($_REQUEST["ok_url"]) {
+        //            go_url($_REQUEST["ok_url"]);
+        //        }
+        //    } elseif ($_REQUEST["err_url"]) {
+        //        go_url($_REQUEST["err_url"]);
+        //    }
+        //}
         return $this->apc;
     }
 

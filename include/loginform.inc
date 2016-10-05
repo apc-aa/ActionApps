@@ -60,23 +60,14 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
  </tr>
 </table>
 
-<?php if ( isset($username) ) { ?>
- <!-- failed login code -->
+ <br><br>
 
- <p>
- <table>
+<table>
   <tr align="center">
-   <td><font color="red"><b><?php echo _m("Either your username or your password is not valid.") ?></b></font></td>
+   <td><?php echo $login_msg; ?></td>
   </tr>
-  <tr align="center">
-   <td><?php echo _m("Please try again!") ?></td>
-  </tr>
-  <tr align="center">
-   <td><?php echo _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", array(ERROR_REPORTING_EMAIL)) ?></td>
-  </tr>
- </table>
+</table>
 
-<?php } ?>
 </center>
 </form>
 <script type="text/javascript">

@@ -24,7 +24,7 @@ require_once AA_INC_PATH.     'formutil.php3';
 require_once AA_INC_PATH.     'files.class.php3';
 require_once AA_INC_PATH.     "msgpage.php3";
 
-page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+pageOpen();
 
 if (!IsSuperadmin()) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");

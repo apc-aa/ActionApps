@@ -287,7 +287,7 @@ function is_dir_empty($dirname) {
  * @param $fmset
  */
 function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset) {
-    global $AA_CP_Session, $err,
+    global $err,
         // set to the name of file which should be viewed by filedit.php3
         $fe_filename,
         // used in copy template

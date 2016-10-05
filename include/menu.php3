@@ -56,7 +56,6 @@ function get_aamenus() {
            $auth,
            $slice_id,
            $r_state,
-           $AA_CP_Session,
            $bookmarks;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings

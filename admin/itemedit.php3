@@ -92,7 +92,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
-    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js').  // for SelectRelations
+    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js?v=1').  // for SelectRelations
                                getFrmJavascript($js)));
 }
 
@@ -281,7 +281,7 @@ if ($lang_control) {
     if (empty($mlx)) {
         $mlx = new MLX($slice);
     }
-    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap), $content4id->getContent(),$action,$mlxl,$mlxid);
+    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(array('slice_id'=>$slice_id,'encap'=>$encap), $content4id->getContent(),$action,$mlxl,$mlxid);
 }
 // end mimo changes
 

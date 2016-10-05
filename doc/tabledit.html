@@ -5,9 +5,9 @@
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <h1>Class TableEdit </h1>
-(c) Jakub Ad&aacute;mek, Econnect, September 2002 
+(c) Jakub Ad&aacute;mek, Econnect, September 2002
 <p>$Id$</p>
-<p> This is a multi-purpose class allowing to edit various tables. It works based 
+<p> This is a multi-purpose class allowing to edit various tables. It works based
   on a configuration array called <a href="tableview.html">Table View</a>. </p>
 <p>Remarks for developers are in <a href="tabledit_developer.html">tabledit_developer.html</a>.</p>
 <p>The main features are:</p>
@@ -27,30 +27,30 @@
   <li>show 1:1 and n:1 tables as it were one table</li>
 </ul>
 <h2>View Types: Browse x Edit</h2>
-<p>The Browse view is used to view many records at once. It is a table with one 
-  row for each table record. If there are many records, a scroller is shown under 
-  the table allowing to jump through the records. A search form may be shown to 
-  quickly find records. After clicking on the Edit image on the left of a record 
-  or on Insert under the table you usually go to an Edit view, set by &quot;gotoview&quot; 
+<p>The Browse view is used to view many records at once. It is a table with one
+  row for each table record. If there are many records, a scroller is shown under
+  the table allowing to jump through the records. A search form may be shown to
+  quickly find records. After clicking on the Edit image on the left of a record
+  or on Insert under the table you usually go to an Edit view, set by &quot;gotoview&quot;
   (see <a href="tabledit.html">Table View grammar</a>).</p>
 <table class=te_table bgcolor="#99CC99">
-  <tr> 
+  <tr>
     <td class=te_td colspan=3>&nbsp;</td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][id]=1'><b>id</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][id]=1'><b>id</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][description]=1'><b>description</b>&nbsp;</a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][description]=1'><b>description</b>&nbsp;</a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][showme]=1'><b>standard</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][showme]=1'><b>standard</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][editorial]=1'><b>editorial</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][editorial]=1'><b>editorial</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][mail_from]=1'><b>From:</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_from]=1'><b>From:</b></a><br>
       <font class=te_hint>mail header</font></td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][mail_reply_to]=1'><b>Reply-To:</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_reply_to]=1'><b>Reply-To:</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][mail_errors_to]=1'><b>Errors-To:</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_errors_to]=1'><b>Errors-To:</b></a><br>
     </td>
-    <td class=te_td><a href='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac&cmd[ac][orderby][mail_sender]=1'><b>Sender:</b></a><br>
+    <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_sender]=1'><b>Sender:</b></a><br>
     </td>
   </tr>
   <script language=javascript>
@@ -60,7 +60,7 @@
                 return false;
             var val = txtfield.value;
             var err = '';
-            if (val > maxval || val < minval) 
+            if (val > maxval || val < minval)
                 err = 'Wrong value: a number between '+minval+' and '+maxval+' is expected.';
             if (err != '') {
                 alert (err);
@@ -69,32 +69,32 @@
             }
             else return true;
         }
-        
+
         function validate (txtfield, type, required) {
-            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/; 
-            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/; 
-            
+            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/;
+            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/;
+
             var val = txtfield.value;
             var err = '';
-            
+
             if (val == '' && required)
                 err = 'This field is required.';
-            
+
             else switch (type) {
-            case 'number': 
-                if (!val.match (/^[0-9]+$/)) 
+            case 'number':
+                if (!val.match (/^[0-9]+$/))
                     err = 'Not a valid integer number.';
                 break;
             case 'filename':
-                if (!val.match (/^[0-9a-zA-Z_]+$/)) 
+                if (!val.match (/^[0-9a-zA-Z_]+$/))
                     err = 'Not a valid file name.';
                 break;
-            case 'email': 
-                if (val.match(invalid_email) || !val.match(valid_email)) 
+            case 'email':
+                if (val.match(invalid_email) || !val.match(valid_email))
                     err = 'Not a valid email address.';
                 break;
             }
-            
+
             if (err != '') {
                 alert (err);
                 txtfield.focus();
@@ -102,7 +102,7 @@
             }
             else return true;
         }
-        
+
         function confirmDelete (url) {
             if (confirm ('Are you sure you want to permanently DELETE this record?'))
                 document.URL = url;
@@ -120,116 +120,116 @@ if (!validate(myform['val[description]'],"", 1))
             }
         // -->
         </script>
-  <form name='tv_ac_16' method=post action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac'>
-    <tr> 
+  <form name='tv_ac_16' method=post action='tabledit.php3?set_tview=ac'>
+    <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
       <td class=te_td><img src="../images/delete.gif" width="16" height="16" alt="delete"></td>
       <td class=te_td><img src="../images/edit.gif" width="16" height="16" alt="edit"></td>
       <td class=te_td>16</td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="30" name="val[description]"
                         value="Collection 11">
       </td>
       <td class=te_td>no</td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="35" name="val[editorial]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_from]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_reply_to]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_errors_to]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_sender]"
                         value="">
       </td>
     </tr>
   </form>
-  <form name='tv_ac_11' method=post action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac'>
-    <tr> 
+  <form name='tv_ac_11' method=post action='tabledit.php3?set_tview=ac'>
+    <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
       <td class=te_td><img src="../images/delete.gif" width="16" height="16" alt="delete"></td>
       <td class=te_td><img src="../images/edit.gif" width="16" height="16" alt="edit"></td>
       <td class=te_td>11</td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="30" name="val[description]2"
                         value="Collection IV">
       </td>
       <td class=te_td>yes</td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="35" name="val[editorial]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_from]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_reply_to]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_errors_to]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_sender]"
                         value="">
       </td>
     </tr>
   </form>
-  <form name='tv_ac_12' method=post action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac'>
+  <form name='tv_ac_12' method=post action='tabledit.php3?set_tview=ac'>
   </form>
-  <form name='tv_ac_13' method=post action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac'>
-    <tr> 
+  <form name='tv_ac_13' method=post action='tabledit.php3?set_tview=ac'>
+    <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
       <td class=te_td><img src="../images/delete.gif" width="16" height="16" alt="delete"></td>
       <td class=te_td><img src="../images/edit.gif" width="16" height="16" alt="edit"></td>
       <td class=te_td>13</td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="30" name="val[description]2"
                         value="New collection">
       </td>
       <td class=te_td>yes</td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="35" name="val[editorial]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_from]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_reply_to]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_errors_to]"
                         value="">
       </td>
-      <td class=te_td> 
+      <td class=te_td>
         <input type="text" size="15" name="val[mail_sender]"
                         value="">
       </td>
     </tr>
   </form>
-  <form name='tv_ac_5' method=post action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac'>
+  <form name='tv_ac_5' method=post action='tabledit.php3?set_tview=ac'>
   </form>
-  <form name='tv_ac_6' method=post action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c&set_tview=ac'>
+  <form name='tv_ac_6' method=post action='tabledit.php3?set_tview=ac'>
   </form>
 </table>
 <form name="form1" method="post" action="">
   <input type="submit" name="Submit" value="Insert">
 </form>
-<p>The Edit view is used to edit a record. Each field is shown on a separate row. 
+<p>The Edit view is used to edit a record. Each field is shown on a separate row.
   Usually only one record is shown although you may show more if you wish.</p>
 <table border=0 cellpadding=3 cellspacing=0 bgcolor='#A8C8B0' class=te_edit_table >
   <script language=javascript>
@@ -239,7 +239,7 @@ if (!validate(myform['val[description]'],"", 1))
                 return false;
             var val = txtfield.value;
             var err = '';
-            if (val > maxval || val < minval) 
+            if (val > maxval || val < minval)
                 err = 'Wrong value: a number between '+minval+' and '+maxval+' is expected.';
             if (err != '') {
                 alert (err);
@@ -248,32 +248,32 @@ if (!validate(myform['val[description]'],"", 1))
             }
             else return true;
         }
-        
+
         function validate (txtfield, type, required) {
-            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/; 
-            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/; 
-            
+            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/;
+            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/;
+
             var val = txtfield.value;
             var err = '';
-            
+
             if (val == '' && required)
                 err = 'This field is required.';
-            
+
             else switch (type) {
-            case 'number': 
-                if (!val.match (/^[0-9]+$/)) 
+            case 'number':
+                if (!val.match (/^[0-9]+$/))
                     err = 'Not a valid integer number.';
                 break;
             case 'filename':
-                if (!val.match (/^[0-9a-zA-Z_]+$/)) 
+                if (!val.match (/^[0-9a-zA-Z_]+$/))
                     err = 'Not a valid file name.';
                 break;
-            case 'email': 
-                if (val.match(invalid_email) || !val.match(valid_email)) 
+            case 'email':
+                if (val.match(invalid_email) || !val.match(valid_email))
                     err = 'Not a valid email address.';
                 break;
             }
-            
+
             if (err != '') {
                 alert (err);
                 txtfield.focus();
@@ -281,7 +281,7 @@ if (!validate(myform['val[description]'],"", 1))
             }
             else return true;
         }
-        
+
         function confirmDelete (url) {
             if (confirm ('Are you sure you want to permanently DELETE this record?'))
                 document.URL = url;
@@ -299,7 +299,7 @@ if (!validate(myform['val[description]'],"", 1))
             }
         // -->
         </script>
-  <form name='tv_ac_edit_16' method=post onSubmit='' action='tabledit.php3?AA_CP_Session=e2fb5448813239ee8d21fcdf32fd601c'>
+  <form name='tv_ac_edit_16' method=post onSubmit='' action='tabledit.php3'>
     <tr>
       <td class=te_edit_td><span class=te_edit_column_header>description</span><br>
       </td>
@@ -364,36 +364,36 @@ Collection 11</textarea>
   </form>
 </table>
 <h2>Form data validation</h2>
-<p>Input is first validated by JavaScript before sending the form and again by 
-  PHP itself. See <a href="tableview.html">Table View grammar</a> for validation 
+<p>Input is first validated by JavaScript before sending the form and again by
+  PHP itself. See <a href="tableview.html">Table View grammar</a> for validation
   types. </p>
 <h2>CSS styles</h2>
-<p>For the styles used and their definition see some source generated by TableEdit 
+<p>For the styles used and their definition see some source generated by TableEdit
   and the <code>tabledit.css</code> style sheet.</p>
 <h2>Parents and Children</h2>
-<p>An important feature of TableEdit is showing tables with Parent - Child (1:n) 
+<p>An important feature of TableEdit is showing tables with Parent - Child (1:n)
   relationships.</p>
-<p>A 1:n (one-to-many) relationship means that 1 record in a Parent table is connected 
+<p>A 1:n (one-to-many) relationship means that 1 record in a Parent table is connected
   by key values to many records in the Child table. </p>
-<p>For example table Countries contains Czech republic with ID 54 and table Towns 
+<p>For example table Countries contains Czech republic with ID 54 and table Towns
   contains records (54, Praha), (54, Brno), (54, Ostrava) etc.</p>
-<p>The usual way to view one-to-many related tables is to use Edit view to show 
-  one parent record and one or more Browse view with related children records. 
+<p>The usual way to view one-to-many related tables is to use Edit view to show
+  one parent record and one or more Browse view with related children records.
   Use &quot;children&quot; in the Table View definition to create such a view.</p>
-<p>A m:n (many-to-many) relationship always needs 3 tables A, B, C, with relationship 
-  1:n between A and B and 1:n between C and B. Table B contains the relation info, 
-  i.e. keys from both A and C. To view such a relationship you may use a child 
-  view on one 1:n relationship (e.g. parent A and child B) and use a select box 
+<p>A m:n (many-to-many) relationship always needs 3 tables A, B, C, with relationship
+  1:n between A and B and 1:n between C and B. Table B contains the relation info,
+  i.e. keys from both A and C. To view such a relationship you may use a child
+  view on one 1:n relationship (e.g. parent A and child B) and use a select box
   which maps keys from C (as OPTION values) to some other field from C.</p>
-<p>For example A = country, B = place, C = place type (city / town / village). 
-  You may have records like (54, Praha, city), (54, Brno, town), (54, Ostrava, 
-  town) in table B and (1,city), (2,town), (3,village) in table C. You view A 
-  as parent, B as child and the field typeID from table B is shown as a select 
+<p>For example A = country, B = place, C = place type (city / town / village).
+  You may have records like (54, Praha, city), (54, Brno, town), (54, Ostrava,
+  town) in table B and (1,city), (2,town), (3,village) in table C. You view A
+  as parent, B as child and the field typeID from table B is shown as a select
   box with values got from C.</p>
 <h2> Class Usage</h2>
-<p>The class usage is quite simple. Create a new class by constructor, see <code>include/tabledit.php3</code> 
-  source for exact parameter description. One of the parameters is the current 
-  URL, TableEdit uses session to move with scroller and to store other parameters. 
+<p>The class usage is quite simple. Create a new class by constructor, see <code>include/tabledit.php3</code>
+  source for exact parameter description. One of the parameters is the current
+  URL, TableEdit uses session to move with scroller and to store other parameters.
   Call the view() function. See <code>admin/tabledit.php3</code> for an example.</p>
 <h2>Dependencies</h2>
 <p>Uses PHPLib Database and Session objects (set externally).<br>

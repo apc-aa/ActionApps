@@ -118,7 +118,7 @@ require_once AA_INC_PATH."formutil.php3";
 /** Some functions pulled from here to allow inclusion elsewhere */
 require_once AA_INC_PATH."fillform.php3";
 
-page_open(array("sess" => "AA_SL_Session"));
+pageOpen('noauth');
 
 function RestoreVariables() {
     $r_state_vars = unserialize($GLOBALS['r_packed_state_vars']);
