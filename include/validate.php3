@@ -320,15 +320,15 @@ class AA_Validate_Regexp extends AA_Validate {
 class AA_Validate_Url extends AA_Validate_Regexp {
     function __construct($param=array()) {
         parent::__construct($param);
-        $this->pattern          = '|^http(s?)\://\S+\.\S+|';
-        $this->empty_expression = '~(^http(s?)\://$)|(^\s*$)~';
+        $this->pattern          = '|^http(s?):\/\/\S+\.\S+|';
+        $this->empty_expression = '~(^http(s?):\/\/$)|(^\s*$)~';
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=> 'url', 'pattern'=>"http(s?)\://\S+");
+        return array('type'=> 'url', 'pattern'=>"^http(s?):\/\/\S+\.\S+");
     }
 }
 
@@ -574,7 +574,7 @@ class AA_Validate_Eunique extends AA_Validate {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
             return false;
         }
-        
+
         $validator = new AA_Validate_Unique(array('field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id));
         return $validator->validate($var, $default);
     }
