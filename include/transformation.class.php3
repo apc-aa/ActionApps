@@ -169,11 +169,11 @@ class AA_Transformation_Value extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      * @return array
      */
-    function transform($field_id, &$content4id) {
-        $item = GetItemFromContent($content4id);
+    function transform($field_id, $itemcontent, $silent=true) {
+        $item = GetItemFromContent($itemcontent);
         $text = $item->subst_alias($this->getParam('new_content'));
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
         return new AA_Value($text,$flag);
@@ -231,11 +231,11 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      * @return array
      */
-    function transform($field_id, &$content4id) {
-        $item = GetItemFromContent($content4id);
+    function transform($field_id, $itemcontent, $silent=true) {
+        $item = GetItemFromContent($itemcontent);
         $text = $this->getParam('new_content');
         $flag = $item->getFlag($field_id);
         return new AA_Value($text,$flag);
@@ -254,6 +254,53 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
 
         FrmTextarea(  $varname_new_content, _m('New content'), $_GET[$varname_new_content],  12, 80, false, _m('Exact value only - no AA expressions'));
 
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+
+/** Just recompute the field */
+class AA_Transformation_Recompute extends AA_Transformation {
+
+    /** AA_Transformation_Exactvalues function
+     * @param $param
+     */
+    function __construct($param) {
+    }
+
+    /** name function
+     * @return message
+     */
+    function name() {
+        return _m("Recompute field");
+    }
+
+    /** description function
+     * @return message
+     */
+    function description() {
+        return _m("Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the comuted fields are recomputed (just like with other transformations))");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $itemcontent (by link)
+     * @return array
+     */
+    function transform($field_id, $itemcontent, $silent=true) {
+        $itemcontent->updateComputedFields($itemcontent->getItemID(), null, 'update', $silent ? array($field_id) : array());
+        return true; // this means: Success - no other operations are needed
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
+    function htmlSetting($input_prefix, $params) {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
         FrmTabEnd();
         return ob_get_clean();
     }
@@ -286,13 +333,13 @@ class AA_Transformation_Setflag extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      * @return array
      */
-    function transform($field_id, &$content4id) {
-        $item = GetItemFromContent($content4id);
+    function transform($field_id, $itemcontent, $silent=true) {
+        $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
-        $ret  = $content4id->getAaValue($field_id);
+        $ret  = $itemcontent->getAaValue($field_id);
         return $ret->setFlag($flag);
     }
 
@@ -349,13 +396,13 @@ class AA_Transformation_AddValue extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      */
-    function transform($field_id, &$content4id) {
-        $item = GetItemFromContent($content4id);
+    function transform($field_id, $itemcontent, $silent=true) {
+        $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
 
-        $ret  = $content4id->getAaValue($field_id);
+        $ret  = $itemcontent->getAaValue($field_id);
         $ret->setFlag($flag);
         $ret->addValue($item->subst_alias($this->new_content));
 
@@ -421,10 +468,10 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      */
-    function transform($field_id, &$content4id) {
-        $item = GetItemFromContent($content4id);
+    function transform($field_id, $itemcontent, $silent=true) {
+        $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
         return new AA_Value(explode($this->delimiter, $item->subst_alias($this->source)), $flag);
     }
@@ -493,7 +540,7 @@ class AA_Strreplace {
      * @param $item (by link)
      * @return array
      */
-    function replace($value, &$item) {
+    function replace($value, $item) {
         $ret = array();
 
         foreach ( $this->replacements as $replacement) {
@@ -535,22 +582,22 @@ class AA_Transformation_Translate extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      * @return array/false
      */
-    function transform($field_id, &$content4id) {
+    function transform($field_id, $itemcontent, $silent=true) {
         if (!$this->translation) {
             $this->message(_m('No translations specified.'));
             return false;
         }
 
-        $item = GetItemFromContent($content4id);
+        $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
 
         $translations = $this->_parseTranslation();
         $ret = new AA_Value;
         $ret->setFlag($flag);
-        foreach ( $content4id->getValues($field_id) as $source ) {
+        foreach ( $itemcontent->getValues($field_id) as $source ) {
             // if not found any match, use the old value
             $new_value = array($source['value']);
             foreach ($translations as $strreplace) {
@@ -640,17 +687,17 @@ class AA_Transformation_Replace extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      * @return array/false
      */
-    function transform($field_id, &$content4id) {
+    function transform($field_id, $itemcontent, $silent=true) {
         if (!$this->searchpattern) {
             $this->message(_m('No searchstring specified.'));
             return false;
         }
 
         $ret = new AA_Value;
-        foreach ( $content4id->getValues($field_id) as $source ) {
+        foreach ( $itemcontent->getValues($field_id) as $source ) {
             $ret->addValue(str_replace($this->searchpattern, $this->replacestring, $source['value']));
             $ret->setFlag($source['flag']);
         }
@@ -706,10 +753,10 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      * @return array/false
      */
-    function transform($field_id, &$content4id) {
+    function transform($field_id, $itemcontent, $silent=true) {
         if (!$this->searchpattern) {
             $this->message(_m('No searchstring specified.'));
             return false;
@@ -717,9 +764,9 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
         $ret     = new AA_Value;
         $count   = 0;
         if ($this->unalias) {
-            $item = GetItemFromContent($content4id);
+            $item = GetItemFromContent($itemcontent);
         }
-        foreach ( $content4id->getValues($field_id) as $source ) {
+        foreach ( $itemcontent->getValues($field_id) as $source ) {
             $ret->setFlag($source['flag']);
             $text = preg_replace('~'.$this->searchpattern.'~', $this->replacestring, $source['value'], -1, $count);
             if ($count AND $this->unalias) {
@@ -778,15 +825,15 @@ class AA_Transformation_CopyField extends AA_Transformation {
 
     /** transform function
      * @param $field_id
-     * @param $content4id (by link)
+     * @param $itemcontent (by link)
      */
-    function transform($field_id, &$content4id) {
+    function transform($field_id, $itemcontent, $silent=true) {
         if (($this->field2copy == 'no_field') OR !$field_id OR ($field_id == 'no_field')) {
             $this->message(_m('Source or destination field is not specified.'));
             return false;
         }
         // get content from $field2copy field of current item
-        return $content4id->getAaValue($this->field2copy);
+        return $itemcontent->getAaValue($this->field2copy);
     }
 
     /** htmlSetting function
@@ -820,31 +867,35 @@ class AA_Transformator {
 
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
 
-            $content4id    = new ItemContent();
-            $content4id->setByItemID($zids->zid($i), true);     // ignore password
+            $itemcontent    = new ItemContent();
+            $itemcontent->setByItemID($zids->zid($i), true);     // ignore password
             // if we do not ignore it, then it will not work for slices with slice_pwd
             // It is OK to do not care about password here - we are loged in and have permission PS_EDIT_ALL_ITEMS
 
-            $sli_id  = $content4id->getSliceID();
-            $item_id = $content4id->getItemID();
+            $sli_id  = $itemcontent->getSliceID();
+            $item_id = $itemcontent->getItemID();
             if (!$sli_id OR !$item_id) {
                 // Probably: item not found, for some reason
                 continue;
             }
 
             // transform retuns AA_Value
-            $field_content = $transformation->transform($field_id, $content4id);
-            if (!$field_content) {
+            $field_content = $transformation->transform($field_id, $itemcontent, $silent);
+            if ( !is_a($field_content, 'AA_Value') ) {
+                if ($field_content === true) {  // for recompute - all is already sucessfully done
+                    $updated_items++;
+                    $slices2invalidate[$sli_id] = $sli_id;
+                }
                 // no need to change, or something goes wrong - missing parameter for transformation, ....
                 continue;
             }
             $field_content->removeDuplicates();
-            $newcontent4id = new ItemContent();
-            $newcontent4id->setAaValue($field_id, $field_content);
-            $newcontent4id->setItemID($item_id);
-            $newcontent4id->setSliceID($sli_id);
+            $newitemcontent = new ItemContent();
+            $newitemcontent->setAaValue($field_id, $field_content);
+            $newitemcontent->setItemID($item_id);
+            $newitemcontent->setSliceID($sli_id);
 
-            if ($newcontent4id->storeItem( $silent ? 'update_silent' : 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
+            if ($newitemcontent->storeItem( $silent ? 'update_silent' : 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
                 $updated_items++;
             }
             $slices2invalidate[$sli_id] = $sli_id;
