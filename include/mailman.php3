@@ -60,11 +60,6 @@ class AA_Mailman {
                 self::_createOneFile($slice_id, $field, $listname);
             }
         }
-
-        //if ($_REQUEST['AA_CP_Session']=='82c3642996563f2b668d21e11c13bf42') {
-        //    huhl($MAILMAN_SYNCHRO_DIR, $maillist);
-        //    exit;
-        //}
     }
 
 

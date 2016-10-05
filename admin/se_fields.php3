@@ -88,7 +88,6 @@ function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $ali
         $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('(content.flag & 64)',64,'i')));
         $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('(content.flag & 64)',0,'i')));
         $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('text','')));
-        //huhl($items_field);
         echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small title=\"Distinct values\">Distinct values:$items_field[cntval]</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">Empty fields:$empty</small></td></tr>";
     }
 }

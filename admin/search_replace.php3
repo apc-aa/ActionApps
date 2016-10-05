@@ -79,7 +79,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo '
   <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
   <title>'.  _m("Modify items") .'</title>';
-FrmJavascriptFile( 'javascript/inputform.js' );
+FrmJavascriptFile( 'javascript/inputform.js?v=1' );
 IncludeManagerJavascript();
 echo '
 </head>

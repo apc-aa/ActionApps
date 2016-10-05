@@ -71,22 +71,22 @@ class AA_Plannedtask extends AA_Object {
     }
 
     /** Manager row HTML  */
-   protected static function getManagerRowHtml($fields, $aliases, $links) {
-       return '
-           <tr>
-             <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
-             <td>_#AA_NAME_</td>
-             <td>_#EVENT___</td>
-             <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>
+    protected static function getManagerRowHtml($fields, $aliases, $links) {
+        return '
+            <tr>
+              <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '. a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
+              <td>_#AA_NAME_</td>
+              <td>_#EVENT___</td>
+              <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>
               <td>{internal:'.get_class().':computedtime}</td>
               <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
               <td>{internal:'.get_class().':scheduledto}</td>
-             <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
-             <td><small>_#AA_ID___</small></td>
-             <td><small title="_#AA_OWNER">_#AA_OW_NM</small></td>
-           </tr>
-           ';
-   }
+              <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
+              <td><small>_#AA_ID___</small></td>
+              <td><small title="_#AA_OWNER">_#AA_OW_NM</small></td>
+            </tr>
+            ';
+    }
 
     function nexttime() {
         // every 5 min

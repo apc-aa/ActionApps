@@ -137,7 +137,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php if ($poll_id) { echo _m("Edit poll"); } else { echo _m("Add poll"); } ?></title>
 
 </head> <?php
-FrmJavascriptFile('javascript/inputform.js');
+FrmJavascriptFile('javascript/inputform.js?v=1');
 FrmJavascript("
   var maxcount = ". MAX_RELATED_COUNT .";
   var relmessage = \""._m("There are too many related items. The number of related items is limited.") ."\";

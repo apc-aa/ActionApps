@@ -315,11 +315,6 @@ function GetXml_GetContent(&$zids) {
 
 class LastEditList {
     var $lastlist = null;
-    /** lastEditList function
-     *
-     */
-    function LastEditList() {
-    }
 
     /** setFromSlice function
      *  return list of items with last_edit date (id-last_edit,) used for 'exact'

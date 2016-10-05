@@ -449,7 +449,7 @@ echo "
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_insert_func_p\" size=\"50\" value=\"". myspecialchars($input_insert_func_p) ."\">
+         <textarea name=\"input_insert_func_p\" rows=3 cols=50 wrap=\"virtual\">". myspecialchars($input_insert_func_p) ."</textarea>
          </td>
      </tr>";
 echo $tab_separator;

@@ -1,4 +1,4 @@
-<?php
+    <?php
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
@@ -131,14 +131,15 @@ class AA_Grabber_Assignmentform extends AA_Grabber {
 }
 
 
-// BSC assignment
+// BSC assignment - snerovadlo 1
 if ( AA_V::P('bsc') == 1 ) {
     $updated = 0;
     foreach (AA_V::Parr() as $varname => $varvalue) {
         if (strlen($varname)>20 AND substr($varname,0,3)=='bsc') {
             $item_id = substr($varname,3);
             $field_content = new AA_Value;
-            foreach ( explode(',', $varvalue) as $related_id ) {
+//            foreach ( explode(',', $varvalue) as $related_id ) {   // older  - Honza 17.8.2016
+            foreach ( explode('-', $varvalue) as $related_id ) {
                 if ( $related_id ) {
                     $field_content->addValue($related_id);
                 }
@@ -150,7 +151,7 @@ if ( AA_V::P('bsc') == 1 ) {
             ++$updated;
         }
     }
-    echo "Upraveno $updated záznamù";
+    echo "Upraveno $updated zaznamu";
 }
 // Snerovadlo assignment
 elseif ( AA_V::P('assignment') == 1 ) {
@@ -168,7 +169,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
             $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
             $SQL .= " WHERE ". $zids->sqlin('id');
 
-            tryQuery($SQL);
+            DB_AA::sql($SQL);
         }
 
         $grabber      = new AA_Grabber_Assignmentform();

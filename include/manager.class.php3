@@ -153,9 +153,7 @@ class AA_Manager extends AA_Storable {
         $this->messages = $settings['messages'];
         if ( !isset($this->messages['noitem_msg']) ) {
             // could be redefined by view (see ['itemview']['manager_vid'])
-            $this->messages['noitem_msg'] =
-                  get_if($settings['itemview']['format']['noitem_msg'],
-                  _m('No item found'));
+            $this->messages['noitem_msg'] = get_if( $settings['itemview']['format']['noitem_msg'], _m('No item found'));
         }
             //huhl('ooo5', $this->module_id);
 
