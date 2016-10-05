@@ -83,6 +83,17 @@ class AA_Log {
         return true;
     }
 
+    static function warn($selector) {
+        AA_Log::write('AA_WARN', AA_Log::backtrack(), $selector);
+    }
+
+    static function backtrack() {
+        $ret = explode("\n", str_replace(AA_BASE_PATH, '', with( new Exception() )->getTraceAsString()));
+        array_shift($ret);
+        array_shift($ret);
+        return join("\n", $ret);
+    }
+
     function cleanup() {
         $toexecute = new AA_Toexecute;
         // clean all older than 40 days
@@ -122,6 +133,7 @@ class AA_Log {
            // 'PAGECACHE',
            // 'TOEXECUTE'
            // 'HITCOUNT'
+           // 'AA_WARN'
         );
         return !in_array($event_type, $DO_NOT_LOG);
     }
