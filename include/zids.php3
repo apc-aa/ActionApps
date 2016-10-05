@@ -274,7 +274,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             case 's':  $trans = $this->translate('l');
                        return (isset($i) ? $trans[$i] : $trans );
             default:
-                       print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - $this");
+                       AA::$debug && AA::$dbg->warn("ERROR - zids:longids(): can't handle type $this->type conversion to longids - $this");
                        return false;  //TODO - handle other types
         }
     }
@@ -293,7 +293,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             case 's': $trans = $this->translate('l');
                       return ( isset($i) ? pack_id($trans[$i]) : array_map("pack_id", $trans));
             default:
-                      print("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");
+                      AA::$debug && AA::$dbg->warn("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");
                       return false;
         }
     }
@@ -385,7 +385,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$v,$parts)) {
                 $tags[$parts[2]] = $parts[1]; // Note can be empty
             } else {
-                print("Cant parse tagged id '$v' - tell Mitra");
+                AA::$debug && AA::$dbg->warn("Cant parse tagged id '$v' - tell Mitra");
             }
         }
         return $tags;
@@ -406,7 +406,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             switch ($this->type) {
                 case 'p': $k = pack_id(id_t2l($v)); break;
                 default:
-                          print("<br>Error: zids: can't retag array of type '".$this->type."', tell mitra");
+                          AA::$debug && AA::$dbg->warn("<br>Error: zids: can't retag array of type '".$this->type."', tell mitra");
                           return;
             }
             $tags[$k]=$v;
@@ -573,7 +573,7 @@ function guesstype($str) {
     if ($s > 32) {
         return 't'; // Could also test last 32 hex
     }
-    debug("Error, unable to guess type of id '$str' - ask mitra");
+    AA::$debug && AA::$dbg->warn("Error, unable to guess type of id '$str' - ask mitra");
     return ('z');
 }
 
@@ -598,7 +598,7 @@ function ParamExplode($param) {
     // convert separators to ##Sx
     // change "#:" to ":" and change back "://" - then split by separation string
     // replaces in order
-    return explode('##Sx', str_replace(array('#:', 'tp://', ':', '~@|_'), array('~@|_', 'tp~@|_//', '##Sx', ':'), $param));
+    return explode('##Sx', str_replace(array('#:', 'tp://', 'tps://', ':', '~@|_'), array('~@|_', 'tp~@|_//', 'tps~@|_//', '##Sx', ':'), $param));
 }
 
 function get_hash() {
@@ -683,14 +683,14 @@ function sqlin( $column, $values ) {
  */
 function id_t2l(&$str) {
     if (!$str) {
-        huhe(print("Warning: zids:id_t2l:converting empty string"));
+        AA::$debug && AA::$dbg->warn("Warning: zids:id_t2l:converting empty string");
         return null;
     }
     // TODO: Look online for quicker way to substr last 32 chars - mitra
     if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$str,$parts)) {
         return $parts[2];
     }
-    print("Unable to parse tagged id '$str' - tell mitra");
+    AA::$debug && AA::$dbg->warn("Unable to parse tagged id '$str' - tell mitra");
 }
 
 
