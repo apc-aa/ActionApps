@@ -1,3 +1,42 @@
+16-10-05 - THIS VERSION IS USED ON PRODUCTION SERVER AGAIN
+(honzam) - all parts of AA moved to AA_Session, which is based on $_SESSION
+           of php5. The main change is, that external AA login to pages uses
+           the same credentials and AA_Auth so only one login is needed
+           for public pages as well as AA. If you need seperated logins, open
+           anonymous window in browser
+         - new recompute field transform function (for bulk item change), which
+           just recomputes selected field
+         - new {edit:{_#ITEM_ID_}:headline........} - Allows on-line editing of
+           field content -
+             {edit:{_#ITEM_ID_}:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
+         - new placeholder parameter to
+             {editable:<item_id>:<field_id>:<placeholder-text>}
+         - new posibility to mix old v303136.. type of item form with the newer
+           approach with aa[u..][], so we will be able to use widgets on old
+           itemedit. That means that we no longer need to have two versions
+           of the same widget in formutil.php and widget.class.php
+           It will be used mainly for new widgets like Related Item Manager
+         - much better debug=255 output - displays summary for each function
+           as well as call tree. The value 255 is binary filter where each bit
+           represents specific debugtime output
+         - removed debugtimes url option - use debug=2 or debug=4 or debug=255..
+           The number behaves as bit-field, where you can show only specific
+           part of debug messages. If you want all messages and times, use =255
+         - initial commit of Related Item Manager input type - modern version
+           of Related Item Window
+         - conversion of encodings moved to much! quicker iconv PHP function
+           and other speed optimalization based on new debugtime possibilities
+         - new possibility to search and replace through all AA database
+           in AA menu. Will you be carefull, OK?
+         - fixed conversion utf-8 to ascii for cz lang
+         - fixed sitemodule caching: pages are not cached when user is logged in
+         - fixed filebrowser of CKEditor integration with new sessions
+         - fix problem with early debug call
+         - better working with https sites
+         - database calls are unified (or at least more unified)
+         - last classes are moved to __construct required by PHP7
+         - fixed database problem when upgrade Links module in some cases
+         - updated textDiff to last version
 16-10-04 - allow specify "-- any text field --" as condition for view.php3
 (honzam) - new {livesearch:<viev_param>[:<placeholder>[:<dafault_phrase>]]}
            Displays live search (search field and the list of matching articles)
@@ -20,7 +59,7 @@
          - jquery updated to 3.1.1
 16-08-22 - CKeditor upgraded to 4.5.10
 (honzam)   - allowed justify, undo
-           - content filter is turn off' misc/htmleditor
+           - content filter is turn off
          - fix page scroller in slice.php3 to not use sessions
            Sessions in slice.php3 is not working when called as SSI (PHP5 style
            sessions do not allow to use sessions in SSI directly). The sessions
