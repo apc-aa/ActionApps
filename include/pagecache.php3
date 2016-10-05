@@ -95,7 +95,7 @@ class PageCache  {
             // do not count with cookie names starting with underscore
             // (Google urchin uses cookies like __utmz which varies very often)
             foreach( $_COOKIE as $key => $val ) {
-                if (!(substr((string)$key,0,1)=='_')) {
+                if ( ($key{0}!='_') AND ($key!='AA_Session')) {
                     $ks["C$key"] = $val;
                 }
             }
