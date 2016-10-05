@@ -61,7 +61,7 @@ class linkassignment {
     var $id;
 
     /** just constructor - variable assignments */
-    function linkassignment($category, $link, $base, $state=null, $proposal=null, $proposal_delete=null, $priority=null, $id=null) {
+    function __construct($category, $link, $base, $state=null, $proposal=null, $proposal_delete=null, $priority=null, $id=null) {
         $this->category        = $category;
         $this->link            = $link;
         $this->base            = $base=='y';
@@ -283,7 +283,7 @@ class assignmentset {
     var $lid;         // link id
     var $assignments; // stores in which categories links should appear
 
-    function assignmentset($lid=null) {
+    function __construct($lid=null) {
         $this->lid = $lid;
     }
 
@@ -663,7 +663,7 @@ class linkobj {
     var $assignments; // stores in which categories links should appear
     var $changes;     // proposed data changes
 
-    function linkobj($lid=null) {
+    function __construct($lid=null) {
         $this->lid         = $lid;
         $this->assignments = new assignmentset($lid);
     }

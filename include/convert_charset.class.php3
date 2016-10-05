@@ -180,7 +180,7 @@ class ConvertCharset {
     var $from_charset;
     var $to_charset;
 
-    function ConvertCharset($from_charset = null, $to_charset = null) {
+    function __construct($from_charset = null, $to_charset = null) {
         $this->from_charset = $from_charset;
         $this->to_charset   = $to_charset;
     }

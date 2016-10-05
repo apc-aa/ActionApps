@@ -77,10 +77,9 @@ class itemview {
    * @param $disc
    * @param $get_content_funct
    */
-  function itemview( $slice_info, $fields, $aliases, $zids, $from, $number,
-                     $clean_url, $disc="", $get_content_funct='GetItemContent'){
-    //constructor
-    $this->slice_info = $slice_info;  // $slice_info is array with this fields:
+  function __construct( $slice_info, $fields, $aliases, $zids, $from, $number, $clean_url, $disc="", $get_content_funct='GetItemContent') {
+
+      $this->slice_info = $slice_info;  // $slice_info is array with this fields:
                                       //      - print_view() function:
                                       //   compact_top, category_sort,
                                       //   category_format, category_top,
@@ -110,26 +109,15 @@ class itemview {
     $idcount = (string)($GLOBALS['QueryIDsCount'] ? $GLOBALS['QueryIDsCount'] : ' 0');
     $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
 
-    $this->fields      = $fields;
-    $this->zids        = $zids;
-    $this->from_record = $from;      // number or text "random[:<weight_field>]"
-    $this->num_records = $number;    // negative number used for displaying n-th group of items only
-    $this->clean_url   = $clean_url;
-    $this->disc        = $disc;
-    $this->parameters  = array();
-    $this->_content    = array();
-
-    switch( (string)$get_content_funct ) {
-        case '1':         // - for backward compatibility when $use_short_ids
-                          //   bool value was used instead of $get_content_funct
-            $this->get_content_funct = 'GetItemContent_Short'; break;
-        case '':          // - use default
-        case '0':         // - for backward compatibility ...
-                          //   Item ids are in long format (default)
-            $this->get_content_funct = 'GetItemContent'; break;
-        default:
-            $this->get_content_funct = $get_content_funct;
-    }
+    $this->fields            = $fields;
+    $this->zids              = $zids;
+    $this->from_record       = $from;      // number or text "random[:<weight_field>]"
+    $this->num_records       = $number;    // negative number used for displaying n-th group of items only
+    $this->clean_url         = $clean_url;
+    $this->disc              = $disc;
+    $this->parameters        = array();
+    $this->_content          = array();
+    $this->get_content_funct = $get_content_funct ?: 'GetItemContent';
   }
 
   /** parameter function
@@ -523,7 +511,7 @@ class itemview {
     // Create an array of content, indexed by either long or short id (not tagged id)
 
     // fill Abstract Data Structure by the right function
-    // (GetItemContent / GetItemContent_Short / GetLinkContent / $metabase->getContent / ...)
+    // (GetItemContent / GetLinkContent / $metabase->getContent / ...)
     if ( is_array($this->get_content_funct) ) {
         // Get content function should be also method of some class. In that
         // case it is passed as two members array(method,params), where both

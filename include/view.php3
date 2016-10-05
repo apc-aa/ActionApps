@@ -80,7 +80,7 @@ class ViewCommand {
      *  @param $command the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters array of command patameters
      */
-    function ViewCommand($command, $parameters) {
+    function __construct($command, $parameters) {
         $this->command    = $command;
         $this->parameters = $parameters;
     }
@@ -285,7 +285,7 @@ function ParseViewParameters($query_string="") {
         add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
     }
 
-    AA::$debug && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string )."$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
+    AA::$debug && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string ), "cmd:", $cmd, "set:", $set, "als:", $als);
 
     // Splits on "-" and subsitutes aliases
     $commands = new AA_View_Commands($cmd[$vid], $GLOBALS['als']);

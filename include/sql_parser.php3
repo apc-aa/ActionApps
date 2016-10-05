@@ -315,7 +315,7 @@ class TokenList {
     /** TokenList function
      * @param $t
      */
-    function TokenList($t) {
+    function __construct($t) {
         $this->tList = $t;
         $this->index = 0;
     }
@@ -371,7 +371,7 @@ class Syntax {
      * @param $operator
      * @param $t
      */
-    function Syntax($column, $operator, $t) {
+    function __construct($column, $operator, $t) {
         global $rl;
         $operator = StrToUpper($operator);
         $this->column = $column;

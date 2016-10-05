@@ -41,7 +41,7 @@ class catassignment {
     var $state;
 
     /** just constructor - variable assignments */
-    function  catassignment($from, $to, $base, $state) {
+    function  __construct($from, $to, $base, $state) {
         $this->from  = $from;
         $this->to    = $to;
         $this->base  = $base;
@@ -508,7 +508,7 @@ class cattree {
 class linkcounter {
 
     /** constructor */
-    function linkcounter() {}
+    function __construct() {}
 
      /** get current link count for whole category including subcategories */
     function get_link_count($cpath, $update=false) {
@@ -549,7 +549,7 @@ class bitfield {
     var $length;
 
     /** default values for all bits are "not set" (=false) */
-    function bitfield() {
+    function __construct() {
         $field = '';
         $length = 0;
     }

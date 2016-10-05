@@ -89,7 +89,7 @@ class spot {
     // the names of variables are short in order the outpot of serialize() function
     // would be as short as possible
 
-    function spot($id=false, $name=false, $conditions=false, $variables=false, $parent=false, $positions=false, $choices=false, $flag=0) {
+    function __construct($id=false, $name=false, $conditions=false, $variables=false, $parent=false, $positions=false, $choices=false, $flag=0) {
         $this->id = $id;
         $this->n  = $name;
         $this->c  = $conditions; // Array of conditions to match to be this
@@ -255,7 +255,7 @@ class sitetree {
     var $tree; // Array of spots
     var $start_id;
 
-    function sitetree($spot=false) {
+    function __construct($spot=false) {
         $this->tree[1]  = new spot( $spot['spot_id'], $spot['name'] ? $spot['name']:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], array($spot['spot_id']), $spot['flag'] );
         $this->start_id = $spot['spot_id'];
     }

@@ -53,7 +53,7 @@ class FileLock {
      * Constructor: takes full path to the lock file.
      * @param $filename
      */
-    function FileLock($filename) {
+    function __construct($filename) {
         $this->filename = $filename;
         $this->locked = false;
         $this->last_error = false;

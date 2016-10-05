@@ -97,7 +97,7 @@ class xml_unserializer {
     /** xml_unserializer function
      *
      */
-    function xml_unserializer() {
+    function __construct() {
         $this->stack       = array();
         $this->namestack   = array();
         $this->codingstack = array();

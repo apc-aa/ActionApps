@@ -29,7 +29,7 @@ http://www.apc.org/
 class mgettext_writer {
     var $fd;   // file
 
-    function mgettext_writer($langfile) {
+    function __construct($langfile) {
         $this->fd = fopen($langfile, "wb");
     }
 
@@ -47,7 +47,7 @@ class mgettext_writer {
 class mgettext_writer_php extends mgettext_writer {
 
     /** constructor */
-    function mgettext_writer_php($langfile) {
+    function __construct($langfile) {
         echo "<br>open $langfile";
         $this->fd = fopen($langfile, "wb");
     }
@@ -106,7 +106,7 @@ class mgettext_writer_php extends mgettext_writer {
 class mgettext_writer_po extends mgettext_writer {
 
     /** constructor */
-    function mgettext_writer_po($langfile) {
+    function __construct($langfile) {
         echo "<br>open (PO) $langfile";
         $this->fd = fopen($langfile, "wb");
     }

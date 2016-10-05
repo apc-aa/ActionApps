@@ -49,7 +49,7 @@ class aahandler {
      * @param $funct
      * @param $conds
      */
-    function aahandler( $funct, $conds ) {
+    function __construct( $funct, $conds ) {
         $this->funct = $funct;
         $this->conds = $conds;
     }
@@ -203,7 +203,7 @@ class NewDiscussionCommentEvent {
      * @param $class
      * @param $selector
      */
-    function NewDiscussionCommentEvent( $params, $type, $class, $selector ) {
+    function __construct( $params, $type, $class, $selector ) {
         $email = unserialize($params);
     }
 

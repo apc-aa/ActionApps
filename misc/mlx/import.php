@@ -25,7 +25,7 @@ require_once AA_INC_PATH."mlx.php";
 class MLXImport {
 //public:
     ///@param $slice_id (string) unpacked slice id of content slice (not control slice)
-    function MLXImport($slice_id) {
+    function __construct($slice_id) {
         $this->slice_id = $slice_id;
 
         $this->sliceObj = AA_Slice::getModule($slice_id);

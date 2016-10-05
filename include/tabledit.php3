@@ -94,7 +94,7 @@ class tabledit {
      * @param $getTableViewsFn
      * @param $is_child
      */
-    function tabledit($viewID, $action, $cmd, $view, $imagepath, &$sess, $getTableViewsFn, $is_child=false) {
+    function __construct($viewID, $action, $cmd, $view, $imagepath, &$sess, $getTableViewsFn, $is_child=false) {
         $this->viewID          = $viewID;
         $this->all_cmd         = $cmd;
         $this->cmd             = $cmd[$viewID];

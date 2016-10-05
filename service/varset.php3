@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AA_Validate
+ * Class Cvariable, Cvarset
  *
  *
  * PHP versions 4 and 5
@@ -46,7 +46,7 @@ class Cvariable {
      * @param $value
      * @param $iskey
      */
-    function Cvariable($name, $type, $value, $iskey=false) {
+    function __construct($name, $type, $value, $iskey=false) {
         $this->name  = $name;
         $this->type  = $type;
         $this->value = $value;
@@ -69,7 +69,7 @@ class Cvariable {
                 // grrr: if $var=0 then $var=""!!!
                 return ($this->value == "") ? "0" : $this->value;
             case "unpacked":
-                return "'" . q_pack_id($this->value) ."'";
+                return strlen($this->value) ? '0x' . quote($this->value) : "''";
             case "quoted":
                 return "'" . $this->value ."'";
             case "null":
@@ -85,21 +85,21 @@ class Cvariable {
 
 class Cvarset {
     var $vars;        // array of variables
-    var $db;          // database handler
+    var $last_used_db;  // database handler
     var $just_print;  // debug option - just prints the query (not implemented for all methods!!!)
 
     /** Cvarset function
      *  constructor - also good for filling the varset
      * @param $arr
      */
-    function Cvarset( $arr=null ) {
-        $this->db         = null;
+    function __construct( $arr=array()) {
+        $TRANS              = array('i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked');
+        $this->vars         = array();
+        $this->last_used_db = null;
         $this->just_print = false;
 
-        foreach ( (array)$arr as $varname => $value ) {
-            if ( $varname ) {
-                $this->add($varname, 'text', $value);
-            }
+        foreach ( $arr as $def ) {
+            $this->add($def[0], isset($def[2]) ? $TRANS[$def[2]] : 'text', $def[1]);
         }
     }
 
@@ -111,7 +111,12 @@ class Cvarset {
      *  clears whole varset
      */
     function clear() {
-        $this->vars="";
+        $this->vars = array();
+    }
+
+    /** Returns true, is the varset do not contain any variable */
+    function isEmpty() {
+        return count($this->vars) < 1;
     }
 
     /** get function
@@ -206,6 +211,16 @@ class Cvarset {
         return $v->value;
     }
 
+    function getArray() {
+        $ret = array();
+        foreach ( $this->vars as  $varname => $variable ) {
+            if (!$variable->iskey) {
+                $ret[$varname] = $variable->getValue();
+            }
+        }
+        return $ret;
+    }
+
     /** setFromArray function
      *  set variables values due to array
      * @param $arr
@@ -235,12 +250,12 @@ class Cvarset {
      * @param $num_fields
      */
     function addArray($text_fields, $num_fields="") {
-        if ( isset($text_fields) AND is_array($text_fields)) {
+        if (is_array($text_fields)) {
             foreach ($text_fields as $name) {
                 $this->add($name, "text");
             }
         }
-        if ( isset($num_fields) AND is_array($num_fields)) {
+        if (is_array($num_fields)) {
             foreach ( $num_fields as $name) {
                 $this->add($name, "number");
             }
@@ -257,14 +272,13 @@ class Cvarset {
             huhl($SQL);
             return;
         }
-        if ( is_null($this->db) ) {
-            $this->db = getDB();
-        }
+        $this->last_used_db = getDB();
         if ( $nohalt=='nohalt' ) {
-            $retval = $this->db->query_nohalt($SQL);
+            $retval = $this->last_used_db->query_nohalt($SQL);
         } else {
-            $retval = $this->db->tquery($SQL);
+            $retval = $this->last_used_db->tquery($SQL);
         }
+        freeDB($this->last_used_db);
         return $retval;
     }
 
@@ -284,6 +298,7 @@ class Cvarset {
             $foo .= $predznak . $variable->getSQLValue();
             $predznak = ", ";
         }
+
         return $foo . " ) " ;
     }
 
@@ -307,6 +322,7 @@ class Cvarset {
      * @param $tablename
      */
     function makeUPDATE($tablename = "") {
+        $updates = array();
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
                 $updates[] = "`$varname`" ."=". $variable->getSQLValue();
@@ -422,12 +438,12 @@ class Cvarset {
      */
     function makeINSERTorUPDATE($tablename) {
         $this->_doQuery($this->makeSELECT($tablename));
-        switch ($this->db->num_rows()) {
+        switch ($this->last_used_db->num_rows()) {
             case 0: return $this->makeINSERT($tablename);
             case 1: return $this->makeUPDATE($tablename);
             default:
             // Error: there are several rows with the same key variables
-            return "Error using makeINSERTorUPDATE: " . $this->db->num_rows(). " rows match the query";
+            return "Error using makeINSERTorUPDATE: " . $this->last_used_db->num_rows(). " rows match the query";
         }
     }
 
@@ -435,13 +451,13 @@ class Cvarset {
      * @param $tablename
      */
     function last_insert_id() {
-        return $this->db->last_insert_id();
+        return $this->last_used_db->last_insert_id();
     }
 
     // Static //
 
     /** sqlin function
-     *  Returns part of SQL command ised in WHERE, column = value, or column IN (...)
+     *  Returns part of SQL command sed in WHERE, column = value, or column IN (...)
      * @param $column
      * @param $values
      */
@@ -457,7 +473,7 @@ class Cvarset {
         }
         if (count($arr) == 1) {
             return "$column = ". $arr[0];
-        } elseif ( count($values) == 0 ) {
+        } elseif ( count($arr) == 0 ) {
             return "2=1";
         }
         return "$column IN (". join(',', $arr) .")";

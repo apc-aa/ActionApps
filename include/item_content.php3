@@ -459,7 +459,7 @@ class ItemContent extends AA_Content {
      *  Constructor which takes content for ID or item_id (unpacked).
      * @param $content4id
      */
-    function ItemContent($content4id = "") {
+    function __construct($content4id = "") {
         if ($content4id) {
             if ( is_array($content4id) ) {
                 $this->setFromArray($content4id);
@@ -549,6 +549,13 @@ class ItemContent extends AA_Content {
 
         $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
+        $aacontent4id = null; // modern input format - introduced with [rim]
+        if ($_POST['aa']) {
+            $grabber = new AA_Grabber_Form();
+            $grabber->prepare();    // maybe some initialization in grabber
+            $aacontent4id = $grabber->getItem();
+            $grabber->finish();
+        }
         foreach ($prifields as $pri_field_id) {
             $f = $fields[$pri_field_id];
 
@@ -574,6 +581,9 @@ class ItemContent extends AA_Content {
                 // modify the value to be compatible with $_GET[] array
                 $GLOBALS[$varname]     = addslashes($x->getValue());
                 $GLOBALS[$htmlvarname] = $x->getFlag();
+            } elseif ($aacontent4id AND $aacontent4id->is_set($pri_field_id) AND (!in_array($pri_field_id, array('id..............','slice_id........')))) {
+                $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
+                continue;
             }
 
             $var = $GLOBALS[$varname];
@@ -741,51 +751,6 @@ class ItemContent extends AA_Content {
         }
     }
 
-    /** storeToDB function
-     *  Store item content to DB. if an item has item_id, which is already
-     *  stored in $items_id, then according to the $actionIfItemExists performs:
-     *    a) "update"    : update the item in DB
-     *    b) or "new_id" : store the item with different (unique random) id
-     *    c) otherwise   : do nothing
-     *  TODO - convert to AA_Grabber/AA_Saver API
-     * @param $alice_id
-     * @param $actionIfItemExists
-     * @param $invalidatecache
-     */
-    function storeToDB($slice_id, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
-        require_once AA_INC_PATH."varset.php3";
-        require_once AA_INC_PATH."itemfunc.php3";
-        global $err, $varset, $itemvarset, $error, $ok;
-
-        $id = $this->getValue("id..............");
-        if ($id == "new id") {	    // if the item has no id => set up an unique new id
-            $id = new_id();
-            $insert = true;
-        } else {
-            // Check duplicity
-            $insert = (false===DB_AA::test('item', array(array('id',$id, 'l'))));
-        }
-        if ($insert == false) {	    // if the item is already in the DB :
-            switch ($actionIfItemExists) {
-                case UPDATE:  	    // the item  will be updated
-                    break;
-                case STORE_WITH_NEW_ID:
-                    $id     = new_id();	// the item should be stored with a new id
-                    $insert = true;
-                    break;
-                case NOT_STORE:
-                default: 		    // NOT_STORE or any other value => do not store the item
-                    return array(0=>NOT_STORE,1=>$id);
-            }
-        }
-
-        $this->setItemID($id);
-        $this->setSliceID($slice_id);
-        $added_to_db = $this->storeItem($insert ? 'insert' : 'update', array($invalidatecache, false));     // invalidatecache, feed
-
-        return $added_to_db ? array( 0 => ($insert ? 'INSERT' : 'UPDATE'), 1 => $id ) : false;
-    }
-
     function validateReport() {
         $slice  = AA_Slice::getModule($this->getSliceID());
         $fields = $slice->getFields();
@@ -857,6 +822,8 @@ class ItemContent extends AA_Content {
      *                      performed (the computed fields are not computed,
      *                      last_edit and edited_by is not changed, events are
      *                      not issued
+     *      update/insert - updates the item if it exists. If not, the item
+     *                      is inserted
      *      add           - do not clear the current content - the values are
      *                      added in paralel to curent values (stored
      *                      as multivalues for all fields stored in content
@@ -896,7 +863,7 @@ class ItemContent extends AA_Content {
         $fields       = $slice->fields('record');
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
-        if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent'))) {
+        if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'))) {
             $mode = 'update';
         }
 
@@ -904,6 +871,15 @@ class ItemContent extends AA_Content {
             case 'update_silent': $silent = true;
                                   $mode   ='update';
                                   $id     = $this->getItemID();
+                                  break;
+            case 'update/insert': // not tested, yet...
+                                  if (!$this->getItemID() OR !itemIsDuplicate($this->getItemID())) {
+                                      $mode = 'insert';
+                                      $id   = $this->getItemID() ?: new_id();
+                                  } else {
+                                      $mode   ='update';
+                                      $id     = $this->getItemID();
+                                  }
                                   break;
             case 'insert_as_new': $id = new_id();
                                   $mode ='insert';
@@ -1285,10 +1261,6 @@ class ItemContent extends AA_Content {
                 }
             }
         }
-        // if ($_POST['AA_CP_Session']=='6953b900572e78f86907c6484992a895') {
-        //     huhl(AA_Item::getItem($id));
-        //     exit;
-        // }
     }
 
     /** transform function

@@ -48,7 +48,7 @@ class easy_scroller {
      * @param $metapage
      * @param $itmcnt
      */
-    function easy_scroller($id="", $url="", $metapage=10, $itmcnt=0) {
+    function __construct($id="", $url="", $metapage=10, $itmcnt=0) {
         $this->id         = $id;
         $this->metapage   = $metapage;
         $this->urldefault = $url;

@@ -46,7 +46,7 @@ class Cvariable {
      * @param $value
      * @param $iskey
      */
-    function Cvariable($name, $type, $value, $iskey=false) {
+    function __construct($name, $type, $value, $iskey=false) {
         $this->name  = $name;
         $this->type  = $type;
         $this->value = $value;
@@ -560,7 +560,7 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
             $varset->set($col["name"],$val,$type);
         }
 
-        if (!tryQuery("INSERT INTO $table ".$varset->makeINSERT())) {
+        if (!DB_AA::sql("INSERT INTO $table ".$varset->makeINSERT())) {
             return false;
         }
     }
@@ -612,7 +612,7 @@ class AA_ChangesMonitor {
      *  called as" $changes = AA_ChangesMonitor::singleton();
      *  This function makes sure, there is just ONE static instance if the class
      */
-    public static function singleton(){
+    public static function singleton() {
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }

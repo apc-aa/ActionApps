@@ -63,7 +63,7 @@ class datectrl {
      * @param $from_now = false
      * @param $display_time = false
      */
-    function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false, $required=true) {
+    function __construct($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false, $required=true) {
         $this->name          = $name;
         $this->y_range_plus  = $y_range_plus;
         $this->y_range_minus = $y_range_minus;
