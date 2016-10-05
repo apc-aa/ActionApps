@@ -29,8 +29,7 @@
 // date_default_timezone_set(date_default_timezone_get());
 
 /* Change this to match your database. */
-$db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
-require_once(AA_INC_PATH.'phplib/'. $db_type_filename);
+require_once(AA_INC_PATH.'phplib/'. (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc"));
 require_once(AA_INC_PATH.'phplib/phplib.php');
 
 spl_autoload_register(function ($class_name) {
@@ -100,6 +99,8 @@ spl_autoload_register(function ($class_name) {
 class AA_Debug {
     protected $_starttime;
     protected $_duration = array();
+    protected $_tracestack = array();
+    protected $_calls      = array();
 
     function __construct() {
         $this->_starttime = array('main' => microtime(true));
@@ -109,8 +110,8 @@ class AA_Debug {
     //   AA::$debug && AA::$dbg->info("OK") && exit;
     function log()      {$v=func_get_args(); $this->_do('log',     $v); return true;}
     function info()     {$v=func_get_args(); $this->_do('info',    $v); return true;}
-    function warn()     {$v=func_get_args(); $this->_do('warn',    $v); return true;}
-    function error()    {$v=func_get_args(); $this->_do('error',   $v); return true;}
+    function warn()     {$v=func_get_args(); $this->tracepoint('warn',    $v[0]); $this->_do('warn',    $v); return true;}
+    function error()    {$v=func_get_args(); $this->tracepoint('error',   $v[0]); $this->_do('error',   $v); return true;}
 
     function group()    {
         $v     = func_get_args();
@@ -126,28 +127,49 @@ class AA_Debug {
         $group = array_shift($v);
         $this->_do('log', $v);
         $this->_logtime($group);
-        $this->duration($group,microtime(true) - $this->_starttime[$group]);
+        //$this->duration($group,microtime(true) - $this->_starttime[$group]);
         $this->_groupend($group);
         return true;
     }
 
-    function duration($func, $time) {
+    function tracestart($func, $text='') {
+        $this->_calls[]      = array(count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true));
+        $this->_tracestack[] = count($this->_calls)-1;
+    }
+
+    function traceend($func, $text='') {
+        $time = microtime(true);
+        $indx = array_pop($this->_tracestack);
+        array_push($this->_calls[$indx], $time, substr($text,0,20), strlen($text));
+
         if (!is_array($this->_duration[$func])) {
             $this->_duration[$func] = array();
         }
-        $this->_duration[$func][] = $time;
+        $this->_duration[$func][] = $time-$this->_calls[$indx][4];
+    }
+
+    function tracepoint($func, $text='') {
+        $this->_calls[]      = array(count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0);
     }
 
     function duration_stat() {
         $row    = array();
         $sumsum = 0;
         foreach($this->_duration as $func => $times) {
-            $sumsum += ($sum = array_sum($times));
-            $row['a'.sprintf('%f',$sum).'-'.$func] .= '<tr><td>'.$func.'</td><td>'.count($times).'</td><td>'.sprintf('%f',$sum/count($times)).'</td><td>'.sprintf('%f',$sum).'</td><td>'.sprintf('%f',max($times)).'</td><td>'.sprintf('%f',min($times)).'</td></tr>';
+            $sumsum += ($sum = 1000*array_sum($times));
+            $row['a'.sprintf('%f',$sum/1000.0).'-'.$func] .= '<tr><td>'.safe($func).'</td><td>'.count($times).'</td><td>'.sprintf('%f',$sum/count($times)).'</td><td>'.sprintf('%f',$sum).'</td><td>'.sprintf('%f',1000*max($times)).'</td><td>'.sprintf('%f',1000*min($times)).'</td></tr>';
         }
         krsort($row);
+
         echo '<table><tr><th>function</th><th>called</th><th>avg</th><th>sum</th><th>max</th><th>min</th></tr>'.join('',$row).'<tr><th>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></table>';
-        //phpinfo();
+        echo '<br><table><tr><th>time</th><th>duration</th><th>function</th><th>in</th><th>out</th></tr>';
+        foreach($this->_calls as $call) {
+           echo '<tr><td>'.(1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])).'</td><td>'.(1000*($call[5]-$call[4])).'</td><td>'.str_repeat('.&nbsp;',$call[0]).safe($call[1]).'</td><td>'.safe($call[2]).($call[3]>200? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
+        }
+        echo '</table>';
+        if ($GLOBALS['contentcache']) {
+            $GLOBALS['contentcache']->duration_stat();
+        }
     }
 
 
@@ -215,7 +237,6 @@ class DB_AA extends DB_Sql {
     var $User      = DB_USER;
     var $Password  = DB_PASSWORD;
 
-    public static $queries = array();
     public static $_instances_no = 0;
 
     /* public: constructor */
@@ -343,11 +364,12 @@ class DB_AA extends DB_Sql {
 
     /** static
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
+     *  @return number of affected rows (useful for INSERT/UPDATE/DELETE) of false on problem
      **/
     static function sql($query, $where=null) {
         $db = getDB();
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
-        $ret = $db->query("$query $sqlwhere");
+        $ret = $db->query("$query $sqlwhere") ? $db->affected_rows() : false;
         freeDB($db);
         return $ret;
     }
@@ -361,6 +383,34 @@ class DB_AA extends DB_Sql {
     static function delete_low_priority($table, $where=null) {
         //huhl( "<br>\nDELETE LOW_PRIORITY FROM `$table` ". (is_null($where) ? '' : DB_AA::makeWhere($where)));
         return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
+    }
+
+    /** used as: DB_AA::update('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
+    static function update($table, $varlist, $where) {
+        $delim = '';
+        $cols = '';
+        foreach ( $varlist as $vardef) {
+            // $vardef is array(varname, type, value)
+            list($name, $value, $type) = $vardef;
+            switch ( $type ) {
+                case "i": $part = (int)$value; break;
+                case "l": $part = q_pack_id($value); break;
+                case "q": $part = $value; break;
+                //default:  $part = DB_AA::quote($value);
+                default:  $part = addslashes($value);
+            }
+            $cols .= "$delim $name = '$part'";
+            $delim = " ,";
+        }
+        $wh = DB_AA::makeWhere($where);
+        $ret = false;
+        if ($cols AND $wh) {
+            $db = getDB();
+            $db->query("UPDATE `$table` SET $cols $wh");
+            $ret = $db->affected_rows();
+            freeDB($db);
+        }
+        return $ret;
     }
 
     /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
@@ -414,31 +464,18 @@ class DB_AA extends DB_Sql {
     /** tquery function
      * @param $SQL
      */
-    function tquery($SQL) {
-        $time = microtime(true);
-        $ret  = ($GLOBALS['pqp'] ? $this->dquery($SQL) : parent::query($SQL));
-        ($GLOBALS['debugtime']>2) && AA::$dbg->duration('Query', microtime(true)-$time);
+    function query($SQL) {
+        AA::$debug&16 && AA::$dbg->tracestart('Query', $SQL);
+        $ret = parent::query($SQL);
+        AA::$debug&16 && AA::$dbg->traceend('Query', (stripos($SQL, "SELECT") === 0) ? $this->num_rows() : $this->affected_rows());
         return $ret;
     }
 
-    /** dquery function
-     * @param $SQL
+    /** tquery function
+     *  @deprecated - use query
      */
-    function dquery($SQL) {
-        $type      = (stripos($SQL, "SELECT") === 0) ? 'S' : 'U';
-        $starttime = microtime(true);
-
-        $retval    = parent::query($SQL);
-
-        // log it
-        self::$queries[] = array(
-                'sql'  => $SQL,
-                'time' => (microtime(true) - $starttime)*1000,
-                'type' => $type,
-                'rows' => ($type == 'S') ? $this->num_rows() : $this->affected_rows()
-            );
-
-        return $retval;
+    function tquery($SQL) {
+        return $this->query($SQL);
     }
 
     /** query_nohalt function
@@ -513,17 +550,6 @@ function freeDB($db) {
     array_push($spareDBs,$db);
 }
 
-/** tryQuery function
- *  Try a query, displaying debugging if $debug, return true on success, false on failure
- * @param $SQL
- */
-function tryQuery($SQL) {
-    $db  = getDB();
-    $res = $db->tquery($SQL);
-    freeDB($db);
-    return $res;
-}
-
 /** @deprecated GetTable2Array function
  *  function converts table from SQL query to array
  * @param $SQL
@@ -537,7 +563,7 @@ function tryQuery($SQL) {
  */
 function GetTable2Array($SQL, $key="id", $values='aa_all') {
     $db = getDB();
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     while ($db->next_record()) {
         if ($values == 'aa_all') {
@@ -572,6 +598,30 @@ class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL D
     var $database_class = "DB_AA";           // Which database to connect...
 }
 
-/* Required, contains your local session management extension */
-require_once(AA_INC_PATH . ($encap ? "extsessi.php3" : "extsess.php3"));
+class AA_Session extends Session {
+
+    // add module_id=... to url. It is better to use StateUrl() directly, but we already use $sess->url() from older versions of $session management
+    function url($url) {
+        return StateUrl($url);
+    }
+
+    // get <input name="module_id"... . It is better to use StateHidden() directly, but we already use $sess->hidden_session() from older versions of $session management
+    function get_hidden_session() {
+        return StateHidden();
+    }
+}
+
+function pageOpen($type = '') {
+    global $sess, $auth;
+    $sess = new AA_Session;
+    $sess->start();
+
+    if ($type != 'noauth') {
+        if (!is_object($auth)) {
+            $auth = new AA_Auth;
+        }
+        $auth->set_nobody($type=='nobody');
+        $auth->start();
+    }
+}
 ?>
