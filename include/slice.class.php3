@@ -698,7 +698,7 @@ class AA_Module_Site extends AA_Module {
     }
 
     function getRelatedSlices() {
-        return GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($this->module_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+        return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i'))));
     }
 
     /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
@@ -872,7 +872,7 @@ class AA_Modules {
         global $auth;
 
         $where_add = empty($module_type) ? '' : "AND type='$module_type'";
-        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted<>1 $where_add ORDER BY priority, name", 'unpack:id', 'name');
+        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted=0 $where_add ORDER BY priority, name", 'unpack:id', 'name');
 
         if (empty($user_id)) {
             $user_id =  $auth->auth["uid"];

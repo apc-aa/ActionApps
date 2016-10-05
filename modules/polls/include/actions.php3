@@ -70,7 +70,7 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
         $SQL = "UPDATE polls SET status_code = '".$this->to_bin."' WHERE ". $zids->sqlin('id', true);
-        tryQuery($SQL);
+        DB_AA::sql($SQL);
         return false;                                     // OK - no error
     }
 
@@ -150,8 +150,7 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
         // don't worry about fed fields - content is copied
         $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
 
-        TryQuery("DELETE FROM polls WHERE id ".$wherein);
-        freeDB($db);
+        DB_AA::sql("DELETE FROM polls WHERE id ".$wherein);
     }
 
     /** Checks if the user have enough permission to perform the action */

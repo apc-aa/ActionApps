@@ -33,8 +33,8 @@ function SiteAdminPage($spot_id, $add = null) {
     if ($add) {
         $url = get_url($url, $add);
     }
-    // Don't add AA_CP_Session if already there (it isn't in PHP_SELF)
-    return myspecialchars((strpos($url, 'AA_CP_Session') === false) ? $sess->url($url) : $url);
+    // Don't add AA_Session if already there (it isn't in PHP_SELF)
+    return myspecialchars( $sess->url($url) );
 }
 
 function ModW_HiddenRSpotId() {
@@ -45,7 +45,7 @@ function ModW_StoreTree(&$tree, $site_id) {
     $p_site_id = q_pack_id($site_id);
     $data      = addslashes(serialize($tree));
     $SQL       = "UPDATE site SET structure='$data' WHERE id='$p_site_id'";
-    tryQuery($SQL);
+    DB_AA::sql($SQL);
 }
 
 function ModW_GetTree( &$tree, $site_id ){

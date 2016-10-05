@@ -169,9 +169,8 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
         $item_ids = array_keys($item_arr);
 
         if ($item_ids) {
-            $SQL = "UPDATE central_conf SET status_code = '".$this->to_bin."'
-                     WHERE id IN ('".join_and_quote("','",$item_ids)."')";
-            tryQuery($SQL);
+            $SQL = "UPDATE central_conf SET status_code = '".$this->to_bin."' WHERE id IN ('".join_and_quote("','",$item_ids)."')";
+            DB_AA::sql($SQL);
         }
         return false;                                     // OK - no error
     }

@@ -15,17 +15,9 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."feeding.php3";
 
-function myQuery (&$db, $SQL, $fire) {
-  global $debug;
-  echo "$SQL<br>";
-
-  if ( !$fire )
-    return true;
-
-  if ($debug)
-    return $db->dquery ($SQL);
-  else
-    return $db->query($SQL);
+function myQuery ($db, $SQL, $fire) {
+    echo "$SQL<br>";
+    return !$fire ? true : $db->query($SQL);
 }
 
 // ---------------------- 2 import -------------------------------------------

@@ -158,7 +158,7 @@ class AA_Hitcounter_Update {
                     unset($hits_l[$short_id]);
                 }
                 if ( $count > 0 ) {
-                    tryQuery( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
+                    DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
                 }
             }
         }
@@ -167,16 +167,16 @@ class AA_Hitcounter_Update {
         if (is_array($hits_l)) {
             foreach ( $hits_l as $short_id => $count ) {
                 if ( $count > 0 ) {
-                    tryQuery( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
+                    DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
                 }
             }
         }
 
-        tryQuery("INSERT INTO hit_archive (id, time) SELECT id, time FROM hit_short_id WHERE time < $time");
-        tryQuery("DELETE FROM hit_short_id WHERE time < $time");
+        DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT id, time FROM hit_short_id WHERE time < $time");
+        DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
 
-        tryQuery("INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
-        tryQuery("DELETE FROM hit_long_id WHERE time < $time");
+        DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
+        DB_AA::sql("DELETE FROM hit_long_id WHERE time < $time");
 
         // once a day plan 3 new grouping (which means, that each day is counted
         // 3 times - in case it fails in one or two cases. If it fails three
@@ -270,7 +270,7 @@ class AA_Hitcounter_Group {
         $time_cond = "time >= $begin AND time < ". ($begin + $step);
         $hits      = GetTable2Array("SELECT id, sum(hits) as sum FROM hit_archive WHERE $time_cond GROUP BY id", 'id', 'sum');
 
-        tryQuery("DELETE FROM hit_archive WHERE $time_cond");
+        DB_AA::sql("DELETE FROM hit_archive WHERE $time_cond");
         if (is_array($hits)) {
             foreach ($hits as $id => $sum ) {
                 $varset->clear();

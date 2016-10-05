@@ -43,19 +43,12 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 // update database or get the value
 
-if (get_magic_quotes_gpc() && $javascript) {
-    $javascript = stripslashes ($javascript);
-}
 
-if ($p_slice_id && $update) {
-    tryQuery("UPDATE slice SET javascript=\"". quote($javascript)."\"
-        WHERE id='$p_slice_id'");
+if ($slice_id && $update) {
+    DB_AA::update('slice', array(array('javascript',$_POST['javascript'])), array(array('id', $slice_id, 'l')));
+    $javascript = $_POST['javascript'];
 } else {
-    $db = getDB();
-    $db->tquery("SELECT javascript FROM slice WHERE id='$p_slice_id'");
-    if ($db->next_record())
-        $javascript = $db->f("javascript");
-    freeDB($db);
+    $javascript = DB_AA::select1('SELECT javascript FROM `slice`', 'javascript', array(array('id', $slice_id, 'l')));
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -80,22 +73,18 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td class="tabtxt"><textarea name="javascript" cols="100" rows="20">
 <?php
 echo $javascript.'</textarea></td></tr>';
-FrmTabSeparator(_m("Available fields and triggers"),array("update", "update"=>array("type"=>"hidden", "value"=>"1"),
-                      "cancel"=>array("url"=>"se_fields.php3")),$sess, $slice_id);
+FrmTabSeparator(_m("Available fields and triggers"),array("update", "update"=>array("type"=>"hidden", "value"=>"1"), "cancel"=>array("url"=>"se_fields.php3")),$sess, $slice_id);
 echo '
 </form>';
 
-$SQL = "SELECT id FROM field
-        WHERE slice_id='$p_slice_id'
-        ORDER BY id";
-$db = getDB();
-$db->query($SQL);
+$fields = AA_Slice::getModule($slice_id)->fields('pri');
+
 echo '
 <tr><td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
 <tr><td class="tabtit">'._m("Field IDs").':</td></tr>';
-while ($db->next_record())
-    echo "<tr><td class=\"tabtxt\">".$db->f("id")."</td></tr>";
-freeDB($db);
+foreach ($fields as $fid) {
+    echo "<tr><td class=\"tabtxt\">$fid</td></tr>";
+}
 echo '</table>
 </td>
 <td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">

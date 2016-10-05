@@ -109,7 +109,7 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
                 $SQL         .= ", moved2active = $moved2active";
                 $SQL         .= " WHERE ". $xzids->sqlin('id');
 
-                tryQuery($SQL);
+                DB_AA::sql($SQL);
 
                 $item_ids = $xzids->longids();
                 if ($to_bin == 1) {
@@ -343,7 +343,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
             return false;     // OK
         }
 
-        tryQuery("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
+        DB_AA::sql("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
 
         $pagecache->invalidateFor("slice_id=". $this->slice_id);  // invalidate old cached values
         $pagecache->invalidateFor("slice_id=". $dest_slice_id);   // invalidate old cached values

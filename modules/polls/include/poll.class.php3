@@ -186,7 +186,7 @@ class AA_Poll {
         }
 
         if (!$vote_invalid) {
-            tryQuery("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
+            DB_AA::sql("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
             $GLOBALS['pagecache']->invalidateFor("slice_id=". $this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
@@ -210,10 +210,7 @@ class AA_Poll {
         $set->addSortorder(new AA_Sortorder(array('priority' => 'a')));
 
         $zids = $metabase->queryZids(array('table'=>'polls_answer'), $set);
-
-        $content_function = array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer'));
-
-        $itemview = new itemview( $format, $fields, $aliases, $zids, 0, $zids->count(), shtml_url(), "", $content_function);
+        $itemview = new itemview( $format, $fields, $aliases, $zids, 0, $zids->count(), shtml_url(), "", array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer')));
 
         return $itemview->get_output();
     }

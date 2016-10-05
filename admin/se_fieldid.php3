@@ -176,7 +176,7 @@ function ChangeFieldID($old_id, $new_id)
                     if ($settings['primary_part']) {
                         $SQL .= " AND ". $settings["slice_id"]." = '$p_slice_id'";
                     }
-                    tryQuery($SQL);
+                    DB_AA::sql($SQL);
                 }
             }
         }
@@ -185,7 +185,7 @@ function ChangeFieldID($old_id, $new_id)
     foreach ($maintain_sql as $sql) {
         $sql = str_replace(":old_id:", $old_id, $sql);
         $sql = str_replace(":new_id:", $new_id, $sql);
-        tryQuery($sql);
+        DB_AA::sql($sql);
     }
 
     // replace the field id in table content
@@ -196,8 +196,7 @@ function ChangeFieldID($old_id, $new_id)
     }
     freeDB($db);
     if (count($item_ids)) {
-        tryQuery("UPDATE content SET field_id='$new_id'
-         WHERE item_id IN ('".join($item_ids,"','")."') AND field_id='$old_id'");
+        DB_AA::sql("UPDATE content SET field_id='$new_id' WHERE item_id IN ('".join($item_ids,"','")."') AND field_id='$old_id'");
     }
 }
 

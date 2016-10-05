@@ -76,9 +76,14 @@ class AA_Log {
         $db->query($SQL);
         freeDB($db);
 
-        // with probability 1:1000 call log cleanup
+        // with probability 1:1000 set up log cleanup
         if ( mt_rand(0,1000) == 1) {
-            AA_Log::cleanup();
+            // we plan this tasks for future (tomorrow)
+            // it should be enough to clean the logs once a day
+
+            // clean all older than 40 days
+            //                                                    what to clean                                         when to run
+            with( new AA_Toexecute )->laterOnce(new AA_Log_Clenup(now() - (60*60*24*40)), array(), "AA_Log_Clenup", 10, now() + (60*60*24));
         }
         return true;
     }
@@ -94,21 +99,9 @@ class AA_Log {
         return join("\n", $ret);
     }
 
-    function cleanup() {
-        $toexecute = new AA_Toexecute;
-        // clean all older than 40 days
-        $cleaner   = new AA_Log_Clenup(now() - (60*60*24*40));
-
-        // we plan this tasks for future (tomorrow)
-        // it should be enough to clean the logs once a day
-        $time2execute   = now() + (60*60*24);
-        $toexecute->laterOnce($cleaner, array(), "AA_Log_Clenup", 10, $time2execute);
-    }
-
     /** Is the event logable?
-     *  Static class method
      **/
-    function isLogable($event_type) {
+    static function isLogable($event_type) {
         /** By $DO_NOT_LOG array you are able to specify, which events you don't want
          *  to log - it's just like filter
          *  This should be list of all logable events (at least now - 2005-11-9)
@@ -152,15 +145,15 @@ class AA_Log_Clenup {
     function toexecutelater() {
         $type_where = ( $this->type ) ? " AND type = '".quote($this->type)."' " : '';
         $db_time    = quote($this->time);
-        tryQuery("DELETE FROM log WHERE time < '$db_time' $type_where");
+        DB_AA::sql("DELETE FROM log WHERE time < '$db_time' $type_where");
 
         // delete also old records post2shtml table
-        tryQuery("DELETE FROM post2shtml WHERE time < '$db_time'");
+        DB_AA::sql("DELETE FROM post2shtml WHERE time < '$db_time'");
 
         // delete task with priority = 0 - considered as undoable (note the priority is decreased on each try of task execution.)
         $undoable_tasks = GetTable2Array('SELECT * FROM toexecute WHERE priority=0', 'NoCoLuMn');
         AA_Log::write('TOEXECUTE', serialize($undoable_tasks), 'cleanup');
-        tryQuery("DELETE FROM toexecute WHERE priority = 0");
+        DB_AA::sql("DELETE FROM toexecute WHERE priority = 0");
     }
 }
 
@@ -230,7 +223,7 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
         if ($slctr) {
             $SQL .= $slctr;
         }
-        tryQuery($SQL);
+        DB_AA::sql($SQL);
     }
 
     return $return;
