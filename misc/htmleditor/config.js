@@ -30,7 +30,7 @@ CKEDITOR.editorConfig = function( config ) {
 
     // Remove some buttons provided by the standard plugins, which are
     // not needed in the Standard(s) toolbar.
-    config.removeButtons = 'Underline,Subscript,Superscript,JustifyLeft,JustifyBlock,Font,About';
+    config.removeButtons = 'Underline,JustifyLeft,JustifyBlock,Font,About';
     // config.removeButtons = 'Underline,Subscript,Superscript,Font,About';   // Honza Change
 
     // Set the most common block elements.
