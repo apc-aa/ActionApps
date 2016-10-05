@@ -415,6 +415,27 @@ function AA_Rotator(id, interval, max, speed, effect) {
     AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
 }
 
+/** used by {livesearch:...}
+ *  internal - could be changed
+ */
+function AA__liveSearch(id, viewparam, deflt) {
+    val    = $(jqid(id)+ ' input.itemsearch')[0].value;
+    if (!val.length && deflt.length) {
+        val=deflt;
+    }
+    fnc = function(t,v,q) { AA_AjaxCss(t, AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    if (AA__liveSearch.timer) {
+       if (AA__liveSearch.searchval != val) {
+           clearTimeout(AA__liveSearch.timer);
+           AA__liveSearch.searchval = val;
+           AA__liveSearch.timer     = setTimeout(fnc,200, $(jqid(id)+ ' .itemgroup')[0], viewparam, val);
+       }
+    } else {
+       AA__liveSearch.timer = setTimeout(fnc,200, $(jqid(id)+ ' .itemgroup')[0], viewparam, val);
+       AA__liveSearch.searchval = val;
+    }
+}
+
 /* text - string or url (begins with '/')
  * type - err | ok | info | [text]
  */
