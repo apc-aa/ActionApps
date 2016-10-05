@@ -20,7 +20,7 @@ require_once AA_INC_PATH. "locauth.php3";
 
 function CheckAuthentication() {
     global $sess;
-    page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+    pageOpen();
 
 
               //  if (!isset($_SESSION['KCFINDER'])) {
