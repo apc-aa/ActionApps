@@ -37,6 +37,10 @@ require_once menu_include();      //show navigation column depending on $show
 require_once AA_INC_PATH."mgettext.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 
+if (!IsSuperadmin()) {
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to do search."), "admin");
+    exit;
+}
 // ----------------------------------------------------------------------------------------
 
 function AafinderFieldLink($field_id, $slice_id) {
@@ -97,8 +101,7 @@ if (strlen($_GET['findtext']) AND $_GET['findinview']) {
         'field2',
         'field3');
 
-    $SQL = "SELECT view.id, view.type, view.slice_id, slice.name
-        FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
+    $SQL = "SELECT view.id, view.type, view.slice_id, slice.name FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
     foreach ($fields as $field) {
         $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%')."%\" OR ";
     }
@@ -339,6 +342,51 @@ if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_
     }
 }
 
+if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET['go_replace']) AND (strlen($_GET['search'])>5) AND (strlen($_GET['replace'])>5) ) ) {
+    $metabase = AA_Metabase::singleton();
+
+    $table2search = array();
+    if ($_GET['searchinview']  ==1) $table2search[] = 'view';
+    if ($_GET['searchinslice'] ==1) $table2search[] = 'slice';
+    if ($_GET['searchinfield'] ==1) $table2search[] = 'field';
+    if ($_GET['searchinspot']  ==1) $table2search[] = 'site_spot';
+    if ($_GET['searchinitems'] ==1) $table2search[] = 'content';
+    if ($_GET['searchindiscus']==1) $table2search[] = 'discussion';
+
+    foreach($table2search as $tbl) {
+        $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function($col) { return ($col['operators'] == 'text'); }));
+        $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), AA_Metabase::getModuleFields($tbl)));
+
+        foreach ($fields as $fld) {
+
+            if (strlen($_GET['go_search'])) {
+                $txt = DB_AA::select([], "SELECT `$fld` as txt, INSTR(`$fld`,\"".quote($_GET['search'])."\") as pos FROM `$tbl` WHERE INSTR(`$fld`,\"".quote($_GET['search'])."\")>0");
+                echo count($txt) ? "<br><b>$tbl.$fld</b> (".count($txt)." matches)" : "<br>$tbl.$fld (".count($txt)." matches)";
+                foreach ($txt as $t) {
+                    $code = substr_replace($t['txt'], 'AA_$@MArK%', $t['pos']-1, 0);
+                    if (strlen($code) > 210) {
+                        if ($t['pos']>40) {
+                            $code = substr($code,0,40).'...'.substr($code,max($t['pos']-107,43),177).'...';
+                        } else {
+                            $code = substr($code,0,210).'...';
+                        }
+                    }
+                    $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)).'</span>';
+                    echo "<br><small> &nbsp; * $code</small>";
+                }
+            } elseif ( strlen($_GET['go_replace']) AND (strlen($_GET['search'])>5) AND (strlen($_GET['replace'])>5) ) {
+                $SQL =  "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, \"".quote($_GET['search'])."\", \"".quote($_GET['replace'])."\")";
+                $rep = DB_AA::sql($SQL);
+                echo $rep ? "<br><b>$tbl.$fld</b> ($rep replaces)" :"<br>$tbl.$fld ($rep replaces)";
+            } else {
+                // just to not make damage in id fields, ...
+                echo "Serach phrase as well as replace phrase must be 5 character long at least";
+            }
+        }
+    }
+}
+
+
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
 
@@ -372,13 +420,30 @@ echo '<b>'._m('Find in').'</b>
 echo '</form>';
 echo '</td></tr><tr><td>';
 
+echo '<form name="f_replace" action="">';
+echo '<b>'._m('Search and Replace in').'</b>
+      <label><input type="checkbox" name="searchinview"   value="1" '. ((!$_GET['search'] OR $_GET['searchinview'  ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinslice"  value="1" '. ((!$_GET['search'] OR $_GET['searchinslice' ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinfield"  value="1" '. ((!$_GET['search'] OR $_GET['searchinfield' ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinspot"   value="1" '. ((!$_GET['search'] OR $_GET['searchinspot'  ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinitems"  value="1" '. ((                    $_GET['searchinitems' ])? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchindiscus" value="1" '. ((                    $_GET['searchindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
+    <br>
+    <input type="text" name="search" value="'.safe($_GET['search']).'" size=60>&nbsp;&nbsp;
+    <input type="text" name="replace" value="'.safe($_GET['replace']).'" size=60>&nbsp;&nbsp;
+    <input type="submit" name="go_search" value="'._m("Search").'">
+    <input type="submit" name="go_replace" value="'._m("Replace!").'">' .$sess->get_hidden_session();
+echo '</form>';
+echo '</td></tr><tr><td>';
+
+
 echo '<form name="f_finditem" action="">';
 echo '<b>'._m("Get all informations about the ITEM").'</b><br>
     <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size=60>&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
-
 echo '</td></tr><tr><td>';
+
 echo '<form name="f_finditem_edit" action="">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
     <input type="text" name="finditem_edit" value="'.safe($_GET['finditem_edit']).'" size=60>&nbsp;&nbsp;
