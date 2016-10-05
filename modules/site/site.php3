@@ -49,7 +49,6 @@ require_once AA_INC_PATH."hitcounter.class.php3";
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
 $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST, $_GET);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
-//AA::$debug && AA::$dbg->info('site', PageCache::globalKeyArray(), AA::$site_id.":$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
@@ -57,7 +56,7 @@ $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI
 $site_nocache = $_REQUEST['nocache'];
 if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
     $cacheentry->processPage();
-    if ( $_REQUEST['debug'] OR $_REQUEST['debugtime']) {
+    if ( AA::$debug ) {
         echo '<br><br>Site cache hit!!!';
         echo '<br>Page generation time: '. (microtime(true) - $timestart);
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
@@ -223,18 +222,19 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
     $slices4cache = array(AA::$site_id);
 }
 
-if (!$site_nocache) {
+// do not cache for logged users
+if (!$site_nocache AND empty($apc_state['xuser'])) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
     $GLOBALS['pagecache']->storePage($cache_key, $cacheentry, $str2find);
 }
 
-if ($debugtime) {
+if (AA::$debug&2) {
     echo '<br><br>Site cache MIS!!!';
     echo '<br>Page generation time: '. (microtime(true) - $timestart);
     echo '<br>Dababase instances: '. DB_AA::$_instances_no;
     echo '<br>  (spareDBs): '. count($spareDBs);
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
-    AA::$dbg->duration_stat();
+    AA::$debug&4 && AA::$dbg->duration_stat();
 }
 
 // ----------------- process status end ---------------------------------------

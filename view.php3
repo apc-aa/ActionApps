@@ -92,7 +92,7 @@ if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
-(AA::$debug OR $debugtime) && AA::$dbg->group("/view.php3", "Start");
+AA::$debug && AA::$dbg->group("/view.php3", "Start");
 
 // Need to be able to set content-type for RSS, cannot do it in the view
 // because the cache wont reflect this
@@ -139,9 +139,9 @@ if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
     }
 }
 
-(AA::$debug OR $debugtime) && AA::$dbg->groupend("/view.php3", "Completed view");
+AA::$debug && AA::$dbg->groupend("/view.php3", "Completed view");
 
-if ($debugtime) {
+if (AA::$debug) {
     AA::$dbg->duration_stat();
 }
 

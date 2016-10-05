@@ -96,7 +96,7 @@ if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
-(AA::$debug OR $debugtime) && AA::$dbg->group("/jsview.php3", "Start");
+AA::$debug && AA::$dbg->group("/jsview.php3", "Start");
 
 $view_param = ParseViewParameters();
 
@@ -128,9 +128,9 @@ if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
     }
 }
 
-(AA::$debug OR $debugtime) && AA::$dbg->groupend("/jsview.php3", "Completed view");
+AA::$debug && AA::$dbg->groupend("/jsview.php3", "Completed view");
 
-if ($debugtime) {
+if (AA::$debug) {
     AA::$dbg->duration_stat();
 }
 
