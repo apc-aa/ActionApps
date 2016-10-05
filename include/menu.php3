@@ -197,16 +197,13 @@ function get_aamenus() {
 
     if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 
-        $db = getDB();
         $items = &$aamenus["itemmanager_submenu"]["items"];
 
         // Add associated Alerts to Item Manager submenu
         if ($slice->getProperty("type") == "ReaderManagement" ) {
-            $db->query("SELECT module_id, module.name FROM alerts_collection AC
-                INNER JOIN module ON AC.module_id = module.id
-                WHERE slice_id='".q_pack_id($slice_id)."'");
-            AddAlertsModules($items, $db, _m("Alerts"),
-                    _m("List of Alerts modules using this slice as Reader Management."));
+            $modules2link = DB_AA::select(array(), 'SELECT module_id as id, module.name as name FROM alerts_collection AC
+                INNER JOIN module ON AC.module_id = module.id', array(array('slice_id', $slice_id, 'l')));
+            AddAlertsModules($items, $modules2link, _m("Alerts"), _m("List of Alerts modules using this slice as Reader Management."));
 
             $items["header4"] = _m("Bulk Emails") ."&nbsp;&nbsp;&nbsp;".GetAAImage("help50.gif", _m("Send bulk email to selected users or to users in Stored searches"));
             $items["item1"]   = array("cond" => 1,
@@ -214,14 +211,12 @@ function get_aamenus() {
                                     "label" => _m("Send emails"),
                                     "no_slice_id"=>1);
         }
-        $db->query("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
+        $modules2link = DB_AA::select(array(), 'SELECT DISTINCT AC.module_id as id, module.name as name FROM alerts_collection AC
             INNER JOIN module ON AC.module_id = module.id
             INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
             INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
-            INNER JOIN view ON view.id = AF.vid
-            WHERE view.slice_id = '".q_pack_id($slice_id)."'");
-        AddAlertsModules($items, $db, _m("Alerts Sent"), _m("List of Alerts modules sending items from this slice."));
-        freeDB($db);
+            INNER JOIN view ON view.id = AF.vid', array(array('view.slice_id', $slice_id, 'l')));
+        AddAlertsModules($items, $modules2link, _m("Alerts Sent"), _m("List of Alerts modules sending items from this slice."));
     }
 
     // left menu for aaadmin is common to all modules, so it is shared
@@ -234,17 +229,17 @@ function get_aamenus() {
  * @param $header
  * @param $help
  */
-function AddAlertsModules(&$submenu, &$db, $header, $help) {
+function AddAlertsModules(&$submenu, $collections, $header, $help) {
     global $auth;
-    if ($db->num_rows()) {
-        $submenu["header3"] = $header."&nbsp;&nbsp;&nbsp;". GetAAImage("help50.gif", $help);
+    if (count($collections)) {
+        $submenu["header3"] = $header."&nbsp;&nbsp;&nbsp;". GetAAImage('help50.gif', $help);
         $i = 100;
-        while ($db->next_record()) {
+        foreach ($collections as $col) {
             $submenu["item".$i] = array(
-                "cond"        => CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("moduleid")), PS_FIELDS),
-                "href"        => "modules/alerts/index.php3?slice_id=".unpack_id($db->f("module_id")),
+                "cond"        => CheckPerms( $auth->auth["uid"], "slice", unpack_id($col['id']), PS_FIELDS),
+                "href"        => "modules/alerts/index.php3?module_id=".unpack_id($col['id']),
                 "no_slice_id" => 1,
-                "label"       => $db->f("name"));
+                "label"       => $col['name']);
             $i++;
         }
     }
