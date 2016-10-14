@@ -355,18 +355,15 @@ class AA_Slice extends AA_Module {
         return $this->getProperty('deleted');
     }
 
-    /** fleman_dir function
-     *
-     */
-    function fileman_dir() {
-        return $this->getProperty('fileman_dir');
-    }
-
     /** type function
      *
      */
     function type() {
         return $this->getProperty('type');
+    }
+
+    function isExpiredContentAllowed() {
+        return ($this->getProperty('flag') & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
     }
 
     /** AA_Slice::_deleteModules() function - called automaticaly form AA_Module::deleteModules()

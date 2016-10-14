@@ -178,13 +178,16 @@ if ( $add || $update ) {
         if ( count($err) > 1) {
             break;
         }
-        $template = ( $template ? 1 : 0 );
-        $deleted  = ( $deleted  ? 1 : 0 );
+        $template           = ( $template            ? 1 : 0 );
+        $deleted            = ( $deleted             ? 1 : 0 );
+        $flag_allow_expired = ( $flag_allow_expired  ? 1 : 0 );
 
         if ( $update ) {
             $varset->clear();
+            $varset->addkey("id", "unpacked", $slice_id);
             $varset->add("name", "quoted", $name);
             $varset->add("owner", "unpacked", $owner);
+            //echo $owner; exit;
             $varset->add("slice_url", "quoted", $slice_url);
             $varset->add("priority", "number", $priority);
             if ( $superadmin ) {
@@ -192,8 +195,7 @@ if ( $add || $update ) {
             }
             $varset->add("lang_file", "quoted", $lang_file);
 
-            $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
-            if (!$db->query($SQL)) {
+            if (!$varset->doUpdate('module')) {
                 // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change slice");
                 break;
@@ -214,15 +216,19 @@ if ( $add || $update ) {
             $varset->add("mailman_field_lists", "text", $mailman_field_lists);
             $varset->add("reading_password", "text", $reading_password);
 
-            //mlx
-            //print("<br>$mlxctrl<br>");
-            $varset->add(MLX_SLICEDB_COLUMN, "quoted", q_pack_id($mlxctrl)); //store 16bytes packed
+            $slice_flag  = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', array(array('id',$slice_id,'l')));
+            $slice_flag &= ~SLICE_ALLOW_EXPIRED_CONTENT; // clear the bits
+            $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+            $varset->add("flag", "number", $slice_flag);
 
-            $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
-            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+            $varset->add('mlxctrl', "unpacked", $mlxctrl); //store 16bytes packed
+
+
+            if (!$varset->doUpdate('slice')) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change slice");
                 break;
             }
+
             $r_slice_view_url = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                                 : stripslashes($slice_url));
         } else { // insert (add)
@@ -273,6 +279,10 @@ if ( $add || $update ) {
             $varset->add("auth_field_group", "text", $auth_field_group);
             $varset->add("mailman_field_lists", "text", $mailman_field_lists);
             $varset->add("reading_password", "text", $reading_password);
+
+            $slice_flag = $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+            $varset->add("flag", "number", $slice_flag);
+
             //mimo
             $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
 

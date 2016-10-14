@@ -75,52 +75,23 @@ require_once AA_INC_PATH."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 
-  // set variables from database - allways
-$db = getDB();
-$SQL= " SELECT *, module.priority FROM slice, module WHERE slice.id = module.id AND module.id='".q_pack_id($foo_source)."'";
-$db->query($SQL);
-if ($db->next_record()) {
-    while (list($key,$val,,) = each($db->Record)) {
-        if (!is_numeric($key)) {
-            $$key = $val; // variables and database fields have identical names
-        }
-    }
+$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(slice.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), array('module.id',$foo_source, 'l')));
+if (!$sarr) {
+    $sarr = array();
 }
-$id    = unpack_id($db->f("id"));  // correct ids
-$owner = unpack_id($db->f("owner"));  // correct ids
-//mlx admin
-$mlxctrl = $db->f(MLX_SLICEDB_COLUMN);  // should we use unpack_id here...
-$SQL     = "SELECT `name`,`id`,`".MLX_SLICEDB_COLUMN."` FROM slice ORDER BY name";
-$db->query($SQL);
 
-while ($db->next_record()) {
-    //__mlx_dbg($db->Record);
-    // could be a ctrl slice
-    if (!$db->f(MLX_SLICEDB_COLUMN)) {
-        $mlx_slices[unpack_id($db->f('id'))] = $db->f('name');
-    } else {
-        // is already ctrl slice
-        $mlx_ctrl_slices[unpack_id($db->f(MLX_SLICEDB_COLUMN))] = $db->f('name');
-    }
-}
-//mlx end
+$flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
 
-if ( $slice_id == "" ) {
-    // load default values for new slice
-    $name         = "";
-    $owner        = "";
-    $template     = "";
-    $slice_url    = "";
-    $lang_control = "";
-}
+//if ( $slice_id == "" ) {
+//    // load default values for new slice
+//    $name         = "";
+//    $owner        = "";
+//    $template     = "";
+//    $slice_url    = "";
+//}
 
 // lookup owners
-$slice_owners[0] = _m("Select owner");
-$SQL             = " SELECT id, name FROM slice_owner ORDER BY name";
-$db->query($SQL);
-while ($db->next_record()) {
-    $slice_owners[unpack_id($db->f('id'))] = $db->f('name');
-}
+$slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
 
 foreach ($LANGUAGE_NAMES as $l => $langname) {
     $biglangs[$l."_news_lang.php3"] = $langname;
@@ -151,58 +122,56 @@ if ($slice_id == "") {
 FrmTabCaption(_m("Slice"), '','', $form_buttons, $sess, $slice_id);
 
 FrmStaticText(_m("Id"), $slice_id);
-FrmInputText("name", _m("Title"), $name, 99, 25, true);
-FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 25, false);
-FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
-$ssiuri = preg_replace("~/admin/.*~", "/slice.php3", $_SERVER['PHP_SELF']);
-echo "<tr><td colspan=\"2\">" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
-     "&lt;!--#include virtual=&quot;" . $ssiuri . "?slice_id=" . $slice_id . "&quot;--&gt;</pre></td></tr>";
-
+FrmInputText("name", _m("Title"), $sarr['name'], 99, 25, true);
+FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['slice_url'], 254, 25, false);
+FrmInputText("priority", _m("Priority (order in slice-menu)"), $sarr['priority'], 5, 5, false);
 // not functional, yet
 // FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
-FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
-if ( !$owner ) {
+FrmInputSelect("owner", _m("Owner"), $slice_owners, $sarr['owner'], false);
+if ( !$sarr['owner'] ) {
     FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
     FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99, 25, false);
 }
-FrmInputText("d_listlen", _m("Listing length"), $d_listlen, 5, 5, true);
 if ( $superadmin ) {
-    FrmInputChBox("template", _m("Template"), $template);
-    FrmInputChBox("deleted", _m("Deleted"), $deleted);
+    FrmInputChBox("template", _m("Template"), $sarr['template']);
+    FrmInputChBox("deleted", _m("Deleted"), $sarr['deleted']);
 }
-FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $permit_anonymous_post, false);
-FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), $PERMS_ANONYMOUS_EDIT, $permit_anonymous_edit, false, "", "../doc/anonym.html");
-FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        $PERMS_STATE, $permit_offline_fill, false);
-FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
-//mimo change
-//print("<h2>mlxctrl:".$mlxctrl."</h2>");
-//FrmInputText(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlxctrl, 40,40, false, "",
-if ($slice_id && isset($mlx_ctrl_slices[$slice_id])) {
-    FrmStaticText(_m("MLX Control Slice for").": ",$mlx_ctrl_slices[$slice_id],0,0,"http://mimo.gn.apc.org/mlx/");
-} else {
-    FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($mlxctrl), false, "", "http://mimo.gn.apc.org/mlx/");
-}
-//
-
-if ($superadmin) {
-    FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false, "", "http://apc-aa.sourceforge.net/faq/#1106");
-    FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false, "", "http://apc-aa.sourceforge.net/faq/#1106");
-}
+FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_allow_expired);
+FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $sarr['permit_anonymous_post'], false);
+FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), $PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
+FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        $PERMS_STATE, $sarr['permit_offline_fill'], false);
+FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false);
 
 // Reader Management specific settings (Jakub, 7.2.2003)
-
 $slice     = AA_Slice::getModule($slice_id);
 if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     $slicefields = GetFields4Select($slice_id, false, 'input_pri');
-    FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $auth_field_group, false, "", "../doc/reader.html#auth_field_group");
-    FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $mailman_field_lists, false, "", "../doc/reader.html#mailman");
+    FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
+    FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
 }
 
-FrmInputText("reading_password", _m("Password for Reading"), $reading_password, 100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
+FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 
 if ($slice_id) {
     FrmStaticText(_m("Additional setting"), AA_Slice::getModuleObjectForm($slice_id),false,'','',false);
 }
+
+FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
+FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false);
+//mimo's MLX
+if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('SELECT name FROM `slice`', 'name', array(array('mlxctrl', $slice_id, 'l'))))) {
+    FrmStaticText(_m("MLX Control Slice for"),$mlx_ctrl_for,0,0,"http://mimo.gn.apc.org/mlx/");
+} else {
+    $mlx_slices = DB_AA::select(array('unpackid'=>'name'), "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
+    FrmInputSelect('mlxctrl', _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($sarr['mlxctrl']), false, "", "http://mimo.gn.apc.org/mlx/");
+}
+
+if ($superadmin) {
+    FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $sarr['fileman_access'], false, "", "http://apc-aa.sourceforge.net/faq/#1106");
+    FrmInputText("fileman_dir", _m("File Manager Directory"), $sarr['fileman_dir'], 99, 25, false, "", "http://apc-aa.sourceforge.net/faq/#1106");
+}
+
+
 
 if ($slice_id=="") {
     echo "<input type=\"hidden\" name=\"add\" value=\"1\">";        // action

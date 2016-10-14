@@ -1740,7 +1740,7 @@ class AA_Items {
         $res = array();
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             $item = AA_Items::getItem($zids->zid($i));
-            if ($item AND $item->isActive()) {
+            if ($item && (AA_Slice::getModule($item->getSliceID())->isExpiredContentAllowed() OR $item->isActive())) { // AND $item->isActive()) {
                 $res[$item->getItemId()] = $item->subst_alias($expression);       // long item id
             }
         }

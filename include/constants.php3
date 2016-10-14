@@ -931,16 +931,17 @@ function getViewTypesInfo() {
 }
 
 /** flag in the feedmap table */
-define ("FEEDMAP_FLAG_MAP",    0);
-define ("FEEDMAP_FLAG_VALUE",  1);
-define ("FEEDMAP_FLAG_EMPTY",  2);
-define ("FEEDMAP_FLAG_EXTMAP", 3);
-define ("FEEDMAP_FLAG_JOIN",   4);
-define ("FEEDMAP_FLAG_RSS",    5);
+define ('FEEDMAP_FLAG_MAP',    0);
+define ('FEEDMAP_FLAG_VALUE',  1);
+define ('FEEDMAP_FLAG_EMPTY',  2);
+define ('FEEDMAP_FLAG_EXTMAP', 3);
+define ('FEEDMAP_FLAG_JOIN',   4);
+define ('FEEDMAP_FLAG_RSS',    5);
 
 /** flag in the slice table */
-define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice table
-define ("DISCUS_ADD_DISABLED", 2);  // disbles filldisc adding on new comments
+define ('DISCUS_HTML_FORMAT',  1);  // discussion html format flag in slice table
+define ('DISCUS_ADD_DISABLED', 2);  // disbles filldisc adding on new comments
+define ('SLICE_ALLOW_EXPIRED_CONTENT', 4);  // when we reference expired item, the content could be shown on public pages
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
 $CONDS_NOT_FIELD_NAMES = array(
