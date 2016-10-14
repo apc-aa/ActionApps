@@ -1,3 +1,13 @@
+16-10-14 - cleaned a bit sess/auth system - no active_state database table in
+(honzam)   use, so removed related code
+         - older Slice settings moved to its own section on Admin -> Slice page
+         - new "Show content of expired items" option on slice setting page
+           AA now trying to prevent displaying data from expired/trashed items,
+           even if you have item id. Sometimes you want to show such items - for
+           expired events in slice of events, for example. In such case just
+           check checkbox on Admin -> Slice.
+           Generaly we do not want to show data from not active items, however
+         - fulltext settings is not mandatory, now
 16-10-05 - THIS VERSION IS USED ON PRODUCTION SERVER AGAIN
 (honzam) - all parts of AA moved to AA_Session, which is based on $_SESSION
            of php5. The main change is, that external AA login to pages uses
