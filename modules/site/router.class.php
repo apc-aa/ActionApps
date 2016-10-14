@@ -261,7 +261,7 @@ class AA_Router_Seo extends AA_Router {
         $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
 
         if (isset($_GET['logout'])) {
-            $GLOBALS['auth']->logout(false);
+            $GLOBALS['auth']->logout();
             $GLOBALS['sess']->delete();
             $this->apc['xuser'] = '';
         }

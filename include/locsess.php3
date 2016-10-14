@@ -279,6 +279,7 @@ class DB_AA extends DB_Sql {
      *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');                    -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
      *                   DB_AA::select(array('id'=>1), 'SELECT id FROM `change`');                   -> [[id1=>1], [id2=>1], ...]
      *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
+     *   $slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
      *                   DB_AA::select(array('id'=>'+other'), 'SELECT id,other FROM `change`');      -> [[id1=>[other1a,other1b], [id2=>[other2]], ...]  // good for multivalues
      *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
@@ -425,6 +426,7 @@ class DB_AA extends DB_Sql {
      *     i   - integer           =                single or array    array('id', $task_id, 'i')
      *     l   - longid            =                single or array    array('item_id', $ids_arr, 'l')
      *     set - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
+     *     j   - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join
      *
      * @param $tablename
      */
@@ -439,6 +441,7 @@ class DB_AA extends DB_Sql {
                 switch ( $type ) {
                     case "i":   $where .= "$delim $name = ". (int)$value; break;
                     case "l":   $where .= "$delim $name = ". xpack_id($value); break;
+                    case "j":   $where .= "$delim $name = ". quote($value); break;
                     case "set": $value  = (int)$value;
                                 $where .= "$delim (($name & $value) = $value)"; break;
                     //default:  $part = DB_AA::quote($value);
@@ -594,9 +597,9 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     return isset($arr) ? $arr : false;
 }
 
-class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
-    var $database_class = "DB_AA";           // Which database to connect...
-}
+//class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
+//    var $database_class = "DB_AA";           // Which database to connect...
+//}
 
 class AA_Session extends Session {
 
