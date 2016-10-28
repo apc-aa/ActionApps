@@ -42,9 +42,6 @@ $mlxScriptsTable = array(
     "KU" => array("name"=>"Kurdish","DIR"=>"RTL","FONT"=>"FACE=\"Ali_Web_Samik\"")
 );
 
-/** name of column in table slice **/
-define ('MLX_SLICEDB_COLUMN','mlxctrl'); //
-
 /** deprecated: using mlxctrl instead
     the field type in the Control Slice whose name sets the
     field in the item in Content Slice that links to the Control Item **/
@@ -124,14 +121,14 @@ function __mlx_dbg($v,$label="")
 /** __mlx_trace function
  * @param $v
  */
-function __mlx_trace($v)
-{
-    if(MLX_TRACE) {
+function __mlx_trace($v) {
+    if (MLX_TRACE) {
         echo "<pre>";
-        if(is_array($v))
+        if (is_array($v)) {
             print_r($v);
-        else
+        } else {
             print($v."\n");
+        }
         echo "</pre>";
     }
 }
@@ -146,26 +143,23 @@ function __mlx_fatal($msg) {
         $msg = implode("<br>",$msg);
     }
     $err["MLX"] = MsgErr($msg);
-    MsgPage(con_url($sess->url(self_base() ."index.php3"),
-        "slice_id=$slice_id"),
-        $err, "standalone");
+    MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
     die;
 }
 
-/** isMLXSlice function
- * test if the slice is MLX enabled
- * @param $sliceobj
+/** MLXSlice function
+ * returns unpacked mlx slice id - works also as test if the slice is MLX enabled
+ * @param $slice
  */
-function isMLXSlice($sliceobj) {
-    //hook other replies here
-    return (is_object($sliceobj) ? $sliceobj->getProperty(MLX_SLICEDB_COLUMN) : $sliceobj[MLX_SLICEDB_COLUMN]);
+function MLXSlice($slice) {
+    return ($p_mlxslice = $slice->getProperty('mlxctrl')) ? unpack_id($p_mlxslice) : false;
 }
 
 /** Stores information about translations (= ids of translations items)
  *  of current item (itemid)
  */
-class MLXCtrl
-{
+class MLXCtrl {
+
     var $itemid;       /** itemid in MLX control slice **/
     var $translations; /** (0=>("EN"=>"itemid"),..) **/
     /** MLXCtrl function
@@ -227,8 +221,8 @@ class MLXCtrl
  *
  *  @see http://mimo.gn.apc.org/mlx for more details
  */
-class MLX
-{
+class MLX {
+
 //private:
     var $ctrlFields = 0;
     var $slice = 0;
@@ -236,8 +230,8 @@ class MLX
 //public:
     function MLX(&$slice) {
         $this->slice = $slice;
-        $this->langSlice = unpack_id($this->slice->getProperty(MLX_SLICEDB_COLUMN));
-        list($this->ctrlFields,) = GetSliceFields($this->langSlice);
+        $this->langSlice  = MLXSlice($this->slice);
+        $this->ctrlFields = AA_Slice::getModule($this->langSlice)->fields('record');
     }
     /** getCtrlFields function
      *
@@ -510,8 +504,8 @@ class MLX
     }
 };
 
-class MLXView
-{
+class MLXView {
+
     // the language code to default to
     var $language = array();
     // the mode to use: MLX  -> use defaulting: if lang not available fall back
@@ -536,10 +530,11 @@ class MLXView
             $arr = explode("-",$mlx);
             foreach($arr as $av) {
                 $av = strtoupper($av);
-                if(in_array($av,$supported_modes))
+                if (in_array($av,$supported_modes)) {
                     $this->mode = $av;
-                else
+                } else {
                     $this->language[] = $av;
+                }
             }
         } else { //mlx is not set for some reason, get default prios
             $aPrio = $this->getPrioTranslationFields($slice_id);
@@ -726,8 +721,7 @@ class MLXView
         if(!$ctrlSliceID) {
 //             $GLOBALS['errcheck'] = true;
 //              __mlx_dbg(func_get_args(),__FUNCTION__);
-            $sliceobj = AA_Slice::getModule(unpack_id($slice_id));
-            $ctrlSliceID = $sliceobj->getProperty(MLX_SLICEDB_COLUMN);
+            $ctrlSliceID = MLXSlice(AA_Slice::getModule(unpack_id($slice_id)));
             if(!$ctrlSliceID) {
                 return "MLXView::getTranslations no ctrlSliceID";
             }
@@ -770,7 +764,7 @@ class MLXView
         if($GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID]) {
             return $GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID];
         }
-        list($fields,) = GetSliceFields($ctrlSliceID);
+        $fields        = AA_Slice::getModule($ctrlSliceID)->fields('record');
         $translations  = array();
         if(!is_array($fields)) {
             return $translations;
@@ -812,25 +806,18 @@ class MLXView
         return $this->language[0];
     }
 }
-class MLXEvents
-{
-    /** MLXEvents function
-     *
-     */
-    function MLXEvents()
-    {
-    }
+class MLXEvents {
+
     /** itemsBeforeDelete function
      * @param $item_ids
      * @param $slice_id
      */
-    function itemsBeforeDelete(&$item_ids,$slice_id)
-    {
-        if(empty($item_ids)) {
+    function itemsBeforeDelete(&$item_ids,$slice_id) {
+
+        if (empty($item_ids)) {
             return;
         }
-        $sliceobj = AA_Slice::getModule($slice_id);
-        if(!IsMLXSlice($sliceobj)) {
+        if (!MLXSlice(AA_Slice::getModule($slice_id))) {
             return;
         }
 //		echo "<h2>called</h2><pre>";
@@ -941,7 +928,7 @@ class MLXGetText
         $isModeActive = ($mode && 1);
         $this->currentDomainRef['mode'] = $mode;
         $this->currentDomainRef['slices'][$slice2add] = array();
-        list($fields,) = GetSliceFields($slice2add);
+        $fields = AA_Slice::getModule($slice2add)->fields('record');
         //__mlx_dbg($fields);
         $lang = strtoupper($lang);
         foreach($fields as $fname=>$fdata) {

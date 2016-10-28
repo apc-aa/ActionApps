@@ -1,3 +1,6 @@
+No longer used. Uses old caching.
+If somene needs it, we can use newer caching (see view.php3) and reenable
+
 <?php
 /**  This command is like /view.php3, except it runs within the Admin
  *     menus, allowing views to be used to define administrative functions.
@@ -28,42 +31,41 @@
  *
 */
 
-
-require_once "../include/init_page.php3"; // Loads variables etc
-//require_once AA_INC_PATH."slice.class.php3";  // for slices
-
-// These parameters effect how slices compare to each other
-
-HtmlPageBegin();
-?>
- <title><?php echo _m("Administrative view");?></title>
-</head>
-
-<?php
-
-/* Fix these shortcuts later */
-if (!$supmenu) {
-    $supmenu = "itemmanager";
-}
-if (!$submenu) {
-    $submenu = $r_state['bin'];
-}
-if (!$submenu) {
-    $submenu = "app";
-}
-
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "$supmenu","$submenu");
-
-if ($time_limit) {
-    set_time_limit($time_limit);
-}
-if ($contenttype) {
-    header("Content-type: $contenttype");
-}
-echo GetView(ParseViewParameters());
-
-HtmlPageEnd();
-page_close();
+// require_once "../include/init_page.php3"; // Loads variables etc
+// //require_once AA_INC_PATH."slice.class.php3";  // for slices
+//
+// // These parameters effect how slices compare to each other
+//
+// HtmlPageBegin();
+// ?>
+//  <title><?php echo _m("Administrative view");?></title>
+// </head>
+//
+// <?php
+//
+// /* Fix these shortcuts later */
+// if (!$supmenu) {
+//     $supmenu = "itemmanager";
+// }
+// if (!$submenu) {
+//     $submenu = $r_state['bin'];
+// }
+// if (!$submenu) {
+//     $submenu = "app";
+// }
+//
+//
+// require_once AA_INC_PATH."menu.php3";
+// showMenu($aamenus, "$supmenu","$submenu");
+//
+// if ($time_limit) {
+//     set_time_limit($time_limit);
+// }
+// if ($contenttype) {
+//     header("Content-type: $contenttype");
+// }
+// echo GetView(ParseViewParameters());
+//
+// HtmlPageEnd();
+// page_close();
 ?>

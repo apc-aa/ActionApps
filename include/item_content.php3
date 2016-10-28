@@ -36,6 +36,10 @@ require_once AA_INC_PATH."itemfunc.php3";
  *          - the values are always plain (= no quoting, no htmlspecialchars...)
  */
 class AA_Value implements Iterator, ArrayAccess, Countable {
+
+    /** you can use MAX_INDEX numerical values for multivalues - bigger indexes are used for language translations */
+    const MAX_INDEX = 1000000;
+
     /** array of the values */
     var $val;
 
@@ -182,7 +186,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             $maxindex = 0;
             foreach ($this->val as $k => $v) {
                 if (strlen($v)) { // do not add index for all empty values
-                    $maxindex = max($maxindex, $k % 1000000);
+                    $maxindex = max($maxindex, $k % AA_Value::MAX_INDEX);
                 }
             }
 
@@ -208,7 +212,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /** Remove duplicate values from the array */
     function removeDuplicates() {
         reset($this->val);
-        if (key($this->val) < 1000000) {  // do not remove for multilingual
+        if (key($this->val) < AA_Value::MAX_INDEX) {  // do not remove for multilingual
             $this->val = array_values( array_unique($this->val) );
         }
         return $this;
@@ -324,7 +328,27 @@ class AA_Content {
     }
 
     function isMultilingual($field_id) {
-        return is_array($a = $this->content[$field_id]) && (key($a) >= 1000000);
+        return is_array($a = $this->content[$field_id]) && (key($a) >= AA_Value::MAX_INDEX);
+    }
+
+    function getIndex($field_id, $idx=0) {
+        if ( !is_array($a = $this->content[$field_id]) ) {
+            return false;
+        }
+        if (isset($a[$idx])) {
+            return $idx;
+        }
+        // the same test as in isMultilingual($field_id) above;
+        if ( (key($a)>=AA_Value::MAX_INDEX) AND ($idx<AA_Value::MAX_INDEX) ) {
+            if (strlen($a[$index = AA::$langnum[0]+$idx]['value'])) {
+                return $index;
+            }
+            if (strlen($a[$index = $this->_getDefaultLangNum()+$idx]['value'])) {
+                return $index;
+            }
+        }
+        return false;
+        //return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
     }
 
     /** getValue function
@@ -334,22 +358,7 @@ class AA_Content {
      * @param $what
      */
     function getValue($field_id, $idx=0) {
-        if ( !is_array($a = $this->content[$field_id]) ) {
-            return false;
-        }
-        if (isset($a[$idx])) {
-            return $a[$idx]['value'];
-        }
-        // the same test as in isMultilingual($field_id) above;
-        if ( (key($a)>=1000000) AND ($idx<1000000) ) {
-            if (strlen($v = $a[AA::$langnum[0]+$idx]['value'])) {
-                return $v;
-            } elseif (strlen($v = $a[$this->_getDefaultLangNum()+$idx]['value'])) {
-                return $v;
-            }
-        }
-        return false;
-        //return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
+        return (($index = $this->getIndex($field_id, $idx)) === false ) ? false : $this->content[$field_id][$index]['value'];
     }
 
     private function _getDefaultLangNum() {
@@ -411,17 +420,17 @@ class AA_Content {
      *  you can use any two (smallcaps) letter for language
      */
     static function getLangNumber($lang) {
-        return strlen($lang) ? 1000000*((ord($lang{0})-97)*26+(ord($lang{1})-97+1)) : 0;
+        return strlen($lang) ? AA_Value::MAX_INDEX*((ord($lang{0})-97)*26+(ord($lang{1})-97+1)) : 0;
     }
 
     /** reverse function to getLangNumber
      *  78000000 -> cz, 78000001 -> cz, 118000000 -> en...
      */
     static function getLangId($langnumber) {
-        if ($langnumber<1000000) {
+        if ($langnumber<AA_Value::MAX_INDEX) {
             return '';
         }
-        $num = $langnumber/1000000-1;
+        $num = $langnumber/AA_Value::MAX_INDEX-1;
         return chr(intval($num / 26) + 97) . chr(($num % 26)+97);
     }
 
@@ -944,7 +953,11 @@ class ItemContent extends AA_Content {
         case 'update':
             // delete content of all fields, which are in new content array
             // (this means - all not redefined fields are unchanged)
-            $this->_clean_updated_fields($id, $fields);
+            if ($_SERVER['SERVER_NAME']=="u-veze.ahref.cz") {
+                $this->_clean_updated_fields2($id, $fields);
+            } else {
+                $this->_clean_updated_fields($id, $fields);
+            }
             break;
         case 'insert':
             // reset hit counter fields for new items
@@ -1198,6 +1211,36 @@ class ItemContent extends AA_Content {
         if ($in AND $id) {
             // delete content just for displayed fields
             DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $in)));
+            // note extra images deleted in insert_fnc_fil if needed
+        }
+    }
+
+    function _clean_updated_fields2($id, &$fields) {
+        $in  = array();
+        foreach ($this->content as $fid => $cont) {
+            if (!$fields[$fid]['in_item_tbl']) {
+                // deal with translations. if only translated values are present, then delete just the specific translation
+                // however - if also basic 0-1000000 indexes are present, clear all the field content
+                $keys = array_keys($cont);
+                foreach ($keys as $k) {
+                    $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
+                    if ($ind==0) {
+                        continue;
+                    }
+                }
+            }
+        }
+        if ($in AND $id) {
+            // delete content just for displayed fields
+            foreach($in as $lang => $field_arr) {
+                if ($lang==0) {
+                    echo DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr))));
+                    // DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr))));
+                } else {
+                    echo DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<')));
+                    // DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang-1)*AA_Value::MAX_INDEX, '<')));
+                }
+            }
             // note extra images deleted in insert_fnc_fil if needed
         }
     }

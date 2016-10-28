@@ -193,8 +193,7 @@ function import_slice(&$slice){
  * @param $feed
  */
  // returns false on failure, but ignored
-function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
-{
+function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
     global $data_IDconflict,
            $data_conflicts_ID,
            $Cancel,
@@ -205,8 +204,8 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
            $only_data,
            $new_slice_ids;
     if ($only_data) { // import slice items ?
-        list($fields,) = GetSliceFields($slice_id);
-        if (!is_array($fields)) {
+        $slice = AA_Slice::getModule($slice_id);
+        if (!$slice OR !count($slice->fields('pri')))
             $data_import_failure[] = $id." No fields for slice_id=$slice_id";
             return false;
         }

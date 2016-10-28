@@ -430,14 +430,15 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
     }
 }
 
+$slice = AA_Slice::getModule($slice_id);
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
-    case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);    break;
-    case 'field':       list($fields,) = GetSliceFields($slice_id);
-                        PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields, false, $form_buttons, $sess, $slice_id);
+    case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);
                         break;
-    case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'), false, false, $form_buttons, $sess, $slice_id);
+    case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']),$slice->fields('record'), false, $form_buttons, $sess, $slice_id);
+                        break;
+    case 'justids':     PrintAliasHelp($slice->aliases(false, 'justids'), false, false, $form_buttons, $sess, $slice_id);
                         break;
     case 'links':
     case 'categories':

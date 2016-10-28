@@ -30,9 +30,9 @@ class MLXImport {
 
         $this->sliceObj = AA_Slice::getModule($slice_id);
 
-        list($this->fields,) = GetSliceFields($this->slice_id);
+        $this->fields = $this->sliceObj->fields('record');
         //do sanity checks
-        $this->ctrlSlice = IsMLXSlice($this->sliceObj);
+        $this->ctrlSlice = MLXSlice($this->sliceObj);
         if(!$this->ctrlSlice)
             $this->fatal("Not an MLX content slice, MLX control slice id not set");
         if(!$this->fields[MLX_CTRLIDFIELD])

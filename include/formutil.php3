@@ -48,18 +48,19 @@ require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 
 define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
 define( 'AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
-// Easy to redefine this functionality by changing the array below
-// prefix is what goes in the selection box in "Edit Item",
-// tag is what goes on the front of the id as stored in the database
-// str is the string to display in the Related Items window
-// Note that A M B are hard-coded in the Related Items Window param wizard,
-// but any letters can be used, i.e. this table can be extended.
-// Next step might be to extend parameter recognition to load this table
-// Retaining backward compatability with "[AMB]+" recognition
-global $tps;
-$tps = array (
+
+// Deprecated GYR tagged ids - it adds letter before item id in ralated item, which is not practical for joined tables, ...
+    // Easy to redefine this functionality by changing the array below
+    // prefix is what goes in the selection box in "Edit Item",
+    // tag is what goes on the front of the id as stored in the database
+    // str is the string to display in the Related Items window
+    // Note that A M B are hard-coded in the Related Items Window param wizard,
+    // but any letters can be used, i.e. this table can be extended.
+    // Next step might be to extend parameter recognition to load this table
+    // Retaining backward compatability with "[AMB]+" recognition
+$TPS = array (
   'AMB' => array (
-    'A' => array ( 'prefix' => '>> ',   'tag' => 'x', 'str' => _m("Add") ),
+    'A' => array ( 'prefix' => '>> ',   'tag' => '',  'str' => _m("Add") ),  // removed x - we can treat it as normal value
     'M' => array ( 'prefix' => '<> ',   'tag' => 'y', 'str' => _m("Add&nbsp;Mutual") ),
     'B' => array ( 'prefix' => '<< ',   'tag' => 'z', 'str' => _m("Backward") ) ),
   'GYR' => array (
@@ -922,9 +923,8 @@ class AA_Inputfield {
                 case 'iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field) = $this->param;
                             $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                             $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
-                            $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
-                                         ( isset($GLOBALS['apc_state']['tps'][$tp]) ? $GLOBALS['apc_state']['tps'][$tp] :
-                                                                                     null ));
+                            $tagprefix = ( isset($GLOBALS['TPS'][$tp])              ? $GLOBALS['TPS'][$tp] :
+                                         ( isset($GLOBALS['apc_state']['TPS'][$tp]) ? $GLOBALS['apc_state']['TPS'][$tp] : null ));
                             if ( is_null($tagprefix) ) {
                                 $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
                             }

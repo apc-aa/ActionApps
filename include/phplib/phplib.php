@@ -352,7 +352,7 @@ class Session {
         session_name ($this->name);
 
         if (!$this->cookie_domain) {
-            $this->cookie_domain = get_cfg_var ("session.cookie_domain");
+            $this->cookie_domain = get_cfg_var('session.cookie_domain');
         }
 
         if (!$this->cookie_path && get_cfg_var('session.cookie_path')) {
@@ -378,21 +378,11 @@ class Session {
     */
     function put_headers() {
         // set session.cache_limiter corresponding to $this->allowcache.
-
         switch ($this->allowcache) {
-
-        case "passive":
-        case "public":
-            session_cache_limiter ("public");
-            break;
-
-        case "private":
-            session_cache_limiter ("private");
-            break;
-
-        default:
-            session_cache_limiter ("nocache");
-            break;
+            case 'passive':
+            case 'public':   session_cache_limiter('public');  break;
+            case 'private':  session_cache_limiter('private'); break;
+            default:         session_cache_limiter('nocache');
         }
     } // end func put_headers
 
@@ -622,6 +612,10 @@ class Auth {
   }
 
   function is_authenticated() {
+      if ( !$this->nobody AND ($this->auth["uid"]=='nobody') ) { // nobody setting could be changed for specific page. Honza
+          return false;
+      }
+
       if ( isset($this->auth["uid"]) && $this->auth["uid"] && (($this->lifetime <= 0) || (time() < $this->auth["exp"])) ) {
           // If more than $this->refresh minutes are passed since last check,
           // perform auth data refreshing. Refresh is only done when current

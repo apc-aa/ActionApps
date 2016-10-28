@@ -159,13 +159,14 @@ if ( $add || $update ) {
         ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
         ValidateInput("upload_url", _m("Upload URL"), $upload_url, $err, false, "url");
         ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
-        ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, true, "number");
         ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
         ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
         ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
         ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
+
+        ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, false, "number");
         //mimo change
-        ValidateInput(MLX_SLICEDB_COLUMN, _m("Language Control Slice"), $mlxctrl, $err, false, "id");
+        ValidateInput('mlxctrl', _m("Language Control Slice"), $mlxctrl, $err, false, "id");
         //
         ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
         ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
@@ -284,7 +285,7 @@ if ( $add || $update ) {
             $varset->add("flag", "number", $slice_flag);
 
             //mimo
-            $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
+            $varset->add('mlxctrl', "quoted", $mlxctrl);
 
             // create new slice
             if ( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {

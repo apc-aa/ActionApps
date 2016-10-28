@@ -116,7 +116,7 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
     else  { //CHange Password
        $sliceID = unpack_id($userdata["slice_id........"][0]['value']);
        $itemID  = unpack_id($userdata["id.............."][0]['value']);
-       list($fields,) = GetSliceFields($sliceID);
+       $fields = AA_Slice::getModule($sliceID)->fields('record');
        $fields["password........"]["input_insert_func"] = "qte:";
        $userdata["password........"][0]['value']        = ParamImplode(array('AA_PASSWD',$password));
        $update = StoreItem( $itemID, $sliceID, $userdata, false, true, false ); // insert, invalidatecache, feed

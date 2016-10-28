@@ -103,7 +103,7 @@ if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_
 }
 
 // Load the session stored variables.
-pageOpen($nobody ? 'nobody':'');
+pageOpen($nobody ? 'nobody': '');
 
 // anonymous login
 if ($nobody) {

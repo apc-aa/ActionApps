@@ -72,7 +72,7 @@ function GetHidden($itemform_id) {
  *
  */
 function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null) {
-    global $tps; // defined in constants.php3
+    global $TPS; // defined in formutil.php3
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
     if ($zid) {               // id of new item defined
@@ -83,7 +83,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
         DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD_, ...
         $item     = new AA_Item($content->getContent(),$aliases);
         $function = $insert ? 'SelectRelations' : 'UpdateRelations';
-        $item->setformat( "$function('$openervar','".$tps['AMB']['A']['tag']."','".$tps['AMB']['A']['prefix']."','".$tps['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
+        $item->setformat( "$function('$openervar','".$TPS['AMB']['A']['tag']."','".$TPS['AMB']['A']['prefix']."','".$TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
 
         $js = ' // variables for related selection
                 var maxcount = '. MAX_RELATED_COUNT .';
@@ -158,7 +158,6 @@ if ($add) {
 // ValidateContent4Id() sets GLOBAL!! variables:
 //   $show_func_used   - list of show func used in the form
 //   $js_proove_fields - JavaScript code for form validation
-//   list ($fields, $prifields) = GetSliceFields ()
 //   $oldcontent4id
 
 // link from public pages sometimes do not contain slice_id
@@ -179,7 +178,7 @@ ValidateContent4Id($err, $slice, $action, $id);
 list($fields, $prifields) = $slice->fields();
 
 //mimo changes
-$lang_control = IsMLXSlice($slice);
+$lang_control = MLXSlice($slice);
 
 //  update database
 if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {

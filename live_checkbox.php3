@@ -73,14 +73,8 @@ reset($content4ids);
 $content4id   = current($content4ids);
 $action       = ! ($content4id[$field_id][0]['value']);
 $content4id   = array ($field_id => array (0 => array ("value" => $action)));
-list($fields) = GetSliceFields($slice_id);
-
-//huhl($item_id, $slice_id, $content4id, false, true, false);
-
 
 StoreItem($item_id, $slice_id, $content4id, false, true, false);
-
-//huhl($image_path.'cb_'.($action ? "on" : "off").'.gif');
 
 readfile ($image_path.'cb_'.($action ? "on" : "off").'.gif');
 page_close();

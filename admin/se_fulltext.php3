@@ -48,8 +48,6 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-list($fields,) = GetSliceFields($slice_id);
-
 if ( $update ) {
     do {
         ValidateInput("fulltext_format_top",    _m("Top HTML code"),      $fulltext_format_top,    $err, false, "text");
@@ -157,7 +155,8 @@ FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, f
 FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
 FrmInputChBox("discus_disabled", _m("New comments disabled"), $discus_disabled);
 
-PrintAliasHelp(GetAliasesFromFields($fields),$fields, false, $form_buttons, $sess, $slice_id);
+$slice = AA_Slice::getModule($slice_id);
+PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $sess, $slice_id);
 
 FrmTabEnd("", $sess, $slice_id);
 ?>

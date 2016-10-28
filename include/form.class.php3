@@ -265,7 +265,7 @@ class AA_Form extends AA_Object {
     }
 
     /** Add item form */
-    function getAjaxHtml($ret_code) {
+    function getAjaxHtml($ret_code, $type='add') {
         if (!isset($this->object_type)) { $this->object_type = 'AA_Item'; } // older forms stored in database do not have this field set
         $this->object_owner = $this->getOwnerId();                          // slice_id is the same as the slice_id of the form (where it is defined)
 
@@ -279,17 +279,14 @@ class AA_Form extends AA_Object {
 
         $html .= $this->_getRowsHtml($content);
 
-        $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
+        switch ($type) {
+            case 'add':      $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
+                             break;
+            case 'inplace':  $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendForm('form$id', 'filler.php3')\" type=\"button\">";
+                             break;
+        }
         $html .= "\n  </fieldset>";
 
-        $slice = AA_Slice::getModule($this->object_owner);
-        if (!empty($slice)) {
-            $charset = $slice->getCharset();
-            if ($charset != 'utf-8') {
-                $encoder = ConvertCharset::singleton($charset, 'utf-8');
-                $html    = $encoder->Convert($html);
-            }
-        }
         return $html;
     }
 

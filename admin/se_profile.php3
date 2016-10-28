@@ -73,10 +73,7 @@ if ( $set_as ) {
 $rules = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid') ORDER BY property, selector");
 
 // get fields for this slice
-list($fields,) = GetSliceFields($slice_id);
-foreach ($fields as $k => $v) {
-    $lookup_fields[$k] = $v['name'];
-}
+$lookup_fields = AA_Slice::getModule($slice_id)->fields('name');
 
 // set property names array
 $PROPERTY_TYPES = array( 'listlen'           => _m("Item number"),

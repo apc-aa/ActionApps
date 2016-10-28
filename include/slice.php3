@@ -92,8 +92,11 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
 /** ExitPage function
  *
  */
-function ExitPage() {
+function ExitPage($msg='') {
     global $encap, $r_packed_state_vars, $r_state_vars;
+    if ($msg) {
+        echo $msg;
+    }
     if (!$encap) {
         Page_HTML_End();
     }

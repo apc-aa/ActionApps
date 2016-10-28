@@ -91,11 +91,7 @@ foreach ($f_slices as $f_slice) {
     }
 
     // fill up feedmap table
-    list( $slice_fields,) = GetSliceFields( $slice_id );        // get slice fields of the "to slice"
     foreach ( $channel['fields'] as $field_id => $v ) {
-
-        //    if (!$slice_fields[$r_field_id])
-        //      continue;
 
         $catVS->clear();
         $catVS->add("from_slice_id",  "unpacked", $remote_slice_id );

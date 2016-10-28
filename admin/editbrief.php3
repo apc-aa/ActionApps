@@ -87,12 +87,6 @@ while (list($short_ids, $ar) = each($edit)) {
   *      reset($oldcontent4ids);
   *      $oldcontent4id = current($content4ids);
 */
-        // get the field list, and cache because of looping
-        if (!$slicefields[$slice_id]) {
-            list($slicefields[$slice_id]) = GetSliceFields($slice_id);
-        }
-        $fields = $slicefields[$slice_id];
-//        huhl("Would store i=",$item_id, "f=",$content4id);
         StoreItem($item_id, $slice_id, $content4id, false, true, false);
       }
     }

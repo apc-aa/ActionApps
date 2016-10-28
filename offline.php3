@@ -219,7 +219,7 @@ if ( $slice->getProperty("permit_offline_fill") < 1 ) {
 }
 
 // get slice fields and its priorities in inputform
-list($fields,$prifields) = GetSliceFields($slice_id);
+$fields = AA_Slice::getModule($slice_id)->fields('record');
 
 $packets = explode( "<wddxPacket", $offline_data );
 foreach ($packets as $packet) {;
