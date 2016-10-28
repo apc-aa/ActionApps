@@ -72,9 +72,10 @@ if (is_null($form)) {
 }
 
 if ($_GET['type']=='ajax') {
-    echo $form->getAjaxHtml($_GET['ret_code']);
+    $html = $form->getAjaxHtml($_GET['ret_code']);
+    if (($charset = AA_Slice::getModule($form->getOwnerId())->getCharset()) != 'utf-8') {
+        $html = ConvertCharset::singleton($charset, 'utf-8')->Convert($html);
+    }
+    echo $html;
 }
-
-exit;
-
 ?>
