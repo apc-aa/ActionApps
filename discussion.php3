@@ -107,12 +107,21 @@ if ( $disc_url ) {
     $view_param["disc_url"] = $disc_url;
 }
 
-if ($debug) {
-    echo "Discussion item IDs:<br>";
-    print_r ($view_param["disc_ids"]);
-}
+//create keystring from values, which exactly identifies resulting content
+$cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
-echo GetView($view_param);
+if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
+    $cacheentry->processPage();
+} else {
+    list($page_content, $cache_sid) = GetViewFromDB($view_param, true);
+    $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
+    $cacheentry->processPage();
+
+    if (!$nocache) {
+        $str2find = new CacheStr2find($cache_sid, 'slice_id');
+        $pagecache->storePage($cache_key, $cacheentry, $str2find);
+    }
+}
 
 if ($searchlog) {
     PutSearchLog();
