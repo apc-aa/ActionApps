@@ -216,9 +216,10 @@ class AA {
     public static $module_id;  // for admin pages - replace of older $slice_id
 
     static function getHeaders() {
-        $ret = array('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]));
+        $ret = array();
+        $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]);
         if (isset(AA::$headers['status'])) {
-            $ret[] = AA::$headers['status'];
+            $ret['status'] = AA::$headers['status'];
         }
         return $ret;
     }
@@ -427,21 +428,31 @@ class DB_AA extends DB_Sql {
      *     l   - longid            =                single or array    array('item_id', $ids_arr, 'l')
      *     set - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
      *     j   - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join
+     *     >   - integer           >                single             array('date', 1478547854, '>')
+     *     <   - integer           <                single             array('date', 1478547854, '<')
+     *     >=  - integer           >=               single             array('date', 1478547854, '>=')
+     *     <=  - integer           <=               single             array('date', 1478547854, '<=')
      *
      * @param $tablename
      */
-    static protected function makeWHERE($varlist) {
+    static public function makeWHERE($varlist) {
         $delim = '';
         $where = '';
         foreach ( $varlist as $vardef) {
             // $vardef is array(varname, type, value)
             list($name, $value, $type) = $vardef;
+            if (in_array($type, array('>','<','<=','>='))) {
+                $operator = $type;
+                $type     = 'i';
+            } else {
+                $operator = '=';
+            }
 
             if (!is_array($value)) {
                 switch ( $type ) {
-                    case "i":   $where .= "$delim $name = ". (int)$value; break;
-                    case "l":   $where .= "$delim $name = ". xpack_id($value); break;
-                    case "j":   $where .= "$delim $name = ". quote($value); break;
+                    case "i":   $where .= "$delim $name $operator ". (int)$value; break;
+                    case "l":   $where .= "$delim $name = ".         xpack_id($value); break;
+                    case "j":   $where .= "$delim $name = ".         quote($value); break;
                     case "set": $value  = (int)$value;
                                 $where .= "$delim (($name & $value) = $value)"; break;
                     //default:  $part = DB_AA::quote($value);
@@ -455,7 +466,7 @@ class DB_AA extends DB_Sql {
                 }
                 switch (count($arr)) {
                     case 0:  $where .= "$delim 2=1"; break;
-                    case 1:  $where .= "$delim $name = ". reset($arr); break;
+                    case 1:  $where .= "$delim $name $operator ". reset($arr); break;
                     default: $where .= "$delim $name IN (". join(',', $arr) .")";
                 }
             }
@@ -596,10 +607,6 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     freeDB($db);
     return isset($arr) ? $arr : false;
 }
-
-//class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
-//    var $database_class = "DB_AA";           // Which database to connect...
-//}
 
 class AA_Session extends Session {
 

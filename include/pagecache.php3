@@ -43,20 +43,40 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."toexecute.class.php3";
 
 class AA_Cacheentry {
-    var $c = '';      // content
-    var $h = array();  // headers array
-    var $i = '';      // item id for page hit
+    protected $c = '';      // content
+    protected $h = array(); // headers array
+    protected $i = '';      // item id for page hit
+    protected $t = 0;       // timestamp
 
     function __construct($content, array $headers=array(), $item_id='') {
         $this->c = $content;
         $this->h = $headers;
         $this->i = $item_id;
+        $this->t = time();
     }
 
     /** send headers, print output and count hit */
     function processPage() {
-        AA::sendHeaders($this->h);
-        echo $this->c;
+
+        $lastModified    = $this->t;     // get the last-modified-date of this very file
+        $etag            = hash('md5', 'x'.$this->c.'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
+        $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$lastModified) : false;
+        $etagMatch       = isset($_SERVER['HTTP_IF_NONE_MATCH'])     ? (trim($_SERVER['HTTP_IF_NONE_MATCH'])==$etag) : false;   //(etag: unique file hash)
+
+        header("Last-Modified: ".gmdate("D, d M Y H:i:s", $lastModified)." GMT");   // set last-modified header
+        header("Etag: $etag");                                                      // set etag-header
+        // maybe we do not have to chache all pages
+        header('Cache-Control: public');                                            // make sure caching is turned on
+        // maybe we can add max-age=60   (minute helps a lot on big loads (catches 99%), but is nothing for reader)
+
+        // check if page has changed. If not, send 304 and exit
+        // Maybe we should check also $this->h, if they do not contain 404, 302 or other status code already
+        if ( $ifModifiedMatch OR $etagMatch ) {
+            header("HTTP/1.1 304 Not Modified");
+        } else {
+            AA::sendHeaders($this->h);
+            echo $this->c;
+        }
         if ($this->i) {
             AA_Hitcounter::hit(new zids($this->i, 'l'));
         }
@@ -64,7 +84,7 @@ class AA_Cacheentry {
 }
 
 class PageCache  {
-    var $cacheTime     = 600; // number of seconds to store cached informations
+    protected $cacheTime     = 600; // number of seconds to store cached informations
 
     /** PageCache function
      *  PageCache class constructor
@@ -245,7 +265,7 @@ class PageCache  {
 
     function getPage($key, $action='get') {
         $entry = $this->get($key, $action);
-        return $entry ? unserialize($entry) : $entry;
+        return $entry ? unserialize($entry) : false;
     }
 
 
@@ -328,12 +348,13 @@ class AA_Pagecache_Purge {
  *  to identify records to be deleted (invalidated) from cache
  */
 class CacheStr2find {
-    var $ids = array();   /** */
+    protected $ids = array();
+
     /** CacheStr2find function
      * @param $ids
      * @param $type
      */
-    function CacheStr2find( $ids=null, $type='slice_id') {
+    function __construct( $ids=null, $type='slice_id') {
         $this->add($ids, $type);
     }
 
