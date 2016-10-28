@@ -310,6 +310,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     if ($_COOKIE['AA_Session']) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
         pageOpen('nobody');
+        $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
     } elseif ($_COOKIE['AA_Sess']) {
         // old unused approach
 

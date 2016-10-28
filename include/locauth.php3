@@ -80,9 +80,9 @@ class AA_Auth extends Auth {
                                                 // cookies username is used - error
 
         // is this necessary? Honza 2016-09-21
-        if (isset($username)){
-            $this->auth["uname"]=$username;
-        }
+        // if (isset($username)){
+        //     $this->auth["uname"]=$username;
+        // }
 
         $uid = $this->_validatelogin($username, $password);
 
