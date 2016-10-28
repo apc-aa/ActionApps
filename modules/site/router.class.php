@@ -219,6 +219,7 @@ class AA_Router {
  *       xseo2 = projekts
  *       xseo3 = eficiency
  *       xseo  = eficiency
+ *       xajax =               // empty or 1 (if called by ajax)
  *
  *  For URL construction yo can use go2url:
  *
@@ -326,7 +327,7 @@ class AA_Router_Seo extends AA_Router {
             return array();
         }
 
-        $ret        = array();
+        $ret        = array('xajax' => IsAjaxCall() ? 1 : '');
         foreach (array('xlang','xpage','xflag','xcat') as $key => $varname) {
             $ret[$varname] = $matches[$key+1];
         }

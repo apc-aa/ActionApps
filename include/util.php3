@@ -194,6 +194,11 @@ function shtml_query_string() {
     return magic_strip($ret_string);
 }
 
+/** check, if the script was called as ajax call */
+function IsAjaxCall() {
+    return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+}
+
 /** DeBackslash function
  *  skips terminating backslashes
  * @param $txt
