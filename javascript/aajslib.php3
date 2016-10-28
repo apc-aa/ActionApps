@@ -710,6 +710,26 @@ function AA_GetStyle(id, name) {
     return element.currentStyle ? element.currentStyle[name] : window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(name) : null;
 }
 
+function AA_SaveEditors() {
+  var params = {'inline':1};
+
+  for(var i in CKEDITOR.instances) {   // for each
+    if (CKEDITOR.instances[i].checkDirty()) {
+        params['aa[u'+$(i).readAttribute('data-aa-id')+']['+$(i).readAttribute('data-aa-field')+'][0]'] = CKEDITOR.instances[i].getData();
+        params['aa[u'+$(i).readAttribute('data-aa-id')+']['+$(i).readAttribute('data-aa-field')+'][flag]'] = 1;
+    }
+  }
+
+  new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+      parameters: params,
+      requestHeaders: {Accept: 'application/json'},
+      onSuccess: function(transport) {
+          AA_Toolbar('');
+          AA_Message((Object.keys(transport.responseJSON).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(transport.responseJSON).length +' zmen'));
+      }
+  });
+}
+
 /* Cookies */
 function SetCookie(name, value, plustime) {
    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
