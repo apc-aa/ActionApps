@@ -187,6 +187,12 @@ class AA_Field {
         return array($field_type, $field_add);
     }
 
+    /** getTranslations
+     *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
+     */
+    function getTranslations() {
+        return ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : array();
+    }
 
     /** getAaProperty function
     * @param $multiple
@@ -197,7 +203,7 @@ class AA_Field {
         if (is_null($multiple)) {
             $multiple = $this->getWidget()->multiple();
         }
-        $translations = ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : array();
+        $translations = $this->getTranslations();
 
         // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
         return new AA_Property( $this->getId(),
@@ -301,6 +307,12 @@ class AA_Field {
         }
         // prefix indicates select from items
         return (substr($showfunc['const'],0,7) == "#sLiCe-") ? array('relation', substr($showfunc['const'],7)) : array('constants', $showfunc['const']);
+    }
+
+    /** isMultiline - @return if the default widget allows block elements  */
+    function isMultiline() {
+        $params = AA_Widget::parseClassProperties($this->data['input_show_func']);
+        return in_array($params['class'], array('AA_Widget_Txt','AA_Widget_Tpr','AA_Widget_Edt'));
     }
 
     function cloneWithId($id) {
@@ -413,7 +425,7 @@ class AA_Fields implements Iterator {
      */
     function getAliases($additional='', $type='') {
         if ( !is_null($this->aliases) ) {
-            return $this->aliases;
+            return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
         $this->load();
 
@@ -425,11 +437,12 @@ class AA_Fields implements Iterator {
         $this->aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
         $this->aliases["_#GRP_INDX"] = GetAliasDef( "f_e:groupindex",       "id..............", _m("index of a group on page (it begins from 0 on each page)"));
         $this->aliases["_#IGRPINDX"] = GetAliasDef( "f_e:itemgroupindex",   "id..............", _m("index of item within a group on page (it begins from 0 on each group)"));
-        $this->aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
-        $this->aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
+        $this->aliases["_#ITEM_ID_"] = GetAliasDef( "f_1",                  "unpacked_id.....", _m("alias for Item ID"));
+        $this->aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
 
         if ( $type == 'justids') {  // it is enough for view of urls
-            return $this->aliases;
+            // maybe we should make $this->aliases = null (to be recounted next time with all aliases), but there was no problem so far, so we left here qucker solution. Honza 2016-10-20
+            return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
 
         $this->aliases["_#EDITITEM"] = GetAliasDef(  "f_e",            "id..............", _m("alias used on admin page index.php3 for itemedit url"));
@@ -448,7 +461,7 @@ class AA_Fields implements Iterator {
         foreach ($this->fields as $field) {
             $this->aliases = array_merge($this->aliases, $field->getAliases());
         }
-        return($this->aliases);
+        return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
     }
 
     /** getCategoryFieldId function
@@ -619,35 +632,6 @@ class AA_Fields implements Iterator {
     public function key()     { if (is_null($this->fields)) {$this->load();} return current($this->prifields);                }
     public function next()    { if (is_null($this->fields)) {$this->load();} next($this->prifields);                          }
     public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->prifields) !== false);    }
-}
-
-
-/** GetSliceFields function
- *  @return list of fields which belongs to the slice
- *  The result is in two arrays - $fields    (key is field_id)
- *                              - $prifields (just field_id sorted by priority)
- *  @param $slice_id       - id of slice for which you want to get fields array
- *  @param $slice_fields   - if true, the result contains only "slice fields"
- *                           which are not used for items, but rather for slice
- *                           setting
- *  @see sliceobj:slice->fields()
- */
-function GetSliceFields($slice_id, $slice_fields = false) {
-    $p_slice_id = q_pack_id($slice_id);
-    $db = getDB();
-    // slice_fields are begins with underscore
-    // slice fields are the fields, which we do not use for items in the slice,
-    // but rather for setting parameters of the slice
-    $slice_fields_where = ($slice_fields) ? "AND id LIKE '\_%'" : "AND id NOT LIKE '\_%'";
-    $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY input_pri";
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $fid          = $db->f("id");
-        $fields[$fid] = $db->Record;
-        $prifields[]  = $fid;
-    }
-    freeDB($db);
-    return array($fields, $prifields);
 }
 
 /** GetFields4Select function

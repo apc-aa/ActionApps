@@ -475,12 +475,10 @@ function get_view_settings_cached($vid) {
     if (!$cached_view_settings[$vid]) {
         $view         = AA_Views::getView($vid);
         $slice        = AA_Slice::getModule(unpack_id($view->f("slice_id")));
-        $fields       = $slice->fields('record');
         $cached_view_settings[$vid] = array (
             "lang"    => substr($slice->getProperty('lang_file'),0,2),
             "info"    => $view,
-            "fields"  => $fields,
-            "aliases" => GetAliasesFromFields($fields),
+            "aliases" => $slice->aliases(),
             "format"  => $view->getViewFormat()
         );
     }
@@ -512,7 +510,7 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
         if (! $item_url) {
             $item_url = "You didn't set the item URL in the view $vid settings!";
         }
-        $itemview   = new itemview($set["format"], $set["fields"], $set["aliases"], $zids, 0, $set["info"]->f("listlen"), $item_url);
+        $itemview   = new itemview($set["format"], '', $set["aliases"], $zids, 0, $set["info"]->f("listlen"), $item_url);
         $items_text = $itemview->get_output ("view");
         //if (! strstr ($filter_settings, ","))
         $cached_filter_outputs[$filter_settings] = $items_text;

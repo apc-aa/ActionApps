@@ -49,8 +49,6 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-list($fields,) = GetSliceFields($slice_id);
-
 if ($update) {
     do {
         ValidateInput("admin_format_top",    _m("Top HTML"),                                $admin_format_top,    $err, false, "text");
@@ -155,7 +153,8 @@ FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $
             .'<br>'.AA_View::getViewJumpLinks($admin_noitem_msg), DOCUMENTATION_URL, 1);
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
              _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
-PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons);
+$slice = AA_Slice::getModule($slice_id);
+PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons);
 FrmTabEnd("", false, true);
 ?>
 </form>

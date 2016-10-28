@@ -51,7 +51,7 @@ class itemview {
   var $from_record;        // from which index begin showing items
   var $num_records;        // number of shown records
   var $slice_info;         // record from slice database for current slice
-  var $fields;             // array of fields used in this slice
+  var $fields;             // array of fields used in this slice  // not used
   var $aliases;            // array of alias definitions. If used with multi-slice,
                            // this variable contains an array of aliases for all slices
                            // aliases[slice_id0] are aliases for slice 0 etc.
@@ -68,7 +68,7 @@ class itemview {
 
   /** itemview function
    * @param $slice_info
-   * @param $fields
+   * @param $fields   // not used
    * @param $aliases
    * @param $zids
    * @param $from
@@ -77,7 +77,7 @@ class itemview {
    * @param $disc
    * @param $get_content_funct
    */
-  function __construct( $slice_info, $fields, $aliases, $zids, $from, $number, $clean_url, $disc="", $get_content_funct='GetItemContent') {
+  function __construct( $slice_info, $not_used_fields, $aliases, $zids, $from, $number, $clean_url, $disc="", $get_content_funct='GetItemContent') {
 
       $this->slice_info = $slice_info;  // $slice_info is array with this fields:
                                       //      - print_view() function:
@@ -109,7 +109,7 @@ class itemview {
     $idcount = (string)($GLOBALS['QueryIDsCount'] ? $GLOBALS['QueryIDsCount'] : ' 0');
     $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:$idcount",  "id..............", _m("number of found items"));
 
-    $this->fields            = $fields;
+    $this->fields            = '';
     $this->zids              = $zids;
     $this->from_record       = $from;      // number or text "random[:<weight_field>]"
     $this->num_records       = $number;    // negative number used for displaying n-th group of items only
@@ -490,10 +490,9 @@ class itemview {
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
       $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
-      if ($debug) huhl('from-'.$this->from_record, 'num-'.$this->num_records, $foo_zids);
     } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
-      if ( !$rweight || !is_array($this->fields[$rweight]) ) {
+      if ( !$rweight ) {
         // not weighted, we can select random id(s)
         for ( $i=0; $i<$this->num_records; $i++) {
           $sel = mt_rand( 0, $this->zids->count() - 1) ;
@@ -529,7 +528,7 @@ class itemview {
     $CurItem->set_parameters($this->parameters);
 
     // process the random selection (based on weight)
-    if ( $rweight && is_array($this->fields[$rweight]) ) {
+    if ( $rweight ) {
       $this->zids->clear('l');   // remove id and prepare for long ids
       //get sum of all weight
       reset( $this->_content );

@@ -543,7 +543,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
             $list_from   = $listlen * ($page-1) + $list_from;
         }
     }
-    return array( $listlen, $random ? $random : ($list_from ? $list_from : 0) );
+    return array( $listlen, $random ?: ($list_from ?: 0) );
 }
 
 
@@ -623,7 +623,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
     $view->setBannerParam(ParseBannerParam($view_param["banner"]));  // if banner set format
 
-    $listlen    = $view_param["listlen"] ? $view_param["listlen"] : $view->f('listlen');
+    $listlen    = $view_param["listlen"] ?: $view->f('listlen');
 
     if ($view_param["slice_id"]) {
         $view_info["slice_id"] = pack_id($view_param["slice_id"]);  // packed,not quoted
@@ -680,7 +680,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
             }
 
-            $itemview = new itemview($format,"",$aliases,null,"","",$durl, $disc);
+            $itemview = new itemview($format,'',$aliases,null,"","",$durl, $disc);
             $ret      = $itemview->get_output("discussion");
             break;
 
@@ -710,10 +710,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 $content_function = 'Links_GetCategoryContent';
             }
 
-            list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
-            $view_param["from"], $list_page, $zids->count(), $random);
+            list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids->count(), $random);
 
-            $itemview = new itemview( $format, GetConstantFields(), $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
+            $itemview = new itemview( $format, '', $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
             $itemview->parameter('category_id', $category_id);
             $itemview->parameter('start_cat',   $view_param['start_cat']);
 
@@ -728,22 +727,19 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
         case 'full':  // parameters: zids, als
             $format = $view->getViewFormat($selected_item);
             if ( isset($zids) AND ($zids->count() > 0) ) {
-                // get alias list from database and possibly from url
-                list($fields,) = GetSliceFields($slice_id);
-                $aliases = GetAliasesFromFields($fields, $als);
+                $slice  = AA_Slice::getModule($slice_id);
                 //mlx stuff
-                $slice = AA_Slice::getModule($slice_id);
-                if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
+                if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
                     $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                     //make sure the lang info doesnt get reused with different view
-                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)));
-                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds);
+                    $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
+                    $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                     $zids3 = new zids($zids->longids());
-                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id); //.serialize($zids3));
+                    $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
                     $zids->a    = $zids3->a;
                     $zids->type = $zids3->type;
                 }
-                $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, shtml_url(), "");
+                $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
                 $ret      = $itemview->get_output("view");
             } else {
                 $ret      = AA_Stringexpand::unalias($noitem_msg);
@@ -771,32 +767,26 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
         case 'rss':
         case 'urls':
         case 'script':  // parameters: conds, param_conds, als
-            // we have to respect listlen, from, to, page parameters, but also we have to deal with view-listlen settings, which is 0 for fulltext vieww
-/*            if ($view_info['type'] == 'full') {
-                $listlen = max(@min($listlen, $zids->count()), 1);
-            }
-*/
             if ($view_info['type'] == 'rss') {
                 AA::$headers['type'] = 'text/xml';
-                //header("Content-type: text/xml");
             }
 
-            if (! $conds ) {        // conds could be defined via cmd[]=d command
+            if ( !$conds ) {        // conds could be defined via cmd[]=d command
                 $conds = GetViewConds($view_info, $param_conds);
             }
             // merge $conds with $calendar_conds
             if (is_array($calendar_conds)) {
-                foreach ( $calendar_conds as $v) {
+                foreach ($calendar_conds as $v) {
                     $conds[] = $v;
                 }
             }
-            list($fields,) = GetSliceFields($slice_id);
-            $aliases       = array_merge(GetAliasesFromFields($fields, $als), GetViewAliases($conds));
+
+            $slice   = AA_Slice::getModule($slice_id);
+            $aliases = array_merge($slice->aliases($als), GetViewAliases($conds));
 
             if (is_array($slices)) {
-                foreach ( $slices as $sid) {
-                    list($fields,) = GetSliceFields($sid);
-                    $aliases[q_pack_id($sid)] = GetAliasesFromFields($fields,$als);
+                foreach ($slices as $sid) {
+                    $aliases[q_pack_id($sid)] = AA_Slice::getModule($sid)->aliases($als);
                 }
             }
 
@@ -804,20 +794,16 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
             AA::$debug && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
 
-            //mlx stuff
-            if (!$slice) {
-                $slice = AA_Slice::getModule($slice_id);
-            }
-            if (isMLXSlice($slice)) {
-                $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
+            if ($mlxslice = MLXSlice($slice)) {
+                $mlx = $view_param["mlx"] ?: $view_param["MLX"];
                 //make sure the lang info doesnt get reused with different view
-                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)));
-                $GLOBALS['mlxView']->preQueryZIDs(unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds);
+                $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
+                $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
             }
             $zids2 = QueryZIDs($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", 0, $zids);
 
-            if (isMLXSlice($slice)) {
-                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id);
+            if ($mlxslice) {
+                $GLOBALS['mlxView']->postQueryZIDs($zids2,$mlxslice,$slice_id);
             }
             //end mlx stuff
             // Note this zids2 is always packed ids, so lost tag information
@@ -836,34 +822,14 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 $format['group_by'] = $view_param['group_by'];
             }
 
-            AA::$debug && AA::$dbg->group("GetListLength".'_'.$dbgtime);
             list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
-            AA::$debug && AA::$dbg->groupend("GetListLength".'_'.$dbgtime);
 
-            AA::$debug && AA::$dbg->log("GetViewFromDB: Filtered listlen=",$listlen);
-
-            $itemview = new itemview( $format, $fields, $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
+            $itemview = new itemview( $format, '', $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
             if (isset($zids2) && ($zids2->count() > $list_from)) {
-                $itemview_type = (($view_info['type'] == 'calendar') ? 'calendar' : 'view');
-                AA::$debug && AA::$dbg->log("GetViewFromDB: to show=",$zids2, $itemview_type);
-                $ret = $itemview->get_output($itemview_type);
-                AA::$debug && AA::$dbg->log("GetViewFromDB: to showend");
-            }
-            else {
-                /* Not sure if this was a necessary change that got missed, or got changed again
-                // $ret = $noitem_msg;
-                $level = 0; $maxlevel = 0;
-                // This next line is not 100% clear, might not catch aliases
-                //since there are two formats for aliases structures. (mitra)
-                //    huhl("XYZZY:v578, msg=",$noitem_msg);
-                $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
-                */
-
-                AA::$debug && AA::$dbg->group("unaliasWithScrollerEasy".'_'.$dbgtime);
+                $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
+            } else {
                 $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
-                AA::$debug && AA::$dbg->groupend("unaliasWithScrollerEasy".'_'.$dbgtime);
-
             }
             break;
 
@@ -872,7 +838,6 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             // I create a CurItem object so I can use the unalias function
             $CurItem      = new AA_Item("", $als);
             $formatstring = $view_info["odd"];          // it is better to copy format-
-            AA::$debug && AA::$dbg->log("GetViewFromDB: unalias=",$CurItem, $formatstring);
             $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
             break;
     }

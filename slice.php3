@@ -261,11 +261,13 @@ require_once AA_INC_PATH."javascript.php3";
 is_object( $db ) || ($db = getDB());
 
 $slice      = AA_Slice::getModule($slice_id);
-$fields     = $slice->fields('record');            // get fields info
 $slice_info = GetSliceInfo($slice_id);       // get slice info
+
 if (!$slice_info OR $slice_info['deleted']>0) {
-    echo _m("Invalid slice number or slice was deleted") . " (ID: $slice_id)";
-    ExitPage();
+    ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
+}
+if ($slice_info['d_listlen']==0) {
+    ExitPage(_m("slice.php3 output forbiden for this slice"));
 }
 
 // Use right language (from slice settings) - languages are used for scroller (Next, ...)
@@ -310,11 +312,7 @@ if (!$encap) {
 }
 
 if ($bigsrch OR $easy_query) {  // big search form or authomatical search form
-    echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>
-          easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>
-          See <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a>
-          for more details. -->';
-    ExitPage();
+    ExitPage('<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>See <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a> for more details. -->');
 }
 
 $add_aliases = $aliases    = GetAliasesFromUrl($als);
@@ -331,15 +329,14 @@ $slice_info = array_merge( $slice_info, ParseBannerParam($banner));
 // get alias list from database and possibly from url
 // if working with multi-slice, get aliases for all slices
 if (!is_array($slices)) {
-    $aliases = GetAliasesFromFields($fields);
+    $aliases = $slice->aliases();
     array_add($add_aliases, $aliases);
 } else {
     foreach ($slices as $sid) {
-        list($fields) = GetSliceFields($sid);
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
         // it is needed by itemview::set_column() (see include/itemview.php3)
-        $aliases[q_pack_id($sid)] = GetAliasesFromFields($fields,$als);
+        $aliases[q_pack_id($sid)] = AA_Slice::getModule($sid)->aliases($als);
         array_add($add_aliases, $aliases[q_pack_id($sid)]);
     }
 }
@@ -363,7 +360,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset ($hideFulltext)) {
-        $itemview = new itemview($slice_info, $fields, $aliases, $zid, 0, 1, MyUrl($slice_id, $encap, $scr_url));
+        $itemview = new itemview($slice_info, '', $aliases, $zid, 0, 1, MyUrl($slice_id, $encap, $scr_url));
         echo $itemview->get_output_cached("fulltext");
     }
 
@@ -389,7 +386,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format  = GetDiscussionFormat($view_info);
             $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
-            $itemview = new itemview($format, "", $aliases, null,"", "", MyUrl($slice_id, $encap, $scr_url), $disc);
+            $itemview = new itemview($format, '', $aliases, null,"", "", MyUrl($slice_id, $encap, $scr_url), $disc);
             echo $itemview->get_output("discussion");
             // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice
@@ -408,9 +405,8 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
     $zids     = new zids($ids,"l");
-    $itemview = new itemview($slice_info, $fields, $aliases, $zids, 0,$zids->count(), MyUrl($slice_id, $encap, $scr_url));
-    echo $itemview->get_output_cached("itemlist");
-    ExitPage();
+    $itemview = new itemview($slice_info, '', $aliases, $zids, 0,$zids->count(), MyUrl($slice_id, $encap, $scr_url));
+    ExitPage($itemview->get_output_cached("itemlist"));
 }
 
 // compact view ----------------------------------------------------------------
@@ -523,17 +519,18 @@ add2sort($sort_tmp, array('publish_date....' => (($timeorder == "rev") ? 'a' : '
 $sort  = $sort_tmp;
 
 //mlx stuff
-if (isMLXSlice($slice_info)) {
+
+if ($mlxslice = MLXSlice($slice)) {
     if (!$mlxView) {
         $mlxView = new MLXView($mlx);
     }
-    $mlxView->preQueryZIDs(unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$conds);
+    $mlxView->preQueryZIDs($mlxslice,$conds);
 }
 
 $zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
 
-if (isMLXSlice($slice_info)) {
-    $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id);
+if ($mlxslice) {
+    $mlxView->postQueryZIDs($zids,$mlxslice,$slice_id);
 }
 
 
@@ -584,7 +581,7 @@ if ( !$srch AND !$encap AND !$easy_query ) {
 
 if ($zids->count() > 0) {
 
-    $itemview = new itemview($slice_info, $fields, $aliases, $zids, $scr->metapage * ($scr->current - 1),
+    $itemview = new itemview($slice_info, '', $aliases, $zids, $scr->metapage * ($scr->current - 1),
                              ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
                              MyUrl($slice_id, $encap, $scr_url) );
 

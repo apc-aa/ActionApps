@@ -206,7 +206,7 @@ if ($lang_file) {
 $page_content = $module->getSite( $apc_state );
 
 // AJAX check
-if((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAjaxCall()) {
     $page_content = ConvertCharset::singleton()->Convert($page_content, AA::$encoding, 'utf-8');
     AA::$headers['encoding'] = 'utf-8';
 }

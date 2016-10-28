@@ -47,11 +47,8 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-list($fields,) = GetSliceFields($slice_id);
-if ( $update )
-{
-    do
-    {
+if ( $update ) {
+    do {
         ValidateInput("odd_row_format", _m("Odd Rows"), $odd_row_format, $err, true, "text");
         ValidateInput("compact_top", _m("Top HTML"), $compact_top, $err, false, "text");
         ValidateInput("compact_bottom", _m("Bottom HTML"), $compact_bottom, $err, false, "text");
@@ -236,7 +233,8 @@ function EnableClick(cond,what) {
                _m("message to show in place of slice.php3, if no item matches the query")
                .'<br>'.AA_View::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
 
-  PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons, $sess, $slice_id);
+  $slice = AA_Slice::getModule($slice_id);
+  PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $sess, $slice_id);
 
   FrmTabEnd("", false, true);
 ?>

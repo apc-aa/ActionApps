@@ -452,6 +452,8 @@ class AA_Slice extends AA_Module {
             case 'record':  return $fields->getRecordArray();    // array of field definitions where field_id is key
             case 'pri':     return $fields->getPriorityArray();  // array of field definitions sorted by priority - integer key
             case 'search':  return $fields->getSearchArray();
+            case 'name':    return $fields->getNameArray();
+
         }
         return array($fields->getRecordArray(), $fields->getPriorityArray());                         // two member array ('record' array, 'pri' array)
     }
@@ -540,8 +542,8 @@ class AA_Slice extends AA_Module {
      *  Get standard aliases definition from slice's fields
      * @param $additional_aliases
      */
-    function aliases($additional_aliases = false) {
-        return $this->fields->getAliases($additional_aliases);
+    function aliases($additional_aliases = false, $type='') {
+        return $this->fields->getAliases($additional_aliases, $type);
     }
 
     /** get_js_validation function

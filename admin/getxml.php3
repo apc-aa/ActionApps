@@ -468,7 +468,7 @@ if (!$slice_id) {
     echo $XML_BEGIN;
     foreach ($slice_ids as $sl_id) {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($sl_id);
-        list( $slice_fields,)        = GetSliceFields( $sl_id );
+        $slice_fields                = AA_Slice::getModule($sl_id)->fields('record');
         $xml_categories_refs         = $xml_fields_refs = "";      // clear fields and categories for this channel
         GetXMLFields(     $sl_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields
         GetXMLCategories( $sl_id, $xml_categories_refs, $xml_categories ); //get categories

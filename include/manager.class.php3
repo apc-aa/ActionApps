@@ -167,7 +167,7 @@ class AA_Manager extends AA_Storable {
         $this->setDesign($format_strings, $aliases, $manager_vid);
 
         $this->itemview = new itemview( $format_strings,
-                                        $settings['itemview']['fields'],
+                                        '',
                                         $aliases,
                                         false,   // no item ids yet
                                         0,       // first item

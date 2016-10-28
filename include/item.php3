@@ -72,66 +72,6 @@ function DefineBaseAliases(&$aliases, $module_id) {
     }
 }
 
-
-/** GetAliasesFromFields function
- * deprecated - use AA_Fields->getAliases()
- * @param $fields
- * @param $additional
- * @param $type
- */
- function GetAliasesFromFields($fields, $additional="", $type='') {
-     if ( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') ) {
-         return false;
-     }
-     //add additional aliases
-     $aliases = array();
-     if ( is_array( $additional ) ) {
-         foreach ( $additional as $k => $v) {
-             $aliases[$k] = $v;
-         }
-     }
-
-     //  Standard aliases
-     $aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
-     $aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within whole listing (begins with 0)"));
-     $aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
-     $aliases["_#GRP_INDX"] = GetAliasDef( "f_e:groupindex",       "id..............", _m("index of a group on page (it begins from 0 on each page)"));
-     $aliases["_#IGRPINDX"] = GetAliasDef( "f_e:itemgroupindex",   "id..............", _m("index of item within a group on page (it begins from 0 on each group)"));
-     $aliases["_#ITEM_ID_"] = GetAliasDef( "f_1",                  "unpacked_id.....", _m("alias for Item ID"));
-     $aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
-
-     if ( $type == 'justids') {  // it is enough for view of urls
-         return $aliases;
-     }
-
-     $aliases["_#EDITITEM"] = GetAliasDef(  "f_e",            "id..............",      _m("alias used on admin page index.php3 for itemedit url"));
-     $aliases["_#ADD_ITEM"] = GetAliasDef(  "f_e:add",        "id..............",      _m("alias used on admin page index.php3 for itemedit url"));
-     $aliases["_#EDITDISC"] = GetAliasDef(  "f_e:disc",       "id..............",      _m("Alias used on admin page index.php3 for edit discussion url"));
-     $aliases["_#RSS_TITL"] = GetAliasDef(  "f_r",            "SLICEtitle",            _m("Title of Slice for RSS"));
-     $aliases["_#RSS_LINK"] = GetAliasDef(  "f_r",            "SLICElink",             _m("Link to the Slice for RSS"));
-     $aliases["_#RSS_DESC"] = GetAliasDef(  "f_r",            "SLICEdesc",             _m("Short description (owner and name) of slice for RSS"));
-     $aliases["_#RSS_DATE"] = GetAliasDef(  "f_r",            "SLICEdate",             _m("Date RSS information is generated, in RSS date format"));
-     $aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",                  _m("Slice name"));
-
-     $aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,         _m("Current MLX language"));
-     $aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",    MLX_CTRLIDFIELD,         _m("HTML markup direction tag (e.g. DIR=RTL)"));
-
-     // database stored aliases
-     foreach ($fields as $k => $val) {
-         if ($val['alias1']) {
-             // fld used in PrintAliasHelp to point to alias editing page
-             $aliases[$val['alias1']] = array("fce" =>  $val['alias1_func'], "param" => $val['id'], "hlp" => $val['alias1_help'], "fld" => $k);
-         }
-         if ($val['alias2']) {
-             $aliases[$val['alias2']] = array("fce" =>  $val['alias2_func'], "param" => $val['id'], "hlp" => $val['alias2_help'], "fld" => $k);
-         }
-         if ($val['alias3']) {
-             $aliases[$val['alias3']] = array("fce" =>  $val['alias3_func'], "param" => $val['id'], "hlp" => $val['alias3_help'], "fld" => $k);
-         }
-     }
-     return($aliases);
- }
-
 /** GetAliases4Type function
  *  Returns aliases
  * @param string type - 'const'/'links'/'categories' - just like *view* types
@@ -1740,7 +1680,7 @@ class AA_Items {
         $res = array();
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             $item = AA_Items::getItem($zids->zid($i));
-            if ($item && (AA_Slice::getModule($item->getSliceID())->isExpiredContentAllowed() OR $item->isActive())) { // AND $item->isActive()) {
+            if ($item && ($slice = AA_Slice::getModule($item->getSliceID())) AND ($slice->isExpiredContentAllowed() OR $item->isActive())) { // AND $item->isActive()) {
                 $res[$item->getItemId()] = $item->subst_alias($expression);       // long item id
             }
         }

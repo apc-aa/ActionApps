@@ -201,16 +201,14 @@ class AA_Poll {
     function getOutput($design='beforevote') {
         $format   = $this->get_format_strings($design);
 
-        $metabase = AA_Metabase::singleton();
         $aliases  = GetAnswerAliases();
-        $fields   = $metabase->getSearchArray('polls_answer');
 
         $set = new AA_Set;
         $set->addCondition(new AA_Condition('poll_id', '==', $this->id()));
         $set->addSortorder(new AA_Sortorder(array('priority' => 'a')));
 
-        $zids = $metabase->queryZids(array('table'=>'polls_answer'), $set);
-        $itemview = new itemview( $format, $fields, $aliases, $zids, 0, $zids->count(), shtml_url(), "", array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer')));
+        $zids     = AA_Metabase::singleton()->queryZids(array('table'=>'polls_answer'), $set);
+        $itemview = new itemview( $format, '', $aliases, $zids, 0, $zids->count(), shtml_url(), "", array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer')));
 
         return $itemview->get_output();
     }
