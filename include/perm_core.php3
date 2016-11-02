@@ -606,20 +606,33 @@ class AA_Perm {
     }
 
     public static function cryptPwd($password) {
-        $seed = '$2y$14$'.gensalt(22);
-        $ret  = crypt($password, $seed);
+        if (function_exists('password_hash')) { // php 5.5
+            return password_hash($password, PASSWORD_DEFAULT);
+        }
+        if (function_exists('mcrypt_create_iv')) {
+            // password_hash implementation using mcrypt
+            return crypt( $password, '$2y$10$'. str_replace('+', '.', base64_encode(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM))) .'$' );
+        }
+        // legacy - compatible with old AA on old php < 5.5
+        $ret  = crypt($password, '$2y$14$'.gensalt(22));
         return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
     }
 
     public static function comparePwds($password, $hash) {
+        if (strlen($hash) == 30) {
+            // legacy only - not so secure to timing attacks... but in current AA it shouldn't be executed
+            // passwords in SQL perms in AA 2.x was 30 characers long (in user table),
+            // so we have to compare it with shortened hash
+            return $hash == substr(crypt($password, $hash),0,30);
+        }
+        if (function_exists('password_verify')) { // php 5.5
+            return password_verify($password, $hash);
+        }
+        // remove for php >= 5.5
+
         // looks ugly for the first_child look, but it is really how the crypt
         // with salt works - see php documentation
-
-        $crypted = crypt($password, $hash);
-
-        // passwords in SQL perms in AA 2.x are 30 characers long (in user table),
-        // so we have to compare it with shortened hash
-        return $hash == ((strlen($hash) == 30) ?  substr($crypted,0,30) : $crypted);
+        return $hash == crypt($password, $hash);
     }
 
     /** AA::$perm->cache function
