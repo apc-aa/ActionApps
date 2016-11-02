@@ -33,7 +33,7 @@ http://www.apc.org/
  *  It is recommended to delete the access code after you finish your setup, to
  *  disable access code guessing from attackers.
  */
-define('ACCESS_CODE','de46272*_!%@*dhje-rty362ddj');
+define('ACCESS_CODE','');
 
 
 /** INSTRUCTIONS BEFORE USE
