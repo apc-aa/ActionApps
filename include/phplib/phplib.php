@@ -348,22 +348,23 @@ class Session {
     */
     function set_tokenname(){
 
-        $this->name = ("" == $this->cookiename) ? $this->classname : $this->cookiename;
-        session_name ($this->name);
+        $this->name = $this->cookiename  ?: $this->classname;
+        session_name($this->name);
 
         if (!$this->cookie_domain) {
             $this->cookie_domain = get_cfg_var('session.cookie_domain');
         }
 
-        if (!$this->cookie_path && get_cfg_var('session.cookie_path')) {
-            $this->cookie_path = get_cfg_var('session.cookie_path');
-        } elseif (!$this->cookie_path) {
-            $this->cookie_path = "/";
+        if (!$this->cookie_path) {
+            $this->cookie_path = get_cfg_var('session.cookie_path') ?: '/';
         }
 
         if ($this->lifetime > 0) {
-            //$lifetime = time()+$this->lifetime*60; //this is incorrect
-            $lifetime = $this->lifetime*60;
+            $lifetime = $this->lifetime*60;                                //$lifetime = time()+$this->lifetime*60; //this is incorrect
+            if (ini_get('session.gc_maxlifetime') < $lifetime) {
+                // default value is 1440, so session would expire after 40 mins
+                ini_set('session.gc_maxlifetime', $lifetime);
+            }
         } else {
             $lifetime = 0;
         }

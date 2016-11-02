@@ -1,18 +1,28 @@
-16-10-28 - new {xajax} variable in Sitemodule, which is = 1 if the site module 
-           is called as ajax call. Now you can switch site module tree by this
+16-11-02 - password generation as well as password check now uses standard php
+(honzam)   functions for php>=5.5
+         - the salt for password is generated in more secure way even for
+           php<5.5
+         - the sql_update.php is more secure
+           (all above fixes are based on Gert Steenssens's security
+           observations. Thanks Gert.)
+         - the expiration time of the session now respects AA_LOGIN_TIMEOUT or
+           is 200 minutes as was previously
+           (gc_maxlifetime increased, so it do not expire after 40 minutes)
+16-10-28 - new {xajax} variable in Sitemodule, which is = 1 if the site module
+(honzam)   is called as ajax call. Now you can switch site module tree by this
            variable.
-           Sometimes you need to call some view as ajax call. You can do that by 
-           calling /apc-aa/view.php3, but in this case you lost {xlang} and 
-           other site module variuables. Now you can for example create slice 
-           with such views as items and call them by ajax as /en/page-with-view  
-         - better page caching - now we use Etag and Last-Modified headers and 
-           if the content is not modified, we are sendning 304 Not modified 
-           header. It saves bandwith mainly when used with reverse proxies. 
+           Sometimes you need to call some view as ajax call. You can do that by
+           calling /apc-aa/view.php3, but in this case you lost {xlang} and
+           other site module variuables. Now you can for example create slice
+           with such views as items and call them by ajax as /en/page-with-view
+         - better page caching - now we use Etag and Last-Modified headers and
+           if the content is not modified, we are sendning 304 Not modified
+           header. It saves bandwith mainly when used with reverse proxies.
          - better support for inline editing with CKEditor - save script now in
            aajslib
          - better handling of logins
-         - better handling of aliases - now we have one code path for handling 
-           them 
+         - better handling of aliases - now we have one code path for handling
+           them
          - form.php3 now respects slice encoding
          - code clean-up
          - discussion.php3 is now cahced the same way as view or site
