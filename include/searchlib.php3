@@ -322,7 +322,7 @@ class AA_Sortorder extends AA_Object {
             return array();
         }
         $ret = array($this->field => ($this->desc ? 'd' : 'a'));
-        if (is_numeric($this->limit)) {
+        if (ctype_digit((string)$this->limit)) {
             $ret['limit'] = (int)$this->limit;
         }
         return $ret;
@@ -391,8 +391,8 @@ class AA_Set extends AA_Object {
      *  Should replace QueryZIDs() in future
      *  @param $restrict_zids - zids
      */
-    function query($restrict_zids=false) {
-        return QueryZIDs($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids);
+    function query($restrict_zids=false, $limit=null) {
+        return QueryZIDs($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
     }
 
     /** clear function
@@ -1334,7 +1334,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 *                                     // view parameter instead)
 *   </pre>
 */
-function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE" ) {
+function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE", $limit=null ) {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
@@ -1714,6 +1714,10 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 //        if (defined("DB_COLLATION") AND (strpos($select_order, '.text') !== false)) {
 //            $SQL .= " COLLATE ". DB_COLLATION;
 //        }
+    }
+
+    if ($limit > 0) {
+        $SQL .= ' LIMIT '. (int)$limit;
     }
 
     // add comment to the SQL command (for debug purposes)
