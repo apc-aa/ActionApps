@@ -58,7 +58,7 @@ function get_formatted_date($datestring, $format) {
     for ( $i=0, $ino=strlen($datestring); $i<$ino; ++$i) {
         if (ctype_alpha($datestring[$i]) && ($s == "" || ctype_alpha($datestring[$i-1]))) {
             $s .= $datestring[$i];
-        } elseif (ctype_digit($datestring[$i]) && ($s == "" || ctype_digit($datestring[$i-1]))) {
+        } elseif (ctype_digit((string)$datestring[$i]) && ($s == "" || ctype_digit((string)$datestring[$i-1]))) {
             $s .= $datestring[$i];
         } elseif ($s) {
             $dateparts[] = $s;

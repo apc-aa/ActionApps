@@ -224,14 +224,14 @@ class AA_Validate_Number extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        if (!ctype_digit($var)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value'), $default);
+        if (!ctype_digit((string)$var)) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value')."'$var'", $default);
         }
         $var = (int)$var;
-        if ( ctype_digit($this->max) AND ($var > $this->max) ) {
+        if ( ctype_digit((string)$this->max) AND ($var > $this->max) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
         }
-        if ( ctype_digit($this->min) AND ($var < $this->min) ) {
+        if ( ctype_digit((string)$this->min) AND ($var < $this->min) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
@@ -242,9 +242,9 @@ class AA_Validate_Number extends AA_Validate {
      */
     function getHtmlInputAttr() {
         $ret = array('type'=>'number', 'pattern'=>'[0-9]*');
-        if (ctype_digit($this->min))                        { $ret['min']  = $this->min; }
-        if (ctype_digit($this->max))                        { $ret['max']  = $this->max; }
-        if (ctype_digit($this->step AND ($this->step > 1))) { $ret['step'] = $this->step; }
+        if (ctype_digit((string)$this->min))                        { $ret['min']  = $this->min; }
+        if (ctype_digit((string)$this->max))                        { $ret['max']  = $this->max; }
+        if (ctype_digit((string)$this->step AND ($this->step > 1))) { $ret['step'] = $this->step; }
         return $ret;
     }
 }
