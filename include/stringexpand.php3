@@ -5029,10 +5029,6 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
     }
 }
 
-
-//error_reporting(E_ALL ^ E_NOTICE);
-//ini_set('display_errors', 1);
-
 /** @return avatar img or colored div with initials
  *  {avatar:<img_url>:[<person_name>]:[<avatar-size>]}
  *  Ussage:
@@ -5638,9 +5634,9 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
  *    {redirect:{ifset:{xid}::http#://example.org/en/new-page}}  - for conditional redirect
  */
 class AA_Stringexpand_Redirect extends AA_Stringexpand {
-    function expand($url='') {
+    function expand($url='',$code='') {
         if (!empty($url)) {
-            go_url($url, '', false, 301);  // 301 Moved Permanently
+            go_url($url, '', false, $code ?: 301);  // 301 Moved Permanently
         }
         return '';
     }
@@ -6026,7 +6022,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
                 $showfirst = 'display:none;';
                 if ($li_code) {
                     $active = $i ? '' : ' active';
-                    $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;\">".trim(AA_Stringexpand::unalias($li_code, '', $item))."</li>";
+                    $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id'); \" onmouseover=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id');\">".trim(AA_Stringexpand::unalias($li_code, '', $item))."</li>";
                 }
             }
             ++$i;

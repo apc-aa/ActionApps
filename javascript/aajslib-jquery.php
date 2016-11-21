@@ -398,10 +398,10 @@ function AA_Rotator(id, interval, max, speed, effect) {
     }
 
     if (AA_Rotator.rotators[id].effect == 'fade') {
-        $(jqid(id)+ ' .rot-hide').fadeOut(AA_Rotator.rotators[id].speed);
+        $(jqid(id)+ ' .rot-hide').stop( true, true ).fadeOut(AA_Rotator.rotators[id].speed);
         $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').fadeIn(AA_Rotator.rotators[id].speed);
     } else {
-        $(jqid(id)+ ' .rot-hide').hide(AA_Rotator.rotators[id].speed);
+        $(jqid(id)+ ' .rot-hide').stop( true, true ).hide(AA_Rotator.rotators[id].speed);
         $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').show(AA_Rotator.rotators[id].speed);
     }
 
@@ -512,22 +512,26 @@ function AA_StateChange(id, state) {
 
 function AA_LoadJs(condition, callback, url) {
     if (condition) {
-        callback();
+        if (callback) {
+            callback();
+        }
     } else {
         var script = document.createElement("script")
         script.type = "text/javascript";
 
-        if (script.readyState) { //IE
-            script.onreadystatechange = function () {
-                if (script.readyState == "loaded" || script.readyState == "complete") {
-                    script.onreadystatechange = null;
+        if (callback) {
+            if (script.readyState) { //IE
+                script.onreadystatechange = function () {
+                    if (script.readyState == "loaded" || script.readyState == "complete") {
+                        script.onreadystatechange = null;
+                        callback();
+                    }
+                };
+            } else { //Others
+                script.onload = function () {
                     callback();
-                }
-            };
-        } else { //Others
-            script.onload = function () {
-                callback();
-            };
+                };
+            }
         }
 
         script.src = url;

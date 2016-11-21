@@ -672,22 +672,26 @@ function AA_Toolbar(text) {
 
 function AA_LoadJs(condition, callback, url) {
     if (condition) {
-        callback();
+        if (callback) {
+            callback();
+        }
     } else {
         var script = document.createElement("script")
         script.type = "text/javascript";
 
-        if (script.readyState) { //IE
-            script.onreadystatechange = function () {
-                if (script.readyState == "loaded" || script.readyState == "complete") {
-                    script.onreadystatechange = null;
+        if (callback) {
+            if (script.readyState) { //IE
+                script.onreadystatechange = function () {
+                    if (script.readyState == "loaded" || script.readyState == "complete") {
+                        script.onreadystatechange = null;
+                        callback();
+                    }
+                };
+            } else { //Others
+                script.onload = function () {
                     callback();
-                }
-            };
-        } else { //Others
-            script.onload = function () {
-                callback();
-            };
+                };
+            }
         }
 
         script.src = url;
