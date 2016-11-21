@@ -29,10 +29,6 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."grabber.class.php3";
 
-//error_reporting(E_ERROR | E_PARSE);
-//ini_set('display_errors',true);
-
-
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }

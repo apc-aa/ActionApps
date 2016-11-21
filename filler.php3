@@ -57,9 +57,6 @@ http://www.apc.org/
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
-//$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
-//error_reporting(E_ALL ^ E_NOTICE);
-//ini_set('display_errors', 1);
 
 $debugfill=$_REQUEST['debugfill'];
 

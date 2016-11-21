@@ -1,3 +1,11 @@
+16-11-21 - new parameter <code> in {redirect:<url>[:<code>]} - default is 301
+(honzam)   (Moved Permanently);
+         - {rotator} better switches between pictures (for both - onclick and
+           onmouseover
+         - optimize AA to run behind a proxy
+         - better validation - validators are unified and uses the same code for
+           all codepaths
+         - optimized for speed
 16-11-21 - new (experimental - so the code could be changed)
 (honzam)     {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>]]}
              - quite powerfull for managing of related items. Works great for

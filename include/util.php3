@@ -28,9 +28,6 @@
 // Miscellaneous utility functions
 //
 
-// supress PHP notices
-error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
-
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."constants.php3";
 require_once AA_INC_PATH."mgettext.php3";
@@ -899,6 +896,8 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
 
     AA::$debug&32 && AA::$dbg->traceend('GetItemContent', $content);
+
+    // $use_short_ids && AA_Log::warn('use_short_ids');
 
     return $content;   // Note null returned above if no items found
 }
