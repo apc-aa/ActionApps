@@ -570,7 +570,7 @@ class AA_Widget extends AA_Components {
      *   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
      *   is called to grab the value (or multivalues) from the submitted form
      *
-     *  static class method
+     *  static class method (...mostly)
      */
     function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
@@ -2224,14 +2224,16 @@ class AA_Property extends AA_Storable {
     }
 
     /** called before StoreItem to fill the field with correct data */
-    function  complete4Insert($new_value, $profile) {
+    function complete4Insert($new_value, $profile) {
         $fid           = $this->getId();
         $profile_value = $profile->getProperty('hide&fill',$fid) ?: $profile->getProperty('fill',$fid);
         if ($profile_value) {
             $new_value = $profile->parseContentProperty($profile_value);
         }
-//        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
-        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues())) {
+
+//      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
+//      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues()) ) {  // HM 2016-10-14
+        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues()) || $new_value->isEmpty()) {
             return $this->default;
         }
         return $new_value;

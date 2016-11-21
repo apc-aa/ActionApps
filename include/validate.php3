@@ -34,12 +34,11 @@
  * @param $variable could be array or not
  * @param $err
  * @param $needed
- * @param $type
- *  You can add parameters to $type divided by ":".
+ * @param $validator  (object of simple string)
  */
-function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") {
+function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $validator="all") {
     foreach ((array)$variable as $var) {
-        $valid = _ValidateSingleInput($variableName, $inputName, $var, $err, $needed, $type);
+        $valid = _ValidateSingleInput($variableName, $inputName, $var, $err, $needed, $validator);
         if ( !$valid ) {
             break;
         }
@@ -502,7 +501,7 @@ class AA_Validate_Unique extends AA_Validate {
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
+            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
             'item_id'  => array( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
             );
     }
@@ -513,6 +512,12 @@ class AA_Validate_Unique extends AA_Validate {
      */
     function validate(&$var, $default='AA_noDefault') {
         global $slice_id;
+
+        switch ($this->scope) {  // for older approach - presented in field setting
+            case '0': $this->scope = 'username';  break;
+            case '1': $this->scope = 'slice';     break;
+            case '2': $this->scope = 'allslices'; break;
+        }
 
         if ( $this->scope == 'username') {
             if ( !AA::$perm->isUsernameFree($var) AND ( !$this->item_id OR (AA_Reader::name2Id($var) != $this->item_id))) {
@@ -550,6 +555,7 @@ class AA_Validate_Unique extends AA_Validate {
  *  @param   $item_id     - current item ID
  */
 class AA_Validate_Eunique extends AA_Validate {
+
     /** Search in which field */
     var $field_id;
 
@@ -566,7 +572,7 @@ class AA_Validate_Eunique extends AA_Validate {
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
+            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
             'item_id'  => array( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
             );
     }
@@ -579,7 +585,6 @@ class AA_Validate_Eunique extends AA_Validate {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
             return false;
         }
-
         $validator = new AA_Validate_Unique(array('field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id));
         return $validator->validate($var, $default);
     }
@@ -607,37 +612,12 @@ class AA_Validate_Text extends AA_Validate {
 *  @param $variable is not array
 * @param $err
 * @param $needed
-* @param $type
+* @param $validator  (object of simple string)
 *  You can add parameters to $type divided by ":".
 */
-function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $type) {
-
-    $validate_definition = ParamExplode($type);
-    $type                = $validate_definition[0];
-
-    switch ($type) {
-        case 'regexp':   $regexp    = array('pattern'=>$validate_definition[1]);
-                         $err_text  = isset($validate_definition[2]) ? $validate_definition[2] : null;
-                         $validator = new AA_Validate_Regexp($regexp, null, $err_text);
-                         break;
-        case 'e-unique':
-        case 'unique':
-                         $UNIQUE_SCOPES               = array ( 0 => 'username',
-                                                                1 => 'slice',
-                                                                2 => 'allslices'
-                                                               );
-                         $val_param = array();
-                         $val_param['field_id'] = $validate_definition[1];
-                         $val_param['scope']    = $UNIQUE_SCOPES[(int)$validate_definition[2]];
-                         $val_param['item_id']  = $validate_definition[3];
-
-                         if ( $type == 'unique' ) {
-                             $validator = new AA_Validate_Unique( $val_param );
-                         } else {
-                             $validator = new AA_Validate_Eunique( $val_param );
-                         }
-                         break;
-        default:         $validator = AA_Validate::factoryCached($type);
+function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $validator) {
+    if (is_string($validator)) {
+       $validator = AA_Validate::factoryCached($validator);
     }
 
     $ret = true;

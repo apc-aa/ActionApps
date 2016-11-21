@@ -940,16 +940,12 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             // special setting for file upload - there we solve the problem
             // of required fileupload field, but which is empty at this moment
             if ( $f["required"] AND (substr($f["input_show_func"], 0,3) === 'fil')) {
-                ValidateInput($varname, $f["name"], $$varname. $GLOBALS[$varname.'x'] , $err, // status code is never required
-                    $f["required"] ? 1 : 0, $f["input_validate"]);
+                ValidateInput($varname, $f["name"], $$varname. $GLOBALS[$varname.'x'] , $err, $f["required"] ? 1 : 0, AA_Validate::factoryByString($f["input_validate"]));
                 continue;
             }
 
             switch( $validate ) {
-                // necessary for 'unique' validation: do not validate if
-                // the value did not change (otherwise would the value always
-                // be found)
-                case 'e-unique':
+                    case 'e-unique':
                 case 'unique':
 
                     // fill field with curent field, if not filled and
@@ -961,7 +957,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                         $v_field = $pri_field_id;
                     }
                     $v_type = ParamImplode(array($v_func,$v_field,$v_scope,$id));
-                    ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, $v_type);
+                    ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, AA_Validate::factoryByString($v_type));
 
                     break;
                 case 'user':
@@ -976,7 +972,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 //case 'id':
                 default:
                     // status code is never required
-                    ValidateInput($varname, $f["name"], $$varname, $err, ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, $f["input_validate"]);
+                    ValidateInput($varname, $f["name"], $$varname, $err, ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, AA_Validate::factoryByString($f["input_validate"]));
                     break;
             }
         }
