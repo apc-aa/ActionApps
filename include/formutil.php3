@@ -1252,8 +1252,15 @@ class AA_Inputfield {
         if ($placeholder) {
             $attrs['placeholder'] = myspecialchars($placeholder);
         }
+
         $attrs['size']      = get_if($size, $attrs['size'], 25);
         $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
+
+        // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
+        if (($attrs['type']=='number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
+            $attrs['max'] = pow(10,$nchars)-1;
+            $attrs['min'] = $attrs['min'] ?: '0';
+        }
 
         $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
 
