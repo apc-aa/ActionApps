@@ -40,10 +40,10 @@ if (!$userfile) {
     if ($encoding) echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
     echo "</form>";
 } else {
-    $file_name=strtolower(gensalt(20));
-    $realname=$_FILES['userfile']['name'];
-    $stringoutput='';
-    $dest_file = Files::uploadFile('userfile', $uploadpath, '', 'new', $file_name);
+    $file_name    = Files::getTmpFilename('msc');
+    $realname     = $_FILES['userfile']['name'];
+    $stringoutput = '';
+    $dest_file    = Files::uploadFile('userfile', $uploadpath, '', 'new', $file_name);
     if ($dest_file === false) {   // error
         $error = Files::lastErrMsg();
     }
