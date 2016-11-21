@@ -72,7 +72,7 @@ class AA_Form_Array {
         if ( !$oowner ) {
             throw new Exception('No owner specifield for '. $form_field_id);
         }
-        $item_index = is_numeric($item_index) ? (int)$item_index : 1;
+        $item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
         return "aa[n${item_index}_$oowner][$form_field_id]";
     }
 
@@ -173,7 +173,7 @@ class AA_Widget extends AA_Components {
 
     /** set index of the item in new-item form */
     public function setIndex($item_index=null) {
-        $this->item_index = is_numeric($item_index) ? (int)$item_index : 1;
+        $this->item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
     }
 
     /** returns array(ids => formated text) for the current widget based on
@@ -397,16 +397,16 @@ class AA_Widget extends AA_Components {
         return $ret;
     }
 
-    static function _saveIcon($base_id, $cond=true,  $pos='right', $offset=0) {
-        return !$cond ? '' : '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH."images/px.gif\" style=\"position:absolute; $pos:$offset"."px; top:0;\">";
+    static function _saveIcon($base_id, $cond=true,  $pos='right', $offset=-12) {
+        return !$cond ? '' : '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH."images/px.gif\" style=\"position:absolute; $pos:$offset"."px; top:-3px;\">";
     }
 
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $aa_property->isRequired() ? 'required' : '';
-        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
-        $widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-left:16px;\"" : '';
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
         $widget      = '';
         $autofocus = ($type=='ajax') ? 'autofocus' : '';
 
@@ -418,7 +418,8 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = AA_Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+            //$widget    = AA_Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+            $widget    = AA_Widget::_saveIcon($base_id, $type == 'live')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
             $selected  = $content->getAaValue($aa_property->getId());
             // empty select option for not required fields and also for live selectbox,
             // because people thinks, that the first value is filled in the database (which is not)
@@ -434,8 +435,15 @@ class AA_Widget extends AA_Components {
             if (is_object($aa_property->validator)) {
                 $attrs = array_merge($attrs, $aa_property->validator->getHtmlInputAttr());
             }
+
             $attrs['size']      = get_if($this->getProperty('width'),          $attrs['size'], 60);
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
+
+            // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
+            if (($attrs['type']=='number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
+                $attrs['max'] = pow(10,$nchars)-1;
+                $attrs['min'] = $attrs['min'] ?: '0';
+            }
 
             $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
 
@@ -462,7 +470,7 @@ class AA_Widget extends AA_Components {
          $input_id    = AA_Form_Array::formName2Id($input_name);
          $input_value = myspecialchars($val);
          $link        = ((substr($input_value,0,7)==='http://') OR (substr($input_value,0,8)==='https://')) ? '&nbsp;'.a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-         $ret         =  "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live', 'right', $link ? 16 : 0);
+         $ret         =  "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live'); //, 'right', $link ? 16 : 0);
          if ($lang = AA_Content::getLangId($i)) {
              $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
          }
@@ -569,7 +577,7 @@ class AA_Widget extends AA_Components {
         $fld_value_arr = array();
 
         foreach ( (array)$data4field as $key => $value ) {
-            if (is_numeric($key)) {
+            if (ctype_digit((string)$key)) {
                 $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
             elseif (($key != 'flag') AND class_exists($class = AA_Widget::constructClassName($key))) {
@@ -601,7 +609,7 @@ class AA_Widget extends AA_Components {
                 case 'const_arr':              $ret[$pid] = new AA_Property( $pid, _m("Values array"),                      'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")); break;
                 case 'area_type':              $ret[$pid] = new AA_Property( $pid, _m("Type"),                              'string', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class'); break;
                 case 'width':                  $ret[$pid] = new AA_Property( $pid, _m("Width"),                                'int', false, true, 'int',    false, _m("width of the field in characters (size parameter)"),     '',  60); break;
-                case 'show_buttons':           $ret[$pid] = new AA_Property( $pid, _m("Buttons to show"),                   'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'); break;
+                case 'show_buttons_txt':       $ret[$pid] = new AA_Property( $pid, _m("Buttons to show"),                   'string', false, true, 'string', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'); break;
                 case 'row_count':              $ret[$pid] = new AA_Property( $pid, _m("Row count"),                            'int', false, true, 'int',    false, '', '', 10); break;
                 case 'slice_field':            $ret[$pid] = new AA_Property( $pid, _m("Slice field"),                       'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'); break;
                 case 'use_name':               $ret[$pid] = new AA_Property( $pid, _m("Use name"),                            'bool', false, true, 'bool',   false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'); break;
@@ -643,6 +651,7 @@ class AA_Widget extends AA_Components {
                 case 'change_hint':            $ret[$pid] = new AA_Property( $pid, _m("Help for Change Password"),          'string', false, true, 'string', false, _m("Help text under the Change Password box (default: no text)"), '', _m("To change password, enter the new password here and below")); break;
                 case 'retype_hint':            $ret[$pid] = new AA_Property( $pid, _m("Help for Retype New Password"),      'string', false, true, 'string', false, _m("Help text under the Retype New Password box (default: no text)"), '', _m("Retype the new password exactly the same as you entered into \"Change Password\".")); break;
                 case 'url':                    $ret[$pid] = new AA_Property( $pid, _m("URL"),                               'string', false, true, 'string', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml")); break;
+                case 'item_template':          $ret[$pid] = new AA_Property( $pid, _m("New item template ID"),              'string', false, true, 'string', false, _m("The ID of item in destination slice used as Template for new items (probably in Holding bin)"), '', '3e86c0be745dd7b35f406d6997c46b8e'); break;
             }
         }
         return $ret;
@@ -681,7 +690,7 @@ class AA_Widget_Txt extends AA_Widget {
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id        = AA_Form_Array::formName2Id($base_name);
-        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
+        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : 'style="width:100%"';
         $widget_add2    = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget         = '';
@@ -820,7 +829,7 @@ class AA_Widget_Mfl extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        $ret = AA_Widget::propertiesShop(array('show_buttons','row_count','max_characters','width','rows'));
+        $ret = AA_Widget::propertiesShop(array('show_buttons_txt','row_count','max_characters','width','rows'));
         $ret['rows']->setHelp(_m("if 1 (default), textfield used. for rows>1 textareas are used"))->setExample(1);
         return $ret;
     }
@@ -833,7 +842,7 @@ class AA_Widget_Mfl extends AA_Widget {
         $base_name_add = $base_name . '[mfl]';
 
         $base_id       = AA_Form_Array::formName2Id($base_name);
-        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
         $row_count     = (int)$this->getProperty('row_count', 6);
@@ -857,7 +866,7 @@ class AA_Widget_Mfl extends AA_Widget {
         $widget_add2 = '';
         $widget_add  = $attrs['size'] ? '' : 'style="width:100%"';
         if ($type == 'live') {
-            $widget_add = "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"";
+            $widget_add = "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"";
             $widget_add2 = '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">';
         }
 
@@ -906,7 +915,7 @@ class AA_Widget_Mfl extends AA_Widget {
         $fld_value_arr = array();
 
         foreach ( (array)$data4field as $key => $value ) {
-            if (is_numeric($key) AND strlen($value)) {
+            if (ctype_digit((string)$key) AND strlen($value)) {
                 $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
@@ -1014,7 +1023,7 @@ class AA_Widget_Rio extends AA_Widget {
         $base_id       = AA_Form_Array::formName2Id($base_name);
 
         $required    = $aa_property->isRequired() ? 'required' : '';
-        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
         $widget      = '';
 
@@ -1230,7 +1239,7 @@ class AA_Widget_Chb extends AA_Widget {
         $fld_value_arr = array();
 
         foreach ( (array)$data4field as $key => $value ) {
-            if (is_numeric($key)) {
+            if (ctype_digit((string)$key)) {
                 $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
@@ -1337,7 +1346,7 @@ class AA_Widget_Mch extends AA_Widget {
         $fld_value_arr = array();
 
         foreach ( (array)$data4field as $key => $value ) {
-            if (is_numeric($key)) {
+            if (ctype_digit((string)$key)) {
                 $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
@@ -1595,7 +1604,7 @@ class AA_Widget_Tag extends AA_Widget {
         $input_name   = $base_name.'[tag][]';
         $input_id     = AA_Form_Array::formName2Id($input_name);
 
-        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
         // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
@@ -1639,7 +1648,7 @@ class AA_Widget_Tag extends AA_Widget {
         $fld_value_arr = array();
 
         foreach ( (array)$data4field as $key => $value ) {
-            if (is_numeric($key) AND strlen($value)) {
+            if (ctype_digit((string)$key) AND strlen($value)) {
                 $vals = explode("|||",$value);
                 foreach ($vals as $v) {
                     if (strlen(trim($v))) {
@@ -1700,8 +1709,7 @@ class AA_Widget_Rim extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return AA_Widget::propertiesShop(array('const','slice_field','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr', 'filter_conds_rw'));
-        return $ret;
+        return AA_Widget::propertiesShop(array('const','slice_field','show_buttons','item_template','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr', 'filter_conds_rw'));
     }
 
     function _getRawHtml($aa_property, $content, $type='normal') {
@@ -1719,7 +1727,16 @@ class AA_Widget_Rim extends AA_Widget {
                               <section class="itemgroup">';
 
 
-        $options     = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
+        $options        = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
+
+        $actions2show   = $this->getProperty('show_buttons', 'MDR');
+        $actbuttons     = array();
+        $actbuttonsdown = array();
+        if (strpos($actions2show, 'M')!==false) { $actbuttonsdown['M'] = ''; }// @todo
+        if (strpos($actions2show, 'R')!==false) { $actbuttonsdown['R'] = "<article><i class=\"ico insert\">add</i><input type=search value onkeyup=\"DisplayAaResponse('flt$input_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>"; }// @todo
+        if (strpos($actions2show, 'N')!==false) { $actbuttonsdown['N'] = ''; }// @todo
+        if (strpos($actions2show, 'D')!==false) { $actbuttons['D'] = '<article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>'; }// @todo
+        if (strpos($actions2show, 'E')!==false) { $actbuttons['E'] = '<article><i class="ico edit">edit</i></article>'; }// @todo
 
         $input_name  = $base_name_add ."[]";
         $i = 0;
@@ -1731,10 +1748,8 @@ class AA_Widget_Rim extends AA_Widget {
                                '. $v .'
                              </section>
                              <section class="icogroup">
-                               <input type="hidden" name="'.$input_name.'" id="'.$input_id.'" value="'.safe($k).'">
-
-                               <!--article><i class="ico edit">edit</i></article-->
-                               <article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>
+                               <input type="hidden" name="'.$input_name.'" id="'.$input_id.'" value="'.safe($k).'">'.
+                               join("\n", array_values($actbuttons)) .'
                              </section>
                            </article>
                            ';
@@ -1754,7 +1769,7 @@ class AA_Widget_Rim extends AA_Widget {
                        </section>
                        <footer>
                          <input type="hidden" name="$input_name" id="$input_id" value="">
-                         <article><i class="ico insert">přidat</i><input type=search value onkeyup="DisplayAaResponse('flt$input_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})"></article>
+
                          <article><i class="ico megainsert">přetánout</i></article>
                          <article><i class="ico new">nový</i></article>
                        </footer>
@@ -1847,7 +1862,7 @@ class AA_Widget_Hco extends AA_Widget {
     //    $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
     //    $base_id     = AA_Form_Array::formName2Id($base_name);
     //    $required    = $aa_property->isRequired() ? 'required' : '';
-    //    $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_HcoDisplaySub(); AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+    //    $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_HcoDisplaySub(); AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
     //    $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
     //    $widget      = '';
     //
