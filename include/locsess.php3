@@ -250,13 +250,14 @@ class DB_AA extends DB_Sql {
      *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
      *  used as: $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
      **/
-    static function select1($query, $column=false, $where=null) {
+    static function select1($query, $column=false, $where=null, $order=null) {
         $db = getDB();
-        $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
+        $query .= is_array($where) ? ' '.DB_AA::makeWhere($where) : '';
+        $query .= is_array($order) ? ' '.DB_AA::makeOrder($order) : '';
 
-        AA::$debug && AA::$dbg->log("$query $sqlwhere LIMIT 1");
+        AA::$debug && AA::$dbg->log("$query LIMIT 1");
 
-        $db->query("$query $sqlwhere LIMIT 1");
+        $db->query("$query LIMIT 1");
         $ret = false;
         if ($db->next_record()) {
             if (!is_array($column)) {
@@ -264,7 +265,7 @@ class DB_AA extends DB_Sql {
             } else {
                 $key = key($column);
                 $val = empty($column) ? $db->Record : array_intersect_key($db->Record, array_flip($column));
-                $ret = is_numeric($key) ? $val : array($db->Record[$key] => $val);
+                $ret = ctype_digit((string)$key) ? $val : array($db->Record[$key] => $val);
             }
         }
         freeDB($db);
@@ -286,11 +287,12 @@ class DB_AA extends DB_Sql {
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
      *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
      **/
-    static function select($column, $query, $where=null) {
+    static function select($column, $query, $where=null, $order=null) {
         $db = getDB();
-        $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
+        $query .= is_array($where) ? ' '.DB_AA::makeWhere($where) : '';
+        $query .= is_array($order) ? ' '.DB_AA::makeOrder($order) : '';
 
-        $db->query("$query $sqlwhere");
+        $db->query($query);
 
         $ret = array();
         if (!is_array($column)) {
@@ -311,7 +313,7 @@ class DB_AA extends DB_Sql {
             } else {
                 $key      = key($column);
                 $values   = reset($column);
-                if (is_numeric($key) OR empty($key)) {
+                if (ctype_digit((string)$key) OR empty($key)) {
                     if (!is_array($values)) {
                         while ($db->next_record()) {
                              $ret[] = $db->Record[$values];
@@ -370,8 +372,8 @@ class DB_AA extends DB_Sql {
      **/
     static function sql($query, $where=null) {
         $db = getDB();
-        $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
-        $ret = $db->query("$query $sqlwhere") ? $db->affected_rows() : false;
+        $query .= is_array($where) ? ' '.DB_AA::makeWhere($where) : '';
+        $ret = $db->query($query) ? $db->affected_rows() : false;
         freeDB($db);
         return $ret;
     }
@@ -383,7 +385,6 @@ class DB_AA extends DB_Sql {
 
     /** LOW PRIORITY version of DB_AA::delete() */
     static function delete_low_priority($table, $where=null) {
-        //huhl( "<br>\nDELETE LOW_PRIORITY FROM `$table` ". (is_null($where) ? '' : DB_AA::makeWhere($where)));
         return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
@@ -420,22 +421,24 @@ class DB_AA extends DB_Sql {
         return (false !== DB_AA::select1("SELECT ".($where[0][0])." FROM `$table` ", '', $where));
     }
 
-    /** makeWHERE function
+    /** makeWhere function
      *  [[field_name, value, type], ...]
-     *     type                    used operator    value              example
-     *     s   - string (default)  =                single or array    array('field_id',$id)
-     *     i   - integer           =                single or array    array('id', $task_id, 'i')
-     *     l   - longid            =                single or array    array('item_id', $ids_arr, 'l')
-     *     set - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
-     *     j   - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join
-     *     >   - integer           >                single             array('date', 1478547854, '>')
-     *     <   - integer           <                single             array('date', 1478547854, '<')
-     *     >=  - integer           >=               single             array('date', 1478547854, '>=')
-     *     <=  - integer           <=               single             array('date', 1478547854, '<=')
+     *     type                        used operator    value              example
+     *     s       - string (default)  =                single or array    array('field_id',$id)
+     *     i       - integer           =                single or array    array('id', $task_id, 'i')
+     *     l       - longid            =                single or array    array('item_id', $ids_arr, 'l')
+     *     set     - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
+     *     j       - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join
+     *     >       - integer           >                single             array('date', 1478547854, '>')
+     *     <       - integer           <                single             array('date', 1478547854, '<')
+     *     >=      - integer           >=               single             array('date', 1478547854, '>=')
+     *     <=      - integer           <=               single             array('date', 1478547854, '<=')
+     *     ISNULL  -                   IS NULL                             array('number', 'ISNULL')
+     *     NOTNULL -                   IS NOT NULL                         array('number', 'NOTNULL')
      *
      * @param $tablename
      */
-    static public function makeWHERE($varlist) {
+    static public function makeWhere($varlist) {
         $delim = '';
         $where = '';
         foreach ( $varlist as $vardef) {
@@ -444,6 +447,12 @@ class DB_AA extends DB_Sql {
             if (in_array($type, array('>','<','<=','>='))) {
                 $operator = $type;
                 $type     = 'i';
+            } elseif ( $value == 'ISNULL' ) {
+                $where   .= "$delim $name IS NULL ";
+                continue;
+            } elseif ( $value == 'NOTNULL' ) {
+                $where   .= "$delim $name IS NOT NULL ";
+                continue;
             } else {
                 $operator = '=';
             }
@@ -474,6 +483,19 @@ class DB_AA extends DB_Sql {
         }
         return $where ? "WHERE $where" : '';
     }
+
+    static protected function makeOrder($orderarr) {
+        $order = array();
+        foreach ($orderarr as $sort) {
+            switch ( substr($sort,-1) ) {    // last character
+                case '-':  $order[] = substr($sort,0,-1). ' DESC'; break;
+                case '+':  $order[] = substr($sort,0,-1); break;
+                default:   $order[] = $sort;
+            }
+        }
+        return $order ? 'ORDER BY '. join(',',$order) : '';
+    }
+
 
     /** tquery function
      * @param $SQL
@@ -610,6 +632,11 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
 
 class AA_Session extends Session {
 
+    function __construct() {
+        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 200;   // 200 minutes
+        parent::__construct();
+    }
+
     // add module_id=... to url. It is better to use StateUrl() directly, but we already use $sess->url() from older versions of $session management
     function url($url) {
         return StateUrl($url);
@@ -623,6 +650,7 @@ class AA_Session extends Session {
 
 function pageOpen($type = '') {
     global $sess, $auth;
+
     $sess = new AA_Session;
     $sess->start();
 
