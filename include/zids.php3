@@ -561,13 +561,13 @@ class zids implements Iterator, ArrayAccess, Countable {
  */
 function guesstype($str) {
     $s = strlen($str);
-    if (($s < 12) AND (is_numeric($str) OR ($str==''))) {
+    if (($s < 12) AND (ctype_digit($str) OR ($str==''))) {
         return 's';
     }
     if (($s >= 12) AND ($s <= 16)) {
         return 'p';
     }
-    if (($s >= 24) AND ($s <= 32) AND (strspn($str, "0123456789abcdefABCDEF") == $s)) {
+    if (($s >= 24) AND ($s <= 32) AND ctype_xdigit($str)) {
         return 'l';
     }
     if ($s > 32) {
@@ -579,7 +579,7 @@ function guesstype($str) {
 
 /** type validating functions */
 function is_short_id($id)  { return guesstype($id)=='s'; }
-function is_long_id($id)   { return ((strlen($id)==32) AND (strspn($id, "0123456789abcdefABCDEF") == 32)); }
+function is_long_id($id)   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
 function is_packed_id($id) { return guesstype($id)=='p'; }
 
 

@@ -297,7 +297,7 @@ class AA_Field_Writer {
         switch( $add_mode ) {
             case 't':  // t for tags - it could be normal item ID or new Tag
                 $v = $value['value'];
-                if ( (strlen($v)!=32) OR (strspn($v, "0123456789abcdefABCDEF")!=32)) {
+                if ( !is_long_id($v)) {
                     $fnc = ParseFnc($field["input_show_func"]);   // input show function
                     if ($fnc AND ($fnc['fnc']=='tag')) {
                         // get add2constant and constgroup (other parameters are irrelevant in here)
@@ -955,7 +955,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     // fill field with curent field, if not filled and
                     // add $id, so we do not find the currently edited item when
                     // we are looking for uniqueness
-                    
+
                     list($v_func,$v_field,$v_scope) = ParamExplode($f["input_validate"]);
                     if (!$v_field) {
                         $v_field = $pri_field_id;
