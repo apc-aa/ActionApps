@@ -21,13 +21,6 @@ http://www.apc.org/
 
 $timestart = microtime(true);
 
-// supress PHP notices
-error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
-if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
-  $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
-  $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_X_FORWARDED_SERVER'];
-}
-
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
@@ -89,10 +82,10 @@ function StripslashesDeep($value) {
 function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
+        header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]));
         echo AA_Stringexpand::unalias($page);
-    } else {
-        echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>';
     }
+    //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
     exit;
 }
 // ----------------- function definition end -----------------------------------

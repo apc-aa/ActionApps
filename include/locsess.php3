@@ -25,8 +25,22 @@
 * @link      http://www.apc.org/ APC
 *
 */
+/** This file is included to all scripts, so let's set there the main environment */
+
 // set timezone - just for date() speedup
 // date_default_timezone_set(date_default_timezone_get());
+
+// supress PHP notices
+error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
+
+// if AA used in proxy mode, we need to correct some internal variables
+if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
+    $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_X_FORWARDED_SERVER'];
+    if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
+        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+}
 
 /* Change this to match your database. */
 require_once(AA_INC_PATH.'phplib/'. (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc"));

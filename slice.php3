@@ -148,14 +148,19 @@ require_once AA_INC_PATH."locsess.php3";
 /** MyUrl function - was in sessions before, but now it is used just in this script, so moved here and rewritten to handle encap (=shtml)/not encap version
  *  rewriten to return URL of shtml page that includes this script instead to return self url of this script.
  */
-// function MyUrl($sliceID, $encap=false, $noquery=false) {   //If noquery parameter is true, session id is not added
-function MyUrl($sliceID, $encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function in extsess.php3
-    $ret  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-    $ret .= '://'. $_SERVER['HTTP_HOST'];
+function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility with MyUrl function in extsess.php3
 
-    if( $scr_url ) {  // if included into php script
-        $ret .= $scr_url;
-    } elseif ($encap) {
+    $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+    $server .= '://'. $_SERVER['HTTP_HOST'];
+
+    if ( $scr_url ) {  // if included into php script
+        return $server.$scr_url;
+    } elseif ($_SERVER["HTTP_X_FORWARDED_SERVER"]) {
+        return '';   // it is impossible to get original script name when AA is hidden after proxy. In this case we will use reletive URL (which is not bad in any case, I think - Honza 2016-11-21)
+    }
+
+    $ret = $server;
+    if ($encap) {
         if (isset($_SERVER['REDIRECT_DOCUMENT_URI'])) {  // CGI --enable-force-cgi-redirect
             $ret .= $_SERVER['REDIRECT_DOCUMENT_URI'];
         } elseif (isset($_SERVER['DOCUMENT_URI'])) {
@@ -360,7 +365,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset ($hideFulltext)) {
-        $itemview = new itemview($slice_info, '', $aliases, $zid, 0, 1, MyUrl($slice_id, $encap, $scr_url));
+        $itemview = new itemview($slice_info, '', $aliases, $zid, 0, 1, MyUrl($encap, $scr_url));
         echo $itemview->get_output_cached("fulltext");
     }
 
@@ -386,7 +391,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format  = GetDiscussionFormat($view_info);
             $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
-            $itemview = new itemview($format, '', $aliases, null,"", "", MyUrl($slice_id, $encap, $scr_url), $disc);
+            $itemview = new itemview($format, '', $aliases, null,"", "", MyUrl($encap, $scr_url), $disc);
             echo $itemview->get_output("discussion");
             // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice
@@ -405,7 +410,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
     $zids     = new zids($ids,"l");
-    $itemview = new itemview($slice_info, '', $aliases, $zids, 0,$zids->count(), MyUrl($slice_id, $encap, $scr_url));
+    $itemview = new itemview($slice_info, '', $aliases, $zids, 0,$zids->count(), MyUrl($encap, $scr_url));
     ExitPage($itemview->get_output_cached("itemlist"));
 }
 
@@ -534,11 +539,13 @@ if ($mlxslice) {
 }
 
 
+
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = get_url(($scr_url ? $sess->url("$scr_url") : MyUrl($slice_id, $encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
+    $scr_url_param = get_url(($scr_url ? $sess->url("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
     $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
 }
+
 // display 'All' option in scroller
 if ($all_scr) { $scr->setShowAll($all_scr); }
 
@@ -574,8 +581,7 @@ if ( !$scrl ) {
 
 if ( !$srch AND !$encap AND !$easy_query ) {
     $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
-    //     pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
-    pCatSelector($sess->name, $sess->id, MyUrl($slice_id, $encap, $scr_url), $cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
+    pCatSelector($sess->name, $sess->id, MyUrl($encap, $scr_url), $cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
 }
 
 
@@ -583,7 +589,7 @@ if ($zids->count() > 0) {
 
     $itemview = new itemview($slice_info, '', $aliases, $zids, $scr->metapage * ($scr->current - 1),
                              ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
-                             MyUrl($slice_id, $encap, $scr_url) );
+                             MyUrl($encap, $scr_url) );
 
     echo $itemview->get_output_cached("view");
 

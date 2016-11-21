@@ -316,7 +316,10 @@ class AA_Router_Seo extends AA_Router {
         // manage links like example.org/?filter=22
         if (substr($apc,0,2)=='/?') {  // maybe also "#"
             $apc = $home.$apc;
+        } elseif ($apc=='/index.php') { // usefull for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Appache adds index.php as default path so we have to re
+            $apc = $home;
         }
+
         $parsed_url = parse_url(trim($apc,' \t/') ? $apc : $home);
         $arr        = explode('/', trim($parsed_url['path'],'/'));
         $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
