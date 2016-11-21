@@ -96,15 +96,17 @@ class zids implements Iterator, ArrayAccess, Countable {
                     }
                 }
             } else {
-                foreach ( $initial as $id ) {
-                    if ( $id ) {                       // copy just not empty ids
-                        $this->a[] = $id;
-                    }
-                }
+                $this->a = array_filter($initial);  // copy just not empty ids
+                // foreach ( $initial as $id ) {
+                //     if ( $id ) {                 // copy just not empty ids
+                //         $this->a[] = $id;
+                //     }
+                // }
             }
         } else {
             $this->a[] = $initial;
         }
+        unset( $initial );
         if ($this->type == "z") {
             $this->type = guesstype($this->a[0]);
         }
@@ -561,7 +563,7 @@ class zids implements Iterator, ArrayAccess, Countable {
  */
 function guesstype($str) {
     $s = strlen($str);
-    if (($s < 12) AND (ctype_digit($str) OR ($str==''))) {
+    if (($s < 12) AND (ctype_digit((string) $str) OR ($str==''))) {
         return 's';
     }
     if (($s >= 12) AND ($s <= 16)) {
@@ -578,9 +580,9 @@ function guesstype($str) {
 }
 
 /** type validating functions */
-function is_short_id($id)  { return guesstype($id)=='s'; }
+function is_short_id($id)  { return (strlen($id) < 12) AND ctype_digit((string) $id); }
 function is_long_id($id)   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
-function is_packed_id($id) { return guesstype($id)=='p'; }
+function is_packed_id($id) { return (strlen($id)==16); }
 
 
 /** ParamExplode(), unpack_id() and get_hash() functions moved here from
