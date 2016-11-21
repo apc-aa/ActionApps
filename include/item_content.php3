@@ -368,9 +368,9 @@ class AA_Content {
         }
         $def_lang = '';
         if ( AA::$site_id ) {
-            $def_lang = AA_Modules::getModule(AA::$site_id)->getDefaultLang();
+            $def_lang = AA_Module_Site::getModule(AA::$site_id)->getDefaultLang();
         } else {
-            $def_lang = AA_Modules::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
+            $def_lang = AA_Module::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
         return ($def_lang_num = AA_Content::getLangNumber($def_lang)); // array of prefered languages in priority order.
     }
@@ -951,13 +951,7 @@ class ItemContent extends AA_Content {
             DB_AA::delete('content', array(array('item_id', $id, 'l')));
             break;
         case 'update':
-            // delete content of all fields, which are in new content array
-            // (this means - all not redefined fields are unchanged)
-            if ($_SERVER['SERVER_NAME']=="u-veze.ahref.cz") {
-                $this->_clean_updated_fields2($id, $fields);
-            } else {
-                $this->_clean_updated_fields($id, $fields);
-            }
+            $this->_clean_updated_fields($id, $fields);
             break;
         case 'insert':
             // reset hit counter fields for new items
@@ -1195,27 +1189,27 @@ class ItemContent extends AA_Content {
         return is_null($item) ? '' : $item->unalias($text);
     }
 
-    /** _clean_updated_fields function
-     *  delete content of all fields, which are in new content array
-     *  (this means - all not redefined fields are unchanged)
-     * @param $id
-     * @param $fields
-     */
-    function _clean_updated_fields($id, &$fields) {
-        $in = array();
-        foreach ($this->content as $fid => $fooo) {
-            if (!$fields[$fid]['in_item_tbl']) {
-                $in[] = $fid;
-            }
-        }
-        if ($in AND $id) {
-            // delete content just for displayed fields
-            DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $in)));
-            // note extra images deleted in insert_fnc_fil if needed
-        }
-    }
+    ///** _clean_updated_fields function
+    // *  delete content of all fields, which are in new content array
+    // *  (this means - all not redefined fields are unchanged)
+    // * @param $id
+    // * @param $fields
+    // */
+    //function _clean_updated_fields($id, &$fields) {
+    //    $in = array();
+    //    foreach ($this->content as $fid => $fooo) {
+    //        if (!$fields[$fid]['in_item_tbl']) {
+    //            $in[] = $fid;
+    //        }
+    //    }
+    //    if ($in AND $id) {
+    //        // delete content just for displayed fields
+    //        DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $in)));
+    //        // note extra images deleted in insert_fnc_fil if needed
+    //    }
+    //}
 
-    function _clean_updated_fields2($id, &$fields) {
+    function _clean_updated_fields($id, &$fields) {
         $in  = array();
         foreach ($this->content as $fid => $cont) {
             if (!$fields[$fid]['in_item_tbl']) {
@@ -1234,11 +1228,16 @@ class ItemContent extends AA_Content {
             // delete content just for displayed fields
             foreach($in as $lang => $field_arr) {
                 if ($lang==0) {
-                    echo DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr))));
-                    // DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr))));
+                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr))));
                 } else {
-                    echo DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<')));
-                    // DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang-1)*AA_Value::MAX_INDEX, '<')));
+                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<'))));
+                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<'))));
+                    //huhl($in);
+                    //huhl(DB_AA::select(array(), 'SELECT * FROM content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)))));
+                    //exit;
+                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<')));
+                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<')));
+                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 'ISNULL')));
                 }
             }
             // note extra images deleted in insert_fnc_fil if needed
