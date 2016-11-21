@@ -115,20 +115,6 @@ function json2asoc($string) {
        return array();
     }
 
-    if ($_GET['dd']==1) {
-        //huhl(json_encode('hrhrhrjjddjjd'));
-        //huhl(json_encode('hrhrhr"jjddjjd'));
-        //huhl(json_encode('hrhrhr"jjd
-        //    djjd'));
-        //huhl(json_encode('hrh\'rhr"jjddjjd'));
-        //huhl(json_encode('řčžščýšášhrhrhrjjddjjd'));
-        //huhl(json_encode('řčžščýšášhrhrhr"jjddjjd'));
-        //huhl(json_encode('řčžščýšášhrhrhr"jjd
-        //    djjd'));
-        //huhl(json_encode('řčžščýšášhrh\'rhr"jjddjjd'));
-//        huhl($string, AA::$encoding, StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)), json_decode(StrExpand('AA_Stringexpand_Convert', array($string, AA::$encoding)),true));
-    }
-
     if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
         if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),true)) == null) {
             return array();
@@ -713,18 +699,10 @@ class AA_Stringexpand_Lastedit extends AA_Stringexpand {
      * @param $format
      * @param $slice_id
      */
-    function expand($format='j. n. Y', $slice_id='') {
-        $where    = '';
-        if ($slice_id AND (guesstype($slice_id) == 'l')) {
-            $where = "WHERE slice_id='".q_pack_id($slice_id)."'";
-        }
-        $db  = getDB();
-        $SQL = "SELECT last_edit FROM item $where ORDER BY last_edit DESC LIMIT 0,1";
-        $db->tquery($SQL);
-        // timestamp
-        $lastedit = $db->next_record() ? $db->f("last_edit") : 0;
-        freeDB($db);
-        return date($format,$lastedit);
+    function expand($format='', $slice_id='') {
+        $format = $format ?: 'j.n.Y';
+        $where = is_long_id($slice_id) ? array(array('slice_id', $slice_id, 'l')) : null;
+        return date($format, DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, array('last_edit-')) ?: 0);
     }
 }
 
@@ -1530,12 +1508,12 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
         }
         // no date (sometimes empty date is 3600 (based on timezone), so we
         // will use all the day 1.1.1970 as empty)
-        if ( !is_null($no_date_text) AND ($timestamp=='' OR (is_numeric($timestamp) AND abs($timestamp) < 86400))) {
+        if ( !is_null($no_date_text) AND ($timestamp=='' OR (ctype_digit((string)$timestamp) AND abs($timestamp) < 86400))) {
             return $no_date_text;
         }
         if ( $timestamp=='' ) {
             $timestamp = time();
-        } elseif ( !is_numeric($timestamp) ) {
+        } elseif ( !ctype_digit((string)$timestamp) ) {
             $timestamp = strtotime($timestamp);
         }
         return ($zone!='GMT') ? date($format, (int)$timestamp) : gmdate($format, (int)$timestamp);
@@ -2162,7 +2140,7 @@ class AA_Stringexpand_View extends AA_Stringexpand {
         if (!$vid) {
             return '';
         }
-        $view_param['vid'] = $vid;
+        $view_param = array('vid' => $vid);
         if (strlen($ids)) {
             $zids = new zids();
             $zids->addDirty(explode('-',$ids));
@@ -2605,7 +2583,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
                 if ($item) {
                     $slice = AA_Slice::getModule($item->getSliceID());
                     $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
-                        $ret  .= AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
+                    $ret  .= AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
                 }
             }
         }
@@ -2636,9 +2614,12 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
     function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null, $limit=null) {
         $restrict_zids = $ids ? new zids(explode('-',$ids),'l') : false;
         $set           = new AA_Set(explode('-', $slices), $conds, $sort);
-        $zids          = $set->query($restrict_zids);
-        if ( $limit ) {
-            $zids = ($limit<0) ? $zids->slice($limit,-$limit) : $zids->slice(0,$limit);
+        if ($limit > 0) {
+            $zids = $set->query($restrict_zids, $limit);
+        } elseif ($limit < 0) {
+            $zids = $set->query($restrict_zids)->slice($limit,-$limit);
+        } else {
+            $zids = $set->query($restrict_zids);
         }
         return join($zids->longids(), $delimiter ?: '-');
     }
@@ -3168,7 +3149,7 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
         $arr = array();
         switch ($type) {
         case 'num':
-            if (is_numeric($min) AND is_numeric($max)) {
+            if (ctype_digit((string)$min) AND ctype_digit((string)$max)) {
                 $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
             }
             break;
@@ -3345,13 +3326,36 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
      * @param $else_text
      */
     function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+        return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), function($a,$b) {return !strlen($b) OR strpos($a, $b) !== false;} );
+        //$arg_list = func_get_args();   // must be asssigned to the variable
+        //$haystack = array_shift($arg_list);
+        //$ret      = false;
+        //$i        = 0;
+        //$matched  = '';
+        //while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+        //    if (!strlen($arg_list[$i]) OR strpos($haystack, $arg_list[$i]) !== false) {
+        //        $ret     = $arg_list[$i+1];
+        //        $matched = $arg_list[$i];
+        //        break;
+        //    }
+        //    $i += 2;
+        //}
+        //if ($ret === false) {
+        //    // else text
+        //    $ret     = isset($arg_list[$i]) ? $arg_list[$i] : '';
+        //    $matched = $ret;
+        //}
+        //// _#2 is not very usefull but we have it from the times the function was just for one option
+        //return str_replace(array('_#1','_#2'), array($haystack, $matched), $ret);
+    }
+
+    public function _resolveCompare($arg_list, $cmp_function) {
         $haystack = array_shift($arg_list);
         $ret      = false;
         $i        = 0;
         $matched  = '';
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if (!strlen($arg_list[$i]) OR strpos($haystack, $arg_list[$i]) !== false) {
+            if ($cmp_function($haystack,$arg_list[$i])) {
                 $ret     = $arg_list[$i+1];
                 $matched = $arg_list[$i];
                 break;
@@ -3363,8 +3367,25 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
             $ret     = isset($arg_list[$i]) ? $arg_list[$i] : '';
             $matched = $ret;
         }
-        // _#2 is not very usefull but we have it from the times the function was just for one option
         return str_replace(array('_#1','_#2'), array($haystack, $matched), $ret);
+    }
+}
+
+/** Equivalent to {ifset:{intersect:SetMember1-SetMember2-SetMember3:SetMember2-SetMember4}:..}
+ *  Example: {ifintersect:{_#P_RIGHTS}:{_#MY_ROLES}:Access granted:Access denied}
+ */
+class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters (maybe we can?) */
+    function doTrimParams() { return false; }
+
+    /** expand function
+     * @param $haystack
+     * @param $needle
+     * @param $text
+     * @param $else_text
+     */
+    function expand() {
+        return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), function($a,$b) {return count(array_filter(array_intersect(array_map('trim', explode('-',$a)),array_map('trim',explode('-',$b))),'strlen'))>0;} );
     }
 }
 
@@ -3578,10 +3599,9 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $item_id
      * @param $field_id
-     * @param $show_alias
-     * @param $onsuccess
+     * @param $required
+     * @param $function
      * @param $widget_type       - not yet implemented
-     * @param $widget_properties - not yet implemented
      */
     function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
         $ret = '';
@@ -3634,18 +3654,23 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
             if (!empty($item)) {
-                $alias_name  = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
-                $repre_value = ($show_alias == '') ? $item->f_h($field_id, ', ') : $item->subst_alias($show_alias);
-                $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
-                $widget_properties = str_replace(array("'", '"',"\r\n", "\r", "\n"), array("\'", "&quot;", " ", " ", " "), $widget_properties);
-                $iid         = $item->getItemID();
-                $input_name  = AA_Form_Array::getName4Form($field_id, $item);
-                $input_id    = AA_Form_Array::formName2Id($input_name);
-                $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
-                $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
-                $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
-                $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
-                $ret .= "</div>";
+                $show_alias  = ($show_alias == '') ? '{@'.$field_id.':, }' : $show_alias;
+                if (strlen($repre_value = $item->subst_alias($show_alias)) < 1) {
+                    $repre_value = '--';
+                }
+                if (StrExpand('AA_Stringexpand_Var', array('AA_FLAG_NOEDIT')) == 1) { // the way, how to disable editing
+                    $ret = $repre_value;
+                } else {
+                    $widget_properties = str_replace(array("'", '"',"\r\n", "\r", "\n"), array("\'", "&quot;", " ", " ", " "), $widget_properties);
+                    $iid         = $item->getItemID();
+                    $input_name  = AA_Form_Array::getName4Form($field_id, $item);
+                    $input_id    = AA_Form_Array::formName2Id($input_name);
+                    $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
+                    $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
+                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
+                    $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
+                    $ret .= "</div>";
+                }
             }
         }
         return $ret;
@@ -3686,18 +3711,16 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
         }
 
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-        if (!empty($item)) {
+        if (!empty($item) AND !$item->is_empty()) {
 
-            $iid   = $item->getItemID();
-            $slice = AA_Slice::getModule($item->getSliceId());
+            if ( !($slice = AA_Slice::getModule($item->getSliceId())) ) { return ''; }
 
             // Use right language (from slice settings) - languages are used for button texts, ...
-            $lang  = $slice->getLang();
-            //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
-            mgettext_bind($lang, 'output');
+            mgettext_bind($slice->getLang(), 'output');
 
-            $field = $slice->getField($field_id);
-            $ret   = $field ? $field->getWidgetLiveHtml($iid, ($required==1) ? true : null, $function, $widget_type) : '';
+            if ( !($field = $slice->getField($field_id)) ) { return ''; }
+
+            $ret = $field->getWidgetLiveHtml($item->getItemID(), ($required==1) ? true : null, $function, $widget_type);
         }
         return $ret;
     }
@@ -3726,17 +3749,23 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
      */
     function expand($item_id, $field_id, $placeholder) {
         $ret = '';
+        if ( $field_id) {
+            $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
+            if (!empty($item)) {
+                $slice = AA_Slice::getModule($item->getSliceId());
 
-        if (!$field_id) {
-            return '';
+                //mgettext_bind($slice->getLang(), 'output'); // Use right language (from slice settings) - languages are used for button texts, ...
+
+                if ($field = $slice->getField($field_id)) {
+                    $index   = (AA::$langnum[0] AND in_array(AA::$lang, $field->getTranslations())) ? AA::$langnum[0] : 0;
+                    $pholder = strlen($placeholder) ? 'placeholder="'.safe($placeholder).'"' : $index ? 'placeholder="['.safe(AA::$lang).']"' : '';
+                    $iid     = $item->getItemID();
+                    $tag     = $field->isMultiline() ? 'div' : 'span';
+                    $ret     = AA_Stringexpand::unalias("<$tag contenteditable=true $pholder id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
+                }
+            }
         }
-        $placeholdertext = strlen($placeholder) ? 'placeholder="'.safe($placeholder).'"' : '';
-        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-        if (empty($item)) {  // can't be combined empty() and assignment = for php 5.3
-            return '';
-        }
-        $item_id = $item->getID();
-        return AA_Stringexpand::unalias("<div contenteditable=true $placeholdertext id=\"". str_replace('.','_', "au-$item_id-$field_id")."\" data-aa-id=\"$item_id\" data-aa-field=\"$field_id\">{". $field_id ."}</div>", '', $item);
+        return $ret;
     }
 }
 
@@ -4153,13 +4182,14 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     function defineDelimiters() {
         $delimiter_chars = "()[] ,.;:?!\"'\n\r";   // I removed & in order you can disable substitution by adding
                                                    // &nbsp; or even better &zwnj; character to the word - like: gender&zwnj;
+        $delimiters = array();
         for ($i=0, $len=strlen($delimiter_chars); $i<$len; $i++) {
             $index              = $delimiter_chars[$i];
             $delimiters[$index] = 'AA#@'.$index.'AA#@';
         }
         // HTML tags are word delimiters, too
         $delimiters['<'] = 'AA#@<';
-        $delimiters['>'] ='>AA#@';
+        $delimiters['>'] = '>AA#@';
         /*
         Some HTML tags in text will be replaced with special strings
         beginning with '_AA_' and ending with '_ShCut'
@@ -4587,6 +4617,8 @@ class AA_Stringexpand {
 
     public static $recursion_count = 0;
 
+    public static $dependent_parts = array();
+
     /** item, for which we are stringexpanding
      *  Not used in many expand functions
      */
@@ -4727,6 +4759,8 @@ class AA_Stringexpand {
                 if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', $callback, $text, 1, $last_replacements))) {  //s for newlines, U for nongreedy
                     //huhl( "Error: preg_replace_callback", '/[{]([^{}]+)[}]/s', $callback, $text, -1, $last_replacements);
                     echo "Error ". preg_last_error().": preg_replace_callback - 2\n";
+                    $pcre_err_arr = array_flip(get_defined_constants(true)['pcre']);
+                    echo $pcre_err_arr[preg_last_error()];
                     echo array_flip(get_defined_constants(true)['pcre'])[preg_last_error()];
                     print_r($oldtext);
                     print_r($callback);
@@ -4784,6 +4818,28 @@ class AA_Stringexpand {
             $text = strtr($text, $trans);
         }
         return $text;
+    }
+
+    function setDependentParts($slices, $hash, $code) {
+        foreach ($slices as $s) {
+            if (isset(AA_Stringexpand::$dependent_parts[$s])) {
+                AA_Stringexpand::$dependent_parts[$s][] = array($hash,$code);
+            } else {
+                AA_Stringexpand::$dependent_parts[$s] = array(array($hash,$code));
+            }
+        }
+    }
+
+    function getDependentParts($slices) {
+        $ret = array();
+        foreach ($slices as $s) {
+            if (is_array(AA_Stringexpand::$dependent_parts[$s])) {
+                foreach (AA_Stringexpand::$dependent_parts[$s] as $part) {
+                    $ret[$part[0]] = $part[1];
+                }
+            }
+        }
+        return $ret;
     }
 }
 
@@ -5668,15 +5724,9 @@ class AA_Password_Manager_Reader {
         $url      = shtml_url()."?aapwd2=$pwdkey-$user_id";
         $pwd_link = "<a href=\"$url\">$url</a>";
 
-        //$GLOBALS['debug']=1;
-        //AA::$debug = true;
-
         if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', array(array('owner_module_id',$slice_id, 'l'), array('type','password change')))) {
             $slice     = AA_Slice::getModule($slice_id);
             $user_item = new AA_Item($user_info, $slice->aliases( array("_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link", "", _m('Password link')))));
-
-            //huhl($user_item);
-
             AA_Mail::sendTemplate($template_id, array($email), $user_item, false);
         } else {
             $mail     = new AA_Mail;
@@ -5689,8 +5739,6 @@ class AA_Password_Manager_Reader {
             //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
             $mail->send(array($email));
         }
-
-        //huhl($template_id, ',', $slice_id );
 
         return self::_ok(_m('E-mail with a key to change the password has just been sent to the e-mail address: %1', array($email)));
     }
@@ -6173,12 +6221,12 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $text
      */
-    function expand($form_id='') {
+    function expand($form_id='', $ok_code='') {
         if (!$form_id OR !($form = AA_Object::load($form_id, 'AA_Form'))) {
             return '';
         }
         //return $form->getAjaxHtml($ret_code);
-        return $form->getAjaxHtml();
+        return $form->getAjaxHtml($ok_code, 'inplace');
     }
 }
 
@@ -6199,6 +6247,48 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
         $form->setObject('AA_Item', $item_id, $item->getOwnerId());
 
         return $form->getEditFormHtml('ajax');
+    }
+}
+
+class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
+
+    function expand($slices, $field=null, $item_id=null, $code=null, $conds=null, $sort=null) {
+        if ($field AND ($item_id = $item_id ?: ($this ? $this->item->getId() : null))) {
+            $conds  .= $conds ? "-$field-=-$item_id" :  "d-$field-=-$item_id";
+        }
+        if (!$sort) {
+            $sort = 'publish_date....';
+        }
+
+        $set           = new AA_Set($slices_arr=explode('-', $slices), $conds, $sort);
+        $zids          = $set->query();
+
+        // load all mentioned items in one step
+        AA_Items::preload($zids);
+
+        $hash = get_hash('manager', $slices, $conds, $sort, $code);
+
+        $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
+                    <section class="itemgroup">';
+        $code =      '<article class="item">
+                        <section class="iteminfo">
+                          '. $code .'
+                        </section>
+                        <section class="icogroup">
+                          <article><i class="ico delete" onclick="AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);">x</i></article>
+                        </section>
+                      </article>';
+
+        $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code), '');
+        $ret .= '
+                    </section>
+                    <footer>
+                      <article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article>
+                    </footer>
+                 </article>';
+
+        AA_Stringexpand::setDependentParts($slices_arr, $hash, $ret);
+        return $ret;
     }
 }
 
