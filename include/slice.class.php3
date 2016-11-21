@@ -84,7 +84,7 @@ class AA_Module {
         if (!isset(static::$_modules[$module_id])) {
             if (($class = get_called_class()) == 'AA_Module') {
                 // tyhis is not usual case - use it just if you do not know what module is it
-                $class = AA_Module::getModuleType($module_id);
+                $class = AA_Module::getModuleClass($module_id);
             }
             if (!$class) {
                 return null;
@@ -94,12 +94,19 @@ class AA_Module {
         return static::$_modules[$module_id];
     }
 
+
     /** AA_Module::getModuleType function
      * @param $module_id
      */
     static public function getModuleType($module_id) {
-        $type  = DB_AA::select1('SELECT type FROM `module`', 'type', array(array('id',$module_id, 'l')));
-        switch ($type) {
+        return DB_AA::select1('SELECT type FROM `module`', 'type', array(array('id',$module_id, 'l')));
+    }
+
+    /** AA_Module::getModuleClass function
+     * @param $module_id
+     */
+    static public function getModuleClass($module_id) {
+        switch (self::getModuleType($module_id)) {
             case 'W':       return 'AA_Module_Site';
             case 'S':       return 'AA_Slice';
             case 'Alerts':  return 'AA_Module_Alerts';
@@ -115,7 +122,7 @@ class AA_Module {
      */
     static public function deleteModules($module_ids) {
         foreach ($module_ids as $module_id) {
-            if (!is_long_id($module_id) OR !($class = AA_Module::getModuleType($module_id))) {
+            if (!is_long_id($module_id) OR !($class = AA_Module::getModuleClass($module_id))) {
                 return false;     // _m("No such module.")
             }
             if (!$class::_deleteModules(array($module_id))) {
@@ -251,6 +258,29 @@ class AA_Module {
 
     static function getUsedModules() {
         return array_keys(static::$_modules);
+    }
+
+    /** @return array id => name of current user's modules
+     *  @param $module_type
+     *  @param $perm
+     *  @param $user_id
+     */
+    public static function getUserModules( $module_type = '') {
+        global $auth;
+
+        $where_add = empty($module_type) ? '' : "AND type='$module_type'";
+        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted=0 $where_add ORDER BY priority, name", 'unpack:id', 'name');
+
+        $user_id =  $auth->auth["uid"];
+
+        $ret = array();
+        foreach($all_modules as $mid => $mname) {
+            if (CheckPerms( $user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS)) {
+                $ret[$mid] = $mname;
+            }
+        }
+
+        return $ret;
     }
 }
 
@@ -824,8 +854,8 @@ class AA_Modulesettings_Site extends AA_Object {
      */
     static function getClassProperties() {
         return array ( //                             id             name                                 type     multi  persist validator, required, help, morehelp, example
-            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"), 'string', false, true, array('enum', AA_Modules::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
-            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum',   AA_Modules::getUserModules('W')), false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
+            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"), 'string', false, true, array('enum', AA_Module::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
+            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),      'string', true,  true, array('enum',   AA_Module::getUserModules('W')), false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
             'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),    'string', true,  true, array('regexp', array('pattern'=>'/^[a-z]{2}$/','maxlength'=>2)), false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apca-aa/modules/site/site.php3 [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]<br>')),
             'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),    'string', false, true, array('enum',   array('1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below'))), false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property( 'page404_code',     _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
@@ -835,84 +865,4 @@ class AA_Modulesettings_Site extends AA_Object {
             );
     }
 }
-
-
-
-
-
-
-
-
-// deprecated - @todo - remove it - move to AA_Module
-class AA_Modules {
-
-    // Store the single instance of Database
-    private static $_instance;
-
-    var $a = array();     // Array unpacked module id -> AA_Module object
-
-    private function __construct() {
-        $this->a = array();
-    }
-
-    public static function singleton() {
-        if(!isset(self::$_instance)) {
-            self::$_instance = new AA_Modules();
-        }
-        return self::$_instance;
-    }
-
-    /** @return array id => name of current user's modules
-     *  @param $module_type
-     *  @param $perm
-     *  @param $user_id
-     */
-    public static function getUserModules( $module_type = '', $perm = PS_EDIT_SELF_ITEMS, $user_id = '') {
-        global $auth;
-
-        $where_add = empty($module_type) ? '' : "AND type='$module_type'";
-        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted=0 $where_add ORDER BY priority, name", 'unpack:id', 'name');
-
-        if (empty($user_id)) {
-            $user_id =  $auth->auth["uid"];
-        }
-
-        $ret = array();
-        foreach($all_modules as $mid => $mname) {
-            if (CheckPerms( $user_id, 'slice', $mid, $perm)) {
-                $ret[$mid] = $mname;
-            }
-        }
-
-        return $ret;
-    }
-
-    /** main factory static method: $module = AA_Modules::getModule($module_id);
-     *  @param $module_id
-     */
-    function getModule($module_id) {
-        return AA_Modules::singleton()->_getModule($module_id);
-    }
-
-    /** getModuleProperty function
-     *  static function
-     * @param $module_id
-     * @param $field
-     */
-    function getModuleProperty($module_id, $prop) {
-        $module = AA_Modules::getModule($module_id);
-        return $module ? $module->getProperty($prop) : null;
-    }
-
-    /** _getModule function
-     * @param $module_id
-     */
-    function _getModule($module_id) {
-        if (!isset($this->a[$module_id])) {
-            $this->a[$module_id] = new AA_Module($module_id);
-        }
-        return $this->a[$module_id];
-    }
-}
-
 ?>
