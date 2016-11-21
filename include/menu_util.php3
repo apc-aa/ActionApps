@@ -199,9 +199,11 @@ function PrintModuleSelection() {
         if ( !$slice_id ) {   // new slice
             $options .= '<option value="new" selected>'. _m("New slice");
         }
-        
+
+        $type = AA_Module::getModuleType($slice_id);
+
         $ret  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-        $ret .= '<select name=slice_id onChange="if (this.options[this.selectedIndex].value != \'\') document.location=\'?change_id=\'+this.options[this.selectedIndex].value">';
+        $ret .= '<select name=slice_id onChange="if (this.options[this.selectedIndex].value != \'\') document.location=\'?from_type='.$type.'&change_id=\'+this.options[this.selectedIndex].value">';
         $ret .= $options;
         $ret .= '</select>';
 

@@ -422,6 +422,8 @@ class AA_Item {
         return $this->content4id->getAaValue($field_id);
     }
 
+    function is_empty() { return $this->content4id->is_empty(); }
+
     /** true if the item is viseble - not expired/trashed/pending/... */
     function isActive() {
         return $this->content4id->isActive();

@@ -1,3 +1,38 @@
+16-11-21 - new (experimental - so the code could be changed)
+(honzam)     {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>]]}
+             - quite powerfull for managing of related items. Works great for
+           manging the related item to the edited one - my_item <-- photos,
+           where photos have relation........ field which points to item.
+           Then you can manage the photos using
+             {manager:45d43f4d567dd8a9f459aa51576a6ce2:relation........:{id..............}:_#ROW_EDIT}.
+           The _#ROW_EDIT is then code in photos slice to be displayed for each
+           photo - could contain {live} edits, ... It allows you also to add new
+           photo with instant redraw.
+         - any site module page is able to serve aa[..].. requests for item
+           insert/update. If called by AJAX, then only the changed part of the
+           page should be refreshed (now works in new {manager:...} block).
+         - new {inintersect:<mainset>:<compare-set-1>:<output-1>:<compare-set-2>:<output-2>:...:<else>}
+            - equivalent to:
+               {ifset:{intersect:SetMember1-SetMember2-SetMember3:SetMember2-SetMember4}:..}
+            - example:
+               {ifintersect:{_#P_RIGHTS}:{_#MY_ROLES}:Access granted:Access denied}
+         - new possibility to block editing of {ajax::} commands by deffining
+           AA_FLAG_NOEDIT variable {define:AA_FLAG_NOEDIT:1}. If you set the
+           AA_FLAG_NOEDIT before the {ajax} is called, then the ajax editing is
+           disabled for the rest of the page
+         - the <input type="number"> are now displayed with bertter default
+           width (based on min, max and size values)
+         - better support of {editable} editing with multiple languages - the
+           value for translated {editable} is stored just to current language
+         - better save-icon placing in {live::}
+         - quicker SQL for {ids:....} where limit is applied - we use LIMIT
+           in SQL there
+         - fixed problem with short time of needed relogin
+         - beter long_id validity check
+         - is_numeric check replaced by more accurate ctype_digit check
+         - fix for backward compatibility with PHP 5.3
+         - better tmp filenames generation
+         - removed old AA_Modules interface in favor of AA_Module
 16-11-02 - password generation as well as password check now uses standard php
 (honzam)   functions for php>=5.5
          - the salt for password is generated in more secure way even for
@@ -8,6 +43,8 @@
          - the expiration time of the session now respects AA_LOGIN_TIMEOUT or
            is 200 minutes as was previously
            (gc_maxlifetime increased, so it do not expire after 40 minutes)
+         - doc and demo directories of the phpThumb library is not necessary to
+           have in our repository - deleted (could be possible security risk)
 16-10-28 - new {xajax} variable in Sitemodule, which is = 1 if the site module
 (honzam)   is called as ajax call. Now you can switch site module tree by this
            variable.

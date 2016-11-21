@@ -205,7 +205,10 @@ if (!$no_slice_id) {
     $r_slice_view_url = $db->f('slice_url');
 
     $module_type         = $g_modules[AA::$module_id]['type'];
+
     $module_type_changed = $after_login || ($g_modules[$r_last_module_id]['type'] != $module_type);
+
+    //$module_type_changed = $after_login || ($_GET['from_type'] != $module_type);  // from_type used on slice selectbox in admin interface
 
 /* If we switch to another module type, we try whether the requested file
    exists in the module direcory and if not, we go to module's index.php3 page.
@@ -230,11 +233,11 @@ if (!$no_slice_id) {
     }
 }
 
-$mgettext_file = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
+$mgettext_file    = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
-AA::$lang     = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
-AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang)); // array of prefered languages in priority order.
-AA::$slice_id = AA::$module_id;
-$r_last_module_id = AA::$module_id;
+AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
+AA::$langnum      = array(AA_Content::getLangNumber(AA::$lang)); // array of prefered languages in priority order.
+AA::$slice_id     = AA::$module_id;
+$r_last_module_id = AA::$module_id; // we need it only in filebrowser of CKEditor
 
 ?>
