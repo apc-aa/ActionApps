@@ -91,7 +91,7 @@ $SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
 $db->query($SQL);
 if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
-        if (!is_numeric($key)) {
+        if (!ctype_digit((string)$key)) {
             $$key = $val; // variables and database fields have identical names
         }
     }

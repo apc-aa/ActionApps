@@ -92,7 +92,7 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 is_object( $db ) || ($db = getDB());
 
-if (is_numeric($time_limit)) {
+if (ctype_digit((string)$time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 

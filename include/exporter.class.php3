@@ -201,7 +201,7 @@ class AA_Exporter_Excel extends AA_Exporter {
 
     function __getCell($value,$row,$col) {
         $ret = '';
-        if (is_numeric($value)) {
+        if (ctype_digit((string)$value)) {
             $ret = pack("sssss", 0x203, 14, $row, $col, 0x0) . pack("d", $value);
         } elseif(is_string($value)) {
             $value = UTF8toBIFF8UnicodeShortchr(255).chr(254).mb_convert_encoding( $value, 'UTF-16LE', 'UTF-8');

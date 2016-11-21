@@ -57,7 +57,7 @@ function HttpGetParameters($parameters) {
                     $param_string .= $delimiter. $variable. '['.rawurlencode($inner_key). ']='. rawurlencode($inner_value);
                     $delimiter     = '&';
                 }
-            } elseif ( is_numeric($variable)) {
+            } elseif ( ctype_digit((string)$variable)) {
                 $param_string .= $delimiter. $value;
             } else {
                 $param_string .= $delimiter. rawurlencode($variable). '='. rawurlencode($value);

@@ -88,7 +88,7 @@ add_vars();
 // honza 2015-12-30
 // is_object( $db ) || ($db = getDB());
 
-if (is_numeric($time_limit)) {
+if (ctype_digit((string)$time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 

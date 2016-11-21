@@ -111,7 +111,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             $varset->doINSERT('email');
             $mail_id = $varset->last_insert_id();  // get mail template id
 
-            if ( !is_numeric($mail_id) )  {
+            if ( !ctype_digit((string)$mail_id) )  {
                 $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );
                 break;
             }

@@ -89,7 +89,7 @@ $manager_vid = null;
 $format      = null;   //default manager format will be used (and _#AA_ACTIO alias expanded)
 
 if ($design) {
-    if (is_numeric($design)) {
+    if (ctype_digit((string)$design)) {
         if ($design==1) {
             $format  = $slice->get_format_strings();
             // replace the checkbox with "action selection links"

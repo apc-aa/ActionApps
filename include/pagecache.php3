@@ -100,7 +100,7 @@ class PageCache  {
      */
     static function globalKeyArray() {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
-        $ks = array('host' => ltrim($_SERVER['HTTP_HOST'],'w.'));
+        $ks = array('host' => (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : $host);
         if (isset($GLOBALS['apc_state'])) {
             $ks['apc_state'] = $GLOBALS['apc_state'];
         }
@@ -136,7 +136,7 @@ class PageCache  {
                 $this->invalidateById( $key );
                 AA::$debug && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
-            } elseif (is_numeric($action) ) {  // nocache=1
+            } elseif (ctype_digit((string)$action) ) {  // nocache=1
                 AA::$debug && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }
@@ -164,7 +164,7 @@ class PageCache  {
             return unserialize($res);  // it is setrialized for storing in the database
         }
         $res = call_user_func_array($function, (array)$params);
-        if (!is_numeric($action)) {  // nocache is not
+        if (!ctype_digit((string)$action)) {  // nocache is not
             $this->store($key, serialize($res), $str2find);
         }
         return $res;

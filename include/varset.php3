@@ -238,7 +238,7 @@ class Cvarset {
     function resetFromRecord($record) {
         $this->clear();
         foreach ( $record as $name => $value ) {
-            if ( !is_numeric($name) ) {
+            if ( !ctype_digit((string)$name) ) {
                 $this->add($name, 'text', $value);
             }
         }

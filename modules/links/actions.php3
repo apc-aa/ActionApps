@@ -242,7 +242,7 @@ function Links_FolderLink($param, $lid, $akce_param) {
  * Assign link to the category specified in param
  */
 function Links_Add2CatLink($param, $lid, $akce_param) {
-    if ( is_numeric($akce_param) ) {
+    if ( ctype_digit((string)$akce_param) ) {
         return Links_Assign2Category($lid, $akce_param);
     }
     return false;
@@ -252,7 +252,7 @@ function Links_Add2CatLink($param, $lid, $akce_param) {
  * Move link from current category to the destination category
  */
 function Links_Move2CatLink($param, $lid, $akce_param) {
-    if ( is_numeric($akce_param) ) {
+    if ( ctype_digit((string)$akce_param) ) {
         // remove link from current category
         Links_DeleteLink($param, $lid, $akce_param);
         // add link to destination category

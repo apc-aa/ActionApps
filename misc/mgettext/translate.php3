@@ -51,7 +51,7 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
         if (substr($name,0,2) != "L_") {
             unset($consts[$name]);
         } else {
-            if (strlen($value) <= 1 || is_numeric($value)) {
+            if (strlen($value) <= 1 || ctype_digit((string)$value)) {
                 $consts[$name] = "\"$value\"";
             } else {
                 $consts [$name] = "_m(\"".str_replace( array('"',"\n","\r"), array('\\"',"\\n",""),  $value)."\")";

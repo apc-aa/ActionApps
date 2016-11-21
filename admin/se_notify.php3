@@ -158,7 +158,7 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
 $db->query($SQL);
 if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
-        if (!is_numeric($key)) {
+        if (!ctype_digit((string)$key)) {
             $$key = $val; // variables and database fields have identical names
         }
     }

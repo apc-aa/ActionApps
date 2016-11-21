@@ -360,7 +360,7 @@ class AA_View_Scroller extends AA_Sitemodule_Scroller {
             }
 
             if (!$v) {
-                $out .= is_numeric($k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
+                $out .= ctype_digit((string)$k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
             } else {
                 $v = safe($v);
                 if ($target) {

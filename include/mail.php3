@@ -42,7 +42,7 @@ class AA_Mailtemplate implements iEditable {
 
     function __construct($id=null) {
         $this->record = array();
-        if ($id and is_numeric($id)) {
+        if ($id and ctype_digit((string)$id)) {
             $template = AA_Metabase::getContent( array('table'=>'email'), new zids($id, 's') );
             if ($template[$id]) {
                 $this->record = $template[$id];

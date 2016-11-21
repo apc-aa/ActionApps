@@ -947,7 +947,7 @@ class AA_Bookmarks {
 
     /** bookmark of key $key is currently seleted? */
     function isSelected($key) {
-        return is_numeric($this->getLastUsed()) && ($this->getLastUsed() == $key);
+        return ctype_digit((string)$this->getLastUsed()) && ($this->getLastUsed() == $key);
     }
 
     /** getSelectbox function

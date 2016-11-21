@@ -114,7 +114,7 @@ class AA_Router {
                    $arr[] = "<a href=\"$v\" $add>$k</a>";
                 }
             } else {
-                $arr[] = is_numeric($k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
+                $arr[] = ctype_digit((string)$k) ? "<span class=\"active\"> $k </span>" : "<span class=\"dots\"> $k </span>";
             }
         }
 
@@ -258,7 +258,6 @@ class AA_Router_Seo extends AA_Router {
          *   </form>
          */
 
-        pageOpen('nobody');
         $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
 
         if (isset($_GET['logout'])) {
@@ -479,7 +478,7 @@ class AA_Router_Seo extends AA_Router {
             // current item id
             return $this->_xseo2id($apc['xseo']);
         }
-        if (is_numeric($param)) {
+        if (ctype_digit((string)$param)) {
             // item on specified level
             return $this->_xseo2id($apc['xseo'.$param]);
         }
@@ -607,7 +606,7 @@ class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     /** expand function */
     function expand($level='') {
-        return $GLOBALS['apc_state']['xseo'.(is_numeric($level) ? (int)$level : '' )];
+        return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? (int)$level : '' )];
     }
 }
 ?>

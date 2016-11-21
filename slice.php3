@@ -212,7 +212,7 @@ if ($encap) {                    // adds values from QUERY_STRING_UNESCAPED
     add_vars("");                //       and REDIRECT_STRING_UNESCAPED
     // if we use input type="buton" for submitting of form, then it adds x and y
     // variables, which we do not want (x means (unfortunately) - item id in AA)
-    if (isset($x) AND isset($y) AND is_numeric($x) AND is_numeric($y) AND isset($conds)) {
+    if (isset($x) AND isset($y) AND ctype_digit((string)$x) AND ctype_digit((string)$y) AND isset($conds)) {
         unset($x);
     }
 }

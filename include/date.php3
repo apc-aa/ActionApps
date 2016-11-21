@@ -144,7 +144,7 @@ class datectrl {
      *  it is perfectly possible to increase the max value, however
      */
     function isTimestamp($timestamp) {
-        return is_numeric($timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);
+        return ctype_digit((string)$timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);
     }
 
     /** get_date function

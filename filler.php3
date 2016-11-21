@@ -292,7 +292,7 @@ if ( $_REQUEST['answer'] )    {
     SendErrorPage(array ("fatal"=>_m("Not allowed to post comments")));
 }
 
-if (is_numeric($_REQUEST['respuesta'])) {
+if (ctype_digit((string)$_REQUEST['respuesta'])) {
     if (($_REQUEST['varA'] + $_REQUEST['varB']) != $_REQUEST['respuesta']) {
         // $varA + $varB must be equal to $respuesta, if provided
         SendErrorPage(array ("fatal"=>_m("Wrong result, not posible to post comments.")));

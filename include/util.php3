@@ -616,7 +616,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
     $now = now('step');            // round up
 
     /* new version of bin selecting, now we use type of bin from constants.php3 */
-    if (is_numeric($bin)) {
+    if (ctype_digit((string)$bin)) {
         /* $bin is numeric constant */
         $numeric_bin = max(1,$bin);
     } elseif (is_string($bin)) { /* for backward compatibility */
@@ -1188,7 +1188,7 @@ function StoreToContent($item_id, $field, $value, $additional='') {
         $varset->add("text", "text", $value['value']);
         // set "TEXT stored" flag
         $varset->add("flag", "number", (int)$value['flag'] | FLAG_TEXT_STORED );
-        if (is_numeric($additional["order"])) {
+        if (ctype_digit((string)$additional["order"])) {
             $varset->add("number", "number", $additional["order"]);
         } else {
             $varset->add("number","null", "");
@@ -1716,6 +1716,6 @@ function IsSpamText($text, $tolerance=4) {
 *  to check the string - for example - accepts _#HEADLINE and also _#P3 (for {_:...} functions)
  */
 function IsAlias($identifier) {
-    return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND is_numeric(substr($identifier,3)))));
+    return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND ctype_digit((string)substr($identifier,3)))));
 }
 ?>
