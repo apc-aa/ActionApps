@@ -46,6 +46,7 @@ class AA_Saver {
 
     private   $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
     private   $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
+    private   $_updated_slices;    /** array of ids of rewritten items (after run()) - the long ones */
     protected $_messages = array();
 
 
@@ -64,6 +65,7 @@ class AA_Saver {
         $this->id_mode         = $id_mode;
         $this->_new_ids        = array();
         $this->_updated_ids    = array();
+        $this->_updated_slices = array();
     }
 
     /** run function
@@ -119,6 +121,8 @@ class AA_Saver {
                 }
             }
             // @todo do validation for updates
+            
+            $this->_updated_slices[$content4id->getOwnerId()] = true;
 
             // id_mode - overwrite or insert_if_new
             // (the $new_item_id should not be changed by storeItem)
@@ -150,6 +154,10 @@ class AA_Saver {
 
     function changedIds() {
         return array_merge($this->_new_ids, $this->_updated_ids);
+    }
+
+    function changedModules() {
+        return array_keys($this->_updated_slices);
     }
 
     /** toexecutelater function

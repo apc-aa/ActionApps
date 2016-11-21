@@ -35,6 +35,14 @@ require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."hitcounter.class.php3";
+require_once AA_INC_PATH."locauth.php3";
+
+$auth4cache = '';
+if ($_COOKIE['AA_Session']) {
+    pageOpen('nobody');
+    $auth4cache = $auth->auth['uname'];
+}
+
 
 // -- CACHE -------------------------------------------------------------------
 // CACHE_TTL defines the time in seconds the page will be stored in cache
@@ -48,12 +56,12 @@ require_once AA_INC_PATH."hitcounter.class.php3";
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST, $_GET);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
+$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = $_REQUEST['nocache'];
+$site_nocache = $_REQUEST['nocache'] OR isset($_POST['aa']);
 if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
     $cacheentry->processPage();
     if ( AA::$debug ) {
@@ -80,10 +88,10 @@ function StripslashesDeep($value) {
 
 function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
-    if (is_null($page)) {
-        echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>';
-    } else {
+    if (!is_null($page)) {
         echo AA_Stringexpand::unalias($page);
+    } else {
+        echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>';
     }
     exit;
 }
@@ -101,9 +109,6 @@ if ( get_magic_quotes_gpc() ) {
 
 require_once AA_BASE_PATH."modules/site/router.class.php";
 
-// we tried to remove all global $db, so let's try to comment out following global object
-// honza 2015-12-30
-// is_object( $db ) || ($db = getDB());
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 if (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) {
@@ -143,8 +148,10 @@ AA::$encoding = $module->getCharset();
 $hit_lid = null;
 
 if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
+    if (!is_object($sess)) {  // could be already opened above
+        pageOpen('nobody');
+    }
     $seo_slices = $module->getRelatedSlices();
-    //$lang_file    = AA_Modules::getModuleProperty(AA::$site_id, 'lang_file');
     // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
     $home       = AA_Stringexpand::unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
     $router     = AA_Router::singleton('AA_Router_Seo', $seo_slices, $home, $module->getProperty('web_languages'));
@@ -200,6 +207,32 @@ if ($lang_file) {
     mgettext_bind(GetLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+}
+
+if (is_array($_POST['aa']) AND IsAjaxCall()) {
+    $grabber = new AA_Grabber_Form();
+    $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
+    // $saver - > check Perms @todo
+    $saver->run();
+
+    $apc_state['xajax'] = 2;  // to not be 1
+    $page_content = $module->getSite( $apc_state );
+
+    header("Content-type: application/json");
+
+    // print_r($page_content);
+    // print_r($saver->changedModules());
+    // print_r(AA_Stringexpand::$dependent_parts);
+    // print_r(AA_Stringexpand::getDependentParts($saver->changedModules()));
+    $parts = AA_Stringexpand::getDependentParts($saver->changedModules());
+    if (AA::$encoding != 'utf-8') {
+        $convertor = ConvertCharset::singleton();
+        foreach ($parts as $k => $v) {
+            $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
+        }
+    }
+    echo json_encode($parts);
+    exit;
 }
 
 

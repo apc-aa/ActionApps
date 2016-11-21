@@ -730,6 +730,33 @@ function AA_SaveEditors() {
   });
 }
 
+function AA_SiteUpdate(item, field, value) {
+  var params = {};
+  params['aa[u'+item+']['+field+'][0]'] = value;
+    AA__doChange(params);
+}
+function AA_SiteNewitem(slice, field, value) {
+  var params = {};
+  params['aa[n1_'+slice+']['+field+'][0]'] = value;
+    AA__doChange(params);
+}
+
+function AA__doChange(params) {
+  new Ajax.Request(window.location.href, {
+      parameters: params,
+      requestHeaders: {Accept: 'application/json'},
+      onSuccess: function(transport) {
+            for (var i in transport.responseJSON) {
+                if (i == 'message') {
+                    AA_Message(transport.responseJSON[i]);
+                } else {
+                    $$("[data-aa-part='"+i+"'").invoke('replace', transport.responseJSON[i]);
+                }
+            }
+      }
+  });
+}
+
 /* Cookies */
 function SetCookie(name, value, plustime) {
    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
