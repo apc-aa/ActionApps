@@ -437,18 +437,20 @@ class DB_AA extends DB_Sql {
 
     /** makeWhere function
      *  [[field_name, value, type], ...]
-     *     type                        used operator    value              example
-     *     s       - string (default)  =                single or array    array('field_id',$id)
-     *     i       - integer           =                single or array    array('id', $task_id, 'i')
-     *     l       - longid            =                single or array    array('item_id', $ids_arr, 'l')
-     *     set     - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
-     *     j       - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join
-     *     >       - integer           >                single             array('date', 1478547854, '>')
-     *     <       - integer           <                single             array('date', 1478547854, '<')
-     *     >=      - integer           >=               single             array('date', 1478547854, '>=')
-     *     <=      - integer           <=               single             array('date', 1478547854, '<=')
-     *     ISNULL  -                   IS NULL                             array('number', 'ISNULL')
-     *     NOTNULL -                   IS NOT NULL                         array('number', 'NOTNULL')
+     *     type                         used operator    value              example
+     *     s        - string (default)  =                single or array    array('field_id',$id)
+     *     i        - integer           =                single or array    array('id', $task_id, 'i')
+     *     l        - longid            =                single or array    array('item_id', $ids_arr, 'l')
+     *     set      - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
+     *     j        - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join  (SELECT ... FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), a..
+     *     >        - integer           >                single             array('date', 1478547854, '>')
+     *     <        - integer           <                single             array('date', 1478547854, '<')
+     *     >=       - integer           >=               single             array('date', 1478547854, '>=')
+     *     <=       - integer           <=               single             array('date', 1478547854, '<=')
+     *     ISNULL   -                   IS NULL                             array('number', 'ISNULL')
+     *     NOTNULL  -                   IS NOT NULL                         array('number', 'NOTNULL')
+     *     LIKE     -                   LIKE             single             array('id', '\_%', 'LIKE')
+     *     NOT LIKE -                   NOT LIKE         single             array('id', '\_%', 'NOT LIKE')
      *
      * @param $tablename
      */
@@ -461,6 +463,9 @@ class DB_AA extends DB_Sql {
             if (in_array($type, array('>','<','<=','>='))) {
                 $operator = $type;
                 $type     = 'i';
+            } elseif ( ($type == 'LIKE') OR ($type == 'NOT LIKE') ) {
+                $where   .= "$delim $name $type ". qquote($value);
+                continue;
             } elseif ( $value == 'ISNULL' ) {
                 $where   .= "$delim $name IS NULL ";
                 continue;

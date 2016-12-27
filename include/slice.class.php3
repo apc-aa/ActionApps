@@ -818,7 +818,7 @@ class AA_Modulesettings_Slice extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, array('translations', 'autofields'));
+        return in_array($prop, array('translations', 'autofields', 'fieldslice'));
     }
 
     /** allows storing object in database
@@ -828,7 +828,7 @@ class AA_Modulesettings_Slice extends AA_Object {
         return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
             'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
-            'fielditems'   => new AA_Property( 'fielditems',   _m("Fields defined by items"),  'text',   false, true, '', false, _m('You can use special slice for additional fields definition. There you can write IDs if items, which defines the fields, or better something like {ids:ac4940d37d6601ce969dc9a7e41826fc}.<br>Could be used for data slice, which stores values for user created forms.'))
+            'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.'))
             );
     }
 }

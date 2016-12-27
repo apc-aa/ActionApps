@@ -271,6 +271,10 @@ class AA_MbC {
     function getFieldDef() {
         return GetFieldDef( $this->c[0], $this->c[0], $this->_getSearchType(), false, 1, 1);
     }
+
+    function getEmptyValue() {
+        return in_array($this->_getSearchType(), array('numeric','date')) ? 0 : '';
+    }
 }
 
 class AA_MbI {
@@ -447,10 +451,18 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
      */
     function getSearchArray() {
         $fieldarr = array();
-        $i = 1;
         foreach ($this->c as $column_name => $column) {
             // @todo - make alias field type aware
             $fieldarr[$column_name] = $column->getFieldDef();
+        }
+        return $fieldarr;
+    }
+
+    /** returns asociative array of table fields filled with '' or 0 (based on column type) */
+    function getEmptyRowArray() {
+        $fieldarr = array();
+        foreach ($this->c as $column_name => $column) {
+            $fieldarr[$column_name] = $column->getEmptyValue();
         }
         return $fieldarr;
     }
@@ -776,8 +788,13 @@ class AA_Metabase {
         $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
     }
 
+    /** returns asociative array of table fields filled with '' or 0 (based on column type)
+     */
+    function getEmptyRowArray($tablename) {
+        return $this->tables[$tablename]->getEmptyRowArray();
+    }
+
     /** getSearchArray function
-     *
      */
     function getSearchArray($tablename) {
         return $this->tables[$tablename]->getSearchArray();

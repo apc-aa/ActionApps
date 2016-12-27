@@ -35,22 +35,56 @@ class AA_Field {
     */
     var $data;
 
+    /** class and propertioes for slice deffined fields (replaces input_show_func functionality)  */
+    var $widget_params;
+
     /** Default widget - as parsed from field data (input_show_func) */
     var $widget;
 
     /** AA_Field function
      *  @param $data
      */
-    function __construct($data) {
-        $this->data   = is_array($data) ? $data : array();
-        $this->widget = null;
+    function __construct($data, $sli_id=null) {
+        $this->data          = array();
+        $this->widget_params = array();
+        $this->widget        = null;
+
+        if (is_array($data)) {
+            $this->data = $data;
+        } elseif ($data instanceof AA_Item) {
+            $this->data = AA_Metabase::singleton()->getEmptyRowArray('field');  // preset all data values (empty)
+
+            $fid = $data->unalias('_#FLD_ID__');
+            if ( (strlen($fid)!=16) OR (strpos($fid,'text..')!==0) ) {
+                return;
+            }
+
+            $this->data['id']                = $fid;
+            $this->data['name']              = $data->unalias('_#FLD_NAME');
+            $this->data['slice_id']          = pack_id($sli_id);
+            $this->data['input_pri']         = (int)$data->unalias('_#FLD_PRI_','_#FLD_PRI_') ?: 100;
+            $this->data['input_help']        =      $data->unalias('_#FLD_HELP','_#FLD_HELP');
+            $this->data['input_default']     =      $data->unalias('_#FLD_DEFA','_#FLD_DEFA');  // txt
+            $this->data['required']          = (int)$data->unalias('_#FLD_REQ_','_#FLD_REQ_') ? 1 : 0;
+            $this->data['multiple']          = (int)$data->unalias('_#FLD_MULT','_#FLD_MULT');  // 0-2
+            $this->data['input_show_func']   = '';
+            $this->widget_params             = json_decode($data->unalias('_#FLD_PARM','_#FLD_PARM'),true);
+            $this->widget_params['class']    = AA_Widget::constructClassName($data->unalias('_#FLD_TYPE','_#FLD_TYPE') ?: 'fld');
+            $this->data['search_pri']        = $this->data['input_pri'];
+            $this->data['html_default']      = 1;
+            $this->data['input_validate']    =      $data->unalias('_#FLD_VALI','_#FLD_VALI');
+            $this->data['input_insert_func'] =      $data->unalias('_#FLD_INS_','_#FLD_INS_');
+            $this->data['input_show']        = (int)$data->unalias('_#FLD_SHOW','_#FLD_SHOW') ? 1 : 0;
+            $this->data['text_stored']       = (int)$data->unalias('_#FLD_STOR','_#FLD_STOR') ? 1 : 0;
+        }
+
     }
 
     /** storageColumn function
      *  @return the table and column, where the field is stored
      */
     function storageColumn() {
-        return $this->data['in_item_tbl'] ? $this->data['in_item_tbl'] :  ($this->data['text_stored'] ? 'text' : 'number');
+        return $this->data['in_item_tbl'] ?:  ($this->data['text_stored'] ? 'text' : 'number');
     }
 
     /** storageTable function
@@ -105,10 +139,12 @@ class AA_Field {
         if ( is_null($this->widget) ) {
 
             // $this->widget = AA_Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
-            $params       = AA_Widget::parseClassProperties($this->data['input_show_func']);
+            $params       = $this->data['input_show_func'] ? AA_Widget::parseClassProperties($this->data['input_show_func']) : $this->widget_params;
             $widget_class = $widget_type ? AA_Widget::constructClassName($widget_type) : $params['class'];
             if (!class_exists($widget_class)) {
-                $widget_class = $params['class'];
+                if (!class_exists($widget_class = $params['class'])) {
+                    $widget_class = 'AA_Widget_Nul';
+                }
             }
             $this->widget = AA_Object::factory($widget_class, $params);
             if ($properties) {
@@ -371,24 +407,21 @@ class AA_Fields implements Iterator {
             return;
         }
 
-        $this->fields    = array();
-        $this->prifields = array();
-
-        $p_master_id = q_pack_id($this->master_id);
-        $db = getDB();
-
-        // slice_fields are begins with underscore
-        // slice fields are the fields, which we do not use for items in the slice,
-        // but rather for setting parameters of the slice
-        $fields_where = ($this->collection == 0) ? "AND id NOT LIKE '\_%'" : "AND id LIKE '\_%'";
-        $SQL = "SELECT * FROM field WHERE slice_id='$p_master_id' $fields_where ORDER BY input_pri";
-        $db->query($SQL);
-        while ($db->next_record()) {
-            $fid                = $db->f("id");
-            $this->fields[$fid] = new AA_Field($db->Record);
-            $this->prifields[]  = $fid;
+        $a = DB_AA::select(array('id'=>array()), 'SELECT * FROM `field`', array(array('slice_id', $this->master_id, 'l'), array('id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE')), array('input_pri'));
+        foreach ($a as $fid => $data) {
+            $this->fields[$fid] = new AA_Field($data);
         }
-        freeDB($db);
+
+        if (is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice'))) {
+            $set = new AA_Set($fields_slice);
+            $zids = $set->query();
+            AA_Items::preload($zids);
+            foreach ($zids as $zid) {
+                $field = new AA_Field(AA_Items::getItem($zid), $this->master_id);
+                $this->fields[$field->getId()] = $field;
+            }
+        }
+        $this->prifields = array_keys($this->fields);
     }
 
     /** getField function
