@@ -1,3 +1,25 @@
+16-12-27 - Slice defined fields now finished and works. You can assign special
+(honzam)   slice (Slice Admin -> Slice -> Fields defined by another slice) to
+           any other slice, where you specify the fields for the slice. Instead
+           of defining the fields on Slice Admin -> Fields, you will define it
+           as items in special slice.
+           The priority of the fields is then defined by _#FLD_PRI_ alias,
+           name by _#FLD_NAME, helptext by _#FLD_HELP, default value by _#FLD_DEFA,
+           required/not required by _#FLD_REQ_, widget type by _#FLD_TYPE and
+           _#FLD_PARM, validator by _#FLD_VALI, insert function by _#FLD_INS_,
+           show/not show by _#FLD_SHOW and text stored/numeric by _#FLD_STOR.
+           With this feature it is possible to let user to create public forms
+           with its own fioelds just by let him insert the item to special
+           "fields" slice
+         - new {colonescape:val1} - escapes colon as internaly used in AA.
+           It is special case function - more internal one:
+              {colonescape:_#this}  - 16:45  -->  16#:45
+         - fixed poblem with lost login session after 3 hours
+         - fixed toexecute cron tasks. now runs smoother (do not run infinitely)
+         - fixed view.php3 to work with wrong slice ids again
+           (it skips wrong slice ids)
+         - fixed - debug url param now works for cron.php3 in php >5.3
+         - fixed problem of filler - undefined query() for special cases
 16-11-21 - new parameter <code> in {redirect:<url>[:<code>]} - default is 301
 (honzam)   (Moved Permanently);
          - {rotator} better switches between pictures (for both - onclick and
@@ -161,7 +183,7 @@
 16-06-30 - THIS VERSION IS USED ON PRODUCTION SERVER AGAIN
 (honzam) - new experimental feature to allow "Fields defined by items" in slice
             - you can use special slice for additional fields definition.
-            There is slice option, where you can write IDs if items, which
+            There is slice option, where you can write IDs of items, which
             defines the fields, or better something like
               {ids:ac4940d37d6601ce969dc9a7e41826fc}.
             Could be used for data slice, which stores values for user created

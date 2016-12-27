@@ -1628,7 +1628,8 @@ class AA_Grabber_CTK extends AA_Grabber {
         $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Název
         $item->setValue('place..........3', iconv('UTF-8', 'windows-1250', mb_strtoupper($domicil, 'UTF-8')));                          // Domicil
         $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveøejnìní - 20160127T145301+01:00
-        $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveøejnìní
+#        $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveøejnìní - zruesno lde emailu 7.12.2016
+        $item->setValue('expiry_date.....', '1577836800');                                                                              // Datum expirace - 1.1.2020 - tedy do konce smlouvy s CTK
         $item->setValue('full_text......1', iconv('UTF-8', 'windows-1250', $ftext));                                                    // Plný text
         $item->setValue('source.........1', 'ÈTK');                                                                                     // Zdroj
         $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
