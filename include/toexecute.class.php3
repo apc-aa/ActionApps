@@ -188,7 +188,11 @@ class AA_Toexecute {
 
         while ($task = DB_AA::select1($SQL)) {
             ++$started;
-            $count += $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+            if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
+                ++$count;
+            } else {
+                break;
+            }
         }
         AA_Log::write('TOEXECUTE', "finished $count/$started in ".(microtime(true) - $execute_start)."/$allowed_time", 'AA_Toexecute');
     }
@@ -216,7 +220,11 @@ class AA_Toexecute {
         foreach ($tasks as $task_id) {
             $task  = DB_AA::select1('SELECT * FROM toexecute', '', array(array('id', $task_id, 'i')));
             ++$started;
-            $count += $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+            if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
+                ++$count;
+            } else {
+                break;
+            }
         }
         AA_Log::write('TOEXECUTE', "finished $count/$started in ".(microtime(true) - $execute_start)."/$allowed_time", 'AA_Toexecute');
     }
@@ -248,7 +256,7 @@ class AA_Toexecute {
         // Task is done - remove it from queue
         $varset->doDelete('toexecute');
         $execute_times[$task_type] = microtime(true) - $task_start;
-        AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:$count:".$task['params'], get_class($object) .(method_exists($object,'getId') ? ":".$object->getId() : ''));
+        AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:".$task['params'], get_class($object) .(method_exists($object,'getId') ? ":".$object->getId() : ''));
         return 1;
     }
 
