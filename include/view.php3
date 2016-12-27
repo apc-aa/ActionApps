@@ -352,7 +352,7 @@ function ParseViewParameters($query_string="") {
     $arr['forcache'] = array($set, $cmd);
 
     if ($arr['slices']) {
-        $arr['slices'] = explode('-', $arr['slices']);
+        $arr['slices'] = array_filter(explode('-', $arr['slices']),'is_long_id');
     }
 
 
@@ -465,9 +465,6 @@ function GetViewSort(&$view_info, $param_sort=null) {
     } else {
         if ($view_info['group_by1']) {
             $sort[] = array($view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
-        }
-        if ($view_info['group_by2']) {
-            $sort[] = array($view_info['group_by2'] => $VIEW_SORT_DIRECTIONS[$view_info['g2_direction']]);
         }
     }
 
@@ -786,7 +783,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
             if (is_array($slices)) {
                 foreach ($slices as $sid) {
-                    $aliases[q_pack_id($sid)] = AA_Slice::getModule($sid)->aliases($als);
+                    if ($m = AA_Slice::getModule($sid)) {
+                        $aliases[q_pack_id($sid)] = $m->aliases($als);
+                    }
                 }
             }
 
@@ -820,6 +819,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             $format['calendar_year']  = $year;
             if (isset($view_param['group_by'])) {
                 $format['group_by'] = $view_param['group_by'];
+            }
+            if (isset($view_param['group_by2'])) {
+                $format['group_by2'] = $view_param['group_by2'];
             }
 
             list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
