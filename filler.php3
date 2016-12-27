@@ -363,8 +363,9 @@ if (!$my_item_id) {
     $my_item_id = new_id();
     $insert     = true;
 } else {
-    $db->query("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
-    $insert = ! $db->next_record();
+    // $db->query("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
+    // $insert = ! $db->next_record();
+    $insert = ! DB_AA::test('item', array(array('id', $my_item_id, 'l')));
 }
 if ($debugfill) huhl("Debugfill insert=",$insert);
 
