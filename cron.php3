@@ -62,8 +62,7 @@ if( !ini_get('safe_mode') ){
  */
 function cron($time = 0) {
 
-    global $debug;
-    if ($debug) {
+    if ($_GET['debug']) {
         echo "<HTML><BODY>";
         echo "DEBUGGING. I don't run any script!<br>";
     }
@@ -76,7 +75,7 @@ function cron($time = 0) {
     $db = getDB();
 
     $parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
-    if ($debug) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
+    if ($_GET['debug']) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
 
     $db->query("SELECT * FROM cron");
     while ($db->next_record()) {
@@ -107,7 +106,7 @@ function cron($time = 0) {
 
             $realnow = getdate ($time);
 
-            if ($debug > 1) {
+            if ($_GET['debug'] > 1) {
                 print_r ($last_run); echo "<br>";
                 print_r ($now); echo "<br>";
             }
@@ -167,28 +166,27 @@ function cron($time = 0) {
 
         $url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
 
-        if ($debug) {
+        if ($_GET['debug']) {
             if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
                  echo "<b>$url</b> will be run<BR>";
             } else {
                 echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
             }
             //echo "Nearest time: "; print_r ($nearest);
-            DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+            // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
         }
         elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
             DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
             fopen ($url,"r");
         }
     }
-    if ($debug) echo "</BODY></HTML>";
+    if ($_GET['debug']) echo "</BODY></HTML>";
 }
 
 // Use this for debug purposes
 /*
 is_object( $db ) || ($db = getDB());
 $db->query("UPDATE cron SET last_run = NULL");
-$debug = 1;
 
 $time = time();
 for ($i = 0; $i < 50; $i++) {
