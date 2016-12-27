@@ -156,10 +156,6 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
 
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-    /** expand function
-     * @param $text
-     * @param $delimiter...
-     */
      function expand() {
          $arg_list = func_get_args();   // must be asssigned to the variable
          $i        = 0;
@@ -176,6 +172,18 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
      }
 }
 
+/** @return {colonescape:val1} - escapes colon as internaly used in AA. It is special case function - more internal one
+ *  usage:
+ *    txt:{colonescape:_#this}  - 16:45  -->  16#:45
+ */
+class AA_Stringexpand_Colonescape extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters ($delimiter could be space) */
+    function doTrimParams() { return false; }
+
+    function expand($text='') {
+        return str_replace(':', '#:', $text);
+    }
+}
 
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
@@ -6034,7 +6042,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $extrahightdiv = ($effect == 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
         $liswitcher    = $li_code ? "<ul class=\"rot-switcher\">".join("\n",$lis)."</ul>" : '';
 
-        return "<div id=\"$div_id\" style=\"position:relative\"'>".join("\n",$frames).$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
+        return "<div id=\"$div_id\" style=\"position:relative\">".join("\n",$frames).$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
     }
 }
 
