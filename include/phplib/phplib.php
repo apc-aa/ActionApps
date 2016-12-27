@@ -360,7 +360,7 @@ class Session {
         }
 
         if ($this->lifetime > 0) {
-            $lifetime = $this->lifetime*60;                                //$lifetime = time()+$this->lifetime*60; //this is incorrect
+            $lifetime = max($this->lifetime*60, 24*3600);               // day or more - the day added, because we experienced some relogin requests, so we are trying to check, if this doesn't help
             if (ini_get('session.gc_maxlifetime') < $lifetime) {
                 // default value is 1440, so session would expire after 40 mins
                 ini_set('session.gc_maxlifetime', $lifetime);
@@ -472,9 +472,8 @@ class Session {
 
 class Auth {
     var $classname = "Auth";
-    var $persistent_slots = array("auth");
 
-    var $lifetime = 15;             // Max allowed idle time before
+    var $lifetime = 200;            // Max allowed idle time before
                                     // reauthentication is necessary.
                                     // If set to 0, auth never expires.
 
@@ -581,13 +580,6 @@ class Auth {
       $this->start();        // Call authentication code
     }
   }
-
-  /** auth4 */
-  // function __sleep () {
-  //   $this->persistent_slots[]="classname";
-  //   return $this->persistent_slots;
-  //  }
-
 
   function unauth($nobody = false) {
     $this->auth["uid"]   = "";
