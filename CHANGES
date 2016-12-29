@@ -1,3 +1,15 @@
+16-12-29 - new possibility to sort items in view by alias instead of fields,
+(honzam)   but it could be very slow (computed for all the possible items in
+           the view), so use fields sorting whereever possible
+         - new "Show content of pending items" option - it is useful for
+           the cases, you want to see prepared item before the publication
+         - fixed problem with lost login session but username did not expire
+         - optimized permission queries - do not ask for non defined groups
+         - better parsing of queries with dash or apostrophe
+         - fixed character conversion when source or destination encoding
+           is not specified
+         - optimized SQL query to get multiple items
+         - fixed database access problem for mailman group sync
 16-12-27 - Slice defined fields now finished and works. You can assign special
 (honzam)   slice (Slice Admin -> Slice -> Fields defined by another slice) to
            any other slice, where you specify the fields for the slice. Instead

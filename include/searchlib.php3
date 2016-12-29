@@ -858,7 +858,7 @@ function getSortFromUrl( $sort ) {
  * @param $querystring
  */
 function GetWhereExp( $field, $operator, $querystring ) {
-    AA::$debug && AA::$dbg->log('GetWhereExp', $field, $operator, $querystring );
+    AA::$debug&64 && AA::$dbg->log('GetWhereExp', $field, $operator, $querystring );
 
     $field = trim($field);
 
@@ -973,7 +973,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
 
 // -------------------------------------------------------------------------------------------
 
-/** ProoveFieldNames function
+/** ProoveFieldNames function - just for debuging
  * show debug info about non-existing fields in all given slices
  * @param $slices
  * @param $conds
@@ -1350,7 +1350,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         return new zids(); // restrict_zids defined but empty - no result
     }
 
-    AA::$debug && ProoveFieldNames($slices, $conds);
+    AA::$debug&64 && ProoveFieldNames($slices, $conds);
 
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
@@ -1733,6 +1733,11 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     }
 
     AA::$debug && AA::$dbg->log("QueryZIDs: SQL: $SQL");
+
+    // @todo - replace LEFT JOIN with INNER JOIN for conditions where posiible (for speedup)
+    // if ($_GET['dd']>70) {
+    //     $SQL = str_replace('LEFT JOIN', 'INNER JOIN', $SQL);
+    // }
 
     // if neverAllItems is set, return empty set if no conds[] are used
     $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems, $select_limit_field);

@@ -96,12 +96,7 @@ class zids implements Iterator, ArrayAccess, Countable {
                     }
                 }
             } else {
-                $this->a = array_filter($initial);  // copy just not empty ids
-                // foreach ( $initial as $id ) {
-                //     if ( $id ) {                 // copy just not empty ids
-                //         $this->a[] = $id;
-                //     }
-                // }
+                 $this->a = array_values(array_filter($initial,'trim'));  // copy just not empty ids and assign them form 0 index
             }
         } else {
             $this->a[] = $initial;
@@ -362,7 +357,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $index
      */
     function zid($index) {
-        return $this->slice($index);
+        return new zids($this->a[$index], $this->type);
     }
 
     /** get the ids array as is */

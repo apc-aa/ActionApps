@@ -262,7 +262,8 @@ class DB_AA extends DB_Sql {
 
     /**
      *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
-     *  used as: $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
+     *           $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
+     *                    DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, array('last_edit-'))
      **/
     static function select1($query, $column=false, $where=null, $order=null) {
         $db = getDB();
