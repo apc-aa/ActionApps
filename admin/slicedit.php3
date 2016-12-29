@@ -81,6 +81,7 @@ if (!$sarr) {
 }
 
 $flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
+$flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
 
 //if ( $slice_id == "" ) {
 //    // load default values for new slice
@@ -137,6 +138,7 @@ if ( $superadmin ) {
     FrmInputChBox("deleted", _m("Deleted"), $sarr['deleted']);
 }
 FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_allow_expired);
+FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_allow_pending);
 FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $sarr['permit_anonymous_post'], false);
 FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), $PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
 FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        $PERMS_STATE, $sarr['permit_offline_fill'], false);
@@ -157,7 +159,7 @@ if ($slice_id) {
 }
 
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
-FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false);
+FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
 //mimo's MLX
 if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('SELECT name FROM `slice`', 'name', array(array('mlxctrl', $slice_id, 'l'))))) {
     FrmStaticText(_m("MLX Control Slice for"),$mlx_ctrl_for,0,0,"http://mimo.gn.apc.org/mlx/");
