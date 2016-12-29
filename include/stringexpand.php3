@@ -234,21 +234,24 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
  *                   'role'  -> returns super|administrator|editor|author|undefined
  */
 class AA_Stringexpand_User extends AA_Stringexpand {
+
+    /** $auth_user_info caches user's informations */
+    private static $auth_user_info = array();
+
     /** additionalCacheParam function
-     *
      */
     function additionalCacheParam() {
-        return serialize(array($GLOBALS['auth_user_info'], $GLOBALS['auth']));
+        return serialize(array(AA_Stringexpand_User::$auth_user_info, $GLOBALS['auth']));
     }
+
     /** expand function
      * @param $field
      */
     function expand($field='') {
-        global $auth_user_info, $cache_nostore, $auth, $perms_roles;
+        global $cache_nostore, $auth, $perms_roles;
         // this GLOBAL :-( variable is message for pagecache to NOT store views (or
         // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
         // cache's keyString.
-        // $auth_user_info caches values about auth user
         $cache_nostore = true;             // GLOBAL!!!
         $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"],$_SERVER['REMOTE_USER']);
         switch ($field) {
@@ -269,11 +272,11 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 }
                 break;
             default:
-            // $auth_user_info caches user's informations
-                if ( !isset($auth_user_info[$auth_user]) ) {
-                    $auth_user_info[$auth_user] = GetAuthData();
+                // $auth_user_info caches user's informations
+                if ( !isset(AA_Stringexpand_User::$auth_user_info[$auth_user]) ) {
+                    AA_Stringexpand_User::$auth_user_info[$auth_user] = GetAuthData();
                 }
-                $item_user = GetItemFromContent($auth_user_info[$auth_user]);
+                $item_user = GetItemFromContent(AA_Stringexpand_User::$auth_user_info[$auth_user]);
                 if ($field=='id') {
                     return $item_user->getItemID();
                 }
@@ -2278,7 +2281,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
             return '';
         }
 
-        $zids = new zids(array_filter(explode('-',str_replace(array('(',')',' ',"\n"),array('-','-','-','-'),$ids_string))));
+        $zids = new zids(array_filter(explode('-',str_replace(array('(',')',' ',"\n"),array('-','-','-','-'),$ids_string)),'trim'));
 
         // load all mentioned items in one step
         AA_Items::preload($zids);
@@ -2503,24 +2506,27 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
             return '';
         }
 
-        $ids     = explode('-', $ids_string);
-        $results = array();
-        $count   = 0;
-        if ( is_array($ids) ) {
-            foreach ( $ids as $item_id ) {
-                // is it item id?
-                $id_type = guesstype($item_id);
-                if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
-                    $item = AA_Items::getItem(new zids($item_id,$id_type));
-                    if ($item) {
-                        $count++;
-                        if ($expression) {
-                            $results[$item_id] = $item->subst_alias($expression);
-                        }
-                    }
-                }
-            }
-        }
+
+        $results = AA_Items::getFormatted(new zids(explode('-', $ids_string)), $expression, true);
+
+        // $ids     = explode('-', $ids_string);
+        // $results = array();
+        // $count   = 0;
+        // if ( is_array($ids) ) {
+        //     foreach ( $ids as $item_id ) {
+        //         // is it item id?
+        //         $id_type = guesstype($item_id);
+        //         if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
+        //             $item = AA_Items::getItem(new zids($item_id,$id_type));
+        //             if ($item) {
+        //                 $count++;
+        //                 if ($expression) {
+        //                     $results[$item_id] = $item->subst_alias($expression);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         switch ($function) {
             case 'sum':
                 $ret = array_sum(str_replace(',', '.', $results));
@@ -2539,7 +2545,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 $ret = join($parameter,$results);
                 break;
             case 'count':
-                $ret = $count;
+                $ret = count($results);
                 break;
             case 'order':
                 switch ($parameter) {
@@ -6254,6 +6260,17 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Item manager in remote slice related to the item
+ *    {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>]]}
+ *        - manage a related items to the edited one - like:
+ *  my_item <-- photos,
+ *        where photos have relation........ field which points to item.
+ *        Then you can manage the photos using
+ *    {manager:45d43f4d567dd8a9f459aa51576a6ce2:relation........:{id..............}:_#ROW_EDIT}.
+ *        The _#ROW_EDIT is then code in photos slice to be displayed for each
+ *        photo - could contain {live} edits, ... It allows you also to add new
+ *        photo with instant redraw.
+ */
 class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
     function expand($slices, $field=null, $item_id=null, $code=null, $conds=null, $sort=null) {
@@ -6279,11 +6296,12 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                           '. $code .'
                         </section>
                         <section class="icogroup">
-                          <article><i class="ico delete" onclick="AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);">x</i></article>
+                          <article><i class="ico delete" onclick="if (confirm(\''._m('Are you sure you want to permanently DELETE this record?'). '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">x</i></article>
                         </section>
                       </article>';
 
-        $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code), '');
+        // expired, ... are already filtered by query() above (if expiry_date is not in conds)
+        $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code, true), '');
         $ret .= '
                     </section>
                     <footer>

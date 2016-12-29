@@ -1653,7 +1653,7 @@ class AA_Items {
         return $ret;
     }
 
-    /** @return array(long_id -> AA_Item) */
+    /**  */
     static function preload($zids, $crypted_additional_slice_pwd=null) {
         $items = AA_Items::singleton();
 
@@ -1678,12 +1678,16 @@ class AA_Items {
     }
 
     // returns output of Active items
-    static function getFormatted($zids, $expression) {
+    static function getFormatted($zids, $expression, $all=false) {
         $res = array();
+        AA_Items::preload($zids);
+        $items = AA_Items::singleton();
+
+        // all is cached, we get all the items in RIGHT ORDER
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
-            $item = AA_Items::getItem($zids->zid($i));
-            if ($item && ($slice = AA_Slice::getModule($item->getSliceID())) AND ($slice->isExpiredContentAllowed() OR $item->isActive())) { // AND $item->isActive()) {
-                $res[$item->getItemId()] = $item->subst_alias($expression);       // long item id
+            $item = $items->_getFromCache($zids->zid($i));
+            if ($item AND ($all OR $item->isActive())) {
+                $res[$item->getItemId()] = strlen($expression) ? $item->subst_alias($expression) : '';       // long item id
             }
         }
         return $res;
