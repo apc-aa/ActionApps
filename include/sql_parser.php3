@@ -145,14 +145,20 @@ function resolveOperator($op) {
     return array("type"=>TOKEN_TYPE_UNKNOWN, "value"=>"strange operator");
 }
 
-/** isLetter function
- * @param $c
- */
-function isLetter($c) {
-    return ($c >= "A" && $c <= "Z")
-        || ($c >= "a" && $c <= "z")
-        || (ord ($c) >= 128);
+///** isLetter function
+// * @param $c
+// */
+//function isLetter($c) {
+//    return ($c >= "A" && $c <= "Z")
+//        || ($c >= "a" && $c <= "z")
+//        || (ord ($c) >= 128);
+//}
+
+/** contains SQL special characters? */
+function isSpecial($text) {
+    return (strpos(SPECIAL, $text) !== false);
 }
+
 
 // there if $input[$i-1]==QUOT (or APOS) on begin
 // $ending should be QUOT or APOS
@@ -165,8 +171,7 @@ function isLetter($c) {
 function tillTheEndingQuotApos($input, $i, $length, $ending) {
     $tok="";
     while ($input[$i] != $ending) {
-        $tok .= $input[$i];
-        $i++;
+        $tok .= $input[$i++];
         if ($i >= $length) {
             return array("status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i);
         }
@@ -180,20 +185,19 @@ function tillTheEndingQuotApos($input, $i, $length, $ending) {
  */
 function tillTheFirstSpecial($input, $i, $length) {
     $tok="";
-    while ($i < $length
-        && ((strpos(SPECIAL, $input[$i]) === false)
-            // changed by Jakub, November 2002
-            // don't break on apostrophe and minus sign in the middle of words
-            || ( (false !== strpos("'-", $input[$i]))
-                  && $i != 0
-                  && isLetter ($input[$i-1])
-                  && $i != $length - 1
-                  && isLetter ($input[$i+1]))))
-    {
-        $tok .= $input[$i];
-        $i++;
+    $last = $length-1;
+    while ( ($i < $length) AND
+        (
+            !isSpecial($input[$i])
+            OR  // don't break on apostrophe and minus sign in the middle of words
+                ( ($input[$i] == '-') AND (($i AND !isSpecial($input[$i-1])) OR ($i == $last)))
+            OR
+                ( ($input[$i] == "'") AND ($i AND ($i != $last) AND !isSpecial($input[$i-1].$input[$i+1])))
+        )) {
+                // (false !== strpos("'-", $input[$i])) && ($i != 0) && ($i != $length - 1) && !isSpecial($input[$i-1].$input[$i+1])))) {
+        $tok .= $input[$i++];
     }
-    return Array("status"=>S_OK, "value"=>$tok, "i"=>$i);
+    return array("status"=>S_OK, "value"=>$tok, "i"=>$i);
 }
 /** getToken function
  * @param $input
