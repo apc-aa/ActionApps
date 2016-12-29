@@ -53,9 +53,14 @@ class AA_Mailman {
             return;
         }
 
+
         // Add empty mailing lists
         if ($group_id = GetCategoryGroup($slice_id, $field)) {
             $maillists = array_keys(GetConstants($group_id));
+
+            //huhl($group_id,$maillists);
+            //exit;
+
             foreach ($maillists as $listname) {
                 self::_createOneFile($slice_id, $field, $listname);
             }
@@ -87,12 +92,10 @@ class AA_Mailman {
      * @param $newvalue
      */
     function constantsChanged( $constant_id, $oldvalue, $newvalue ) {
-        $db = getDB();
-        $db->query("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
-        if (!$db->next_record()) {
+        if ( !($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', array(array('id',$constant_id, 'l')))) ) {
             return;
         }
-        $group_id = $db->f("group_id");
+        $db = getDB();
         $db->query("SELECT slice.id FROM slice
             INNER JOIN field ON field.slice_id = slice.id
             WHERE slice.type = 'ReaderManagement'
