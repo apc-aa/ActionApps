@@ -223,6 +223,8 @@ function PhpFloat($value) {
 }
 
 function ConvertEncodingDeep($value, $from=null, $to=null) {
+    $from = $from ?: 'UTF-8';
+    $to   = $to   ?: 'UTF-8';
     array_walk_recursive(
         $value,
         function (&$entry) use ($from, $to) {
@@ -235,8 +237,10 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
 }
 
 function ConvertEncoding($str, $from, $to='UTF-8') {
+    $from = $from ?: 'UTF-8';
+    $to   = $to   ?: 'UTF-8';
     //return function_exists('mb_convert_encoding') ? mb_convert_encoding($str, $to, $from) : iconv($from, "$to//TRANSLIT",$str);  // does not work with windows-1250
-    return iconv($from, "$to//TRANSLIT",$str);
+    return iconv($from, "$to//TRANSLIT", $str);
 }
 
 /** add_vars function
