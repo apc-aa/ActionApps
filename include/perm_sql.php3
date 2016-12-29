@@ -369,6 +369,10 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($id, $flags = 0) {
+        if (!ctype_digit((string)$id)) {
+            return array();
+        }
+
         $all_groups  = array();
         $last_groups = array($id);
 
@@ -383,7 +387,9 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             $last_groups = array();  //get deeper groups to last_groups and groups
             foreach ($groupids as $gid) {
                 // Realize that it has already checked a group and eliminate it.
-                if ( !in_array($gid, array($all_groups))) {
+
+
+                if ( !in_array($gid, $all_groups) ) {
                     $last_groups[] = $gid;
                     $all_groups[]  = $gid;
                 }
