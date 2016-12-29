@@ -489,10 +489,15 @@ class itemview {
 
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
-      $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
+        if ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
+            $SORT_CONST = array('0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric');
+            $this->zids = new zids(explode("-",StrExpand('AA_Stringexpand_Order', array(join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]))));
+        }
+        $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
       if ( !$rweight ) {
+        $foo_ids = array();
         // not weighted, we can select random id(s)
         for ( $i=0; $i<$this->num_records; $i++) {
           $sel = mt_rand( 0, $this->zids->count() - 1) ;

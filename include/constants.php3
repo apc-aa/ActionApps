@@ -442,8 +442,8 @@ function getViewFields() {
     $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "group"  );
     $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
     $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("",      "quoted", "number","none"   );
-    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
-    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
+    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text",  "quoted", "text",  "orderal");
+    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"  );
     $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["group_bottom"]    = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["remove_string"]   = GetViewFieldDef("text",  "quoted", "text",  "area"   );
@@ -533,11 +533,11 @@ function getViewTypes() {
                          "o1_direction" => " " ,
                          "order2" => _m("Sort secondary") ,
                          "o2_direction" => " " ,
+                         "group_by2" => _m("Sort alias"),
+                         "g2_direction" => " " ,
                          "group_by1" => _m("Group by") ,
                          "g1_direction" => " " ,
                          "gb_header" => " " ,
-    //                     "group_by2" => _m("Group by") ,
-    //                     "g2_direction" => " " ,
                          "group_title" => _m("Group title format") ,
                          "group_bottom" => _m("Group bottom format") ,
     //                     "selected_item" => _m("HTML for Selected") ,
@@ -942,6 +942,7 @@ define ('FEEDMAP_FLAG_RSS',    5);
 define ('DISCUS_HTML_FORMAT',  1);  // discussion html format flag in slice table
 define ('DISCUS_ADD_DISABLED', 2);  // disbles filldisc adding on new comments
 define ('SLICE_ALLOW_EXPIRED_CONTENT', 4);  // when we reference expired item, the content could be shown on public pages
+define ('SLICE_ALLOW_PENDING_CONTENT', 8);  // pending items, when referenced, will be wisible - this allows you also to see preview of pending item
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
 $CONDS_NOT_FIELD_NAMES = array(

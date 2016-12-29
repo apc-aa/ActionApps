@@ -164,6 +164,27 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
 }
+
+/** OrderFrm function
+ * @param $name
+ * @param $txt
+ * @param $val
+ * @param $order_fields
+ * @param $easy_order=false
+ */
+function OrderAliasFrm($name, $txt, $val) {
+    global $vw_data;
+    $name=safe($name); $txt=safe($txt);
+
+    $order_type = array( '0'=>_m("Ascending"), '1' => _m("Descending"), '4'=>_m("Ascending (numeric)"),     '5' => _m("Descending (numeric)"));
+    echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
+    echo "</td>\n<td><input name=\"$name\" size=\"14\" maxlength=\"10\" value=\"". safe($val) ."\">";
+    $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
+    FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
+    echo "<div class=tabhlp>"._m("you can sort items by alias instead of fields, but it is very slow (computed for all the items)")."</div></td></tr>\n";
+}
+
+
 /** ConditionForm function
  * @param $name
  * @param $txt
@@ -424,6 +445,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "chbox":   FrmInputChBox( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
+        case "orderal": OrderAliasFrm( $k, $label, $value); break;
         case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help, ''); break;
         case "none":    break;

@@ -820,8 +820,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             if (isset($view_param['group_by'])) {
                 $format['group_by'] = $view_param['group_by'];
             }
-            if (isset($view_param['group_by2'])) {
-                $format['group_by2'] = $view_param['group_by2'];
+            if (isset($view_info['group_by2'])) {
+                $format['group_by2']    = $view_info['group_by2'];
+                $format['g2_direction'] = $view_info['g2_direction'];
             }
 
             list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
