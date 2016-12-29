@@ -92,9 +92,7 @@ class AA_Auth extends Auth {
     }
 
     protected function _validatelogin($username, $password) {
-        if ($uid = AA::$perm->authenticateUsername($username, $password)) {
-            $this->auth['uname']=$username;
-        }
+        $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password)) ? $username : '';
         return $uid;
     }
 

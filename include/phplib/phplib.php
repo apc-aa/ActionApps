@@ -583,6 +583,7 @@ class Auth {
 
   function unauth($nobody = false) {
     $this->auth["uid"]   = "";
+    $this->auth["uname"] = "";
     $this->auth["perm"]  = "";
     $this->auth["exp"]   = 0;
 
@@ -600,7 +601,7 @@ class Auth {
     global $sess;
 
     $sess->unregister("auth");
-    unset($this->auth["uname"]);
+    // unset($this->auth["uname"]);  - now in unauth
     $this->unauth($this->nobody);
   }
 
