@@ -81,17 +81,17 @@ class AA_Module {
         if (!is_long_id($module_id)) {
             return null;
         }
-        if (!isset(static::$_modules[$module_id])) {
+        if (!isset(AA_Module::$_modules[$module_id])) {
             if (($class = get_called_class()) == 'AA_Module') {
-                // tyhis is not usual case - use it just if you do not know what module is it
+                // this is not usual case - use it just if you do not know what module is it
                 $class = AA_Module::getModuleClass($module_id);
             }
             if (!$class) {
                 return null;
             }
-            static::$_modules[$module_id] =  new $class($module_id);
+            AA_Module::$_modules[$module_id] =  new $class($module_id);
         }
-        return static::$_modules[$module_id];
+        return AA_Module::$_modules[$module_id];
     }
 
 
@@ -257,7 +257,7 @@ class AA_Module {
     }
 
     static function getUsedModules() {
-        return array_keys(static::$_modules);
+        return array_keys(AA_Module::$_modules);
     }
 
     /** @return array id => name of current user's modules
@@ -394,6 +394,10 @@ class AA_Slice extends AA_Module {
 
     function isExpiredContentAllowed() {
         return ($this->getProperty('flag') & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
+    }
+
+    function isPendingContentAllowed() {
+        return ($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
     }
 
     /** AA_Slice::_deleteModules() function - called automaticaly form AA_Module::deleteModules()

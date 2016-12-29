@@ -660,8 +660,16 @@ class ItemContent extends AA_Content {
 
     /** true if the item is viseble - not expired/trashed/pending/... */
     function isActive() {
-        $now = now('step');
-        return (($this->getStatusCode() == 1) AND ($this->getPublishDate() <= $now) AND ($this->getExpiryDate() > $now));
+        $ret = false;
+        if ($this->getStatusCode() == 1) {
+            $now = now('step');
+            if (($this->getPublishDate() <= $now) OR (($slice = AA_Slice::getModule($this->getSliceID())) AND $slice->isPendingContentAllowed())) {
+                if (($this->getExpiryDate() > $now) OR (($slice = $slice ?: AA_Slice::getModule($this->getSliceID())) AND $slice->isExpiredContentAllowed())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** matches function
