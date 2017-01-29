@@ -2,6 +2,7 @@
 (honzam)   function - displays timestamp of last login (for logintime) or dash
            separated list of last login times of the user specified by his ID
            You can display the times for example by:
+             {foreach:{userinfo:{user:id}:logintimes}:{(<br>{date:j.n.y H#:i:_#1} )} }
          - {protectmail:<email>[:<text>]} no longer uses deprecated 
            document.write() function, so it do not block page rendering
          - {math:..} accepts numbers in scientific notation - 2.15E10 
