@@ -342,14 +342,21 @@ class AA_Stringexpand_Internal extends AA_Stringexpand_Nevercache {
 /** Returns name or other info about user (usable for posted_by, edited_by, ...)
  *   {userinfo:<user>[:<property>]}
  *   @param $user - user as stored in posted_by....... or edited_by....... field
- *   @param $property - 'name' at this moment only, which is default
+ *   @param $property - 'name'|logintime|logintimes at this moment only, which is default
  */
 class AA_Stringexpand_Userinfo extends AA_Stringexpand {
 
     /** expand function
      * @param $user
      */
-    function expand($user='') {
+    function expand($user='', $property='') {
+        if (!$user) {
+            return '';
+        }
+        switch ($property) {
+            case 'logintime':  return DB_AA::select1("SELECT time FROM `log`", 'time', array(array('type','LOGIN'),array('params',str_replace(':',':#',$user).':%','LIKE')), array('time-')) ?: '';
+            case 'logintimes': return join('-',DB_AA::select('time', "SELECT time FROM `log`", array(array('type','LOGIN'),array('params',str_replace(':',':#',$user).':%','LIKE')), array('time-')));
+        }
         return perm_username( $user );
     }
 }
@@ -687,13 +694,18 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
         if (!$email) {
             return $text;
         }
+        $ahrefid = 'aapm'.gensalt(10);
         $linkpart    = explode('@', $email);
         $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
-        $linktext    = ($text=='') ? $mailprotect : "'".str_replace("'", "\'", $text)."'";
-        $ret = "<script type=\"text/javascript\">document.write('<a href=\"mai'+'lto:'+$mailprotect+'\">'+$linktext+'</a>')</script>";
+        $linktext    = ($text=='') ? $mailprotect : "'".escape4js($text)."'";
+        $ret = "<a href=\"\" id=\"$ahrefid\"></a>";
+        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);</script>";
         return $ret;
     }
 }
+
+
+
 
 /** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of
  *  last modificaton of any item in the slice
@@ -1113,7 +1125,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
 
 function calculate($exp) {
     $exp = str_replace(array(' ',"\t", "\r", "\n", ',', '(+', '(-', '(*', '(/', '(%', '+)', '-)', '*)', '/)', '%)', '()') ,array('', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '+0)', '-0)', '*0)', '/0)', '%0)', '0'), "($exp)");
-    if (strspn($exp, '0123456789.+-*/%()') != strlen($exp)) {
+    if (strspn($exp, '0123456789.+-*/%()E') != strlen($exp)) {
         return 'wrong characters';
     }
     try {
@@ -1271,7 +1283,7 @@ function parseLoop($out, &$item) {
                         // constant value
                         $item->setAaValue('loop............', new AA_Value($value));
                         // get for this alias his output
-                        $par = $item->get_alias_subst($params[$i],"loop............");
+                        $par = $item->get_alias_subst($params[$i], null, 'loop............');
                     }
                     $dummy = str_replace("_#".($i+1), $par, $dummy);
                 }
@@ -1949,7 +1961,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
         $rexPassword  = $rexUsername; // allow the same characters as in the username
         $rexUrl       = "($rexScheme)?(?:($rexUsername)(:$rexPassword)?@)?($rexDomain|$rexIp)($rexPort$rexPath$rexQuery$rexFragment)";
         $rexTrailPunct= "[)'?.!,;:]"; // valid URL characters which are not part of the URL if they appear at the very end
-        $rexNonUrl    = "[^-_#$+.!*'(),;/?:@=&a-zA-Z0-9\x7f-\xff]"; // characters that should never appear in a URL
+        $rexNonUrl    = "[^-_#$+.!*%'(),;/?:@=&a-zA-Z0-9\x7f-\xff]"; // characters that should never appear in a URL
         $rexUrlLinker = "{\\b$rexUrl(?=$rexTrailPunct*($rexNonUrl|$))}";
         $rexUrlLinker .= 'i'; // Uncomment this line to allow uppercase URL schemes (e.g. "HTTP://google.com").
 
@@ -1961,6 +1973,8 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
 
         $html = '';
         $position = 0;
+        $match = array();
+
         while (preg_match($rexUrlLinker, $text, $match, PREG_OFFSET_CAPTURE, $position)) {
             list($url, $urlPosition) = $match[0];
 
@@ -2219,7 +2233,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
      */
     function expand($text='', $no_url_encode=false) {
         if ( !is_object($this->item) OR !$this->item->isField($text) ) {
-            return AA_Stringexpand_Conds::_joinArray(json2arr($text), $no_url_encode, '');
+            return AA_Stringexpand_Conds::_joinArray(json2arr($text), $no_url_encode, $no_url_encode ? 'AAnoCONDITION' : '');
         }
 
         return AA_Stringexpand_Conds::_joinArray($this->item->getValuesArray($text), $no_url_encode);
@@ -3471,7 +3485,8 @@ class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
 }
 
 /** Fieldid -
- *  ussage:  {fieldid:text:1}  - returns text...........1
+ *  ussage:  {fieldid:text:1}    - returns text...........1
+ *           {fieldid:text:1:_}  - returns text___________1
  */
 class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4217,7 +4232,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 }
 
 /** include file, first parameter is filename, second is hints on where to find it **/
-class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
      * @param $fn first parameter is filename, second is hints on where to find it
      */
@@ -4792,7 +4807,7 @@ class AA_Stringexpand {
         }
 
         if (is_object($item)) {
-            $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode("##",$remove): array());
+            $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode('##',$remove) : array());
         }
 
         // if ( !$dequote ) { }
@@ -5864,8 +5879,11 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
      *                     If specified, then all matching texts are returned delimited by <delimiter>
      */
     function expand($string="", $query='', $attr='', $delimiter='AA_PrintJustFirst') {
+        if (!$query) {
+            return '';
+        }
         $doc = new DOMDocument();
-        if (!$doc->loadHTML($string) OR !$query) {
+        if (!$doc->loadHTML($string)) {   // I tried to contentcached this load to save time on parsing document, but it had absolutely no effect - PHP 7.0 - Honza 2017-01-25
             return 'Error parsing';
         }
         $xpath = new DOMXPath($doc);
@@ -5891,10 +5909,12 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
 /**
  *  Use as:
  *    {foreach:val1-val2:<p>_#1</p>:-:<br>}
+ *    {foreach:val1-val2:<p>_#loop</p>:-:<br>}  // newer version - older _#1 may colide with others _#1 in others expressions
  *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
  *    {foreach:{changed:{_#ITEM_ID_}}:{( - {field:_#1:name:81294238c1ea645f7eb95ccb301063e4} <br>)}}
  *    {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>)}}
- *    {foreach:{sequence:num:1999:17}:<th>_#1</th>}
+ *    {foreach:2011-2012:{(<li><a href="?year=_#loop" {ifeq:_#loop:{qs:year}:class="active"}>_#1</a></li>)}}
+ *    {foreach:{sequence:num:1999:2017:1:-}:<th>_#1</th>}
  *    {foreach:{ids:478598ab745a65f1478598ab745a65f1}:{({_:Editor_document:_#1:{id..............}})}}
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand {
@@ -5910,7 +5930,9 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
 
     function expand($values='', $text='', $valdelimiter='', $outputdelimiter='') {
         // _##1 is the way, how to use parameter from the outside of if:
-        // {foreach:2011-2012:<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>}
+        // {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>)}}
+        // or better 
+        // {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_#loop:{qs:year}:class="active"}>_#1</a></li>)}}
         $text = str_replace('_##1', '_#1', $text);
 
         $item   = $this ? $this->item : null;
@@ -5922,7 +5944,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
         $ret= array();
 
         foreach($arr as $str) {
-            $ret[] = AA_Stringexpand::unalias(str_replace('_#1',$str,$text),'',$item);
+            $ret[] = AA_Stringexpand::unalias(str_replace(array('_#1','_#loop'),$str,$text),'',$item);
         }
         return join($outputdelimiter, $ret);
 
