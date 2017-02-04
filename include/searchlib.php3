@@ -1160,7 +1160,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                         }
                     }
                 }  // between conditions inside one cond is OR
-                if     ( count($onecond) == 1 ) {
+                if ( count($onecond) == 1 ) {
                     $ret[] = $onecond[0];
                 } elseif ( count($onecond) >  1 ) {
                     $ret[] = '( '. join( ' OR ',$onecond ) . ')';
@@ -1168,8 +1168,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
             }
         }
     }
-    return ( isset($ret) AND is_array($ret) ) ?
-                       ' AND ( '. join(' AND ', $ret ) .') ' : '';
+    return ( isset($ret) AND is_array($ret) ) ? ' AND ( '. join(' AND ', $ret ) .') ' : '';
 }
 
 /** MakeSQLOrderBy function
@@ -1858,8 +1857,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                     unset ($select_cond);
                     while ( list ($fid) = each ($vv)) {
                         if ( in_array($fid,$fields) AND $cond['value'] > "" ) {
-                            $select_cond[] = GetWhereExp( "discussion.$fid",
-                                              $cond['operator'], $cond['value'] );
+                            $select_cond[] = GetWhereExp( "discussion.$fid", $cond['operator'], $cond['value'] );
                         }
                     }
                     if (is_array($select_cond)) {

@@ -166,16 +166,6 @@ function make_return_url($r1="") {
     return '';
 }
 
-/** Links_admin_url function
- * helper function for f_e:link_*  (links module admin page link) - honzam
- * @param $script
- * @param $add
- */
-function Links_admin_url($script, $add) {
-    global $sess;
-    return $sess->url(AA_INSTAL_URL. "modules/link/$script?$add");
-}
-
 /** Inputform_url function
  *  helper function which create link to inputform from item manager
  * (_#EDITITEM, f_e:add, ...)
@@ -187,7 +177,7 @@ function Links_admin_url($script, $add) {
  * @param $var
  */
 function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null, $safe=true) {
-    global $sess, $profile;
+    global $profile;
 
     // $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
     // changed back to relative address - in order we stay within the same
@@ -485,8 +475,7 @@ class AA_Item {
         global $sess;
 
         // redirecting to another page?
-        $url_base = ( $redirect ? $redirect :
-        (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
+        $url_base = ( $redirect ?: (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
 
         // add state variable, if defined (apc - AA Pointer Cache)
         if ( $GLOBALS['apc_state'] AND $GLOBALS['apc_state']['state'] ) {
@@ -505,7 +494,7 @@ class AA_Item {
      */
     function getitemurl($extern, $extern_url, $redirect, $condition=true, $no_sess=false) {
         if ( $extern ) {      // link_only
-            return ($extern_url ? $extern_url : NO_OUTER_LINK_URL);
+            return ($extern_url ?: NO_OUTER_LINK_URL);
         }
         if ( !$condition ) {
             return false;
@@ -530,7 +519,7 @@ class AA_Item {
         if ( $url AND $txt ) {
             // repair url if user omits to write http://
             if ( substr($url,4)=='www.' ) {
-                $url = 'http://'.$url;
+                $url = '//'.$url;
             }
             // hide email from spam robots
             if ($hide=='1') {
@@ -552,7 +541,7 @@ class AA_Item {
      * @param $alias
      * @param $use_field
      */
-    function get_alias_subst( $alias, $use_field="" ) {
+    function get_alias_subst( $alias, $default=null, $use_field="" ) {
         // use_field is for expanding aliases with loop - prefix {@
         $ali_arr = $this->aliases[$alias];
         // is this realy alias?
@@ -560,7 +549,7 @@ class AA_Item {
             // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
             // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
             if ( ! ((substr($alias,9,1)=='#') AND is_array($ali_arr = $this->aliases[substr($alias,0,9).'_']))) {
-                return $alias;
+                return is_null($default) ? $alias : $default;
             }
         }
 
@@ -609,7 +598,7 @@ class AA_Item {
 
         // we have to remove stings
         // In this case we use older approach of substitution - it has problems with stringsl like "link:_#SEO_URL_#_#LASTEDIT"
-        $piece      = explode( "_#", $text );
+        $piece = explode( "_#", $text );
         $out   = array_shift($piece);   // initial sequence
         $clear_output = '';
         foreach ($piece as $vparam) {
@@ -623,7 +612,7 @@ class AA_Item {
             }
             $out .= substr($vparam,8);
         }
-        return $clear_output . str_replace($remove_arr, "", $out);
+        return $clear_output . str_replace($remove_arr, '', $out);
     }
 
     /** unalias function
