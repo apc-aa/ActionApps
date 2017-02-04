@@ -138,7 +138,7 @@ if ($add || $update) {
             $varset->doInsert('site');
 
             // copy spots
-            DB_AA::select(array(),'SELECT * FROM `site`', '', array(array('id', $template_id, 'l')));
+            DB_AA::select(array(),'SELECT * FROM `site`', array(array('id', $template_id, 'l')));
             $sitespots = DB_AA::select(array(), 'SELECT spot_id, content FROM `site_spot`', array(array('site_id', $template_id, 'l')));
             foreach ($sitespots as $spot) {
                 $varset->clear();
