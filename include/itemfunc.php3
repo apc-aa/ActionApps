@@ -45,7 +45,10 @@ if ( !is_object($event) ) {
  *  derived from  AA_Serializable in order to be able to factory from string
  *
  *  Ussage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
+ *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
 */
+
+
 abstract class AA_Generator extends AA_Serializable {
     abstract function generate();
 }
@@ -226,6 +229,17 @@ class AA_Generator_Mul extends AA_Generator {
 
 
 class AA_Field_Writer {
+
+    protected $item_varset;
+
+    function __construct() {
+        $this->item_varset = new Cvarset;
+    }
+
+    /** The content fields are already written, but the fields in item table still probably waits - get them for update */
+    public function getItemVarset() {
+        return $this->item_varset;
+    }
 
     /** insert_fnc_qte function
      *  What are the parameters to this function - $field must be an array with values [input_show_func] etc
@@ -416,29 +430,14 @@ class AA_Field_Writer {
         return;
     }
 
-    /** insert_fnc_com function - Computed field
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
-        $this->insert_fnc_co2($item_id, $field, $value, $param, $additional);
-        return;
-    }
+    /** insert_fnc_com function - Computed field */
+    function insert_fnc_com($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
 
-    /** insert_fnc_com function - SEO Name
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_seo($item_id, $field, $value, $param, $additional='') {
-        $this->insert_fnc_co2($item_id, $field, $value, $param, $additional);
-        return;
-    }
+    /** insert_fnc_seo function - SEO Name */
+    function insert_fnc_seo($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
+
+    /** insert_fnc_seo function - Unique number for this field (from 1,..)    */
+    function insert_fnc_seq($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
 
     // -----------------------------------------------------------------------------
     /** insert_fnc_fil function
@@ -622,7 +621,6 @@ class AA_Field_Writer {
     }
 
     protected function _store($item_id, $field, $value, $param, $additional='') {
-        global $itemvarset;
 
         $varset = new Cvarset();
         // if input function is 'selectbox with presets' and add2connstant flag is set,
@@ -672,7 +670,7 @@ class AA_Field_Writer {
             }
 
             // field in item table
-            $itemvarset->add($field["in_item_tbl"], "text", $value['value']);
+            $this->item_varset->add($field["in_item_tbl"], "text", $value['value']);
             return;
         }
 
@@ -777,7 +775,6 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
             $fncname .= "_anonym";
         }
 
-        // updates content table or fills $itemvarset
         if ($edit) {
             $fncname($varname, $f, $content4id[$pri_field_id],
                      $fnc["param"], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );

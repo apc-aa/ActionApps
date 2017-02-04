@@ -168,11 +168,6 @@ class MLXImport {
     }
 //private:
     var $slice_id;
-/*
-    var $varset;
-    var $itemvarset;
-    var $db;
-*/
     var $sliceObj;
     var $ctrlSlice;
     var $fields;

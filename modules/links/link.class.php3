@@ -888,7 +888,7 @@ class linkobj {
 
 
     function save() {
-        global $auth, $varset, $r_state, $LINK_DATA_FIELDS, $LINK_INNER_FIELDS, $debug;
+        global $auth, $r_state, $LINK_DATA_FIELDS, $LINK_INNER_FIELDS, $debug;
 
         debug("SAVE: ", $this);
         $this->load();     // make sure the data are filled (used mainly for changes)

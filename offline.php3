@@ -176,7 +176,6 @@ function SendOkPage($txt) {
   // init used objects
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-$itemvarset  = new Cvarset();
 
 if ( !$slice_id ) {
     SendErrorPage(_m("Slice ID not defined"));

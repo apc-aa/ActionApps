@@ -871,9 +871,7 @@ class ItemContent extends AA_Content {
      *    @param string $context  special parameter used for thumbnails
      */
     function storeItem( $mode, $flags = array(), $context='direct' ) {
-        global $event, $itemvarset;
-
-        $itemvarset   = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
+        global $event;
 
         $slice_id     = $this->getSliceID();
         $slice        = AA_Slice::getModule($slice_id);
@@ -974,53 +972,53 @@ class ItemContent extends AA_Content {
         // in paralel to curent values (stored as multivalues for all fields
         // stored in content table)
 
-        // and NOW - store the fields and prepare itemvarset
-        $this->_store_fields($id, $fields, $context);
+        // and NOW - store the fields and prepare item_varset
+        $item_varset = $this->_store_fields($id, $fields, $context);
 
         // Alerts module uses moved2active as the time when an item was moved to the active bin
-        if (($mode=='insert') OR (($itemvarset->get('status_code') != $oldItemContent->getStatusCode()) AND $itemvarset->get('status_code') >= 1)) {
-            $itemvarset->add("moved2active", "number", $itemvarset->get('status_code') > 1 ? 0 : time());
+        if (($mode=='insert') OR (($item_varset->get('status_code') != $oldItemContent->getStatusCode()) AND $item_varset->get('status_code') >= 1)) {
+            $item_varset->add("moved2active", "number", $item_varset->get('status_code') > 1 ? 0 : time());
         }
 
         /** update item table */
         // we can't redefine id or short_id for the field, so if it is set, unset it
-        $itemvarset->remove("short_id");
-        $itemvarset->addkey('id', 'unpacked', $id);
-        $itemvarset->add("slice_id",  "unpacked", $slice_id);
+        $item_varset->remove("short_id");
+        $item_varset->addkey('id', 'unpacked', $id);
+        $item_varset->add("slice_id",  "unpacked", $slice_id);
         // update item table
         switch ($mode) {
             case 'update':
             case 'add':
                 if (!$silent) {
-                    $itemvarset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
-                    $itemvarset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
+                    $item_varset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
+                    $item_varset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
                 }
-                $itemvarset->doUpdate('item');
+                $item_varset->doUpdate('item');
                 break;
             case 'overwrite':
-                if ($itemvarset->get('status_code') < 1) {
-                    $itemvarset->set('status_code', 1);
+                if ($item_varset->get('status_code') < 1) {
+                    $item_varset->set('status_code', 1);
                 }
-                $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
-                $itemvarset->add("last_edit", "quoted",   AA_Generator::factoryByString('now')->generate()->getValue());
-                $itemvarset->add("edited_by", "quoted",   AA_Generator::factoryByString('uid')->generate()->getValue());
-                $itemvarset->doReplace('item');
+                $item_varset->set('display_count', (int)$this->getValue('display_count...'));
+                $item_varset->add("last_edit", "quoted",   AA_Generator::factoryByString('now')->generate()->getValue());
+                $item_varset->add("edited_by", "quoted",   AA_Generator::factoryByString('uid')->generate()->getValue());
+                $item_varset->doReplace('item');
                 break;
             case 'insert':
                 // check, if all data in item table are correct
-                if ($itemvarset->get('status_code') < 1) {
-                    $itemvarset->set('status_code', 1);
+                if ($item_varset->get('status_code') < 1) {
+                    $item_varset->set('status_code', 1);
                 }
-                if ($itemvarset->get('publish_date') < 1) {
-                    $itemvarset->set('publish_date', now());
+                if ($item_varset->get('publish_date') < 1) {
+                    $item_varset->set('publish_date', now());
                 }
-                if ($itemvarset->get('expiry_date') < 1) {
-                    $itemvarset->set('expiry_date', 1861916400);   // sometimes in 2029
+                if ($item_varset->get('expiry_date') < 1) {
+                    $item_varset->set('expiry_date', 1861916400);   // sometimes in 2029
                 }
-                $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
-                $itemvarset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
-                $itemvarset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
-                $itemvarset->doInsert('item');
+                $item_varset->set('display_count', (int)$this->getValue('display_count...'));
+                $item_varset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
+                $item_varset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
+                $item_varset->doInsert('item');
         }
         if ($invalidatecache) {
             // invalidate old cached values
@@ -1075,13 +1073,11 @@ class ItemContent extends AA_Content {
      * @param $restict_fields
      */
     function updateComputedFields($fields=null, $mode='update', $restict_fields=null) {
-        global $itemvarset; // set by insert_fnc_qte function
 
         if (!($id = $this->getItemID()) OR $this->is_empty()) {  // the recomputed item is already deleted, probably
             return false;
         }
 
-        $itemvarset   = new CVarset();
         $field_writer = new AA_Field_Writer;
 
         $update       = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
@@ -1098,7 +1094,7 @@ class ItemContent extends AA_Content {
         foreach ($fields as $fid => $f) {
 
             if (is_array($restict_fields) AND count($restict_fields) AND !in_array($fid, $restict_fields)) {
-                // we can restict the recomputed fields in {recompute}
+                // we can restrict the recomputed fields in {recompute}
                 // so - skip not recomputed fields
                 continue;
             }
@@ -1168,9 +1164,11 @@ class ItemContent extends AA_Content {
             }
         }
 
-        if (!$itemvarset->isEmpty()) {
-            $itemvarset->addkey('id', 'unpacked', $id);
-            $itemvarset->doUpdate('item');
+        $item_varset = $field_writer->getItemVarset();
+
+        if (!$item_varset->isEmpty()) {
+            $item_varset->addkey('id', 'unpacked', $id);
+            $item_varset->doUpdate('item');
         }
         return $computed_field_exist;
     }
@@ -1255,7 +1253,7 @@ class ItemContent extends AA_Content {
     /** _store_fields function
      *  private function - goes through content and runs all insert functions
      *  on each field in content array. The content is stored in the database
-     *  of in itemvarset
+     *  or in returned item_varset
      * @param $id
      * @param $fields
      * @param $context
@@ -1272,7 +1270,7 @@ class ItemContent extends AA_Content {
             $fnc = ParseFnc($f["input_insert_func"]);
             if ($fnc) {
                 $fncname = 'insert_fnc_' . $fnc["fnc"];
-                // update content table or fill $itemvarset
+                // update content table or fill item_varset
                 if (!is_array($cont)) {
                     continue;
                 }
@@ -1311,6 +1309,7 @@ class ItemContent extends AA_Content {
                 }
             }
         }
+        return $field_writer->getItemVarset();
     }
 
     /** transform function

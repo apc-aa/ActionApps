@@ -189,7 +189,6 @@ function FeedJoin($columns, $fields, $params, &$result) {
  * @param $content
  */
 function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory=0, $content="") {
-    global $varset, $itemvarset;
 
     if ( $destination_id == $from_slice_id ) { // don't feed into the same slice
         return false;
@@ -216,11 +215,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
         $destinationcat = DB_AA::select1('SELECT value FROM constant', 'value', array(array('id',$tocategory, 'l')));
     }
 
-    $varset     = new Cvarset;
-    $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
-    $id         = new_id();
-
-
+    $id          = new_id();
     $fields_to   = $destination->fields('record');
 
     // prepare new4id array before call StoreItem function
@@ -357,15 +352,14 @@ function CreateFeedTree($sl_id, $from_category_id) {
     }
     return $tree;
 }
-/** Update function
+/** UpdateFedItem function
  * Update $dest_d item according to $item_id
  * @param $item_id
  * @param $slice_id
  * @param $dest_id
  * @param $destination_id
  */
-function Update($item_id, $slice_id, $dest_id, $destination_id) {
-    global $varset, $itemvarset;
+function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
 
     $slice       = AA_Slice::getModule($slice_id);
     $fields      = $slice->getFields();
@@ -376,9 +370,6 @@ function Update($item_id, $slice_id, $dest_id, $destination_id) {
     $oldcontent4id = $oldcontent[$dest_id];
     $content       = GetItemContent($item_id);
     $content4id    = $content[$item_id];   // shortcut
-
-    $varset     = new Cvarset;
-    $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
 
     while (list($key,$fval) = each($oldcontent4id)) {
         // skip field, if field from source item is not mapped to dest
@@ -405,9 +396,9 @@ function Update($item_id, $slice_id, $dest_id, $destination_id) {
  * @param $slice_id
  */
 function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
-    $items[$item_id] = $slice_id;
+    $items = array($item_id => $slice_id);
 
-    $db = getDB(); 	// do not use global db, because of conflict in Update - StoreItem
+    $db = getDB(); 	// do not use global db, because of conflict in UpdateFedItem - StoreItem
     while (list($item_id,$slice_id) = each($items)) {
         $p_item_id = q_pack_id($item_id);
 
@@ -423,7 +414,7 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
             //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
             //      continue;
 
-            Update($item_id,$slice_id,$d_id,$dest_sl_id);
+            UpdateFedItem($item_id,$slice_id,$d_id,$dest_sl_id);
             $items[$d_id] = $dest_sl_id;
         }
     }

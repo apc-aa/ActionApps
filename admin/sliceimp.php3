@@ -43,7 +43,6 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 }
 
 $varset     = new Cvarset();
-$itemvarset = new Cvarset();
 
 // Prooves whether this ID already exists in the slices table,
 // changes the ID to a new chosen one

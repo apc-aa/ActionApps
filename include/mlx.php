@@ -1037,7 +1037,6 @@ class MLXGetText
         __mlx_dbg($this->domains);
         __mlx_dbg($args,__function__);
         $old_varset = $GLOBALS['varset'];
-        $old_itemvarset = $GLOBALS['itemvarset'];
         if(!is_callable('StoreItem')) {
             require_once('itemfunc.php3');
         }
@@ -1056,7 +1055,6 @@ class MLXGetText
         $content4id['expiry_date.....'][0]['value'] = time()+3600*24*365*10;
         StoreItem( new_id(), $sliceid, $content4id, true,true,false);
         $GLOBALS['varset'] = $old_varset;
-        $GLOBALS['itemvarset'] = $old_itemvarset;
     }
 };
 /** stringexpand_m function
