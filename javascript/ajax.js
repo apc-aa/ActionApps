@@ -5,27 +5,9 @@
 // by another code
 function SetContent(id,txt,d) {
     if(!d) d=document;
-    if (d.all) {                    // IE 4+
-        el = d.all[id];
-        if ( el != null ) {
-            el.innerHTML=txt;
-        }
-    } else if (d.layers) {            // NS 4
-        getElementByName(id, d).document.write(txt);   // eval('document.ids.'+id).document.write(txt);
-        getElementByName(id, d).document.close();
-    } else if (d.getElementById) {   // NS 6 (new DOM)
-        rng = d.createRange();
-        el = d.getElementById(id);
-        if ( el != null ) {  // in case the element do not exist => do nothing
-            rng.setStartBefore(el);
-            htmlFrag = rng.createContextualFragment(txt);
-            while (el.hasChildNodes())
-                el.removeChild(el.lastChild);
-            el.appendChild(htmlFrag);
-        }
-    }
+    var el=d.getElementById(id);
+    if (el) el.innerHTML = txt;
 }
-
 
 /** This code comes from: http://www.devpro.it/JSL/JSLOpenSource.js */
 // (C) Andrea Giammarchi - JSL 1.4b

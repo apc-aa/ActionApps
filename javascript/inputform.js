@@ -181,31 +181,6 @@ function CallConvertor(aa_instal_path, textarea_id) {
     conv.focus();
 }
 
-
-// functions for formbreak (split form to more pages)
-// ( we do not do it by separate pages, we use much easier approach
-//   - switch off the unvanted table rows (display: none))
-
-// (thanks to Bernard Marx from http://www.webmasterworld.com/forum91/1757.htm)
-function getElementsbyclassName(className,container) {
-  container = container||document ;
-  var all = container.all||container.getElementsbyTagName('*');
-  var arr = [] ;
-  for(var k=0;k<all.length;k++) {
-      if(all[k].getAttribute("className") == className) {
-          arr[arr.length] = all[k];
-      }
-  }
-  return arr
-}
-
-// Usage: getElementsbyclassName("test").setStyle("backgroundColor","red")
-Array.prototype.setStyle = function(propName,val) {
-    for(var k=0;k<this.length;k++) {
-        this[k].style[propName] = val
-    }
-}
-
 // displays all tags 'classtoshow' of 'type', which is in 'where' id
 // and hide all such tags which class begins with 'classmasktohide'
 function ShowThisTagClass(where,type,classtoshow,classmasktohide) {
@@ -282,5 +257,3 @@ function openHTMLAreaFullscreen(name, session) {    // open HTMLArea in popupwin
     switchHTML(name);
     CKEDITOR.replace(name);
 }
-
-

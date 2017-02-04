@@ -1,86 +1,15 @@
-function getElementByName(n, d) {
-  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
-    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
-  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
-  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=getElementByName(n,d.layers[i].document);
-  if(!x && document.getElementById) x=document.getElementById(n); return x;
-}
-
 
 // function replaces html code of a an HTML element (identified by id)
 // by another code
 function SetContent(id,txt,d) {
-  if(!d) d=document;
-  if (d.all) {                    // IE 4+
-    el = d.all[id];
-    if ( el != null ) {
-      el.innerHTML=txt;
-    }
-  } else if (d.layers) {            // NS 4
-    getElementByName(id, d).document.write(txt);   // eval('document.ids.'+id).document.write(txt);
-    getElementByName(id, d).document.close();
-  } else if (d.getElementById) {   // NS 6 (new DOM)
-    rng = d.createRange();
-    el = d.getElementById(id);
-    if ( el != null ) {  // in case the element do not exist => do nothing
-      rng.setStartBefore(el);
-      htmlFrag = rng.createContextualFragment(txt);
-      while (el.hasChildNodes())
-        el.removeChild(el.lastChild);
-      el.appendChild(htmlFrag);
-    }
-  }
+    if(!d) d=document;
+    var el=d.getElementById(id);
+    if (el) el.innerHTML = txt;
 }
 
 function GetContent(id, d) {
     if(!d) d=document;
-    if(d.getElementById) {
-        return d.getElementById(id).innerHTML;
-    }
-    else if(d.layers) {
-        for (i=0; i < d.layers.length; i++) {
-            var whichEl = d.layers[i];
-            if (whichEl.id.indexOf(id) != -1) {
-                return whichEl;
-            }
-        }
-    }
-    else if(d.all) {
-        return d.all(id);
-    }
-    return "";
-}
-
-function MoveElement(id, d, direction) {
-    var el,swap, content;
-    if(!d) d=document;
-    if(!d.getElementById) {  // do not work in dom1
-        return ;
-    }
-    el = d.getElementById(id);
-    if ( el != null ) {  // in case the element do not exist => do nothing
-        if ( direction == 'up' ) {
-            swap = el.previousSibling;
-        } else {
-            swap = el.nextSibling;
-        }
-        if ( swap != null ) {  // in case the element do not exist => do nothing
-            content = el.innerHTML;
-            alert(el.innerHTML);
-            alert(swap.innerHTML);
-            el.innerHTML   = swap.innerHTML;
-            swap.innerHTML = content;
-        }
-    }
-}
-
-
-function MoveRowUp(id, d) {
-    return MoveElement(id, d, 'up');
-}
-
-function MoveRowDown(id, d) {
-    return MoveElement(id, d, 'down');
+    d.getElementById(id).innerHTML;
 }
 
 var popupwindows = [];
@@ -171,8 +100,6 @@ function GoIfConfirmed(url, text) {
   }
 }
 
-
-
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
  *  using apropriate ? or &. */
 function GetUrl(url, params) {
@@ -182,5 +109,3 @@ function GetUrl(url, params) {
     url_params     = params.join('&');
     return url_path + ((url_path.search(/\?/) == -1) ? '?' : '&') + url_params + url_fragment;
 }
-
-
