@@ -54,30 +54,30 @@ class AA_Field {
         } elseif ($data instanceof AA_Item) {
             $this->data = AA_Metabase::singleton()->getEmptyRowArray('field');  // preset all data values (empty)
 
-            $fid = $data->unalias('_#FLD_ID__');
+            $fid = $data->get_alias_subst('_#FLD_ID__');
             if ( (strlen($fid)!=16) OR (strpos($fid,'text..')!==0) ) {
                 return;
             }
 
+
             $this->data['id']                = $fid;
-            $this->data['name']              = $data->unalias('_#FLD_NAME');
+            $this->data['name']              = ( ($fname = $data->get_alias_subst('_#FLD_NAME','AA_NULL'))=='AA_NULL' ) ? $data->get_alias_subst('_#HEADLINE',$fid) : $fname;
             $this->data['slice_id']          = pack_id($sli_id);
-            $this->data['input_pri']         = (int)$data->unalias('_#FLD_PRI_','_#FLD_PRI_') ?: 100;
-            $this->data['input_help']        =      $data->unalias('_#FLD_HELP','_#FLD_HELP');
-            $this->data['input_default']     =      $data->unalias('_#FLD_DEFA','_#FLD_DEFA');  // txt
-            $this->data['required']          = (int)$data->unalias('_#FLD_REQ_','_#FLD_REQ_') ? 1 : 0;
-            $this->data['multiple']          = (int)$data->unalias('_#FLD_MULT','_#FLD_MULT');  // 0-2
+            $this->data['input_pri']         = (int)$data->get_alias_subst('_#FLD_PRI_',100) ?: 100;
+            $this->data['input_help']        =      $data->get_alias_subst('_#FLD_HELP','');
+            $this->data['input_default']     =      $data->get_alias_subst('_#FLD_DEFA','');  // txt
+            $this->data['required']          = (int)$data->get_alias_subst('_#FLD_REQ_',0) ? 1 : 0;
+            $this->data['multiple']          = (int)$data->get_alias_subst('_#FLD_MULT',0);  // 0-2
             $this->data['input_show_func']   = '';
-            $this->widget_params             = json_decode($data->unalias('_#FLD_PARM','_#FLD_PARM'),true);
-            $this->widget_params['class']    = AA_Widget::constructClassName($data->unalias('_#FLD_TYPE','_#FLD_TYPE') ?: 'fld');
+            $this->widget_params             = json_decode($data->get_alias_subst('_#FLD_PARM',''),true);
+            $this->widget_params['class']    = AA_Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE','fld') ?: 'fld');
             $this->data['search_pri']        = $this->data['input_pri'];
             $this->data['html_default']      = 1;
-            $this->data['input_validate']    =      $data->unalias('_#FLD_VALI','_#FLD_VALI');
-            $this->data['input_insert_func'] =      $data->unalias('_#FLD_INS_','_#FLD_INS_');
-            $this->data['input_show']        = (int)$data->unalias('_#FLD_SHOW','_#FLD_SHOW') ? 1 : 0;
-            $this->data['text_stored']       = (int)$data->unalias('_#FLD_STOR','_#FLD_STOR') ? 1 : 0;
+            $this->data['input_validate']    =      $data->get_alias_subst('_#FLD_VALI','');
+            $this->data['input_insert_func'] =      $data->get_alias_subst('_#FLD_INS_','qte');
+            $this->data['input_show']        = (int)$data->get_alias_subst('_#FLD_SHOW',1) ? 1 : 0;
+            $this->data['text_stored']       = (int)$data->get_alias_subst('_#FLD_STOR',1) ? 1 : 0;
         }
-
     }
 
     /** storageColumn function
@@ -161,10 +161,8 @@ class AA_Field {
      */
     function getDefault() {
         // all default should have fnc:param format
-        if (!($generator = AA_Generator::factoryByString($this->data['input_default']))) {
-            return null;
-        }
-        return $generator->generate()->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
+        $val = ($generator = AA_Generator::factoryByString($this->data['input_default'])) ? $generator->generate() : new AA_Value();
+        return $val->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
     }
 
     /** getAliases function
