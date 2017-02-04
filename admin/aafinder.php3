@@ -59,6 +59,88 @@ function AafinderSiteLink($spot_id, $slice_id) {
     return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")");
 }
 
+function query_search($where) {
+    $db = getDB();
+    $sql="SELECT distinct slice.name as slice_name, slice.id as slice_id, item.* from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE $where ORDER BY slice_name, short_id";
+    $db->query($sql);
+
+    $num_rows = $db->num_rows();
+
+    $output .= $num_rows." "._m('Show results with string')."  <b><i>$where</i></b><br>";
+
+    $items = array(array(_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by' ));
+    while ($db->next_record()) {
+        $slice_name = $db->f('slice_name');
+        $slice_id   = (string)bin2hex($db->f('slice_id'));
+        $short_id   = $db->f('short_id');
+        $long_id    = (string)bin2hex($db->f('id'));
+
+        $items[]    = array("<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $db->f('status_code'), date('Y-m-d H:i',$db->f('post_date')), date('Y-m-d H:i',$db->f('last_edit')),$db->f('edited_by'));
+    }
+
+    return GetHtmlTable($items, 'th'). '<br><br>';
+}
+
+function PrintItemInfo($item_id) {
+    $zid = new zids($item_id);
+    $item = AA_Items::getItem($zid);
+    if ($item) {
+        $long_id = $item->getItemID();
+        $sid     = $item->getSliceID();
+        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$sid&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a>";
+        echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
+        $format = '_#HEADLINE';
+        echo "<br>_#HEADLINE: ". $item->unalias($format);
+        echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
+        echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
+        echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
+        print_r($item->content4id);
+        echo "</pre>";
+    }
+
+    $long_id = $zid->longids(0);
+    if ($long_id) {
+        echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
+        print_r(GetTable2Array('SELECT * FROM item WHERE id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        echo "</pre>";
+
+        echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
+        print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        echo "</pre>";
+
+        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
+            echo '<h3>'. _m('Slice') .'</h3><pre>';
+            echo AafinderSliceLink($long_id). "<br>";
+            echo "</pre>";
+        }
+        if ($sdata = DB_AA::select1('SELECT * FROM module', '', array(array('id',$long_id, 'l')))) {
+            echo '<h3>'. _m('Module') .'</h3><pre>';
+            echo AafinderSliceLink($long_id). "<br>";
+            echo "</pre>";
+        }
+        if ($rec = GetTable2Array('SELECT * FROM object_text WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields')) {
+            echo '<h3>'. _m('Object') .'</h3><pre>';
+            print_r($rec);
+            print_r(GetTable2Array('SELECT * FROM object_integer WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
+            print_r(GetTable2Array('SELECT * FROM object_float   WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
+            echo "</pre>";
+        }
+
+        $changes = AA_ChangesMonitor::singleton();
+        echo '<h3>'. _m('History') .'</h3>';
+        //echo "<pre>";
+        //print_r($changes->getHistory(array($long_id)));
+        //echo "</pre>";
+
+        $changes->display(array($long_id));
+      //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
+      //  print_r($changes->getProposals(array($long_id)));
+      //  echo "</pre>";
+    }
+    echo '<br><br>';
+}
+
+
 if (!IsSuperadmin()) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
@@ -252,93 +334,26 @@ if (strlen($_GET['findtext']) AND $_GET['findindiscus']) {
 }
 
 if ($_GET['go_finditem'] && $_GET['finditem']) {
-    $zid = new zids($_GET['finditem']);
-    $item = AA_Items::getItem($zid);
-    if ($item) {
-        $long_id = $item->getItemID();
-        $sid     = $item->getSliceID();
-        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$sid&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a>";
-        echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
-        $format = '_#HEADLINE';
-        echo "<br>_#HEADLINE: ". $item->unalias($format);
-        echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
-        echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
-        echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
-        print_r($item->content4id);
-        echo "</pre>";
+    if ( in_array(guesstype(trim($_GET['finditem'])), array('s','l')) ) {
+        PrintItemInfo(trim($_GET['finditem']));
+    } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['finditem'], $ids)) {
+        $ids = array_unique($ids[0]);
+        foreach ($ids as $id) {
+            PrintItemInfo($id);
+            echo '<hr>';
+        }
+    } else {
+        print query_search("content.text = '". quote($_GET['finditem'])."' AND content.field_id = 'seo.............'");
     }
 
-    $long_id = $zid->longids(0);
-    if ($long_id) {
-        echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
-        print_r(GetTable2Array('SELECT * FROM item WHERE id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
-        echo "</pre>";
-
-        echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
-        print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
-        echo "</pre>";
-
-        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
-            echo '<h3>'. _m('Slice') .'</h3><pre>';
-            echo AafinderSliceLink($long_id). "<br>";
-            echo "</pre>";
-        }
-        if ($sdata = DB_AA::select1('SELECT * FROM module', '', array(array('id',$long_id, 'l')))) {
-            echo '<h3>'. _m('Module') .'</h3><pre>';
-            echo AafinderSliceLink($long_id). "<br>";
-            echo "</pre>";
-        }
-        if ($rec = GetTable2Array('SELECT * FROM object_text WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields')) {
-            echo '<h3>'. _m('Object') .'</h3><pre>';
-            print_r($rec);
-            print_r(GetTable2Array('SELECT * FROM object_integer WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
-            print_r(GetTable2Array('SELECT * FROM object_float   WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
-            echo "</pre>";
-        }
-
-        $changes = AA_ChangesMonitor::singleton();
-        echo '<h3>'. _m('History') .'</h3>';
-        //echo "<pre>";
-        //print_r($changes->getHistory(array($long_id)));
-        //echo "</pre>";
-
-        $changes->display(array($long_id));
-      //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
-      //  print_r($changes->getProposals(array($long_id)));
-      //  echo "</pre>";
-    }
-    echo '<br><br>';
 }
 
 if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_op']) {
-
-    function query_search ($where,$sess) {
-        $db = getDB();
-        $sql="SELECT distinct slice.name as slice_name, slice.id as slice_id, item.* from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE $where ORDER BY slice_name, short_id";
-        $db->query($sql);
-
-        $num_rows = $db->num_rows();
-
-        $output .= $num_rows." "._m('Show results with string')."  <b><i>$where</i></b><br>";
-
-        $items = array(array(_m('Show'), _m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by' ));
-        while ($db->next_record()) {
-            $slice_name = $db->f('slice_name');
-            $slice_id   = (string)bin2hex($db->f('slice_id'));
-            $short_id   = $db->f('short_id');
-            $long_id    = (string)bin2hex($db->f('id'));
-
-            $items[]    = array("<a href=\"http://".$_SERVER['SERVER_NAME']."/".AA_BASE_DIR.$sess->url('slice.php3')."&slice_id=".$slice_id."&nocache=1\" target=\"_blank\" >"._m('Show')."</a>", "<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a>", $slice_name, $short_id, $db->f('status_code'), date('Y-m-d H:i',$db->f('post_date')), date('Y-m-d H:i',$db->f('last_edit')),$db->f('edited_by'));
-        }
-
-        return GetHtmlTable($items, 'th'). '<br><br>';
-    }
-
     switch ($_GET['finditem_edit_op']) {
-        case 'LIKE': print query_search("content.text LIKE '%". quote($_GET['finditem_edit'])."%'",$sess);break;
-        case '=':    print query_search("content.text = '". quote($_GET['finditem_edit'])."'",$sess);break;
-        case 'item': print query_search("item.short_id = '". quote($_GET['finditem_edit'])."'",$sess);break;
-        case 'seo':  print query_search("content.text = '". quote($_GET['finditem_edit'])."' AND content.field_id = 'seo.............'",$sess);break;
+        case 'LIKE': print query_search("content.text LIKE '%". quote($_GET['finditem_edit'])."%'");break;
+        case '=':    print query_search("content.text = '". quote($_GET['finditem_edit'])."'");break;
+        case 'item': print query_search("item.short_id = '". quote($_GET['finditem_edit'])."'");break;
+        case 'seo':  print query_search("content.text = '". quote($_GET['finditem_edit'])."' AND content.field_id = 'seo.............'");break;
     }
 }
 
@@ -395,13 +410,13 @@ FrmTabCaption(_m("Manage"));
 echo '<tr><td>';
 echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'">';
 echo '<b>'._m("Manage User:").'</b><br>
-    <input type="text" name="usr" value="" size=60>&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
+    <input type="text" name="usr" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
     <input type="submit" name="go_finduser" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'">';
 echo '<b>'._m("Manage Group:").'</b><br>
-    <input type="text" name="grp" value="" size=60>&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
+    <input type="text" name="grp" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
     <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr>';
@@ -415,7 +430,7 @@ echo '<b>'._m('Find in').'</b>
       <label><input type="checkbox" name="findinspot"   value="1" '. ((!$_GET['findtext'] OR $_GET['findinspot'  ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findindiscus" value="1" '. ((                      $_GET['findindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
-    <input type="text" name="findtext" value="'.safe($_GET['findtext']).'" size=60>&nbsp;&nbsp;
+    <input type="text" name="findtext" value="'.safe($_GET['findtext']).'" size=120>&nbsp;&nbsp;
       <input type="submit" name="go_findtext" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
@@ -439,14 +454,14 @@ echo '</td></tr><tr><td>';
 
 echo '<form name="f_finditem" action="">';
 echo '<b>'._m("Get all informations about the ITEM").'</b><br>
-    <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size=60>&nbsp;&nbsp;
+    <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size=120>&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">' .$sess->get_hidden_session();
 echo '</form>';
 echo '</td></tr><tr><td>';
 
 echo '<form name="f_finditem_edit" action="">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
-    <input type="text" name="finditem_edit" value="'.safe($_GET['finditem_edit']).'" size=60>&nbsp;&nbsp;
+    <input type="text" name="finditem_edit" value="'.safe($_GET['finditem_edit']).'" size=120>&nbsp;&nbsp;
     <select name="finditem_edit_op">
     <option value="LIKE">'._m('contains').'</option>
     <option value="=">'._m('is').'</option>
