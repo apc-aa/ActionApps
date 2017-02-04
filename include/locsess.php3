@@ -43,7 +43,7 @@ if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
 }
 
 /* Change this to match your database. */
-require_once(AA_INC_PATH.'phplib/'. (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc"));
+require_once(AA_INC_PATH.'phplib/'. ( (defined("DB_TYPE") AND (DB_TYPE != 'db_mysqli')) ? DB_TYPE .".inc" : "db_mysql.inc"));
 require_once(AA_INC_PATH.'phplib/phplib.php');
 
 spl_autoload_register(function ($class_name) {
