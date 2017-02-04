@@ -111,6 +111,9 @@ array ("name" => _m("Item IDs"));
 $INSERT_TYPES["items"]["now"] =
 array ("name" => _m("Now = always store current time"),
        "desc" => _m("Inserts the current time, no matter what the user sets."));
+$INSERT_TYPES["items"]["seq"] =
+array ("name" => _m("Unique number for this field (from 1,..)"),
+       "desc" => _m("Unique number in sequence 1,2,3,..."));
 $INSERT_TYPES["items"]["pwd"] =
 array ("name" => _m("Password and Change Password"),
        "desc" => _m("Stores value from a 'Password and Change Password' field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it."),
