@@ -3787,7 +3787,8 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
 
                 if ($field = $slice->getField($field_id)) {
                     $index   = (AA::$langnum[0] AND in_array(AA::$lang, $field->getTranslations())) ? AA::$langnum[0] : 0;
-                    $pholder = strlen($placeholder) ? 'placeholder="'.safe($placeholder).'"' : $index ? 'placeholder="['.safe(AA::$lang).']"' : '';
+                    $placeholder = safe(strlen($placeholder) ? $placeholder : ($index ? '['.AA::$lang.']' : ''));
+                    $pholder = strlen($placeholder) ? 'placeholder="'.$placeholder.'"' : '';
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
                     $ret     = AA_Stringexpand::unalias("<$tag contenteditable=true $pholder id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
@@ -4788,9 +4789,9 @@ class AA_Stringexpand {
                 if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', $callback, $text, 1, $last_replacements))) {  //s for newlines, U for nongreedy
                     //huhl( "Error: preg_replace_callback", '/[{]([^{}]+)[}]/s', $callback, $text, -1, $last_replacements);
                     echo "Error ". preg_last_error().": preg_replace_callback - 2\n";
-                    $pcre_err_arr = array_flip(get_defined_constants(true)['pcre']);
+                    $pcre_const   = get_defined_constants(true);    // we can't use array dereference in php<=5.3: array_flip(get_defined_constants(true)['pcre']);
+                    $pcre_err_arr = array_flip($pcre_const['pcre']);
                     echo $pcre_err_arr[preg_last_error()];
-                    echo array_flip(get_defined_constants(true)['pcre'])[preg_last_error()];
                     print_r($oldtext);
                     print_r($callback);
                     print_r($last_replacements);
@@ -5931,7 +5932,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
     function expand($values='', $text='', $valdelimiter='', $outputdelimiter='') {
         // _##1 is the way, how to use parameter from the outside of if:
         // {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>)}}
-        // or better 
+        // or better
         // {foreach:2011-2012:{(<li><a href="?year=_#1" {ifeq:_#loop:{qs:year}:class="active"}>_#1</a></li>)}}
         $text = str_replace('_##1', '_#1', $text);
 
@@ -5993,6 +5994,46 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
         return $mail->sendLater($to);
+    }
+}
+
+/** Sends e-mail conditionaly
+ *  Be careful - it can send mail on every page load!
+ *  Use as:
+ *    {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
+ */
+class AA_Stringexpand_Xxmail extends AA_Stringexpand_Nevercache {
+
+    function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='', $cc='', $bcc='') {
+
+        if (!strlen($condition) OR !strlen($body) OR ((string)$condition==='0')) {
+            return '';
+        }
+
+        $to = json2arr($to); // can't be inside empty()  - Honza, php 5.2
+        if (empty($to)) {
+            return '';
+        }
+
+        $cc  = join(',',AA_Validate::filter(json2arr($cc), 'email'));
+        $bcc = join(',',AA_Validate::filter(json2arr($bcc), 'email'));
+
+        $mail_arr = array( 'subject'     => $subject,
+                           'body'        => $body,
+                           'header_from' => $from,
+                           'reply_to'    => $reply_to,
+                           'errors_to'   => $errors_to,
+                           'sender'      => $sender,
+                           'lang'        => $lang,
+                           'html'        => 1,
+                           'cc'          => $cc,
+                           'bcc'         => $bcc
+                           );
+
+        $mail = new AA_Mail;
+        $mail->setFromArray($mail_arr);
+        AA_Log::write('DEBUG', join('-',$to), substr($subject, 0,16));
+        return '';
     }
 }
 
