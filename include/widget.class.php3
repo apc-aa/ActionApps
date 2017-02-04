@@ -526,9 +526,13 @@ class AA_Widget extends AA_Components {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
-        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html  = '<div class="ajax_widget" style="position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;">';
+        $widget_html .= "\n".$winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html .= "\n<div class=ajax_buttons>";
         $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //ULO�IT ZM�NU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n</div>";
+        $widget_html .= "\n</div>";
         return $widget_html;
     }
 
@@ -1564,9 +1568,13 @@ class AA_Widget_Fil extends AA_Widget {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
-        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html  = '<div class="ajax_widget" style="position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;">';
+        $widget_html .= "\n".$winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html .= "\n<div class=ajax_buttons>";
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
-        return $widget_html;
+        $widget_html .= "\n</div>";
+        $widget_html .= "\n</div>";
+            return $widget_html;
     }
 }
 
