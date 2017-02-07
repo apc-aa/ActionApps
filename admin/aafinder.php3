@@ -411,13 +411,14 @@ echo '<tr><td>';
 echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'">';
 echo '<b>'._m("Manage User:").'</b><br>
     <input type="text" name="usr" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
-    <input type="submit" name="go_finduser" value="'._m("Go!").'">' .$sess->get_hidden_session();
+    <input type="submit" name="go_finduser" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'">';
 echo '<b>'._m("Manage Group:").'</b><br>
     <input type="text" name="grp" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
-    <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .$sess->get_hidden_session();
+    <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .StateHidden();
+
 echo '</form>';
 echo '</td></tr>';
 FrmTabSeparator(_m("Search"));
@@ -431,7 +432,7 @@ echo '<b>'._m('Find in').'</b>
       <label><input type="checkbox" name="findindiscus" value="1" '. ((                      $_GET['findindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
     <input type="text" name="findtext" value="'.safe($_GET['findtext']).'" size=120>&nbsp;&nbsp;
-      <input type="submit" name="go_findtext" value="'._m("Go!").'">' .$sess->get_hidden_session();
+      <input type="submit" name="go_findtext" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
 
@@ -444,10 +445,11 @@ echo '<b>'._m('Search and Replace in').'</b>
       <label><input type="checkbox" name="searchinitems"  value="1" '. ((                    $_GET['searchinitems' ])? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchindiscus" value="1" '. ((                    $_GET['searchindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
-    <input type="text" name="search" value="'.safe($_GET['search']).'" size=60>&nbsp;&nbsp;
-    <input type="text" name="replace" value="'.safe($_GET['replace']).'" size=60>&nbsp;&nbsp;
+    <input type="text" name="search" value="'.safe($_GET['search']).'" size=60 placeholder="'._m('minimum 6 chracters for replace function').'">&nbsp;&nbsp;
+    <input type="text" name="replace" value="'.safe($_GET['replace']).'" size=60 placeholder="'._m('minimum 6 chracters for replace function').'">&nbsp;&nbsp;
     <input type="submit" name="go_search" value="'._m("Search").'">
-    <input type="submit" name="go_replace" value="'._m("Replace!").'">' .$sess->get_hidden_session();
+    <input type="submit" name="go_replace" value="'._m("Replace!").'">'.StateHidden();
+
 echo '</form>';
 echo '</td></tr><tr><td>';
 
@@ -455,7 +457,7 @@ echo '</td></tr><tr><td>';
 echo '<form name="f_finditem" action="">';
 echo '<b>'._m("Get all informations about the ITEM").'</b><br>
     <input type="text" name="finditem" value="'.safe($_GET['finditem']).'" size=120>&nbsp;&nbsp;
-    <input type="submit" name="go_finditem" value="'._m("Go!").'">' .$sess->get_hidden_session();
+    <input type="submit" name="go_finditem" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
 
@@ -468,7 +470,7 @@ echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
     <option value="item">'._m('Item number').'</option>
     <option value="seo">'._m('seo............. =').'</option>
     </select>
-    <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">'.$sess->get_hidden_session();
+    <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">'.StateHidden();
 echo '</form></td></tr>';
 
 FrmTabEnd();
