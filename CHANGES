@@ -1,5 +1,6 @@
-17-02-07 - added placeholder text as help for AA search
-(honzam) - fix for setup - do not check active_sessions table, which is
+17-02-07 - more accurate slice delele
+(honzam) - added placeholder text as help for AA search
+         - fix for setup - do not check active_sessions table, which is
            no longer necessary
          - small change do not use global $sess for session if not necessary
 17-02-03 - {ajax} widgets are now rendered above the the document, so it looks

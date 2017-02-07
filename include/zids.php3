@@ -467,22 +467,6 @@ class zids implements Iterator, ArrayAccess, Countable {
         return false;
     }
 
-    // no longer used
-    ///** sort_and_restrict_as_in function
-    // *  Sorts zids array in the same order as the zids are in $sort_zids
-    // * @param $sort_zids
-    // */
-    //function sort_and_restrict_as_in($sort_zids) {
-    //    $translation = $this->get_translation($sort_zids->onetype());
-    //    $ret         = array();
-    //    foreach ( $sort_zids->a as $zid ) {
-    //        if ( $translation[$zid] ) {
-    //            $ret[] = $translation[$zid];
-    //        }
-    //    }
-    //    $this->a = $ret;
-    //}
-
     /** translate function
      *  fills $s2l and $l2s array used for translation 'long' <-> 'short' and
      * @return array of zids in 'long' (for $type=='l') or short form
@@ -508,29 +492,6 @@ class zids implements Iterator, ArrayAccess, Countable {
             }
         }
         return $ret;
-    }
-    /** get_translation function
-     * @param $from_type
-     */
-    function get_translation($from_type) {
-        if ($this->count() <= 0) {
-            return array();
-        }
-        $ret = array();
-        $trans = $this->get_retyped($from_type);
-        foreach ( $this->a as $idx => $zid ) {
-            $ret[$trans[$idx]] = $zid;
-        }
-        return $ret;
-    }
-
-    function get_retyped($to_type) {
-        switch($to_type) {
-            case "p": return $this->packedids();
-            case "l": return $this->longids();
-            case "s": return $this->shortids();
-        }
-        return array();
     }
 
     /** Iterator interface */

@@ -117,7 +117,7 @@ class AA_Module {
         return '';
     }
 
-    /** AA_Module::deleteModule function
+    /** AA_Module::deleteModules function
      * @param $module_id
      */
     static public function deleteModules($module_ids) {
@@ -413,31 +413,26 @@ class AA_Slice extends AA_Module {
         // now performed in AA_Items::deleteItems
         // DB_AA::delete_low_priority('item',  array(array('slice_id', $module_ids, 'l')));
 
-        DB_AA::delete_low_priority('feedmap',   array(array('from_slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedmap',   array(array('to_slice_id',   $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedperms', array(array('from_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedperms', array(array('to_id',   $module_ids, 'l')));
-        DB_AA::delete_low_priority('email_notify',  array(array('slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('field',  array(array('slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('view',  array(array('slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('email',  array(array('owner_module_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('profile',  array(array('slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('rssfeeds',  array(array('slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('constant_slice',  array(array('slice_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('slice',  array(array('id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('alerts_collection',  array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('constant_slice',     array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('email',              array(array('owner_module_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('email_notify',       array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('external_feeds',     array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedmap',            array(array('from_slice_id',   $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedmap',            array(array('to_slice_id',     $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedperms',          array(array('from_id',         $module_ids, 'l')));
+        DB_AA::delete_low_priority('feedperms',          array(array('to_id',           $module_ids, 'l')));
+        DB_AA::delete_low_priority('field',              array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('jump',               array(array('dest_slice_id',   $module_ids, 'l')));
+        DB_AA::delete_low_priority('mysql_auth_group',   array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('mysql_auth_userinfo',array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('profile',            array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('rssfeeds',           array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('slice',              array(array('id',              $module_ids, 'l')));
+        DB_AA::delete_low_priority('view',               array(array('slice_id',        $module_ids, 'l')));
 
         return true;
     }
-
-    /** unpacked_id function - removed - use getId()  */
-    // function unpacked_id() {
-    //     return $this->module_id; // Return a 32 character id
-    // }
-
-    /** packed_id function - removed - use pack_id($module->getId()) */
-    // function packed_id() {
-    //     return pack_id($this->module_id);
-    // }
 
     /** getFields function
      */

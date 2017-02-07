@@ -419,6 +419,10 @@ class AA_Item {
         return $this->content4id->isActive();
     }
 
+    function getStatusCode() {
+        return $this->content4id->getStatusCode();
+    }
+
     function isMultilingual($field_id) {
         return $this->content4id->isMultilingual($field_id);
     }
@@ -1694,6 +1698,7 @@ class AA_Items {
     // array of unpacked ids
     static public function deleteItems($zids) {
         $ids_arr = $zids->longids(); // unpacked ids
+        //$ids_arr = $zids->shortids();
         DB_AA::delete_low_priority('item',       array(array('id',             $ids_arr, 'l')));
         DB_AA::delete_low_priority('content',    array(array('item_id',        $ids_arr, 'l')));
         DB_AA::delete_low_priority('discussion', array(array('item_id',        $ids_arr, 'l')));
