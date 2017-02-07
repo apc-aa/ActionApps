@@ -1,7 +1,11 @@
+17-02-07 - added placeholder text as help for AA search
+(honzam) - fix for setup - do not check active_sessions table, which is
+           no longer necessary
+         - small change do not use global $sess for session if not necessary
 17-02-03 - {ajax} widgets are now rendered above the the document, so it looks
-(honzam)   like dialog window and do not change ocuppied space. It looks way 
+(honzam)   like dialog window and do not change ocuppied space. It looks way
            better, now
-         - item search in AA admin interface searches not only for item ID, but 
+         - item search in AA admin interface searches not only for item ID, but
              - it can find ID in the string (like url, ...)
              - it searches for multiple id in the string
              - it searches also for exact match of any seo string
@@ -11,7 +15,7 @@
          - unified MySQL access to db_mysql using mysqli approach
          - cleaned javascripts from old code (Netscape 4 support,...)
          - fixed bug in site creation array() error
-         - storing items is cleaner - no longer uses global varset and 
+         - storing items is cleaner - no longer uses global varset and
            itemvarset variables
 17-01-29 - new {userinfo:<user_id>:logintime} and {userinfo:<user_id>:logintimes}
 (honzam)   function - displays timestamp of last login (for logintime) or dash
