@@ -262,26 +262,6 @@ class Session {
     }
 
     /**
-    * Stores session id in a hidden variable (part of a form).
-    *
-    * @return string
-    * @access public
-    */
-    function get_hidden_session() {
-        return "";
-    }
-
-    /**
-    * @brother  get_hidden_session
-    * @return   void
-    */
-    function hidden_session() {
-        print $this->get_hidden_session();
-    } // end func hidden_session
-
-
-
-    /**
     * Sets or returns the name of the current session
     *
     * @param  string  If given, sets the session name

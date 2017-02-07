@@ -661,11 +661,6 @@ class AA_Session extends Session {
     function url($url) {
         return StateUrl($url);
     }
-
-    // get <input name="module_id"... . It is better to use StateHidden() directly, but we already use $sess->hidden_session() from older versions of $session management
-    function get_hidden_session() {
-        return StateHidden();
-    }
 }
 
 function pageOpen($type = '') {

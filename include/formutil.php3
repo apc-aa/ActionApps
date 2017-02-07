@@ -91,7 +91,6 @@ function GetInputFormTemplate() {
 
 /** getHtmlareaJavascript() */
 function getHtmlareaJavascript($slice_id) {
-    global $sess;
     // special includes for HTMLArea
     // we need to include some scripts
     // switchHTML(name) - switch radiobuttons from Plain text to HTML
@@ -106,8 +105,8 @@ function getHtmlareaJavascript($slice_id) {
                 // You may try a relative URL if you wish]
                 //  eg: _editor_url = "../";
                 _aa_url        = "'.get_aa_url("", '', false).'";
+                aa_slice_id        = "'.$slice_id.'";'
                 // _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
-                aa_slice_id        = "'.$slice_id.'";
                 // aa_session         = "'.$sess->id.'";
                 // aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
                 );
@@ -395,7 +394,7 @@ class inputform {
      *  $this->js_proove_fields must be already filled
      */
     function getFormJavascript() {
-        global $slice_id, $sess;
+        global $slice_id;
 
         $retval  = getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
         $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
@@ -1356,8 +1355,6 @@ class AA_Inputfield {
     * @param $showhtmlarea
     */
     function textarea( $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false, $maxlength=0) {
-
-        global $sess;
 
         list($name,$val,$add) = $this->prepareVars('multi');
         // make the textarea bigger, if already filled with long text
@@ -2919,7 +2916,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
     }
 
     if ( $sess ) {
-        $sess->hidden_session();
+        echo StateHidden();
     }
     if ( $slice_id ) {
         echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';

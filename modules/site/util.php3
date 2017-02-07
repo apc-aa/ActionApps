@@ -139,7 +139,7 @@ function ModW_PrintVariables( $spot_id, $vars ) {
     }
     echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
     ModW_HiddenRSpotId();
-    $sess->hidden_session();
+    echo StateHidden();
     echo "</form></td></tr>";
     FrmTabEnd();
 }
@@ -166,7 +166,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
                          <input type='text' name='addcond' value='' size='50'>
                      <input type='hidden' name='addcondvar' value='$v'>
                      <span align=right><a href='javascript:document.fcond$i.submit()'>"._m("Add")."</a></span>";
-                $sess->hidden_session();
+                echo StateHidden();
                 ModW_HiddenRSpotId();
                 echo "</form>";
             }

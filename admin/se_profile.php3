@@ -249,8 +249,8 @@ echo "</table>
       <input type=\"hidden\" name=\"param\">
       <input type=\"hidden\" name=\"field_id\">
       <input type=\"hidden\" name=\"fnction\">
-      <input type=\"hidden\" name=\"html\">";
-      $sess->hidden_session();
+      <input type=\"hidden\" name=\"html\">".
+      StateHidden();
 echo '</form>
     </td>
    </tr>';
@@ -264,8 +264,8 @@ if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
     echo '<tr><td>
     <form name="cpf" action="se_profile.php3">
       <input type="hidden" name="uid" value="'.$uid.'">
-      <input type="hidden" name="set_as" value="1">';
-      $sess->hidden_session();
+      <input type="hidden" name="set_as" value="1">'.
+      StateHidden();
 
     echo _m('Copy Profile from');
     FrmSelectEasy('set_as_uid', $set_as_from);
