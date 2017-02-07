@@ -90,7 +90,6 @@ function PrintErr($err) {
  * @return prints a form
  */
 function SuperForm() {
-  global $sess;
   global $login, $password1, $password2, $fname, $lname, $email;
   ?>
   <form action="setup.php3">
@@ -110,7 +109,7 @@ function SuperForm() {
             ?>
          </table>
       <tr><td align="center">
-         <?php $sess->hidden_session(); ?>
+         <?php echo StateHidden(); ?>
          <input type=submit name=phase value="<?php echo _m("Create") ?>">
     </td></tr>
     </table>
@@ -121,12 +120,11 @@ function SuperForm() {
  * @return prints two messages and a form
  */
 function InitForm() {
-   global $sess;
    echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
    echo _m("If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
    ?>
    <form method=get action="setup.php3">
-   <?php $sess->hidden_session(); ?>
+   <?php echo StateHidden(); ?>
    <input type=submit name=phase value="<?php echo _m(" Init "); ?>">
    <input type=submit name=phase value="<?php echo _m("Recover"); ?>">
    </form>
@@ -148,7 +146,7 @@ is_object( $db ) || ($db = getDB());
 // Check if database is already created
 $store_halt        = $db->Halt_On_Error;
 $db->Halt_On_Error = "report";
-$info              = $db->metadata( 'active_sessions' );
+$info              = $db->metadata( 'content' );
 if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlStart();
     echo _m('Database is not configured correctly or the database is empty.<br>
