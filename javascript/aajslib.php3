@@ -169,33 +169,6 @@ function AA_Response(method, resp_params, ok_func, err_func) {
     });
 }
 
-// function displayInput(valdivid, item_id, fid) {
-//     // already editing ?
-//     switch ($(valdivid).readAttribute('data-aa-edited')) {
-//        case '1': return;
-//        case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-//                  return;
-//     }
-//
-//     // store current content
-//     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
-//
-//     var alias_name = $(valdivid).readAttribute('data-aa-alias');
-//
-//     $(valdivid).update(AA_Config.loader);
-//     new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-//         parameters: { field_id:   fid,
-//                       item_id:    item_id,
-//                       alias_name: alias_name,
-//                       aaaction:   'DISPLAYINPUT'
-//                      },
-//         onSuccess: function(transport) {
-//             $(valdivid).update(transport.responseText);  // new value
-//             $(valdivid).setAttribute('data-aa-edited', '1');
-//         }
-//     });
-// }
-
 function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     // already editing ?
     switch ($(valdivid).readAttribute('data-aa-edited')) {
@@ -207,9 +180,9 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     // store current content
     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
 
-    $(valdivid).update(AA_Config.loader);
+    $(valdivid).update('<div style="position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;margin:-11px 0 0 -11px;">'+AA_Config.loader+'</div>');
     AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties}, function(responseText) {
-            $(valdivid).update(responseText);  // new value
+            $(valdivid).firstDescendant().update(responseText);  // new value
             $(valdivid).setAttribute('data-aa-edited', '1');
             var firstElement = $(valdivid).select('input','select', 'textarea')[0];
             if(firstElement != null) {

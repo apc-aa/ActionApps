@@ -233,31 +233,30 @@ function displayInput(valdivid, item_id, fid) {
                  return;
     }
     $(valdiv).attr("data-aa-oldval", $(valdiv).html());
-    $(valdiv).html(AA_Config.loader);
+    $(valdiv).html('<div style="position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;margin:-11px 0 0 -11px;">'+AA_Config.loader+'</div>');
 
     AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(data) {
-            var valdiv = jqid(valdivid);
+            //var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
-            $(valdiv).html(data);
-            var aa_input = $(valdiv).children('select,textarea,input').first();
+            $(valdiv).children().first().html(data);
+            var aa_input = $(valdiv).find('select,textarea,input').first();
             $(aa_input).focus();  // select the input field (<select> or <input>)
             if ((aa_input).is("textarea")) {
                 // do not react on enter in textarea
                 $(aa_input).keydown( function(event) {
                     switch (event.which) {
-                    case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
+                    case 27: $(valdiv).find('input.cancel-button').click(); break; // Esc
                     }
                 });
             } else {
                 $(aa_input).keydown( function(event) {
                     switch (event.which) {
-                    case 13: $(this).nextAll('input.save-button').click();   break; // Enter
-                    case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
-//                  case 9:  $(this).nextAll('input.save-button').click(); $(this).closest('div.ajax_container').nextAll('div.ajax_container').click(); break; // Tab
+                    case 13: $(valdiv).find('input.save-button').click();   break; // Enter
+                    case 27: $(valdiv).find('input.cancel-button').click(); break; // Esc
                     case 9:  // Tab
                          // we must grab the next input right now - after save-button click we have no current div
                          var next_input = $('div.ajax_container').eq($('div.ajax_container').index($(this).parents('div.ajax_container'))+1);
-                         $(this).nextAll('input.save-button').click();
+                         $(valdiv).find('input.save-button').click();
                          $(next_input).click();
                          break;
                     }
