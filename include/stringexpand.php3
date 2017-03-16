@@ -2074,10 +2074,11 @@ class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $text
      */
-    function expand($text='') {
+    function expand($text='', $maxlen='') {
         $entities_old = array('&nbsp;', '& ');
         $entities_new = array(' ', '&amp; ');
-        return str_replace($entities_old, $entities_new, strip_tags($text));
+        $ret = trim(str_replace($entities_old, $entities_new, strip_tags($text)));
+        return ctype_digit((string)$maxlen) ? substr($ret, 0, $maxlen) : $ret;
     }
 }
 
@@ -4353,7 +4354,7 @@ class AA_Unalias_Callback {
     }
 
     function expand_bracketed_timedebug($match) {
-        $func = current(explode(':',substr($match[1],0,16),2));
+        $func = current(explode(':',substr($match[1],0,18),2));
         AA::$dbg->tracestart($func, $match[1]);
         $ret  = $this->expand_bracketed($match);
         AA::$dbg->traceend($func, $ret);
@@ -5095,8 +5096,9 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *  {img:<url>:[<phpthumb_params>]:[<info>]:[<param1>]:[<param2>]}
  *
  *  Ussage:
- *     <img src="{img:{img_url.........}:w=150&h=150}">
- *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">
+ *     {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}  // this is the quickest - exact size (zc=1), no need to size check => im
+ *     <img src="{img:{img_url.........}:w=150&h=150}">  /"
+ *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
  *
@@ -5124,6 +5126,9 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
             return $img_short;
         }
+        if ($info == 'im') {
+            return "<img src=\"$img_short\" $param2 border=0". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+        }
 
         $a = @getimagesize(str_replace('&amp;', '&', $img_url));
         if (! $a) {
@@ -5138,6 +5143,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'mime':    return image_type_to_mime_type($a[2]);
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
+          //case 'im':      quick version - img without width and height - see above
             case 'imgb':    $param2 .= ' border="0"';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                             $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
@@ -5155,7 +5161,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
         }
 
-        // it is much better for phpThumb to access the files as files reletive
+        // it is much better for phpThumb to access the files as files relative
         // to the directory, than using http access
         if (AA_HTTP_DOMAIN !== "/") {
             $image = str_replace(AA_HTTP_DOMAIN, '', $image);
