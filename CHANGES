@@ -1,8 +1,20 @@
+17-03-16 - new "im" option in
+(honzam)   {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}
+           which do not checks exact image size (so it is a much quicker)
+         - fixed err_url for public page login (it was used even if login was OK
+           in some cases)
+         - {ajax:..} widget improved - better default size and autofocus
+         - CKEditor (HTMLarea) better title atribute
+         - better and quicker item deletion
+           (removed tracks also from hit archive, ...)
 17-02-07 - more accurate slice delele
 (honzam) - added placeholder text as help for AA search
          - fix for setup - do not check active_sessions table, which is
            no longer necessary
          - small change do not use global $sess for session if not necessary
+         - the config.php3 file is now on ignore list in SVN in order it could
+           be ignored during comits and diffs. As the base of config.php3 you
+           can use newely created config.php3.default
 17-02-03 - {ajax} widgets are now rendered above the the document, so it looks
 (honzam)   like dialog window and do not change ocuppied space. It looks way
            better, now

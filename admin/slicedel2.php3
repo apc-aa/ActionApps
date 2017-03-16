@@ -46,12 +46,16 @@ if ($del OR $deletearr) {
 }
 
 $err["Init"] = "";      // error array (Init - just for initializing variable
+//AA::$debug = 127;
 
 if (!AA_Module::deleteModules($del ? array($del) : $deletearr)) {
     go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
 }
+//AA::$dbg->duration_stat();
+//exit;
 
 page_close();                                // to save session variables
+
 // There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
 go_url(con_url($sess->url("slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));

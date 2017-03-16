@@ -1764,6 +1764,9 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 *   Fields definition - {see include/constants.php3}
 */
 function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $defaultCondsOperator = "RLIKE") {
+    if (!trim($group_id)) {
+        return new zids();
+    }
     global $debug;                 // displays debug messages
 
     // set default sortorder for constants if sortorder is not set
