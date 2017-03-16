@@ -272,7 +272,7 @@ class AA_Router_Seo extends AA_Router {
 
             if ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["ok_url"]) {
                 go_url($_REQUEST["ok_url"]);
-            } elseif ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["err_url"]) {
+            } elseif (!$GLOBALS['auth']->auth["uname"] AND $_REQUEST["err_url"]) {
                 go_url($_REQUEST["err_url"]);
             }
         }
