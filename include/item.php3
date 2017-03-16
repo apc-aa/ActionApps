@@ -274,6 +274,10 @@ function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $
  *        to itemviwew
  */
 function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort) {
+    if (!trim($constgroup)) {
+        return false;
+    }
+
     $conds = String2Conds( $conds );
     $sort  = String2Sort( $sort ? $sort : 'sort[0][const_pri]=a');
     $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids);
@@ -1697,18 +1701,20 @@ class AA_Items {
 
     // array of unpacked ids
     static public function deleteItems($zids) {
-        $ids_arr = $zids->longids(); // unpacked ids
-        //$ids_arr = $zids->shortids();
-        DB_AA::delete_low_priority('item',       array(array('id',             $ids_arr, 'l')));
-        DB_AA::delete_low_priority('content',    array(array('item_id',        $ids_arr, 'l')));
-        DB_AA::delete_low_priority('discussion', array(array('item_id',        $ids_arr, 'l')));
-        DB_AA::delete_low_priority('offline',    array(array('id',             $ids_arr, 'l')));
-        DB_AA::delete_low_priority('relation',   array(array('source_id',      $ids_arr, 'l'), array('flag', REL_FLAG_FEED, 'set')));
-        DB_AA::delete_low_priority('relation',   array(array('destination_id', $ids_arr, 'l'), array('flag', REL_FLAG_FEED, 'set')));
+        $ids_arr   = $zids->longids(); // unpacked ids
+        $short_arr = $zids->shortids();
+        DB_AA::delete_low_priority('item',        array(array('id',             $ids_arr,   'l')));
+        DB_AA::delete_low_priority('content',     array(array('item_id',        $ids_arr,   'l')));
+        DB_AA::delete_low_priority('discussion',  array(array('item_id',        $ids_arr,   'l')));
+        DB_AA::delete_low_priority('offline',     array(array('id',             $ids_arr,   'l')));
+        DB_AA::delete_low_priority('relation',    array(array('source_id',      $ids_arr,   'l'), array('flag', REL_FLAG_FEED, 'set')));
+        DB_AA::delete_low_priority('relation',    array(array('destination_id', $ids_arr,   'l'), array('flag', REL_FLAG_FEED, 'set')));
+
+        DB_AA::delete_low_priority('hit_archive', array(array('id',             $short_arr, 'i')));
+        DB_AA::delete_low_priority('hit_short_id',array(array('id',             $short_arr, 'i')));
+        DB_AA::delete_low_priority('hit_long_id', array(array('id',             $ids_arr,   'l')));
 
         AA_ChangesMonitor::deleteChanges($ids_arr);
-
-        // we should delete also hit_ tables (but it is based on short ids)
     }
 
     /** Invalidate item cache */
