@@ -94,8 +94,6 @@ FrmTabCaption(_m("Select constants"), '','', '', $sess, $slice_id);
 
 echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1), $preset_value) : '') .'</td></tr>';
 
-// following definition MUST be after $aainput->get() - this method modifies
-// $aainput->varname() !!!
 $form_buttons = array("var_id" => array("type" =>"hidden", "value"=>$var_id),
                       "btn_ok" => array("type" =>"button",
                                         "value"=> _m("OK"),
