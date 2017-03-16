@@ -41,6 +41,7 @@ CKEDITOR.editorConfig = function( config ) {
     //config.removeDialogTabs = 'image:advanced;link:advanced'; // Honza Change
 
     // Honza's changes
+    config.title = 'Text Editor';
     config.entities = false;
     config.extraPlugins = 'confighelper';  // for placeholder of editor
     //config.extraAllowedContent = 'span;*[id];a[rel];*(*);*{*}'; // any class and any inline style...
