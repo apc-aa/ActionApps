@@ -606,7 +606,7 @@ class AA_Inputfield {
             $this->input_morehlp = $field['input_morehlp'];
 
             //$funct = ParamExplode($field["input_show_func"]);
-            //$this->input_type    = AA_Stringexpand::unalias($funct[0]);
+            //$this->input_type    = AA::Stringexpander()->unalias($funct[0]);
             $funct = array_values(AA_Widget::parseClassProperties($field["input_show_func"]));
             $this->input_type    = substr(strtolower($funct[0]),10);
 
@@ -808,7 +808,7 @@ class AA_Inputfield {
     function get( $item, $slice_id ) {
         // @todo check, how to do it better - this do not work if
         // "slice_field" parameter uses {subst...} for examle
-        AA_Stringexpand::unaliasArray($this->param);
+        AA::Stringexpander()->unaliasArray($this->param);
         $this->result_mode = 'template';
         $this->echoo($this->input_before);
         if ($this->mode == 'freeze') {

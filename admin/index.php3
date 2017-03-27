@@ -198,7 +198,7 @@ if ($perm_set_id) {
     } else {
         $conds_string = $profile_set->getCondsAsString();
         // the conditions could use some aliases with user_id say: d-organization....-=-{user:_#ORGANIZA}
-        $conds_string = AA_Stringexpand::unalias($conds_string);
+        $conds_string = AA::Stringexpander()->unalias($conds_string);
         $aa_set->addCondsFromString($conds_string);
     }
 }

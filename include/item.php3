@@ -230,7 +230,7 @@ function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $
 
     $items = AA_Items::getItems($zids, $crypted_additional_slice_pwd);
     foreach($items as $long_id=>$item) {
-        $ret[$long_id] = AA_Stringexpand::unalias($format, '', $item);
+        $ret[$long_id] = AA::Stringexpander()->unalias($format, '', $item);
     }
 
     if (!(isset($tagprefix) AND ($zids->onetype() == 't'))) {
@@ -628,7 +628,7 @@ class AA_Item {
      * @param $remove
      */
     function unalias( $text, $remove="" ) {
-        return AA_Stringexpand::unalias($text, $remove, $this);
+        return AA::Stringexpander()->unalias($text, $remove, $this);
     }
 
     /** subst_alias function
@@ -1077,7 +1077,7 @@ class AA_Item {
             $text  = $p[0] ?: $this->getval($col);
             $modif = $p[1];
             if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'))) {
-                if ( $fnc = AA_Stringexpand::$php_functions[$modif] ) {
+                if ( $fnc = AA_Stringexpander::$php_functions[$modif] ) {
                     // special php functions aliases
                     return $fnc($text);
                 }

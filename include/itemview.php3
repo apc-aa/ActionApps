@@ -438,7 +438,7 @@ class itemview {
       if (!$item) {
           $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
       }
-      return AA_Stringexpand::unalias($txt, '', $item, true, $this);
+      return AA::Stringexpander()->unalias($txt, '', $item, true, $this);
   }
 
   // set the aliases from the slice of the item ... used to view items from
@@ -567,7 +567,7 @@ class itemview {
         $this->setColumns($CurItem, $iid);        // set right content for aliases
 
         // print item
-        $out = AA_Stringexpand::unalias($this->slice_info['fulltext_format_top'].$this->slice_info['fulltext_format'].$this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
+        $out = AA::Stringexpander()->unalias($this->slice_info['fulltext_format_top'].$this->slice_info['fulltext_format'].$this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
         break;
 
       case "itemlist":          // multiple items as fulltext one after one

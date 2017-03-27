@@ -83,7 +83,7 @@ function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
         header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]));
-        echo AA_Stringexpand::unalias($page);
+        echo AA::Stringexpander()->unalias($page);
     }
     //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
     exit;
@@ -146,7 +146,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     }
     $seo_slices = $module->getRelatedSlices();
     // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
-    $home       = AA_Stringexpand::unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
+    $home       = AA::Stringexpander()->unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
     $router     = AA_Router::singleton('AA_Router_Seo', $seo_slices, $home, $module->getProperty('web_languages'));
 
     // use REDIRECT_URL for homepage redirects:
@@ -208,16 +208,13 @@ if (is_array($_POST['aa']) AND IsAjaxCall()) {
     // $saver - > check Perms @todo
     $saver->run();
 
+    // we need to evaluate $page_content in order to reevaluate DependentParts
     $apc_state['xajax'] = 2;  // to not be 1
     $page_content = $module->getSite( $apc_state );
 
     header("Content-type: application/json");
 
-    // print_r($page_content);
-    // print_r($saver->changedModules());
-    // print_r(AA_Stringexpand::$dependent_parts);
-    // print_r(AA_Stringexpand::getDependentParts($saver->changedModules()));
-    $parts = AA_Stringexpand::getDependentParts($saver->changedModules());
+    $parts = AA::Stringexpander()->getDependentParts($saver->changedModules());
     if (AA::$encoding != 'utf-8') {
         $convertor = ConvertCharset::singleton();
         foreach ($parts as $k => $v) {

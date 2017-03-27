@@ -241,7 +241,7 @@ class spot {
     function conditionMatches(&$state) {
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
-                $value = ($var[0]=='{') ? AA_Stringexpand::unalias($var, '', $state['item']) : $state[$var];
+                $value = ($var[0]=='{') ? AA::Stringexpander()->unalias($var, '', $state['item']) : $state[$var];
                 if ( !(AA_Site_Spot_Match::factoryByString($cond,$var)->match($value)) ) {
                     return false;
                 }

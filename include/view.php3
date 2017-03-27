@@ -739,7 +739,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
                 $ret      = $itemview->get_output("view");
             } else {
-                $ret      = AA_Stringexpand::unalias($noitem_msg);
+                $ret      = AA::Stringexpander()->unalias($noitem_msg);
             }
             break;
 

@@ -261,7 +261,7 @@ class AA_Content {
     protected $owner_field  = 'aa_owner';
 
     function unalias($text) {
-        return AA_Stringexpand::unalias($text);
+        return AA::Stringexpander()->unalias($text);
     }
 
     /** isField function

@@ -124,7 +124,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
             $response = file_get_contents($file);
             $status   = substr($response,0,3);
             $toggle   = '{htmltoggle:&gt;&gt;:'. QuoteColons($file).':&lt;&lt;:'. QuoteColons($response).'}';
-            $ret     .= AA_Stringexpand::unalias($status.' '.$toggle);
+            $ret     .= AA::Stringexpander()->unalias($status.' '.$toggle);
         }
         freeDB($db);
         return $ret;                                     // OK - no error

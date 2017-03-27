@@ -121,19 +121,19 @@ class AA_Plannedtask extends AA_Object {
         $ret = $this->task;
         AA::$slice_id = $this->getOwnerId();
         if (is_long_id($this->item_id)) {
-            AA_Stringexpand::unalias('{define:aa_event_for:'.$this->item_id.'}');
+            AA::Stringexpander()->unalias('{define:aa_event_for:'.$this->item_id.'}');
         }
         $condition = trim($this->condition);
         if (strlen($condition)) {
-            $condition_res = trim(AA_Stringexpand::unalias($condition));
+            $condition_res = trim(AA::Stringexpander()->unalias($condition));
             if (!strlen($condition_res) OR ((string)$condition_res==='0')) {
                 return $ret. "- Cond not met: $condition ($condition_res)";
             }
         }
         if (is_long_id($this->item_id)) {
-            $ret .= '='.AA_Stringexpand::unalias($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
+            $ret .= '='.AA::Stringexpander()->unalias($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
         } else {
-            $ret .= '='.AA_Stringexpand::unalias($this->task);
+            $ret .= '='.AA::Stringexpander()->unalias($this->task);
         }
         return $ret;
     }

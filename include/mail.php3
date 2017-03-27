@@ -97,7 +97,7 @@ class AA_Mail extends htmlMimeMail {
         }
         // unalias all the template fields including errors_to ...
         foreach ( $record as $key => $value) {
-            $record[$key] = AA_Stringexpand::unalias($value, "", $item);
+            $record[$key] = AA::Stringexpander()->unalias($value, "", $item);
         }
         $record["lang"] = $LANGUAGE_CHARSETS[$record["lang"]];
         return $this->setFromArray($record);

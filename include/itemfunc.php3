@@ -198,7 +198,7 @@ class AA_Generator_Variable extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     function generate() {
-        return new AA_Value(AA_Stringexpand::unalias($this->text));
+        return new AA_Value(AA::Stringexpander()->unalias($this->text));
     }
 }
 

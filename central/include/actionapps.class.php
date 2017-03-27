@@ -580,7 +580,7 @@ class AA_Difference {
                        <div style="background-color:#FFE0E0;border: solid 1px #F88;">'._m('Destination').':<br>'.safe($destination_arr[$key]).'</div>
                        <br>
                        <div style="background-color:#E0E0FF;border: solid 1px #88F;">'._m('Template').':<br>'.safe($value).'</div>'). '}';
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('The value for key %1 in %2 array is different %3', array($key, $identifier->toString(), AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('The value for key %1 in %2 array is different %3', array($key, $identifier->toString(), AA::Stringexpander()->unalias($code))), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
