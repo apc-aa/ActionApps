@@ -179,10 +179,16 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
 
     // store current content
     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
+    var width = $(valdivid).getWidth();
 
-    $(valdivid).update('<div style="position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;margin:-11px 0 0 -11px;">'+AA_Config.loader+'</div>');
+    $(valdivid).update(AA_Config.loader);
     AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties}, function(responseText) {
-            $(valdivid).firstDescendant().update(responseText);  // new value
+            var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
+            if (width>200) {
+                style += 'width:'+width+'px;';
+            }
+            // $(valdivid).firstDescendant().update(responseText);  // new value
+            $(valdivid).update(responseText.replace('data-aa-style', 'style="'+style+'"'));  // new value
             $(valdivid).setAttribute('data-aa-edited', '1');
             var firstElement = $(valdivid).select('input','select', 'textarea')[0];
             if(firstElement != null) {

@@ -233,12 +233,18 @@ function displayInput(valdivid, item_id, fid) {
                  return;
     }
     $(valdiv).attr("data-aa-oldval", $(valdiv).html());
-    $(valdiv).html('<div style="position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;margin:-11px 0 0 -11px;">'+AA_Config.loader+'</div>');
+
+    var width = $(valdivid).width();
+    $(valdiv).html(AA_Config.loader);
 
     AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(data) {
-            //var valdiv = jqid(valdivid);
+            var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
-            $(valdiv).children().first().html(data);
+            var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
+            if (width>200) {
+                style += 'width:'+width+'px;';
+            }
+            $(valdiv).html(data.replace('data-aa-style', 'style="'+style+'"'));
             var aa_input = $(valdiv).find('select,textarea,input').first();
             $(aa_input).focus();  // select the input field (<select> or <input>)
             if ((aa_input).is("textarea")) {

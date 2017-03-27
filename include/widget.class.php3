@@ -526,10 +526,12 @@ class AA_Widget extends AA_Components {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
+        $widget_html  = '<div class=ajax_widget>';
         $widget_html .= "\n".$winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $widget_html .= "\n<div class=ajax_buttons>";
-        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">&nbsp;"; //ULO�IT ZM�NU
+        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //ULO�IT ZM�NU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
         return $widget_html;
     }
@@ -1556,7 +1558,7 @@ class AA_Widget_Fil extends AA_Widget {
             $link = '&nbsp;'.a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));
         };
 
-        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':{({item:'.$content->getId().':'.$aa_property->getId().'})}'.$link.'<br><input type=button value='. _m('Upload') .'>}');
+        return AA::Stringexpander()->unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':{({item:'.$content->getId().':'.$aa_property->getId().'})}'.$link.'<br><input type=button value='. _m('Upload') .'>}');
         // add JS OK Function
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
@@ -1566,9 +1568,11 @@ class AA_Widget_Fil extends AA_Widget {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
+        $widget_html  = '<div class=ajax_widget>';
         $widget_html .= "\n".$winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $widget_html .= "\n<div class=ajax_buttons>";
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
         return $widget_html;
     }
