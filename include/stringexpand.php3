@@ -4390,7 +4390,7 @@ class AA_Unalias_Callback {
         // {formpart:}
         // {view.php3?vid=12&cmd[12]=x-12-34}
         // {dequote:already expanded and quoted string}
-        // {fnctn:xxx:yyyy}   - expand $AA_Stringexpand::$php_functions[fnctn]
+        // {fnctn:xxx:yyyy}   - expand AA_Stringexpander::$php_functions[fnctn]
         // {unpacked_id.....}
         // {mlx_view:view format in html} mini view of translatiosn available for this article
         //                                does substitutions %lang, %itemid
@@ -4540,7 +4540,7 @@ class AA_Unalias_Callback {
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
                 return StrExpand($class_name, $class_name::parseParam($outparam), array('item'=>$this->item, 'itemview'=> $this->itemview), true);
             }
-            elseif ( ($fnctn = AA_Stringexpand::$php_functions[$outcmd]) OR is_callable($fnctn = "stringexpand_$outcmd") ) {
+            elseif ( ($fnctn = AA_Stringexpander::$php_functions[$outcmd]) OR is_callable($fnctn = "stringexpand_$outcmd") ) {
                 // eb functions - call allowed php functions directly
 
                 if (!strlen($outparam)) {
@@ -4644,22 +4644,9 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
     }
 }
 
-class AA_Stringexpand {
-
-    public static $recursion_count = 0;
-
-    public static $dependent_parts = array();
-
-    /** item, for which we are stringexpanding
-     *  Not used in many expand functions
-     */
-
-    var $item;
-
-    /** view, in which we are stringexpanding
-     *  Not used in many expand functions
-     */
-    var $itemview;
+class AA_Stringexpander {
+    protected $recursion_count = 0;
+    protected $dependent_parts = array();
 
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
@@ -4686,59 +4673,7 @@ class AA_Stringexpand {
         'version'          => 'aa_version'         // old AA_Stringexpand_Version'
     );
 
-
-    /** AA_Stringexpand function
-     * @param $item
-     */
-    function __construct($param) {
-        $this->item     = $param['item'];
-        $this->itemview = $param['itemview'];
-    }
-
-    /** expand function
-     */
-    function expand() {
-    }
-
-    static function parseParam($params) {
-        if (empty($params)) {
-            return array();
-        }
-        return array_map(static::doTrimParams() ? 'DeQuoteColonsTrim' : 'DeQuoteColons', ParamExplode($params));
-    }
-
-    /** additionalCacheParam function
-     *  Some stringexpand functions uses global parameters, so it is not posible
-     *  to use cache for results based just on expand() parameters. We need to
-     *  add following parameters. In most cases you do not need to override this
-     *  function
-     */
-    function additionalCacheParam() {
-        return '';
-    }
-
-    function doCache() {
-        return true;
-    }
-
-    /** Marks rare cases, when we do not want to qoute results - like for
-     *  {_:...} shortcuts
-     */
-    function doQuoteColons() {
-        return true;
-    }
-
-    /** Trim all parameters? */
-    function doTrimParams() {
-        return true;
-    }
-
-    /** unalias function
-     *  static function
-     *  This is based on the old unalias_recurent, it is intended to replace
-     *  string substitution wherever its occurring.
-     *  Differences ....
-     *    - remove is applied to the entire result, not the parts!
+     /** called as AA::Stringexpander()->unalias();
      * @param $text
      * @param $item
      * @param $remove
@@ -4747,8 +4682,8 @@ class AA_Stringexpand {
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
 
-        if (++AA_Stringexpand::$recursion_count > 5000) {
-            --AA_Stringexpand::$recursion_count;
+        if (++$this->recursion_count > 5000) {
+            --$this->recursion_count;
             return "Error: recursion detected";
         }
 
@@ -4815,7 +4750,7 @@ class AA_Stringexpand {
         // if ( !$dequote ) { }
         // there is no need to substitute on level 1
 
-        --AA_Stringexpand::$recursion_count;
+        --$this->recursion_count;
 
         // return from unalias - change all back to ':'
         if ( $dequote AND $quotecolons_partly ) {
@@ -4838,6 +4773,100 @@ class AA_Stringexpand {
         }
     }
 
+    function postprocess($out) {
+        return $out;
+    }
+
+    function setDependentParts($slices, $hash, $code) {
+        foreach ($slices as $s) {
+            if (isset($this->dependent_parts[$s])) {
+                $this->dependent_parts[$s][] = array($hash,$code);
+            } else {
+                $this->dependent_parts[$s] = array(array($hash,$code));
+            }
+        }
+    }
+
+    function getDependentParts($slices) {
+        $ret = array();
+        foreach ($slices as $s) {
+            if (is_array($this->dependent_parts[$s])) {
+                foreach ($this->dependent_parts[$s] as $part) {
+                    $ret[$part[0]] = $part[1];
+                }
+            }
+        }
+        return $ret;
+    }
+}
+
+class AA_Stringexpand {
+
+    /** item, for which we are stringexpanding
+     *  Not used in many expand functions
+     */
+
+    var $item;
+
+    /** view, in which we are stringexpanding
+     *  Not used in many expand functions
+     */
+    var $itemview;
+
+
+
+    /** AA_Stringexpand function
+     * @param $item
+     */
+    function __construct($param) {
+        $this->item     = $param['item'];
+        $this->itemview = $param['itemview'];
+    }
+
+    /** @deprecated - use AA::Stringexpander()->unalias() directly
+     */
+    function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
+        return AA::Stringexpander()->unalias($text, $remove, $item, $dequote, $itemview);
+    }
+
+    /** expand function
+     */
+    function expand() {
+    }
+
+    static function parseParam($params) {
+        if (empty($params)) {
+            return array();
+        }
+        return array_map(static::doTrimParams() ? 'DeQuoteColonsTrim' : 'DeQuoteColons', ParamExplode($params));
+    }
+
+    /** additionalCacheParam function
+     *  Some stringexpand functions uses global parameters, so it is not posible
+     *  to use cache for results based just on expand() parameters. We need to
+     *  add following parameters. In most cases you do not need to override this
+     *  function
+     */
+    function additionalCacheParam() {
+        return '';
+    }
+
+    function doCache() {
+        return true;
+    }
+
+    /** Marks rare cases, when we do not want to qoute results - like for
+     *  {_:...} shortcuts
+     */
+    function doQuoteColons() {
+        return true;
+    }
+
+    /** Trim all parameters? */
+    function doTrimParams() {
+        return true;
+    }
+
     /** replace parameters _#P1, _#P2, ... by the supplied ones */
     function replaceParams($text, $arg_list) {
         if (count($arg_list)>0) {
@@ -4849,28 +4878,6 @@ class AA_Stringexpand {
             $text = strtr($text, $trans);
         }
         return $text;
-    }
-
-    function setDependentParts($slices, $hash, $code) {
-        foreach ($slices as $s) {
-            if (isset(AA_Stringexpand::$dependent_parts[$s])) {
-                AA_Stringexpand::$dependent_parts[$s][] = array($hash,$code);
-            } else {
-                AA_Stringexpand::$dependent_parts[$s] = array(array($hash,$code));
-            }
-        }
-    }
-
-    function getDependentParts($slices) {
-        $ret = array();
-        foreach ($slices as $s) {
-            if (is_array(AA_Stringexpand::$dependent_parts[$s])) {
-                foreach (AA_Stringexpand::$dependent_parts[$s] as $part) {
-                    $ret[$part[0]] = $part[1];
-                }
-            }
-        }
-        return $ret;
     }
 }
 
@@ -6330,7 +6337,7 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
 }
 
 /** Item manager in remote slice related to the item
- *    {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>]]}
+ *    {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>]]]}
  *        - manage a related items to the edited one - like:
  *  my_item <-- photos,
  *        where photos have relation........ field which points to item.
@@ -6339,24 +6346,30 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  *        The _#ROW_EDIT is then code in photos slice to be displayed for each
  *        photo - could contain {live} edits, ... It allows you also to add new
  *        photo with instant redraw.
+ *  <mode> - which edit features present. default is all possible
+ *           - 'N' - new, 'D' - delete, '-' - no manage (just view)
  */
 class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
-    function expand($slices, $field=null, $item_id=null, $code=null, $conds=null, $sort=null) {
+    function expand($slices, $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null) {
+
         if ($field AND ($item_id = $item_id ?: ($this ? $this->item->getId() : null))) {
             $conds  .= $conds ? "-$field-=-$item_id" :  "d-$field-=-$item_id";
         }
         if (!$sort) {
             $sort = 'publish_date....';
         }
+        $mode = $mode ?: 'ND'; // add here all possible options, whichis ND currently
 
-        $set           = new AA_Set($slices_arr=explode('-', $slices), $conds, $sort);
-        $zids          = $set->query();
+        $set  = new AA_Set($slices_arr=explode('-', $slices), $conds, $sort);
+        $zids = $set->query();
 
         // load all mentioned items in one step
         AA_Items::preload($zids);
-
         $hash = get_hash('manager', $slices, $conds, $sort, $code);
+
+        $code_actions = (strpos($mode,'D')===false) ? '' : ('<article><i class="ico delete" onclick="if (confirm(\''._m('Are you sure you want to permanently DELETE this record?'). '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">x</i></article>');
+        $footer       = (strpos($mode,'N')===false) ? '' : ('<footer><article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article></footer>');
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
                     <section class="itemgroup">';
@@ -6365,7 +6378,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                           '. $code .'
                         </section>
                         <section class="icogroup">
-                          <article><i class="ico delete" onclick="if (confirm(\''._m('Are you sure you want to permanently DELETE this record?'). '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">x</i></article>
+                          '. $code_actions .'
                         </section>
                       </article>';
 
@@ -6373,12 +6386,10 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code, true), '');
         $ret .= '
                     </section>
-                    <footer>
-                      <article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article>
-                    </footer>
+                          '. $footer .'
                  </article>';
 
-        AA_Stringexpand::setDependentParts($slices_arr, $hash, $ret);
+        AA::Stringexpander()->setDependentParts($slices_arr, $hash, $ret);
         return $ret;
     }
 }
