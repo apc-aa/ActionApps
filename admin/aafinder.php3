@@ -375,7 +375,7 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
         foreach ($fields as $fld) {
 
             if (strlen($_GET['go_search'])) {
-                $txt = DB_AA::select([], "SELECT `$fld` as txt, INSTR(`$fld`,\"".quote($_GET['search'])."\") as pos FROM `$tbl` WHERE INSTR(`$fld`,\"".quote($_GET['search'])."\")>0");
+                $txt = DB_AA::select(array(), "SELECT `$fld` as txt, INSTR(`$fld`,\"".quote($_GET['search'])."\") as pos FROM `$tbl` WHERE INSTR(`$fld`,\"".quote($_GET['search'])."\")>0");
                 echo count($txt) ? "<br><b>$tbl.$fld</b> (".count($txt)." matches)" : "<br>$tbl.$fld (".count($txt)." matches)";
                 foreach ($txt as $t) {
                     $code = substr_replace($t['txt'], 'AA_$@MArK%', $t['pos']-1, 0);
