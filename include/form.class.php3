@@ -319,6 +319,7 @@ class AA_Form extends AA_Object {
     }
 
     private function _getContent() {
+
         if (empty($this->object_id)) {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);

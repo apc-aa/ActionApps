@@ -1,3 +1,14 @@
+17-03-27 - unalias refactoring - now it is cleaner and more extensible:
+(honzam)     AA_Stringexpand::unalias -> AA::Stringexpander()->unalias
+         - new {manager} <mode> parameter which edit features presented
+             'N' - new
+             'D' - delete
+             '-' - no manage (just view)
+           default is all possible
+           {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>]]]}
+         - better {ajax} default display
+         - slice.php3 no longer displays items in holding bin or trash
+         - fix for PHP 5.3
 17-03-16 - new "im" option in
 (honzam)   {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}
            which do not checks exact image size (so it is a much quicker)
