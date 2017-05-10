@@ -56,7 +56,6 @@ require_once "./include/config.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."searchlib.php3";
-$encap = true; // just for calling extsessi.php
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 require_once AA_INC_PATH."grabber.class.php3";

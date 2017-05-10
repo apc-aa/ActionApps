@@ -1,3 +1,21 @@
+17-05-09 - new type of Alerts type "irregular" - best for irregular Newsletters.
+(honzam)   You will probably call it by Button in admin interface - the
+           newsletter is then send to all Readers with confirmed e-mail and
+           howoften field set to "irregular".
+           The button could be set as:
+             if (confirm('Send?')) {
+               AA_Response('Alertitem', { "item_id":"{id..............}", "collection_id":"sQjwa"}, function(responseText) {
+                 alert('sent mails'+responseText);
+               });}
+           or for testing:
+             if (confirm('Send test?')) {
+               AA_Response('Alertitem', { "item_id":"{id..............}", "collection_id":"sQjwa", "test_email":"test@actionapps.org"}, function(responseText) {
+                 alert('sent mails'+responseText);
+               } );}
+         - views of any type uses the same universal caching code, now
+         - dirname(__FILE__) replaced by quicker __DIR__ variable
+         - fixes in polls module - fixed language encoding
+         - the SQL queries uses more readable notation of packed ids 0xe345ea564b...
 17-03-27 - unalias refactoring - now it is cleaner and more extensible:
 (honzam)     AA_Stringexpand::unalias -> AA::Stringexpander()->unalias
          - new {manager} <mode> parameter which edit features presented

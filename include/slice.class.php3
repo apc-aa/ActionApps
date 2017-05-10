@@ -242,7 +242,7 @@ class AA_Module {
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
     function getLang()     {
-        return GetLang($this->getProperty('lang_file'));
+        return GetLang($this->_getModuleTableProperty('lang_file'));
     }
 
     /** getCharset function
@@ -696,6 +696,8 @@ class AA_Module_Site extends AA_Module {
     const SETTING_CLASS = 'AA_Modulesettings_Site';
     const SETTING_TABLE = 'site';
 
+    protected $_related_slices = null;
+
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {
         if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModule($translate_slice)->getProperty('translations'))) {
@@ -725,9 +727,21 @@ class AA_Module_Site extends AA_Module {
         return AA::Stringexpander()->postprocess($out);
     }
 
+    public function getRouter() {
+        if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
+            // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
+            $home       = AA::Stringexpander()->unalias(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
+            return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, $this->_getModuleObjectProperty('web_languages'));
+        }
+        return null;
+    }
+
     function getRelatedSlices() {
-        // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
-        return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i'))));
+        if (is_null($this->_related_slices)) {
+            // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
+            $this->_related_slices = array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i'))));
+        }
+        return $this->_related_slices;
     }
 
     /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
@@ -746,6 +760,8 @@ class AA_Module_Site extends AA_Module {
 
 class AA_Module_Alerts extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
+
+    // !!! this will not work - id in alerts_collection is not module ID
     const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Alerts::_deleteModules() function - called automaticaly form AA_Module::deleteModules()

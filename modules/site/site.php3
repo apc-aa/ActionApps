@@ -144,10 +144,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     if (!is_object($sess)) {  // could be already opened above
         pageOpen('nobody');
     }
-    $seo_slices = $module->getRelatedSlices();
-    // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
-    $home       = AA::Stringexpander()->unalias(trim($module->getProperty('state_file'))) ?: '/' .substr($lang_file,0,2). '/';
-    $router     = AA_Router::singleton('AA_Router_Seo', $seo_slices, $home, $module->getProperty('web_languages'));
+    $router = $module->getRouter();
 
     // use REDIRECT_URL for homepage redirects:
     //    RewriteRule ^/?$ /en/home [QSA]

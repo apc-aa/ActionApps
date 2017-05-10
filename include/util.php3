@@ -1081,7 +1081,6 @@ function url2bin($data) {
 /** HtmlPageBegin function
  * Prints HTML start page tags (html begin, encoding, style sheet, but no title).
  * Chooses the right encoding by get_mgettext_lang().
- * @param string $stylesheet  if empty, no StyleSheet tag is printed
  * @param bool   $js_lib      if true, includes js_lib.js javascript
  * @param $lang
  */

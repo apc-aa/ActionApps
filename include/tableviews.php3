@@ -107,4 +107,3 @@ function te_au_confirm($val) {
     return $val ? _m("no") : _m("yes");
 }
 ?>
-
