@@ -54,13 +54,12 @@ function set_collectionid() {
 }
 
 function get_howoften_options($include_instant = true) {
-    if ($include_instant) {
-        $retval["instant"] = _m("instant");
-    }
+    $retval = array();
     $retval["daily"]     = _m("daily");
     $retval["weekly"]    = _m("weekly");
     $retval["twoweeks"]  = _m("twoweeks");
     $retval["monthly"]   = _m("monthly");
+    $retval["irregular"] = _m("irregular");
     return $retval;
 }
 

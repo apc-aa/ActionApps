@@ -331,6 +331,35 @@ class AA_Responder_Widget_Selection extends AA_Responder {
     }
 }
 
+/** @return sends one item in mail to alert irregular readers collection */
+class AA_Responder_Alertitem extends AA_Responder {
+    /** array of module types to get */
+    protected $item_id;
+    protected $collection_id;
+    protected $test_email;
+
+    function  __construct($param=null) {
+        // the slice id and the field id defines the field, where the widget is DEFINED
+        $this->item_id       = $param['item_id'];
+        $this->collection_id = $param['collection_id'];
+        $this->test_email    = strpos($param['test_email'],'@') ? array($param['test_email']) : array();
+    }
+
+    function isPerm() {  return IfSlPerm(PS_EDIT_ALL_ITEMS); }
+
+    function run() {
+        $ret = '0';
+        if (is_long_id($this->item_id) AND (strlen($this->collection_id)==5)) {
+            //initialize_last();
+            //set_time_limit(600); // This can take a while
+            $ret = send_emails("irregular", array($this->collection_id), $this->test_email, true, $this->item_id);
+            // We must reset moved2active so that the item is not re-sent on update.
+            //$db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");    }
+        }
+        return new AA_Response($ret);
+    }
+}
+
 //print_r($auth);
 //print_r($sess);
 //page_open(array("sess" => "AA_CP_Session", "auth" => "AA_Responder_Auth"));

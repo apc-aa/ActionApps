@@ -67,14 +67,11 @@ class AA_Collection {
     }
 
     function getReaderSlice()    { return AA_Slice::getModule($this->_get('reader_slice_id'));  }
-    function getAlertsModuleId() { return $this->_get('alerts_module_id');   }
-    function getEmailIdWelcome() { return $this->_get('email_id_welcome'); }
-    function getEmailIdAlert()   { return $this->_get('email_id_alert');   }
 
     function getSliceUrl()       {
         if ( is_null($this->slice_url) ) {
-            $alerts_id = $this->getAlertsModuleId();
-            $this->slice_url =  GetTable2Array('SELECT slice_url FROM module WHERE id=\''.q_pack_id($alerts_id).'\'', 'aa_first', 'slice_url');
+            $this->slice_url = DB_AA::select1("SELECT slice_url FROM `module`", 'slice_url', array(array('id',$this->_get('alerts_module_id'),'l')));
+                              //GetTable2Array('SELECT slice_url FROM module WHERE id=\''.q_pack_id($alerts_id).'\'', 'aa_first', 'slice_url');
         }
         return $this->slice_url;
     }
@@ -108,9 +105,7 @@ class AA_Collection {
         $credentials = AA_Credentials::singleton();
         $credentials->loadFromSlice($this->_get('reader_slice_id'));
 
-        // huhl($this->reader_slice_id);
-        // huhl($credentials);
-        // exit;
+        $GLOBALS['apc_state']['xlang'] = substr(AA_Module_Alerts::getModule($this->_get('alerts_module_id'))->getLang(),0,2);
 
         // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for
@@ -129,7 +124,7 @@ class AA_Collection {
         }
 
         // Find all users who should receive anything
-        if ( !is_array($emails) ) {
+        if ( !is_array($emails) OR !count($emails) ) {
 
             // get all confirmed users for this collection and frequency
             $zids = is_null($reader_id) ? $this->getReaders($ho) : new zids($reader_id, 'l');
@@ -156,7 +151,7 @@ class AA_Collection {
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
                     $item         = new AA_Item($readerContent, $aliases);
 
-                    if (AA_Mail::sendTemplate($this->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                    if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
                         AA_Log::write("ALERTS", $this->id.": ". $readerContent->getValue(FIELDID_EMAIL), $ho);
                         $email_count++;
                     }
@@ -177,13 +172,13 @@ class AA_Collection {
             $item = new AA_Item('', $aliases);
 
             foreach ( (array)$emails as $email ) {
-                if (AA_Mail::sendTemplate($this->getEmailIdAlert(), $email, $item)) {
+                if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $email, $item)) {
                     $email_count++;
                 }
             }
         }
         AA_Log::write("ALERTS", "Sent for collection ".$this->id.": ". ((int)$email_count), $ho);
-        AA_Log::write("ALERTS", join('; ', array("Debug collection ".$this->id, $this->getEmailIdAlert(), join(',',(array)$emails), join(',',$aliases))), $ho);
+        AA_Log::write("ALERTS", join('; ', array("Debug collection ".$this->id, $this->_get('email_id_alert'), join(',',(array)$emails), join(',',$aliases))), $ho);
         return $email_count;
     }
 
@@ -194,7 +189,7 @@ class AA_Collection {
     *              works completely the same for any how often (only that it writes
     *              the values to the appropriate field).
     *
-    * The only exception are the "instant" messages: If the paramter $item_id
+    * The only exception are the "instant" and "irregular" messages: If the paramter $item_id
     * contains an unpacked item ID, nothing or a message containing just that item is sent.
     *
     * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
@@ -424,17 +419,18 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
 *   to a value depending on howoften, i.e. to one week ago for weekly etc.
 */
 function initialize_last() {
-    $now = getdate ();
+    $now = getdate();
 
     $init["instant"] = time();
     // one day ago
-    $init["daily"]   = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-1);
+    $init["daily"]     = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-1);
     // one week (7 days) ago
-    $init["weekly"]  = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-7);
+    $init["weekly"]    = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-7);
     // two week (14 days) ago
     $init["twoweeks"]  = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-14);
     // one month ago
-    $init["monthly"] = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon']-1);
+    $init["monthly"]   = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon']-1);
+    $init["irregular"] = 0;
 
     $db  = getDB();
     $db2 = getDB();
@@ -456,8 +452,9 @@ function initialize_last() {
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
         while ($db->next_record()) {
-            $db2->tquery("UPDATE alerts_collection_howoften SET last=".$init[$ho]
-                ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
+            DB_AA::update('alerts_collection_howoften', array(array('last',$init[$ho],'i')), array(array('collectionid', $db->f("id")),array('howoften', $ho)));
+           // $db2->tquery("UPDATE alerts_collection_howoften SET last=".$init[$ho]
+           //     ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
         }
     }
     freeDB($db);
