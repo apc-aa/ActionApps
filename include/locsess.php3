@@ -410,7 +410,7 @@ class DB_AA extends DB_Sql {
         return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
-    /** used as: DB_AA::update('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
+    /** used as: DB_AA::update('slice', array(array('javascript',$_POST['javascript'])), array(array('id', $slice_id, 'l')));  */
     static function update($table, $varlist, $where) {
         $delim = '';
         $cols = '';
@@ -419,7 +419,7 @@ class DB_AA extends DB_Sql {
             list($name, $value, $type) = $vardef;
             switch ( $type ) {
                 case "i": $part = (int)$value; break;
-                case "l": $part = q_pack_id($value); break;
+                case "l": $part = xpack_id($value); break;
                 case "q": $part = $value; break;
                 //default:  $part = DB_AA::quote($value);
                 default:  $part = addslashes($value);
