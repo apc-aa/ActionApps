@@ -43,11 +43,23 @@ if (!IsSuperadmin()) {
 }
 // ----------------------------------------------------------------------------------------
 
+function AdminLink($table, $id, $slice_id='') {
+    switch ($table) {
+    case 'item':    return AafinderItemLink($id,$slice_id);
+    case 'content': return AafinderItemLink($id,$slice_id);
+    }
+}
+
 function AafinderFieldLink($field_id, $slice_id) {
     return a_href( get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
 }
 
-function AafinderItemLink($item_id, $slice_id) {
+function AafinderItemLink($item_id, $slice_id='') {
+    if (!$slice_id AND ($item = AA_Items::getItem(new zids($item_id, 'l')))) {
+        $slice_id = $item->getSliceID();
+    } else {
+        return '';
+    }
     return a_href( get_admin_url("itemedit.php3?slice_id=$slice_id&id=$item_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")");
 }
 
@@ -57,6 +69,11 @@ function AafinderSliceLink($slice_id) {
 
 function AafinderSiteLink($spot_id, $slice_id) {
     return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")");
+}
+
+function AafinderViewLink($view_id, $slice_name='') {
+    $view = AA_Views::getView($view_id);
+    return $view->jumpLink($view_id." -  ".$view->f("name"). ($slice_name ? " ($slice_name) ":''));
 }
 
 function query_search($where) {
@@ -191,8 +208,7 @@ if (strlen($_GET['findtext']) AND $_GET['findinview']) {
     $db->query($SQL);
     echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
     while ($db->next_record()) {
-        $view = AA_Views::getView($db->f("id"));
-        echo $view->jumpLink($db->f("id")." -  ".$view->f("name")." (".$db->f("name").") "). "<br>\n";
+        echo AafinderViewLink($db->f("id"), $db->f("name")). "<br>\n";
     }
     echo '<br><br>';
 }
@@ -361,22 +377,31 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
     $metabase = AA_Metabase::singleton();
 
     $table2search = array();
-    if ($_GET['searchinview']  ==1) $table2search[] = 'view';
-    if ($_GET['searchinslice'] ==1) $table2search[] = 'slice';
-    if ($_GET['searchinfield'] ==1) $table2search[] = 'field';
-    if ($_GET['searchinspot']  ==1) $table2search[] = 'site_spot';
-    if ($_GET['searchinitems'] ==1) $table2search[] = 'content';
-    if ($_GET['searchindiscus']==1) $table2search[] = 'discussion';
+    if ($_GET['searchinview']  ==1) $table2search['view']       = array();
+    if ($_GET['searchinslice'] ==1) $table2search['slice']      = array();
+    if ($_GET['searchinfield'] ==1) $table2search['field']      = array();
+    if ($_GET['searchinspot']  ==1) $table2search['site_spot']  = array();
+    if ($_GET['searchinitems'] ==1) $table2search['content']    = array('id'=>'LOWER(HEX(`item_id`))');
+    if ($_GET['searchindiscus']==1) $table2search['discussion'] = array();
 
-    foreach($table2search as $tbl) {
+    echo '<table>';
+    foreach($table2search as $tbl => $tblinfo) {
         $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function($col) { return ($col['operators'] == 'text'); }));
         $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), AA_Metabase::getModuleFields($tbl)));
 
+        $addfields  = $tblinfo['id']       ? (', '.$tblinfo['id'] ).       ' as iid' : '';
+        $addfields .= $tblinfo['slice_id'] ? (', '.$tblinfo['slice_id'] ). ' as sid' : '';
+
         foreach ($fields as $fld) {
+            $row = array();
 
             if (strlen($_GET['go_search'])) {
-                $txt = DB_AA::select(array(), "SELECT `$fld` as txt, INSTR(`$fld`,\"".quote($_GET['search'])."\") as pos FROM `$tbl` WHERE INSTR(`$fld`,\"".quote($_GET['search'])."\")>0");
-                echo count($txt) ? "<br><b>$tbl.$fld</b> (".count($txt)." matches)" : "<br>$tbl.$fld (".count($txt)." matches)";
+                $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"".quote($_GET['search'])."\") as pos $addfields FROM `$tbl` WHERE INSTR(`$fld`,\"".quote($_GET['search'])."\")>0";
+                $txt = DB_AA::select(array(), $SQL);
+                $row[0] = count($txt) ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
+                $row[1] = count($txt);
+                FrmTabRow($row);
+                $row = array();
                 foreach ($txt as $t) {
                     $code = substr_replace($t['txt'], 'AA_$@MArK%', $t['pos']-1, 0);
                     if (strlen($code) > 210) {
@@ -387,18 +412,25 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
                         }
                     }
                     $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)).'</span>';
-                    echo "<br><small> &nbsp; * $code</small>";
+                    $row[0] = "<small>".($t['iid'] ? AdminLink($tbl, $t['iid'])  : ''). "</small>";
+                    $row[1] = "<small> $code</small>";
+                    FrmTabRow($row);
                 }
             } elseif ( strlen($_GET['go_replace']) AND (strlen($_GET['search'])>5) AND (strlen($_GET['replace'])>5) ) {
                 $SQL =  "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, \"".quote($_GET['search'])."\", \"".quote($_GET['replace'])."\")";
                 $rep = DB_AA::sql($SQL);
-                echo $rep ? "<br><b>$tbl.$fld</b> ($rep replaces)" :"<br>$tbl.$fld ($rep replaces)";
+                $row[0] =  $rep ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
+                $row[1] =  "($rep replaces)";
+                FrmTabRow($row);
             } else {
                 // just to not make damage in id fields, ...
-                echo "Serach phrase as well as replace phrase must be 5 character long at least";
+                $row[0] = "Serach phrase as well as replace phrase must be 5 character long at least";
+                FrmTabRow($row);
             }
         }
     }
+    echo '</table>';
+
 }
 
 
