@@ -148,6 +148,7 @@ function get_aamenus() {
         "export"        => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_export.php",                 "label"=>_m("Export to file")),
 
         "header5"       => _m("Misc"),
+        "history"       => array("cond"=>IfSlPerm(PS_HISTORY),   "href"=>"admin/se_history.php3",              "label"=>_m("History")),
         "field_ids"     => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fieldid.php3",               "label"=>_m("Change field IDs")),
         "javascript"    => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_javascript.php3",            "label"=>_m("Field Triggers")),
         "fileman"       => array("cond"=>FilemanPerms($slice_id), "href"=>"admin/fileman.php3",                "label"=>_m("File Manager")),
