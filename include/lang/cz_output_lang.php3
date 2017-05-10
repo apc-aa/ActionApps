@@ -15,6 +15,10 @@ setlocale(LC_NUMERIC, 'en_US');  // use numeric with dot - there is problem, whe
                                  //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
                                  // float!! value $etalon is then with comma which leads to syntax error
 
+$_m["new"]
+ = "nový";
+
+
 # Unused messages
 $_m["Cancel"]
  = "Storno";

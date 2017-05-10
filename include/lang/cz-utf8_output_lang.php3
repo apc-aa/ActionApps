@@ -16,6 +16,10 @@ setlocale(LC_NUMERIC, 'en_US');  // use numeric with dot - there is problem, whe
                                  //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
                                  // float!! value $etalon is then with comma which leads to syntax error
 
+$_m["new"]
+ = "nový";
+
+
 # Unused messages
 $_m["Cancel"]
  = "Storno";
@@ -95,6 +99,12 @@ $_m["Show all"]
 // include/discussion.php3, row 209, 257
 $_m["Add new"]
  = "Přidej nový";
+
+// admin/se_inputform.php3, row 411
+// admin/sliceimp.php3, row 484
+// include/formutil.php3, row 202, 2698
+$_m["Insert"]
+ = "Vložit";
 
 // include/discussion.php3, row 215
 $_m["Alias for subject of the discussion comment"]
@@ -366,6 +376,55 @@ $_m["Next"]
 $_m["No comment was selected"]
  = "Nebyl vybrán žádný příspěvek";
 
+
+// include/util.php3, row 1878
+$_m["January"]
+ = "Leden";
+
+// include/util.php3, row 1878
+$_m["February"]
+ = "Únor";
+
+// include/util.php3, row 1878
+$_m["March"]
+ = "Březen";
+
+// include/util.php3, row 1878
+$_m["April"]
+ = "Duben";
+
+// include/util.php3, row 1878
+$_m["May"]
+ = "Květen";
+
+// include/util.php3, row 1878
+$_m["June"]
+ = "Červen";
+
+// include/util.php3, row 1879
+$_m["July"]
+ = "Červenec";
+
+// include/util.php3, row 1879
+$_m["August"]
+ = "Srpen";
+
+// include/util.php3, row 1879
+$_m["September"]
+ = "Září";
+
+// include/util.php3, row 1879
+$_m["October"]
+ = "Říjen";
+
+// include/util.php3, row 1879
+$_m["November"]
+ = "Listopad";
+
+// include/util.php3, row 1879
+$_m["December"]
+ = "Prosinec";
+
 // include/widget.php3 ...
 $_m["Upload"]
  = "Nahrát";
@@ -404,10 +463,10 @@ $_m["To save changes click here or outside the field."]
  = "Změna hesla";
 
  $_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
- = "Pro zmenu hesla prosim navstivte nasledujici adresu:<br>%1<br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.";
+ = "Pro zadani noveho hesla prosim navstivte nasledujici adresu:<br>%1<br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.";
 
  $_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
- = "E-mail s klíčem pro změnu hesla byl právě odeslán na e-mail: %1";
+ = "E-mail s klíčem pro zadání nového hesla byl právě odeslán na e-mail: %1";
 
  $_m["Bad or expired key."]
  = "Špatný, či expirovaný klíč.";
@@ -430,8 +489,10 @@ $_m["To save changes click here or outside the field."]
  $_m["An error occurred during password change - please contact: %1."]
  = "Došlo k chybě během změny hesla - prosím kontaktujte %1.";
 
+$_m["Selected"]
+ = "Vybrané";
+
  $_m["Delete"]
  = " Odstranit ";
-
 
 ?>

@@ -3734,6 +3734,9 @@ $_m["by&nbsp;type:"]
 $_m["New"]
  = "Nový";
 
+$_m["new"]
+ = "nový";
+
 // admin/se_views.php3, row 159
 $_m["by&nbsp;template:"]
  = "dle&nbsp;šablony:";
