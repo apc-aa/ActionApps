@@ -290,13 +290,12 @@ class AA_Poll {
         }
 
         if ($request['convertto'] OR $request['convertfrom'] ) {
-            $encoder = ConvertCharset::singleton();
-            $ret     = $encoder->Convert($ret, $request['convertfrom'], $request['convertto']);
+            $ret = ConvertCharset::singleton()->Convert($ret, $request['convertfrom'], $request['convertto']);
+        } elseif (IsAjaxCall()) {
+            $ret = ConvertCharset::singleton()->Convert($ret, AA_Module_Polls::getModule($poll->id())->getCharset(), 'utf-8');
         }
-
         return $ret;
     }
-
 }
 
 class AA_Polls {
