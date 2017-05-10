@@ -140,6 +140,25 @@ AA::$encoding = $module->getCharset();
 
 $hit_lid = null;
 
+// auth people from: Reader slice / Reader slices / AA + Reader slices
+//
+// perm_mode 1 - first Reader Management slice listed in Uses slices
+//           2 - all Reader Management slices listed in Uses slices
+//           3 - AA + all Reader Management slices in AA (old behavior)
+//           First Reader Management slice is encouraged option - only the
+//           people from this slice is allowed to login to public pages.
+//           If not selected, "AA + all Reader Management slices" option is used.
+$perm_mode  = (string)$module->getProperty('perm_mode');
+if ( ($perm_mode == '1') OR ($perm_mode == '2') ) {
+    $seo_slices = $module->getRelatedSlices();
+    $rm_slices  = array_map('unpack_id', DB_AA::select('', 'SELECT id FROM slice', array(array('id', $seo_slices, 'l'), array('type', 'ReaderManagement'))));
+    if ($perm_mode=='1') {
+        $rm_slices = array_slice($rm_slices,0,1);
+    }
+    AA::$perm->restrictPermsTo($rm_slices);
+}
+
+
 if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     if (!is_object($sess)) {  // could be already opened above
         pageOpen('nobody');

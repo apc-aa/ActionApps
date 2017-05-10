@@ -744,6 +744,7 @@ class AA_Module_Site extends AA_Module {
         return $this->_related_slices;
     }
 
+
     /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
      *  @param $module_id
      */
@@ -862,7 +863,7 @@ class AA_Modulesettings_Site extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, array('translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code'));
+        return in_array($prop, array('translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode'));
     }
 
     /** allows storing object in database
@@ -877,7 +878,8 @@ class AA_Modulesettings_Site extends AA_Object {
             'page404_code'    => new AA_Property( 'page404_code',     _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
             'sitemap_alias'   => new AA_Property( 'sitemap_alias',    _m("sitemap.xml alias"),       'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias shoud in each slice generate full url of the item. For private/hidden items it shopuld generate empty string in order the URL is not shown.')),
             'perm_alias'      => new AA_Property( 'perm_alias',       _m("Permission alias"),        'string', false, true, '', false, _m('You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word "Valid", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule.')),
-            'loginpage_code'  => new AA_Property( 'loginpage_code',   _m("HTML code for \"Login page\""), 'text', false, true)
+            'loginpage_code'  => new AA_Property( 'loginpage_code',   _m("HTML code for \"Login page\""), 'text', false, true),
+            'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),    'string', false, true, array('enum',  array('1'=>_m('first Reader Management slice listed in Uses slices'),'2'=>_m('all Reader Management slices listed in Uses slices'),'3'=>_m('AA + all Reader Management slices in AA (old behavior)'))), false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.'))
             );
     }
 }

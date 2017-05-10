@@ -431,14 +431,30 @@ require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 /** main AA permissions */
 class AA_Perm {
 
-    var $perm_systems;
+    private $perm_systems;
 
     function __construct($systems) {
         $this->perm_systems = array();
         foreach ($systems as $system_name) {
             $system_name = 'AA_Permsystem_' . ucfirst($system_name);
-            $this->perm_systems[] = new $system_name;
+            $this->perm_systems[$system_name] = new $system_name;
         }
+    }
+
+    /**
+     * perm_mode 1 - first Reader Management slice listed in Uses slices
+     *           2 - all Reader Management slices listed in Uses slices
+     *           3 - AA + all Reader Management slices in AA (old behavior)
+     *           First Reader Management slice is encouraged option - only the
+     *           people from this slice is allowed to login to public pages.
+     *           If not selected, "AA + all Reader Management slices" option is used.
+     */
+    function restrictPermsTo($rm_slices) {
+        $ps_rm = $this->perm_systems['AA_Permsystem_Reader'];
+        // restrict to slices
+        $ps_rm->restrictSlices($rm_slices);
+        // use just Reader slices
+        $this->perm_systems = array( 'AA_Permsystem_Reader' => $ps_rm );
     }
 
 
@@ -770,6 +786,8 @@ class AA_Permsystem {
 
 class AA_Permsystem_Reader extends AA_Permsystem {
 
+    private $rm_slices = null;
+
     /** userIdFormatMatches - is user id in correct format?
      *  we MUST use specific UIDs for every single Permission Type
      *  (it MUST be clear, which perm system is used just from the format of UID)
@@ -777,6 +795,11 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     function userIdFormatMatches($uid) {
         // Reader perms - long ID (32 hexa)
         return (guesstype($uid) == 'l');
+    }
+
+    /** restrict user search just to specific RM slice(s) */
+    function restrictSlices($rmslices) {
+        $this->rm_slices = $rmslices;
     }
 
     /** AuthenticateReaderUsername function
@@ -790,7 +813,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             return false;
         }
 
-        $user_id   = AA_Reader::name2Id($username);
+        $user_id   = AA_Reader::name2Id($username, $this->rm_slices);
         $user_info = GetAuthData( $user_id );
 
         if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
@@ -1008,7 +1031,7 @@ function GetAuthData( $user_id = false ) {
 
 class AA_Reader {
     function _find($field, $value, $slices, $bin ) {
-        if (!$slices) {
+        if (!is_array($slices)) {
             $slices  = getReaderSlices();
         }
         $aa_set = new AA_Set($slices, new AA_Condition($field, '=', $value), null, $bin);
