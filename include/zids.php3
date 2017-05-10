@@ -326,7 +326,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *
      */
     function use_short_ids() {
-        return ($this->type == "s");
+        return ($this->type == 's');
     }
 
     /** id function
@@ -424,28 +424,24 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $asis - returns the ids in long form (not packed even for 'l' type)
      */
     function sqlin( $column = 'short_or_long', $asis = false ) {
-        $id_arr = array();
+        $id_list = '';
         if ($this->count()) {
             if ( $column == 'short_or_long' ) {
                 $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
             }
-            if ( $asis ) {
-                $id_arr = $this->a;
-            } elseif ($this->use_short_ids()) {
-                $id_arr = $this->shortids();
+            if ( $asis OR ($this->type == 's') ) {
+                $id_list = join(",",array_map("qquote",$this->a));
             } else {
-                $id_arr = $this->packedids();
+                $id_list = join(",",array_map('xpack_id',$this->longids()));
             }
         }
-        if (!$id_arr) {  // false, null empty arr
+        if (!$id_list) {
             return $column ? '0' : ' = "" ';
         }
 
-        $id_list = implode(",",array_map("qquote", $id_arr));
-
         // '=' is much quicker than 'IN ()' in MySQL 4.0.x
         // - don't ask me why, please. Honza
-        return ((count($id_arr) == 1) ? " $column = $id_list " : " $column IN ($id_list) ");
+        return strpos($id_list,',') ? " $column IN ($id_list) ": " $column = $id_list ";
     }
 
     /** getFirstSlice function
@@ -628,12 +624,13 @@ function qqquote($str) {
  * @param $column
  * @param $values - array of values
  */
-function sqlin( $column, $values ) {
+function sqlin( $column, $values, $long=false ) {
+    $fce = $long ? 'xpack_id' : 'qquote';
     switch (count($values)) {
     case 0: return '0';
-    case 1: return "$column = ".qquote(reset($values));
+    case 1: return "$column = ".$fce(reset($values));
     }
-    return "$column IN (". implode(",",array_map("qquote", $values)). ')';
+    return "$column IN (". implode(",",array_map($fce, $values)). ')';
 }
 
 /** id_t2l function
