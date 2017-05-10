@@ -573,7 +573,10 @@ class AA_Item {
         // like f_d("start_date......", "mm-dd")
         $field_id = get_if($use_field, $ali_arr['param']);
         $param    = str_replace('_#this', '{'.$field_id.'}', $function['param']);
-        return $this->$fce($field_id, $param);
+        AA::$debug&8 && AA::$dbg->tracestart($fce, $param);
+        $ret = $this->$fce($field_id, $param);
+        AA::$debug&8 && AA::$dbg->traceend($fce, $ret);
+        return $ret;
     }
 
     /** substitute_alias_and_remove function
