@@ -762,7 +762,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     $n_items = 0;
 
     // returned ids (possibly removed items in trash, ...)
-    $packed_ids  = array();
+    $long_ids    = array();
     $unpermitted = array();
     $slices      = array();
     $content     = array();
@@ -774,7 +774,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         // proove permissions for password-read-protected slices
         $unpack_id                  = unpack_id($row['id']);
         $unpack_slice_id            = unpack_id($row['slice_id']);
-        $packed_ids[]               = $row['id'];
+        $long_ids[]                 = $unpack_id;
         $slices[$unpack_slice_id]   = true;   // mark slice for perm check
 
         // add special fields to all items (zids)
@@ -830,7 +830,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
     // construct WHERE query to content table
-    $new_sel_in = sqlin('item_id', $packed_ids);
+    $new_sel_in = sqlin('item_id', $long_ids, true);
 
     if ( is_array( $fields2get ) ) {
         switch ( count($content_fields) ) {
@@ -1086,7 +1086,10 @@ function url2bin($data) {
  */
 function HtmlPageBegin($js_lib=false, $lang=null) {
     AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang ?: get_mgettext_lang()];
-    AA::sendHeaders(AA::getHeaders());
+    $headers = AA::getHeaders();
+    // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
+    $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
+    AA::sendHeaders($headers);
     echo
 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
