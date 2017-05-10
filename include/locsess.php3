@@ -236,6 +236,9 @@ class AA {
         if (isset(AA::$headers['status'])) {
             $ret['status'] = AA::$headers['status'];
         }
+        if (isset(AA::$headers['disposition'])) {
+            $ret['disposition'] = 'Content-Disposition: '.AA::$headers['disposition'];
+        }
         return $ret;
     }
 
@@ -313,6 +316,8 @@ class DB_AA extends DB_Sql {
         $db = getDB();
         $query .= is_array($where) ? ' '.DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' '.DB_AA::makeOrder($order) : '';
+
+        AA::$debug && AA::$dbg->log("$query");
 
         $db->query($query);
 

@@ -919,7 +919,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
 
 
 /** Displays live search (search field and the list of matching articles) on html page
- *    {livesearch:<viev_param>[:<placeholder>[:<dafault_phrase>]]}
+ *    {livesearch:<view_param>[:<placeholder>[:<dafault_phrase>]]}
  *    {livesearch:3650}
  *    {livesearch:3650:search...:DoNotDisplayAnythingByDefault}
  *    {livesearch:3650&cmd[3650]=c-1-%22AA_LS_QUERY%22-2-publications:search for pubs...}
@@ -927,7 +927,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
  *  @param $view_param      - just view ID or whole view parameters. If whole parameters used, then you have to use AA_LS_QUERY
  *                            constant on the place, where you want to put search phrase
  *                            example:
- *                              3560
+ *                              3560       // first condition used as in c-1-%22AA_LS_QUERY%22
  *                              3650&cmd[3650]=c-1-%22AA_LS_QUERY%22-2-publications
  *  @param $placeholder     - placeholder text to search field
  *  @param $default         - the phrase to search if the search field is empty.
@@ -1240,7 +1240,7 @@ function parseLoop($out, &$item) {
             // we don't have format string, so we return
             // separated values by $separator (default is ", ")
             foreach ($val as $value) {
-                $ret_str = $ret_str . ($ret_str ? $separator : "") . $value;
+                $ret_str = $ret_str . (strlen(trim($ret_str)) ? $separator : "") . $value;
             }
         }
     } else { // we have format string
@@ -4648,6 +4648,9 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
 class AA_Stringexpander {
     protected $recursion_count = 0;
     protected $dependent_parts = array();
+    protected $postprocesess   = array();
+    protected $requires        = array();
+    protected $runscripts        = array();
 
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
@@ -4774,8 +4777,50 @@ class AA_Stringexpander {
         }
     }
 
+    /** replacement functions / filters */
+    function addPostpocess($key, $params='') {
+        $this->postprocesess[$key] = $params;
+    }
+
+    function addRequire($require) {
+        $this->requires[$require] = 1;
+    }
+
+    function addRunscript($script) {
+        $this->runscripts[] = $script;
+    }
+
+    function getRequireHead() {
+        return $this->requires ? with(new AA_Requires())->getLibs($this->requires) : '';
+    }
+    function getRequireFoot() {
+        if (!$this->runscripts) {
+            return '';
+        }
+        return '<script> document.addEventListener("DOMContentLoaded", function() { '. join("\n",$this->runscripts) .'});</script>';
+    }
+
     function postprocess($out) {
-        return $out;
+        $search_arr  = array();
+        $replace_arr = array();
+        foreach ($this->postprocesess as $search => $replace) {
+            switch ($search) {
+                case '':
+                    break;
+                case '<!--AAGenerateHEAD-->':
+                    $search_arr[]  = $search;
+                    $replace_arr[] = $this->getRequireHead();
+                    break;
+                case '<!--AAGenerateFOOT-->':
+                    $search_arr[]  = $search;
+                    $replace_arr[] = $this->getRequireFoot();
+                    break;
+                default:
+                    $search_arr[]  = $search;
+                    $replace_arr[] = $replace;
+            }
+        }
+        return count($search_arr) ? str_replace($search_arr, $replace_arr, $out) : $out;
     }
 
     function setDependentParts($slices, $hash, $code) {
@@ -4798,6 +4843,36 @@ class AA_Stringexpander {
             }
         }
         return $ret;
+    }
+}
+
+class AA_Requires {
+    private static $requires_arr = array(
+                          //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
+      'lightgallery'      => array('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery')),
+      'lightgallery@1'    => array('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery')),
+      'jquery'            => array('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f', array()),
+      'jquery@3'          => array('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f', array()),
+      '_css-lightgallery' => array('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', '', array())
+    );
+
+    function getLibs(array $libs) {
+        $retarr = array();
+        foreach (AA_Requires::$requires_arr as $script_id => $def) {
+            if ($libs[$script_id]) {
+                if (trim(substr($script_id,0,4),'_') == 'css') {
+                    $retarr[] = "<link rel=stylesheet href=\"$def[0]\" type=\"text/css\">";
+                } else {
+                    $retarr[] = "<script src=\"$def[0]\" integrity=\"$def[1]\" crossorigin=anonymous></script>";
+                }
+                // mark requires for this library
+                // the requires are ordered from particular script to global libraries in $requires_arr, so we can add depending libraries here without problem
+                foreach ($def[2] as $reqlib) {
+                    $libs[$reqlib] = 1;
+                }
+            }
+        }
+        return join("\n", array_reverse($retarr));  // reverse - first should goes the libraries, then particular depending scripts
     }
 }
 
@@ -5714,14 +5789,15 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
  * {header:{ifset:{xid}::404}}   - good example - never use something like {ifset:{xid}::{header:404}}!!!
  */
 class AA_Stringexpand_Header extends AA_Stringexpand {
-    function expand($header=null) {
+    function expand($header=null,$filename=null) {
         switch ($header) {
-        case '404': AA::$headers['status'] = 'HTTP/1.0 404 Not Found';
-                    break;
-        case 'xml': AA::$headers['type']   = 'text/xml';
-                    break;
-        case 'svg': AA::$headers['type']   = 'image/svg+xml';
-                    break;
+        case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';               break;
+        case 'xml':       AA::$headers['type']        = 'text/xml';                             break;
+        case 'svg':       AA::$headers['type']        = 'image/svg+xml';                        break;
+        case 'json':      AA::$headers['type']        = 'application/json';                     break;
+        case 'csv':       AA::$headers['type']        = 'text/csv';                             break;
+        case 'filename':  AA::$headers['disposition'] = 'attachment; filename="'.$filename.'"'; break;  // $filename should be escaped - JirkaR
+        case 'utf-8':     AA::$headers['encoding']    = 'utf-8';                                break;
         }
         return '';
     }
@@ -6461,6 +6537,46 @@ class AA_Stringexpand_Aabox extends AA_Stringexpand {
         return '';
     }
 
+}
+
+class AA_Stringexpand_Generate extends AA_Stringexpand_Nevercache {
+
+    /** expand function
+     * @param $section - HEAD | FOOT | ???
+     */
+    function expand($section='') {
+        $spotname = "<!--AAGenerate$section-->";
+        AA::Stringexpander()->addPostpocess($spotname);
+        return $spotname;
+    }
+}
+
+class AA_Stringexpand_Require extends AA_Stringexpand {
+    /** expand function
+     * @param $lib
+     * @param $script
+     */
+    function expand($lib='', $script='') {
+        if ($lib) {
+            AA::Stringexpander()->addRequire($lib);
+        }
+        if ($script) {
+            AA::Stringexpander()->addRunscript($script);
+        }
+        return '';
+    }
+}
+
+class AA_Stringexpand_Postreplace extends AA_Stringexpand {
+    /** expand function
+     * @param $search
+     * @param $replace
+     */
+    function expand($search='', $replace='') {
+        // not used yet - if you need it, just uncomment it and send it to SVN (I want to have free hands to adapt it for the first real ussage (REGEXP? ...) )
+        // AA::Stringexpander()->addPostpocess($search, $replace);
+        return '';
+    }
 }
 
 ?>
