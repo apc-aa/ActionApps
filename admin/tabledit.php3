@@ -31,7 +31,7 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
-require_once dirname(__FILE__). "/../include/init_page.php3";
+require_once __DIR__. "/../include/init_page.php3";
 require_once AA_INC_PATH."tabledit.php3";
 require_once menu_include();   //show navigation column depending on $show
 
