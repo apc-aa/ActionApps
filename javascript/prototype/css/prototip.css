@@ -1,64 +1,130 @@
-/* prototip.css : http://www.nickstakenburg.com/projects/prototip */
-.prototip { position: absolute; }
-.prototip .effectWrapper { position: relative; }
-.prototip .tooltip { position: relative; }
-.prototip .toolbar {
-	position: relative;
-	display: block;
-	}
-.prototip .toolbar .title {
-	display: block;
-	position: relative;
-	}
-.prototip .content { clear: both; }
-.prototip .toolbar a.close {
-	position: relative;
-	text-decoration: none;
-	float: right;
-	width: 15px;
-	height: 15px;
-	background: transparent url(close.gif);
-	display: block;
-	line-height: 0;
-	font-size: 0px;
-	border: 0;
-	}
-.prototip .toolbar a.close:hover { background: transparent url(close_hover.gif); }
-
-.iframeShim { 
-	position: absolute;
-	border: 0;
-	margin: 0;	
-    padding: 0;
-    background: none;
+/* CSS to go with Prototip.Styles */
+.prototip {
+    font: 11px Arial, Helvetica, sans-serif;
+    color: #000;
 }
 
-/* Tooltip styles */
-.prototip .default { width: 150px; color: #fff; }
-.prototip .default .toolbar { background: #0F6788; font: italic 17px Georgia, serif; }
+/* the default style */
+.prototip .default {
+    width: 250px;
+    color: #808080;
+}
+.prototip .default .toolbar {
+    background: #f1f1f1;
+    font-weight: bold;
+}
 .prototip .default .title { padding: 5px; }
-.prototip .default .content { background: dodgerblue; font: 11px Arial, Helvetica, sans-serif; padding: 5px;}
+.prototip .default .content {
+    padding: 5px;
+    background: #fff;
+}
 
-.prototip .pinktip { border: 5px solid #a1a1a1; }
-.prototip .pinktip .toolbar { background: #ff1e53; color: #fff; font: italic 17px Georgia, serif; }
-.prototip .pinktip .title { padding: 5px; }
-.prototip .pinktip .content { background: #fff; color: #555555; font: 11px Arial, Helvetica, sans-serif; padding: 5px; }
+/* basic */
+.prototip .basic {
+    width: 250px;
+    color: #808080;
+}
+.prototip .basic .toolbar {
+    background: #f1f1f1;
+    font-weight: bold;
+}
+.prototip .basic .title { padding: 5px; }
+.prototip .basic .content {
+    padding: 5px;
+    background: #fff;
+}
 
-.prototip .darktip { width: 250px; border: 5px solid #a1a1a1; }
-.prototip .darktip .toolbar { background: #606060; color: #fff; font: italic 17px Georgia, serif; }
-.prototip .darktip .toolbar a.close { background: url(close_hover.gif);}
-.prototip .darktip .toolbar a.close:hover { background: url(close.gif);}
-.prototip .darktip .title { padding: 5px;}
-.prototip .darktip .content { background: #808080; color: #fff; font: 11px Arial, Helvetica, sans-serif; padding: 5px; }
+/* basic */
+.prototip .hint {
+    width: 250px;
+    color: #313120;
+    background: #fff6aa;
+}
+.prototip .hint .toolbar {
+    background: #fdf1a0;
+    font-weight: bold;
+}
+.prototip .hint .title,
+.prototip .hint .content { padding: 5px; }
 
-.prototip .silver { width: 300px; border: 5px solid #cccccc; color: #fff; font: 11px Arial, Helvetica, sans-serif;}
-.prototip .silver .toolbar { background: #2e2e2e; color: #fff; font-weight: bold; }
-.prototip .silver .toolbar a.close:hover { background: url(close_hover_red.gif);}
-.prototip .silver .title { padding: 5px; }
-.prototip .silver .content { background: #fff; color: #666666; padding: 5px;}
+/* protoblue */
+.prototip .protoblue {
+    width: 250px;
+    color: #fff;
+}
+.prototip .protoblue .toolbar {
+    background: #0d7cd0;
+    font-weight: bold;
+}
+.prototip .protoblue .title { padding: 5px; }
+.prototip .protoblue .content {
+    background: #1e90ff;
+    padding: 5px;
+}
 
-.protoClassic { width: 300px; border: 5px solid #8c939c; }
-.protoClassic .toolbar { background: #96b8e2 url(classic_toolbar.gif) top left repeat-y; font-weight: bold; color: #fff;}
-.protoClassic .toolbar a.close:hover { background: url(close_hover_red.gif);}
-.protoClassic .title { padding: 5px; }
-.protoClassic .content { background: #fff; color: #333333; font: 11px Arial, Helvetica, sans-serif; padding: 5px; }
+/* creamy */
+.prototip .creamy {
+    width: 250px;
+    color: #bb9c61;
+}
+.prototip .creamy .toolbar {
+    background: #f3edc2;
+    font-weight: bold;
+}
+.prototip .creamy .title { padding: 5px; }
+.prototip .creamy .content {
+    background: #f8f4ca;
+    padding: 5px;
+}
+
+/* darkgrey */
+.prototip .darkgrey {
+    width: 250px;
+    color: #fff;
+}
+.prototip .darkgrey .toolbar {
+    background: #5f5f5f;
+    font-weight: bold;
+}
+.prototip .darkgrey .title { padding: 5px; }
+.prototip .darkgrey .content {
+    background: #808080;
+    padding: 5px;
+}
+
+/* protogrey */
+.prototip .protogrey {
+    width: 250px;
+    color: #fff;
+    background: #fff;
+}
+.prototip .protogrey .toolbar {
+    background: #969c92;
+    font-weight: bold;
+}
+.prototip .protogrey .title { padding: 5px; }
+.prototip .protogrey .content {
+    color: #808080;
+    padding: 5px;
+}
+/* This is how to resize the close button for a style */
+.prototip .protogrey .toolbar .close {
+    width: 14px;
+    height: 14px;
+}
+
+
+/* loader gif */
+.prototipLoader {
+    position: absolute;
+    top: -1000px;
+    left: -1000px;
+    height: 14px;
+    width: 14px;
+    border: 1px solid #dddddd;
+    overflow: hidden;
+}
+
+
+/* Required for all tooltips, do not modify */
+.prototip{position:absolute;overflow:hidden;}.prototip .tooltip,.prototip .toolbar,.prototip .toolbar .title{position:relative;}.prototip .content{clear:both;}.prototip .toolbar .close{position:relative;text-decoration:none;float:right;width:19px;height:15px;display:block;line-height:0;font-size:0;border:0;cursor:pointer;}.prototip .tooltip{clear:both;float:left;}.prototip .borderLeftWrapper,.prototip .borderRightWrapper{position:absolute;top:0;left:0;width:300px;height:20px;}.prototip .borderFrame{height:100%;width:100%;float:left;margin:0;padding:0;position:relative;}.prototip .borderTop,.prototip .borderBottom{overflow:hidden;}.prototip .borderRow{list-style-type:none;float:left;width:100%;position:relative;clear:both;margin:0;padding:0;}.prototip_CornerWrapper{position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:0;clear:both;}.prototip_Corner{float:left;position:relative;}.prototip canvas{position:relative;float:left;}.prototip_CornerTr,.prototip_CornerBr{float:right;}.prototip_BetweenCorners{position:absolute;top:0;left:0;width:100%;overflow:hidden;clear:both;}.prototip .borderMiddle{position:relative;float:left;}.prototip .borderCenter{position:relative;float:left;height:100%;}.prototip_StemWrapper{position:relative;width:100%;height:auto;clear:both;}.prototip_StemBox{float:left;position:relative;}.prototip_Stem{width:100%;position:absolute;overflow:hidden;}.iframeShim{position:absolute;border:0;margin:0;padding:0;background:none;overflow:hidden;}.prototip .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}.prototip .clearfix{display:inline-block;}/* IE Mac Hide \*/ .prototip .clearfix{display:block;}/* IE Mac Hide End */
