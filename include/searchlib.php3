@@ -852,123 +852,155 @@ function getSortFromUrl( $sort ) {
     return $set->getSort();
 }
 
+
+class AA_Dbcondition {
+
+    private $field;             // string
+    private $operator;          // string
+    private $querystring;       // string
+    private $condition = null;
+    private $jointype  = null;
+
+    function __construct($field, $operator, $querystring) {
+        $this->field       = trim($field);
+
+        // normalize operator
+        // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
+        // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
+        $this->operator    = str_replace(array('#:',':','&gt;','&lt;'),array('','','>','<'), trim($operator)); // #: - fix mistaken escaping of d#:>...
+
+        $this->querystring = $querystring;
+
+        $arr = $this->_calculate();
+        $this->jointype  = $arr[0];
+        $this->condition = $arr[1];
+    }
+
+    function getWhereExp() { return $this->condition; }
+    function getJoinType() { return $this->jointype;  }
+
+    function _calculate() {
+        AA::$debug&64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring );
+
+        $field       = $this->field;
+        $operator    = $this->operator;
+        $querystring = $this->querystring;
+
+
+        // check for illegal characters in filed_id
+        if (strlen($field) != strspn($field,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
+            return array('NONE', '1=0');
+        }
+
+        if ($operator == '==') {
+            return array('INNER', " ($field = '". str_replace("'","\'",$querystring) ."') ");  // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
+        }
+
+        // query string could be slashed - sometimes :-(
+        // However - if the string starts with ", then it is never
+        // slashed, for sure
+        // @todo remove stripslashes for AA3.0 - Honza
+        //    if ( substr($querystring,0,1) != '"') {
+        //        $querystring = stripslashes( $querystring );
+        //    }
+
+        $querystring = stripslashes( $querystring );
+
+        // search operator for functions (some operators can be in function:operator
+        // fomat - the function is called to $querystring (good for date transform ...)
+        if ( in_array($operator[0],array('d','e','m')) ) {
+            $func        = $operator[0];
+            $operator    = substr($operator,1);
+            $querystring = trim($querystring, '"');
+
+            switch( $func ) {
+                case 'd': // english style datum (like '12/31/2001' or '10 September 2000')
+                    $querystring = strtotime($querystring);
+                    break;
+                case 'e': // european datum style (like 24. 12. 2001)
+                    if ( !preg_match("/^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$/", $querystring, $part)) {
+                        if ( !preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$/", $querystring, $part)) {
+                            if ( !preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$/", $querystring, $part)) {
+                                $querystring = time();
+                                break;
+                            }
+                        }
+                    }
+                    if ( ($operator == "<=") or ($operator == ">") ) {
+                        // end of day used for some operators
+                        $querystring = mktime(23,59,59,$part[2],$part[1],$part[3]);
+                    } else {
+                        $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
+                    }
+                    break;
+                case 'm':
+                case '-':
+                    $querystring = time() - $querystring;
+                    break;
+            }
+        }
+
+        $querystring =  (string)$querystring;   // to be able to do string operations
+        $cleanstr    = quote( (($querystring[0] == '"') OR ($querystring[0] == "'")) ? substr( $querystring, 1, -1 ) : $querystring);
+
+        switch( $operator ) {
+            case 'LIKE':
+            case 'RLIKE':
+            case 'LLIKE':
+            case 'XLIKE':
+                // @todo - I do not like this part of code, which means, that you
+                // can use '%' as well as '*'
+                // I think we should escape all the % and _ and allow it only for
+                // say XLIKE
+                $querystring = str_replace('*', '%', trim($querystring));
+                $querystring = str_replace('?', '_', $querystring);
+                // continue!
+            case '=':
+                // it is not possible to use wildcard characers with '='
+                $syntax      = new Syntax($field, $operator, lex( trim($querystring) ) );
+
+                // ret will be quoted
+                $ret         = $syntax->S();
+                if ( $ret == "_SYNTAX_ERROR" ) {
+                    if ( $GLOBALS['debug'] ) {
+                        echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
+                    }
+                    return array('ALL', "1=1");
+                }
+                return ( $ret ? array('INNER', " ($ret) ") : array('ALL', "1=1") );   // maybe we can change LEFT to INNER
+            case 'BETWEEN':
+                $arr = explode( ",", quote($querystring) );
+                return  array('INNER', " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
+            case 'ISNULL':    return array('LEFT',  " (($field IS NULL) OR ($field='')) ");
+            case 'NOTNULL':   return array('INNER', " (($field IS NOT NULL) AND ($field<>'')) ");
+            case 'ISMAIL':    return array('INNER', " ($field REGEXP '". quote(AA_REGEXP_MAIL). "') ");
+            case 'REGEXP':    return array('INNER', " ($field REGEXP '". quote($querystring). "') ");
+            case 'NOTMAIL':   return array('LEFT',  " ($field NOT REGEXP '". quote(AA_REGEXP_MAIL). "') ");
+            case 'NOTREGEXP': return array('LEFT',  " ($field NOT REGEXP '". quote($querystring). "') ");
+    //      case '<=>':  //MySQL know this operator, but we do not use it in AA
+    //      MariDB doc: NULL values cannot be used with most comparison operators. For example, =, >, >=, <=, <, or != cannot be used, as any comparison with a NULL always returns a NULL value, never true (1) or false (0).
+    //        - so we can use INNER join
+            case '<>' :       return array('LEFT', " ($field $operator '$cleanstr') ");
+            case '!=' :       return array('LEFT', " ($field $operator '$cleanstr') ");
+            case '<=' :       return array('LEFT', " ($field $operator '$cleanstr') ");
+            case '<'  :       return array('LEFT', " ($field $operator '$cleanstr') ");
+            case '>=' :       return array('LEFT', " ($field $operator '$cleanstr') ");
+            case '>'  :       return array('LEFT', " ($field $operator '$cleanstr') ");
+        }
+        return array('ALL', "1=1");
+    }
+
+}
+
+
 /** GetWhereExp function
  * @param $field
  * @param $operator
  * @param $querystring
+ * @deprecated - use AA_Dbcondition directly
  */
 function GetWhereExp( $field, $operator, $querystring ) {
-    AA::$debug&64 && AA::$dbg->log('GetWhereExp', $field, $operator, $querystring );
-
-    $field = trim($field);
-
-    // check for illegal characters in filed_id
-    if (strlen($field) != strspn($field,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
-        return '1=0';
-    }
-
-    // normalize operator
-    // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
-    // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
-    $operator = str_replace(array('#:',':','&gt;','&lt;'),array('','','>','<'), trim($operator));   // #: - fix mistaken escaping of d#:>...
-
-    if ($operator == '==') {
-        return " ($field = '". str_replace("'","\'",$querystring) ."') ";         // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
-    }
-
-    // query string could be slashed - sometimes :-(
-    // However - if the string starts with ", then it is never
-    // slashed, for sure
-    // @todo remove stripslashes for AA3.0 - Honza
-    //    if ( substr($querystring,0,1) != '"') {
-    //        $querystring = stripslashes( $querystring );
-    //    }
-
-    $querystring = stripslashes( $querystring );
-
-    // search operator for functions (some operators can be in function:operator
-    // fomat - the function is called to $querystring (good for date transform ...)
-    if ( in_array($operator[0],array('d','e','m')) ) {
-        $func        = $operator[0];
-        $operator    = substr($operator,1);
-        $querystring = trim($querystring, '"');
-
-        switch( $func ) {
-            case 'd': // english style datum (like '12/31/2001' or '10 September 2000')
-                $querystring = strtotime($querystring);
-                break;
-            case 'e': // european datum style (like 24. 12. 2001)
-                if ( !preg_match("/^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$/", $querystring, $part)) {
-                    if ( !preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$/", $querystring, $part)) {
-                        if ( !preg_match("/^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$/", $querystring, $part)) {
-                            $querystring = time();
-                            break;
-                        }
-                    }
-                }
-                if ( ($operator == "<=") or ($operator == ">") ) {
-                    // end of day used for some operators
-                    $querystring = mktime(23,59,59,$part[2],$part[1],$part[3]);
-                } else {
-                    $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
-                }
-                break;
-            case 'm':
-            case '-':
-                $querystring = time() - $querystring;
-                break;
-        }
-    }
-
-    $querystring =  (string)$querystring;   // to be able to do string operations
-
-    switch( $operator ) {
-        case 'LIKE':
-        case 'RLIKE':
-        case 'LLIKE':
-        case 'XLIKE':
-            // @todo - I do not like this part of code, which means, that you
-            // can use '%' as well as '*'
-            // I think we should escape all the % and _ and allow it only for
-            // say XLIKE
-            $querystring = str_replace('*', '%', trim($querystring));
-            $querystring = str_replace('?', '_', $querystring);
-            // continue!
-        case '=':
-            // it is not possible to use wildcard characers with '='
-            $syntax      = new Syntax($field, $operator, lex( trim($querystring) ) );
-
-            // ret will be quoted
-            $ret         = $syntax->S();
-            if ( $ret == "_SYNTAX_ERROR" ) {
-                if ( $GLOBALS['debug'] ) {
-                    echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
-                }
-                return "1=1";
-            }
-            return ( $ret ? " ($ret) " : "1=1" );
-        case 'BETWEEN':
-            $arr = explode( ",", quote($querystring) );
-            return  " (($field >= $arr[0]) AND ($field <= $arr[1])) ";
-        case 'ISNULL':    return " (($field IS NULL) OR ($field='')) ";
-        case 'NOTNULL':   return " (($field IS NOT NULL) AND ($field<>'')) ";
-        case 'ISMAIL':    $querystring = AA_REGEXP_MAIL;
-                          // continue!
-        case 'REGEXP':    return " ($field REGEXP '". quote($querystring). "') ";
-        case 'NOTMAIL':   $querystring = AA_REGEXP_MAIL;
-                          // continue!
-        case 'NOTREGEXP': return " ($field NOT REGEXP '". quote($querystring). "') ";
-//      case '<=>':  //MySQL know this operator, but we do not use it in AA
-        case '<>' :
-        case '!=' :
-        case '<=' :
-        case '<'  :
-        case '>=' :
-        case '>'  :
-            $str = quote( (($querystring[0] == '"') OR ($querystring[0] == "'")) ? substr( $querystring, 1, -1 ) : $querystring);
-            return " ($field $operator '$str') ";
-    }
-    return "1=1";
+    return with(new AA_Dbcondition($field, $operator, $querystring))->getWhereExp();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1537,24 +1569,34 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                     $store      = $field->storageColumn();
                 }
             }
-            if ( $cond_flds != '' ) {
-                $tbl = 'c'.$tbl_count++;
-                // fill arrays to be able construct select command
-                $select_conds[] = GetWhereExp( "$tbl.$store", $cond['operator'], $cond['value'] );
 
-                if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
-                    $select_tabs[] = "LEFT JOIN content as $tbl
-                                      ON ($tbl.item_id=item.id)";
-                } elseif ($field_count>1) {
-                    $select_tabs[] = "LEFT JOIN content as $tbl
-                                      ON ($tbl.item_id=item.id
-                                      AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
+            if ( $cond_flds != '' ) {
+
+                $dbcond = new AA_Dbcondition('c'.$tbl_count.".$store", $cond['operator'], $cond['value']);
+                $dbcjointype = $dbcond->getJoinType();
+                if ($dbcjointype == 'ALL') {
+                    // nothing;
+                } elseif ($dbcjointype == 'NONE') {
+                    $select_conds[] = '1=0';
                 } else {
-                    $select_tabs[] = "LEFT JOIN content as $tbl
-                                      ON ($tbl.item_id=item.id
-                                      AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
-                    // mark this field as sortable (store without apostrofs)
-                    $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
+                    // INNER / LEFT
+                    $tbl = 'c'.$tbl_count++;
+
+                    $selprefix  = ($dbcjointype == 'INNER') ? 'INNER' : 'LEFT';
+                    $selcondadd = ($dbcjointype == 'INNER') ? '' : "OR $tbl.field_id is NULL";
+
+                    // fill arrays to be able construct select command
+                    $select_conds[] = $dbcond->getWhereExp();
+
+                    if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id)";
+                    } elseif ($field_count>1) {
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd))";
+                    } else {
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd))";
+                        // mark this field as sortable (store without apostrofs)
+                        $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
+                    }
                 }
             }
         }
