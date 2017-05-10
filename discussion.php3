@@ -87,7 +87,6 @@ require_once AA_INC_PATH."pagecache.php3";
 /** functions for searching and filtering items */
 require_once AA_INC_PATH."searchlib.php3";
 /** Main include file for using session management function on page */
-$encap = true; // just for calling extsessi.php
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
@@ -113,7 +112,10 @@ $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
     $cacheentry->processPage();
 } else {
-    list($page_content, $cache_sid) = GetViewFromDB($view_param, true);
+    $showview     = new AA_Showview($view_param);
+    $page_content = $showview->getViewOutput();
+    $cache_sid    = $showview->lastUsedSliceId();
+
     $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage();
 

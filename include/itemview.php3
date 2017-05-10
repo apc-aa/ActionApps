@@ -608,7 +608,7 @@ class itemview {
         for ( $i=0; $i<$number_of_ids; ++$i ) {
             // display banner, if you have to
             if ( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
-                $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
+                $out .= with(new AA_Showview(ParseViewParameters($this->slice_info['banner_parameters'])))->getViewOutput();
             }
 
             $zidx = $this->from_record+$i;

@@ -544,327 +544,317 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 }
 
 
-/** GetView function
- *  Expand a set of view parameters, and return the view
- * @param $view_param
- */
-function GetView($view_param) {
-    global $nocache;
 
-    //create keystring from values, which exactly identifies resulting content
-    $key = get_hash($view_param, PageCache::globalKeyArray());
+class AA_Showview {
+    protected $_view_param    = array();
+    protected $_used_slice_id = null;
+    protected $_hit_id        = null;
 
-    if ( $res = $GLOBALS['pagecache']->get($key, $nocache) ) {
-        return $res;
+    function __construct($view_param) {
+        $this->_view_param = $view_param;
     }
 
-    global $str2find_passon, $pagecache;
-    $str2find_save         = $str2find_passon;    // Save str2find from same level
-    $str2find_passon       = new CacheStr2find(); // clear it for caches stored further down
-    list($res, $cache_sid) = GetViewFromDB($view_param, true);
-    $str2find_passon->add($cache_sid, 'slice_id');
-    $pagecache->store($key, $res, $str2find_passon);
-    $str2find_passon->add_str2find($str2find_save); // and append saved for above
-    return $res;
-}
+    function getViewOutput() {
+        $vid           = $this->_view_param["vid"];
+        $als           = $this->_view_param["als"];
+        $conds         = $this->_view_param["conds"];
+        $slices        = $this->_view_param["slices"];
+        $param_conds   = $this->_view_param["param_conds"];
+        $param_sort    = array('sort'        => $this->_view_param["sort"],
+                               'group_by'    => $this->_view_param["group_by"],
+                               'group_limit' => $this->_view_param["group_limit"]);
+        $category_id   = $this->_view_param['cat'];
+        // $item_ids   = $this->_view_param["item_ids"];
+        $zids          = $this->_view_param["zids"];
+        //  $use_short_ids = $this->_view_param["use_short_ids"];
+        $list_page     = $this->_view_param["page"];
+        if ( $this->_view_param["random"] ) {
+            $random    = (($this->_view_param["random"]==1) ? 'random' : 'random:'.$this->_view_param["random"]);
+        }
 
-// Return view result based on parameters,
-function GetViewFromDB($view_param, $return_with_slice_ids=false) {
-    $vid           = $view_param["vid"];
-    $als           = $view_param["als"];
-    $conds         = $view_param["conds"];
-    $slices        = $view_param["slices"];
-    $param_conds   = $view_param["param_conds"];
-    $param_sort    = array('sort'        => $view_param["sort"],
-                           'group_by'    => $view_param["group_by"],
-                           'group_limit' => $view_param["group_limit"]);
-    $category_id   = $view_param['cat'];
-    // $item_ids   = $view_param["item_ids"];
-    $zids          = $view_param["zids"];
-    //  $use_short_ids = $view_param["use_short_ids"];
-    $list_page     = $view_param["page"];
-    if ( $view_param["random"] ) {
-        $random    = (($view_param["random"]==1) ? 'random' : 'random:'.$view_param["random"]);
-    }
+        $selected_item = $this->_view_param["selected"];      // used for boolean (1|0) _#SELECTED
 
-    $selected_item = $view_param["selected"];      // used for boolean (1|0) _#SELECTED
+        AA::$debug && AA::$dbg->group("view_$vid".'_'.($dbgtime=microtime(true)));
 
-    AA::$debug && AA::$dbg->group("view_$vid".'_'.($dbgtime=microtime(true)));
+        // alias - =1 for selected item
+        // gets view data
+        $view      = AA_Views::getView($vid);
+        $view_info = $view->getViewInfo();
 
-    // alias - =1 for selected item
-    // gets view data
-    $view      = AA_Views::getView($vid);
-    $view_info = $view->getViewInfo();
+        if (!$view->isValid()) {
+            AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+            return false;
+        }
 
-    if (!$view->isValid()) {
-        AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
-        return false;
-    }
+        // Use right language (from slice settings) - languages are used for
+        // 'No item found', Next, ... messages
+        // Do not load new language if we are in sitemodule - languages are handled
+        // there
+        if (!isset($GLOBALS['apc_state']['router'])) {
+            mgettext_bind($view->getLang(), 'output');
+        }
+        if (!AA::$langnum) { // for multilingual content (not defined when called from view.php3, or cron.php3 mail, ...)
+            AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
+            AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+        }
 
-    // Use right language (from slice settings) - languages are used for
-    // 'No item found', Next, ... messages
-    // Do not load new language if we are in sitemodule - languages are handled
-    // there
-    if (!isset($GLOBALS['apc_state']['router'])) {
-        mgettext_bind($view->getLang(), 'output');
-    }
-    if (!AA::$langnum) { // for multilingual content (not defined when called from view.php3, or cron.php3 mail, ...)
-        AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
-    }
+        $noitem_msg = (isset($this->_view_param["noitem"]) ? $this->_view_param["noitem"] :
+                       ( ((strlen($view->f('noitem_msg')) > 0) ) ?
+                       str_replace( '<!--Vacuum-->', '', $view->f('noitem_msg')) :
+                                         ("<div>"._m("No item found") ."</div>")));
 
-    $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
-                   ( ((strlen($view->f('noitem_msg')) > 0) ) ?
-                   str_replace( '<!--Vacuum-->', '', $view->f('noitem_msg')) :
-                                     ("<div>"._m("No item found") ."</div>")));
+        $view->setBannerParam(ParseBannerParam($this->_view_param["banner"]));  // if banner set format
 
-    $view->setBannerParam(ParseBannerParam($view_param["banner"]));  // if banner set format
+        $listlen    = $this->_view_param["listlen"] ?: $view->f('listlen');
 
-    $listlen    = $view_param["listlen"] ?: $view->f('listlen');
+        if ($this->_view_param["slice_id"]) {
+            $view_info["slice_id"] = pack_id($this->_view_param["slice_id"]);  // packed,not quoted
+            $slice_id = $this->_view_param["slice_id"]; // unpacked
+        } else {
+            $slice_id = unpack_id($view_info["slice_id"]);
+        }
 
-    if ($view_param["slice_id"]) {
-        $view_info["slice_id"] = pack_id($view_param["slice_id"]);  // packed,not quoted
-        $slice_id = $view_param["slice_id"]; // unpacked
-    } else {
-        $slice_id = unpack_id($view_info["slice_id"]);
-    }
+        // At this point, view_info["slice_id"] = $slice_id
+        // and view_param[slice_id] is empty or same
 
-    // At this point, view_info["slice_id"] = $slice_id
-    // and view_param[slice_id] is empty or same
+        $this->_used_slice_id = $slice_id;     // pass back to GetView (passed by reference)
+        if (!AA::$site_id AND !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
+            AA::$slice_id = $slice_id;
+        }
 
-    $cache_sid = $slice_id;     // pass back to GetView (passed by reference)
-    if (!AA::$site_id AND !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
-        AA::$slice_id = $slice_id;
-    }
+        // ---- display content in according to view type ----
+        AA::$debug && AA::$dbg->log("getViewOutput:view_info=",$view_info);
 
-    // ---- display content in according to view type ----
-    AA::$debug && AA::$dbg->log("GetViewFromDB:view_info=",$view_info);
-
-    switch( $view_info['type'] ) {
-        case 'discus':
-            // create array of discussion parameters
-            $disc = array('ids'         => ($view_param["all_ids"] ? "" : $view_param["ids"]),
-                          'item_id'     => $view_param["sh_itm"],
-                          'vid'         => $vid,
-                          'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
-                          'parent_id'   => $view_param["parent_id"],
-                          'disc_ids'    => $view_param["disc_ids"]);
-            if (($view_param["disc_type"] == "list") || is_array($view_param["disc_ids"])) {
-                $disc['type'] = "list";
-            } elseif ($view_param["add_disc"]) {
-                $disc['type'] = "adddisc";
-            } elseif ($view_param["sel_ids"] || $view_param["all_ids"]) {
-                $disc['type'] = "fulltext";
-            } else {
-                $disc['type'] = "thread";
-            }
-            $aliases = GetDiscussionAliases();
-
-            $format = GetDiscussionFormat($view_info);
-            // This is probably a bug, I think it should be
-            //  $format['slice_id'] = pack_id($slice_id); // packed, not quoted
-            //  Re: No, it is not bug - format normaly holds data from slice table,
-            //      where id of slice is stored in 'id' column (honzam)
-
-            $format['id'] = pack_id($slice_id);                  // set slice_id because of caching
-                                                                 // not needed probably - we no longer call get_output_cached here
-
-            // special url parameter disc_url - tell us, where we have to show
-            // discussion fulltext (good for discussion search)
-            $durl = ( $view_param["disc_url"] ? $view_param["disc_url"] : shtml_url());
-            // add state variable, if defined (apc - AA Pointer Cache)
-            if ( $GLOBALS['apc_state'] AND !$GLOBALS['apc_state']['router'] ) {
-                $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
-            }
-
-            $itemview = new itemview($format,'',$aliases,null,"","",$durl, $disc);
-            $ret      = $itemview->get_output("discussion");
-            break;
-
-        case 'links':              // links       (module Links)
-        case 'categories':         // categories  (module Likns)
-        case 'const':              // constants
-            if ( !$category_id ) {
-                $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
-            }
-            $format    = $view->getViewFormat($selected_item);
-            $aliases   = GetAliases4Type($view_info['type'],$als);
-            if (!$conds) {          // conds could be defined via cmd[]=d command
-                $conds = GetViewConds($view_info, $param_conds);
-            }
-            $sort      = GetViewSort($view_info, $param_sort);
-            if ( $view_info['type'] == 'const' ) {
-                $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
-                $content_function = 'GetConstantContent';
-            } elseif ( ($view_info['type'] == 'links') AND $category_id ) {
-                $cat_path = Links_GetCategoryColumn( $category_id, 'path');
-                if ( $cat_path ) {
-                    $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $view_param['show_subcat']);
-                    $content_function = 'Links_GetLinkContent';
+        switch( $view_info['type'] ) {
+            case 'discus':
+                // create array of discussion parameters
+                $disc = array('ids'         => ($this->_view_param["all_ids"] ? "" : $this->_view_param["ids"]),
+                              'item_id'     => $this->_view_param["sh_itm"],
+                              'vid'         => $vid,
+                              'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
+                              'parent_id'   => $this->_view_param["parent_id"],
+                              'disc_ids'    => $this->_view_param["disc_ids"]);
+                if (($this->_view_param["disc_type"] == "list") || is_array($this->_view_param["disc_ids"])) {
+                    $disc['type'] = "list";
+                } elseif ($this->_view_param["add_disc"]) {
+                    $disc['type'] = "adddisc";
+                } elseif ($this->_view_param["sel_ids"] || $this->_view_param["all_ids"]) {
+                    $disc['type'] = "fulltext";
+                } else {
+                    $disc['type'] = "thread";
                 }
-            } elseif ( ($view_info['type'] == 'categories') AND $category_id ) {
-                $zids             = Links_QueryCatZIDs($category_id, $conds, $sort, $view_param['show_subcat']);
-                $content_function = 'Links_GetCategoryContent';
-            }
+                $aliases = GetDiscussionAliases();
 
-            list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids->count(), $random);
+                $format = GetDiscussionFormat($view_info);
+                // This is probably a bug, I think it should be
+                //  $format['slice_id'] = pack_id($slice_id); // packed, not quoted
+                //  Re: No, it is not bug - format normaly holds data from slice table,
+                //      where id of slice is stored in 'id' column (honzam)
 
-            $itemview = new itemview( $format, '', $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
-            $itemview->parameter('category_id', $category_id);
-            $itemview->parameter('start_cat',   $view_param['start_cat']);
+                $format['id'] = pack_id($slice_id);                  // set slice_id because of caching
+                                                                     // not needed probably - we no longer call get_output_cached here
 
-            if ( !isset($zids) || $zids->count() <= 0) {
-                $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
+                // special url parameter disc_url - tell us, where we have to show
+                // discussion fulltext (good for discussion search)
+                $durl = ( $this->_view_param["disc_url"] ? $this->_view_param["disc_url"] : shtml_url());
+                // add state variable, if defined (apc - AA Pointer Cache)
+                if ( $GLOBALS['apc_state'] AND !$GLOBALS['apc_state']['router'] ) {
+                    $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
+                }
+
+                $itemview = new itemview($format,'',$aliases,null,"","",$durl, $disc);
+                $ret      = $itemview->get_output("discussion");
                 break;
-            }
 
-            $ret = $itemview->get_output();
-            break;
+            case 'links':              // links       (module Links)
+            case 'categories':         // categories  (module Likns)
+            case 'const':              // constants
+                if ( !$category_id ) {
+                    $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
+                }
+                $format    = $view->getViewFormat($selected_item);
+                $aliases   = GetAliases4Type($view_info['type'],$als);
+                if (!$conds) {          // conds could be defined via cmd[]=d command
+                    $conds = GetViewConds($view_info, $param_conds);
+                }
+                $sort      = GetViewSort($view_info, $param_sort);
+                if ( $view_info['type'] == 'const' ) {
+                    $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
+                    $content_function = 'GetConstantContent';
+                } elseif ( ($view_info['type'] == 'links') AND $category_id ) {
+                    $cat_path = Links_GetCategoryColumn( $category_id, 'path');
+                    if ( $cat_path ) {
+                        $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $this->_view_param['show_subcat']);
+                        $content_function = 'Links_GetLinkContent';
+                    }
+                } elseif ( ($view_info['type'] == 'categories') AND $category_id ) {
+                    $zids             = Links_QueryCatZIDs($category_id, $conds, $sort, $this->_view_param['show_subcat']);
+                    $content_function = 'Links_GetCategoryContent';
+                }
 
-        case 'full':  // parameters: zids, als
-            $format = $view->getViewFormat($selected_item);
-            if ( isset($zids) AND ($zids->count() > 0) ) {
-                $slice  = AA_Slice::getModule($slice_id);
-                //mlx stuff
-                if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
-                    $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
+                list( $listlen, $list_from ) = GetListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids->count(), $random);
+
+                $itemview = new itemview( $format, '', $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
+                $itemview->parameter('category_id', $category_id);
+                $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
+
+                if ( !isset($zids) || $zids->count() <= 0) {
+                    $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
+                    break;
+                }
+
+                $ret = $itemview->get_output();
+                break;
+
+            case 'full':  // parameters: zids, als
+                $format = $view->getViewFormat($selected_item);
+                if ( isset($zids) AND ($zids->count() > 0) ) {
+                    $slice  = AA_Slice::getModule($slice_id);
+                    //mlx stuff
+                    if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
+                        $mlx = ($this->_view_param["mlx"]?$this->_view_param["mlx"]:$this->_view_param["MLX"]);
+                        //make sure the lang info doesnt get reused with different view
+                        $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
+                        $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
+                        $zids3 = new zids($zids->longids());
+                        $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
+                        $zids->a    = $zids3->a;
+                        $zids->type = $zids3->type;
+                    }
+                    $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
+                    $ret      = $itemview->get_output("view");
+                } else {
+                    $ret      = AA::Stringexpander()->unalias($noitem_msg);
+                }
+                break;
+
+            case 'seetoo':
+            case 'calendar':
+                $today = getdate();
+                $month = $this->_view_param['month'];
+                if ($month < 1 || $month > 12) {
+                    $month = $today['mon'];
+                }
+                $year = $this->_view_param['year'];
+                if ($year < 1900 || $year > 3000) {
+                    $year = $today['year'];
+                }
+                $calendar_conds = array (array( 'operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1 ),
+                                         array( 'operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1 ));
+                // Note drops through to next case
+
+    //        case 'full':  // parameters: zids, als
+            case 'digest':
+            case 'list':
+            case 'rss':
+            case 'urls':
+            case 'script':  // parameters: conds, param_conds, als
+                if ($view_info['type'] == 'rss') {
+                    AA::$headers['type'] = 'text/xml';
+                }
+
+                if ( !$conds ) {        // conds could be defined via cmd[]=d command
+                    $conds = GetViewConds($view_info, $param_conds);
+                }
+                // merge $conds with $calendar_conds
+                if (is_array($calendar_conds)) {
+                    foreach ($calendar_conds as $v) {
+                        $conds[] = $v;
+                    }
+                }
+
+                $slice   = AA_Slice::getModule($slice_id);
+                $aliases = array_merge($slice->aliases($als), GetViewAliases($conds));
+
+                if (is_array($slices)) {
+                    foreach ($slices as $sid) {
+                        if ($m = AA_Slice::getModule($sid)) {
+                            $aliases[q_pack_id($sid)] = $m->aliases($als);
+                        }
+                    }
+                }
+
+                $sort  = GetViewSort($view_info, $param_sort);
+
+                AA::$debug && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
+
+                if ($mlxslice = MLXSlice($slice)) {
+                    $mlx = $this->_view_param["mlx"] ?: $this->_view_param["MLX"];
                     //make sure the lang info doesnt get reused with different view
                     $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
                     $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
-                    $zids3 = new zids($zids->longids());
-                    $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
-                    $zids->a    = $zids3->a;
-                    $zids->type = $zids3->type;
                 }
-                $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
-                $ret      = $itemview->get_output("view");
-            } else {
-                $ret      = AA::Stringexpander()->unalias($noitem_msg);
-            }
-            break;
+                $zids2 = QueryZIDs($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", 0, $zids);
 
-        case 'seetoo':
-        case 'calendar':
-            $today = getdate();
-            $month = $view_param['month'];
-            if ($month < 1 || $month > 12) {
-                $month = $today['mon'];
-            }
-            $year = $view_param['year'];
-            if ($year < 1900 || $year > 3000) {
-                $year = $today['year'];
-            }
-            $calendar_conds = array (array( 'operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1 ),
-                                     array( 'operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1 ));
-            // Note drops through to next case
-
-//        case 'full':  // parameters: zids, als
-        case 'digest':
-        case 'list':
-        case 'rss':
-        case 'urls':
-        case 'script':  // parameters: conds, param_conds, als
-            if ($view_info['type'] == 'rss') {
-                AA::$headers['type'] = 'text/xml';
-            }
-
-            if ( !$conds ) {        // conds could be defined via cmd[]=d command
-                $conds = GetViewConds($view_info, $param_conds);
-            }
-            // merge $conds with $calendar_conds
-            if (is_array($calendar_conds)) {
-                foreach ($calendar_conds as $v) {
-                    $conds[] = $v;
+                if ($mlxslice) {
+                    $GLOBALS['mlxView']->postQueryZIDs($zids2,$mlxslice,$slice_id);
                 }
-            }
+                //end mlx stuff
+                // Note this zids2 is always packed ids, so lost tag information
+                AA::$debug && AA::$dbg->log("getViewOutput retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
 
-            $slice   = AA_Slice::getModule($slice_id);
-            $aliases = array_merge($slice->aliases($als), GetViewAliases($conds));
-
-            if (is_array($slices)) {
-                foreach ($slices as $sid) {
-                    if ($m = AA_Slice::getModule($sid)) {
-                        $aliases[q_pack_id($sid)] = $m->aliases($als);
-                    }
+                if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
+                    $zids2 = $zids2->retag($zids);
                 }
-            }
 
-            $sort  = GetViewSort($view_info, $param_sort);
+                AA::$debug && AA::$dbg->log("getViewOutput: Filtered ids=",$zids2);
 
-            AA::$debug && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
+                $format = $view->getViewFormat($selected_item);
+                $format['calendar_month'] = $month;
+                $format['calendar_year']  = $year;
+                if (isset($this->_view_param['group_by'])) {
+                    $format['group_by'] = $this->_view_param['group_by'];
+                }
+                if (isset($view_info['group_by2'])) {
+                    $format['group_by2']    = $view_info['group_by2'];
+                    $format['g2_direction'] = $view_info['g2_direction'];
+                }
 
-            if ($mlxslice = MLXSlice($slice)) {
-                $mlx = $view_param["mlx"] ?: $view_param["MLX"];
-                //make sure the lang info doesnt get reused with different view
-                $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
-                $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
-            }
-            $zids2 = QueryZIDs($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", 0, $zids);
+                list($listlen, $list_from) = GetListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids2->count(), $random);
 
-            if ($mlxslice) {
-                $GLOBALS['mlxView']->postQueryZIDs($zids2,$mlxslice,$slice_id);
-            }
-            //end mlx stuff
-            // Note this zids2 is always packed ids, so lost tag information
-            AA::$debug && AA::$dbg->log("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
+                $itemview = new itemview( $format, '', $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
-            if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
-                $zids2 = $zids2->retag($zids);
-            }
+                if (isset($zids2) && ($zids2->count() > $list_from)) {
+                    $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
+                } else {
+                    $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
+                }
+                break;
 
-            AA::$debug && AA::$dbg->log("GetViewFromDB: Filtered ids=",$zids2);
-
-            $format = $view->getViewFormat($selected_item);
-            $format['calendar_month'] = $month;
-            $format['calendar_year']  = $year;
-            if (isset($view_param['group_by'])) {
-                $format['group_by'] = $view_param['group_by'];
-            }
-            if (isset($view_info['group_by2'])) {
-                $format['group_by2']    = $view_info['group_by2'];
-                $format['g2_direction'] = $view_info['g2_direction'];
-            }
-
-            list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
-
-            $itemview = new itemview( $format, '', $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
-
-            if (isset($zids2) && ($zids2->count() > $list_from)) {
-                $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
-            } else {
-                $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
-            }
-            break;
-
-        case 'static':
-            // $format = $view->getViewFormat();  // not needed now
-            // I create a CurItem object so I can use the unalias function
-            $CurItem      = new AA_Item("", $als);
-            $formatstring = $view_info["odd"];          // it is better to copy format-
-            $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
-            break;
-    }
-
-    AA::$debug && AA::$dbg->log("GetViewFromDB: ret=",$ret);
-
-    // user could make the view to display view ID before and after the view output
-    // which is usefull mainly for debugging. See view setting in admin interface
-    if ( AA::$debug OR ($ret AND ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
-        $ret = "<!-- $vid -->$ret<!-- /$vid -->";
-    }
-
-    if ($view_param['convertto'] OR $view_param['convertfrom'] ) {
-        if (!$view_param['convertfrom']) {
-            $slice                     = AA_Slice::getModule($slice_id);
-            $view_param['convertfrom'] = $slice->getCharset();
+            case 'static':
+                // $format = $view->getViewFormat();  // not needed now
+                // I create a CurItem object so I can use the unalias function
+                $CurItem      = new AA_Item("", $als);
+                $formatstring = $view_info["odd"];          // it is better to copy format-
+                $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
+                break;
         }
-        if ($view_param['convertto'] != $view_param['convertfrom'] ) {
-            $encoder                 = ConvertCharset::singleton();
-            $ret                     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
-            AA::$headers['encoding'] = $view_param['convertto'];
+
+        AA::$debug && AA::$dbg->log("getViewOutput: ret=",$ret);
+
+        // user could make the view to display view ID before and after the view output
+        // which is usefull mainly for debugging. See view setting in admin interface
+        if ( AA::$debug OR ($ret AND ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
+            $ret = "<!-- $vid -->$ret<!-- /$vid -->";
         }
+
+        if ($this->_view_param['convertto'] OR $this->_view_param['convertfrom'] ) {
+            if (!$this->_view_param['convertfrom']) {
+                $slice                     = AA_Slice::getModule($slice_id);
+                $this->_view_param['convertfrom'] = $slice->getCharset();
+            }
+            if ($this->_view_param['convertto'] != $this->_view_param['convertfrom'] ) {
+                $encoder                 = ConvertCharset::singleton();
+                $ret                     = $encoder->Convert($ret, $this->_view_param['convertfrom'], $this->_view_param['convertto']);
+                AA::$headers['encoding'] = $this->_view_param['convertto'];
+            }
+        }
+        AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+        return $ret;
     }
-    AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
-    return $return_with_slice_ids ? array($ret, $cache_sid) : $ret;
+
+    public function lastUsedSliceId() {
+        return $this->_used_slice_id;
+    }
 }
 ?>

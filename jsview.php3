@@ -87,10 +87,11 @@ require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
-$encap = true; // just for calling extsessi.php
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
-is_object( $db ) || ($db = getDB());
+// we tried to remove all global $db, so let's try to comment out following global object
+// honza 2017-04-19
+//AA::$debug && AA::$dbg->group("/jsview.php3", "Start");
 
 if (ctype_digit((string)$time_limit)) {
     @set_time_limit((int)$time_limit);
@@ -113,7 +114,9 @@ $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
     $cacheentry->processPage();
 } else {
-    list($page_content, $cache_sid) = GetViewFromDB($view_param, true);
+    $showview     = new AA_Showview($view_param);
+    $page_content = $showview->getViewOutput();
+    $cache_sid    = $showview->lastUsedSliceId();
 
     // special for jsview - print it as javascript!!!
     // backslash quotes, remove newlines, escape </script, which will make the code broken
@@ -135,5 +138,4 @@ if (AA::$debug) {
 }
 
 exit;
-
 ?>

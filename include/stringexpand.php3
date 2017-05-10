@@ -2176,7 +2176,7 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             $view_param = array_merge($view_param, ParseSettings($settings));
         }
         // do not pagecache the view
-        return GetViewFromDB($view_param);
+        return with(new AA_Showview($view_param))->getViewOutput();
     }
 }
 
@@ -4520,9 +4520,10 @@ class AA_Unalias_Callback {
             elseif ( substr($out, 0,10) == "view.php3?" ) {
                 // Xinha editor replaces & with &amp; so we need to change it back
                 $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), substr($out,10));
-                $view_param = ParseViewParameters(DeQuoteColons($param));
                 // do not store in the pagecache, but store into contentcache
-                return QuoteColons($contentcache->get_result('GetViewFromDB', array($view_param)));
+
+                $showview   = new AA_Showview(ParseViewParameters(DeQuoteColons($param)));
+                return QuoteColons($contentcache->get_result(array($showview,'getViewOutput')));
             }
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
