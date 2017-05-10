@@ -61,7 +61,7 @@ function ShowCollectionAddOns() {
 
     // send to supplied email
     FrmInputText("example[email]", _m('Email'), $example['email']);
-    FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(true), $example["howoften"]);
+    FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
     FrmTabSeparator("", array('example[go]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
 
     // send to selected user
@@ -69,7 +69,7 @@ function ShowCollectionAddOns() {
     asort($reader_mails);
 
     FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"]);
-    FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(true), $example["howoftenr"]);
+    FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"]);
     FrmTabEnd(array('example[goreader]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
     echo '</form>';
 
@@ -84,14 +84,14 @@ function ShowCollectionAddOns() {
     }
 
 
-    FrmInputSelect("fire[howoften]",_m('Send now alerts to all users subscribed to '), get_howoften_options(true), $fire["howoften"], _m("Warning: This is a real command!"));
+    FrmInputSelect("fire[howoften]",_m('Send now alerts to all users subscribed to '), get_howoften_options(), $fire["howoften"], _m("Warning: This is a real command!"));
     FrmTabEnd(array('fire[fire]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
     echo '<br>';
 
     FrmTabCaption( _m("Last time the alerts were sent on:"));
     $last = GetTable2Array("SELECT howoften, last FROM alerts_collection_howoften WHERE collectionid='".$collectionid."'", 'howoften', 'last');
 
-    foreach (get_howoften_options(true) as $ho => $msg) {
+    foreach (get_howoften_options() as $ho => $msg) {
         FrmStaticText($msg,  date("j.n. H:i", $last[$ho]));
     }
     FrmTabEnd();

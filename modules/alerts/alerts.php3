@@ -82,8 +82,8 @@ $frequency['daily']     = 24 * 60 * 60;
 $frequency['weekly']    =  7 * $frequency['daily'];
 $frequency['twoweeks']  = 14 * $frequency['daily'];
 $frequency['monthly']   = 31 * $frequency['daily'];
+//$frequency['irregular']  = ...;   // not specified - used for irregular sending - see AA_Response('Alertitem', ...
 
-//$debug = 1;
 
 if (!is_object($db)) $db = new DB_AA;
 

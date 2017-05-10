@@ -53,8 +53,9 @@ function set_collectionid() {
     }
 }
 
-function get_howoften_options($include_instant = true) {
+function get_howoften_options() {
     $retval = array();
+    $retval["instant"]   = _m("instant");
     $retval["daily"]     = _m("daily");
     $retval["weekly"]    = _m("weekly");
     $retval["twoweeks"]  = _m("twoweeks");

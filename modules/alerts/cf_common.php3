@@ -62,7 +62,7 @@ $cf_fields = array (
         "label"=>_m("Last name"),
         "userinfo"=>true),
     "howoften" => array (
-        "code"=>FrmSelectEasyCode ("alerts[howoften]", get_howoften_options ()),
+        "code"=>FrmSelectEasyCode("alerts[howoften]", get_howoften_options()),
         "required"=>true,
         // do not show in user center
         "hidecenter"=>true,

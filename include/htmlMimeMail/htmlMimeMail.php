@@ -306,7 +306,7 @@ class htmlMimeMail {
 */
     function setCc($cc)
     {
-        $this->headers['Cc'] = $cc;
+        $this->headers['Cc'] = is_array($cc) ? implode(",", $cc) : $cc;
     }
 
 /**
@@ -314,7 +314,7 @@ class htmlMimeMail {
 */
     function setBcc($bcc)
     {
-        $this->headers['Bcc'] = $bcc;
+        $this->headers['Bcc'] = is_array($bcc) ? implode(",", $bcc) : $bcc;
     }
 
 /**

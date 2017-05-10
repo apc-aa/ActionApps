@@ -388,7 +388,7 @@ function AA_SendWidgetAjax(id) {
 }
 
 /** Closes the ajax for after file upload
- *  The main chane is, that now we use standard AA input names:
+ *  The main change is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
 function AA_ReloadAjaxResponse(id, responseText) {
@@ -602,6 +602,28 @@ function AA_Rotator(id, interval, max, speed, effect) {
 
     AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
 }
+
+/** used by {livesearch:...}
+ *  internal - could be changed
+ */
+function AA__liveSearch(id, viewparam, deflt) {
+    val    = $$('#' +id+ ' input.itemsearch')[0].value;
+    if (!val.length && deflt.length) {
+        val=deflt;
+    }
+    fnc = function(t,v,q) { AA_AjaxCss(t, AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    if (AA__liveSearch.timer) {
+       if (AA__liveSearch.searchval != val) {
+           clearTimeout(AA__liveSearch.timer);
+           AA__liveSearch.searchval = val;
+           AA__liveSearch.timer     = setTimeout(fnc,200, '#' +id+ ' .itemgroup', viewparam, val);
+       }
+    } else {
+       AA__liveSearch.timer = setTimeout(fnc,200, '#' +id+ ' .itemgroup', viewparam, val);
+       AA__liveSearch.searchval = val;
+    }
+}
+
 /* text - string or url (begins with '/')
  * type - err | ok | info | [text]
  */

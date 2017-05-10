@@ -472,7 +472,7 @@ class AA_Fields implements Iterator {
         $this->aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
 
         if ( $type == 'justids') {  // it is enough for view of urls
-            // maybe we should make $this->aliases = null (to be recounted next time with all aliases), but there was no problem so far, so we left here qucker solution. Honza 2016-10-20
+            // maybe we should make $this->aliases = null (to be recounted next time with all aliases), but there was no problem so far, so we left here quicker solution. Honza 2016-10-20
             return is_array($additional) ? array_merge($additional, $this->aliases) : $this->aliases;
         }
 

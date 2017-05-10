@@ -1,4 +1,51 @@
-17-05-09 - new type of Alerts type "irregular" - best for irregular Newsletters.
+17-05-10 - new Slice Admin -> History manager - allows to return back the user
+(honzam)   changes in items
+         - new "User login databases" site setting - perm_mode:
+             1 - first Reader Management slice listed in Uses slices
+                 (encouraged option) - only the people from this slice is
+                 allowed to login to public pages
+             2 - all Reader Management slices listed in Uses slices
+             3 - AA + all Reader Management slices in AA (old - default option)
+         - AA Finder - when searched by Search and Replace the link to item edit
+           is shown
+         - new {generate:HEAD} and {generate:FOOT} commands, which works
+           together with {require:<jslib>:<script-to-run>}.
+           Generate commands should be places in sitemodule - HEAD in header,
+           FOOT before </body> tag. In the HEAD and FOOT then AA dynamicaly
+           generates all JS libraries, CSS and scripts needed for current page
+         - {require:<library>[:<js-to-run>]} - dynamicaly adds the js <library>
+           to the page (to {generate:HEAD}) and runs (on DOMContentLoaded) the
+           script <js-to-run> placed in {generate:FOOT}.
+           So if you place both {generate:..} commands to sitemodule, you can
+           place for example following command to any place in the page
+           (even the for just one item):
+             {require:lightgallery:{- lightGallery(document.getElementById("userform"), { "selector": ".lightgallery" });}}
+           this command adds lightgallery.js lib to the head and runs the command
+           on document load.
+           {require} also manages dependencies, so it includes also css (if needed)
+           and for example jquery (if needed). Currently supported scripts are
+            - lightgallery     - latest version of lightgallery.js library
+            - lightgallery@1,  - latest version of lightgallery.js library from 1.x.x row
+            - jquery           - latest version of jquery.js library
+            - jquery@3         - latest version of jquery.js library from 3.x.x row
+           The scripts we will update to latest versions. The libraries are now
+           hardcoded in stringexpand.php. They are loaded from cdn.jsdelivr.net CDN,
+           right now and uses SRI (integrity) attribute, so it is safe to load it this way.
+         - new {header:json}, {header:csv}, {header:utf-8},
+             {header:filename:<name-of-file>} HTTP headers options available
+         - view now supports "Show content of expired items" slice setting
+         - the SQL queries uses more readable notation of packed ids 0xe345ea564b
+           whereever possible
+         - item SQL search in AA now uses INNER JOIN instead of LEFT JOIN,
+           where it is safe (which should be quicker)
+         - fix for Chrome 57 which do not allow to send HTML in POST request
+           sometimes (ERR_BLOCKED_BY_XSS_AUDITOR)
+         - better debug output - f_* functions are watched as well
+         - improved czech translation of manager
+         - old prototip.js library used with prototype.js is updated from 1.1.0
+           to last version 2.2.5. But I would recommend to use more modern
+           jQuery with other tooltip solution
+17-05-10 - new type of Alerts type "irregular" - best for irregular Newsletters.
 (honzam)   You will probably call it by Button in admin interface - the
            newsletter is then send to all Readers with confirmed e-mail and
            howoften field set to "irregular".
