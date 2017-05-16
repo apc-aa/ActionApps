@@ -575,6 +575,30 @@ function AA_SaveEditors() {
     }, 'json');
 }
 
+
+function AA_SiteUpdate(item, field, value) {
+  var params = {};
+  params['aa[u'+item+']['+field+'][0]'] = value;
+    AA__doChange(params);
+}
+function AA_SiteNewitem(slice, field, value) {
+  var params = {};
+  params['aa[n1_'+slice+']['+field+'][0]'] = value;
+    AA__doChange(params);
+}
+
+function AA__doChange(params) {
+  $.post(window.location.href, params, function(data) {
+    for (var i in data) {
+        if (i == 'message') {
+            AA_Message(data[i]);
+        } else {
+            $("[data-aa-part='"+i+"'").html(data[i]);
+        }
+    }
+  });
+}
+
 /* Cookies */
 function SetCookie(name, value, plustime) {
    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
@@ -626,7 +650,7 @@ function ToggleCookie(name,val) {
     }
 }
 
-function NewId() {
+function AA_NewId() {
     // Private array of chars to use
     var chars = '0123456789abcdefgh'.split('');
 
