@@ -1,3 +1,16 @@
+17-05-16 - {editable} now automaticaly include all the scripts needed for CKeditor
+(honzam)   if you place {generate:HEAD} in the <head> and {generate:FOOT} just
+           before the </body> of the sitemodule HTML code
+         - {require:} now allows custom .css and .js, just like:
+             {require:/css/my.css}
+           or
+             {require:https#://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.min.js}
+           {require} also allows to multirequire in one command:
+             {require:["vue@2","aa-jslib@1"]}
+         - textareas in object editor (site aliases editor,...) is bigger,
+           if already contain longer text
+         - irregular alerts now can be invoked by slice editor (not only superadmin)
+         - {manager} now works with jquery version of aajslib-jquery.js
 17-05-10 - new Slice Admin -> History manager - allows to return back the user
 (honzam)   changes in items
          - new "User login databases" site setting - perm_mode:

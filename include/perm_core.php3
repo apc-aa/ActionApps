@@ -238,7 +238,7 @@ function GetUserSlices( $user_id = "current") {
  */
 function IfSlPerm($perm, $slice=null) {
     global $auth, $slice_id;
-    return CheckPerms( $auth->auth["uid"], "slice", get_if($slice,$slice_id), $perm);
+    return CheckPerms( $auth->auth["uid"], "slice", !is_null($slice) ? $slice : $slice_id, $perm);
 }
 
 /** IsSuperadmin function
