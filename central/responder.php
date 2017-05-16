@@ -345,7 +345,15 @@ class AA_Responder_Alertitem extends AA_Responder {
         $this->test_email    = strpos($param['test_email'],'@') ? array($param['test_email']) : array();
     }
 
-    function isPerm() {  return IfSlPerm(PS_EDIT_ALL_ITEMS); }
+    function isPerm() {
+        if (is_long_id($this->item_id)) {
+            if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
+                // @todo should we check also collection_id???
+                return IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
+            }
+        }
+        return false;
+    }
 
     function run() {
         $ret = '0';
