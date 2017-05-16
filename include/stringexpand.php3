@@ -3793,6 +3793,16 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
                     $ret     = AA_Stringexpand::unalias("<$tag contenteditable=true $pholder id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
+
+                    AA::Stringexpander()->addRequire('ckeditor');
+                    $script2run = '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
+                                  'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
+                                  '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
+                                  '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
+                                  '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
+                                  '  });' . "\n" .
+                                  '});' . "\n";
+                    AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
                 }
             }
         }
@@ -4649,8 +4659,11 @@ class AA_Stringexpander {
     protected $recursion_count = 0;
     protected $dependent_parts = array();
     protected $postprocesess   = array();
-    protected $requires        = array();
-    protected $runscripts        = array();
+    protected $requires;
+
+    function __construct() {
+        $this->requires = new AA_Requires();
+    }
 
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
@@ -4782,22 +4795,15 @@ class AA_Stringexpander {
         $this->postprocesess[$key] = $params;
     }
 
-    function addRequire($require) {
-        $this->requires[$require] = 1;
-    }
-
-    function addRunscript($script) {
-        $this->runscripts[] = $script;
+    function addRequire($require, $type='') {
+        $this->requires->addRequire($require, $type);
     }
 
     function getRequireHead() {
-        return $this->requires ? with(new AA_Requires())->getLibs($this->requires) : '';
+        return $this->requires->getHead();
     }
     function getRequireFoot() {
-        if (!$this->runscripts) {
-            return '';
-        }
-        return '<script> document.addEventListener("DOMContentLoaded", function() { '. join("\n",$this->runscripts) .'});</script>';
+        return $this->requires->getFoot();
     }
 
     function postprocess($out) {
@@ -4809,11 +4815,11 @@ class AA_Stringexpander {
                     break;
                 case '<!--AAGenerateHEAD-->':
                     $search_arr[]  = $search;
-                    $replace_arr[] = $this->getRequireHead();
+                    $replace_arr[] = "\n<!--AA-Generated-HEAD start-->\n".$this->getRequireHead(). "\n<!--/AA-Generated-HEAD end-->\n";
                     break;
                 case '<!--AAGenerateFOOT-->':
                     $search_arr[]  = $search;
-                    $replace_arr[] = $this->getRequireFoot();
+                    $replace_arr[] = "\n<!--AA-Generated-FOOT start-->\n".$this->getRequireFoot(). "\n<!--/AA-Generated-FOOT end-->\n";
                     break;
                 default:
                     $search_arr[]  = $search;
@@ -4846,35 +4852,172 @@ class AA_Stringexpander {
     }
 }
 
-class AA_Requires {
-    private static $requires_arr = array(
-                          //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
-      'lightgallery'      => array('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery')),
-      'lightgallery@1'    => array('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery')),
-      'jquery'            => array('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f', array()),
-      'jquery@3'          => array('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f', array()),
-      '_css-lightgallery' => array('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', '', array())
-    );
+/** Base clas of requires. Could be useful for dependencies */
+class AA_Req {
+    const CODE_POSITION = 'HEAD-A';
+    protected $depend;
 
-    function getLibs(array $libs) {
-        $retarr = array();
-        foreach (AA_Requires::$requires_arr as $script_id => $def) {
-            if ($libs[$script_id]) {
-                if (trim(substr($script_id,0,4),'_') == 'css') {
-                    $retarr[] = "<link rel=stylesheet href=\"$def[0]\" type=\"text/css\">";
-                } else {
-                    $retarr[] = "<script src=\"$def[0]\" integrity=\"$def[1]\" crossorigin=anonymous></script>";
-                }
-                // mark requires for this library
-                // the requires are ordered from particular script to global libraries in $requires_arr, so we can add depending libraries here without problem
-                foreach ($def[2] as $reqlib) {
-                    $libs[$reqlib] = 1;
+    function __construct($depend=array()) { $this->depend = $depend; }
+    function getCodePosition()        { return static::CODE_POSITION; }
+    function getDependencies()        { return $this->depend; }
+    function getCode()                { return ''; }
+}
+
+class AA_Req_Lib extends AA_Req {
+    const CODE_POSITION = 'HEAD-B';
+    protected $url;
+    protected $integrity;
+
+    function __construct($url, $integrity='', $depend=array()) {
+        $this->url       = $url;
+        $this->integrity = $integrity;
+        $this->depend    = $depend;
+    }
+
+    function getCode() {
+        return "<script src=\"{$this->url}\"" .($this->integrity ? " integrity=\"{$this->integrity}\" " : ''). "crossorigin=anonymous></script>";
+    }
+
+}
+
+class AA_Req_Css extends AA_Req {
+    const CODE_POSITION = 'HEAD-A';
+    protected $url;
+
+    function __construct($url, $depend=array()) {
+        $this->url       = $url;
+        $this->depend    = $depend;
+    }
+
+    function getCode() {
+        return "<link rel=stylesheet href=\"{$this->url}\" type=\"text/css\">";
+    }
+}
+
+class AA_Req_Htm extends AA_Req {
+    const CODE_POSITION = 'FOOT-A';
+    protected $funct;
+
+    function __construct($funct, $depend=array()) {
+        $this->funct  = $funct;
+        $this->depend = $depend;
+    }
+
+    function getCode() {
+        return call_user_func($this->funct);
+    }
+}
+
+class AA_Req_Run extends AA_Req {
+    const CODE_POSITION = 'FOOT-B';
+    protected $script;
+
+    function __construct($script, $depend=array()) {
+        $this->script  = $script;
+        $this->depend  = $depend;
+    }
+
+    function getCode() {
+        return "<script> {$this->script} </script>";
+    }
+}
+
+class AA_Req_Load extends AA_Req_Run {
+    function getCode() {
+        return "<script> document.addEventListener('DOMContentLoaded', function() { {$this->script} }); </script>";
+    }
+}
+
+
+
+class AA_Requires {
+    protected $reqs  = array();
+    protected $usrdefs  = array();
+    private   $_outputs = null;
+
+    function addRequire($require, $type = '') {
+        if ($type == 'AA_Req_Run') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Run');
+        } elseif ($type == 'AA_Req_Load') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Load');
+        } elseif (substr($require,-3)=='.js') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
+        } elseif (substr($require,-4)=='.css') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Css');
+        } else {
+            $hash = $require;   // must be system require
+        }
+
+        $this->_outputs    = null; // be sure it will be recomputed after adding
+        $this->reqs[$hash] = 1;
+    }
+
+    function addUsrRequire($require, $type) {
+        $hash = get_hash($require);
+        $this->usrdefs = array($hash => new $type($require)) + $this->usrdefs;  // we want them in reverse order because of compute() function code
+        return $hash;
+    }
+
+    protected function compute($position) {
+        if (is_null($this->_outputs)) { // precomputed?
+            $this->_outputs = array();
+
+            $requires_definitions = $this->usrdefs + self::systemDefinitions();
+            foreach ($requires_definitions as $code_id => $req) {
+                if ($this->reqs[$code_id] OR $this->reqs[strtok($code_id,'@')]) {    // we are checking jquery@3 and then also jquery
+                    $this->_outputs[$req->getCodePosition()][] = $req->getCode();
+                    // mark requires for this library
+                    // the requires are ordered from particular script to global libraries in $requires_arr, so we can add depending libraries here without problem
+                    $dep = $req->getDependencies();
+                    foreach ($dep as $reqlib) {
+                        $this->reqs[$reqlib] = 1;
+                    }
                 }
             }
         }
-        return join("\n", array_reverse($retarr));  // reverse - first should goes the libraries, then particular depending scripts
+        return $this->_outputs[$position] ? (join("\n", array_reverse($this->_outputs[$position]))."\n") : '';  // reverse - first should goes the libraries, then particular depending scripts
+    }
+
+    function getHead() {
+        return $this->compute('HEAD-A'). $this->compute('HEAD-B');
+    }
+
+    function getFoot() {
+        return $this->compute('FOOT-A'). $this->compute('FOOT-B');  // reverse - first should goes the libraries, then particular depending scripts
+    }
+
+    static function systemDefinitions() {
+        return array(
+                          //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
+          //'tableexport@4'       => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/js/tableexport.min.js', 'sha384-xMwzl7oWKWy1JOFwVKo6ylPXiT/QiA43ikfTH66pT8TTk0BvnP4x8DrISPx28syf', array('_css-tableexport@4')),
+          'lightgallery@1'      => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
+          'aa-tools@1'          => new AA_Req(array('css-aa-system@1','htm-aa-system@1')),
+          'ckeditor@4'          => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js'),'',array('aa-jslib@1','css-aa-system@1')),
+          'aa-jslib@1'          => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php'),'',array('jquery@3')),
+          'jquery@3'            => new AA_Req_Lib('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f'),
+          'vue@2'               => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.min.js', 'sha256-R9Mt0qq5P1LslCyog7N4sBewA6oOwsxBOoEwGURp6iE='),
+          //'_css-tableexport@4'  => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/css/tableexport.min.css'),
+          '_css-lightgallery@1' => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css'),
+          'css-aa-system@1'     => new AA_Req_Css(get_aa_url('css/aa-system.css'))  ,
+          'css-normalize@7'     => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css'),
+          'htm-aa-system@1'     => new AA_Req_Htm('AA_Tools::getBottomCode')
+        );
     }
 }
+
+/** @todo - move it to special file */
+class AA_Tools {
+    static function getBottomCode() {
+        if (AA::$site_id AND ($site = AA_Module_Site::getModule(AA::$site_id))) {
+            $ret  = '<div class="aa-tools-switch" onclick="document.getElementsByTagName(\'body\')[0].classList.toggle(\'aa-page\')"></div><aside class="aa-tools">';
+            $ret .= AA::Stringexpander()->unalias($site->getProperty('loginpage_code'));
+            $ret .= '</aside>';
+            return $ret;
+        }
+        return '';
+    }
+}
+
 
 class AA_Stringexpand {
 
@@ -5273,7 +5416,6 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercache {
 
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
     /** expand function
      * @param $phpthumb_params - parameters as you would put to url for phpThumb
      *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
@@ -6445,8 +6587,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         AA_Items::preload($zids);
         $hash = get_hash('manager', $slices, $conds, $sort, $code);
 
-        $code_actions = (strpos($mode,'D')===false) ? '' : ('<article><i class="ico delete" onclick="if (confirm(\''._m('Are you sure you want to permanently DELETE this record?'). '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">x</i></article>');
-        $footer       = (strpos($mode,'N')===false) ? '' : ('<footer><article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article></footer>');
+        $code_actions  = (strpos($mode,'S')===false) ? '' : ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">&#x2261;</i></article>');
+        $code_actions .= (strpos($mode,'D')===false) ? '' : ('<article><i class="ico delete"  onclick="if (confirm(\''._m('Are you sure you want to permanently DELETE this record?'). '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">&#xd7;</i></article>');
+        $footer        = (strpos($mode,'N')===false) ? '' : ('<footer><article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article></footer>');
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
                     <section class="itemgroup">';
@@ -6556,12 +6699,13 @@ class AA_Stringexpand_Require extends AA_Stringexpand {
      * @param $lib
      * @param $script
      */
-    function expand($lib='', $script='') {
-        if ($lib) {
+    function expand($libs='', $script='') {
+        $l = json2arr($libs);
+        foreach($l as $lib) {
             AA::Stringexpander()->addRequire($lib);
         }
         if ($script) {
-            AA::Stringexpander()->addRunscript($script);
+            AA::Stringexpander()->addRequire($script, 'AA_Req_Load');
         }
         return '';
     }
