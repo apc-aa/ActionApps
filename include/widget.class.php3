@@ -700,10 +700,11 @@ class AA_Widget_Txt extends AA_Widget {
         $widget         = '';
 
         $delim          = '';
-        $rows           = $this->getProperty('rows', 4);
+        $value          = $content->getAaValue($aa_property->getId());
+        $rows           = $this->getProperty('rows', min(substr_count($value[0],"\n")+4, 30));
+
         $max_characters = (int)$this->getProperty('max_characters', 0);
         $required       = $aa_property->isRequired() ? 'required' : '';
-        $value          = $content->getAaValue($aa_property->getId());
 
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty textarea at least
