@@ -1452,7 +1452,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         //   headline........@relation.......1
                         //   - search in headline field of all related items
                         //     (relation.......1 field pointed to related items)
-                        list($cond_flds, $rel_fld) = explode('@',$fid);
+                        list($cf, $rel_fld) = explode('@',$fid);
 
                         $field = $fields->getField($rel_fld);
                         if (!is_object($field)) {
@@ -1464,30 +1464,38 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                             if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>";
                             continue;            // bad field_id or not defined condition - skip
                         }
-                        $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cond_flds);
-                        if (!is_object($cond_field)) {
-                            if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>";
-                            continue;            // bad field_id or not defined condition - skip
-                        }
-
-                        $cond_flds = "'$cond_flds'";
                         $rel_fld   = "'$rel_fld'";
-                        $tbl       = 'c'.$tbl_count++;
-                        $tbl2      = 'c'.$tbl_count++;
-                        if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
-                            // Long ID in conds should be specified as unpacked, but in db it is packed
+                        if ($cf == 'all_fields') {
+                            $tbl       = 'c'.$tbl_count++;
+                            $tbl2      = 'c'.$tbl_count++;
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
+                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
+                            $cur_cond = GetWhereExp( $tbl2.'.text', $cond['operator'], $cond['value'] );
                         } else {
-                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
-                        }
-                        $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
-                        if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
-                            $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
+                            $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cf);
+                            if (!is_object($cond_field)) {
+                                if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>";
+                                continue;            // bad field_id or not defined condition - skip
+                            }
+
+                            $cond_flds = "'$cf'";
+                            $tbl       = 'c'.$tbl_count++;
+                            $tbl2      = 'c'.$tbl_count++;
+                            if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                                // Long ID in conds should be specified as unpacked, but in db it is packed
+                                $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                                  LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
+                            } else {
+                                $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                                  LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                            }
+                            $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
+                            if (in_array($cf, array('id..............', 'slice_id........'))) {
+                                $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
+                            }
                         }
                         $select_conds[] = $cur_cond;
-                        $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
+                        $sortable[$cf]  = $tbl;  // @todo - test if it works
                         $cond_flds = '';
                         continue;
                     } else {
