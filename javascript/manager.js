@@ -1,6 +1,6 @@
 // Scripts used in manager.class.php3
 // - folloving global javascript variables should be set before calling
-//   AA_Config structure - see javascript/aajslib.php3
+//   AA_Config structure - see javascript/aajslib.php
 
 //  Fills 'akce' hidden field and submits the form or opens popup window
 function MarkedActionGo() {

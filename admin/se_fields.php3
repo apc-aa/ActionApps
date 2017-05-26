@@ -225,7 +225,7 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, a
 $s_fields = GetTable2Array($SQL);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
+FrmJavascriptFile( 'javascript/aajslib.php' );
 ?>
  <title><?php echo _m("Admin - configure Fields");?></title>
  <script type="text/javascript"><!--

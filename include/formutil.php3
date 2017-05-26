@@ -398,7 +398,7 @@ class inputform {
 
         $retval  = getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
         $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
-        $retval .= getFrmJavascriptFile( 'javascript/aajslib.php3' );
+        $retval .= getFrmJavascriptFile( 'javascript/aajslib.php' );
 
         $jscode .= $this->js_proove_fields;
 
@@ -3073,8 +3073,7 @@ function FrmCSS( $stylecode ) {
 /** IncludeManagerJavascript function
  */
 function IncludeManagerJavascript() {
-    global $sess;
-    FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
+    FrmJavascriptFile( 'javascript/aajslib.php' );
     FrmJavascriptFile( 'javascript/manager.js' );
 }
 

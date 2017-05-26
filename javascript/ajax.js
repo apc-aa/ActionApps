@@ -1,4 +1,4 @@
-// aajslib.php3 should be always included before this script - we are using
+// aajslib.php should be always included before this script - we are using
 // AA_Config variable from there (at least)
 
 // function replaces html code of a an HTML element (identified by id)
