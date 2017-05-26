@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once dirname(__FILE__). "/include/init_central.php";
+require_once __DIR__. "/include/init_central.php";
 require_once AA_INC_PATH.     'formutil.php3';
 require_once AA_INC_PATH.     'files.class.php3';
 require_once AA_INC_PATH.     "msgpage.php3";
@@ -35,7 +35,7 @@ if (!IsSuperadmin()) {
 $aas = AA_Actionapps::getArray();
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
+FrmJavascriptFile( 'javascript/aajslib.php' );
 
 ?>
 <TITLE><?php echo _m("Central - Synchronize ActionApps (2/3) - Slices to Compare"); ?></TITLE>

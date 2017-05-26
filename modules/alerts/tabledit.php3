@@ -43,7 +43,7 @@ if ($cmd["modedit"]["update"]) {
     ProcessFormData("GetAlertsTableView", $val, $cmd);
 }
 
-require_once dirname(__FILE__). "/../../include/init_page.php3";
+require_once __DIR__. "/../../include/init_page.php3";
 
 if (!$no_slice_id) {
     require_once menu_include();

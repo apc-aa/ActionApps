@@ -26,7 +26,7 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-require_once dirname(__FILE__). "/../../include/init_page.php3";
+require_once __DIR__. "/../../include/init_page.php3";
 require_once AA_INC_PATH."go_url.php3";
 go_url(AA_INSTAL_PATH ."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .$slice_id."]=1&slice_id=$slice_id");
 ?>

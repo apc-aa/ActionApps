@@ -52,7 +52,7 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-require_once dirname(__FILE__). "/../../include/config.php3";
+require_once __DIR__. "/../../include/config.php3";
 
 define('AA_CENTRAL_PATH', AA_BASE_PATH. "central/include/");
 

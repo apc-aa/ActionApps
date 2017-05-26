@@ -73,7 +73,7 @@ if ($encap == "false") {   // used in itemedit for anonymous form
     $encap = false;        // it must be here, because the variable is rewriten
 }                          // if the get_magic_quotes_gpc()==false (see above)
 
-require_once dirname(__FILE__). "/config.php3";
+require_once __DIR__. "/config.php3";
 require_once AA_INC_PATH."mgettext.php3";
 
 // should be set in config.php3

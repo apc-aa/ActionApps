@@ -25,7 +25,7 @@
 */
 // expected $del - unpacked id of slice to delete
 
-require_once dirname(__FILE__). "/../include/init_page.php3";
+require_once __DIR__. "/../include/init_page.php3";
 require_once AA_INC_PATH . "feeding.php3";
 require_once AA_INC_PATH . "msgpage.php3";
 require_once AA_INC_PATH . "modutils.php3";

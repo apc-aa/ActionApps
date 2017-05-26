@@ -105,10 +105,10 @@ function RedirectToCachedFile() {
 
 // instantiate a new phpThumb() object
 ob_start();
-//if (!include_once(dirname(__FILE__).'/phpthumb.class.php')) {
+//if (!include_once(__DIR__.'/phpthumb.class.php')) {
 if (!include_once(AA_PHPTHUMB_PATH.'phpthumb.class.php')) {  // Honza AA Change
     ob_end_flush();
-    die('failed to include_once("'.realpath(dirname(__FILE__).'/phpthumb.class.php').'")');
+    die('failed to include_once("'.realpath(__DIR__.'/phpthumb.class.php').'")');
 }
 ob_end_clean();
 $phpThumb = new phpThumb();

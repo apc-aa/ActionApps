@@ -1,6 +1,6 @@
 <?php
 /** AA Javascripts library usable on the public pages, just like:
- *  <script type="text/javascript" src="http://actionapps.org/apc-aa/javascript/aajslib.php3"></script>
+ *  <script type="text/javascript" src="http://actionapps.org/apc-aa/javascript/aajslib.php"></script>
  *  (replace "http://actionapps.org/apc-aa" with your server and aa path
  *
  *  It includes the scripts, which are based on great prototype.js library
@@ -44,7 +44,7 @@ header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
 header('Content-Type: application/x-javascript');
 
-$dir = dirname(__FILE__). '/prototype/';
+$dir = __DIR__. '/prototype/';
 
 // next lines are copied from prototype/HEADER and prototype/prototype.js files
 

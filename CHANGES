@@ -1,3 +1,34 @@
+26-05-16 - the all_fields constant could be used also in conditions with
+(honzam)   relations:
+             d-all_fields@relation........-LIKE-mystring
+           which searches all fields in the item related through
+           relation........ field
+         - new {tableexport:.xlsexportable} which creates "Export to XLSX"
+           button on the table specified by selector. All the JS libraries are
+           automaticaly loaded. You must using {generate:HEAD} and {generate:FOOT}
+           in your site module, of course.
+           We may replace the JS by another with the same functionality in the
+           future, so do not count on the exact library in the code.
+           The {tableexport} code will remain functional, however.
+         - new parameters <limit> and <add> for
+             {sort:<values>[:<order-type>[:<unique>[:<delimiter>[:<limit>[:<add>]]]]}
+           so you are able to limit number of results directly in sort and also
+           add some text, if the number of results is higher, than limit.
+           The <add> text is added just like the last item, so it is also
+           delimited by delimiter
+         - css styles in {require} now also supports SRI hashes (integrity=...)
+         - {require} now better detects CSS vs JS includes, so the you can use
+           something like xxx.css?v=22 for CSS in {require}
+         - {require} now could work with alternative scripts, so if you use
+           {editable} for example, which will include ckeditor scripts in the
+           page and also aajslib. If aa-jslib@1 (the prototype.js based one)
+           is already required by {require:aa-jslib@1}, then it do not include
+           the default (latest) version (aa-jslib@2) - the one using jQuery
+         - new exprimental {require:vue-test} used for vue.js debugging
+           (probably will be switched to another dev/production switch in future)
+         - aajslib.php used internaly instead of php3 one - aajslib.php3
+           (which should be the same)
+         - dirname(__FILE__) replaced by quicker __DIR__ variable
 17-05-16 - {editable} now automaticaly include all the scripts needed for CKeditor
 (honzam)   if you place {generate:HEAD} in the <head> and {generate:FOOT} just
            before the </body> of the sitemodule HTML code

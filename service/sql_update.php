@@ -249,9 +249,9 @@ if (!is_callable('quote')) {
 
 
 // do not reorder those requires because of metabase and varset dependency
-require_once dirname(__FILE__)."/metabase.class.php3";
-require_once dirname(__FILE__)."/varset.php3";
-require_once dirname(__FILE__)."/update.optimize.class.php";
+require_once __DIR__."/metabase.class.php3";
+require_once __DIR__."/varset.php3";
+require_once __DIR__."/update.optimize.class.php";
 
 class AA_SQL_Updater {
     var $messages = array();

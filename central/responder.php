@@ -24,7 +24,7 @@ if ($_REQUEST['free']) {   // can't be just POST - we use it in live Tags, which
     $nobody = true;
 }
 
-require_once dirname(__FILE__). "/include/init_central.php";
+require_once __DIR__. "/include/init_central.php";
 
 /** AA_Responder base class - defines some useful common methods
  */

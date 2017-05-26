@@ -76,7 +76,7 @@ class AA_Debug_Firephp extends AA_Debug {
     function __construct() {
         define('INSIGHT_IPS', '*');
         define('INSIGHT_AUTHKEYS', '*');
-        define('INSIGHT_PATHS', dirname(__FILE__));
+        define('INSIGHT_PATHS', __DIR__);
         define('INSIGHT_SERVER_PATH', '/aaa/test.php3');
         require_once(AA_BASE_PATH. 'misc/firephp/lib/FirePHP/Init.php');
         $inspector = FirePHP::to('page');

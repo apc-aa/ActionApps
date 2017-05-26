@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__). "/../../include/init_page.php3";
+require_once __DIR__. "/../../include/init_page.php3";
 require_once AA_INC_PATH."util.php3";
 
 if (!IsSuperadmin()) {
