@@ -776,7 +776,7 @@ class AA_Stringexpand_Lastdisc extends AA_Stringexpand {
  *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...:bottom}
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time
- *  The /javscript/aajslib.php3 shoud be included to the page
+ *  The /javscript/aajslib.php shoud be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $code_1         - HTML code displayed as default (in div)
@@ -830,7 +830,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
  *          {htmltogglecss:+:-:#id_#SITEM_ID:1}
  *  It creates the link text1 (or text2) +/- toggle which displays/hides all
  *  elements matching the css_rule (#id82422) in our example
- *  The /javscript/aajslib.php3 shoud be included to the page
+ *  The /javscript/aajslib.php shoud be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $switch_state_2 - link text 2
@@ -871,7 +871,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
  *          {htmlajaxtogglecss:+:-:#id_#SITEM_ID:/apc-aa/view.php3?vid=33&cmd[33]=x-33-{_#SITEM_ID}}
  *  It creates the link text1 (or text2) +/- toggle which loads+displays/hides all
  *  elements matching the css_rule (#id82422) in our example
- *  The /javscript/aajslib.php3 shoud be included to the page
+ *  The /javscript/aajslib.php shoud be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1  - default link text
  *  @param $switch_state_2  - link text 2
@@ -1032,7 +1032,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
  *          {expandable:some long text:50:...:more >>>:less <<<}
  *  It creates the div and if the text is longer than <length> characters, then
  *  it adds <more> DHTML link in order user can see all the text
- *  The /javscript/aajslib.php3 shoud be included to the page
+ *  The /javscript/aajslib.php shoud be included to the page
  *  (by <script src="">)
  *  @param $text           - default link text
  *  @param $length         - HTML code displayed as default (in div)
@@ -1087,7 +1087,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time - first is displayed as defaut, the second is loaded by AJAX
  *  call on demand from specified url. The URL should be on the same server
- *  The /apc-aa/javascript/aajslib.php3 shoud be included to the page
+ *  The /apc-aa/javascript/aajslib.php shoud be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $code_1         - HTML code displayed as default (in div)
@@ -1685,7 +1685,7 @@ class AA_Stringexpand_Shuffle extends AA_Stringexpand_Nevercache {
 }
 
 /** sorts the values
- *    {sort:<values>[:<order-type>[:<unique>[:<delimiter>]]]}
+ *    {sort:<values>[:<order-type>[:<unique>[:<delimiter>[:<limit>]]]}
  */
 class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1694,27 +1694,33 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
     function doTrimParams() { return false; }
 
-    /** for offset and length parameters see PHP function array_slice()
-     * @param $ids        // parts separated by '-'
-     * @param $limit      // number of returned shuffled ids
+    /**
      */
-    function expand($values, $type=null, $unique='', $delimiter='') {
+    function expand($values, $type=null, $unique='', $delimiter='',$limit='', $add='') {
         if (!strlen($delimiter)) {
            $delimiter = '-';
         }
         $arr = explode($delimiter, $values);
         switch ($type) {
+            case 'locale':   sort($arr,  SORT_LOCALE_STRING); break;
+            case 'string':   sort($arr,  SORT_STRING);        break;
             case 'rnumeric': rsort($arr, SORT_NUMERIC);       break;
             case 'rstring':  rsort($arr, SORT_STRING);        break;
             case 'rlocale':  rsort($arr, SORT_LOCALE_STRING); break;
-            case 'string':   sort($arr,  SORT_STRING);        break;
-            case 'locale':   sort($arr,  SORT_LOCALE_STRING); break;
             default:         sort($arr,  SORT_NUMERIC);       break;
         }
-        return join($delimiter, ($unique=='1') ? array_unique($arr) : $arr);
+        if ($unique=='1')  {
+            $arr = array_unique($arr);
+        }
+        if (ctype_digit((string)$limit) AND (count($arr)>$limit)) {
+            $arr   = array_slice($arr,0,$limit);
+            if (strlen($add)) {
+               $arr[] = $add;
+            }
+        }
+        return join($delimiter, $arr);
     }
 }
-
 
 
 /** Next item for the current item in the list
@@ -4856,41 +4862,52 @@ class AA_Stringexpander {
 class AA_Req {
     const CODE_POSITION = 'HEAD-A';
     protected $depend;
+    protected $integrity;
 
-    function __construct($depend=array()) { $this->depend = $depend; }
-    function getCodePosition()        { return static::CODE_POSITION; }
-    function getDependencies()        { return $this->depend; }
-    function getCode()                { return ''; }
+    function __construct($depend=array(), $integrity='') {
+        $this->depend    = $depend;
+        $this->integrity = $integrity;
+    }
+    function getCodePosition()  { return static::CODE_POSITION; }
+    function getDependencies()  { return $this->depend; }
+    function getCode()          { return ''; }
+    function getIntegrity()     { return ($this->integrity ? " integrity=\"{$this->integrity}\" crossorigin=anonymous" : ''); }
 }
 
 class AA_Req_Lib extends AA_Req {
     const CODE_POSITION = 'HEAD-B';
     protected $url;
-    protected $integrity;
 
     function __construct($url, $integrity='', $depend=array()) {
+        parent::__construct($depend, $integrity);
         $this->url       = $url;
-        $this->integrity = $integrity;
-        $this->depend    = $depend;
     }
 
     function getCode() {
-        return "<script src=\"{$this->url}\"" .($this->integrity ? " integrity=\"{$this->integrity}\" " : ''). "crossorigin=anonymous></script>";
+        return "<script src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
     }
 
 }
-
+/** {require:/css/myprintstyle.css print} */
 class AA_Req_Css extends AA_Req {
     const CODE_POSITION = 'HEAD-A';
     protected $url;
+    protected $media;
 
-    function __construct($url, $depend=array()) {
-        $this->url       = $url;
-        $this->depend    = $depend;
+    function __construct($url, $integrity='', $depend=array()) {
+        parent::__construct($depend, $integrity);
+        if (strpos(trim($url),' ')) {
+            $a = array_filter(explode(' ',$url, 2));
+            $this->url   = $a[0];
+            $this->media = $a[1];
+        } else {
+            $this->url   = $url;
+            $this->media = '';
+        }
     }
 
     function getCode() {
-        return "<link rel=stylesheet href=\"{$this->url}\" type=\"text/css\">";
+        return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->media ? " media=\"{$this->media}\">" : '>');
     }
 }
 
@@ -4940,10 +4957,10 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Run');
         } elseif ($type == 'AA_Req_Load') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Load');
-        } elseif (substr($require,-3)=='.js') {
-            $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
-        } elseif (substr($require,-4)=='.css') {
+        } elseif ((substr($require,-4)=='.css') OR strpos($require,'.css?') OR strpos($require,'.css ')) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
+        } elseif (substr($require,-3)=='.js' OR (strpos($require,'/')!==false)) {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
         } else {
             $hash = $require;   // must be system require
         }
@@ -4953,7 +4970,7 @@ class AA_Requires {
     }
 
     function addUsrRequire($require, $type) {
-        $hash = get_hash($require);
+        $hash = get_hash($require);    // we expect it does not contain '|' character, which is used for alternatives in compute()
         $this->usrdefs = array($hash => new $type($require)) + $this->usrdefs;  // we want them in reverse order because of compute() function code
         return $hash;
     }
@@ -4961,15 +4978,30 @@ class AA_Requires {
     protected function compute($position) {
         if (is_null($this->_outputs)) { // precomputed?
             $this->_outputs = array();
+            $already_in     = array();
 
             $requires_definitions = $this->usrdefs + self::systemDefinitions();
             foreach ($requires_definitions as $code_id => $req) {
-                if ($this->reqs[$code_id] OR $this->reqs[strtok($code_id,'@')]) {    // we are checking jquery@3 and then also jquery
+                $base_code_id = strtok($code_id,'@');
+                if ($this->reqs[$code_id] OR $this->reqs[$base_code_id]) {    // we are checking jquery@3 and then also jquery
+                    if ($already_in[$base_code_id]) {
+                        continue;
+                    }
+                    $already_in[$base_code_id] = true;
                     $this->_outputs[$req->getCodePosition()][] = $req->getCode();
                     // mark requires for this library
                     // the requires are ordered from particular script to global libraries in $requires_arr, so we can add depending libraries here without problem
                     $dep = $req->getDependencies();
                     foreach ($dep as $reqlib) {
+                        if (strpos($reqlib,'|')!== false) {
+                            $alternatives = explode('|',$reqlib);
+                            foreach ($alternatives as $alt) {
+                                if ($this->reqs[$alt]) {
+                                    continue 2;
+                                }
+                            }
+                            $reqlib = $alternatives[0];  // if not found in the already included, require the first
+                        }
                         $this->reqs[$reqlib] = 1;
                     }
                 }
@@ -4989,17 +5021,21 @@ class AA_Requires {
     static function systemDefinitions() {
         return array(
                           //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
-          //'tableexport@4'       => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/js/tableexport.min.js', 'sha384-xMwzl7oWKWy1JOFwVKo6ylPXiT/QiA43ikfTH66pT8TTk0BvnP4x8DrISPx28syf', array('_css-tableexport@4')),
+          'tableexport@4'       => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/js/tableexport.min.js', 'sha384-xMwzl7oWKWy1JOFwVKo6ylPXiT/QiA43ikfTH66pT8TTk0BvnP4x8DrISPx28syf', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
+          'js-xlsx@0'           => new AA_Req_Lib('https://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.core.min.js', 'sha384-Z64xo5gl0CGLf7pO6yQqbSz60LwUKgL7XrNEhh6nl+ZDQMwffbK0G+d4Nep52sIS'),
+          'filesaver@1'         => new AA_Req_Lib('https://cdn.jsdelivr.net/filesaver.js/1.3.3/FileSaver.min.js', 'sha384-VgWGwiEJnh9P379lbU8DxPcfRuFkfLl0uPuL9tolOHtm2tx8Qy8d/KtvovfM0Udh'),
           'lightgallery@1'      => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
-          'aa-tools@1'          => new AA_Req(array('css-aa-system@1','htm-aa-system@1')),
-          'ckeditor@4'          => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js'),'',array('aa-jslib@1','css-aa-system@1')),
-          'aa-jslib@1'          => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php'),'',array('jquery@3')),
+          'aa-tools@1'          => new AA_Req(array('css-aa-system@1','aa-jslib@2|aa-jslib@1','htm-aa-system@1')),
+          'ckeditor@4'          => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js'),'',array('css-aa-system@1','aa-jslib@2|aa-jslib@1')),
+          'aa-jslib@2'          => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php'),'',array('jquery@3')),
+          'aa-jslib@1'          => new AA_Req_Lib(get_aa_url('javascript/aajslib.php')),
           'jquery@3'            => new AA_Req_Lib('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f'),
           'vue@2'               => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.min.js', 'sha256-R9Mt0qq5P1LslCyog7N4sBewA6oOwsxBOoEwGURp6iE='),
-          //'_css-tableexport@4'  => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/css/tableexport.min.css'),
-          '_css-lightgallery@1' => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css'),
+          'vue-test@2'          => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.js', 'sha384-9U+IjOKdTdq0peTWxmURfKMD9//OSxyJjHThI8VgQH8TEjfQnbSs43aolMWPE0TI'),
+          '_css-tableexport@4'  => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/css/tableexport.min.css', 'sha384-Wt31MACcRL7zmUKRfvIIetCJdQfQqPRzFoTyuKv2qR+VjBol+DV460LynjT2WJaD'),
+          '_css-lightgallery@1' => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
           'css-aa-system@1'     => new AA_Req_Css(get_aa_url('css/aa-system.css'))  ,
-          'css-normalize@7'     => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css'),
+          'css-normalize@7'     => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
           'htm-aa-system@1'     => new AA_Req_Htm('AA_Tools::getBottomCode')
         );
     }
@@ -6610,6 +6646,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                  </article>';
 
         AA::Stringexpander()->setDependentParts($slices_arr, $hash, $ret);
+        AA::Stringexpander()->addRequire('css-aa-system');
         return $ret;
     }
 }
@@ -6719,6 +6756,30 @@ class AA_Stringexpand_Postreplace extends AA_Stringexpand {
     function expand($search='', $replace='') {
         // not used yet - if you need it, just uncomment it and send it to SVN (I want to have free hands to adapt it for the first real ussage (REGEXP? ...) )
         // AA::Stringexpander()->addPostpocess($search, $replace);
+        return '';
+    }
+}
+
+/** Creates "Export to XLSX" button on the table specified by selector:
+ *    {tableexport:.xlsexportable}
+ *  All the JS libraries are automaticaly loaded
+ *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
+ *  We may replace the JS by another with the same functionality in the future,
+ *  so do not count on the exact library in the code. The {tableexport} code
+ *  will remain functional, however
+ */
+class AA_Stringexpand_Tableexport extends AA_Stringexpand {
+    /** expand function
+     * @param $selector
+     */
+    function expand($selector='') {
+        if ($selector) {
+            AA::Stringexpander()->addRequire('tableexport');
+                          //'TableExport.prototype.charset = "charset=utf-8";' . "\n" .    // possible addition
+                          //'TableExport.prototype.defaultButton = "big-button";' . "\n" . // possible addition
+            $script2run = "TableExport(document.querySelectorAll('.derava-tbl table'),{ formats: ['xlsx'], position: 'bottom'}); \n";
+            AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
+        }
         return '';
     }
 }
