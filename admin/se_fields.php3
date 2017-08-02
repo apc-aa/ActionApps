@@ -66,7 +66,7 @@ function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $ali
         $rowclass .= ' separator';
     }
     echo "<tr class=\"$rowclass\">
-      <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
+      <td><input type=\"Text\" name=\"name[$id]\" size=50 maxlength=254 value=\"$name\"></td>";
     echo "<td>$id</td>";
     echo "
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
@@ -114,7 +114,7 @@ function ShowNewField($from_slice, $slice_id) {
     echo "\n</td>
           </tr>
           <tr class=\"tabtxt\">
-          <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>
+          <td><input type=\"Text\" name=\"name[$id]\" size=50 maxlength=254 value=\"$name\"></td>
           <td id=\"fieldselection\"></td>
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
