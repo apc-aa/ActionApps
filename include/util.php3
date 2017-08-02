@@ -1723,4 +1723,10 @@ function IsSpamText($text, $tolerance=4) {
 function IsAlias($identifier) {
     return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND ctype_digit((string)substr($identifier,3)))));
 }
+
+/** is signed int (ctype_digit do not allow signed numbers) */
+function IsSigInt($var) {
+    return is_int(filter_var($var, FILTER_VALIDATE_INT));
+}
+
 ?>

@@ -195,7 +195,7 @@ class AA_Validate extends AA_Serializable {
  *  @param   $max
  *  @param   $step
  */
-class AA_Validate_Number extends AA_Validate {
+class AA_Validate_Signed extends AA_Validate {
     /** Minum number */
     var $min;
 
@@ -224,14 +224,14 @@ class AA_Validate_Number extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        if (!ctype_digit((string)$var)) {
+        if (!IsSigInt($var)) {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value')."'$var'", $default);
         }
         $var = (int)$var;
-        if ( ctype_digit((string)$this->max) AND ($var > $this->max) ) {
+        if ( IsSigInt($this->max) AND ($var > $this->max) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
         }
-        if ( ctype_digit((string)$this->min) AND ($var < $this->min) ) {
+        if ( IsSigInt($this->min) AND ($var < $this->min) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
@@ -241,10 +241,31 @@ class AA_Validate_Number extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $ret = array('type'=>'number', 'pattern'=>'[0-9]*');
-        if (ctype_digit((string)$this->min))                        { $ret['min']  = $this->min; }
-        if (ctype_digit((string)$this->max))                        { $ret['max']  = $this->max; }
-        if (ctype_digit((string)$this->step AND ($this->step > 1))) { $ret['step'] = $this->step; }
+        $ret = array('type'=>'number', 'pattern'=>'-?[0-9]*');
+        if (IsSigInt($this->min))                        { $ret['min']  = $this->min; }
+        if (IsSigInt($this->max))                        { $ret['max']  = $this->max; }
+        if (IsSigInt($this->step) AND ($this->step > 1)) { $ret['step'] = $this->step; }
+        return $ret;
+    }
+}
+
+/** Test for integer value
+ *  @param   $min
+ *  @param   $max
+ *  @param   $step
+ */
+class AA_Validate_Number extends AA_Validate_Signed {
+    function __construct($param=array()) {
+        parent::__construct($param);
+        $this->min = 0;
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        $ret = parent::getHtmlInputAttr();
+        $ret['pattern']='[0-9]*';
         return $ret;
     }
 }
@@ -260,9 +281,9 @@ class AA_Validate_Bool extends AA_Validate_Number {
     }
 }
 
-/** Test for bool value
+/** Test for date value (could be negative)
  */
-class AA_Validate_Date extends AA_Validate_Number {
+class AA_Validate_Date extends AA_Validate_Signed {
 }
 
 /** Test for Regular Expression
@@ -616,6 +637,7 @@ class AA_Validate_Text extends AA_Validate {
 *  You can add parameters to $type divided by ":".
 */
 function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $validator) {
+
     if (is_string($validator)) {
        $validator = AA_Validate::factoryCached($validator);
     }

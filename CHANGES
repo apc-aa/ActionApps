@@ -1,4 +1,8 @@
-26-05-16 - the all_fields constant could be used also in conditions with
+17-08-02 - fixed validation bug, so dates now could be older than 1970 again
+(honzam) - added fontawesome 4.7 for {require:css-fontawesome}
+         - improved {expandable:} - shorted text is clickable
+         - AA UI - longer field for Field Name in Admin -> Fields
+17-05-26 - the all_fields constant could be used also in conditions with
 (honzam)   relations:
              d-all_fields@relation........-LIKE-mystring
            which searches all fields in the item related through
