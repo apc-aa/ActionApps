@@ -700,7 +700,7 @@ class AA_Module_Site extends AA_Module {
 
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {
-        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModule($translate_slice)->getProperty('translations'))) {
+        if (($translate_slice = $this->getProperty('translate_slice')) AND is_array($translations = AA_Slice::getModuleProperty($translate_slice,'translations'))) {
             return $translations[0];
         }
         return $this->getLang();

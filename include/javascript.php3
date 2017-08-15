@@ -58,7 +58,7 @@ class AA_Jstriggers {
             }
         }
 
-        $javascript = is_null($slice = AA_Slice::getModule($slice_id)) ? '' : $slice->getProperty('javascript');
+        $javascript = (string)AA_Slice::getModuleProperty($slice_id,'javascript');
 
         $ws = "[ \t\n\r]*";
         foreach ($js_trig as $trg => $foo) {

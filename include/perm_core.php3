@@ -904,7 +904,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @param $user_id
      */
     private function _isUserReader($user_id)      { return (guesstype($user_id) == 'l');  }
-    private function _isGroupReader($group_id)    { return ((guesstype($group_id) == 'l') AND (AA_Slice::getModule($group_id)->getProperty('type')=='ReaderManagement')); }
+    private function _isGroupReader($group_id)    { return ((guesstype($group_id) == 'l') AND (AA_Slice::getModuleProperty($group_id,'type')=='ReaderManagement')); }
     private function _isGroupReaderSet($group_id) { return is_marked_by($group_id, 1); }
 
     /** GetReaderIDsInfo function

@@ -685,7 +685,7 @@ class AA_Item {
         // first_child try translation to right language
         if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber(AA::$lang)))) {
             // if not present - translate to default language of the slice
-            $translations = AA_Slice::getModule($this->getSliceID())->getProperty('translations');
+            $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
             if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber($translations[0])))) {
                 // last try the 0 index (if the field was not set to translation)
                 $txt = $this->getval($col);

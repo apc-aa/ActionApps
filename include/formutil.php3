@@ -403,7 +403,7 @@ class inputform {
         $jscode .= $this->js_proove_fields;
 
         // field javascript feature - triggers (see /include/javascript.php3)
-        $javascript = AA_Slice::getModule($slice_id)->getProperty('javascript');
+        $javascript = AA_Slice::getModuleProperty($slice_id,'javascript');
 
         if ($javascript) {
             $jscode .= $javascript;

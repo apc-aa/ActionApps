@@ -57,7 +57,7 @@ if (isset($go_sid)) {
 
 $tree = new sitetree();
 
-if ( ($structre = AA_Module_Site::getModule($module_id)->getProperty('structure')) != '') {
+if ( ($structre = AA_Module_Site::getModuleProperty($module_id,'structure')) != '') {
     $tree = unserialize($structre);
 } else {
     // get information about start spot (=start of the tree)

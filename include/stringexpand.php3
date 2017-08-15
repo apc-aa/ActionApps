@@ -4277,7 +4277,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
                     // if ($errcheck) huhl("No slice_id defined when expanding fileman");
                     return "";
                 }
-                $fileman_dir = AA_Slice::getModule($mysliceid)->getProperty("fileman_dir");
+                $fileman_dir = AA_Slice::getModuleProperty($mysliceid,'fileman_dir');
             // Note dropthrough from case "fileman"
             case "site":
                 if ($type == "site") {
@@ -6668,7 +6668,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     return AA_Items::getItem($zids[0])->f_2('headline........');
                 }
                 // if not present - translate to default language of the slice
-                $translations = AA_Slice::getModule($translate_slice)->getProperty('translations');
+                $translations = AA_Slice::getModuleProperty($translate_slice,'translations');
 
                 $ic = new ItemContent();
                 $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));

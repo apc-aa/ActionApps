@@ -1422,7 +1422,7 @@ class AA_Credentials {
 
     /** main method for checking the slice_pwd */
     function checkSlice($slice_id, $crypted_additional_slice_pwd=null) {
-        return $this->checkCryptedPassword(AA_Slice::getModule($slice_id)->getProperty('reading_password'), $crypted_additional_slice_pwd);
+        return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id,'reading_password'), $crypted_additional_slice_pwd);
     }
 
     function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null) {
@@ -1439,7 +1439,7 @@ class AA_Credentials {
      * @param $slice_id
      */
     function loadFromSlice($slice_id) {
-        $this->register(AA_Slice::getModule($slice_id)->getProperty('reading_password'));
+        $this->register(AA_Slice::getModuleProperty($slice_id,'reading_password'));
     }
 
     function register($crypted_slice_pwd) {
