@@ -177,10 +177,11 @@ function ChangeGroup($group, $flags = 0) {
  * @param $flags
  */
 function AddGroupMember($group_id, $id, $flags = 0) {
-    DelGroupMember($group_id, $id);
-    $varset = new CVarset(array(array('groupid',$group_id),
-                                array('memberid',$id)));
-    $varset->doInsert('membership');
+    if ($group_id AND $id) {
+        DelGroupMember($group_id, $id);
+        $varset = new CVarset(array(array('groupid',$group_id), array('memberid',$id)));
+        $varset->doInsert('membership');
+    }
 }
 
 /** DelGroupMember function
@@ -369,6 +370,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($id, $flags = 0) {
+
         if (!ctype_digit((string)$id)) {
             return array();
         }
@@ -388,8 +390,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             foreach ($groupids as $gid) {
                 // Realize that it has already checked a group and eliminate it.
 
-
-                if ( !in_array($gid, $all_groups) ) {
+                if ( $gid AND !in_array($gid, $all_groups) ) {  // eliminate also $gid == 0 - nonsence, but sometimes it is in DB
                     $last_groups[] = $gid;
                     $all_groups[]  = $gid;
                 }

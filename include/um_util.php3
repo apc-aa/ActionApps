@@ -284,8 +284,8 @@ function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
 
     // posted_groups contains comma delimeted list of selected groups for user
     $assigned_groups = explode(",",$posted_groups);
-    if ( isset($assigned_groups) AND is_array($assigned_groups) ) {
-        foreach ($assigned_groups as $foo_gid) {
+    foreach ($assigned_groups as $foo_gid) {
+        if ($foo_gid) {
             AddGroupMember(urldecode($foo_gid), $selected_user);
         }
     }
