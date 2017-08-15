@@ -1,3 +1,7 @@
+17-08-15 - fixed bug with assigning user to empty group
+(honzam) - optimaization - module property obtained by right method with
+           checking for valid module
+         - fixed AA_DB::sql making WHERE - NULL values are OK, now
 17-08-02 - fixed validation bug, so dates now could be older than 1970 again
 (honzam) - added fontawesome 4.7 for {require:css-fontawesome}
          - improved {expandable:} - shorted text is clickable

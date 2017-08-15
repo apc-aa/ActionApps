@@ -468,22 +468,22 @@ class DB_AA extends DB_Sql {
      * @param $tablename
      */
     static public function makeWhere($varlist) {
-        $delim = '';
-        $where = '';
+        $where = array();
         foreach ( $varlist as $vardef) {
             // $vardef is array(varname, type, value)
             list($name, $value, $type) = $vardef;
+            $type = (string)$type;
             if (in_array($type, array('>','<','<=','>='))) {
                 $operator = $type;
                 $type     = 'i';
             } elseif ( ($type == 'LIKE') OR ($type == 'NOT LIKE') ) {
-                $where   .= "$delim $name $type ". qquote($value);
+                $where[]  = "$name $type ". qquote($value);
                 continue;
-            } elseif ( $value == 'ISNULL' ) {
-                $where   .= "$delim $name IS NULL ";
+            } elseif ( (string)$value == 'ISNULL' ) {
+                $where[]  = "$name IS NULL ";
                 continue;
-            } elseif ( $value == 'NOTNULL' ) {
-                $where   .= "$delim $name IS NOT NULL ";
+            } elseif ( (string)$value == 'NOTNULL' ) {
+                $where[]  = "$name IS NOT NULL ";
                 continue;
             } else {
                 $operator = '=';
@@ -491,13 +491,13 @@ class DB_AA extends DB_Sql {
 
             if (!is_array($value)) {
                 switch ( $type ) {
-                    case "i":   $where .= "$delim $name $operator ". (int)$value; break;
-                    case "l":   $where .= "$delim $name = ".         xpack_id($value); break;
-                    case "j":   $where .= "$delim $name = ".         quote($value); break;
+                    case "i":   $where[]  = "$name $operator ". (int)$value; break;
+                    case "l":   $where[]  = "$name = ".         xpack_id($value); break;
+                    case "j":   $where[]  = "$name = ".         quote($value); break;
                     case "set": $value  = (int)$value;
-                                $where .= "$delim (($name & $value) = $value)"; break;
+                                $where[]  = "(($name & $value) = $value)"; break;
                     //default:  $part = DB_AA::quote($value);
-                    default:    $where .= "$delim $name = ". qquote($value);
+                    default:    $where[]  = "$name = ". qquote($value);
                 }
             } else {
                 switch ( $type ) {
@@ -506,14 +506,13 @@ class DB_AA extends DB_Sql {
                     default:  $arr = array_map('qquote',   $value);
                 }
                 switch (count($arr)) {
-                    case 0:  $where .= "$delim 2=1"; break;
-                    case 1:  $where .= "$delim $name $operator ". reset($arr); break;
-                    default: $where .= "$delim $name IN (". join(',', $arr) .")";
+                    case 0:  $where    = array("2=1"); break;
+                    case 1:  $where[]  = "$name $operator ". reset($arr); break;
+                    default: $where[]  = "$name IN (". join(',', $arr) .")";
                 }
             }
-            $delim = " AND";
         }
-        return $where ? "WHERE $where" : '';
+        return count($where) ? "WHERE ".join(' AND ',$where) : '';
     }
 
     static protected function makeOrder($orderarr) {
