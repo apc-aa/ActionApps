@@ -1097,7 +1097,7 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
     <head>
       <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
       <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'" type="text/css" media="all">
-      <link rel="stylesheet" href="'.AA_INSTAL_PATH. '/css/aa-system.css" type="text/css" media="all">
+      <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css" type="text/css" media="all">
       <style type="text/css" media="print">
         .noprint, .aa_manager_actions { display: none; }
         body, #hlavnitbl { background-color: #FFFFFF;  }
