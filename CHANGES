@@ -1,3 +1,8 @@
+17-09-08 - fixed problem of creation of new AA system user when Readers uses
+(honzam)   numeric usernames
+         - fixed "Export to file" in AA UI - the column names was not shown
+           in some cases and encodings
+         - fixed CSS in AA - aa-system.css was not loaded in the AA UI
 17-08-15 - fixed bug with assigning user to empty group
 (honzam) - optimaization - module property obtained by right method with
            checking for valid module
