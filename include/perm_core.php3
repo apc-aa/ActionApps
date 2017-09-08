@@ -1034,7 +1034,7 @@ class AA_Reader {
         if (!is_array($slices)) {
             $slices  = getReaderSlices();
         }
-        $aa_set = new AA_Set($slices, new AA_Condition($field, '=', $value), null, $bin);
+        $aa_set = new AA_Set($slices, new AA_Condition($field, '==', $value), null, $bin);
 
         // get item id of current user
         $zid = $aa_set->query();

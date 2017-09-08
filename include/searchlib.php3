@@ -858,10 +858,11 @@ class AA_Dbcondition {
     private $field;             // string
     private $operator;          // string
     private $querystring;       // string
+    private $type;              // text|number   - store type - used for check for c0.number = 'honza'  (which would equals to TRUE in MySQL)
     private $condition = null;
     private $jointype  = null;
 
-    function __construct($field, $operator, $querystring) {
+    function __construct($field, $operator, $querystring, $type='text') {
         $this->field       = trim($field);
 
         // normalize operator
@@ -870,6 +871,7 @@ class AA_Dbcondition {
         $this->operator    = str_replace(array('#:',':','&gt;','&lt;'),array('','','>','<'), trim($operator)); // #: - fix mistaken escaping of d#:>...
 
         $this->querystring = $querystring;
+        $this->type = $type;
 
         $arr = $this->_calculate();
         $this->jointype  = $arr[0];
@@ -890,6 +892,15 @@ class AA_Dbcondition {
         // check for illegal characters in filed_id
         if (strlen($field) != strspn($field,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
             return array('NONE', '1=0');
+        }
+
+        // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
+        if ( ($this->type == 'number') ) {
+            if (strlen($querystring) != strspn($querystring,"0123456789+-()orandORAND '\"")) {
+                return array('NONE', '1=0');
+            } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
+                return array('NONE', '1=0');
+            }
         }
 
         if ($operator == '==') {
@@ -1580,7 +1591,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
             if ( $cond_flds != '' ) {
 
-                $dbcond = new AA_Dbcondition('c'.$tbl_count.".$store", $cond['operator'], $cond['value']);
+                $dbcond = new AA_Dbcondition('c'.$tbl_count.".$store", $cond['operator'], $cond['value'], $store);
                 $dbcjointype = $dbcond->getJoinType();
                 if ($dbcjointype == 'ALL') {
                     // nothing;
