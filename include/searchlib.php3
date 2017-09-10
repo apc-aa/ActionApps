@@ -896,7 +896,8 @@ class AA_Dbcondition {
 
         // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
         if ( ($this->type == 'number') ) {
-            if (strlen($querystring) != strspn($querystring,"0123456789+-()orandORAND '\"")) {
+            $querystring = trim($querystring);
+            if (strlen($querystring) != strspn($querystring,"0123456789+-()[]orandtORANDT '\"")) {   // OR AND NOT
                 return array('NONE', '1=0');
             } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
                 return array('NONE', '1=0');

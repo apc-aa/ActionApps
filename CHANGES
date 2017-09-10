@@ -1,3 +1,5 @@
+17-09-10 - fixed previous fix with numeric searches - now we count with all 
+(honzam)   cases (some numeric searches was broken from last update 17-09-08)
 17-09-08 - fixed problem of creation of new AA system user when Readers uses
 (honzam)   numeric usernames
          - fixed "Export to file" in AA UI - the column names was not shown
