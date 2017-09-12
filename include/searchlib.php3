@@ -38,6 +38,10 @@ class AA_Operators {
      */
     function getEnum() {
         return array('enum', array('LIKE'      => _m('contains'),
+                                   'CONTAIN'   => _m('contains'),        // CONTAIN and BEGIN are like LIKE and RLIKE, but:
+                                   'BEGIN'     => _m('begins with'),     //    - do not stripslashes
+                                                                         //    - *, ? and also _, %, ' and " treats as normal characters
+                                                                         //    - do not allow OR, AND, NOT
                                    'RLIKE'     => _m('begins with'),
                                    'LLIKE'     => _m('LLIKE'),
                                    'XLIKE'     => _m('XLIKE'),
@@ -129,7 +133,7 @@ class AA_Condition extends AA_Object {
         return array (                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
             /** Array of compared fields */
             'fields'   => new AA_Property( 'fields',   _m("Fields"),   'text',  true,  true, 'field' ),
-            /** Condition operator like 'LIKE', 'RLIKE', '=', '<>', '<', '>' ... */
+            /** Condition operator like 'CONTAIN', 'BEGIN', '=', '<>', '<', '>' ... */
             'operator' => new AA_Property( 'operator', _m("Operator"), 'text',  false, true, AA_Operators::getEnum() ),
              /** Compared value */
             'value'    => new AA_Property( 'value',    _m("Value"),    'text',  false, true, 'text' )
@@ -233,8 +237,10 @@ class AA_Condition extends AA_Object {
      */
     function _compare($field_value) {
         switch( $this->operator ) {
+            case 'CONTAIN':
             case 'LIKE':
             case 'XLIKE':      return (strpos($field_value, $this->value) === false) ? false : true;
+            case 'BEGIN':
             case 'RLIKE':      return (strpos($field_value, $this->value) === 0)     ? true  : false;
             case 'LLIKE':      return  strpos($field_value, $this->value) == (strlen($field_value)-strlen($this->value));
             case 'REGEXP':     return  preg_match('/'. str_replace('/', '\/', $this->value) .'/', $field_value);
@@ -446,7 +452,7 @@ class AA_Set extends AA_Object {
 
     /** addCondsFromString function
      *  Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
-     *  string ie:   d-headline........,category.......1-RLIKE-Bio
+     *  string ie:   d-headline........,category.......1-BEGIN-Bio
      * @param $string
      * @param $defaultCondsOperator
      */
@@ -683,7 +689,7 @@ class AA_Set extends AA_Object {
 
     /** _parseViewConds function
      *  Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
-     *  @param $string ie:   d-headline........,category.......1-RLIKE-Bio
+     *  @param $string ie:   d-headline........,category.......1-BEGIN-Bio
      */
     function _parseViewConds($string) {
         $commands = new AA_View_Commands($string);
@@ -897,15 +903,18 @@ class AA_Dbcondition {
         // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
         if ( ($this->type == 'number') ) {
             $querystring = trim($querystring);
-            if (strlen($querystring) != strspn($querystring,"0123456789+-()[]orandtORANDT '\"")) {   // OR AND NOT
+            if (strlen($querystring) != strspn($querystring,"0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
                 return array('NONE', '1=0');
             } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
                 return array('NONE', '1=0');
             }
         }
 
-        if ($operator == '==') {
-            return array('INNER', " ($field = '". str_replace("'","\'",$querystring) ."') ");  // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
+        // new operators - no SQL parsing, no stripslashes
+        switch ($operator) {
+            case '==':      return array('INNER', " ($field = '".     addcslashes($querystring,"'")   ."') ");  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
+            case 'BEGIN':   return array('INNER', " ($field LIKE '".  addcslashes(quote($querystring),"_%") ."%') ");
+            case 'CONTAIN': return array('INNER', " ($field LIKE '%". addcslashes(quote($querystring),"_%") ."%') ");
         }
 
         // query string could be slashed - sometimes :-(
