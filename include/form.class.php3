@@ -217,6 +217,18 @@ class AA_Form extends AA_Object {
             );
     }
 
+    // add default property's row(s)
+    function addProperty($prop) {
+        $prop->addPropertyFormrows($this);
+    }
+
+    // add default property's row(s) for all props in array
+    function addProperties(array $props) {
+        foreach ($props as $prop ) {
+            $prop->addPropertyFormrows($this);
+        }
+    }
+
     function addRow($row) {
         $this->rows[] = $row;
     }

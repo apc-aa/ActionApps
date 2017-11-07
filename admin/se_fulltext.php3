@@ -27,7 +27,6 @@
  *
 */
 
-
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."varset.php3";
@@ -35,14 +34,44 @@ require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
-if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
-}
 
-if (!IfSlPerm(PS_FULLTEXT)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fulltext formatting"), "admin");
-    exit;
-}
+
+//class AA_Adminpage {
+//    protected $module_id;
+//    protected $perm;
+//    protected $name;
+//
+//    function __construct($module_id, $perm) {
+//        $this->module_id = $module_id;
+//        $this->perm      = $perm;
+//        $this->name      = $name;
+//    }
+//
+//    protected function getCancelUrl() {
+//        return get_admin_url('index.php3');
+//    }
+//    protected function isPerm() {
+//        return IfSlPerm($this->perm,$this->module_id);
+//    }
+//
+//    public function process() {
+//        if ($_POST['cancel']) {
+//            go_url($this->getCancelUrl());
+//        }
+//        if (!$this-isPerm()) {
+//            MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page').': '.$this->name, 'admin');
+//        }
+//
+//
+//
+//    }
+//
+//}
+//
+//$apage = new AA_Adminpage(AA::$module_id, PS_FULLTEXT, _m("Admin - design Fulltext view"));
+//$apage->process();
+
+
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
@@ -107,16 +136,49 @@ if ( $slice_id != "" ) {  // set variables from database
 $discus_vids    = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_slice_id' AND type='discus'",    'id', 'name');
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+
+
+
+
+//$aa_property = AA_Metabase::singleton()->getColumnProperty('slice', 'fulltext_format');
+//$widget      = $aa_property->defaultWidget();
+//$ret         = $widget->getEditHtml($aa_property, )
+//
+//
+//                $widget      = $field->getWidget($widget_type, $widget_properties);
+//                $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_properties['name'], $widget_properties['input_help']);
+//                $ret         = $widget->$type($aa_property, $item, $function);
+//                $widget->registerRequires();
+//
+
+
+
+
+
 ?>
 <title><?php echo _m("Admin - design Fulltext view");?></title>
-<script Language="JavaScript"><!--
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.css" integrity="sha256-XyDJ6+MvRGhJHdk5i+vjmlocQ4lO6W2q5fahVAcYql0=" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.js"  integrity="sha256-/OCc+1HKfnjOGUtgcpPUGj14IzwliaF2X83ws+OlXaU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/htmlmixed/htmlmixed.js" integrity="sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/xml/xml.js" integrity="sha256-sB8UtHQubuS61s0F+Ui6xNwJHrTXcd3zjCgfb4bOnK4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/css/css.js" integrity="sha256-lKwXc/xVYQ26OoLFzIMNK0o1tTTYBNMqHbBO7bdoIio=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/javascript/javascript.js" integrity="sha256-6vpQF2FCKaaXS1eBjQHL/Zzf5mUcA8cLLTQ8nVGgZYo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchbrackets.js" integrity="sha256-coEcESK5JwnNa8975uTdCcJb553y6HKAwlWs/LCWeuQ=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchtags.js" integrity="sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/fold/xml-fold.js" integrity="sha256-l/TrijjAvQgiGYppltKp2PLTBGe7s7tPiid0WoaLeMY=" crossorigin="anonymous"></script>
+<style>
+  .CodeMirror { height:auto; min-height: 100px; font-size: 12px}
+  .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
+</style>
+<script>
 function Defaults() {
-    document.f.fulltext_format_top.value    = '<?php echo DEFAULT_FULLTEXT_TOP ?>'
-    document.f.fulltext_format.value        = '<?php echo DEFAULT_FULLTEXT_HTML ?>'
-    document.f.fulltext_format_bottom.value = '<?php echo DEFAULT_FULLTEXT_BOTTOM ?>'
-    document.f.fulltext_remove.value        = '<?php echo DEFAULT_FULLTEXT_REMOVE ?>'
+    document.f.fulltext_format_top.value    = '';
+    document.f.fulltext_format.value        = "<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>";
+    document.f.fulltext_format_bottom.value = '';
+    document.f.fulltext_remove.value        = '';
 }
-// -->
 </script>
 </head>
 
@@ -136,6 +198,7 @@ $form_buttons = array ("update",
                                           'add'   => 'onclick="Defaults()"'));
 
 ?>
+
 <form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("HTML code for fulltext view"), '','', $form_buttons, $sess, $slice_id);
@@ -161,6 +224,8 @@ PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons
 FrmTabEnd("", $sess, $slice_id);
 ?>
 </form>
+<script> CodeMirror.fromTextArea(document.getElementById('fulltext_format_bottom'), { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" }); </script>
+
 <?php
 HtmlPageEnd();
 page_close()

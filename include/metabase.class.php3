@@ -1049,8 +1049,13 @@ class AA_Metabase {
         return $ret;
     }
 
+    /** AA_Property for $tablename and column */
+    function getColumnProperty($tablename, $columnname) {
+        return (is_object($table = $this->tables[$tablename]) AND is_object($column = $table[$columnname])) ? $column->getAsProperty() : null;
+    }
+
     /** AA_Propery array - for form generation */
-    function getColumnProperies($tablename) {
+    function getColumnProperties($tablename) {
         $table = $this->tables[$tablename];
         $ret   = array();
         foreach ($table as $column) { // in priority order
@@ -1126,16 +1131,13 @@ class AA_MetabaseTableEdit {
     /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
     public static function defaultAddFormrows($tablename, $form) {
         $metabase  = AA_Metabase::singleton();
-        $props     = $metabase->getColumnProperies($tablename);
-        foreach ($props as $name => $property) {
-            $property->addPropertyFormrows($form);
-        }
+        $form->addProperties($metabase->getColumnProperties($tablename));
         return $form;
     }
 
     /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
     public static function defaultGetClassProperties($tablename) {
-        return AA_Metabase::singleton()->getColumnProperies($tablename);
+        return AA_Metabase::singleton()->getColumnProperties($tablename);
     }
 
     /** helps other classes to implement iEditable method factoryFromForm - creates Object from the form data */

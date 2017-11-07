@@ -298,8 +298,6 @@ define("EDIT_ITEM_COUNT", 20);
 define("QUERY_DATE_STEP", 1000);
 
 
-define("DEFAULT_FULLTEXT_HTML", '<br><font size="+2" color="blue">_#HEADLINE</FONT>'
-                               .'<br><b>_#PUB_DATE</b> <br>_#FULLTEXT');
 define("DEFAULT_ODD_HTML",
      '<font face="Arial" color="#808080" size="-2">_#PUB_DATE - </font>'
     .'<font color="red"><strong><a href="_#HDLN_URL">_#HEADLINE</a></strong></font>'
@@ -312,7 +310,6 @@ define("DEFAULT_CATEGORY_HTML", "<p>_#CATEGORY</p>");
 define("DEFAULT_EVEN_ODD_DIFFER", false);
 define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
-define("DEFAULT_FULLTEXT_REMOVE", "()");
 
 define("ANONYMOUS_EDIT_NOT_ALLOWED", 0);
 define("ANONYMOUS_EDIT_ALL", 1);
