@@ -374,8 +374,13 @@ class AA_Responder_Alertitem extends AA_Responder {
 
 //echo "ok";
 
-pageOpen('nobody');
+// if ($_POST['username']) {
+//     pageOpen();
+// } else {
+//     pageOpen('nobody');
+// }
 
+pageOpen('nobody');
 
 //$sess = new AA_CP_Session;
 //$sess->start();
@@ -431,7 +436,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You don't have permissions to run %1.", array($responder->name())), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", array($responder->name(), $auth->auth["uid"])), 101);  // error code > 0
     exit;
 }
 

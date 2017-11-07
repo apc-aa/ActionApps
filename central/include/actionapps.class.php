@@ -196,12 +196,15 @@ class AA_Actionapps {
             }
         }
         // _remote_session_id is set
-        return $request->ask($this->getComunicatorUrl(), array('AA_CP_Session'=>$this->_remote_session_id));
+        return $request->ask($this->getComunicatorUrl(), array('AA_CP_Session'=>$this->_remote_session_id), array('Cookie'=>'AA_Session='.$this->_remote_session_id));
+        // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
+        // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
     }
 
     function _authenticate() {
         $request  = new AA_Request('Get_Sessionid');
-        $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
+        // $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
+        $response = $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
         if ( !$response->isError() ) {
             $arr = $response->getResponse();
             $this->setSession($arr[0]);

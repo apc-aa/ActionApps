@@ -19,10 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once __DIR__. "/include/init_central.php";
+require_once __DIR__. '/include/init_central.php';
 require_once AA_INC_PATH.     'formutil.php3';
 require_once AA_INC_PATH.     'files.class.php3';
-require_once AA_INC_PATH.     "msgpage.php3";
+require_once AA_INC_PATH.     'msgpage.php3';
 
 pageOpen();
 
@@ -132,8 +132,8 @@ FrmTabCaption('', '','', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Modules to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
 FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, @reset($_POST['sync_slices']), 10);
-FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, "", 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
-FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, "", 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));
+FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, '', 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
+FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));
 FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
 FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, @reset($_POST['sync_alerts']), 10);
 FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
