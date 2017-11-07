@@ -98,12 +98,6 @@ function getHtmlareaJavascript($slice_id) {
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
 
     $retval = getFrmJavascript('
-                // global variables used in CKEDITOR (HTMLArea (xinha))
-                // You must set _editor_url to the URL (including trailing slash) where
-                // where xinha is installed, it\'s highly recommended to use an absolute URL
-                //  eg: _editor_url = "/path/to/xinha/";
-                // You may try a relative URL if you wish]
-                //  eg: _editor_url = "../";
                 _aa_url        = "'.get_aa_url("", '', false).'";
                 aa_slice_id        = "'.$slice_id.'";'
                 // _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
@@ -184,30 +178,8 @@ class inputform {
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used and
         // $this->js_proove_fields
-        $form       = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
-        $profile    = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
-        $page_title = get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_title' : 'add_title'), $this->page_title);
-
-        if ( $this->display_aa_begin_end ) {
-            HtmlPageBegin(false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-            // get validation and gui javascripts for used fields
-            // getFormJavascript must be called after getForm since
-            // $this->show_func_used, $this->js_proove_fields must be already filled
-            echo $this->getFormJavascript();
-            echo '
-                <title>'. $page_title .'</title>
-              </head>
-              <body '.getTriggers('body').'>
-                <h1><b>' . $page_title .'</b></h1>';
-
-            // you can add some html code by user profiles, above the form
-            echo get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_tophtml' : 'add_tophtml'), '');
-
-            PrintArray( $this->messages['err'] );     // prints err or OK messages
-        }
-
-        echo $this->getFormStart();
+        $form          = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
+        $remove_string = '';
 
         // design of form could be customized by view
         if ( $this->template AND ($view = AA_Views::getView($this->template))) {
@@ -216,9 +188,10 @@ class inputform {
             $remove_string = $view->f('remove_string');
         }
 
-        $buttons = array();
+        $profile       = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
-        // create buttons array for top (and lately for bottom of the form)
+        // create buttons array for top (and lately for bottom of the form) ------------------
+        $buttons = array();
         if ( $this->form4update ) {
             $buttons += inputform::_getButton('update',   'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
             $buttons += inputform::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
@@ -240,36 +213,75 @@ class inputform {
             $buttons += inputform::_getButton('ins_preview', 'submit', _m("Insert & View"), $profile->getProperty('ui_inputform', 'add_btn_ins_preview'));
             $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'add_btn_cancel'), $this->cancel_url);
         }
+        // /buttons  ------------------
 
-    //added for MLX
+        $html_end   = '';
+        $html_start = '';
+        if ( $this->display_aa_begin_end ) {
+            $page_title = get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_title' : 'add_title'), $this->page_title);
+
+            HtmlPageBegin(false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+            // adding to $form just for {generate:HEAD}. Honza 2017-06-13
+
+            // get validation and gui javascripts for used fields
+            // getFormJavascript must be called after getForm since
+            // $this->show_func_used, $this->js_proove_fields must be already filled
+            $html_start  = $this->getFormJavascript();
+            $html_start .= '
+                <title>'. $page_title .'</title>
+                {generate:HEAD}
+              </head>
+              <body '.getTriggers('body').'>
+                <h1><b>' . $page_title .'</b></h1>';
+
+            // you can add some html code by user profiles, above the form
+            $html_start .= get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_tophtml' : 'add_tophtml'), '');
+
+            $html_start .= GetPrintArray( $this->messages['err'] );     // prints err or OK messages
+
+            $html_end = "{generate:FOOT}</body></html>";
+        }
+
         // print the inputform
-        $CurItem = new AA_Item($content4id, $slice->aliases(), $form, $remove_string);   // just prepare
+        $out        = AA::Stringexpander()->unalias($form, $remove_string, GetItemFromContent($content4id));
+        $out        = AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 
-        $out = $CurItem->get_item();
+        $form_parts      = $GLOBALS['g_formpart'];        // must be here - right after unalias
+        $form_part_names = $GLOBALS['g_formpart_names'];  // must be here - right after unalias
+        $form_part_pos   = $GLOBALS['g_formpart_pos'];    // must be here - right after unalias
+
+        $html_start = AA::Stringexpander()->unalias($html_start);
+        $html_start = AA::Stringexpander()->postprocess($html_start);
+        $html_end   = AA::Stringexpander()->unalias($html_end);
+        $html_end   = AA::Stringexpander()->postprocess($html_end);
+           //$CurItem = new AA_Item($content4id, $slice->aliases(), $form, $remove_string.'##{generate:FOOT}');   // just prepare
+           //$out = $CurItem->get_item();
+
+        echo $html_start;
+
+        echo $this->getFormStart();
 
         FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"', $buttons);
-        $parts = $GLOBALS['g_formpart'];
         $tabs  = array();
-        if ( $parts ) {
-            $idx = 0;
-            while ( $parts+1 ) {
-                $tabs['formrow'.(string)$parts] = get_if( $GLOBALS['g_formpart_names'][$parts], _m('Part'). " ".($idx+1));
-                $idx++;
-                $parts--;
+        if ( $form_parts ) {
+            for ( $idx=0; $idx <= $form_parts; $idx++ ) {
+                $tabs['formrow'.(string)$idx] = get_if( $form_part_names[$idx], _m('Part'). " ".($idx+1));
             }
             // print tabs for form switching
-            if ( $GLOBALS['g_formpart_pos'] & 1 ) {  // 1 ~ top
+            if ( $form_part_pos & 1 ) {  // 1 ~ top
                 FrmTabs( $tabs, 'formtabs' );
             }
         }
 
+    //added for MLX
         if ($this->formheading) {// added for mlx tab
             echo $this->formheading;
         }
 
         echo $out;
 
-        if ( $parts AND ($GLOBALS['g_formpart_pos'] & 2)) {  // 2 ~ bottom
+        if ( $form_parts AND ($form_part_pos & 2)) {  // 2 ~ bottom
             // print tabs for form switching
             FrmTabs( $tabs, 'formtabs2' );
         }
@@ -288,19 +300,17 @@ class inputform {
 
         FrmTabEnd( $buttons, $sess, $slice->getId() );
 
-        if ( $GLOBALS['g_formpart'] ) {
+        if ( $form_parts ) {
             FrmJavascript('document.getElementById("inputtabrows").style.display = \'\';
-                           TabWidgetToggle(\'formrow'.$GLOBALS['g_formpart'].'\');');
+                           TabWidgetToggle(\'formrow0\');');
         }
 
         echo '</form>';
 
         // you can add some html code by user profiles, below the form
         echo get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_bottomhtml' : 'add_bottomhtml'), '');
+        echo $html_end;
 
-        if ( $this->display_aa_begin_end ) {
-            echo "</body></html>";
-        }
     }
 
     /** getForm function
@@ -395,41 +405,28 @@ class inputform {
      */
     function getFormJavascript() {
         global $slice_id;
+        $retval = '';
 
-        $retval  = getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
-        $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
-        $retval .= getFrmJavascriptFile( 'javascript/aajslib.php' );
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.js?v=1','',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.js','',false));
+
+        // $retval .= getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
+        // $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
+        // $retval .= getFrmJavascriptFile( 'javascript/aajslib.php' );
 
         $jscode .= $this->js_proove_fields;
 
         // field javascript feature - triggers (see /include/javascript.php3)
-        $javascript = AA_Slice::getModuleProperty($slice_id,'javascript');
-
-        if ($javascript) {
+        if ($javascript = AA_Slice::getModuleProperty($slice_id,'javascript')) {
             $jscode .= $javascript;
+            AA::Stringexpander()->addRequire('aa-jslib@1');
+            AA::Stringexpander()->addRequire(get_aa_url('javascript/fillform.js','',false));
         }
+
         $retval .= getFrmJavascript( $jscode );
-
-        $retval .= getFrmJavascript('
-                    // global variables used by multi-value selectboxes
-                    var maxcount = '. MAX_RELATED_COUNT .';
-                    var relmessage = "'._m("There are too many items.") .'";'
-                    );
-
         $retval .= getHtmlareaJavascript($slice_id);
 
-        $retval .= getFrmJavascriptFile('javascript/constedit.js');
-
-//      if ($this->show_func_used['txt'] || $this->show_func_used['edt']) {
-//          $retval .= getFrmJavascript('
-//                window.onload   = ckeditor_init;'
-//                window.onunload = HTMLArea.flushEvents;'
-//          );
-//      }
-
-        if ($javascript) {
-            $retval .= getFrmJavascriptFile('javascript/fillform.js' );
-        }
+        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.js','',false));  // no longer needed - managed by {require:...} in hco
 
         return $retval;
     }
@@ -960,6 +957,7 @@ class AA_Inputfield {
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
                 case 'mfl':
                 case 'rim':
+                case 'cod':
                 default:    $this->inputWidget($item, $slice_id);
 
             }
@@ -1169,15 +1167,15 @@ class AA_Inputfield {
         $ret = '';
         if (count($parts)>1) {
             $ret .= "<div class=\"aa-langswitch\">";
-            $ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
+            $ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[].forEach.call(document.querySelectorAll('#".join(",#", array_keys($parts))."'), function(a) { a.style.display='block'; }); this.parentNode.style.display='none';\">";
+            //$ret .= "\n  <input type=button value=\""._m('Translate')."\" class=\"aa-langall\" onclick=\"[$('".join("'),$('", array_keys($parts))."')].invoke($(this).hasClassName('aa-open')?'hide':'show');[$('aa-but".join("'),$('aa-but", array_keys($parts))."')].invoke('toggleClassName', 'aa-open', !$(this).hasClassName('aa-open'));$(this).toggleClassName('aa-open')\">";
             foreach ($parts as $id => $prop) {
-                $ret .= "\n     <input type=button value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"$('$id').toggle();$('aa-but$id').toggleClassName('aa-open')\">";
+                $ret .= "\n     <input type=button value=\"".$prop[0]."\" id=\"aa-but$id\" class=\"".join(' ',$prop[1])."\" onclick=\"this.classList.toggle('aa-open');document.querySelector('#$id').style.display=(this.classList.contains('aa-open')?'block':'none');\">";
             }
             $ret .= "\n</div>";
         }
         return $ret;
     }
-
     // field displaying functions ---------------------------------------------
 
 
@@ -1390,7 +1388,7 @@ class AA_Inputfield {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                     $value = $val[0]['value'];
                 }
-                $rows              = max($rows, min(substr_count($value,"\n")+1, 30));
+                $rows              = max($rows, min(floor(substr_count($value,"\n")*1.3), 30));
                 $rows_css          = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
                 $name2             = $name."[$lang_id]";
@@ -1414,7 +1412,7 @@ class AA_Inputfield {
         } else {
 
             $value    = myspecialchars($val[0]['value']);
-            $rows     = max($rows, min(substr_count($value,"\n")+1, 30));
+            $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
             $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
@@ -1838,6 +1836,7 @@ class AA_Inputfield {
         }
 
         $this->echoo("
+            <!-- {require:aa-constedit} -->
             <table border=\"0\" cellpadding=\"2\" width=\"100%\"><tr>
             <td align=\"center\"><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
             <td>");
@@ -1882,9 +1881,9 @@ class AA_Inputfield {
     function inputWidget($item, $slice_id) {
         $this->field_name('plus');
         if (is_null($item)) {
-            $this->echoo('{input:'.$slice_id.':'.$this->id.'}');
+            $this->echovar(AA::Stringexpander()->unalias('{input:'.$slice_id.':'.$this->id.'}'));
         } else {
-            $this->echoo('{edit:'.$item->getId().':'.$this->id.'}');
+            $this->echovar(AA::Stringexpander()->unalias('{edit:'.$item->getId().':'.$this->id.'}'));
         }
         $this->helps('plus');
     }
@@ -3000,18 +2999,13 @@ function GetHtmlTable( $content, $mode='td' ) {
 function getFrmJavascriptFile( $src, $add='') {
     return "\n <script type=\"text/javascript\" $add src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
 }
+
 /** getFrmJavascript function
  * @param $code
  */
 function getFrmJavascript( $jscode ) {
-    return '
-    <script type="text/javascript"> <!--
-      '.$jscode.'
-      //-->
-    </script>
-    ';
+    return "\n<script type=\"text/javascript\">\n  $jscode \n</script>\n";
 }
-
 
 /** getFrmJavascriptCached function
  *  Stores the javascript to the dababase cache in order we can call this
@@ -3037,12 +3031,7 @@ function getFrmJavascriptCached( $jscode, $name ) {
  * @param $stylecode
  */
 function getFrmCSS( $stylecode ) {
-    return '
-    <style type="text/css">  <!--
-      '.$stylecode.'
-      //-->
-    </style>
-    ';
+    return "\n<style type=\"text/css\">\n  $stylecode \n</style>\n";
 }
 /** FrmJavascript function
  * @param $jscode

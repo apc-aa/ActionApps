@@ -166,6 +166,25 @@ class AA_Widget extends AA_Components {
     function name()         {}
     //    function description()  {}
 
+    /** returns if the widget handles multivalue or just single value   */
+    function multiple()    { return false;   }
+
+    /** array of libs needed for the widget - automaticaly inserted to the inputform */
+    function requireLibs() { return array(); }
+
+    /** script to run after the page DOM is loaded */
+    function requireRun()  { return '';      }
+
+    /** register Requires */
+    public function registerRequires() {
+        foreach ($this->requireLibs() as $lib) {
+            AA::Stringexpander()->addRequire($lib);
+        }
+        if ($script2run = $this->requireRun()) {
+            AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
+        }
+    }
+
     // not used, yet
     //function assignConstants($arr) {
     //    $this->_const_arr = (array)$arr;
@@ -497,6 +516,11 @@ class AA_Widget extends AA_Components {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
     }
 
+    /** @return just widget HTML for using in form - without label... */
+    function getEditfullHtml($aa_property, $content, $function=null) {
+        return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
+    }
+
     function _finalizeHtml($winfo, $aa_property, $widget_only=false) {
         $base_name   = $winfo['base_name'];
         $base_id     = AA_Form_Array::formName2Id($base_name);
@@ -526,10 +550,11 @@ class AA_Widget extends AA_Components {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $help         = $aa_property->getHelp();
-        $widget_html  = '<div class=ajax_widget>';
+        $class        = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-ajax-inline' : 'aa-ajax-open';
+        $widget_html  = "<div class=\"ajax_widget $class\">";
         $widget_html .= "\n".$winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $widget_html .= "\n<div class=ajax_buttons>";
-        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //ULO�IT ZM�NU
+        $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
         $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
@@ -655,6 +680,7 @@ class AA_Widget extends AA_Components {
                 case 'change_hint':            $ret[$pid] = new AA_Property( $pid, _m("Help for Change Password"),          'string', false, true, 'string', false, _m("Help text under the Change Password box (default: no text)"), '', _m("To change password, enter the new password here and below")); break;
                 case 'retype_hint':            $ret[$pid] = new AA_Property( $pid, _m("Help for Retype New Password"),      'string', false, true, 'string', false, _m("Help text under the Retype New Password box (default: no text)"), '', _m("Retype the new password exactly the same as you entered into \"Change Password\".")); break;
                 case 'url':                    $ret[$pid] = new AA_Property( $pid, _m("URL"),                               'string', false, true, 'string', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml")); break;
+                case 'ajaxtype':               $ret[$pid] = new AA_Property( $pid, _m("Ajax inline"),                       'string', false, true, 'string', false, _m("If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)"), '', 'inline'); break;
                 case 'item_template':          $ret[$pid] = new AA_Property( $pid, _m("New item template ID"),              'string', false, true, 'string', false, _m("The ID of item in destination slice used as Template for new items (probably in Holding bin)"), '', '3e86c0be745dd7b35f406d6997c46b8e'); break;
             }
         }
@@ -674,18 +700,12 @@ class AA_Widget_Txt extends AA_Widget {
     function name() {
         return _m('Text Area');   // widget name
     }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;// returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties() {
-        return AA_Widget::propertiesShop(array('rows','max_characters'));
+        return AA_Widget::propertiesShop(array('rows','max_characters', 'ajaxtype'));
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -748,9 +768,6 @@ class AA_Widget_Tpr extends AA_Widget {
     function name() {
         return _m('Textarea with Presets');   // widget name
     }
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
@@ -771,9 +788,6 @@ class AA_Widget_Edt extends AA_Widget {
      */
     function name() {
         return _m('Rich Edit Text Area');   // widget name
-    }
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -796,12 +810,6 @@ class AA_Widget_Fld extends AA_Widget {
     function name() {
         return _m('Text Field');   // widget name
     }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;    // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -823,11 +831,10 @@ class AA_Widget_Mfl extends AA_Widget {
     function name() {
         return _m('Multiple Text Field');   // widget name
     }
-    /** multiple function
-     *
-     */
+
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -942,12 +949,6 @@ class AA_Widget_Pre extends AA_Widget {
     function name() {
         return _m('Text Field with Presets');   // widget name
     }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
@@ -969,12 +970,6 @@ class AA_Widget_Sel extends AA_Widget {
     function name() {
         return _m('Select Box');   // widget name
     }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -995,12 +990,6 @@ class AA_Widget_Rio extends AA_Widget {
      */
     function name() {
         return _m('Radio Button');   // widget name
-    }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1060,12 +1049,6 @@ class AA_Widget_Dte extends AA_Widget {
      */
     function name() {
         return _m('Date');   // widget name
-    }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1215,12 +1198,6 @@ class AA_Widget_Chb extends AA_Widget {
     function name() {
         return _m('Check Box');   // widget name
     }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -1267,11 +1244,10 @@ class AA_Widget_Mch extends AA_Widget {
     function name() {
         return _m('Multiple Checkboxes');   // widget name
     }
-    /** multiple function
-     *
-     */
+
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1374,11 +1350,10 @@ class AA_Widget_Mse extends AA_Widget {
     function name() {
         return _m('Multiple Selectbox');   // widget name
     }
-    /** multiple function
-     *
-     */
+
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1401,11 +1376,10 @@ class AA_Widget_Wi2 extends AA_Widget_Mch {
     function name() {
         return _m('Two Boxes');   // widget name
     }
-    /** multiple function
-     *
-     */
+
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1427,12 +1401,6 @@ class AA_Widget_Fil extends AA_Widget {
      */
     function name() {
         return _m('File Upload');   // widget name
-    }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1463,6 +1431,8 @@ class AA_Widget_Fil extends AA_Widget {
      */
     function getValue($data4field) {
 
+        //huhl($data4field, $_FILES);
+
         $uploads  = (array)$data4field['var'];
         $urls     = (array)$data4field['url'];
 
@@ -1471,7 +1441,7 @@ class AA_Widget_Fil extends AA_Widget {
 
         $values = array();
 
-        if (!empty($uploads)) {
+        if (!empty($uploads) AND ($uploads[3]==0)) {  // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
             // the information about file is in array - array(name, type, tmp_name, error, size)
             $values[] = 'AA_UPLOAD:'. ParamImplode($uploads);
         }
@@ -1592,8 +1562,10 @@ class AA_Widget_Tag extends AA_Widget {
     function name() {
         return _m('Tags');   // widget name
     }
+
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1682,8 +1654,10 @@ class AA_Widget_Iso extends AA_Widget {
     function name() {
         return _m('Related Item Window');   // widget name
     }
+
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1710,8 +1684,9 @@ class AA_Widget_Rim extends AA_Widget {
         return _m('Related Item Manager');   // widget name
     }
 
+    /** returns if the widget handles multivalue or just single value   */
     function multiple() {
-        return true;   // returns multivalue or single value
+        return true;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1815,6 +1790,121 @@ HTML;
 }
 
 
+/** Code editor */
+class AA_Widget_Cod extends AA_Widget {
+
+    /** widget name  */
+    function name() {
+        return _m('Code editor');
+    }
+
+    function requireLibs() {
+        return array('codemirror@5');
+    }
+
+    /** script to run after the page DOM is loaded */
+    function requireRun()  {
+      return '
+      var tas = document.querySelectorAll("textarea[data-editor]");
+      for(var i = 0; i < tas.length; i++) {
+        CodeMirror.fromTextArea(tas[i], { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" });
+      }
+      ';
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     */
+     static function getClassProperties()  {
+        return AA_Widget::propertiesShop(array('rows'));
+    }
+
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $property_id  = $aa_property->getId();
+        $base_name    = AA_Form_Array::getName4Form($property_id, $content, $this->item_index);
+        $base_id      = AA_Form_Array::formName2Id($base_name);
+        $input_name   = $base_name."[0]";
+        $input_flag   = $base_name."[flag]";
+        $value        = $content->getAaValue($aa_property->getId());
+        $input_value  = myspecialchars($value->getValue(0));
+        $rows         = $this->getProperty('rows', min(substr_count($value[0],"\n")+4, 60));
+
+
+        //$ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
+        $widget       = "<textarea id=\"$base_id\" name=\"$input_name\" rows=\"$rows\" data-editor=html>$input_value</textarea>";
+        $widget      .= "<input type=hidden name=\"$input_flag\" value=\"".FLAG_HTML."\">";
+
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+}
+
+//class AA_Widget_Cod extends AA_Widget {
+
+//    /** widget name  */
+//    function name() {
+//        return _m('Code editor');
+//    }
+
+//    function requireLibs() {
+//        return array('ace@1');
+//    }
+
+//    /** script to run after the page DOM is loaded */
+//    function requireRun()  {
+//      return "
+//      $('textarea[data-editor]').each(function() {
+//        var textarea = $(this);
+//        var mode     = textarea.data('editor');
+//        var editDiv = $('<div>', {
+//          position: 'absolute',
+//          width: '100%',   //textarea.width(),
+//          height: textarea.height(),
+//          'class': textarea.attr('class')
+//        }).insertBefore(textarea);
+//        textarea.css('display', 'none');
+//        var editor = ace.edit(editDiv[0]);
+//        editor.renderer.setShowGutter(false);
+//        // editor.renderer.setShowGutter(textarea.data('gutter'));
+//        editor.getSession().setValue(textarea.val());
+//        editor.getSession().setTabSize(2);
+//        editor.getSession().setMode('ace/mode/' + mode);
+//        editor.setTheme('ace/theme/chrome');
+
+//        // copy back to textarea on form submit...
+//        textarea.closest('form').submit(function() {
+//          textarea.val(editor.getSession().getValue());
+//        })
+//      });";
+//    }
+
+
+//    /** getClassProperties function of AA_Serializable
+//     *  Used parameter format (in fields.input_show_func table)
+//     */
+//     static function getClassProperties()  {
+//        return AA_Widget::propertiesShop(array('rows'));
+//    }
+
+//    function _getRawHtml($aa_property, $content, $type='normal') {
+//        $property_id  = $aa_property->getId();
+//        $base_name    = AA_Form_Array::getName4Form($property_id, $content, $this->item_index);
+//        $base_id      = AA_Form_Array::formName2Id($base_name);
+//        $input_name   = $base_name."[0]";
+//        $input_flag   = $base_name."[flag]";
+//        $value        = $content->getAaValue($aa_property->getId());
+//        $input_value  = myspecialchars($value->getValue(0));
+//        $rows         = $this->getProperty('rows', min(substr_count($value[0],"\n")+4, 60));
+
+
+//        //$ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
+//        $widget       = "<textarea id=\"$base_id\" name=\"$input_name\" rows=\"$rows\" data-editor=html data-gutter=false>$input_value</textarea>";
+//        $widget      .= "<input type=hidden name=\"$input_flag\" value=\"".FLAG_HTML."\">";
+
+//        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+//    }
+//}
+
+
 
 /** Do not show widget */
 class AA_Widget_Nul extends AA_Widget {
@@ -1827,9 +1917,6 @@ class AA_Widget_Nul extends AA_Widget {
      */
     function name() {
         return _m('Do not show');   // widget name
-    }
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1851,12 +1938,6 @@ class AA_Widget_Hco extends AA_Widget {
      */
     function name() {
         return _m('Hierachical constants');   // widget name
-    }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -1917,13 +1998,6 @@ class AA_Widget_Pwd extends AA_Widget {
     function name() {
         return _m('Password and Change password');
     }   // widget name
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
-
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
@@ -1988,12 +2062,6 @@ class AA_Widget_Hid extends AA_Widget {
     function name() {
         return _m('Hidden field');
     }   // widget name
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -2023,12 +2091,6 @@ class AA_Widget_Inf extends AA_Widget {
     function name() {
         return _m('Info text - output');
     }   // widget name
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
-    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -2058,12 +2120,6 @@ class AA_Widget_Lup extends AA_Widget {
      */
     function name() {
         return _m('Local URL Picker');   // widget name
-    }
-    /** multiple function
-     *
-     */
-    function multiple() {
-        return false;   // returns multivalue or single value
     }
 
     /** getClassProperties function of AA_Serializable
@@ -2274,6 +2330,10 @@ class AA_Property extends AA_Storable {
             return null;
         }
 
+        return $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
+    }
+
+    function defaultWidget() {
         $values = $this->getConstants();
         $widget = '';
         if ($this->isMulti()) {
@@ -2298,8 +2358,7 @@ class AA_Property extends AA_Storable {
         else {
             $widget = new AA_Widget_Fld();
         }
-
-        return $form->addRow(new AA_Formrow_Full($this, $widget));
+        return $widget;
     }
 
     function validateReport($value_arr) {
