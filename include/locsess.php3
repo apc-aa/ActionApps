@@ -415,6 +415,11 @@ class DB_AA extends DB_Sql {
         return DB_AA::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
 
+    /** check if Table exists */
+    static function exists_table($table) {
+        return (false !== DB_AA::select1('SELECT table_schema FROM information_schema.tables', '', array(array('table_schema', DB_NAME), array('table_name', $table))));
+    }
+
     /** used as: DB_AA::update('slice', array(array('javascript',$_POST['javascript'])), array(array('id', $slice_id, 'l')));  */
     static function update($table, $varlist, $where) {
         $delim = '';

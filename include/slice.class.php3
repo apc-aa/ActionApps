@@ -424,8 +424,12 @@ class AA_Slice extends AA_Module {
         DB_AA::delete_low_priority('feedperms',          array(array('to_id',           $module_ids, 'l')));
         DB_AA::delete_low_priority('field',              array(array('slice_id',        $module_ids, 'l')));
         DB_AA::delete_low_priority('jump',               array(array('dest_slice_id',   $module_ids, 'l')));
-        DB_AA::delete_low_priority('mysql_auth_group',   array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('mysql_auth_userinfo',array(array('slice_id',        $module_ids, 'l')));
+        if (DB_AA::exists_table('mysql_auth_group')) {
+            DB_AA::delete_low_priority('mysql_auth_group',   array(array('slice_id',        $module_ids, 'l')));
+        }
+        if (DB_AA::exists_table('mysql_auth_userinfo')) {
+            DB_AA::delete_low_priority('mysql_auth_userinfo',array(array('slice_id',        $module_ids, 'l')));
+        }
         DB_AA::delete_low_priority('profile',            array(array('slice_id',        $module_ids, 'l')));
         DB_AA::delete_low_priority('rssfeeds',           array(array('slice_id',        $module_ids, 'l')));
         DB_AA::delete_low_priority('slice',              array(array('id',              $module_ids, 'l')));
