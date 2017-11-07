@@ -138,7 +138,7 @@ echo "
 
 if ( isset($rules) AND is_array($rules) ) {
     foreach ($rules as $v) {
-        PrintRule($v);
+        PrintRule($v, $lookup_fields);
     }
 } else {
     echo "<tr><td>"._m("No rule is set")."</td></tr>";
@@ -277,6 +277,6 @@ if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
 
 echo  '
   </table>';
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 ?>
