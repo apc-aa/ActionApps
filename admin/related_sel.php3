@@ -178,10 +178,6 @@ $manager->performActions();
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/inputform.js?v=1');  // for SelectRelations() function
-FrmJavascript("
-  var maxcount = ". MAX_RELATED_COUNT .";
-  var relmessage = \""._m("There are too many related items. The number of related items is limited.") ."\";
-  ");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();

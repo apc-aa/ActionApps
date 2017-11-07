@@ -85,10 +85,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
         $function = $insert ? 'SelectRelations' : 'UpdateRelations';
         $item->setformat( "$function('$openervar','".$TPS['AMB']['A']['tag']."','".$TPS['AMB']['A']['prefix']."','".$TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
 
-        $js = ' // variables for related selection
-                var maxcount = '. MAX_RELATED_COUNT .';
-                var relmessage = "'._m("There are too many related items. The number of related items is limited.") .'";
-                '. $item->get_item() ."\n";
+        $js = $item->get_item() ."\n";
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
