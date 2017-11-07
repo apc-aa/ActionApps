@@ -708,26 +708,30 @@ class AA_Showview {
 
             case 'full':  // parameters: zids, als
                 $format = $view->getViewFormat($selected_item);
+                AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
                 if ( isset($zids) AND ($zids->count() > 0) ) {
-                    $slice  = AA_Slice::getModule($slice_id);
-                    //mlx stuff
-                    if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
-                        $mlx = ($this->_view_param["mlx"]?$this->_view_param["mlx"]:$this->_view_param["MLX"]);
-                        //make sure the lang info doesnt get reused with different view
-                        $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
-                        $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
-                        $zids3 = new zids($zids->longids());
-                        $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
-                        $zids->a    = $zids3->a;
-                        $zids->type = $zids3->type;
+                    $slice = AA_Slice::getModule($slice_id);
+                    $zids  = QueryZIDs(false, '', '', $slice->isExpiredContentAllowed() ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE, 0, $zids);
+                    AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
+                    if ( $zids->count() > 0 ) {
+                        //mlx stuff
+                        if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
+                            $mlx = ($this->_view_param["mlx"]?$this->_view_param["mlx"]:$this->_view_param["MLX"]);
+                            //make sure the lang info doesnt get reused with different view
+                            $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
+                            $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
+                            $zids3 = new zids($zids->longids());
+                            $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
+                            $zids->a    = $zids3->a;
+                            $zids->type = $zids3->type;
+                        }
+                        $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
+                        $ret      = $itemview->get_output("view");
+                        break;
                     }
-                    $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
-                    $ret      = $itemview->get_output("view");
-                } else {
-                    $ret      = AA::Stringexpander()->unalias($noitem_msg);
                 }
+                $ret      = AA::Stringexpander()->unalias($noitem_msg);
                 break;
-
             case 'seetoo':
             case 'calendar':
                 $today = getdate();
