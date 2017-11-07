@@ -792,7 +792,8 @@ class AA_Object extends AA_Storable implements iEditable {
      *  @static
      */
     function _generateAliases($properties) {
-        $aliases = array();
+        // the order is important - must be in the same order as search fields (for getManagerConf)
+        $aliases["_#AA_NAME_"] = GetAliasDef( "f_1", 'aa_name', 'aa_name');
         foreach ($properties as $prop_id => $property) {
             if ($property->isObject()) {
                 continue;
@@ -800,9 +801,8 @@ class AA_Object extends AA_Storable implements iEditable {
             // @todo - make alias field type aware
             $aliases["_#". substr(str_pad(strtoupper($prop_id),8,'_'),0,8)] = GetAliasDef( 'f_h:, ', $prop_id, $prop_id);
         }
-        $aliases["_#AA_NAME_"] = GetAliasDef( "f_h", 'aa_name', 'aa_name');
-        $aliases["_#AA_ID___"] = GetAliasDef( "f_h", 'aa_id',   'aa_id');
-        $aliases["_#AA_OWNER"] = GetAliasDef( "f_h", 'aa_owner','aa_owner');
+        $aliases["_#AA_ID___"] = GetAliasDef( "f_1", 'aa_id',   'aa_id');
+        $aliases["_#AA_OWNER"] = GetAliasDef( "f_1", 'aa_owner','aa_owner');
         $aliases["_#AA_OW_NM"] = GetAliasDef( "f_t:{modulefield:{_#AA_OWNER}:name}", 'aa_owner','aa_owner');
         return $aliases;
     }
@@ -844,7 +844,7 @@ class AA_Object extends AA_Storable implements iEditable {
         return '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')),array_keys($fields),array( _m('Name'), _m('ID'), _m('Owner')))).'</th>
+              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')),array_column($fields,'name'),array( _m('ID'), _m('Owner')))).'</th>
             </tr>
             ';
     }
