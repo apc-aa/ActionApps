@@ -45,8 +45,13 @@ if (!IsSuperadmin()) {
 
 function AdminLink($table, $id, $slice_id='') {
     switch ($table) {
-    case 'item':    return AafinderItemLink($id,$slice_id);
-    case 'content': return AafinderItemLink($id,$slice_id);
+        case 'item':       return AafinderItemLink($id,$slice_id);
+        case 'content':    return AafinderItemLink($id,$slice_id);
+        case 'discussion': return AafinderItemLink($id,$slice_id);
+        case 'view':       return AafinderViewLink($id);
+        case 'slice':      return AafinderSliceLink($id);
+        case 'field':      return AafinderFieldLink($id,$slice_id);
+        case 'site_spot':  return AafinderSiteLink($id,$slice_id);
     }
 }
 
@@ -173,180 +178,213 @@ echo $Msg;
 
 is_object( $db ) || ($db = getDB());
 
-if (strlen($_GET['findtext']) AND $_GET['findinview']) {
-    $fields = array (
-        'id',
-        'before',
-        'even',
-        'row_delimiter',
-        'odd',
-        'after',
-        'group_title',
-        'order1',
-        'order2',
-        'group_by1',
-        'group_by2',
-        'cond1field',
-        'cond2field',
-        'cond3field',
-        'aditional',
-        'aditional2',
-        'aditional3',
-        'aditional4',
-        'aditional5',
-        'aditional6',
-        'group_bottom',
-        'field1',
-        'field2',
-        'field3');
-
-    $SQL = "SELECT view.id, view.type, view.slice_id, slice.name FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
-    foreach ($fields as $field) {
-        $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%')."%\" OR ";
-    }
-    $SQL .= "0";
-    $db->query($SQL);
-    echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
-    while ($db->next_record()) {
-        echo AafinderViewLink($db->f("id"), $db->f("name")). "<br>\n";
-    }
-    echo '<br><br>';
-}
-
-if (strlen($_GET['findtext']) AND $_GET['findinslice']) {
-    $fields = array (
-        'slice.name',
-        'slice.type',
-        'slice.id',
-        'slice.fulltext_format_top',
-        'slice.fulltext_format',
-        'slice.fulltext_format_bottom',
-        'slice.odd_row_format',
-        'slice.even_row_format',
-        'slice.compact_top',
-        'slice.compact_bottom',
-        'slice.category_top',
-        'slice.category_format',
-        'slice.category_bottom',
-        'slice.admin_format_top',
-        'slice.admin_format',
-        'slice.admin_format_bottom',
-        'slice.aditional',
-        'slice.javascript',
-        'email_notify.uid'
-        );
-
-    $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
-    foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
-    }
-    $SQL .= "0";
-    $db->query($SQL);
-    echo "<b>slices</b> <small>(".$db->num_rows()." matching found)</small><br>";
-    while ($db->next_record()) {
-        echo $db->f("name")." "
-                ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id($db->f("id")))
-                ."\">"._m("Jump")."</a><br>";
-    }
-    echo '<br><br>';
-}
-
-
-if (strlen($_GET['findtext']) AND $_GET['findinfield']) {
-    $fields = array (
-        'id',
-        'type',
-        'slice_id',
-        'name',
-        'input_pri',
-        'input_help',
-        'input_morehlp',
-        'input_default',
-        'feed',
-        'input_show_func',
-        'alias1',
-        'alias1_func',
-        'alias1_help',
-        'alias2',
-        'alias2_func',
-        'alias2_help',
-        'alias3',
-        'alias3_func',
-        'alias3_help',
-        'input_before',
-        'aditional',
-        'content_edit',
-        'input_validate',
-        'input_insert_func',
-        'input_show'
-        );
-
-    $SQL = "SELECT slice_id, id, name FROM field WHERE ";
-    foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
-    }
-    $SQL .= "0";
-    $db->query($SQL);
-    echo "<b>fields</b> <small>(".$db->num_rows()." matching found)</small><br>";
-    while ($db->next_record()) {
-        echo $db->f("name")." ".AafinderFieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
-    }
-    echo '<br><br>';
-}
-
-
-if (strlen($_GET['findtext']) AND $_GET['findinspot']) {
-    $fields = array (
-        'content'
-        );
-
-    $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
-    foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
-    }
-    $SQL .= "0";
-    $db->query($SQL);
-    echo "<b>site spots</b> <small>(".$db->num_rows()." matching found)</small><br>";
-    while ($db->next_record()) {
-        echo AafinderSiteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
-    }
-    echo '<br><br>';
-}
-
-if (strlen($_GET['findtext']) AND $_GET['findindiscus']) {
-    $fields = array (
-        'subject',
-        'author',
-        'e_mail',
-        'body',
-        'url_address',
-        'url_description',
-        'remote_addr',
-        'free1',
-        'free2'
-        );
-
-    $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
-    foreach ($fields as $field) {
-        $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
-    }
-    $SQL .= "0) ORDER BY date";
-    $db->query($SQL);
-    echo "<b>comments</b> <small>(".$db->num_rows()." matching found)</small><br>";
-    while ($db->next_record()) {
-        if (!$head) {
-            echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->Record)).'</td></tr>');
+if (strlen($_GET['findtext'])) {
+    if ($_GET['findinseo']) {
+        if ('l' == guesstype(trim($_GET['findtext']))) {
+            PrintItemInfo(trim($_GET['findtext']));
+        } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['findtext'], $ids)) {
+            $ids = array_unique($ids[0]);
+            foreach ($ids as $id) {
+                PrintItemInfo($id);
+                echo '<hr>';
+            }
+        } else {
+            print query_search("content.text = '". quote($_GET['findtext'])."' AND content.field_id = 'seo.............'");
         }
-        $print = $db->Record;
-        $print['slice_id'] = unpack_id($print['slice_id']);
-        $print['id'] = unpack_id($print['id']);
-        $print['parent']  = unpack_id($print['parent']);
-        $print['item_id'] = AafinderItemLink(unpack_id($print['item_id']), $print['slice_id']);
-        $print['date'] = date('Y-m-d H:i:s', $print['date']);
-        echo '<tr><td>'. join('</td><td>', $print).'</td></tr>';
     }
-    echo '</table>';
-    echo '<br><br>';
+
+    if ($_GET['findinview']) {
+        $fields = array (
+            'id',
+            'before',
+            'even',
+            'row_delimiter',
+            'odd',
+            'after',
+            'group_title',
+            'order1',
+            'order2',
+            'group_by1',
+            'group_by2',
+            'cond1field',
+            'cond2field',
+            'cond3field',
+            'aditional',
+            'aditional2',
+            'aditional3',
+            'aditional4',
+            'aditional5',
+            'aditional6',
+            'group_bottom',
+            'field1',
+            'field2',
+            'field3');
+
+        $SQL = "SELECT view.id, view.type, view.slice_id, slice.name FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
+        foreach ($fields as $field) {
+            $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%')."%\" OR ";
+        }
+        $SQL .= "0";
+        $db->query($SQL);
+        echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        while ($db->next_record()) {
+            echo AafinderViewLink($db->f("id"), $db->f("name")). "<br>\n";
+        }
+        echo '<br><br>';
+    }
+
+    if ($_GET['findinslice']) {
+        $fields = array (
+            'slice.name',
+            'slice.type',
+            'slice.id',
+            'slice.fulltext_format_top',
+            'slice.fulltext_format',
+            'slice.fulltext_format_bottom',
+            'slice.odd_row_format',
+            'slice.even_row_format',
+            'slice.compact_top',
+            'slice.compact_bottom',
+            'slice.category_top',
+            'slice.category_format',
+            'slice.category_bottom',
+            'slice.admin_format_top',
+            'slice.admin_format',
+            'slice.admin_format_bottom',
+            'slice.aditional',
+            'slice.javascript',
+            'email_notify.uid'
+            );
+
+        $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
+        foreach ($fields as $field) {
+            $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
+        }
+        $SQL .= "0";
+        $db->query($SQL);
+        echo "<b>slices</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        while ($db->next_record()) {
+            echo $db->f("name")." "
+                    ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id($db->f("id")))
+                    ."\">"._m("Jump")."</a><br>";
+        }
+        echo '<br><br>';
+    }
+
+
+    if ($_GET['findinfield']) {
+        $fields = array (
+            'id',
+            'type',
+            'slice_id',
+            'name',
+            'input_pri',
+            'input_help',
+            'input_morehlp',
+            'input_default',
+            'feed',
+            'input_show_func',
+            'alias1',
+            'alias1_func',
+            'alias1_help',
+            'alias2',
+            'alias2_func',
+            'alias2_help',
+            'alias3',
+            'alias3_func',
+            'alias3_help',
+            'input_before',
+            'aditional',
+            'content_edit',
+            'input_validate',
+            'input_insert_func',
+            'input_show'
+            );
+
+        $SQL = "SELECT slice_id, id, name FROM field WHERE ";
+        foreach ($fields as $field) {
+            $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
+        }
+        $SQL .= "0";
+        $db->query($SQL);
+        echo "<b>fields</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        while ($db->next_record()) {
+            echo $db->f("name")." ".AafinderFieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
+        }
+        echo '<br><br>';
+    }
+
+
+    if ($_GET['findinspot']) {
+        $like_text = addcslashes(quote($_GET['findtext']),'_%');
+
+        $fields = array (
+            'content'
+            );
+
+        $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
+        foreach ($fields as $field) {
+            $SQL .= "$field LIKE \"%$like_text%\" OR ";
+        }
+        $SQL .= "0";
+        $db->query($SQL);
+        echo "<b>site spots</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        while ($db->next_record()) {
+            echo AafinderSiteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
+        }
+        echo '<br><br>';
+
+        // ------
+        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('alias',   'CONTAIN', $_GET['findtext'])));
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('code',    'CONTAIN', $_GET['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('desc',    'CONTAIN', $_GET['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('ussage',  'CONTAIN', $_GET['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('aa_name', 'CONTAIN', $_GET['findtext']))) );
+
+        if (!$zids->is_empty()) {
+            $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('admin/aafinder.php3'));
+            $manager_settings['show'] = MGR_ITEMS;
+            $manager = new AA_Manager('aafindaliases'.$module_id, $manager_settings);
+            $manager->performActions();
+            $manager->display($zids);
+        }
+    }
+
+    if ($_GET['findindiscus']) {
+        $fields = array (
+            'subject',
+            'author',
+            'e_mail',
+            'body',
+            'url_address',
+            'url_description',
+            'remote_addr',
+            'free1',
+            'free2'
+            );
+
+        $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
+        foreach ($fields as $field) {
+            $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
+        }
+        $SQL .= "0) ORDER BY date";
+        $db->query($SQL);
+        echo "<b>comments</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        while ($db->next_record()) {
+            if (!$head) {
+                echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->Record)).'</td></tr>');
+            }
+            $print = $db->Record;
+            $print['slice_id'] = unpack_id($print['slice_id']);
+            $print['id'] = unpack_id($print['id']);
+            $print['parent']  = unpack_id($print['parent']);
+            $print['item_id'] = AafinderItemLink(unpack_id($print['item_id']), $print['slice_id']);
+            $print['date'] = date('Y-m-d H:i:s', $print['date']);
+            echo '<tr><td>'. join('</td><td>', $print).'</td></tr>';
+        }
+        echo '</table>';
+        echo '<br><br>';
+    }
 }
 
 if ($_GET['go_finditem'] && $_GET['finditem']) {
@@ -361,12 +399,11 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
     } else {
         print query_search("content.text = '". quote($_GET['finditem'])."' AND content.field_id = 'seo.............'");
     }
-
 }
 
 if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_op']) {
     switch ($_GET['finditem_edit_op']) {
-        case 'LIKE': print query_search("content.text LIKE '%". quote($_GET['finditem_edit'])."%'");break;
+        case 'LIKE': print query_search("content.text LIKE '%". addcslashes(quote($_GET['finditem_edit']))."%'");break;
         case '=':    print query_search("content.text = '". quote($_GET['finditem_edit'])."'");break;
         case 'item': print query_search("item.short_id = '". quote($_GET['finditem_edit'])."'");break;
         case 'seo':  print query_search("content.text = '". quote($_GET['finditem_edit'])."' AND content.field_id = 'seo.............'");break;
@@ -377,12 +414,12 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
     $metabase = AA_Metabase::singleton();
 
     $table2search = array();
-    if ($_GET['searchinview']  ==1) $table2search['view']       = array();
-    if ($_GET['searchinslice'] ==1) $table2search['slice']      = array();
-    if ($_GET['searchinfield'] ==1) $table2search['field']      = array();
-    if ($_GET['searchinspot']  ==1) $table2search['site_spot']  = array();
+    if ($_GET['searchinview']  ==1) $table2search['view']       = array('id'=>'`id`','slice_id'=>'LOWER(HEX(`slice_id`))');
+    if ($_GET['searchinslice'] ==1) $table2search['slice']      = array('id'=>'LOWER(HEX(`id`))');
+    if ($_GET['searchinfield'] ==1) $table2search['field']      = array('id'=>'`id`','slice_id'=>'LOWER(HEX(`slice_id`))');
+    if ($_GET['searchinspot']  ==1) $table2search['site_spot']  = array('id'=>'`spot_id`','slice_id'=>'LOWER(HEX(`site_id`))');
     if ($_GET['searchinitems'] ==1) $table2search['content']    = array('id'=>'LOWER(HEX(`item_id`))');
-    if ($_GET['searchindiscus']==1) $table2search['discussion'] = array();
+    if ($_GET['searchindiscus']==1) $table2search['discussion'] = array('id'=>'LOWER(HEX(`item_id`))');
 
     echo '<table>';
     foreach($table2search as $tbl => $tblinfo) {
@@ -412,7 +449,7 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
                         }
                     }
                     $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)).'</span>';
-                    $row[0] = "<small>".($t['iid'] ? AdminLink($tbl, $t['iid'])  : ''). "</small>";
+                    $row[0] = "<small>".($t['iid'] ? AdminLink($tbl, $t['iid'], $t['sid'])  : ''). "</small>";
                     $row[1] = "<small> $code</small>";
                     FrmTabRow($row);
                 }
@@ -457,6 +494,7 @@ FrmTabSeparator(_m("Search"));
 echo '<tr><td>';
 echo '<form name="f_findtext" action="">';
 echo '<b>'._m('Find in').'</b>
+      <label><input type="checkbox" name="findinseo"    value="1" '. ((!$_GET['findtext'] OR $_GET['findinseo'   ])? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findinview"   value="1" '. ((!$_GET['findtext'] OR $_GET['findinview'  ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findinslice"  value="1" '. ((!$_GET['findtext'] OR $_GET['findinslice' ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findinfield"  value="1" '. ((!$_GET['findtext'] OR $_GET['findinfield' ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
