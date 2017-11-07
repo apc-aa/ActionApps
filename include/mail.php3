@@ -77,9 +77,18 @@ class AA_Mailtemplate implements iEditable {
 
 class AA_Mail extends htmlMimeMail {
 
+    /** $template_id and $reader_id is mainly for getId() used in AA_Log after toexecute */
+    protected $template_id = '';
+    protected $reader_id   = '';
+
     /** static getTemplate */
-    function getTemplate($mail_id) {
+    static function getTemplate($mail_id) {
         return GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+    }
+
+    /** used in AA_Log after toexecute */
+    function getId() {
+        return $this->template_id.':'.$this->reader_id;
     }
 
     /** setFromTemplate function
@@ -91,6 +100,12 @@ class AA_Mail extends htmlMimeMail {
      */
     function setFromTemplate($mail_id, $item=null) {
         global  $LANGUAGE_CHARSETS;
+
+        $this->template_id = $mail_id;
+        if (is_object($item)) {
+            $this->reader_id = $item->getId();
+        }
+
         // email has the templates in it
         if (! ( $record = AA_Mail::getTemplate($mail_id))) {
             return false;
@@ -164,7 +179,7 @@ class AA_Mail extends htmlMimeMail {
             } else {
                 // Yes, two nested arrays - mail->send() accepts array($to) and
                 // all parameters to later must be in another only one array
-                if ( $toexecute->later($this, array(array($to)), 'send_mail') ) {
+                if ( $toexecute->later($this, array(array($to)), 'AA_Mail'.$this->getId())) {
                     ++$sent;
                 }
             }
@@ -268,16 +283,59 @@ class AA_Mail extends htmlMimeMail {
      * @param $mail_id
      * @param $zids
      */
-     function sendToReader($mail_id, $zids) {
+    function sendToReader($mail_id, $zids) {
+        $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
+        if (count($chunks)==1) {
+            // less than 50 mails - schedule right now
+            $mail_scheduler = new AA_Mail_Scheduler($mail_id,$chunks[0]);
+            $mail_scheduler->schedule();  // right now
+        } else {
+            // more than 50 - plan scheduling
+            // there was problems wit more than 1000 mails - it wasn't possible to plan it in one shot
+            $toexecute  = new AA_Toexecute;
+            foreach ($chunks as $chunk) {
+                $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk);
+                $toexecute->later($mail_scheduler, array(), "AA_Mail_Scheduler:$mail_id", 105);      // a bit higher priority than mail sending
+            }
+        }
+        return $zids->count();
+    }
+};
+
+/** Helsp split email generation into chunks - 50 mails each task
+ *  there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
+ *  @see AA_Mail::sendToReader();
+ */
+class AA_Mail_Scheduler {
+    protected $mail_id;
+    protected $reader_ids;
+
+    function __construct($mail_id, $reader_ids) {
+        $this->mail_id    = $mail_id;
+        $this->reader_ids = $reader_ids;
+    }
+
+    /** this will be written to AA_Log after toexecute. No other purpose */
+    function getId() {
+       return $this->mail_id;
+    }
+
+    function schedule() {
         $mail_count = 0;
-        for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
-            $item = AA_Item::getItem($zids->longids($i));
-            $to   = $item->getval(FIELDID_EMAIL);
-            $mail_count += AA_Mail::sendTemplate($mail_id, $to, $item);
+        if ($this->mail_id AND count($this->reader_ids)) {
+            foreach ( $this->reader_ids as $id ) {
+                $item = AA_Item::getItem($id);
+                $to   = $item->getval(FIELDID_EMAIL);
+                $mail_count += AA_Mail::sendTemplate($this->mail_id, $to, $item);
+            }
         }
         return $mail_count;
     }
-};
+
+    function toexecutelater() {
+        return $this->schedule();
+    }
+}
 
 /** html2text function
  *  Strips the HTML tags and lot more to get a plain text mail version.

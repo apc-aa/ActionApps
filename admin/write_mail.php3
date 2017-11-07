@@ -129,7 +129,7 @@ if ( !$send ) {               // for the first time - directly from item manager
                 $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
                 $users_count = $zids->count();
             }
-            $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)", array($users_count, $mails_sent)));
+            $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", array($users_count, $mails_sent, $mail_id)));
 
             if ((string)$group == (string)"sel_item") {
                 $sel = "LIST";
@@ -141,7 +141,7 @@ if ( !$send ) {               // for the first time - directly from item manager
                 $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
                 $description .= ' - '. _m('Filter'). " $sel";
             }
-            AA_Log::write("EMAIL_SENT",array($users_count, $mails_sent),$sel);
+            AA_Log::write("EMAIL_SENT",array($mail_id, $users_count, $mails_sent),$sel);
             // remove temporary email template from database
             $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
             if ( !$db->tquery($SQL)) {
