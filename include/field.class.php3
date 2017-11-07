@@ -262,52 +262,24 @@ class AA_Field {
     * @param $item_id
     * @param $required    - redefine default settings of required
     * @param $function    - js function to call after the update
-    *                     - not implemented yet (it is here for (optical) parameter compatibility with getWidgetLiveHtml)
     * @param $widget_type - wi2|sel|...
     *                       used, when we want to use another widget, than the default one
     * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1)
     */
     function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
-        $widget      = $this->getWidget($widget_type, $widget_properties);
-        $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
-        return $widget->getAjaxHtml($aa_property, $item, $function);
+        return $this->_getWidget('getAjaxHtml', $item_id, $required, $function, $widget_type, $widget_properties);
     }
 
-    /** getWidgetLiveHtml function
-    * @param $item_id
-    * @param $required    - redefine default settings of required
-    * @param $function    - js function to call after the update
-    * @param $widget_type - wi2|sel|...
-    *                       used, when we want to use another widget, than the default one
-    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1, 'name' => 'My Category', 'input_help' => 'check the categories, please',  )
-    */
-    function getWidgetLiveHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
+    protected function _getWidget($type, $item_id, $required, $function, $widget_type, $widget_properties) {
         $widget      = $this->getWidget($widget_type, $widget_properties);
         $item        = AA_Items::getItem($item_id);
         $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
-        return $widget->getLiveHtml($aa_property, $item, $function);
-    }
-
-    /** getWidgetEditHtml function
-    * @param $item_id
-    * @param $required    - redefine default settings of required
-    * @param $function    - js function to call after the update
-    * @param $widget_type - wi2|sel|...
-    *                       used, when we want to use another widget, than the default one
-    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1, 'name' => 'My Category', 'input_help' => 'check the categories, please',  )
-    */
-    function getWidgetEditHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
-        $widget      = $this->getWidget($widget_type, $widget_properties);
-        $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
-        return $widget->getEditHtml($aa_property, $item, $function);
+        return $widget->$type($aa_property, $item, $function);
     }
 
     /** getWidgetNewHtml function
      * @param $item_id
      * @param $required  // redefine default settings of required
-     * @param $function - not implemented yet (it is here for (optical) parameter compatibility with getWidgetLiveHtml)
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
