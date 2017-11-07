@@ -161,7 +161,7 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
          $i        = 0;
          $arr      = array();
          while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-             if ( !strlen($field_id = $arg_list[$i]) ) {
+             if ( !strlen($field_id = trim($arg_list[$i])) ) {
                  $i += 2;
                  continue;
              }
@@ -821,6 +821,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
                 $script = "<script> if (localStorage['$persistent_id'] == '2') $func; </script>\n";
             }
         }
+        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_HtmlToggle
         return (trim($position)=='bottom') ?  $ret. $link. $script: $link. $ret. $script;
     }
 }
@@ -863,6 +864,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
         $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule');return false;\">{$switches[$selected]}</a>\n";
+        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_HtmlToggleCss
         return $ret;
     }
 }
@@ -2295,8 +2297,9 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
      * @param $delimeter
      * @param $top
      * @param $bottom
+     * @param $bin         allowed bins dash separated: ACTIVE-HOLDING-TRASH. Default is ACTIVE (pending and expired is not available, for now)
      */
-    function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null) {
+    function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null, $bin=null) {
 
         if (!($ids_string = trim(strtolower($ids_string)))) {
             return '';
@@ -2308,7 +2311,13 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
         AA_Items::preload($zids);
 
         if (strpos($ids_string,'(')===false) {
-            return AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $content), $delim);
+            if (strlen($bin)) {
+                $bins        = explode('-',$bin);
+                $numeric_bin = 0 | (in_array('ACTIVE',$bins) ?  AA_BIN_ACTIVE : 0) | (in_array('HOLDING',$bins) ?  AA_BIN_HOLDING : 0) | (in_array('TRASH',$bins) ?  AA_BIN_TRASH : 0);
+            } else {
+                $numeric_bin = AA_BIN_ACTIVE;
+            }
+            return AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $content, $numeric_bin), $delim);
         }
 
         // sanity input
@@ -2505,7 +2514,7 @@ class AA_Treecache {
 /** Aggregate information from specified set of items. The function, which could
  *  be used for aggregated values are:
  * @param $function   sum | max | min | avg | concat | count | order | filter
- * @param $ids_string list of item ids, khich we take into account
+ * @param $ids_string list of item ids, which we take into account
  * @param $expression the value, we are counting with (like _#NUMBER_E)
  * @param $parameter  posible additional parameter for the function (like delimiter for the "concat" function)
  *
@@ -2528,7 +2537,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         }
 
 
-        $results = AA_Items::getFormatted(new zids(explode('-', $ids_string)), $expression, true);
+        $results = AA_Items::getFormatted(new zids(explode('-', $ids_string)), $expression, AA_BIN_ALL);
 
         // $ids     = explode('-', $ids_string);
         // $results = array();
@@ -3580,7 +3589,7 @@ class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
     }
 }
 
-/** Allows on-line editing of field content
+/** Prints the widget for the field in the new item
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........}
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:text..........23:::::2}
  *    {input:36fd8c4501d7a8b9e9505dc323d24321:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
@@ -3589,7 +3598,7 @@ class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
  */
 class AA_Stringexpand_Input extends AA_Stringexpand_Field {
     /** expand function
-     * @param $item_id
+     * @param $slice_id
      * @param $field_id
      * @param $required
      * @param $widget_type
@@ -3632,6 +3641,10 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
         return !is_object($this->item) ? '' : $this->item->getID();
     }
 
+    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
+        return $this->_getWidget('getEditHtml',$item_id, $field_id, $required, $function, $widget_type);
+    }
+
     /** expand function
      * @param $item_id
      * @param $field_id
@@ -3639,26 +3652,50 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
      * @param $function
      * @param $widget_type       - not yet implemented
      */
-    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
+    protected function _getWidget($type, $item_id, $field_id, $required, $function, $widget_type, $widget_properties=array()) {
         $ret = '';
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-            if (!empty($item)) {
-                $iid   = $item->getItemID();
-                $slice = AA_Slice::getModule($item->getSliceId());
+            if (!empty($item) AND !$item->is_empty() AND ($slice = AA_Slice::getModule($item->getSliceId()))) {
 
                 // Use right language (from slice settings) - languages are used for button texts, ...
-                $lang  = $slice->getLang();
-                //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
-                mgettext_bind($lang, 'output');
+                mgettext_bind($slice->getLang(), 'output');
 
-                $field = $slice->getField($field_id);
-                $ret   = $field ? $field->getWidgetEditHtml($iid, ($required==1) ? true : null, $function, $widget_type) : '';
+                if ( !($field = $slice->getField($field_id)) ) {
+                    return '';
+                }
+                $widget      = $field->getWidget($widget_type, $widget_properties);
+                $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_properties['name'], $widget_properties['input_help']);
+                $ret         = $widget->$type($aa_property, $item, $function);
+                $widget->registerRequires();
             }
         }
         return $ret;
     }
 }
+
+/** The same as {edit:...} but also with labels */
+class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
+    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
+        return $this->_getWidget('getEditfullHtml',$item_id, $field_id, $required, $function, $widget_type);
+    }
+}
+
+/** Allows on-line editing of field content
+ *    {live:<item_id>:<field_id>:<required>:<function>:<widget_type>}
+ *
+ *   <required>    explicitly mark the live field as required (0|1)
+ *   <function>    specify javascript function, which is executed after the widget
+ *                  is sumbitted
+ *   <widget_type> which widget to show
+ */
+class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
+
+    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
+        return $this->_getWidget('getLiveHtml',$item_id, $field_id, $required, $function, $widget_type);
+    }
+}
+
 
 /** Allows on-line editing of field content
  *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
@@ -3706,64 +3743,13 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                     $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
                     $ret .= "</div>";
+                    AA::Stringexpander()->addRequire('css-aa-system');
                 }
             }
         }
         return $ret;
     }
 }
-
-/** Allows on-line editing of field content
- *    {live:<item_id>:<field_id>:<required>:<function>:<widget_type>}
- *
- *   <required>    explicitly mark the live field as required (0|1)
- *   <function>    specify javascript function, which is executed after the widget
- *                  is sumbitted
- *   <widget_type> which widget to show
- */
-class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // It works with database, so it shoud always look in the database
-
-    // not needed right now for Nevercached functions, but who knows in the future
-    function additionalCacheParam() {
-        /** output is different for different items - place item id into cache search */
-        return !is_object($this->item) ? '' : $this->item->getID();
-    }
-
-    /** expand function
-     * @param $item_id
-     * @param $field_id
-     * @param $required
-     * @param $function
-     * @param $widget_type
-     * @param $widget_properties - not yet implemented
-     */
-    function expand($item_id, $field_id, $required=null, $function=null, $widget_type=null) {
-        $ret = '';
-
-        if (!$field_id) {
-            return '';
-        }
-
-        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-        if (!empty($item) AND !$item->is_empty()) {
-
-            if ( !($slice = AA_Slice::getModule($item->getSliceId())) ) { return ''; }
-
-            // Use right language (from slice settings) - languages are used for button texts, ...
-            mgettext_bind($slice->getLang(), 'output');
-
-            if ( !($field = $slice->getField($field_id)) ) { return ''; }
-
-            $ret = $field->getWidgetLiveHtml($item->getItemID(), ($required==1) ? true : null, $function, $widget_type);
-        }
-        return $ret;
-    }
-}
-
-
-
 
 /** Allows on-line editing of field content in HTML Editor
  *    {editable:<item_id>:<field_id>:<placeholder-text>}
@@ -3798,7 +3784,8 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $pholder = strlen($placeholder) ? 'placeholder="'.$placeholder.'"' : '';
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
-                    $ret     = AA_Stringexpand::unalias("<$tag contenteditable=true $pholder id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
+                    // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
+                    $ret     = AA_Stringexpand::unalias("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
 
                     AA::Stringexpander()->addRequire('ckeditor');
                     $script2run = '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
@@ -3841,24 +3828,11 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
      */
     function expand() {
         $arg_list              = func_get_args();   // must be asssigned to the variable
-
         if (!is_long_id($template_long_item_id = array_shift($arg_list))) {
             return '';
         }
 
-        $i                     = 0;
-        $transformations       = array();
-        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if ( (strlen($field_id = $arg_list[$i]) != 16) ) {
-                $i += 2;
-                continue;
-            }
-            if ( !count($value=json2arr($arg_list[$i+1])) ) {
-                $value = array('');
-            }
-            $transformations[$field_id] = new AA_Transformation_Exactvalues(array('new_content'=>$value));
-            $i += 2;
-        }
+        $transformations = self::_getTransformationsFromArgs($arg_list);
 
         // move to active, clear seo
         if ( !isset($transformations['status_code.....']) ) {
@@ -3872,14 +3846,13 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
 
         // the template must be in related slices (to not allow to create item in foreign slice)
         $slices = AA::$slice_id ? array(AA::$slice_id) : array();
-        $sites  = array();
         if (AA::$site_id) {
-            $sites = array(AA::$site_id);
+            $slices = array_merge($slices, AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices());
         } elseif (AA::$slice_id) {
             $sites = explode('-',StrExpand('AA_Stringexpand_Modulefield', array(AA::$slice_id, 'site_ids')));
-        }
-        foreach($sites as $site) {
-            $slices = array_merge($slices, AA_Module_Site::getModule($site)->getRelatedSlices());
+            foreach($sites as $site) {
+                $slices = array_merge($slices, AA_Module_Site::getModule($site)->getRelatedSlices());
+            }
         }
 
         if (!count($slices)) {
@@ -3891,8 +3864,77 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         $saver   = new AA_Saver($grabber, $transformations, null, 'insert_if_new', 'new');
         $saver->run();
 
-        //SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
         return join('-',$saver->changedIds());
+    }
+
+    static protected function _getTransformationsFromArgs($arg_list) {
+        $i                     = 0;
+        $transformations       = array();
+        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+            if ( (strlen($field_id = $arg_list[$i]) != 16) ) {
+                $i += 2;
+                continue;
+            }
+            if ( !count($value=json2arr($arg_list[$i+1])) ) {
+                $value = array('');
+            }
+            $transformations[$field_id] = new AA_Transformation_Exactvalues(array('new_content'=>$value));
+            $i += 2;
+        }
+        return $transformations;
+    }
+}
+
+/** Updates item fields
+ *    {updateitem:<long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
+ *
+ *  It works only on slices where "Allow anonymous editing of items" is set to "All items", right now.
+ *  The plan is to work with field permissions in future
+ *
+ *    {updateitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
+ *
+ * c239cb267837a25b4efb5892ca4f4324 is ID of the updated item
+ * The values could be single (for headline........), or multiple - written in JSON format.
+ *
+ * If you want to update the item conditionaly just do not fill <long_item_id> in cases you do not want update
+ *
+ * @return <long_item_id> if updated, nothing if item is not updated
+ *
+ */
+class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+
+    /** expand function
+     * @param $item_id
+     * @param $field_id1
+     * @param $value1
+     * @param ...
+     */
+    function expand() {
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        $zid      = new zids(array_shift($arg_list), 'l');
+
+        if ( !is_object($item = AA_Items::getItem($zid)) ) {
+            return '';
+        }
+
+        $transformations = self::_getTransformationsFromArgs($arg_list);
+
+        if ( !count($restrict_fields  = array_filter(array_keys($transformations), function($fld) { return strlen($fld)==16; })) ) {
+            return '';
+        }
+
+        $item_slice = $item->getSliceId();
+        $slices     = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
+
+        if ($item_slice AND count($slices) AND in_array($item_slice, $slices) AND (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL)) {
+            $grabber = new AA_Grabber_Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
+            $saver   = new AA_Saver($grabber, $transformations, $item_slice, 'update');
+            $saver->run();
+            return join('-',$saver->changedIds());
+        }
+        return '';
     }
 }
 
@@ -4671,6 +4713,18 @@ class AA_Stringexpander {
         $this->requires = new AA_Requires();
     }
 
+    public function __toString() {
+        $ret  = "AA_Stringexpander->recursion_count:";
+        $ret .= print_r($this->recursion_count, true);
+        $ret .=  "AA_Stringexpander->dependent_parts:";
+        $ret .= print_r($this->dependent_parts, true);
+        $ret .=  "AA_Stringexpander->postprocesess:";
+        $ret .= print_r($this->postprocesess, true);
+        $ret .=  "AA_Stringexpander->requires:";
+        $ret .= print_r($this->requires, true);
+        return $ret;
+    }
+
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
         'strlen'           => 'strlen',             // old  AA_Stringexpand_Strlen
@@ -5021,23 +5075,35 @@ class AA_Requires {
     static function systemDefinitions() {
         return array(
                           //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
-          'tableexport@4'       => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/js/tableexport.min.js', 'sha384-xMwzl7oWKWy1JOFwVKo6ylPXiT/QiA43ikfTH66pT8TTk0BvnP4x8DrISPx28syf', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
-          'js-xlsx@0'           => new AA_Req_Lib('https://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.core.min.js', 'sha384-Z64xo5gl0CGLf7pO6yQqbSz60LwUKgL7XrNEhh6nl+ZDQMwffbK0G+d4Nep52sIS'),
-          'filesaver@1'         => new AA_Req_Lib('https://cdn.jsdelivr.net/filesaver.js/1.3.3/FileSaver.min.js', 'sha384-VgWGwiEJnh9P379lbU8DxPcfRuFkfLl0uPuL9tolOHtm2tx8Qy8d/KtvovfM0Udh'),
-          'lightgallery@1'      => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
-          'aa-tools@1'          => new AA_Req(array('css-aa-system@1','aa-jslib@2|aa-jslib@1','htm-aa-system@1')),
-          'ckeditor@4'          => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js'),'',array('css-aa-system@1','aa-jslib@2|aa-jslib@1')),
-          'aa-jslib@2'          => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php'),'',array('jquery@3')),
-          'aa-jslib@1'          => new AA_Req_Lib(get_aa_url('javascript/aajslib.php')),
-          'jquery@3'            => new AA_Req_Lib('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f'),
-          'vue@2'               => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.min.js', 'sha256-R9Mt0qq5P1LslCyog7N4sBewA6oOwsxBOoEwGURp6iE='),
-          'vue-test@2'          => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.js', 'sha384-9U+IjOKdTdq0peTWxmURfKMD9//OSxyJjHThI8VgQH8TEjfQnbSs43aolMWPE0TI'),
-          '_css-tableexport@4'  => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/css/tableexport.min.css', 'sha384-Wt31MACcRL7zmUKRfvIIetCJdQfQqPRzFoTyuKv2qR+VjBol+DV460LynjT2WJaD'),
-          '_css-lightgallery@1' => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
-          'css-aa-system@1'     => new AA_Req_Css(get_aa_url('css/aa-system.css'))  ,
-          'css-normalize@7'     => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
-          'css-fontawesome@4'   => new AA_Req_Css('https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
-          'htm-aa-system@1'     => new AA_Req_Htm('AA_Tools::getBottomCode')
+          'codemirror@5'               => new AA_Req(array('css-aa-system@1', '_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
+          '_codemirror_htmlmixed@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/htmlmixed/htmlmixed.js', 'sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA='),
+          '_codemirror_xml@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/xml/xml.js', 'sha256-sB8UtHQubuS61s0F+Ui6xNwJHrTXcd3zjCgfb4bOnK4='),
+          '_codemirror_css@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/css/css.js', 'sha256-lKwXc/xVYQ26OoLFzIMNK0o1tTTYBNMqHbBO7bdoIio='),
+          '_codemirror_javascript@5'   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/javascript/javascript.js', 'sha256-6vpQF2FCKaaXS1eBjQHL/Zzf5mUcA8cLLTQ8nVGgZYo='),
+          '_codemirror_matchbrackets@5'=> new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchbrackets.js', 'sha256-coEcESK5JwnNa8975uTdCcJb553y6HKAwlWs/LCWeuQ='),
+          '_codemirror_matchtags@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchtags.js', 'sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8='),
+          '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/fold/xml-fold.js', 'sha256-l/TrijjAvQgiGYppltKp2PLTBGe7s7tPiid0WoaLeMY='),
+          '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.css', 'sha256-XyDJ6+MvRGhJHdk5i+vjmlocQ4lO6W2q5fahVAcYql0='),
+          '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.js', 'sha256-/OCc+1HKfnjOGUtgcpPUGj14IzwliaF2X83ws+OlXaU=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
+          'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js', 'sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=',array('jquery@3')),
+          'tableexport@4'              => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/js/tableexport.min.js', 'sha384-xMwzl7oWKWy1JOFwVKo6ylPXiT/QiA43ikfTH66pT8TTk0BvnP4x8DrISPx28syf', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
+          'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.core.min.js', 'sha384-Z64xo5gl0CGLf7pO6yQqbSz60LwUKgL7XrNEhh6nl+ZDQMwffbK0G+d4Nep52sIS'),
+          'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/filesaver.js/1.3.3/FileSaver.min.js', 'sha384-VgWGwiEJnh9P379lbU8DxPcfRuFkfLl0uPuL9tolOHtm2tx8Qy8d/KtvovfM0Udh'),
+          'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
+          'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@2|aa-jslib@1','htm-aa-system@1')),
+          'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@2|aa-jslib@1')),
+          'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.js','',false)),
+          'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php','',false),'',array('jquery@3')),
+          'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php','',false)),
+          'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f'),
+          'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.min.js', 'sha256-R9Mt0qq5P1LslCyog7N4sBewA6oOwsxBOoEwGURp6iE='),
+          'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/vue/2.3.2/vue.js', 'sha384-9U+IjOKdTdq0peTWxmURfKMD9//OSxyJjHThI8VgQH8TEjfQnbSs43aolMWPE0TI'),
+          '_css-tableexport@4'         => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/TableExport/4.0.3/css/tableexport.min.css', 'sha384-Wt31MACcRL7zmUKRfvIIetCJdQfQqPRzFoTyuKv2qR+VjBol+DV460LynjT2WJaD'),
+          '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
+          'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css','',false))  ,
+          'css-normalize@7'            => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
+          'css-fontawesome@4'          => new AA_Req_Css('https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
+          'htm-aa-system@1'            => new AA_Req_Htm('AA_Tools::getBottomCode')
         );
     }
 }
@@ -6310,7 +6376,7 @@ class AA_Stringexpand_Xxmail extends AA_Stringexpand_Nevercache {
  *  Be careful - it can send mail on every page load!
  *  Use as:
  *    {mailform:<to>:<subject>:<html-inputs>:<body>:<ok-text>:<lang>:<from>}
- *    {mailform:honza.malik@ecn.cz:test mail:Your note <input name="note">:You posted<br>_#1<br>Regards<br>ActionApps:sent OK:utf-8:actionapps@ecn.cz}
+ *    {mailform:honza.malik@ecn.cz:test mail:Your note <input name="note">:User posted<br>_#1<br>Regards<br>ActionApps:sent OK:utf-8:actionapps@ecn.cz}
  */
 class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
 
@@ -6334,6 +6400,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         $html
         </form>
         ";
+        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_AjaxSendForm
         return $ret;
     }
 }
@@ -6380,6 +6447,7 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $extrahightdiv = ($effect == 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
         $liswitcher    = $li_code ? "<ul class=\"rot-switcher\">".join("\n",$lis)."</ul>" : '';
 
+        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Rotator
         return "<div id=\"$div_id\" style=\"position:relative\">".join("\n",$frames).$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
     }
 }
@@ -6626,7 +6694,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
         $code_actions  = (strpos($mode,'S')===false) ? '' : ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">&#x2261;</i></article>');
         $code_actions .= (strpos($mode,'D')===false) ? '' : ('<article><i class="ico delete"  onclick="if (confirm(\''._m('Are you sure you want to permanently DELETE this record?'). '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">&#xd7;</i></article>');
-        $footer        = (strpos($mode,'N')===false) ? '' : ('<footer><article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article></footer>');
+        $footer        = (strpos($mode,'N')===false) ? '' : ('<footer><article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\'\',\''.$field.'\',\''.$item_id.'\');">'._m('new').'</i></article></footer>');
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
                     <section class="itemgroup">';
@@ -6640,7 +6708,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                       </article>';
 
         // expired, ... are already filtered by query() above (if expiry_date is not in conds)
-        $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code, true), '');
+        $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code, AA_BIN_ALL), '');
         $ret .= '
                     </section>
                           '. $footer .'
@@ -6651,6 +6719,22 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         return $ret;
     }
 }
+
+
+class AA_Stringexpand_Partdiv extends AA_Stringexpand {
+    function expand($name='', $vars='', $content='') {
+        if ( !$name ) {
+            $ret = $content;
+        } else {
+            $hash = get_hash('partdiv', $name, $vars);
+            $ret  = "<div class=\"aa-partdiv $name\" data-aa-part=\"$hash\">$content</div>";
+            $vars = json2arr($vars);
+            AA::Stringexpander()->setDependentParts($vars, $hash, $ret);
+        }
+        return $ret;
+    }
+}
+
 
 /** Translation */
 class AA_Stringexpand_Tr extends AA_Stringexpand {
@@ -6779,7 +6863,7 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
                           //'TableExport.prototype.charset = "charset=utf-8";' . "\n" .    // possible addition
                           //'TableExport.prototype.defaultButton = "big-button";' . "\n" . // possible addition
             $script2run = "TableExport(document.querySelectorAll('.derava-tbl table'),{ formats: ['xlsx'], position: 'bottom'}); \n";
-            AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
+            AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         }
         return '';
     }
