@@ -92,8 +92,8 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
                                         <td>_#AA_USER_</td>
                                         <td>_#PRIORITY</td>
                                         <td>_#SELECTOR</td>
-                                        <td>_#OBJECT__</td>
-                                        <td>_#PARAMS__</td>
+                                        <td>{htmlspecialchars:{_#OBJECT__}}</td>
+                                        <td>{htmlspecialchars:{_#PARAMS__}}</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 
 $manager = new AA_Manager('task'.$auth->auth['uid'],  $manager_settings);
