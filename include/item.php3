@@ -418,9 +418,11 @@ class AA_Item {
 
     function is_empty() { return $this->content4id->is_empty(); }
 
-    /** true if the item is viseble - not expired/trashed/pending/... */
-    function isActive() {
-        return $this->content4id->isActive();
+    /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     */
+    function isActive($bin=AA_BIN_ACTIVE) {
+        return $this->content4id->isActive($bin);
     }
 
     function getStatusCode() {
@@ -1675,8 +1677,10 @@ class AA_Items {
         return;
     }
 
-    // returns output of Active items
-    static function getFormatted($zids, $expression, $all=false) {
+    /** returns output of Active items
+     *  @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     */
+    static function getFormatted($zids, $expression, $bin=AA_BIN_ACTIVE) {
         $res = array();
         AA_Items::preload($zids);
         $items = AA_Items::singleton();
@@ -1684,7 +1688,7 @@ class AA_Items {
         // all is cached, we get all the items in RIGHT ORDER
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             $item = $items->_getFromCache($zids->zid($i));
-            if ($item AND ($all OR $item->isActive())) {
+            if ($item AND (($bin==AA_BIN_ALL) OR $item->isActive($bin))) {  // AA_BIN_ALL - all items - speedup - no need to check
                 $res[$item->getItemId()] = strlen($expression) ? $item->subst_alias($expression) : '';       // long item id
             }
         }

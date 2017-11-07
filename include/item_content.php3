@@ -394,7 +394,7 @@ class AA_Content {
      * @param $field_id
      */
     function getValuesArray($field_id) {
-        return empty($this->content[$field_id]) ? array() : array_map( function($val) {return $val['value'];}, $this->content[$field_id] );
+        return empty($this->content[$field_id]) ? array() : array_column($this->content[$field_id],'value');
     }
 
     function diff($object2compare) {
@@ -658,16 +658,23 @@ class ItemContent extends AA_Content {
         return is_array($this->content[$field_id]);
     }
 
-    /** true if the item is viseble - not expired/trashed/pending/... */
-    function isActive() {
+    /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     */
+    function isActive($bin=AA_BIN_ACTIVE) {
         $ret = false;
-        if ($this->getStatusCode() == 1) {
+
+        if ( (($status=$this->getStatusCode()) == 1) AND ($bin & AA_BIN_ACTIVE)) {
             $now = now('step');
             if (($this->getPublishDate() <= $now) OR (($slice = AA_Slice::getModule($this->getSliceID())) AND $slice->isPendingContentAllowed())) {
                 if (($this->getExpiryDate() > $now) OR (($slice = $slice ?: AA_Slice::getModule($this->getSliceID())) AND $slice->isExpiredContentAllowed())) {
                     return true;
                 }
             }
+        } elseif (($status==2) AND ($bin & AA_BIN_HOLDING)) {
+            return true;
+        } elseif (($status==3) AND ($bin & AA_BIN_TRASH)) {
+            return true;
         }
         return false;
     }
@@ -695,7 +702,7 @@ class ItemContent extends AA_Content {
     /** getItemID function
      */
     function getItemID() {
-        return unpack_id($this->getValue('id..............'));
+        return strlen($id = $this->getValue('unpacked_id.....')) ? $id : unpack_id($this->getValue('id..............'));
     }
 
     /** redefined AA_Content's function */
@@ -711,7 +718,7 @@ class ItemContent extends AA_Content {
     /** getSliceID function
      */
     function getSliceID() {
-        return unpack_id($this->getValue('slice_id........'));
+        return strlen($id = $this->getValue('u_slice_id......')) ? $id : unpack_id($this->getValue('slice_id........'));
     }
 
     /** getStatusCode function
