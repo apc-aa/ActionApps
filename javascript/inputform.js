@@ -199,18 +199,19 @@ function ShowThisTagClass(where,type,classtoshow,classmasktohide) {
     }
 }
 
+// hide all input tab rows except the row of "class2togle"
 function TabWidgetToggle(class2togle) {
-    // hide all input tab rows except the row of "class2togle"
+    var els, i;
 
-    $$('#inputtabrows tr[class^=formrow]').invoke('hide');
-    $$('#inputtabrows tr[class^='+class2togle+']').invoke('show');
-    //ShowThisTagClass('inputtabrows', 'tr', class2togle, 'formrow');
+    els = document.querySelectorAll("#inputtabrows tr[class^=formrow]");
+    for (i = 0; i < els.length; i++) { els[i].style.display = 'none'; }
+    els = document.querySelectorAll('#inputtabrows tr[class^='+class2togle+']');
+    for (i = 0; i < els.length; i++) { els[i].style.display =''; }
 
-    $$('#formtabs a').invoke('addClassName','tabsnonactiv').invoke('removeClassName','tabsactiv');
-    $$('#formtabs'+class2togle).invoke('addClassName','tabsactiv').invoke('removeClassName','tabsnonactiv');
-
-    $$('#formtabs2 a').invoke('addClassName','tabsnonactiv').invoke('removeClassName','tabsactiv');
-    $$('#formtabs2'+class2togle).invoke('addClassName','tabsactiv').invoke('removeClassName','tabsnonactiv');
+    els = document.querySelectorAll('#formtabs a, #formtabs2 a');
+    for (i = 0; i < els.length; i++) { els[i].classList.add('tabsnonactiv'); els[i].classList.remove('tabsactiv'); }
+    els = document.querySelectorAll('#formtabs'+class2togle + ', #formtabs2'+class2togle);
+    for (i = 0; i < els.length; i++) { els[i].classList.add('tabsactiv'); els[i].classList.remove('tabsnonactiv'); }
 }
 
 //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
@@ -229,31 +230,29 @@ function sb_ClearField(field) {
 
 
 // APC-AA javascript 3 functions for HTMLArea -- was in htmlarea/aafunc.js
-function switchHTML(name) {
-    elem = $$('input[name="'+name+"html"+'"]');
-    //elem = document.inputform.eval(name+"html");
-    if ( elem != null ) {
-        for (i=0; i<elem.length; i++) {
-            if (elem[i].value == "h") {
-                elem[i].checked = true;
-            }
-        }
-    }
-    if (CKEDITOR.env.isCompatible) {
-        $("htmlplainspan"+name).hide();
-    }
-}
-
 function showHTMLAreaLink(name) {
+    var elem;
     if (CKEDITOR.env.isCompatible) {
-        elem = document.getElementById("arealinkspan"+name);
-        if( elem && (elem != null) ) {
+        if ( elem = document.getElementById("arealinkspan"+name) ) {
             elem.style.display = "inline";
         }
     }
 }
 
 function openHTMLAreaFullscreen(name, session) {    // open HTMLArea in popupwindow
-    switchHTML(name);
-    CKEDITOR.replace(name);
+    if (CKEDITOR.env.isCompatible) {
+        var elem = document.body.querySelectorAll('input[name="'+name+"html"+'"]');
+        for (i=0; i<elem.length; i++) {
+            if (elem[i].value == "h") {
+                elem[i].checked = true;
+            }
+        }
+        if ( elem = document.getElementById("htmlplainspan"+name) ) {
+            elem.style.display = "none";
+        }
+        if ( elem = document.getElementById("arealinkspan"+name) ) {
+            elem.style.display = "none";
+        }
+        CKEDITOR.replace(name);
+    }
 }
