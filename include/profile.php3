@@ -72,8 +72,8 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
 /** PrintRule function
  * @param $rule
  */
-function PrintRule($rule) {
-    global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields, $DEFAULT_VALUE_TYPES;
+function PrintRule($rule, $fields) {
+    global $PROPERTY_TYPES, $SORTORDER_TYPES, $DEFAULT_VALUE_TYPES;
     $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
 
     $prop = $rule['property'];
@@ -91,7 +91,7 @@ function PrintRule($rule) {
         case 'admin_order':
             $fid = substr( $rule['value'], 0, -1 );
             $ord = substr( $rule['value'], -1 );
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $SORTORDER_TYPES[$ord]);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fid .'<small> ('.$fields[$fid].')</small>', $SORTORDER_TYPES[$ord]);
             break;
         case 'admin_search':
             $pos = strpos($rule['value'],':');
@@ -100,17 +100,17 @@ function PrintRule($rule) {
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
             break;
         case 'hide':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value']==1 ? 'hide' : 'show'], $fields[$rule['selector']]['name']);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value']==1 ? 'hide' : 'show'], $rule['selector'].'<small> ('.$fields[$rule['selector']].')</small>');
             break;
         case 'fill':
         case 'hide&fill':
         case 'predefine':
             if (!$rule['value']) {   // for 'show' the hide&fill value is '0' and in this case
-                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'], _m('--disabled-- (added by "Show field" rule)'));
+                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'].'<small> ('.$fields[$rule['selector']].')</small>', _m('--disabled-- (added by "Show field" rule)'));
                 break;
             }
             $fnc = ParseFnc(substr($rule['value'],2));  // all default should have fnc:param format
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'],
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'].'<small> ('.$fields[$rule['selector']].')</small>',
                 $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
                 ($rule['value'][0] == '1')? 'HTML' : "" );
             break;
