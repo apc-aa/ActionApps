@@ -474,20 +474,22 @@ function huhl() {
     }
 }
 
+function GetPrintArray($a) {
+    $ret = '';
+    if (is_array($a)) {
+        foreach ( $a as $val) {
+            $ret .=  is_array($val) ? GetPrintArray($val) : $val;
+        }
+    }
+    return $ret;
+}
+
 /** PrintArray function
  * @param $a
  * Prints all values from array
  */
 function PrintArray($a) {
-    if (is_array($a)) {
-        foreach ( $a as $val) {
-            if (is_array($val)) {
-               PrintArray($val);
-            } else {
-               echo $val;
-            }
-        }
-    }
+    echo GetPrintArray($a);
 }
 
 /** MsgOK function
@@ -1084,7 +1086,7 @@ function url2bin($data) {
  * @param bool   $js_lib      if true, includes js_lib.js javascript
  * @param $lang
  */
-function HtmlPageBegin($js_lib=false, $lang=null) {
+function HtmlPageBegin($js_lib=false, $lang=null, $ace='') {
     AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang ?: get_mgettext_lang()];
     $headers = AA::getHeaders();
     // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
@@ -1096,12 +1098,8 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
   <html>
     <head>
       <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
-      <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'" type="text/css" media="all">
-      <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css" type="text/css" media="all">
-      <style type="text/css" media="print">
-        .noprint, .aa_manager_actions { display: none; }
-        body, #hlavnitbl { background-color: #FFFFFF;  }
-      </style>
+      <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'" type="text/css">
+      <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css" type="text/css">
       ';
 
     echo "<!--$lang-->";
@@ -1728,5 +1726,15 @@ function IsAlias($identifier) {
 function IsSigInt($var) {
     return is_int(filter_var($var, FILTER_VALIDATE_INT));
 }
+
+/** Defines array_column() for PHP version < 5.5
+  * @todo remove after the switch to 5.5
+  */
+if(!function_exists("array_column")) {
+    function array_column($array,$column_name) {
+        return array_map(function($element) use($column_name) {return $element[$column_name];}, $array);
+    }
+}
+
 
 ?>

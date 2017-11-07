@@ -445,3 +445,12 @@ input.cancel-button {
 .aa-langswitch input[type=button].aa-langall:hover {
     box-shadow: 0 0 6px #000;
 }
+
+@media print {
+  .noprint, .aa_manager_actions {
+      display: none;
+  }
+  body, #hlavnitbl {
+      background-color: #FFFFFF;
+  }
+}

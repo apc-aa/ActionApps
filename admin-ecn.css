@@ -779,4 +779,11 @@ input.cancel-button {
 .dis-color7 { background-color: #bb94c6; }
 .dis-color8 { background-color: #c46f87; }
 
-
+@media print {
+  .noprint, .aa_manager_actions {
+      display: none;
+  }
+  body, #hlavnitbl {
+      background-color: #FFFFFF;
+  }
+}
