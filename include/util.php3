@@ -1058,7 +1058,7 @@ function ParseFnc($s) {
 
 /** replaces htmlspecialchars because of changes in php 5.4
  */
-function myspecialchars( $var, $double_encode=true) {
+function myspecialchars( $var='', $double_encode=true) {
     return htmlspecialchars( $var, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1', $double_encode);
 }
 

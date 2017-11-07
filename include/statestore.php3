@@ -345,6 +345,11 @@ class AA_Object extends AA_Storable implements iEditable {
         return $this->aa_owner;
     }
 
+    /** getObjectType */
+    function getObjectType() {
+        return $this->aa_type;
+    }
+
     function getProperty($property_id, $default=null) {
         return is_null($default) ? $this->$property_id : (($this->$property_id == '') ? $default : $this->$property_id);
     }
@@ -486,7 +491,7 @@ class AA_Object extends AA_Storable implements iEditable {
     }
 
     function loadProperty($id, $property) {
-        return GetTable2Array("SELECT value FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'value');
+        return DB_AA::select1('SELECT value FROM `object_text`', 'value', array(array('object_id',$id),array('property',$property)));
     }
 
     /** static called as AA_Object::loadProperties($ids, 'name')
@@ -494,13 +499,6 @@ class AA_Object extends AA_Storable implements iEditable {
      */
     function loadProperties($ids, $property) {
         return DB_AA::select( array('object_id'=> '+value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids), array('property', $property)));
-    }
-
-    /** getObjectType
-     * @param $id
-     */
-    function getObjectType($id) {
-        return self::loadProperty($id, 'aa_type');
     }
 
     /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
@@ -513,11 +511,7 @@ class AA_Object extends AA_Storable implements iEditable {
         //    - get used tables from properties,
         //    - load object from database in one step using aa_subobjects property of the objects
 
-        if ( !$type ) {
-            $type = self::getObjectType($id);
-        }
-
-        if ( !$type ) {
+        if ( !$type AND !($type = self::loadProperty($id, 'aa_type')) ) {
             return null;
         }
 
@@ -525,23 +519,27 @@ class AA_Object extends AA_Storable implements iEditable {
         $obj->setId($id);
         $properties = $type::getClassProperties();
 
-        $tab = GetTable2Array("SELECT `property`, `value` FROM object_text WHERE object_id = '$id' ORDER by property, priority", '');
-        $props_from_db = is_array($tab) ? $tab : array();
+        $prop_arr =                        DB_AA::select( array('property'=> '+value'), 'SELECT `property`, `value` FROM `object_text`',    array(array('object_id', $id)), array('property', 'priority'));
+        $prop_arr = array_merge($prop_arr, DB_AA::select( array('property'=> '+value'), 'SELECT `property`, `value` FROM `object_integer`', array(array('object_id', $id)), array('property', 'priority')));
+        $prop_arr = array_merge($prop_arr, DB_AA::select( array('property'=> '+value'), 'SELECT `property`, `value` FROM `object_float`',   array(array('object_id', $id)), array('property', 'priority')));
 
-        $tab = GetTable2Array("SELECT `property`,`value` FROM `object_integer` WHERE object_id = '$id' ORDER by property, priority", '');
-        if (is_array($tab)) {
-            $props_from_db = array_merge($props_from_db, $tab);
-        }
-        $tab = GetTable2Array("SELECT `property`,`value` FROM `object_float` WHERE object_id = '$id' ORDER by property, priority", '');
-        if (is_array($tab)) {
-            $props_from_db = array_merge($props_from_db, $tab);
-        }
-
-        // first prepare value array
-        $prop_arr = array();
-        foreach ( $props_from_db as $v ) {
-            $prop_arr[$v['property']][] = $v['value'];
-        }
+        //$tab = GetTable2Array("SELECT `property`, `value` FROM object_text WHERE object_id = '$id' ORDER by property, priority", '');
+        //$props_from_db = is_array($tab) ? $tab : array();
+        //
+        //$tab = GetTable2Array("SELECT `property`,`value` FROM `object_integer` WHERE object_id = '$id' ORDER by property, priority", '');
+        //if (is_array($tab)) {
+        //    $props_from_db = array_merge($props_from_db, $tab);
+        //}
+        //$tab = GetTable2Array("SELECT `property`,`value` FROM `object_float` WHERE object_id = '$id' ORDER by property, priority", '');
+        //if (is_array($tab)) {
+        //    $props_from_db = array_merge($props_from_db, $tab);
+        //}
+        //
+        //// first prepare value array
+        //$prop_arr = array();
+        //foreach ( $props_from_db as $v ) {
+        //    $prop_arr[$v['property']][] = $v['value'];
+        //}
 
         foreach ($properties as $property_id => $property) {
             $prop_val = '';
@@ -561,6 +559,9 @@ class AA_Object extends AA_Storable implements iEditable {
                     if (!$property->isMulti()) {
                         $prop_val = $tmp_val;
                         break;  // next property
+                    }
+                    if (!is_array($prop_val)) { // PHP 7.1 needs to convert var to array before use
+                        $prop_val = array();
                     }
                     $prop_val[] = $tmp_val;
                 }
@@ -588,7 +589,7 @@ class AA_Object extends AA_Storable implements iEditable {
    // *   @global  bool $nocache (in) do not use cache, even if use_cache is set
    // */
    //    // @todo !!! - rewrite it.
-   //    // do the same as in quryZids for any object
+   //    // do the same as in queryZids for any object
     function querySet($type, $set, $restrict_zids=null) {
 
         $owners = $set->getModules();
@@ -874,6 +875,10 @@ class AA_Object extends AA_Storable implements iEditable {
 
         $search_fields = AA_Object::_getSearchArray($properties);
         $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
+
+
+// huhl($aliases,$search_fields,static::getManagerTopHtml($search_fields));
+
 
         $manager_settings = array(
              'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS

@@ -71,7 +71,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
     } else {
         if ($lang != get_mgettext_lang()) {
-            $_m = "";
+            $_m = array();
         }
         include $filename;
     }
@@ -103,6 +103,8 @@ function mgettext_bind($lang, $section, $cache=false) {
  */
 function _m($id, $params = 0) {
     global $_m;
+    
+    //huhl($id, $_m[$id], $_m);
 
     $retval = $_m[$id];
     if (!$retval) {

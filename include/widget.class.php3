@@ -60,7 +60,7 @@ class AA_Form_Array {
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
-    static public function getName4Form($property_id, $content, $item_index) {
+    static public function getName4Form($property_id, $content, $item_index=1) {
         $form_field_id = self::getVarFromFieldId($property_id);
 
         $oid = $content->getId();

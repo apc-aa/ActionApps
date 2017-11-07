@@ -299,7 +299,7 @@ class AA_Sortorder extends AA_Object {
 
 
     /** AA_Sortorder function  */
-    function __construct($sort) {
+    function __construct($sort=array()) {
         $this->clear();
         foreach ($sort as $key => $val) {
             if ($key == 'limit') {
