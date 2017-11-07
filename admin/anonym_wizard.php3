@@ -60,18 +60,17 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
         $ret .= "<!--#include virtual=\"$fillform_url\" -->";
     }
 
-    $ret .= '
-    <!-- '. _m('ActionApps Anonymous form') .'-->
-    <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) ."\n\n";
+    $ret .= "\n <!-- ". _m('ActionApps Anonymous form') ."-->\n\n";
 
     // get form - we need to call $form->getForm() before we call
     // $form->getFormStart(), $form->getFormJavascript
     $inputform_settings = array('form_action' => AA_INSTAL_URL.'filler.php3');
     $form               = new inputform($inputform_settings);
-    $content4id         = new ItemContent;
-    $form_code          = $form->getForm($content4id, $slice, false, $show);
-    $CurItem    = new AA_Item($content4id, $slice->aliases(), $form_code);   // just prepare
-    $form_code  = $CurItem->get_item();
+    $content4id       = new ItemContent;
+    $form_code          = '{generate:HEAD}'.$form->getForm($content4id, $slice, false, $show).'{generate:FOOT}';
+    //$CurItem    = new AA_Item($content4id, $slice->aliases(), $form_code);   // just prepare
+    //$form_code  = $CurItem->get_item();
+
 
     $ret .= $form->getFormStart();
 
@@ -98,7 +97,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     $ret .= $additional. "\n";
     $ret .= $form->getFormJavascript();
     $ret .= "\n    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" align=\"center\" class=\"tabtxt\">\n";
-    $ret .= $form_code;   // show all fields
+    $ret .=  AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($form_code)); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
 
     $ret .= '
       <tr>
