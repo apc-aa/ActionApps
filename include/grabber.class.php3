@@ -41,7 +41,7 @@ class AA_Saver {
     protected $grabber;            /** the object which deliveres the data */
     protected $transformations;    /** describes, what to do with data before storing */
     protected $slice_id;           /** id of destination slice */
-    protected $store_mode;         /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
+    protected $store_mode;         /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
     protected $id_mode;            /** id-policy    - how to construct id - old | new | combined */
 
     private   $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
@@ -121,7 +121,7 @@ class AA_Saver {
                 }
             }
             // @todo do validation for updates
-            
+
             $this->_updated_slices[$content4id->getOwnerId()] = true;
 
             // id_mode - overwrite or insert_if_new
@@ -205,7 +205,6 @@ class AA_Grabber {
     /** */
     static function factoryFromFile($file) {
         $grabbers = AA_Components::getClassNames('AA_Grabber');
-        huhl($grabbers, $file);
         exit;
     }
 
@@ -1167,16 +1166,18 @@ class AA_Grabber_Slice extends AA_Grabber {
 
     protected $set;                 /** AA_Set specifies the slice, conds and sort */
     protected $restrict_zids;       /** possible subset of ids grabbed */
+    protected $restrict_fields;     /** possible subset of fields - used in {updateitem:...} for field value update */
     private   $_longids;            /** list if files to grab - internal array */
     private   $_content_cache;      /**  */
     private   $_index;              /**  */
 
-    function __construct($set, $restrict_zids=null) {
-        $this->set            = $set;
-        $this->restrict_zids  = $restrict_zids;
-        $this->_longids       = array();
-        $this->_content_cache = array();
-        $this->_index         = 0;
+    function __construct($set, $restrict_zids=null, $restrict_fields=null) {
+        $this->set             = $set;
+        $this->restrict_zids   = $restrict_zids;
+        $this->restrict_fields = is_array($restrict_fields) ? $restrict_fields : false;
+        $this->_longids        = array();
+        $this->_content_cache  = array();
+        $this->_index          = 0;
     }
 
     /** Name of the grabber - used for grabber selection box */
@@ -1214,7 +1215,7 @@ class AA_Grabber_Slice extends AA_Grabber {
     /** speedup */
     function _fillCache() {
         // read next 100 items (we can laborate with cache size in future to get even better performance)
-        $this->_content_cache = GetItemContent(new zids( array_slice($this->_longids, $this->_index, 100), 'l'));
+        $this->_content_cache = GetItemContent(new zids( array_slice($this->_longids, $this->_index, 100), 'l'), '', false, $this->restrict_fields);
     }
 
     function getCharset() {
