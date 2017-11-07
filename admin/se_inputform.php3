@@ -298,8 +298,15 @@ if ( !$update ) {      // load defaults
 }
 
 HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+
 ?>
- <title><?php echo _m("Admin - configure Fields");?></title>
+<title><?php echo _m("Admin - configure Fields");?></title>
+
+<!-- code for ACE editor -->
+<script src="https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js" integrity="sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=" crossorigin="anonymous"></script>
+<!-- code for ACE editor end -->
+
 <script language="JavaScript"><!--
   function CallConstantEdit(as_new) {
     var url = "<?php echo EditConstantURL(); ?>"
@@ -487,8 +494,8 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
     FrmInputText($alias_name, _m("Alias")." $iAlias", $alias_value, 10, 20, false, _m("_# + 8 UPPERCASE letters or _"));
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
-    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 4, 60, false, AA_View::getViewJumpLinks('view.php3?'.$$alias_func)); // added for f_v parameters
-    FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0, false, '', '', '', false, 255);
+    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php3?'.$$alias_func)); // added for f_v parameters
+    FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
     if ($iAlias != 3) {
         echo "\n    <tr><td colspan=2><hr></td></tr>";
     }
@@ -497,6 +504,39 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
 echo "\n </form>";
+
+?>
+<!-- code for ACE editor -->
+<script>
+    $(function() {
+//      $('textarea[data-editor]').each(function() {
+      $("#alias1_func, #alias2_func, #alias3_func").each(function() {
+        var textarea = $(this);
+        var mode = "html";      // textarea.data('editor');
+        var editDiv = $('<div>', {
+          position: 'absolute',
+          width: '100%',   //textarea.width(),
+          height: textarea.height(),
+          'class': textarea.attr('class')
+        }).insertBefore(textarea);
+        textarea.css('display', 'none');
+        var editor = ace.edit(editDiv[0]);
+        editor.renderer.setShowGutter(false);
+        // editor.renderer.setShowGutter(textarea.data('gutter'));
+        editor.getSession().setValue(textarea.val());
+        editor.getSession().setMode("ace/mode/" + mode);
+        //editor.setTheme("ace/theme/idle_fingers");
+        editor.setTheme("ace/theme/chrome");
+
+        // copy back to textarea on form submit...
+        textarea.closest('form').submit(function() {
+          textarea.val(editor.getSession().getValue());
+        })
+      });
+    });
+</script>
+<!-- code for ACE editor end -->
+<?php
 
 HtmlPageEnd();
 page_close();

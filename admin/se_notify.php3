@@ -184,6 +184,16 @@ while ($db->next_record()) {
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 HtmlPageBegin();
+
+// code for ACE editor
+FrmJavascriptFile( 'javascript/jquery.min.js' );
+?>
+<script src="https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js" integrity="sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=" crossorigin="anonymous"></script>
+<?php
+// code for ACE editor end
+
+
+
 echo '<title> '. _m("Email Notifications of Events"). '</title></head>';
     require_once AA_INC_PATH."menu.php3";
     showMenu ($aamenus, "sliceadmin","notify");
@@ -203,17 +213,6 @@ echo '<title> '. _m("Email Notifications of Events"). '</title></head>';
 <?php
 
     FrmTabCaption(_m("Email Notifications of Events"),'','',$form_buttons, $sess, $slice_id);
-/*
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Email Notifications of Events")?></b>
-</td>
-</tr>
-
-<tr><td>
-
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-*/
 
 $help = _m('E-mail is sent only if body is not empty.<br>You can use this for selestive e-mails. For example: {ifset:{category........}:e-mail text}');
 
@@ -239,18 +238,39 @@ echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Approved Bin</h4>  People
 
   FrmTabEnd($form_buttons, $sess, $slice_id);
 
-/*
-</table>
-</td></tr><tr><td align="center">
-  echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
-  echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
-
-
-</td></tr></table>
-*/
 echo "</form>";
+?>
+<!-- code for ACE editor -->
+<script>
+    $(function() {
+//      $('textarea[data-editor]').each(function() {
+      $("#notify_holding_item_b, #notify_holding_item_edit_b, #notify_active_item_b, #notify_active_item_edit_b").each(function() {
+        var textarea = $(this);
+        var mode = "html";      // textarea.data('editor');
+        var editDiv = $('<div>', {
+          position: 'absolute',
+          width: '100%',   //textarea.width(),
+          height: textarea.height(),
+          'class': textarea.attr('class')
+        }).insertBefore(textarea);
+        textarea.css('display', 'none');
+        var editor = ace.edit(editDiv[0]);
+        editor.renderer.setShowGutter(false);
+        // editor.renderer.setShowGutter(textarea.data('gutter'));
+        editor.getSession().setValue(textarea.val());
+        editor.getSession().setMode("ace/mode/" + mode);
+        //editor.setTheme("ace/theme/idle_fingers");
+        editor.setTheme("ace/theme/chrome");
+
+        // copy back to textarea on form submit...
+        textarea.closest('form').submit(function() {
+          textarea.val(editor.getSession().getValue());
+        })
+      });
+    });
+</script>
+<!-- code for ACE editor end -->
+<?php
 
 HtmlPageEnd();
 page_close();
