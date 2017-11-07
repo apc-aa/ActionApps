@@ -109,7 +109,7 @@ class AA_Toexecute {
                                      array('execute_after' , ((int)$time < time() ? time() : $time)),  // task for user queue uses TOEXECUTE_USER_TASK_TIME
                                      array('aa_user'       , $auth->auth['uid']),
                                      array('priority'      , $priority),
-                                     array('selector'      , ($selector ? $selector : get_class($object))),
+                                     array('selector'      , ($selector ?: get_class($object))),
                                      array('object'        , serialize($object)),
                                      array('params'        , serialize($params))
                               ));
