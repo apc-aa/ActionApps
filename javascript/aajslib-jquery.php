@@ -240,11 +240,10 @@ function displayInput(valdivid, item_id, fid) {
     AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(data) {
             var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
-            var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
             if (width>200) {
-                style += 'width:'+width+'px;';
+                data = data.replace('class="ajax_widget aa-ajax-open"', 'class="ajax_widget aa-ajax-open" style="width:'+width+'px;"');
             }
-            $(valdiv).html(data.replace('data-aa-style', 'style="'+style+'"'));
+            $(valdiv).html(data);
             var aa_input = $(valdiv).find('select,textarea,input').first();
             $(aa_input).focus();  // select the input field (<select> or <input>)
             if ((aa_input).is("textarea")) {
@@ -324,7 +323,7 @@ function AA_SendWidgetAjax(base_id) {
 
 
 /** Closes the ajax for after file upload
- *  The main chane is, that now we use standard AA input names:
+ *  The main change is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
 function AA_ReloadAjaxResponse(id, responseText) {
@@ -577,27 +576,76 @@ function AA_SaveEditors() {
 
 
 function AA_SiteUpdate(item, field, value) {
-  var params = {};
-  params['aa[u'+item+']['+field+'][0]'] = value;
+    var params = {};
+    params['aa[u'+item+']['+field+'][0]'] = value;
     AA__doChange(params);
 }
-function AA_SiteNewitem(slice, field, value) {
-  var params = {};
-  params['aa[n1_'+slice+']['+field+'][0]'] = value;
+/* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
+function AA_SiteNewitem(slice, template, field, value) {
+    var params = {};
+    for (var i = 2, len = arguments.length; i < len; i+=2) {
+        if (len > i+1) {
+            params['aa[n1_'+slice+']['+arguments[i]+'][0]'] = arguments[i+1];
+        }
+    }
     AA__doChange(params);
+}
+function AA_SiteEdit(item) {
+    AA__doChange({'aaedit':item}, 'get');
+}
+function AA_SiteSendForm(form) {
+    AA__doChange(new FormData(form));
+    return false;
 }
 
-function AA__doChange(params) {
-  $.post(window.location.href, params, function(data) {
+function AA__SiteUpdateParts(data) {
+    var ckeditors = [];
+    var matches   = [];
+    var re = /contenteditable=true id="([^"]*)"/g;
     for (var i in data) {
         if (i == 'message') {
             AA_Message(data[i]);
         } else {
-            $("[data-aa-part='"+i+"'").html(data[i]);
+            $("[data-aa-part='"+i+"'").replaceWith(data[i]);
+            if (data[i].indexOf("contenteditable=true")) {
+                while (matches = re.exec(data[i])) {
+                    if (matches[1]) {
+                        ckeditors.push(matches[1]);
+                    }
+                }
+            }
         }
     }
-  });
+    if (ckeditors.length && (typeof CKEDITOR !== "undefined")) {
+        for(var i in ckeditors) {
+            var editor = CKEDITOR.instances[ckeditors[i]];
+            if (editor) {
+                editor.destroy(true);
+            }
+            CKEDITOR.inline(ckeditors[i]);
+        }
+    }
 }
+
+function AA__doChange(params, type) {
+    if (type == 'get') {
+        $.get(window.location.href, params, AA__SiteUpdateParts);
+    } else if (params instanceof FormData) {
+        $.ajax({
+          url         : window.location.href,
+          data        : params,
+          cache       : false,
+          contentType : false,
+          processData : false,
+          type        : 'POST',
+          success     : AA__SiteUpdateParts
+        });
+        // $.post(window.location.href, params, AA__SiteUpdateParts);
+    } else {
+        $.post(window.location.href, params, AA__SiteUpdateParts);
+    }
+}
+
 
 /* Cookies */
 function SetCookie(name, value, plustime) {

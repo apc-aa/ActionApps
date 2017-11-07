@@ -240,6 +240,26 @@ if (is_array($_POST['aa']) AND IsAjaxCall()) {
     echo json_encode($parts);
     exit;
 }
+if (isset($_GET['aaedit']) AND IsAjaxCall()) {
+
+    // we need to evaluate $page_content in order to reevaluate DependentParts
+    $apc_state['xajax'] = 2;  // to not be 1
+    $page_content = $module->getSite( $apc_state );
+
+    header("Content-type: application/json");
+
+    $parts = AA::Stringexpander()->getDependentParts(array('aaedit'));
+    //echo $parts;
+    //echo AA::Stringexpander();
+    if (AA::$encoding != 'utf-8') {
+        $convertor = ConvertCharset::singleton();
+        foreach ($parts as $k => $v) {
+            $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
+        }
+    }
+    echo json_encode($parts);
+    exit;
+}
 
 
 $page_content = $module->getSite( $apc_state );

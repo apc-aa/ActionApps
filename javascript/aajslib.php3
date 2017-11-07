@@ -183,12 +183,12 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
 
     $(valdivid).update(AA_Config.loader);
     AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties}, function(responseText) {
-            var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
+            // var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
             if (width>200) {
-                style += 'width:'+width+'px;';
+                responseText = responseText.replace('class="ajax_widget aa-ajax-open"', 'class="ajax_widget aa-ajax-open" style="width:'+width+'px;"');
             }
-            // $(valdivid).firstDescendant().update(responseText);  // new value
-            $(valdivid).update(responseText.replace('data-aa-style', 'style="'+style+'"'));  // new value
+            $(valdivid).update(responseText);
+            // $(valdivid).update(responseText.replace('class=ajax_widget', 'class=ajax_widget style="'+style+'"'));  // new value
             $(valdivid).setAttribute('data-aa-edited', '1');
             var firstElement = $(valdivid).select('input','select', 'textarea')[0];
             if(firstElement != null) {
