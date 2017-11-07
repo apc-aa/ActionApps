@@ -141,7 +141,7 @@ class AA_Module {
     /** getModuleProperty function
      *  static function
      * @param $module_id
-     * @param $field
+     * @param $prop
      */
     static public function getModuleProperty($module_id, $prop) {
         $module = static::getModule($module_id);
@@ -307,7 +307,7 @@ class AA_Slice extends AA_Module {
 
     protected function _getSpecificTableProperty($prop) {
         if (is_null($this->table_setting)) {
-            parent::_getSpecificTableProperty();
+            parent::_getSpecificTableProperty($prop);
             if ($this->table_setting['reading_password']) {
                 $this->table_setting['reading_password'] =  AA_Credentials::encrypt($this->table_setting['reading_password']);
             }

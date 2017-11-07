@@ -79,6 +79,7 @@ spl_autoload_register(function ($class_name) {
         case 'transformation':
         case 'grabber':
         case 'difftext':
+        case 'manager':
         //  case 'widget':
         //  case 'field':
             require_once AA_INC_PATH. $core. '.class.php3';

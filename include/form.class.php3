@@ -265,7 +265,7 @@ class AA_Form extends AA_Object {
     function getObjectEditHtml() {
         $content = $this->_getContent();
 
-        $html    = $this->_getRowsHtml($content);
+        $html    = $this->getRowsHtml($content);
         $html   .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
         $html   .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
 
@@ -289,7 +289,7 @@ class AA_Form extends AA_Object {
         $html .= "\n    ". '<input id="slice_id" name="slice_id" value="'.$this->object_owner.'" type="hidden">';
         $html .= "\n    ". '<input id="ret_code" name="ret_code" value="'.$ret_code.'" type="hidden">';
 
-        $html .= $this->_getRowsHtml($content);
+        $html .= $this->getRowsHtml($content);
 
         switch ($type) {
             case 'add':      $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
@@ -312,7 +312,7 @@ class AA_Form extends AA_Object {
         $content = $this->_getContent();
 
         $html  = "\n  <fieldset id=\"form".$this->object_id."\">";
-        $html .= $this->_getRowsHtml($content, $type);
+        $html .= $this->getRowsHtml($content, $type);
         $html .= "\n  </fieldset>";
 
         return $html;
@@ -322,7 +322,7 @@ class AA_Form extends AA_Object {
      *        actual user's permissions and profile
      *  @param $type  normal|ajax|live
      */
-    private function _getRowsHtml($content, $type='') {
+    public function getRowsHtml($content, $type='') {
         $ret = '';
         foreach($this->rows as $row) {
             $ret .= $row->getRowHtml($content, $type);

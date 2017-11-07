@@ -961,6 +961,7 @@ define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store eve
 define ("LINKS_VALIDATION_COUNT", 100);
 
 /** constants for manager class used in $manager->show */
+define("MGR_ITEMS",          1);  // 1 reserved - used to pass 'show' minimal (0 means default)
 define("MGR_ACTIONS",        2);  // show actions
 define("MGR_SB_SEARCHROWS",  4);  // show search rows in searchbar
 define("MGR_SB_ORDERROWS",   8);  // show order rows in searchbar

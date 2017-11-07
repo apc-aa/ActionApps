@@ -60,10 +60,15 @@ if ( $upd_preview ) {
 $ret_url = $_REQUEST['ret_url'];
 // could be changed in the future - the owner could be not only slice,
 // however we have to change also permission check
-$oowner = $slice_id;
 
-$oid    = $_REQUEST['oid'];
-$otype  = $_REQUEST['otype'];
+$oid = $_REQUEST['oid'];
+if ($oid) {
+    $old_obj = AA_Object::load($oid);
+    $oowner = $old_obj->getOwnerId();
+    $otype  = $old_obj->getObjectType();
+}
+if (!$oowner) { $oowner = $slice_id; }           // for new of incorrect object in db
+if (!$otype)  { $otype  = $_REQUEST['otype']; }  // for new of incorrect object in db
 
 if ($cancel) {
     go_url(get_admin_url($ret_url));
