@@ -162,13 +162,13 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 }
 
 function SendErrorPage($txt) {
-    HTMLPageBegin();
+    HtmlPageBegin();
     echo "</head><body>".$txt."</body></html>";
     exit;
 }
 
 function SendOkPage($txt) {
-    HTMLPageBegin();
+    HtmlPageBegin();
     echo "</head><body>".$txt."</body></html>";
     exit;
 }

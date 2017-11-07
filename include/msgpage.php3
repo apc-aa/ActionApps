@@ -82,7 +82,7 @@ function MsgPageMenu($url, $msg, $mode, $menu="") {
       echo "<p>$msg</p><br><br>";
   }
   echo "<a href=\"$url\">"._m("Back")."</a>";
-  HTMLPageEnd();
+  HtmlPageEnd();
   page_close();
   exit;
 }

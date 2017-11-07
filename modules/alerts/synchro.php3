@@ -43,7 +43,7 @@ if ($collectionprop) {
     echo "Can't find collection with module_id=$slice_id. Bailing out.<br>";
 }
 
-HTMLPageBegin();
+HtmlPageBegin();
 echo "<title>"._m("Slice Synchro")."</title>";
 echo "</head>";
 echo "<body>";
@@ -137,6 +137,6 @@ if ($slice_set) {
 
 echo "\n</td></tr></table></form>";
 
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 ?>

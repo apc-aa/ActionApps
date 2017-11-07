@@ -114,7 +114,7 @@ if (!$err && $tview == "acf") {
 if ($no_slice_id) {
     echo "</BODY></HTML>";
 } else {
-    HTMLPageEnd();
+    HtmlPageEnd();
 }
 page_close();
 ?>

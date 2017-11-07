@@ -146,7 +146,7 @@ echo '
 FrmTabEnd(array("update"=>array("value"=>($jump_id ? _m("Update") : _m("Create"))),
                 "cancel"=>array("url"=>AA_INSTAL_PATH."admin/um_uedit.php3")), $sess, $slice_id);
 echo "</form>";
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 ?>
 

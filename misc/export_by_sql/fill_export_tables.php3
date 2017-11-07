@@ -51,7 +51,7 @@ if ($slices_chosen) {
     echo "INSERT INTO export_constant: ".$db->affected_rows()." rows<br>\n";
 }
 
-HTMLPageBegin();
+HtmlPageBegin();
 
 reset ($tables);
 while (list ($table) = each ($tables)) {

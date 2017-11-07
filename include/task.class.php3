@@ -140,7 +140,7 @@ class AA_Plannedtask extends AA_Object {
 
     static function toexecuteSelector($id) {
         return "Plannedtask_$id";
-}
+    }
 
     /** method called after save */
     function aftersave() {

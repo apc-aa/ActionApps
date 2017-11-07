@@ -156,6 +156,6 @@ else
 echo "</form>";
 
 echo "</td></tr></table>";
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 ?>

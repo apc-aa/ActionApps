@@ -636,7 +636,7 @@ class AA_Set extends AA_Object {
      */
     function addSortFromBasicString( $sort_string ) {
         if ($sort_string) {
-            $sorts = array_filter(explode(',', str_replace(array('-','+',' '),array('-,','+,', '+,'), $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
+            $sorts = array_filter(explode(',', str_replace(array('-','+',' '),array('-,','+,','+,'), $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
             foreach ($sorts as $number => $sort) {
                 $retone = array();
                 // is defined group limit?

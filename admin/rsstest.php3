@@ -152,7 +152,7 @@ if ($err) {
     echo "<b>$err</b>";
 }
 
-HTMLPageEnd();
+HtmlPageEnd();
 page_close ();
 
 

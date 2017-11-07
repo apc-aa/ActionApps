@@ -28,7 +28,7 @@
  * @param $title
  */
 function Page_HTML_Begin($title="") {
-    HTMLPageBegin(ADM_SLICE_CSS);
+    HtmlPageBegin();
     echo '
       <title>'.$title.'</title>
     </head>

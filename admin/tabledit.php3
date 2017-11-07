@@ -88,6 +88,6 @@ if (!$err && $tview == "email_edit") {
     ShowEmailAliases();
 }
 
-HTMLPageEnd();
+HtmlPageEnd();
 page_close ();
 ?>

@@ -170,7 +170,7 @@ $tabledit = new tabledit('aarsstest', $script, $cmd, $aarss_tv, AA_INSTAL_PATH."
 $err = $tabledit->view($where);
 if ($err) echo "<b>$err</b>";
 
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 
 ?>

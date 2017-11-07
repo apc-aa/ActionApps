@@ -46,6 +46,7 @@ CKEDITOR.editorConfig = function( config ) {
     config.extraPlugins = 'confighelper';  // for placeholder of editor
     //config.extraAllowedContent = 'span;*[id];a[rel];*(*);*{*}'; // any class and any inline style...
     config.allowedContent = true;   // disable filtering at all - toto je poslední možnost
+    config.disableNativeSpellChecker = false;  // default webspellchecker do not allow Czech for exaple...
 
     // allow i tags to be empty (for font awesome)
     CKEDITOR.dtd.$removeEmpty['i'] = false

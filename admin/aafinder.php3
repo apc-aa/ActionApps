@@ -507,6 +507,6 @@ echo '</form></td></tr>';
 
 FrmTabEnd();
 
-HTMLPageEnd();
+HtmlPageEnd();
 page_close ();
 ?>

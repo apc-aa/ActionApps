@@ -196,6 +196,6 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 </form>
 <?php
 freeDB($db);
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 ?>

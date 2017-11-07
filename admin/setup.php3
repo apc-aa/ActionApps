@@ -65,7 +65,7 @@ bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
  * @return prints title,body,h1
  */
 function HtmlStart() {
-    HTMLPageBegin("../".ADMIN_CSS);
+    HtmlPageBegin();
     echo "<title>" . _m("ActionApps Setup") . "</title></head>\n";
     echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
     echo "<center>\n";

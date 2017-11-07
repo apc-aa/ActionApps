@@ -104,7 +104,7 @@ if ($hide_value) {
 
 <?php
 FrmJavascript("hcInit($hcid);");
-HTMLPageEnd();
+HtmlPageEnd();
 page_close();
 exit;
 ?>

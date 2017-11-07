@@ -1,3 +1,50 @@
+17-11-07 - new Code editor widget - HTML with syntax highlight using CodeMirror
+(honzam)   js library
+         - new {updateitem:<long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
+             - updates item fields
+           It works only on slices where "Allow anonymous editing of items" is
+           set to "All items", right now.
+           The plan is to work with field permissions in future.
+             {updateitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}
+             - c239cb267837a25b4efb5892ca4f4324 is ID of the updated item.
+           The values could be single (for headline........), or multiple
+             - written in JSON format.
+           If you want to update the item conditionaly just do not fill <long_item_id>
+           in cases you do not want update.
+           Returns <long_item_id> if updated, nothing if item is not updated' include/grabber.class.php3
+         - new {editfull:} - the same as {edit} but also with labels
+         - many {aa commands} registers its used libraries in order
+           {generate:HEAD} and {generate:FOOT} can include the libs automaticaly,
+           when used in sitemodule
+         - new <bin> parameter to {item:<ids>:<content>:<delim>:<top>:<bottom>:<bins>}
+           which allows to use data from other bins than ACTIVE
+           - the format is dash separated bins: ACTIVE-HOLDING-TRASH
+         - added codemirror and ACE JS libraries
+           (experimentaly - ACE will be probably removed)
+         - better Bulk email sending. Now AA can send email to much more users
+           (>1000), because we using ToExecute queue not only for sending emails,
+           but also for its generation
+         - fix AA for PHP 7.1
+         - experimental syntax highlight for Admin->Fulltext using Codemirror
+         - experimental syntax highlight for aliases in Admin->Field - Edit
+           using ACE editor (will be replaced by Codemirror, probably)
+         - Anonymous form wizard uses {generate:HEAD} and {generate:FOOT}.
+           However, still uses older filler approach with v... variables and
+           not aa[][].... It is on TODO
+         - js prepared for automatical item inline editig using sitemodule,
+           {partdiv} and AA_Toolbox
+         - fixed HTML code for Admin->Task Manager
+         - fixed broken Slice Import
+         - removed MAX_RELATED_COUNT
+         - improved a bit HTML and CSS of admin pages
+         - widget generator for fields use common functions internaly
+         - fixed problem with module deletion when some of the tables do not exists
+         - more informations on Admin-> User Profile settings
+         - fixed object edit - there is no more missing column
+         - views no longer displays expired items when no
+           "Show content of expired items" in slice is set
+         - cleanup - using more vanilla JS instead of prototype.js
+         - small changes and typos
 17-09-12 - new operators for conditions - CONTAIN and BEGIN which are like LIKE
 (honzam)   and RLIKE, but better - characters -*?_%'\ are treated as normal
            characters so you can search for them. It do not allow OR, AND, NOT.

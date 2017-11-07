@@ -1018,7 +1018,7 @@ class AA_Metabase {
     }
 
     /** AA_Propery array - for form generation */
-    function getColumnProperies($tablename) {
+    function getColumnProperties($tablename) {
         $table = $this->tables[$tablename];
         $ret   = array();
         foreach ($table as $column) { // in priority order
