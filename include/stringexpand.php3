@@ -5067,9 +5067,20 @@ class AA_Requires {
             $already_in     = array();
 
             $requires_definitions = $this->usrdefs + self::systemDefinitions();
+
+            // we have to deal with different versions of library. Is some code needs specific version of the lib (jslib@1) we have to use it in all requires 'jslib'
+            $exact_versions = array();
+            foreach ($this->reqs as $code_id => $foo) {
+                if (strpos($code_id,'@') !== false) {
+                    $base_code_id = strtok($code_id,'@');
+                    $exact_versions[$base_code_id] = $code_id;
+                }
+            }
+
             foreach ($requires_definitions as $code_id => $req) {
                 $base_code_id = strtok($code_id,'@');
-                if ($this->reqs[$code_id] OR $this->reqs[$base_code_id]) {    // we are checking jquery@3 and then also jquery
+                // process if exact match or we do not care about version or this one is_a the right exact version
+                if ($this->reqs[$code_id] OR ($this->reqs[$base_code_id] AND ( !isset($exact_versions[$base_code_id]) OR ($exact_versions[$base_code_id]==$code_id)))) {    // we are checking jquery@3 and then also jquery
                     if ($already_in[$base_code_id]) {
                         continue;
                     }

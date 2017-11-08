@@ -1,3 +1,23 @@
+17-11-08 - fixed {generate:HEAD} when working with different versions of libs
+(honzam)   on the page (mainly for jslib)
+17-11-07 - AA now works well with PHP 7.1
+(honzam) - new {range} - returns human readable ranges
+            {range:2008-2009-2010-2011} - 2008-2011
+            {range:1-4-5-6}             - 1, 4-6
+            {range:{@year............:-}}
+            {range:_#this}
+         - {mail:...} now supports attachments:
+             {mail:1:test@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::["https#://test.org/img1.png","https#://test.org/img2.png"]}
+             {mail:1:test@ecn.cz:test mail:Hi, I am body of mail:utf-8:actionapps@ecn.cz:::::{@file............:json}}
+         - new {lang} - better than {xlang} - returns allways valid lang code
+           - not only in sitemodule
+         - new {tooltip:myinfoicon:<b>My tip</b><br>tip text} which creates
+           popup tooltip. All the JS libraries are automaticaly loaded. You must
+           be using {generate:HEAD} and {generate:FOOT} in your site module!
+           We may replace the JS by another one with the same functionality in
+           the future, so do not count on the exact library in the code.
+           The {tooltip} code will remain functional, however.
+         - better AA finder - first searchfield looks for all - items, slices...
 17-11-07 - new Code editor widget - HTML with syntax highlight using CodeMirror
 (honzam)   js library
          - new {updateitem:<long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
