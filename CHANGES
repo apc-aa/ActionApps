@@ -1,3 +1,5 @@
+17-11-20 - new css/aa-system.css - all system and widgets css - mostly autoloaded
+(honzam)
 17-11-08 - fixed {generate:HEAD} when working with different versions of libs
 (honzam)   on the page (mainly for jslib)
 17-11-07 - AA now works well with PHP 7.1
