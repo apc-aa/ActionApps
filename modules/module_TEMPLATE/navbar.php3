@@ -46,11 +46,11 @@ $nb_backpath = ( (strpos($_SERVER['PHP_SELF'], '/admin/') > 0 ) ? '' : '../' );
 
 $nb_manager = ( $editor_page ?
   '<span class=nbdisable>'. _m("Code&nbsp Manager") .'</span>':
-  '<a href="'. $sess->url("index.php3"). '"><span class=nbenable>'. _m("Code Manager") .'</span></a>');
+  '<a href="'. StateUrl("index.php3"). '"><span class=nbenable>'. _m("Code Manager") .'</span></a>');
 
 $nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?
   '<span class=nbdisable>'. _m("Module Settings") .'</span>':
-  '<a href="'. $sess->url($MODULES[$g_modules[$module_id]['type']]['directory']. "slicedit.php3") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
+  '<a href="'. StateUrl($MODULES[$g_modules[$module_id]['type']]['directory']. "slicedit.php3") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
 
 $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. _m("View site") .'</span>' :
@@ -62,7 +62,7 @@ $nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
 $nb_usermng = ( (!IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
   '<span class=nbdisable>'. _m("Users") .'</span>' :
-  '<a href="'. $sess->url("um_uedit.php3") .'"><span class=nbenable>'. _m("Users") .'</span></a>');
+  '<a href="'. StateUrl("um_uedit.php3") .'"><span class=nbenable>'. _m("Users") .'</span></a>');
 
 echo "
 <TABLE border=0 cellpadding=0 cellspacing=0>

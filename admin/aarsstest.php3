@@ -35,7 +35,7 @@ require_once menu_include();   //show navigation column depending on $show
  */
 function TV_PageBegin(&$config_arr) {
     if (! $config_arr["cond"] ) {
-        MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
+        MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
         exit;
     }
 
@@ -164,7 +164,7 @@ ProcessFormData('GetAARSS_tv', $val, $cmd);
 PrintArray($Err);
 echo $Msg;
 
-$script = $sess->url("aarsstest.php3");
+$script = StateUrl("aarsstest.php3");
 
 $tabledit = new tabledit('aarsstest', $script, $cmd, $aarss_tv, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);

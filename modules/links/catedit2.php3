@@ -163,7 +163,7 @@ function GetPureName($name, &$state) {
 // End of function definitions -------------------------------------------------
 
 if ($cancel)
-    go_url( $sess->url(self_base(). "index.php3"));
+    go_url( StateUrl(self_base(). "index.php3"));
 
 
 // we allways sending cat id - it prevent us of bug with 'Back' browser button
@@ -174,7 +174,7 @@ $cpath = GetCategoryPath( $cid );
 if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_path']  = $cpath;
 } else {
-    MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit category'));
+    MsgPage(StateUrl(self_base())."index.php3", _m('No permission to edit category'));
     exit;
 }
 
@@ -200,7 +200,7 @@ if (count($r_err) <= 1) {
     $r_msg[] = MsgOK(_m('Category data changed'));
 } else {
     page_close();
-    go_url( $sess->url(self_base() . "catedit.php3"));
+    go_url( StateUrl(self_base() . "catedit.php3"));
 }
 
 // Procces subcategories ---------------------
@@ -291,5 +291,5 @@ if (isset($oldBaseSubcat) AND is_array($oldBaseSubcat) ) {
 }
 
 page_close();
-go_url( $sess->url(self_base() . "index.php3"));
+go_url( StateUrl(self_base() . "index.php3"));
 ?>

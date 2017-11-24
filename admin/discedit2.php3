@@ -33,11 +33,11 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."pagecache.php3";
 
 if ($cancel) {
-    go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
+    go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
 }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
     exit;
 }
 
@@ -82,7 +82,7 @@ if ($update) {
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
-        go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
+        go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
     }
 }
 
@@ -113,7 +113,7 @@ echo "<h1><b>" . _m("Items managment - Discussion comments managment - Edit comm
 PrintArray($err);
 echo $Msg;
 ?>
-  <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF'] . "?d_id=".$d_id); ?>">
+  <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF'] . "?d_id=".$d_id); ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>

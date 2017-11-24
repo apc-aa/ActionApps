@@ -43,7 +43,7 @@ require_once AA_INC_PATH."mgettext.php3";
 require_once AA_BASE_PATH."modules/links/util.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -54,12 +54,12 @@ $module_id   = $slice_id;
 
 if ($template['Links']) {        // add module
     if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-        MsgPage($sess->url(self_base())."index.php3", _m('No permission to add module'));
+        MsgPage(StateUrl(self_base())."index.php3", _m('No permission to add module'));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_LINKS_SETTINGS)) {
-        MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit module'));
+        MsgPage(StateUrl(self_base())."index.php3", _m('No permission to edit module'));
         exit;
     }
 }
@@ -150,7 +150,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         if ($return_url) {  // after work for action, if return_url is there, we go to the page.
             go_url(urldecode($return_url));
         }
-        go_url($sess->url(self_base() . "modedit.php3?$netscape"));
+        go_url(StateUrl(self_base() . "modedit.php3?$netscape"));
     }
 }
 
@@ -193,7 +193,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 
-  echo '<form method=post action="'. $sess->url($_SERVER['PHP_SELF']) .'">';
+  echo '<form method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
 
   FrmTabCaption( _m('Module Links data') );
   $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";

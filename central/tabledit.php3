@@ -43,7 +43,7 @@ function GetCentalEditTableView() {
 }
 
 if ( !IsSuperadmin() ) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
     exit;
 }
 
@@ -67,7 +67,7 @@ ProcessFormData('GetCentalEditTableView', $val, $cmd);
 PrintArray($Err);
 echo $Msg;
 
-$script = $sess->url("tabledit.php3");
+$script = StateUrl("tabledit.php3");
 
 $tabledit = new tabledit($tview, $script, $cmd, $tableview, AA_INSTAL_PATH."images/", $sess, $func);
 $err      = $tabledit->view($where);

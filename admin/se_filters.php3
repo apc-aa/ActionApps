@@ -37,11 +37,11 @@ require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
     exit;
 }
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -72,7 +72,7 @@ while ($db->next_record()) {
 }
 
 if ( !isset($impslices) OR !is_array($impslices)){
-    MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
+    MsgPageMenu(con_url(StateUrl(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
     exit;
 }
 
@@ -168,7 +168,7 @@ function HiddenValue(sel) {
 
 function ChangeImport()
 {
-  var url = "<?php echo $sess->url(self_base() . "se_filters.php3")?>"
+  var url = "<?php echo StateUrl(self_base() . "se_filters.php3")?>"
   url += "&slice_id=<?php echo $slice_id ?>"
   url += "&import_id=" + SelectValue('document.f.import_id')
   document.location=url
@@ -193,7 +193,7 @@ function DisableClick(cond,what) {
 }
 
 function UpdateFilters(slice_id, import_id) {
-  var url = "<?php echo $sess->url(self_base() . "se_filters2.php3")?>"
+  var url = "<?php echo StateUrl(self_base() . "se_filters2.php3")?>"
   var done = 0
   url += "&slice_id=" + slice_id
   url += "&import_id=" + import_id
@@ -259,7 +259,7 @@ function UpdateFilters(slice_id, import_id) {
                 "cancel"       =>array("url"   =>"se_fields.php3"))
 
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
   FrmTabCaption(_m("Content Pooling - Configure Filters"),'','',$form_buttons, $sess, $slice_id);
 ?>

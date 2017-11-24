@@ -38,7 +38,7 @@ require_once AA_BASE_PATH."modules/site/util.php3";
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -50,12 +50,12 @@ $module_id   = $slice_id;
 
 if ($template_id) {        // add module
     if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"));
+        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODW_SETTINGS)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"));
+        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this slice"));
         exit;
     }
 }
@@ -221,7 +221,7 @@ FrmJavascript('
     PrintArray($err);
     echo $Msg;
 ?>
-<form name="inputform" method=post action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" onSubmit="return ModeditSubmit()">
+<form name="inputform" method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" onSubmit="return ModeditSubmit()">
 <?php
     FrmTabCaption(_m("Site"),'','',$form_buttons, $sess, $module_id);
 

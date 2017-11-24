@@ -63,7 +63,7 @@ if ( !isset($r_err) ) {
 
 if ($cancel) {
     // page where to go after this script execution
-    $cancelUrl = ( Links_IsPublic() ? "/" : $sess->url(self_base() ."index.php3"));
+    $cancelUrl = ( Links_IsPublic() ? "/" : StateUrl(self_base() ."index.php3"));
     go_url( $cancelUrl );
 }
 
@@ -82,7 +82,7 @@ if ( $lid ) {
 
 if ( $r_state['link_id'] ) {
     if ( !($db_link = GetLinkInfo( $r_state['link_id']))) {
-        MsgPage($sess->url(self_base()."index.php3"), _m('Link do not exist or the base category is not set'));
+        MsgPage(StateUrl(self_base()."index.php3"), _m('Link do not exist or the base category is not set'));
         exit;
     }
 
@@ -92,7 +92,7 @@ if ( $r_state['link_id'] ) {
 
 /*  all users have the permissions to create link
 } elseif (!IsGlobalPerm( PS_LINKS_CREATE_LINK )) {
-    MsgPage($sess->url(self_base()."index.php3"), _m('No permission to create link'));
+    MsgPage(StateUrl(self_base()."index.php3"), _m('No permission to create link'));
     exit;
 */
 
@@ -400,7 +400,7 @@ $form_buttons = array ( "submit",
                         "lid"       => array('value' => $r_state['link_id']) );
 
 echo '
-<form name="f" method=post action="'. $sess->url("linkedit2.php3") .'">';
+<form name="f" method=post action="'. StateUrl("linkedit2.php3") .'">';
 $caption = _m('Link').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
                                       array("before"=>"(", "text"=>"?", "after"=>")"));
 FrmTabCaption($caption, '','', $form_buttons, $sess, $slice_id);

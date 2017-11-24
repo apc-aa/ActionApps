@@ -33,7 +33,7 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");
+  MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");
   exit;
 }
 
@@ -131,12 +131,12 @@ do {
 
 if ( count($err) <= 1 ) {
     if ( isset($I) AND is_array($I) ) {   // slice imports some slices
-        go_url( $sess->url(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
+        go_url( StateUrl(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
     } else {
-        go_url( $sess->url(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
+        go_url( StateUrl(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
     }
 } else {
-  MsgPage($sess->url(self_base()."se_import.php3"), $err);
+  MsgPage(StateUrl(self_base()."se_import.php3"), $err);
 }
 
 page_close();

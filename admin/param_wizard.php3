@@ -120,7 +120,7 @@ if (is_array($desc['params'])) {
 
         <script Language="JavaScript"><!--
             function changeFunction (combo) {
-                page = "<?php echo $sess->url(self_base() . "param_wizard.php3") ?>"
+                page = "<?php echo StateUrl(self_base() . "param_wizard.php3") ?>"
                     + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'" ?>"
                     + "&item=" + combo.options [combo.selectedIndex].value;
                 document.location = page;

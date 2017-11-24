@@ -76,7 +76,7 @@ function ShowCollectionAddOns() {
     // SEND EMAILS
 
     echo '<br>
-    <form name="fire_form" method="post" action="'.$sess->url($_SERVER["PHP_SELF"]).'">';
+    <form name="fire_form" method="post" action="'.StateUrl($_SERVER["PHP_SELF"]).'">';
     FrmTabCaption( _m('Send alerts'));
 
     if ($fire["fire"]) {
@@ -140,7 +140,7 @@ function showSelectionTable() {
                 continue;
             }
             echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">
-                <A href=\"".$sess->url(AA_INSTAL_PATH
+                <A href=\"".StateUrl(AA_INSTAL_PATH
                     ."admin/index.php3?slice_id=".unpack_id($slice_id))."\">"
                     .$slice["name"]."</A></TD>";
             $first_view = true;
@@ -150,7 +150,7 @@ function showSelectionTable() {
                 }
                 $first_view = false;
                 echo "<TD class=tabtxt>
-                    <a href=\"".$sess->url(AA_INSTAL_PATH
+                    <a href=\"".StateUrl(AA_INSTAL_PATH
                     ."admin/se_view.php3?slice_id=".unpack_id($slice_id)
                     ."&view_id=".$vid."&view_type=".$view["type"])
                     ."\">".$view["name"]."</A></TD><TD class=tabtxt>";

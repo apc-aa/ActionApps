@@ -41,7 +41,7 @@ require_once AA_INC_PATH."formutil.php3";
 
 // Make sure you have permissions to do this
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You are not allowed to export / import slices"));
     exit;
 }
 
@@ -151,7 +151,7 @@ FrmTabCaption(_m("Export slice structure"));
 if ($SHOWTEXT == "") {
 
 ?>
-    <form name="f" method="post" action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
+    <form name="f" method="post" action="<?php echo StateUrl("sliceexp.php3") ?>" onsubmit="return validate2();">
 
     <?php
         $SQL= "SELECT id, name FROM slice ORDER BY name";

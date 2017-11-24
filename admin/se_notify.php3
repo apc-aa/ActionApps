@@ -71,16 +71,16 @@ function save_notify2db($slice_id, $function, $emails) {
 // sanity checks
 
 if ($cancel){
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (! $slice_id){
-    MsgPage($sess->url(self_base())."index.php3", "error on se_notify.php3");
+    MsgPage(StateUrl(self_base())."index.php3", "error on se_notify.php3");
     exit;
 }
 
 if (!IfSlPerm(PS_EDIT)) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this slice"));
     exit;
 }
 
@@ -209,7 +209,7 @@ echo '<title> '. _m("Email Notifications of Events"). '</title></head>';
 
 ?>
 
-<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
     FrmTabCaption(_m("Email Notifications of Events"),'','',$form_buttons, $sess, $slice_id);

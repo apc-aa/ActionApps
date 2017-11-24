@@ -143,7 +143,7 @@ function __mlx_fatal($msg) {
         $msg = implode("<br>",$msg);
     }
     $err["MLX"] = MsgErr($msg);
-    MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+    MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
     die;
 }
 

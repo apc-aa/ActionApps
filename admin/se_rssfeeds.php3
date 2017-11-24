@@ -36,7 +36,7 @@
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 
@@ -49,7 +49,7 @@ $qp_slice_id=q_pack_id($slice_id);
 
 if ($mode == "map") {
     $feed = name2rssfeed($slice_id,$sel_rssfeed_name);
-    go_url($sess->url(self_base() . "se_mapping.php3?from_slice_id=".$feed["remote_slice_id"]));
+    go_url(StateUrl(self_base() . "se_mapping.php3?from_slice_id=".$feed["remote_slice_id"]));
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -166,7 +166,7 @@ function checkData() {
   PrintArray($err);
   echo $Msg;
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
   FrmTabCaption(_m("Remote RSS Feed administration"));

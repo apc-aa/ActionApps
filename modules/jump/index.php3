@@ -34,7 +34,7 @@ if ($db->next_record()) {
     $dest = $db->f("destination");
     if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
     $instal_url = AA_INSTAL_PATH;
-    $url = $sess->url($instal_url.$dest);
+    $url = StateUrl($instal_url.$dest);
     $change_id = $db->f("dest_slice_id");
     if ($change_id) $url .= "&jumping=1&change_id=".unpack_id($change_id);
     //echo $url; exit;

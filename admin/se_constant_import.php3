@@ -39,11 +39,11 @@ require_once AA_INC_PATH."constedit_util.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -85,7 +85,7 @@ if ($update) {
         if (count($err) <= 1) {
             $Msg .= MsgOK(_m("Constants update successful"));
         }
-        go_url($sess->url(get_url($back_url, 'Msg='.urlencode($Msg))));
+        go_url(StateUrl(get_url($back_url, 'Msg='.urlencode($Msg))));
     } while( 0 );           // in order we can use "break;" statement
 }
 
@@ -108,7 +108,7 @@ $form_buttons = array("update",
                       "return_url"=> array("value"=>$return_url),
                       "fid"       => array("value"=>$fid));
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);

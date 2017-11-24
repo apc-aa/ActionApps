@@ -38,7 +38,7 @@ require_once AA_INC_PATH."mgettext.php3";
 require_once AA_INC_PATH."formutil.php3";
 
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You are not allowed to export / import slices"));
     exit;
 }
 
@@ -240,7 +240,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
 }
 
 if ($Cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 $IDconflict = false;
@@ -318,7 +318,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   showMenu ($aamenus, "aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>
-<form name="formular" method="post" action="<?php echo $sess->url("sliceimp.php3") ?>"
+<form name="formular" method="post" action="<?php echo StateUrl("sliceimp.php3") ?>"
 enctype="multipart/form-data">
 
 <h1><b><?php echo _m("Import exported data (slice structure and content)").$pom?></b></h1>

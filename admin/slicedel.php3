@@ -33,11 +33,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IsSuperadmin()) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
     exit;
 }
 /** PrintSlice function
@@ -68,7 +68,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
    function DeleteSlice(id,url2go) {
      if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>"))
        return
-     var url=url2go+"<?php echo $sess->url("?"); ?>"
+     var url=url2go+"<?php echo StateUrl("?"); ?>"
      document.location=url+'&del='+id;
    }
 // -->
@@ -86,7 +86,7 @@ echo $Msg;
 // echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url(self_base() . "slicedel2.php3")?>">
+<form name="f" method="post" action="<?php echo StateUrl(self_base() . "slicedel2.php3")?>">
 <?php
 
 

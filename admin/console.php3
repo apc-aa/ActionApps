@@ -33,7 +33,7 @@ require_once AA_INC_PATH."mgettext.php3";
 // ----------------------------------------------------------------------------------------
 
 if (!IsSuperadmin()) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
     exit;
 }
 
@@ -58,7 +58,7 @@ if ($code) {
 
 // ------------------------------------------------------------------------------------------
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 
     <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center" >
         <tr><td>

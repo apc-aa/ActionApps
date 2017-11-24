@@ -674,7 +674,8 @@ class AA_Session extends Session {
         parent::__construct();
     }
 
-    // add module_id=... to url. It is better to use StateUrl() directly, but we already use $sess->url() from older versions of $session management
+    // add module_id=... to url. It is better to use StateUrl() directly, but we already use StateUrl() from older versions of $session management
+    // @deprecated - no longer used in the code
     function url($url) {
         return StateUrl($url);
     }

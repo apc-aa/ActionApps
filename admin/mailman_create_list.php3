@@ -48,11 +48,11 @@ require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."file_lock.php3";
 
 if ($cancel) {
-  go_url( $sess->url(self_base() . "index.php3"));
+  go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+  MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }
 
@@ -146,7 +146,7 @@ function caption($s) {
 }
 
 echo '
-<form name="mailman_create_list" method="post" action="'.$sess->url($_SERVER['PHP_SELF']).'"
+<form name="mailman_create_list" method="post" action="'.StateUrl($_SERVER['PHP_SELF']).'"
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
 <input type="hidden" name="slice_id" value="'.$slice_id.'">

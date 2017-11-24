@@ -30,7 +30,7 @@ require_once AA_INC_PATH. 'formutil.php3';
 require_once AA_INC_PATH. 'optimize.class.php3';
 
 if (!IsSuperadmin()) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to do optimize tests."), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do optimize tests."), "admin");
     exit;
 }
 
@@ -64,10 +64,10 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     <div>
       <div style=\"float: right;\">";
     if (in_array('test', $actions)) {
-        $row .= "<a href=\"". $sess->url("?test=$optimize_class") ."\">". _m('Test'). "</a> ";
+        $row .= "<a href=\"". StateUrl("?test=$optimize_class") ."\">". _m('Test'). "</a> ";
     }
     if (in_array('repair', $actions)) {
-        $row .= "<a href=\"". $sess->url("?repair=$optimize_class") ."\">". _m('Repair'). "</a> ";
+        $row .= "<a href=\"". StateUrl("?repair=$optimize_class") ."\">". _m('Repair'). "</a> ";
     }
 
     $optimize_descriptions[] = $row ."
@@ -99,7 +99,7 @@ $form_buttons   = array ();
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m('Optimalizations'), '','', $form_buttons, $sess, $slice_id);
 foreach ( $optimize_names as $i => $name ) {

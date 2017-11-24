@@ -38,15 +38,15 @@ require_once AA_INC_PATH."mgettext.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 if (!IsSuperadmin()) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to do search."), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do search."), "admin");
     exit;
 }
 // ----------------------------------------------------------------------------------------
 
 function AdminLink($table, $id, $slice_id='') {
     switch ($table) {
-        case 'item':       return AafinderItemLink($id,$slice_id);
-        case 'content':    return AafinderItemLink($id,$slice_id);
+    case 'item':    return AafinderItemLink($id,$slice_id);
+    case 'content': return AafinderItemLink($id,$slice_id);
         case 'discussion': return AafinderItemLink($id,$slice_id);
         case 'view':       return AafinderViewLink($id);
         case 'slice':      return AafinderSliceLink($id);
@@ -164,7 +164,7 @@ function PrintItemInfo($item_id) {
 
 
 if (!IsSuperadmin()) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
 }
 
@@ -265,7 +265,7 @@ if (strlen($_GET['findtext'])) {
         echo "<b>slices</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
             echo $db->f("name")." "
-                    ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id($db->f("id")))
+                    ."<a href=\"".StateUrl("se_fulltext.php3?change_id=".unpack_id($db->f("id")))
                     ."\">"._m("Jump")."</a><br>";
         }
         echo '<br><br>';
@@ -477,13 +477,13 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
 
 FrmTabCaption(_m("Manage"));
 echo '<tr><td>';
-echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'">';
+echo '<form name="f_finduser" action="'.StateUrl("um_uedit.php3").'">';
 echo '<b>'._m("Manage User:").'</b><br>
     <input type="text" name="usr" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
     <input type="submit" name="go_finduser" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'">';
+echo '<form name="f_findgroup" action="'.StateUrl("um_gedit.php3").'">';
 echo '<b>'._m("Manage Group:").'</b><br>
     <input type="text" name="grp" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
     <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .StateHidden();

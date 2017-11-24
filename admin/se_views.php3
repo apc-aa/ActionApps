@@ -33,11 +33,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
     exit;
 }
 
@@ -66,7 +66,7 @@ function PrintViewRow($id, $name, $type) {
     $VIEW_TYPES = getViewTypes();
     $name = safe($name); $id = safe($id);
 
-    $edit_url = con_url($sess->url("./se_view.php3"), "view_id=$id&view_type=$type");
+    $edit_url = con_url(StateUrl("./se_view.php3"), "view_id=$id&view_type=$type");
     $view_url = AA_INSTAL_URL. "view.php3?vid=$id";
 
     echo "<tr class=\"tabtxt\">
@@ -76,7 +76,7 @@ function PrintViewRow($id, $name, $type) {
             <td class=\"tabtxt\"><a href=\"$edit_url\">". _m("Edit") . "</a></td>
             <td class=\"tabtxt\"><a href=\"$view_url\" title=\"". _m('show this view') ."\">". _m("Show") . "</a></td>
             <td class=\"tabtxt\"><a href=\"javascript:GoIfConfirmed('".
-                          $sess->url(con_url("./se_views.php3", "del=1&vid=". urlencode($id))) ."','".
+                          StateUrl(con_url("./se_views.php3", "del=1&vid=". urlencode($id))) ."','".
                           _m("Are you sure you want to delete selected view?") ."')\">". _m("Delete") ."</a></td>
            </tr>";
 }
@@ -119,7 +119,7 @@ echo "<h1><b>" . _m("Admin - design View") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
-echo '<form name="fvtype" method="post" action="'. $sess->url("./se_view.php3"). '">';
+echo '<form name="fvtype" method="post" action="'. StateUrl("./se_view.php3"). '">';
 
 FrmTabCaption(_m("Defined Views"));
 

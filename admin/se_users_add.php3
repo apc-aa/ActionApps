@@ -44,13 +44,13 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
        (($usr['mail']) ? $usr['mail'] : "&nbsp;") ."</td>\n";
 
     IfLink(($editor_role > $perms_roles["AUTHOR"]['id']) && $new_usr,
-         $sess->url(self_base() . "se_users.php3") .
+         StateUrl(self_base() . "se_users.php3") .
                "&UsrAdd=$usr_id&role=AUTHOR", _m("Author"));
     IfLink(($editor_role > $perms_roles["EDITOR"]['id']) && $new_usr,
-         $sess->url(self_base() . "se_users.php3") .
+         StateUrl(self_base() . "se_users.php3") .
                "&UsrAdd=$usr_id&role=EDITOR", _m("Editor"));
     IfLink(($editor_role > $perms_roles["ADMINISTRATOR"]['id']) && $new_usr,
-         $sess->url(self_base() . "se_users.php3") .
+         StateUrl(self_base() . "se_users.php3") .
                "&UsrAdd=$usr_id&role=ADMINISTRATOR", _m("Administrator"));
     echo "</tr>\n";
 }
@@ -60,7 +60,7 @@ $form_buttons = array("back" => array("type" => "submit",
                                       "value" => _m("Back")));
 
 ?>
-<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
     FrmTabCaption(_m("Search user or group"));
 ?>

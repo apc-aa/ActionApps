@@ -141,18 +141,18 @@ class AA_Csv_Importer {
     function check() {
         global $sess;
         if (!CheckPerms( $this->auth_uid, "slice", $this->slice_id, PS_EDIT_ALL_ITEMS)) {
-            MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to setting "));
+            MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to setting "));
             exit;
         }
 
         // check parameters
 /*
         if (!file_exists($fileName)) {
-            MsgPage($sess->url(self_base()."se_csv_import.php3"), _m("File for import does not exists:").$fileName );
+            MsgPage(StateUrl(self_base()."se_csv_import.php3"), _m("File for import does not exists:").$fileName );
         }
 */
         if (!$this->addParams) {
-            MsgPage($sess->url(self_base()."se_csv_import.php3"), _m("Invalid additional parameters for import"));
+            MsgPage(StateUrl(self_base()."se_csv_import.php3"), _m("Invalid additional parameters for import"));
             exit;
         }
     }
@@ -252,7 +252,7 @@ class AA_Csv_Importer {
         }
 
         $msg = _m("Added to slice"). $this->slice_id ." :<br><br>\n". $msg." <br><br>\n";
-        MsgPage($sess->url(self_base()."se_csv_import.php3"), $msg.$logMsg );
+        MsgPage(StateUrl(self_base()."se_csv_import.php3"), $msg.$logMsg );
     }
 
 /** preview function
@@ -342,7 +342,7 @@ class AA_Csv_Importer {
                              );
 
 
-        echo '<form enctype="multipart/form-data" method=post name="f" action="'. $sess->url(self_base() . "se_csv_import2.php3") .'">';
+        echo '<form enctype="multipart/form-data" method=post name="f" action="'. StateUrl(self_base() . "se_csv_import2.php3") .'">';
 
         FrmTabCaption(_m("Mapping settings"));
         ?>
@@ -480,7 +480,7 @@ function InitPage() {}
     text_param = the text field where the parameters are placed
   */
   function CallParamWizard(list, combo_list, text_param ) {
-    page = "<?php echo $sess->url(self_base()."param_wizard.php3")?>"
+    page = "<?php echo StateUrl(self_base()."param_wizard.php3")?>"
         + "&list=" + list + "&combo_list=" + combo_list + "&text_param=" + text_param;
     combo_list_el = document.f.elements[combo_list];
     page += "&item=" + combo_list_el.options [combo_list_el.selectedIndex].value;

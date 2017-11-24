@@ -124,7 +124,7 @@ $form_buttons = array ("update",
                       );
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Object Edit"), '','',$form_buttons, $sess, $slice_id);
 FrmHidden('ret_url', $ret_url);

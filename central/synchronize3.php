@@ -45,7 +45,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
 pageOpen();
 
 if (!IsSuperadmin()) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
     exit;
 }
 
@@ -126,7 +126,7 @@ $form_buttons = array("synchronize"  => array( "type"      => "submit",
                      );
 
 ?>
-<form name=f method=post action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name=f method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
 FrmTabCaption(_m('Slice Comparison - %1 x %2', array($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName())), '','', $form_buttons);

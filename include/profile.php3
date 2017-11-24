@@ -64,7 +64,7 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
           <td align=\"right\"><a href=\"javascript:document.location='".
-            $sess->url("se_profile.php3?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
+            StateUrl("se_profile.php3?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
         </tr>";
 }
 

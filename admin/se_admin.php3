@@ -37,11 +37,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_CONFIG)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
     exit;
 }
 
@@ -133,7 +133,7 @@ $form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
                       "defaults" => array("type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"'));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Listing of items in Admin interface"),'','',$form_buttons, $sess, $slice_id);
 

@@ -24,7 +24,7 @@ if ( !isset($r_err) ) {
 }
 
 if ($cancel)
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 
 if ( !$cid )
     $cid = $r_state['cat_id'];
@@ -35,7 +35,7 @@ if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_path']  = $cpath;
 }
 else {
-    MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit category'));
+    MsgPage(StateUrl(self_base())."index.php3", _m('No permission to edit category'));
     exit;
 }
 

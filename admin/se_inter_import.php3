@@ -34,7 +34,7 @@
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 require_once AA_INC_PATH."formutil.php3";
@@ -101,7 +101,7 @@ function Delete() {
   if (!confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>'))
     return
 
-  var url = "<?php echo $sess->url(self_base() . "se_inter_import.php3"); ?>"
+  var url = "<?php echo StateUrl(self_base() . "se_inter_import.php3"); ?>"
   url += "&feed_id=" + sel
   document.location = url
 }
@@ -129,7 +129,7 @@ function Submit() {
   $form_buttons = array("submit"=>array("value" => _m("Create new feed from node")),
                         "cancel"=>array("url"=>"se_fields.php3"));
 ?>
-<form method="post" name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
+<form method="post" name="f" action="<?php echo StateUrl(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
 <?php
   FrmTabCaption(_m("Existing remote imports into the slice") ." <b>". AA_Slice::getModuleName($slice_id). "</b>");
   FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));

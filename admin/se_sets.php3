@@ -37,11 +37,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change sets"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change sets"), "admin");
     exit;
 }
 
@@ -103,7 +103,7 @@ $form_buttons = array ("update",
                       );
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Sets"), '','',$form_buttons, $sess, $slice_id);
 FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), false, '', '', false);

@@ -51,7 +51,7 @@ function GetCommonMenu($profile) {
         "slicewiz"    => array("label"=>_m("Create new Wizard"), "cond"=>IfSlPerm(PS_ADD),    "href"=>"admin/slicewiz.php3"),
         "slicedel"    => array("label"=>_m("Delete"),          "cond"=>IsSuperadmin(),        "href"=>"admin/slicedel.php3"),
         "jumpedit"    => array("label"=>_m("Edit Jump"),       "cond"=>IfSlPerm(PS_ADD),      "exact_href" =>
-                       $sess->url(AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1")),
+                       StateUrl(AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1")),
     /*    "delete" => array ("label" => _m("Empty trash"), "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash"),*/
 
         "header1"     =>_m("Users"),
@@ -328,7 +328,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         echo '
               </td>
               <td class="navbar" align="right" valign="bottom">
-                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. $sess->url($_SERVER['PHP_SELF']) .'" style="display:inline">
+                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl($_SERVER['PHP_SELF']) .'" style="display:inline">
                 &nbsp; ';
         echo "\n";
         PrintModuleSelection();

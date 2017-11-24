@@ -32,16 +32,16 @@ require_once AA_INC_PATH . "modutils.php3";
 
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if ($del OR $deletearr) {
     if (!IsSuperadmin()) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."));
+        MsgPage(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete slice."));
         exit;
     }
 } else {
-    MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete slice."));
     exit;
 }
 
@@ -58,6 +58,6 @@ page_close();                                // to save session variables
 
 // There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
-go_url(con_url($sess->url("slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
+go_url(con_url(StateUrl("slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 ?>
 

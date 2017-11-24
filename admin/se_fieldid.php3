@@ -126,12 +126,12 @@ $maintain_sql = array (
 
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 
 if (!IfSlPerm(PS_FIELDS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -250,7 +250,7 @@ if ($update) {
 }
 
 echo "
-<form method=\"post\" action='".$sess->url($_SERVER['PHP_SELF'])."'>";
+<form method=\"post\" action='".StateUrl($_SERVER['PHP_SELF'])."'>";
 FrmTabCaption(_m("Admin - change Field IDs"));
 
 echo"<tr><td class=\"tabtxt\">"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>

@@ -30,7 +30,7 @@
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+   MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
    exit;
 }
 require_once AA_INC_PATH."formutil.php3";
@@ -104,7 +104,7 @@ function Delete() {
   echo $Msg;
 ?>
 
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" >
+<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" >
 <?php
 
 FrmTabCaption(_m("Inter node export settings"));

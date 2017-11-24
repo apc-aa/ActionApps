@@ -28,7 +28,7 @@ require_once AA_INC_PATH.     "msgpage.php3";
 pageOpen();
 
 if (!IsSuperadmin()) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
+  MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
   exit;
 }
 
@@ -55,7 +55,7 @@ foreach ( $aas as $k => $aa ) {
 
 $form_buttons = array ("submit");
 ?>
-<form name=f method=post action="<?php echo $sess->url(self_base() ."copyslice2.php") ?>">
+<form name=f method=post action="<?php echo StateUrl(self_base() ."copyslice2.php") ?>">
 <?php
 FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));

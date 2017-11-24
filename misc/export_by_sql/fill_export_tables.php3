@@ -86,7 +86,7 @@ editor to replace<br>
 <p><b>Did I say you to run the script on your AA database? But please BE CAREFULL!!</b></p>
 
 <p><b>Choose slices (you may choose several at once by holding Shift or Ctrl):</b></p>
-<FORM name=choose method=post action="'.$sess->url("fill_export_tables.php3").'">
+<FORM name=choose method=post action="'.StateUrl("fill_export_tables.php3").'">
 <SELECT name=slices_chosen[] MULTIPLE SIZE=30>
 ';
 

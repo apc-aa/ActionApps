@@ -56,11 +56,11 @@ if ( ($tview{0} == "a") OR ( substr($tview,0,5) =='polls') ) {
 $tableview = $func($tview);
 
 if (!is_array($tableview)) {
-    go_url ($sess->url(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview"));
+    go_url (StateUrl(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview"));
     exit;
 }
 if (! $tableview["cond"] ) {
-    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
+    MsgPage (StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
     exit;
 }
 
@@ -76,7 +76,7 @@ ProcessFormData($func, $val, $cmd);
 PrintArray($Err);
 echo $Msg;
 
-$script = $sess->url("tabledit.php3");
+$script = StateUrl("tabledit.php3");
 
 $tabledit = new tabledit($tview, $script, $cmd, $tableview, AA_INSTAL_PATH."images/", $sess, $func);
 $err      = $tabledit->view($where);

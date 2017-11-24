@@ -32,11 +32,11 @@ require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
     exit;
 }
 
@@ -98,7 +98,7 @@ function InitPage() {
 
 function UpdateImportExport(slice_id)
 {
-  var url = "<?php echo $sess->url(self_base() . "se_import2.php3")?>"
+  var url = "<?php echo StateUrl(self_base() . "se_import2.php3")?>"
   url += "&slice_id=" + slice_id
   url += "&to_all=" + (document.f.export_to_all.checked ? '1' : '0')
   for (var i = 0; i < document.f.import_y.options.length; i++) {
@@ -128,7 +128,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
                        "cancel"=>array("url"=>"se_fields.php3"));
 
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
   FrmTabCaption(_m("Enable export to slice:"));
 ?>

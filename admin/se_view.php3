@@ -227,7 +227,7 @@ if ($view_id) {
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
     exit;
 }
 

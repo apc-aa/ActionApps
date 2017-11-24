@@ -35,11 +35,11 @@ require_once AA_INC_PATH."constedit_util.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -51,7 +51,7 @@ $from_form = false;  // display the values from form (after unsucessful update)
 
 if ($deleteGroup AND $group_id) {
     delete_constant_group($group_id);
-    go_url($sess->url($back_url));
+    go_url(StateUrl($back_url));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -61,7 +61,7 @@ $varset      = new Cvarset();
 if ( $group_id ) {
     $row = DB_AA::select1('SELECT slice_id, name FROM constant_slice INNER JOIN slice ON constant_slice.slice_id = slice.id','', array(array('group_id',$group_id)));
     if ($row && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($row["slice_id"]), PS_FIELDS)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$row['name'].")", "admin");
+        MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$row['name'].")", "admin");
         exit;
     }
 }
@@ -287,7 +287,7 @@ $form_buttons = array("update",
                                           "add"   => 'onclick="deleteWholeGroup();"')
                       );
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
 <?php
 

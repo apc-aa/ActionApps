@@ -58,7 +58,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 $slice       = AA_Slice::getModule($module_id);
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission see the users in this slice:").AA_Slice::getModuleName($slice_id));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission see the users in this slice:").AA_Slice::getModuleName($slice_id));
     exit;
 }
 

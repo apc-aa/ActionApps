@@ -40,7 +40,7 @@ require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");
+  MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");
   exit;
 }
 /** ParseIdA function
@@ -160,9 +160,9 @@ if ($feed_id) { // cross server feeding
 }
 
 if ( count($err) <= 1 ) {
-    go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
+    go_url( StateUrl(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
 } else {
-    MsgPageMenu($sess->url(self_base()."se_import.php3"), $err, "admin");
+    MsgPageMenu(StateUrl(self_base()."se_import.php3"), $err, "admin");
 }
 
 page_close();

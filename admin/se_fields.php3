@@ -36,11 +36,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -72,7 +72,7 @@ function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $ali
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-    echo "<td><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
+    echo "<td><a href=\"". StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
     if ( $type=="in_item_tbl" ) {
         echo "<td>". _m("Delete") ."</td>";
     } else {
@@ -233,7 +233,7 @@ FrmJavascriptFile( 'javascript/aajslib.php' );
        if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
            return;
        }
-       var url="<?php echo $sess->url(con_url("./se_inputform.php3", "del=1")); ?>"
+       var url="<?php echo StateUrl(con_url("./se_inputform.php3", "del=1")); ?>"
        document.location=url + "&fid=" + escape(id);
    }
 
@@ -256,7 +256,7 @@ FrmJavascriptFile( 'javascript/aajslib.php' );
 
 ?>
 
-<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 $form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
 FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);

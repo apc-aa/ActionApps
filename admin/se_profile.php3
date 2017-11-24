@@ -35,11 +35,11 @@ require_once AA_INC_PATH."profile.php3";
 require_once AA_INC_PATH."constants_param_wizard.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "./se_users.php3"));
+    go_url( StateUrl(self_base() . "./se_users.php3"));
 }
 
 if (!IfSlPerm(PS_USERS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
     exit;
 }
 

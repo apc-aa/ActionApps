@@ -354,7 +354,7 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um
         }
         $Msg = MsgOK(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url) {
-            go_url( get_url($sess->url($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);
+            go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);
         }
     }
 }

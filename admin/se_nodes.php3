@@ -36,7 +36,7 @@
 require_once "../include/init_page.php3";
 
 if ( !isSuperadmin() ) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
     exit;
 }
 $err["Init"]="";
@@ -129,7 +129,7 @@ function checkData() {
 }
 
 function Cancel() {
-  document.location = "<?php echo $sess->url(self_base() . "index.php3")?>"
+  document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
 }
 
 // -->
@@ -150,7 +150,7 @@ function Cancel() {
 
 ?>
 
-<form method="post" name="frm" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" onsubmit="return checkData()">
+<form method="post" name="frm" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" onsubmit="return checkData()">
 <?php
 
     FrmTabCaption(_m("Remote node administration"));

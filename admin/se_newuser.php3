@@ -35,11 +35,11 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_NEW_USER)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("No permission to create new user"), "admin");
     exit;
 }
 
@@ -81,7 +81,7 @@ if ( $update ) {
     }while(false);
     if ( count($err) <= 1 ) {
         $Msg = MsgOK(_m("User successfully added to permission system"));
-        $url = con_url($sess->url(self_base() . "se_users.php3"),"Msg=".rawurlencode($Msg));
+        $url = con_url(StateUrl(self_base() . "se_users.php3"),"Msg=".rawurlencode($Msg));
         $url = con_url($url, "UsrSrch=".rawurlencode(_m("Search")));
         $url = con_url($url, "usr=".rawurlencode($user_login));
         go_url($url);
@@ -102,7 +102,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("New user")?></b>
 </td>

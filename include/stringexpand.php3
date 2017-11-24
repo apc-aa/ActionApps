@@ -3504,7 +3504,7 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
             case 'hidden': return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
             case 'param':  return $sess->name.'='.$sess->id;
         }
-        return $sess->url($url);
+        return StateUrl($url);
     }
 }
 

@@ -37,7 +37,7 @@ require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 $wizard = 1;
@@ -59,7 +59,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 
 <center>
-<form method="post" action="<?php echo $sess->url("slicedit.php3") ?>">
+<form method="post" action="<?php echo StateUrl("slicedit.php3") ?>">
 <?php
     require_once AA_INC_PATH."sliceadd.php3";
 

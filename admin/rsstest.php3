@@ -36,7 +36,7 @@ require_once menu_include();   //show navigation column depending on $show
 function TV_PageBegin(&$config_arr) {
     global $sess;
     if (! $config_arr["cond"] ) {
-        MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"));
+        MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
         exit;
     }
 
@@ -144,7 +144,7 @@ ProcessFormData('GetRSS_tv', $val, $cmd);
 PrintArray($Err);
 echo $Msg;
 
-$script = $sess->url("rsstest.php3");
+$script = StateUrl("rsstest.php3");
 
 $tabledit = new tabledit ('rsstest', $script, $cmd, $rss_tv, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);

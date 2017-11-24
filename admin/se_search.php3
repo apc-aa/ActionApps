@@ -31,11 +31,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_SEARCH)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change search settings"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change search settings"), "admin");
     exit;
 }
 
@@ -137,7 +137,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 ?>
-<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Search form criteria")?></b>
 </td>

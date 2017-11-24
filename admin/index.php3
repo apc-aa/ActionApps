@@ -93,7 +93,7 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slice::getModuleName($slice_id));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slice::getModuleName($slice_id));
     exit;
 }
 
@@ -104,14 +104,14 @@ $actions->addAction(new AA_Manageraction_Item_MoveItem('Folder2',  2));
 $actions->addAction(new AA_Manageraction_Item_MoveItem('Folder3',  3));
 
 $new_action = new AA_Manageraction_Item_Feed('Feed', $slice->getId());
-$new_action->setOpenUrl($sess->url("feed_to.php3"));
+$new_action->setOpenUrl(StateUrl("feed_to.php3"));
 $actions->addAction($new_action);
 
 // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
 // '&'    add items[] array to open_url url which will hold checked items
 $actions->addAction(new AA_Manageraction_Item_Preview(      'Preview',       con_url($slice->getProperty('slice_url'),'rXn=1'), '&'));
-$actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', $sess->url("search_replace.php3"), '&'));
-$actions->addAction(new AA_Manageraction_Item_Email(        'Email',         $sess->url("write_mail.php3"),     '&'));
+$actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', StateUrl("search_replace.php3"), '&'));
+$actions->addAction(new AA_Manageraction_Item_Email(        'Email',         StateUrl("write_mail.php3"),     '&'));
 $actions->addAction(new AA_Manageraction_Item_DeleteTrash(  'DeleteTrashAction',true));
 $actions->addAction(new AA_Manageraction_Item_Duplicate(    'Duplicate'));
 $actions->addAction(new AA_Manageraction_Item_Move2slice(   'Move2slice',    $module_id));

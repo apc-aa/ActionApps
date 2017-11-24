@@ -55,12 +55,12 @@ $PERMS_ANONYMOUS_EDIT = array(
 );
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 foreach ($MODULES as $type => $module) {
     if ($create[$type]) {
-        $url = $sess->url(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
+        $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
         if ( $template[$type] ) {
             $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
         }
@@ -117,7 +117,7 @@ if ($slice_id == "") {
 }
 
 ?>
-<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
 FrmTabCaption(_m("Slice"), '','', $form_buttons, $sess, $slice_id);

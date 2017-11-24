@@ -27,7 +27,7 @@ require_once AA_INC_PATH.     'msgpage.php3';
 pageOpen();
 
 if (!IsSuperadmin()) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
+  MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to synchronize slices."), "admin");
   exit;
 }
 
@@ -125,7 +125,7 @@ $form_buttons = array("copy"      => array( "type"      => "submit",
                      );
 
 ?>
-<form name=f method=post action="<?php echo $sess->url(self_base() ."copyslice2.php") ?>">
+<form name=f method=post action="<?php echo StateUrl(self_base() ."copyslice2.php") ?>">
 <?php
 
 FrmTabCaption('', '','', $form_buttons);

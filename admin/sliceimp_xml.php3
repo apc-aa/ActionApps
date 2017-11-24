@@ -102,7 +102,7 @@ exit;
  */
 function si_err($str) {
     global $sess;
-    MsgPage($sess->url(self_base())."index.php3", $str, "standalone");
+    MsgPage(StateUrl(self_base())."index.php3", $str, "standalone");
     exit;
 }
 

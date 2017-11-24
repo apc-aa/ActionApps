@@ -248,7 +248,7 @@ function file_table($path, $dirname)
         // create the HTML code
         reset($files);
         while (list(,$file) = each($files)) {
-            $href = $sess->url("fileman.php3?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
+            $href = StateUrl("fileman.php3?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
             $retval .= "<tr>
             <td>".($file['name']!=".." ? "<input type=\"checkbox\" name=\"chb[".$file['path']."]\">" : "&nbsp;")."</td>
             <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"".$file['type']."\" border=\"0\"></a></td>

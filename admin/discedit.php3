@@ -58,7 +58,7 @@ function getHeadline($content4id) {
 
 // check permission to edit discussion - you must be Editor, at least
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to edit all items."), "items");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to edit all items."), "items");
     exit;
 }
 
@@ -109,19 +109,19 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   function DeleteComment(id) {
     if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
        return
-    var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=delete")); ?>"
+    var url="<?php echo StateUrl(con_url("./discedit.php3", "mode=delete")); ?>"
     document.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
   }
   function DeleteAllComments() {
     if ( !confirm("<?php echo _m("Are you sure you want to delete ALL comments? There is no way back!"); ?>"))
        return;
-    var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=deleteall")); ?>"
+    var url="<?php echo StateUrl(con_url("./discedit.php3", "mode=deleteall")); ?>"
     document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
   }
   function DeleteAllHiddenComments() {
     if ( !confirm("<?php echo _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!"); ?>"))
        return;
-    var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=deleteshown")); ?>"
+    var url="<?php echo StateUrl(con_url("./discedit.php3", "mode=deleteshown")); ?>"
     document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
   }
   // -->
@@ -189,10 +189,10 @@ if (!$outcome) {
         echo $item->get_item();
 
         echo "<td align=\"center\">&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
-        echo "&nbsp;<a href=". con_url($sess->url("discedit2.php3"),"d_id=".
+        echo "&nbsp;<a href=". con_url(StateUrl("discedit2.php3"),"d_id=".
              $d_id."&item_id=".$item_id) ."><small>". _m("Edit") ."</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
-        echo "&nbsp;<a href=" . con_url($sess->url("discedit.php3"), "mode=hide&h=".$h.
+        echo "&nbsp;<a href=" . con_url(StateUrl("discedit.php3"), "mode=hide&h=".$h.
             "&d_id=".$d_id. "&item_id=".$item_id) ."><small>". $s. "</small></a></td>
             <td>&nbsp;</td>";
         echo "</tr>\n";

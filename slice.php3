@@ -546,7 +546,7 @@ if ($mlxslice) {
 
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = get_url(($scr_url ? $sess->url("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
+    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
     $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
 }
 

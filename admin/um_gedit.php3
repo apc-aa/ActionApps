@@ -43,17 +43,17 @@ require_once AA_INC_PATH."msgpage.php3";
 require_once AA_INC_PATH."um_util.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_NEW_USER)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("No permission to create new user"), "admin");
     exit;
 }
 
 if ( ($submit_action == "grp_del") AND $selected_group ) {
     DelGroup( $selected_group );     // default is to delete any references as well
-    go_url( $sess->url($_SERVER['PHP_SELF']) );
+    go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
 
 $sess->register("rgrp");
@@ -100,7 +100,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
     if (count($err) <= 1) {
         $Msg = MsgOK(_m("Group successfully added to permission system"));
-        go_url( get_url($sess->url($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
+        go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
     }
 }
 
@@ -162,7 +162,7 @@ FrmTabCaption(_m("Groups"));
 
 ?>
  <tr><td>
-   <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+   <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%">&nbsp;</td>
@@ -177,7 +177,7 @@ FrmTabCaption(_m("Groups"));
 FrmTabSeparator("");
 ?>
  <tr>
-  <td><form name="f2" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+  <td><form name="f2" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td width="20%"class="tabtxt"><b><?php echo _m("Group") ?></b></td>
@@ -213,7 +213,7 @@ do {
     }
 } while (false);
 
-echo "\n<form name=\"f\" method=\"post\" action=\"".$sess->url($_SERVER['PHP_SELF']) ."\">";
+echo "\n<form name=\"f\" method=\"post\" action=\"".StateUrl($_SERVER['PHP_SELF']) ."\">";
 
 echo "<br />";
 if ( $grp_edit OR ($submit_action == "update_submit") ) {

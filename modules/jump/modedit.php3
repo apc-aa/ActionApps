@@ -97,7 +97,7 @@ echo '<H1><B>'.( !$jump_id ? _m("Create new Jump module") : _m("Edit Jump module
 // Show the select box to choose a module to edit
 if ($jump_id) {
     echo '
-    <form name=choose action="'.$sess->url("modedit.php3").'" method="post">';
+    <form name=choose action="'.StateUrl("modedit.php3").'" method="post">';
     FrmTabCaption(_m("Choose module to be edited"));
 
     echo '<tr>
@@ -118,7 +118,7 @@ if ($jump_id) {
 }
 
 echo '<br>
-<form name=f action="'.$sess->url("modedit.php3").'" method="post">
+<form name=f action="'.StateUrl("modedit.php3").'" method="post">
 <input type=hidden name="jump_id" value="'.$jump_id.'">';
 if ($edit) echo "<input type=hidden name='edit' value='1'>";
 FrmTabCaption(_m("Edit module"));

@@ -59,7 +59,7 @@ function CountItemsInBins() {
 }
 
 if ( !IsSuperadmin() ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to manage ActioApps instalations"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActioApps instalations"));
     exit;
 }
 
@@ -94,7 +94,7 @@ $manager_settings['itemview']['format']['compact_top'] = '
 $manager_settings['itemview']['format']['odd_row_format'] = '
                                     <tr class=tabtxt>
                                       <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
-                                      <td class=tabtxt><a href="'.$sess->url('tabledit.php3?cmd[centraledit][edit][_#ID______]=1').'"> _#ORG_NAME </a></td>
+                                      <td class=tabtxt><a href="'.StateUrl('tabledit.php3?cmd[centraledit][edit][_#ID______]=1').'"> _#ORG_NAME </a></td>
                                       <td class=tabtxt>_#AA_ID___</td>
                                       <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
                                       <td class=tabtxt>_#AA_HTTP__#AA_BASE_</td>

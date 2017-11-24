@@ -81,14 +81,14 @@ if ($db->next_record()) {
 // Choose Reader Management Slice
 
 echo '
-<form method="post" name="form_choose" action="'.$sess->url("synchro.php3").'">
+<form method="post" name="form_choose" action="'.StateUrl("synchro.php3").'">
 <table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
     <tr><td class=tabtxt>
     <h2>'._m("Choose Reader Management Slice").'</h2>
     '._m("This Alerts Collection takes user data from the slice").":<br><b>";
 
 if ($slice_set) {
-    echo "<a href=\"".$sess->url(AA_INSTAL_PATH."admin/index.php3?change_id=". $collectionprop["slice_id"])."\">".$slice_name.'</a>';
+    echo "<a href=\"".StateUrl(AA_INSTAL_PATH."admin/index.php3?change_id=". $collectionprop["slice_id"])."\">".$slice_name.'</a>';
 } else {
     echo $slice_name;
 }
@@ -109,7 +109,7 @@ echo '
 // Add Alerts-specific fields to Reader Management
 
 echo '
-<form method="post" name="form_add" action="'.$sess->url("synchro.php3").'">
+<form method="post" name="form_add" action="'.StateUrl("synchro.php3").'">
 <table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
     <tr><td class=tabtxt>
     <h2>'._m("Add %1-specific fields to %2",

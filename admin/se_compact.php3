@@ -35,11 +35,11 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_COMPACT)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change compact view formatting"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change compact view formatting"), "admin");
     exit;
 }
 
@@ -186,7 +186,7 @@ function EnableClick(cond,what) {
                                             'add' => 'onclick="Defaults()"'));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
   FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);

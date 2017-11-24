@@ -89,7 +89,7 @@ echo "$Msg <br>";
 
 // ------- Caption -----------
 
-echo '<form name="inputform" method=post action="'. $sess->url($_SERVER['PHP_SELF']) .'">';
+echo '<form name="inputform" method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
 FrmTabCaption(_m("Select constants"), '','', '', $sess, $slice_id);
 
 echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1), $preset_value) : '') .'</td></tr>';

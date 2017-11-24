@@ -150,7 +150,7 @@ $after_login = !$no_slice_id && !AA::$module_id;
 $perm_slices = GetUserSlices();
 
 if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[AA::$module_id] AND !$after_login ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slice::getModuleName(AA::$module_id));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in the slice").": ".AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 
@@ -177,7 +177,7 @@ if (!$no_slice_id) {
         $auth->auth_loginform('<div style="color:red;"><b>'._m("No slice found for you").'</b></div>');
         //$auth->relogin();
         exit;
-        MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"));
+        MsgPage(StateUrl(self_base())."index.php3", _m("No slice found for you"));
         exit;
     }
 
@@ -225,7 +225,7 @@ if (!$no_slice_id) {
             $page = "index.php3";
         }
         if ($web_dir.$page != $_SERVER['PHP_SELF']) {
-            $page = $sess->url($web_dir.$page."?slice_id=$slice_id");
+            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");
             page_close();
             go_url($page);
             exit;

@@ -36,11 +36,11 @@ require_once AA_INC_PATH."msgpage.php3";
 require_once AA_INC_PATH."um_util.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable($auth->auth["uid"])) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change user data"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change user data"), "admin");
     exit;
 }
 
@@ -97,7 +97,7 @@ $form_buttons = array ("update",
                        "cancel" => array("url"=>"index.php3"));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
 FrmTabCaption(_m("Edit User"));

@@ -49,7 +49,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 // Check permissions for this page.
 
 if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODP_ADD_POLL)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to add/edit poll."), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("No permission to add/edit poll."), "admin");
     exit;
 }
 
@@ -128,7 +128,7 @@ if ($insert  || $update ) {
     $GLOBALS['pagecache']->invalidateFor("slice_id=$poll_id");    // invalidate this concrete poll
     $GLOBALS['pagecache']->invalidateFor("slice_id=$module_id");  // and also the list of polls in this module, if used
 
-    go_url($sess->url(self_base(). "./index.php3"));  // back to poll manager
+    go_url(StateUrl(self_base(). "./index.php3"));  // back to poll manager
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -160,7 +160,7 @@ if ($poll_id) {
 }
 
 ?>
-<form name="inputform" method="post" onSubmit="BeforeSubmit();" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="inputform" method="post" onSubmit="BeforeSubmit();" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Insert question and answers"), '','', $form_buttons, $sess, $module_id);
 

@@ -38,7 +38,7 @@ require_once AA_BASE_PATH. "modules/polls/include/actions.php3";
 require_once AA_BASE_PATH. "modules/polls/include/util.php3";
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to manage Polls"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage Polls"));
     exit;
 }
 

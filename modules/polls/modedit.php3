@@ -37,7 +37,7 @@ require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."modutils.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -49,12 +49,12 @@ $module_id   = $slice_id;
 
 if ($template['P']) {        // add module
     if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add polls"));
+        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add polls"));
         exit;
     }
 } else {                    // edit module
     if (!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODP_SETTINGS)) {
-        MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this polls"));
+        MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to edit this polls"));
         exit;
     }
 }
@@ -189,7 +189,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     PrintArray($err);
     echo $Msg;
 ?>
-<form method=post action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
     FrmTabCaption(_m("Polls Module general data"),'','',$form_buttons, $sess, $module_id);

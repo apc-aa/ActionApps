@@ -26,16 +26,16 @@ require_once AA_INC_PATH . "modutils.php3";
 
 
 if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+  go_url( StateUrl(self_base() . "index.php3"));
 
 
 if ($del) {
   if (!IsSuperadmin()) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete a site."));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You don't have permissions to delete a site."));
     exit;
   }
 } else {
-  MsgPage($sess->url(self_base())."index.php3", _m("Module not found."));
+  MsgPage(StateUrl(self_base())."index.php3", _m("Module not found."));
   exit;
 }
 
@@ -55,7 +55,7 @@ DB_AA::sql('DELETE LOW_PRIORITY FROM `site_spot`', array(array('site_id', $del, 
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url(AA_INSTAL_PATH . "admin/slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
+go_url(con_url(StateUrl(AA_INSTAL_PATH . "admin/slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 ?>
 

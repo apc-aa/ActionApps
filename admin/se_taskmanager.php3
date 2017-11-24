@@ -37,7 +37,7 @@ require_once AA_INC_PATH. "actions.php3";
 require_once AA_BASE_PATH. "central/include/actionapps.class.php";
 
 if ( !IsSuperadmin() ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to manage ActioApps tasks"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to manage ActioApps tasks"));
     exit;
 }
 

@@ -37,11 +37,11 @@ require_once AA_INC_PATH."manager.class.php3";
 require_once AA_INC_PATH."form.class.php3";
 
 if ($cancel) {
-    go_url( $sess->url(self_base() . "index.php3"));
+    go_url( StateUrl(self_base() . "index.php3"));
 }
 
 if (!IfSlPerm(PS_FORMS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage tasks"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage tasks"), "admin");
     exit;
 }
 

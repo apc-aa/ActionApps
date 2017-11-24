@@ -33,7 +33,7 @@
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 require_once AA_INC_PATH."varset.php3";
@@ -109,6 +109,6 @@ foreach ($f_slices as $f_slice) {
     $msg = rawurlencode(MsgOK(_m("The import was successfully created")));
 }
 
-go_url( $sess->url(self_base() . "se_inter_import.php3"). "&Msg=" . $msg );
+go_url( StateUrl(self_base() . "se_inter_import.php3"). "&Msg=" . $msg );
 page_close()
 ?>

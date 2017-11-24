@@ -63,7 +63,7 @@ function a_href($url, $txt, $class='', $blank=false) {
  */
 function expand_return_url($session=true) {
     global $return_url, $sess;
-    return ($session AND is_object($sess)) ? $sess->url($return_url) : $return_url;
+    return ($session AND is_object($sess)) ? StateUrl($return_url) : $return_url;
 }
 
 /** go_return_or_url function
@@ -83,7 +83,7 @@ function go_return_or_url($url, $usejs=false, $session=false) {
     if ($return_url) {
         go_url(expand_return_url($session), '', $usejs);
     } elseif ($url) {
-        go_url($sess->url($url));
+        go_url(StateUrl($url));
     }
     // Note if no $url or $return_url then drops through - this is used in index.php3
 }

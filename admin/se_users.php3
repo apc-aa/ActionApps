@@ -35,7 +35,7 @@ require_once AA_INC_PATH."se_users.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 if (!IfSlPerm(PS_USERS)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
+    MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
     exit;
 }
 
@@ -103,7 +103,7 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     // show profile button also for groups
     $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', array(array('slice_id', $GLOBALS['slice_id'], 'l'),array('uid', $usr_id)))) ? " ($cnt)" : '';
 
-    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
+    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". StateUrl("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
     echo "</tr>\n";
 }
 
@@ -160,7 +160,7 @@ if ( $continue ) {
     echo "<tr><td class=\"tabtxt\">&nbsp;</td>
               <td class=\"tabtxt\" colspan=\"8\">". _m("Default user profile") ."</td>
               <td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\"
-           onclick=\"document.location='". $sess->url("se_profile.php3?uid=*") ."'\"></td>\n";
+           onclick=\"document.location='". StateUrl("se_profile.php3?uid=*") ."'\"></td>\n";
   echo "</tr>\n";
 
     echo "</table>

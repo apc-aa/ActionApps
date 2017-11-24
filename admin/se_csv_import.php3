@@ -67,12 +67,12 @@ $enclosure = $_REQUEST['enclosure'];
 $delimiter = $_REQUEST['delimiter'];
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to import files"));
     exit;
 }
 
 if (!isset($slice_id)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("Missing slice"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("Missing slice"));
     exit;
 }
 
@@ -119,7 +119,7 @@ if ($upload OR $preview) {
             }
     }
     if ($err != "") {
-         MsgPage($sess->url(self_base()."se_csv_import.php3"), $err);
+         MsgPage(StateUrl(self_base()."se_csv_import.php3"), $err);
     }
 }
 
@@ -133,7 +133,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .bin2url(serialize($addParams)));
+    go_url(StateUrl(self_base()."se_csv_import2.php3"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .bin2url(serialize($addParams)));
 }
 
 require_once AA_INC_PATH."formutil.php3";
@@ -188,7 +188,7 @@ function InitPage() {}
       }
   }
 ?>
-<form enctype="multipart/form-data" method="post" name="f" action="<?php echo $sess->url(self_base() . "se_csv_import.php3"); ?>">
+<form enctype="multipart/form-data" method="post" name="f" action="<?php echo StateUrl(self_base() . "se_csv_import.php3"); ?>">
 
 <table width="600" border="0" cellspacing="0" cellpadding="1"
        bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">

@@ -74,7 +74,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </head>
 <!-- frames -->
 <frameset  rows="30,*">
-   <frame name="Navigation" src="<?php echo con_url($sess->url("prev_navigation.php3"),"sh_itm=$sh_itm&return_url=$return_url"); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0">
+   <frame name="Navigation" src="<?php echo con_url(StateUrl("prev_navigation.php3"),"sh_itm=$sh_itm&return_url=$return_url"); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0">
    <frame name="Item" src="<?php echo $preview_url; ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
 </frameset>
 </html>

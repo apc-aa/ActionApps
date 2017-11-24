@@ -36,7 +36,7 @@ require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 
 if ( !IsSuperadmin() ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to see currently scheduled tasks"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to see currently scheduled tasks"));
     exit;
 }
 

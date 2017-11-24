@@ -31,7 +31,7 @@
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 
@@ -47,7 +47,7 @@ if ($db->next_record()) {
 }
 
 if (!($data = xml_fetch($server_url, ORG_NAME, $password, $auth->auth["uname"],"",0,""))) {
-    MsgPage($sess->url(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
+    MsgPage(StateUrl(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 
 // find out first character of fetched data: if it is not '<' exit
@@ -58,13 +58,13 @@ if (substr($data,0,1) != "<") {
         case ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
         default:            $err_msg = _m("Remote server returns following error:") . " $data"; break;
     }
-    MsgPage($sess->url(self_base() . "se_inter_import.php3"), $err_msg); // $data contains error message
+    MsgPage(StateUrl(self_base() . "se_inter_import.php3"), $err_msg); // $data contains error message
 }                                                                   // from the server module
 
 // try to parse xml document
 if (!($aa_rss = aa_rss_parse($data,"establish_mode"))) {
     AA_Log::write("CSN","Establishing mode: Unable to parse XML data");
-    MsgPage($sess->url(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
+    MsgPage(StateUrl(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 
 while (list($id,) = each($aa_rss['channels'])) {
@@ -93,7 +93,7 @@ $form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m(
                      );
 
 ?>
-<form method="post" name="f" action="<?php echo $sess->url(self_base() . "se_inter_import3.php3")?>">
+<form method="post" name="f" action="<?php echo StateUrl(self_base() . "se_inter_import3.php3")?>">
 <?php
   FrmTabCaption(_m("List of available slices from the node "). "<b>$rem_nodes</b>", '','', $form_buttons, $sess, $slice_id);
   FrmInputMultiSelect('f_slices[]', _m('Slice to import'), $chan, '', 5, false, true);

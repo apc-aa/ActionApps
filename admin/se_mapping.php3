@@ -33,7 +33,7 @@
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 
@@ -90,7 +90,7 @@ foreach ($g_modules as  $k => $v) {
 }
 
 if (!isset($impslices) OR !is_array($impslices)){
-    MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"));
+    MsgPage(con_url(StateUrl(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"));
     exit;
 }
 
@@ -150,7 +150,7 @@ function SelectValue(sel) {
 
 function ChangeFromSlice()
 {
-    var url = "<?php echo $sess->url(self_base() . "se_mapping.php3")?>"
+    var url = "<?php echo StateUrl(self_base() . "se_mapping.php3")?>"
     var from_sl = SelectValue('document.f.from_slice_id')
     if (from_sl == 0) {
         return;
@@ -161,7 +161,7 @@ function ChangeFromSlice()
 }
 
 function Cancel() {
-    document.location = "<?php echo $sess->url(self_base() . "index.php3")?>"
+    document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
 }
 
 function Submit() {
@@ -201,7 +201,7 @@ $form_buttons = array("ext_slice"=>array("type"=>"hidden",
                                        "add"=>'onclick="Submit()"'),
                       "cancel"=>array("url"=>"se_fields.php3"));
 ?>
-<form enctype="multipart/form-data" method="post" name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
+<form enctype="multipart/form-data" method="post" name="f" action="<?php echo StateUrl(self_base() . "se_mapping2.php3")?>">
 <?php
 FrmTabCaption(_m("Content Pooling - Fields' mapping"),'','',$form_buttons, $sess, $slice_id);
 ?>

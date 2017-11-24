@@ -36,7 +36,7 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."csn_util.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
+  MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
 }
 
@@ -108,7 +108,7 @@ if ($map_to && is_array($map_to)) {
     }
 }
 
-go_url( $sess->url(self_base() . "se_mapping.php3") . "&from_slice_id=".rawurlencode($from_slice_id) .
+go_url( StateUrl(self_base() . "se_mapping.php3") . "&from_slice_id=".rawurlencode($from_slice_id) .
         "&Msg=" . rawurlencode(MsgOK(_m("Fields' mapping update succesful"))));
 page_close();
 ?>

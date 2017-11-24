@@ -49,7 +49,7 @@ require_once AA_INC_PATH."exporter.class.php3";
 require_once AA_INC_PATH."manager.class.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to export"));
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to export"));
     exit;
 }
 
@@ -116,7 +116,7 @@ foreach ($format_classes as $fclass) {
 }
 
 ?>
-<form name="f" method="get" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="get" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Export Items"), '','',$form_buttons, $sess, $slice_id);
 

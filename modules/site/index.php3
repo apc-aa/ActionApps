@@ -41,7 +41,7 @@ if (!isset($r_spot_id)) {
 }
 
 if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
     exit;
 }
 

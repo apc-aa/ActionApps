@@ -16,7 +16,7 @@ require_once AA_BASE_PATH."modules/links/linksearch.php3";
 HtmlPageBegin();
 echo '<title>'. _m('ActionApps - URL Check'). '</title>';
 $js = 'function edit(lid) {
-           window.opener.location="'. $sess->url("linkedit.php3") .'&lid="+lid;
+           window.opener.location="'. StateUrl("linkedit.php3") .'&lid="+lid;
            window.close();
        }
       ';
