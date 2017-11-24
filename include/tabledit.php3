@@ -196,8 +196,7 @@ class tabledit {
         $scrname = "te_".$this->viewID;
         global $$scrname;
         $scroll = $$scrname;
-        if (is_object($this->sess))
-            $scrurl = $this->sess->url($_SERVER[PHP_SELF]."?set_tview=".$this->gotoview2());
+        $scrurl = StateUrl($_SERVER[PHP_SELF]."?set_tview=".$this->gotoview2());
 
         if (is_object($scroll)) {
             $scroll->metapage = $this->view["listlen"];
