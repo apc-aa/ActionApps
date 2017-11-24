@@ -78,10 +78,10 @@ class AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
         global $sess;
-        
+
         $slice = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l')));
         if (!$slice) {
-            MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
+            MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
         }
         $uid = unpack_id($slice['id']);
@@ -93,7 +93,7 @@ class AA_Slice_Exporter {
 
         if ($this->type != _m("Export to Backup")) {
             if (strlen ($new_slice_id) != 16) {
-                MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id));
+                MsgPage(StateUrl(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id));
                 exit;
             } else {
                 $uid = unpack_id($new_slice_id);
@@ -101,7 +101,7 @@ class AA_Slice_Exporter {
         }
 
         $slice["id"] = $uid;
-        
+
         $fields = DB_AA::select(array(), 'SELECT * FROM `field`', array(array('id',$slobj->getId(), 'l')));
         foreach ($fields as $new) {
             $new["slice_id"] = $uid; // Use new id if set
@@ -214,7 +214,7 @@ class AA_Slice_Exporter {
 
             if ($this->type != _m("Export to Backup")) {
                 if (strlen ($new_slice_id) != 16) {
-                    MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id));
+                    MsgPage(StateUrl(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id));
                     exit;
                 } else {
                     $new_slice_idunpack = unpack_id($new_slice_id);

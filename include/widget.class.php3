@@ -210,16 +210,17 @@ class AA_Widget extends AA_Components {
         $ids_arr = false;
 
         $constgroup      = $this->getProperty('const');
-                        // $restrict_zids could be removed from this check. Honza 2015-06-11
+        if ( !$constgroup ) {  // no constants or slice defined
+            return;                           //  = array();
+        }
+
+                           // $restrict_zids could be removed from this check. Honza 2015-06-11
         $filter_conds    = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds');
         // filter_conds_rw - changeable conditions - could come as paremeter widget_properties
         $filter_conds_rw = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
         $sort_by         = $this->getProperty('sort_by');
         $slice_field     = $this->getProperty('slice_field');
 
-        if ( !$this->getProperty('const')) {  // no constants or slice defined
-            return;                           //  = array();
-        }
 
         // AA::$debug && AA::$dbg->log($filter_conds);
 
@@ -1707,22 +1708,60 @@ class AA_Widget_Rim extends AA_Widget {
         //    $height = 400;
         //}
 
+        $constgroup      = $this->getProperty('const');
+        if (!$constgroup OR (substr($constgroup,0,7) != "#sLiCe-")) {  // no constants or slice defined
+            return;                           //  = array();
+        }
+        $sid = substr($constgroup, 7);
+
+                           // $restrict_zids could be removed from this check. Honza 2015-06-11
+          // $filter_conds    = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds');
+          // // filter_conds_rw - changeable conditions - could come as paremeter widget_properties
+          // $filter_conds_rw = ($ignore_filters AND $restrict_zids) ? '' : $this->getProperty('filter_conds_rw');
+          // $sort_by         = $this->getProperty('sort_by');
+          // $slice_field     = $this->getProperty('slice_field');
+          //
+          // // if variable is for some item, then we can use _#ALIASES_ in conds
+          // // and sort
+          // if ( is_object($content) ) {
+          //     $filter_conds    = $content->unalias($filter_conds);
+          //     $filter_conds_rw = $content->unalias($filter_conds_rw);
+          //     $sort_by         = $content->unalias($sort_by);
+          // }
+
+          // // "#sLiCe-" prefix indicates select from items
+          // if ( substr($constgroup,0,7) == "#sLiCe-" ) {
+          //
+          //     $bin_filter                   = $this->getProperty('bin_filter', AA_BIN_ACT_PEND);
+          //     $tag_prefix                   = $this->getProperty('tag_prefix');  // tag_prfix is deprecated - should not be used
+          //     $crypted_additional_slice_pwd = AA_Credentials::encrypt($this->getProperty('additional_slice_pwd'));
+          //
+          //     $sid              = substr($constgroup, 7);
+
+
+        $input_name  = $base_name_add ."[]";
         $widget          = '<article class="aa-rim relactionitem flex">
                               <section class="itemgroup">';
 
 
         $options        = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
 
-        $actions2show   = $this->getProperty('show_buttons', 'MDR');
+        $actions2show   = $this->getProperty('show_buttons', 'MRND');
         $actbuttons     = array();
         $actbuttonsdown = array();
         if (strpos($actions2show, 'M')!==false) { $actbuttonsdown['M'] = ''; }// @todo
         if (strpos($actions2show, 'R')!==false) { $actbuttonsdown['R'] = "<article><i class=\"ico insert\">add</i><input type=search value onkeyup=\"DisplayAaResponse('flt$input_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>"; }// @todo
-        if (strpos($actions2show, 'N')!==false) { $actbuttonsdown['N'] = ''; }// @todo
+        if (strpos($actions2show, 'N')!==false) { $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $input_name) .  "');\">"._m('new').'</i></article>'; }// @todo
         if (strpos($actions2show, 'D')!==false) { $actbuttons['D'] = '<article onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"><i class="ico delete">x</i></article>'; }// @todo
         if (strpos($actions2show, 'E')!==false) { $actbuttons['E'] = '<article><i class="ico edit">edit</i></article>'; }// @todo
 
-        $input_name  = $base_name_add ."[]";
+           // if (strpos($actions,'N') !== false) {
+           //     $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
+           // }
+           // if (strpos($actions,'E') !== false) {
+           //     $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Edit") ."' onclick=\"EditItemInPopup('". Inputform_url(false, null, $sid, 'close_dialog', null, $name) .  "', document.inputform['".$name."']);\">\n");
+           // }
+
         $i = 0;
         foreach ($options as $k => $v) {
             $input_id   = AA_Form_Array::formName2Id($input_name."[$i]");
@@ -1748,19 +1787,22 @@ class AA_Widget_Rim extends AA_Widget {
         $def_field_id = $aa_property->getId();
         $def_slice_id = $content->getOwnerId();
 
+        $downbuttons =  join("\n", array_values($actbuttonsdown));
+
 
         $widget      .= <<<HTML
                        </section>
                        <footer>
                          <input type="hidden" name="$input_name" id="$input_id" value="">
-
-                         <article><i class="ico megainsert">přetánout</i></article>
-                         <article><i class="ico new">nový</i></article>
+                         $downbuttons
                        </footer>
                        <section class="itemselect" id=flt$input_id>
                        </section>
                      </article>
 HTML;
+
+        // <article><i class="ico megainsert">přetánout</i></article>
+        // <article><i class="ico new">nový</i></article>
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }

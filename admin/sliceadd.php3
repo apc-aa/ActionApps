@@ -50,7 +50,7 @@ function GetModuleTemplateSelecbox($type, $g_modules) {
 // the parts used by the slice wizard are in the included file
 
 if ($cancel) {
-  go_url( $sess->url(self_base() . "index.php3"));
+  go_url( StateUrl(self_base() . "index.php3"));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -66,7 +66,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 
 <center>
-<form method="post" action="<?php echo $sess->url("slicedit.php3") ?>">
+<form method="post" action="<?php echo StateUrl("slicedit.php3") ?>">
 <?php
     require_once AA_INC_PATH."sliceadd.php3";
 ?>
@@ -100,7 +100,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <?php
-  FrmInputButtons(array("cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id, 'middle', true, COLOR_TABTITBG);
+  FrmInputButtons(array("cancel"=>array("url"=>"um_uedit.php3")), $slice_id, 'middle', true, COLOR_TABTITBG);
 ?>
 </td></tr>
 </table>

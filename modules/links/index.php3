@@ -42,7 +42,7 @@ require_once AA_BASE_PATH."modules/links/util.php3";      // module specific uti
 // module. See /include/perm_core.php3 for more details
 
 if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("No permissions to edit links"));
+    MsgPage(StateUrl(self_base())."index.php3", _m("No permissions to edit links"));
     exit;
 }
 
@@ -327,11 +327,11 @@ $manager_settings = array(
                                 'type'       => 'one_by_one' ),
          'Add2Cat'     => array('function'   => 'Links_Add2CatLink',
                                 'name'       => _m('Add to category'),
-                                'open_url'   => $sess->url("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
+                                'open_url'   => StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
                                 'type'       => 'one_by_one' ),
          'Move2Cat'    => array('function'   => 'Links_Move2CatLink',
                                 'name'       => _m('Move to category'),
-                                'open_url'   => $sess->url("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
+                                'open_url'   => StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
                                 'type'       => 'one_by_one' ),
 /*       'Refuse'      => array('function'   => 'Links_RefuseLink',
                                 'name'       => _m('Refuse Link'),
@@ -403,7 +403,7 @@ echo '<script language="JavaScript" type="text/javascript"> <!--
   }
 
   function EditCurrentCat() {
-      document.location = "'.$sess->url('catedit.php3').'&cid=" + document.filterform.cat_id.value;
+      document.location = "'.StateUrl('catedit.php3').'&cid=" + document.filterform.cat_id.value;
   }
   //-->
   </script>
@@ -450,7 +450,7 @@ FrmInputButtons( array( 'gocat'    => array('type'=>'button',
                                             'help'=>get_help_url(AA_LINKS_HELP_MAIN,"editujkat"))
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
-                      ),  false, false, 'bottom');
+                      ),  false, 'bottom');
 
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);

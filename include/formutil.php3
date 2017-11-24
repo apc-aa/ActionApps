@@ -2721,7 +2721,7 @@ function FrmTabCaption( $caption='', $outer_add='', $inner_add='', $buttons='', 
         <tr><td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">
           <tr>';
-          FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABBG, false, 'top');
+          FrmInputButtons($buttons, $slice_id, $valign, false, COLOR_TABBG, false, 'top');
         echo '</tr></table></td></tr>';
     }
     if ($caption != "") {
@@ -2748,7 +2748,7 @@ function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $vali
     if ($buttons) {
         echo '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
           <tr>";
-        FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG, $no_hidden);
+        FrmInputButtons($buttons, $slice_id, $valign, false, COLOR_TABTITBG, $no_hidden);
         echo "</tr></table>";
     }
     echo '</td>
@@ -2788,7 +2788,7 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
             </td>
           </tr>';
     if ( $buttons ) {
-        FrmInputButtons($buttons, $sess, $slice_id, $valign, true, COLOR_TABTITBG, false, 'bottom');
+        FrmInputButtons($buttons, $slice_id, $valign, true, COLOR_TABTITBG, false, 'bottom');
     }
     echo '
         </table>';
@@ -2807,7 +2807,7 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
  * @param $no_hidden - prints all $buttons except the hidden fields
  * @param $prefix    - prefix for button ids
  */
-function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='') {
+function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='') {
 
     if ($tr) {
         echo '<tr class="formbuttons">';
@@ -2861,9 +2861,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     if (!$properties['url']) {
                         $url = con_url($url,'cancel=1');
                     }
-                    if ($sess) {
-                        $url  = $sess->url($url);
-                    }
+                    $url  = StateUrl($url);
                     //          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' ">&nbsp;';
                     echo '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
                     if ($properties['help'] != '') {
@@ -2914,9 +2912,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
         }
     }
 
-    if ( $sess ) {
-        echo StateHidden();
-    }
+    echo StateHidden();
     if ( $slice_id ) {
         echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
     }
@@ -3266,7 +3262,7 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
      if (is_array($aliases)) {
          foreach ($aliases as $ali => $v ) {
              // if it is possible point to alias editing page
-             $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
+             $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
              if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
                  $ali = "<span class=\"disabled\">$ali</span>";
              }

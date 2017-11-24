@@ -137,10 +137,10 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
  * @param $url
  */
 function sess_return_url($url) {
-    global $sess, $return_url;
+    global $return_url;
 
     // decode and return $return_url OR return for standard APC-AA behavier
-    return $return_url ? expand_return_url(1) : $sess->url($url);
+    return $return_url ? expand_return_url(1) : StateUrl($url);
 }
 
 
@@ -182,12 +182,11 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     // $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
     // changed back to relative address - in order we stay within the same
     // domain and protocol (https...)
-    $admin_path = "itemedit.php3";
+    // $admin_path = 'itemedit.php3';
     $param      = array();
 
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
-    //$url2go = isset($sess) ? $sess->url($admin_path) : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
-    $url2go = $admin_path;
+    //$url2go = isset($sess) ? StateUrl($admin_path) : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
 
     // return_url is used for non AA Admin interface filling - writen by Settu
     // Not sure, if it is functional. Honza 2006-01-07
@@ -212,7 +211,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     } elseif (isset($profile) AND $profile->getProperty('input_view')) {
         $param[] = 'vid='.$profile->getProperty('input_view');
     }
-    return $safe ? con_url($url2go,$param) : get_url($url2go,$param);
+    return $safe ? con_url('itemedit.php3',$param) : get_url('itemedit.php3',$param);
 }
 
 /** GetFormatedItems function
@@ -485,7 +484,7 @@ class AA_Item {
         global $sess;
 
         // redirecting to another page?
-        $url_base = ( $redirect ?: (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
+        $url_base = ( $redirect ?: (($no_sess OR !is_object($sess))  ? '' : StateUrl('')) );
 
         // add state variable, if defined (apc - AA Pointer Cache)
         if ( $GLOBALS['apc_state'] AND $GLOBALS['apc_state']['state'] ) {
@@ -1133,7 +1132,7 @@ class AA_Item {
                 return $sess->id;
             case "disc":
                 // _#DISCEDIT used on admin page index.php3 for edit discussion comments
-                return con_url($sess->url("discedit.php3"), "item_id=". $this->getItemID());
+                return con_url(StateUrl("discedit.php3"), "item_id=". $this->getItemID());
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.
             case "itemcount":
