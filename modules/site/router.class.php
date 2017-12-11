@@ -313,6 +313,9 @@ class AA_Router_Seo extends AA_Router {
 
     /** static function - caling from outside is not necessary, now */
     function parseApc($apc, $home='', $langs=array()) {
+        if (!$home) {
+            $home = '/'.get_mgettext_lang();
+        }
         // manage links like example.org/?filter=22
         if (substr($apc,0,2)=='/?') {  // maybe also "#"
             $apc = $home.$apc;
@@ -327,6 +330,8 @@ class AA_Router_Seo extends AA_Router {
         $matches    = array();
         if (!(preg_match("/($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
             return array();
+            // newer behavior (not helped on library4all, so commented out)
+            // return array('xlang'=>'','xpage'=>'','xflag'=>'','xcat'=>'','xseo1'=>'','xseo2'=>'','xseo3'=>'','xseo4'=>'','xseo5'=>'','xseo6'=>'','xseo7'=>'','xseo8'=>'','xseo9'=>'');
         }
 
         $ret        = array('xajax' => IsAjaxCall() ? 1 : '');

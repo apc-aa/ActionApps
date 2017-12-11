@@ -1,5 +1,11 @@
+17-12-11 - fixed multiple text field live widget - allows delete of last text, now
+(honzam) - another fixes for php 7.1 - fixed last bits - RSS feeds, Alerts,
+           {dictionary:...}
+         - fix site module for old sites, which was based on private control file
+           but derived for AA_Router_Seo - {xseo1}... is emptyf for root /, which
+           is correct, fot "{xseo1}
 17-11-23 - replaced old $sess->url() with better StataUrl()
-         - removing session $sess variable, where not necessary
+(honzam) - removing session $sess variable, where not necessary
          - fixed view caching, when no related slice is found
            (so the cache for the view wasn't invalidated on site change)
 17-11-20 - new css/aa-system.css - all system and widgets css - mostly autoloaded
