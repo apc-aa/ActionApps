@@ -205,17 +205,17 @@ function endElement($parser, $name) {
     case "^RDF:RDF^RSS:CHANNEL":
       if (!($channel_uri)) $channel_uri = string2id($channel['title']);   // RSS 0.9
       $aa_rss['channels'][$channel_uri] = $channel;
-      $channel="";
+      $channel = array();
       break;
 
     case "^RDF:RDF^AA:CATEGORY":
       $aa_rss['categories'][$category_uri] = $category;
-      $category="";
+      $category = array();
       break;
 
     case "^RDF:RDF^AA:FIELD":
       $aa_rss['fields'][$field_uri] = $field;
-      $field="";
+      $field = array();
       break;
 
     case "^RSS^CHANNEL^ITEM":			// RSS 0.9
@@ -226,7 +226,7 @@ function endElement($parser, $name) {
             $item['dc'][$k] = decode($v);
       if (!($item_uri)) { $item_uri = string2id($item['title'] . $item["link"] . $item['description']); } // RSS 0.9
       $aa_rss['items'][$item_uri] = $item;
-      $item="";
+      $item = array();
       break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
@@ -332,7 +332,13 @@ function aa_rss_parse($xml_data) {
 
     // Clear out, or will just append to previous parse!
     // unset do not works for GLOBAL variables!!!
-    $cur_tag = $channel = $category = $field = $item = $fulltext_content = $fielddata = $content_format = null;
+    $channel   = array();
+    $category  = array();
+    $field     = array();
+    $fielddata = array();
+    $item      = array();
+
+    $cur_tag = $fulltext_content = $content_format = null;
     $aa_rss = array();
 
     xml_set_element_handler($xml_parser, "startElement", "endElement");

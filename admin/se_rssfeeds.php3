@@ -104,7 +104,7 @@ if ($mode == "edit" || $mode == "test") {
 }
 
 $db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
-$rssfeeds="";
+$rssfeeds=array();
 while ($db->next_record()) {
     $rssfeeds[] = $db->f(name);
 }

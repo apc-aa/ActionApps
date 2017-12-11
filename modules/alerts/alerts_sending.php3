@@ -225,6 +225,7 @@ class AA_Collection {
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
         initialize_last();
+        $slices = array();
 
         $db->tquery($SQL);
         while ($db->next_record()) {
@@ -241,14 +242,15 @@ class AA_Collection {
                 $myview["sort"] = $db->f("aditional3");
             }
         }
-        if (! is_array($slices)) {
+        if (!$slices ) {
             freeDB($db);
             return;
         }
 
         // first I create a hierarchical array $slices and than use it instead of the recordset
 
-        $now = time();
+        $now    = time();
+        $retval = array();
 
         foreach ( $slices as $slice_id => $slice ) {
             $p_slice_id   = q_pack_id($slice_id);
@@ -285,7 +287,7 @@ class AA_Collection {
 
             $db->tquery($SQL);
 
-            $all_ids = "";
+            $all_ids = array();
             while ($db->next_record()) {
                 $all_ids[] = $db->f("id");
             }
@@ -296,7 +298,7 @@ class AA_Collection {
                     $conds = $dbconds_arr['conds'];
                     $sort  = $dbconds_arr['sort'];
                     $zids  = new zids(null, "p");
-                    if (is_array($all_ids)) {
+                    if ($all_ids) {
                         // find items for the given filter
                         $zids = QueryZIDs(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
                     }
@@ -330,6 +332,7 @@ class AA_Collection {
     *   @param object $readerContent  if null, use all filters
     */
     function getFilterText4Reader($readerContent, $filters) {
+        $user_filters = array();
         if ($readerContent) {
             $user_filters_value = $readerContent->getValues(getAlertsField(FIELDID_FILTERS, $this->id));
 
@@ -343,8 +346,8 @@ class AA_Collection {
             }
         }
 
-        $last_fprop = "";
-        $filter_ids = "";
+        $last_fprop = array();
+        $filter_ids = array();  // $filter_ids = "";   // changed to array() for php 7.1 - Jirka
         $user_zids  = new zids(null, "p");
 
         // add dummy filter
@@ -352,7 +355,7 @@ class AA_Collection {
 
         foreach ( $filters as $filterid => $fprop ) {
             // Send items from filters with "group" not set when the view changes.
-            if ( $last_fprop["vid"] != $fprop["vid"] AND is_array($filter_ids) AND $user_zids->count()) {
+            if ( $last_fprop["vid"] != $fprop["vid"] AND $filter_ids AND $user_zids->count()) {
                 // WARNING - HACK: we need to sort the zids according to the common
                 // sort[]: we use the same global trick as in createFilterText
                 if ($last_fprop["sort"]) {
@@ -363,7 +366,9 @@ class AA_Collection {
                 }
 
                 $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
-                $filter_ids = "";
+
+                // $filter_ids = "";   // changed to array() for php 7.1 - Jirka
+                $filter_ids = array();
                 $user_zids->clear("p");
             }
             if ($fprop == "dummy") {

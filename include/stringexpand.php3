@@ -3318,21 +3318,41 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
      * @param $else_text
      */
     function expand() {
-        $OPERATORS = array('>'=>'>', '>='=>'>=', 'gt'=>'>', 'ge'=>'>=', '='=>'==', '=='=>'==', 'eq'=>'==', '<'=>'<', '<='=>'<=', 'lt'=>'<', 'le'=>'<=', '<>'=>'<>', '!='=>'<>');
-
         $arg_list = func_get_args();   // must be asssigned to the variable
-        $etalon   = PhpFloat(array_shift($arg_list));
-        $operator = $OPERATORS[str_replace(array('&gt;','&lt;'), array('>','<'),array_shift($arg_list))];
-        if ($operator) {
-            $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
-        } else {
-            $cmp  = create_function('return false;');
-        }
+        $etalon   = (float)str_replace(',', '.', trim(array_shift($arg_list)));
+        switch (array_shift($arg_list)) {
+            case '=' :
+            case '==':
+            case 'eq':    $cmp = function( $a,  $b) { return $a == $b; };  break;
+                          // typehints doesn't work for float in php 5.6
+                          // $cmp = function(float $a, float $b) { return $a == $b; };  break;
 
+            case '>':
+            case 'gt':
+            case '&gt;':  $cmp = function( $a,  $b) { return $a >  $b; };  break;
+
+            case '<' :
+            case 'lt':
+            case '&lt;':  $cmp = function( $a,  $b) { return $a < $b; };   break;
+
+            case '>=':
+            case '&gt;=':
+            case 'ge':    $cmp = function( $a,  $b) { return $a >= $b; };  break;
+
+            case '<=':
+            case '&lt;=':
+            case 'le':    $cmp = function( $a,  $b) { return $a <=  $b; }; break;
+
+            case '<>':
+            case '&lt;&gt;':
+            case '!=':    $cmp = function( $a,  $b) { return $a <> $b; }; break;
+
+            default:      $cmp = function( $a,  $b) { return false; };
+        }
         $ret      = false;
         $i        = 0;
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if ($cmp((float)str_replace(',', '.', trim($arg_list[$i])))) {
+            if ($cmp($etalon, (float)str_replace(',', '.', trim($arg_list[$i])))) {
                 $ret = $arg_list[$i+1];
                 break;
             }
@@ -3343,8 +3363,9 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
             $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
         }
         // _#2 is not very usefull but we have it from the times the function was just for one option
-        return str_replace(array('_#1','_#2'), array($etalon, $arg_list[0]), $ret);
+        return str_replace(array('_#1','_#2'), array(PhpFloat($etalon), $arg_list[0]), $ret);
     }
+
 }
 
 
@@ -4139,24 +4160,6 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
     }
 }
 
-
-/** makeAsShortcut function
- *  Store $text in the $html_subst_arr array - used for dictionary escaping html
- *  tags.
- *  This function belongs to AA_Stringexpand_Dictionary class, but I don't know,
- *  how to call class method from preg_replace function.
- *  So it remains as separate function.
- * @param $text
- */
-function makeAsShortcut($text) {
-    static $count=0;
-    $shortcut = '_AA_'.$count.'_ShCut';
-    $GLOBALS['html_subst_arr'][$shortcut] = stripslashes($text);
-    $count++;
-    return $shortcut;
-}
-
-
 /** Uses slice (or slices) ($dictionaries) and replace any word which matches a
  *  word in dictionary by the text specified in $format.
  *  It do not search in <script>, <a>, <h*> tags and HTML tags itself.
@@ -4167,6 +4170,7 @@ function makeAsShortcut($text) {
  *  @author Honza Malik, Hana Havelkova
  */
 class AA_Stringexpand_Dictionary extends AA_Stringexpand {
+
     /** Do not trim all parameters (maybe we can?) */
     function doTrimParams() { return false; }
 
@@ -4195,38 +4199,43 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // we do not want to replace text in the html tags, so we substitute all
         // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
         // $html_subst_arr. Then it is used with replace_pairs to return back
-        $GLOBALS['html_subst_arr'] = array();
-        $search = array ("'<script[^>]*?>.*?</script>'sie",  // Strip out javascript
-                "'<h[1-6][^>]*?>.*?</h[1-6]>'sie",  // Strip out titles
-                // can't be nested
-                "'<a[^>]*?>.*?</a>'sie",            // Strip out links
-                "'<[\/\!]*?[^<>]*?>'sie");          // Strip out HTML tags
 
-        $replace = array ("makeAsShortcut('\\0')", "makeAsShortcut('\\0')",
-                "makeAsShortcut('\\0')", "makeAsShortcut('\\0')");
+        $html_subst_arr = array();
+        $search = array ("'<script[^>]*?>.*?</script>'si",  // Strip out javascript
+                "'<h[1-6][^>]*?>.*?</h[1-6]>'si",  // Strip out titles
+                // can't be nested
+                "'<a[^>]*?>.*?</a>'si",            // Strip out links
+                "'<[\/\!]*?[^<>]*?>'si");          // Strip out HTML tags
 
         // substitute html tags with shortcuts
         // (= remove the code where we do not want replace text)
-        $text = preg_replace($search, $replace, $text);
+        //
+        // Store $text in the $html_subst_arr array - used for dictionary escaping html  tags.
+
+        $text = preg_replace_callback (
+            $search,
+            function ($matches) use (&$html_subst_arr) {
+                $shortcut = '_AA_'.hash('md5', $matches[0]).'_ShCut';
+                $html_subst_arr[$shortcut] = stripslashes($matches[0]);
+                return $shortcut;
+            },
+            $text);
 
         // Insert special string before the beginning and after the end of the text
         // Replacing all delimiters with special strings!!!
         $text = 'AA#@'.strtr($text, $delimiters).'AA#@';
 
         // add shortcuts also to the replace_pairs, so all is done in one step
-        $replace_pairs = array_merge($replace_pairs, $GLOBALS['html_subst_arr']);
+        $replace_pairs = array_merge($replace_pairs, $html_subst_arr);
         // do both: process dictionary words and put back the shortcuted text
 
         $text = strtr($text, $replace_pairs);
-
-        unset($GLOBALS['html_subst_arr']);         // just clean up
 
         // finally - removing additional vaste text 'AA#@' - recovering original
         // word delimiters
         $text = str_replace('AA#@', '', $text);
         return $text;
     }
-
 
     /** getDictReplacePairs function
      *  Return array of substitution pairs for dictionary, based on given dictionary
