@@ -932,6 +932,10 @@ class AA_Widget_Mfl extends AA_Widget {
                 $fld_value_arr[$key] = array('value'=>$value, 'flag'=>$flag);
             }
         }
+        if (!count($fld_value_arr)) {
+              $fld_value_arr[] = array('value'=>'', 'flag'=>$flag);
+        }
+
         return new AA_Value($fld_value_arr, $flag);
     }
 
