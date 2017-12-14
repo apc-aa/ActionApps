@@ -78,7 +78,7 @@ if (!$slice_field ) { $slice_field ='_#HEADLINE'; }
 
 for ( $i=0, $ino=strlen($mode); $i<$ino; ++$i) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$TPS['AMB'][$m1]['tag']."','".$TPS['AMB'][$m1]['prefix']."','".$TPS['AMB'][$m1]['tag']."_#ITEM_ID_','{javascript:{expand:".$slice_field."}}')\">". $TPS['AMB'][$m1]['str'] ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$TPS['AMB'][$m1]['tag']."','".$TPS['AMB'][$m1]['prefix']."','".$TPS['AMB'][$m1]['tag']."_#ITEM_ID_','{safe:{javascript:{expand:".$slice_field."}}}')\">". $TPS['AMB'][$m1]['str'] ."</a>&nbsp;";
 }
 
 $aliases = $slice->aliases();
@@ -176,8 +176,8 @@ if ($r_state['related']['manager'] ) {        // do not set state for the first 
 $manager->performActions();
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
-FrmJavascriptFile('javascript/js_lib.js');
-FrmJavascriptFile('javascript/inputform.js?v=1');  // for SelectRelations() function
+FrmJavascriptFile('javascript/js_lib.js?v='.AA_JS_VERSION);
+FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);  // for SelectRelations() function
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();

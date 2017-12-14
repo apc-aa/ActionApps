@@ -137,7 +137,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php if ($poll_id) { echo _m("Edit poll"); } else { echo _m("Add poll"); } ?></title>
 
 </head> <?php
-FrmJavascriptFile('javascript/inputform.js?v=1');
+FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);
 
 $db = new DB_AA;
 

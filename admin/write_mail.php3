@@ -159,7 +159,7 @@ echo '
   <title>'.  _m("Write email to users") .'</title>';
 
 IncludeManagerJavascript();
-FrmJavascriptFile( 'javascript/inputform.js?v=1' );
+FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);
 echo getHtmlareaJavascript($slice_id);
 // FrmJavascript(' window.onload   = xinha_init; window.onunload = HTMLArea.flushEvents;');
 

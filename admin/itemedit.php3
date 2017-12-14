@@ -89,7 +89,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
-    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js?v=1').  // for SelectRelations
+    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION).  // for SelectRelations
                                getFrmJavascript($js)));
 }
 
@@ -103,6 +103,7 @@ if ($encap) {
 
 QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
+AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()];
 
 // TODO: GetHidden is not so correct in current AA code
 // Now we can have multiple itemedits open, so one set of r_hidden isn't correct

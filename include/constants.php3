@@ -273,6 +273,11 @@ $LANGUAGE_NAMES = array ("cz-utf8" => "Cestina (Unicode)",
                          "en-utf8" => "English (Unicode)"
                          );
 
+/** any string - used as parameter to included JS files in order browser can
+ *  use newer version of JS libs. Feel free to increase it
+ */
+define('AA_JS_VERSION', 2);
+
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
 define ("FIELDID_USERNAME",      "headline........");
 define ("FIELDID_PASSWORD",      "password........");
