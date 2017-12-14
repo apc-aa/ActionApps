@@ -1,6 +1,6 @@
 <?php
 /**
- * Author: Jakub Ad�mek
+ * Author: Jakub Adamek
  *
  *   Params: $list = name of an array defined in constants_param_wizard.php3
  *                   (or anywhere else, but must be included into this script)
@@ -88,6 +88,28 @@ function processJavaScript($s) {
     $s = str_replace("'", "\\'", $s);
     return $s;
 }
+
+
+function GetWizardRow($name, $param) {
+    $ret     = '';
+    $example = processValue($param['example']);
+    $hlp     = '';
+    switch ($param['type']) {
+        case 'INT':   $ret = "<input type=number name=\"$name\" size=20 value=\"$example\">";
+                      break;
+        case 'STR':   $ret = "<input type=text name=\"$name\" style=\"width:95%\" value=\"$example\">";
+                      break;
+        case 'STRID': $ret = "<input type=text name=\"$name\" size=20 value=\"$example\">";
+                      $hlp = "(" . _m("field&nbsp;id") . ")";
+                      break;
+        case 'BOOL':  $ret = "<input type=text name=\"$name\" size=4 value=\"$example\">";
+                      $hlp = "(" . _m("boolean:&nbsp;0=false,1=true") . ")";
+                      break;
+    }
+    $ret .= "<span class=\"tabhlp\">$hlp<br>". processSlashes($param['desc']) . "</span>";
+    return $ret;
+}
+
 
 $desc = $$list;
 $desc = $desc['items'][$item];
@@ -193,24 +215,12 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                         foreach ($desc['params'] as $param) {
                             echo "<tr><td align=\"left\" size=\"50%\" class=\"tabtxt\" valign=\"top\">"
                             . "<b>" . strtolower("$param[name]:") . "</b></td>
-            <td align=\"left\" class=\"tabtxt\">
-            <input type=\"text\" name=\"param$iparam\" value=\""
-                            . processValue($param['example']) . "\">
-            <span class=\"tabhlp\">";
-                            switch ($param['type']) {
-                                case "INT": echo " (" . _m("integer&nbsp;number") . ")";
-                                    break;
-                                case "STR": echo " (" . _m("any&nbsp;text") . ")";
-                                    break;
-                                case "STRID":echo " (" . _m("field&nbsp;id") . ")";
-                                    break;
-                                case "BOOL": echo " (" . _m("boolean:&nbsp;0=false,1=true") . ")";
-                                    break;
-                            }
-                            echo "<br>" . processSlashes($param['desc']) . "</span>
-            </td></tr>";
-                            if ($iparam > 0)
+            <td align=\"left\" class=\"tabtxt\">";
+                            echo GetWizardRow("param$iparam", $param);
+                            echo "</td></tr>";
+                            if ($iparam > 0) {
                                 $example .= ":";
+                            }
                             $example .= $param['example'];
                             ++$iparam;
                         }
