@@ -178,15 +178,16 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
     function run() {
 
-        $item        = AA_Item::getItem(new zids($this->item_id));
-        $iid         = $item->getItemID();
-        $slice       = AA_Slice::getModule($item->getSliceId());
+        $item         = AA_Item::getItem(new zids($this->item_id));
+        $iid          = $item->getItemID();
+        $slice        = AA_Slice::getModule($item->getSliceId());
 
         // Use right language (from slice settings) - languages are used for button texts, ...
-        $lang        = $slice->getLang();
+        $lang         = $slice->getLang();
         mgettext_bind($lang, 'output');
-        AA::$lang    = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+        AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
+        AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+        AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang];
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
