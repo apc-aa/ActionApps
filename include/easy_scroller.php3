@@ -173,7 +173,7 @@ class easy_scroller {
         $arr = $this->navarray();
         if ( count($arr) > 0 ) {
             echo "\n<div class=\"enclose-scroller\" id=\"scroller-{$this->id}\">";
-            while (list($k, $v) = each($arr)) {
+            foreach($arr as $k => $v) {
                 if ($i++) {
                     echo " | ";
                 }
@@ -300,7 +300,7 @@ class AA_Sitemodule_Scroller {
             return $nopage;
         }
 
-        while (list($k, $v) = each($arr)) {
+        foreach($arr as $k => $v) {
             if ($i++) {
                 $out .= " | ";
             }
@@ -354,7 +354,7 @@ class AA_View_Scroller extends AA_Sitemodule_Scroller {
             return $nopage;
         }
 
-        while (list($k, $v) = each($arr)) {
+        foreach($arr as $k => $v) {
             if ($i++) {
                 $out .= '<span class="delimiter"> | </span>';
             }
