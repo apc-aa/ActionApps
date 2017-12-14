@@ -751,7 +751,9 @@ class ItemContent extends AA_Content {
      * @param $value
      */
     function setItemID($value) {
-        $this->setValue("id..............", pack_id($value));
+        // we want to switch the default to unpacked_id, but id is still necessary (for field copy in complete4Insert...)
+        $this->setValue('id..............', pack_id($value));
+        $this->setValue('unpacked_id.....', $value);
     }
 
     /** setSliceID function
@@ -808,6 +810,9 @@ class ItemContent extends AA_Content {
             $property = $field->getAaProperty();
             $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
         }
+
+        // normalize - set id and well as unpacked_id
+        $new_content->setItemID($this->getItemID());
 
         $status = max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user());
         $new_content->setValue('status_code.....', $status);
@@ -1228,7 +1233,7 @@ class ItemContent extends AA_Content {
             if (!$fields[$fid]['in_item_tbl']) {
                 // deal with translations. if only translated values are present, then delete just the specific translation
                 // however - if also basic 0-1000000 indexes are present, clear all the field content
-                $keys = array_keys($cont);
+                $keys = (is_array($cont) AND $cont) ? array_keys($cont) : array(0); // sometimes we want delete field so no AA_Value is_a passed (delete file...)
                 foreach ($keys as $k) {
                     $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
                     if ($ind==0) {
@@ -1343,7 +1348,7 @@ class ItemContent extends AA_Content {
             } else {
                 echo "<td>";
                 unset($s);
-                while (list (,$v2) = each ($v)) {
+                foreach ($v as $v2) {
                     $v2['value'] = stripslashes($v2['value']);
                     $s[] = $v2['html'] ? $v2['value'] : myspecialchars($v2['value']);
                 }
