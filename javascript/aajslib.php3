@@ -148,7 +148,7 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
 /** calls AA responder with permissions of current user and displays returned
  *  html code into div_id
  *  Usage:
- *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
+ *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
  *     echo '<div id="fieldselection"></div>';
  **/
 function DisplayAaResponse(div_id, method, params) {
@@ -740,7 +740,8 @@ function AA_SiteUpdate(item, field, value) {
   params['aa[u'+item+']['+field+'][0]'] = value;
     AA__doChange(params);
 }
-function AA_SiteNewitem(slice, field, value) {
+/* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
+function AA_SiteNewitem(slice, template, field, value) {
   var params = {};
   params['aa[n1_'+slice+']['+field+'][0]'] = value;
     AA__doChange(params);
