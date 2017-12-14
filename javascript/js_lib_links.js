@@ -300,9 +300,9 @@ function CheckURL() {
 function LinkVote(link1, link2, changetag) {
     // needs global aa_live_file, aa_img_null
   imgsrc = aa_live_file+"?type=linksvote&clicked="+link1+"&notclicked="+link2;
-  img1 = getElementByName(""+link1+"");
+  img1 = document.getElementsByName(""+link1+"")[0];
   img1.src = imgsrc;  // now we write to database
-  SetContent(changetag,thanks_text);
+  changetag.innerHTML = thanks_text;
 /*  img1.width = 68;
   img2 = getElementByName(""+link2+"");
   img2.src = aa_img_null;

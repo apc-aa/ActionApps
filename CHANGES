@@ -1,3 +1,5 @@
+17-12-14 - removed live_checkbox.php3 - no longer used - we use {live} widgets
+(honzam)   for all Live Checkbox - even f_k, now (which do not use live_checkbox.php3)
 17-12-11 - fixed multiple text field live widget - allows delete of last text, now
 (honzam) - another fixes for php 7.1 - fixed last bits - RSS feeds, Alerts,
            {dictionary:...}

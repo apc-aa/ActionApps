@@ -30,7 +30,7 @@ function MarkedActionSelect() {
         // instatnionated in AA and asked for displaying htmlSetting of the action
         if( markedactionsetting[$('markedaction_select').selectedIndex] != null ) {
             $('makrekactionparams').update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
-            new Ajax.Updater('makrekactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?' + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID +"&display_params="+markedactionsetting[$('markedaction_select').selectedIndex]);
+            new Ajax.Updater('makrekactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?display_params='+markedactionsetting[$('markedaction_select').selectedIndex]);
         } else {
             $('makrekactionparams').update('');
         }
@@ -154,40 +154,6 @@ function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
         srchform.submit();
         return true;
     }
-}
-
-// called by the f_k alias function (see item.php3)
-// - folloving global javascript variables should be set before calling
-function CallLiveCheckbox(controlName) {
-    myimg     = document.itemsform[controlName];
-    myimg.src = AA_Config.AA_INSTAL_PATH + "images/cb_2off.gif";
-    imgsrc    = AA_Config.AA_INSTAL_PATH + "live_checkbox.php3?" + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID +"&"+controlName+"=1&no_cache="+Math.random();
-    setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
-}
-
-// - folloving global javascript variables should be set before calling
-function CallLiveChange(controlName, status) {
-    switch (status) {
-      case "change" :
-            controlName = controlName + "_chb";
-            imgsrc = A_Config.AA_INSTAL_PATH + "images/cb_off.gif";
-            ChangeImgSrc(controlName,imgsrc);
-           break;
-      case "click" :
-            mysel = eval("document.itemsform['"+controlName+"']");
-            val = mysel.options[mysel.selectedIndex].value;
-
-            imgsrc = A_Config.AA_INSTAL_PATH + "images/cb_off.gif";
-            ChangeImgSrc(controlName+"_chb",imgsrc);
-
-            imgsrc    = AA_Config.AA_INSTAL_PATH + "live_change.php3?" + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID +"&"+controlName+"="+val+"&no_cache="+Math.random();
-            setTimeout("ChangeImgSrc('"+controlName+"_chb', '"+imgsrc+"')", 1);
-           break;
-    }
-}
-
-function ChangeImgSrc(imageName, newsrc) {
-    document.itemsform[imageName].src = newsrc;
 }
 
 function OpenWindowIfRequest(form_name, bar, admin_url) {

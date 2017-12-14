@@ -1390,12 +1390,7 @@ class AA_Item {
      * @param $param
      */
     function f_k($col, $param = "") {
-        $short_id = $this->getval("short_id........");
-
-        $name = "live_checkbox[".$short_id."][$col]";
-        $img  = $this->getval($col) ? "on" : "off";
-        return "<img width=\"16\" height=\"16\" name=\"$name\" border=\"0\" onClick='CallLiveCheckbox(\"$name\");'
-                src=\"".AA_INSTAL_PATH."images/cb_".$img.".gif\" alt=\"".($this->getval($col) ? _m("on") : _m("off"))."\">";
+        return $this->unalias("{live::$col}");
     }
 
     /** f_x function
