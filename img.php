@@ -18,10 +18,14 @@ ini_set('magic_quotes_runtime', '0');
 if (ini_get('magic_quotes_runtime')) {
     die('"magic_quotes_runtime" is set in php.ini, cannot run phpThumb with this enabled');
 }
+// Set a default timezone if web server has not done already in php.ini
+if (!ini_get('date.timezone') && function_exists('date_default_timezone_set')) { // PHP >= 5.1.0
+    date_default_timezone_set('UTC');
+}
 $starttime = array_sum(explode(' ', microtime())); // could be called as microtime(true) for PHP 5.0.0+
 
 // this script relies on the superglobal arrays, fake it here for old PHP versions
-if (phpversion() < '4.1.0') {
+if (PHP_VERSION < '4.1.0') {
     $_SERVER = $HTTP_SERVER_VARS;
     $_GET    = $HTTP_GET_VARS;
 }
@@ -74,16 +78,16 @@ function RedirectToCachedFile() {
             exit;
         }
         SendSaveAsFileHeaderIfNeeded();
-
-        header('Cache-Control: private');
         header('Pragma: private');
-        header('Expires: '.date(DATE_RFC822, strtotime(' 1 day')));
+        header('Cache-Control: max-age='.$phpThumb->getParameter('config_cache_maxage'));
+        header('Expires: '.date(DATE_RFC1123,  time() + $phpThumb->getParameter('config_cache_maxage')));
         if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']) && ($nModified == strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])) && !empty($_SERVER['SERVER_PROTOCOL'])) {
         header('Last-Modified: '.gmdate('D, d M Y H:i:s', $nModified).' GMT');
             header($_SERVER['SERVER_PROTOCOL'].' 304 Not Modified');
             exit;
         }
         header('Last-Modified: '.gmdate('D, d M Y H:i:s', $nModified).' GMT');
+        header('ETag: "'.md5_file($phpThumb->cache_filename).'"');
         if ($getimagesize = @GetImageSize($phpThumb->cache_filename)) {
             header('Content-Type: '.phpthumb_functions::ImageTypeToMIMEtype($getimagesize[2]));
         } elseif (preg_match('#\\.ico$#i', $phpThumb->cache_filename)) {
@@ -216,6 +220,7 @@ if (empty($_SERVER['PATH_INFO']) && empty($_SERVER['QUERY_STRING'])) {
 }
 
 if (!empty($_GET['src']) && isset($_GET['md5s']) && empty($_GET['md5s'])) {
+    $md5s = '';
     if (preg_match('#^([a-z0-9]+)://#i', $_GET['src'], $protocol_matches)) {
         if (preg_match('#^(f|ht)tps?://#i', $_GET['src'])) {
             if ($rawImageData = phpthumb_functions::SafeURLread($_GET['src'], $error, $phpThumb->config_http_fopen_timeout, $phpThumb->config_http_follow_redirect)) {
@@ -496,6 +501,7 @@ while ($CanPassThroughDirectly && $phpThumb->src) {
 
         $ImageCreateFunctions = array(1=>'ImageCreateFromGIF', 2=>'ImageCreateFromJPEG', 3=>'ImageCreateFromPNG');
         $theImageCreateFunction = @$ImageCreateFunctions[$phpThumb->getimagesizeinfo[2]];
+        $dummyImage = false;
         if ($phpThumb->config_disable_onlycreateable_passthru || (function_exists($theImageCreateFunction) && ($dummyImage = @$theImageCreateFunction($SourceFilename)))) {
 
             // great
@@ -507,7 +513,7 @@ while ($CanPassThroughDirectly && $phpThumb->src) {
                 $phpThumb->ErrorImage('Headers already sent ('.basename(__FILE__).' line '.__LINE__.')');
                 exit;
             }
-            if (@$_GET['phpThumbDebug']) {
+            if (!empty($_GET['phpThumbDebug'])) {
                 $phpThumb->DebugTimingMessage('skipped direct $SourceFilename passthru', __FILE__, __LINE__);
                 $phpThumb->DebugMessage('Would have passed "'.$SourceFilename.'" through directly, but skipping due to phpThumbDebug', __FILE__, __LINE__);
                 break;
@@ -602,7 +608,7 @@ if ($phpThumb->rawImageData) {
         $phpThumb->src = $cleanedupurl;
         unset($cleanedupurl);
         if ($rawImageData = phpthumb_functions::SafeURLread($phpThumb->src, $error, $phpThumb->config_http_fopen_timeout, $phpThumb->config_http_follow_redirect)) {
-            $phpThumb->DebugMessage('SafeURLread('.$phpThumb->src.') succeeded'.($error ? ' with messsages: "'.$error.'"' : ''), __FILE__, __LINE__);
+            $phpThumb->DebugMessage('SafeURLread('.$phpThumb->src.') succeeded'.($error ? ' with messages: "'.$error.'"' : ''), __FILE__, __LINE__);
             $phpThumb->DebugMessage('Setting source data from URL "'.$phpThumb->src.'"', __FILE__, __LINE__);
             $phpThumb->setSourceData($rawImageData, urlencode($phpThumb->src));
         } else {
