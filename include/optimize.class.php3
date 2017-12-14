@@ -1035,8 +1035,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     function test() {
         $ret = true;
 
-        // test wrong destination slices
-        $SQL      = "SELECT `item_id`, `field_id`, `text`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) GROUP BY `item_id`, `field_id`, `text`, `number` HAVING `cnt` >1";
+        $SQL      = "SELECT `item_id`, `field_id`, `text`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) GROUP BY `item_id`, `field_id`, `text`, `number` HAVING `cnt` >1";
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_text) AND count($err_text) > 0) {
@@ -1047,13 +1046,13 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
             $ret = false;
         }
 
-        $SQL      = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
+        $SQL      = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
         $err_num  = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_num) AND count($err_num) > 0) {
             $this->message( _m('%1 duplicates found in numeric fields', array(count($err_num))));
             foreach ($err_num as $wrong) {
-                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['number'],$wrong['cnt'])));
+                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3 - numeric', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['number'],$wrong['cnt'])));
             }
             $ret = false;
         }
@@ -1072,8 +1071,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
 
         $ret = true;
 
-        // test wrong destination slices
-        $SQL      = "SELECT `item_id`, `field_id`, `text`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) GROUP BY `item_id`, `field_id`, `text` HAVING `cnt` >1";
+        $SQL      = "SELECT `item_id`, `field_id`, `text`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) GROUP BY `item_id`, `field_id`, `text` HAVING `cnt` >1";
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_text) AND count($err_text) > 0) {
@@ -1086,7 +1084,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
             $ret = false;
         }
 
-        $SQL      = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
+        $SQL      = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
         $err_num  = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_num) AND count($err_num) > 0) {
