@@ -211,11 +211,10 @@ class AA_Validate_Signed extends AA_Validate {
      */
     static function getClassProperties()  {
         return array (
-                 // we use array instead of "new AA_Property", because then it makes infinite loop - AA_Property contains validator...
                  //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'min'  => array( 'min',  _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
-            'max'  => array( 'max',  _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
-            'step' => array( 'step', _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
+            'min'  => new AA_Property( 'min',  _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'max'  => new AA_Property( 'max',  _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
+            'step' => new AA_Property( 'step', _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
             );
     }
 
@@ -299,9 +298,9 @@ class AA_Validate_Regexp extends AA_Validate {
 
     static function getClassProperties()  {
         return array (                      //           id            name              type    multi  persist validator, required, help, morehelp, example
-            'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
-            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
-            'maxlength'        => array( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
+            'pattern'          => new AA_Property( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
+            'empty_expression' => new AA_Property( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
+            'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
             );
     }
 
@@ -405,8 +404,8 @@ class AA_Validate_Float extends AA_Validate {
 
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'f_min'  => array( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
-            'f_max'  => array( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+            'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+            'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
             );
     }
 
@@ -435,7 +434,7 @@ class AA_Validate_Enum extends AA_Validate {
 
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'possible_values' => array( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
+            'possible_values' => new AA_Property( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
             );
     }
 
@@ -521,9 +520,9 @@ class AA_Validate_Unique extends AA_Validate {
      */
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
-            'item_id'  => array( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
+            'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
+            'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'item_id'  => new AA_Property( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
             );
     }
 
@@ -592,9 +591,9 @@ class AA_Validate_Eunique extends AA_Validate {
      */
     static function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
-            'item_id'  => array( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
+            'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
+            'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'item_id'  => new AA_Property( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
             );
     }
 
