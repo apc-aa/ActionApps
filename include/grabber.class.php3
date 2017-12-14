@@ -71,15 +71,26 @@ class AA_Saver {
     /** run function
      * Now import all items to the slice
      */
-    function run() {
+    function run( $fire = true ) {
 
         $this->grabber->prepare();    // maybe some initialization in grabber
 
-        while ($content4id = $this->grabber->getItem()) {
+        // returns grabber prepared item of just parsed source structure, which have to be converted ti item by transformations?
+        $directfill = $this->grabber->isDirectfill();
+
+        while ($source_content4id = $this->grabber->getItem()) {
+
+            if (!$fire) {
+                $this->message("AA_Saver->run(): grabbed item: ");
+                $this->message($source_content4id);
+            }
+
+            // check, if grabber returns already prepared item
+            $content4id = $directfill ? $source_content4id : new ItemContent();
 
             // if we want some Transformations, do them here
             foreach($this->transformations as $field_id => $transformation) {
-                $field_content = $transformation->transform($field_id, $content4id);
+                $field_content = $transformation->transform($field_id, $source_content4id);
                 if (!$field_content) {
                     // no need to change, or something goes wrong - missing parameter for transformation, ....
                     continue;
@@ -88,8 +99,14 @@ class AA_Saver {
                 $content4id->setAaValue($field_id, $field_content);
             }
 
+            // now the $content4id should be filled in both cases - directfill as well as indirect
+
             $id_mode    = ($this->id_mode    == 'by_grabber') ? $this->grabber->getIdMode()    : $this->id_mode;
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
+
+            if (!$fire) {
+                $this->message("AA_Saver->run(): id_mode: $id_mode, store_mode: $store_mode");
+            }
 
             switch ($id_mode) {
                 // Create new item id (always the same for item-slice pair)
@@ -99,8 +116,38 @@ class AA_Saver {
                 case 'old'      : $new_item_id = $content4id->getItemID(); break;
 
                 // Generate completely new id
-                default         :
+                //default         :
+                //case 'new'      : $new_item_id = new_id();                 break;
+
+
+                case ''         :
                 case 'new'      : $new_item_id = new_id();                 break;
+
+                default         :
+                    // should be allowed just to slice admins (for security reasons)
+                    if ($store_mode == 'update/insert') {
+                        // this allows you to update item based on the key fields.
+                        // if $id_mode is ["relation.......1","year............"], then saver searches the slice for the item matching the two fields.
+                        // If found, then the item is updated
+                        // If not found, the item is_a created, but only with fields if $content4id (not whole insert)
+
+                        $set           = new AA_Set(array($this->slice_id));
+                        if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
+                            foreach ($flds as $fld) {
+                                $set->addCondition( new AA_Condition($fld, '=', $content4id->getValue($fld)) );
+                            }
+                            $zids = $set->query(null, 1);
+                            if (!$fire) {
+                                $this->message("AA_Saver->run(): update/insert - condition:");
+                                $this->message($set);
+                                $this->message($zids);
+                            }
+                            $new_item_id = $zids->count() ? $zids->longids(0) : new_id();
+
+                            break;
+                        }
+                    }
+                    $new_item_id = new_id();
             }
 
             $old_item_id = $content4id->getItemID();
@@ -124,23 +171,28 @@ class AA_Saver {
 
             $this->_updated_slices[$content4id->getOwnerId()] = true;
 
-            // id_mode - overwrite or insert_if_new
-            // (the $new_item_id should not be changed by storeItem)
-            if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
-                // AA_Saver->run(): storeItem failed or skiped duplicate:
-                $this->message(ItemContent::lastErrMsg());
-            } else {
-                // @todo better check of new ids
-                if ($store_mode == 'insert') {
-                    $this->_new_ids[] = $new_item_id;
+            if ($fire ) {
+                // id_mode - overwrite or insert_if_new
+                // (the $new_item_id should not be changed by storeItem)
+                if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
+                    // AA_Saver->run(): storeItem failed or skiped duplicate:
+                    $this->message(ItemContent::lastErrMsg());
                 } else {
-                    $this->_updated_ids[] = $new_item_id;
-                }
+                    // @todo better check of new ids
+                    if ($store_mode == 'insert') {
+                        $this->_new_ids[] = $new_item_id;
+                    } else {
+                        $this->_updated_ids[] = $new_item_id;
+                    }
 
-                // Update relation table to show where came from
-                if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
-                    AddRelationFeed($new_item_id, $content4id->getItemID());
+                    // Update relation table to show where came from
+                    if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
+                        AddRelationFeed($new_item_id, $content4id->getItemID());
+                    }
                 }
+            } else {
+                $this->message($new_item_id);
+                $this->message($content4id);
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
@@ -175,7 +227,7 @@ class AA_Saver {
      * @param $text
      */
     function message($text) {
-        $this->_messages[] = $text;
+        $this->_messages[] = (is_object($text) && !is_callable(array($text,"__toString"))) ? print_r($text, true) : $text;
     }
 
     /** report function
@@ -208,6 +260,9 @@ class AA_Grabber {
         exit;
     }
 
+    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations */
+    function isDirectfill() { return true; }
+
     /** name function
      *  Name of the grabber - used for grabber selection box
      */
@@ -225,7 +280,20 @@ class AA_Grabber {
      * @param $input_prefix
      * @param $params
      */
-    function htmlSetting($input_prefix, $params) {}
+    function htmlSetting($input_prefix, $params) {     // $input_prefix - here grabber_id
+        $properties = static::getClassProperties();
+        $form = new AA_Form;
+        foreach ( $properties as $id => $property) {
+            $property->addPropertyFormrows($form);
+        }
+        $content = new AA_Content();
+        $content->setId($input_prefix);
+        return $form->getRowsHtml($content);
+    }
+
+    /** getClassProperties function of AA_Serializable - used for htmlSetting()
+     */
+    static function getClassProperties() { return array(); }
 
     /** getItem function
      *  Method called by the AA_Saver to get next item from the data input
@@ -288,8 +356,91 @@ class AA_Grabber {
     }
 }
 
+/** AA_Grabber_XML
+ */
+class AA_Grabber_Xml extends AA_Grabber {
+
+    protected $file;                /** file to grab - internal array */
+    protected $item_xpath;
+    private   $_items;
+
+    function __construct($file, $item_xpath='') {
+        $this->file       = $file;
+        $this->item_xpath = $item_xpath;
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('XML'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('General XML file'); }
+
+    /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations */
+    function isDirectfill() { return false; }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used for importer and htmlSettings()
+     */
+    static function getClassProperties() {
+        $properties = array();//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
+        $properties['file']       = new AA_Property( 'file',        _m("URL of the file"), 'string', false, true);
+        $properties['item_xpath'] = new AA_Property( 'item_xpath',  _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
+        return $properties;
+    }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        if (false === ($data = file_get_contents($this->file))) {
+            throw new Exception('file not loaded: '. $this->file);
+        }
+        // remove namespaces (it is pain to work with it in simple XML interface)
+        // $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
+        if (false === ($xml  = simplexml_load_string($data))) {
+            throw new Exception('xml parse error: '. $data);
+        }
+
+        if ($this->item_xpath) {
+            $splitted = $xml->xpath($this->item_xpath);
+        } else {
+            $splitted = $xml;
+            //$items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
+        }
+
+        $this->_items = array();
+        foreach ($splitted as $item) {
+            $this->_items[] = $item;
+        }
+    }
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+
+        if (!($polozka = current($this->_items))) {
+            return false;
+        }
+        next($this->_items);
+
+        // huhl($this,count($this->_items), $i, $polozka->asXML());
+        // if (!--$i) {
+        //     exit;
+        // }
+
+        $item = new ItemContent();
+        $item->setValue('initem', $polozka->asXML());    // stav importu
+        return $item;
+    }
+}
+
 /** AA_Grabber_Csv - CSV (Comma Separated Values) format grabber */
-class AA_Grabber_Csv {
+class AA_Grabber_Csv extends AA_Grabber {
+
+    protected $file;                /** file to grab - internal array */
+    protected $item_xpath;
+
 
     /** name function
      * Name of the grabber - used for grabber selection box
@@ -305,6 +456,19 @@ class AA_Grabber_Csv {
     function description() {
         return _m('Import data from CSV (Comma Separated Values) format');
     }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used for importer and htmlSettings()
+     */
+    static function getClassProperties() {
+        $properties = array();   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
+        $properties['file']      = new AA_Property( 'file',       _m("URL of the file"), 'string', false, true);
+        $properties['delimiter'] = new AA_Property( 'delimiter',  _m("Delimiter of fields"), 'string', false, true, array('enum',array(','  => ', (comma)', ';'  => '; (semicolon)', '\t' => '\t (tabulator)', '|'  => '| (pipe)', '~'  => '~ (tilde)', ''   => 'other')), false, '', '', ',');
+        $properties['enclosure'] = new AA_Property( 'enclosure',  _m("Enclosure"), 'string', false, true, array('enum',array('"'  => '" (double quote )', "'"  => '\' (single quote)')), false, '', '', '"');
+        $properties['caption']   = new AA_Property( 'caption',    _m("Use first row as field names"), 'bool', false, true);
+        return $properties;
+    }
+
 
     /** getItem function
      * Method called by the AA_Saver to get next item from the data input
@@ -564,8 +728,8 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         // Find channel definition
         if (!($this->channel = $this->aa_rss['channels'][$this->r_slice_id])) {
-            while (list(,$this->channel) = each($this->aa_rss['channels'])) {
-                if ($this->channel) {
+            foreach ($this->aa_rss['channels'] as $ch ) {
+                if ($this->channel = $ch) {  // assignment
                    break;
                 }
             }
@@ -639,14 +803,14 @@ class AA_Grabber_Aarss extends AA_Grabber {
                 case FEEDMAP_FLAG_RSS:
                             $values = map1field($v['value'],$item,$this->channel);
                             if (isset($values) && is_array($values)) {
-                                while (list($k,$v2) = each($values)) {
+                                foreach($values as $k=>$v2) {
                                     $values[$k]['value'] = $v2['value'];
                                 }
                                 $content4id[$to_field_id] = $values;
                             }
                             break;
             } // switch
-        } // while each($map)
+        }
 
         next($this->aa_rss['items']);
 
@@ -701,7 +865,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 *   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
 *   is called to grab the value (or multivalues) from the submitted form
 */
-class AA_Grabber_Form {
+class AA_Grabber_Form extends AA_Grabber {
     private   $_items;
     private   $_last_store_mode;
 
@@ -847,12 +1011,10 @@ class AA_Grabber_Form {
                 if ($dirty_item_id{0} == 'r') {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
-
                 $item->setAaValue($field_id, $aa_value);
             }
             $this->_items[] = array($item, $store_mode);
         }
-
         reset ($this->_items);
     }
 
@@ -902,7 +1064,7 @@ class AA_Grabber_Form {
 *   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
 *   is called to grab the value (or multivalues) from the submitted form
 */
-class AA_Objectgrabber_Form {
+class AA_Objectgrabber_Form extends AA_Grabber {
     private   $_content          = array();
     private   $_last_store_mode;
 
@@ -1045,7 +1207,6 @@ class AA_Objectgrabber_Form {
         return $ret;
     }
 }
-
 
 /** AA_Grabber_Iekis_Xml - grabs data from XML files in one directory
  */
@@ -1296,7 +1457,6 @@ class AA_Grabber_Discussion extends AA_Grabber {
         $this->_longids = array();
     }
 }
-
 
 /** AA_Grabber_Ical - iCal  calendar format grabber
  *  could be called like
