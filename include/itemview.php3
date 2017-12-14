@@ -249,7 +249,7 @@ class itemview {
               // show discussion in the thread mode
               GetDiscussionThread($d_tree, "0", 0, $outcome);
               if ( $outcome ) {
-                  while ( list( $d_id, $images ) = each( $outcome )) {
+                  foreach( $outcome as $d_id => $images) {
                       SetCheckboxContent( $this->_content, $d_id, $cnt++ );
                       SetImagesContent( $this->_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
                       $this->setColumns($CurItem, $d_id);
@@ -351,7 +351,7 @@ class itemview {
 
       $out.= '<a name="disc"></a>';
       if ( isset($outcome) AND is_array($outcome) ) {
-          while ( list( $d_id, $images ) = each( $outcome )) {
+          foreach( $outcome as $d_id => $images ) {
               $this->setColumns($CurItem, $d_id);
               $depth = count($images)-1;
               $spacer = "";
@@ -536,20 +536,18 @@ class itemview {
     if ( $rweight ) {
       $this->zids->clear('l');   // remove id and prepare for long ids
       //get sum of all weight
-      reset( $this->_content );
-      while ( list(,$v) = each($this->_content) ) {
-        $weightsum += $v[$rweight][0]['value'];
+      foreach ($this->_content as $v) {
+          $weightsum += $v[$rweight][0]['value'];
       }
       for ( $i=0; $i<$this->num_records; $i++) {
         $winner = mt_rand(1,$weightsum);
-        reset( $this->_content );
         $ws=0;
-        while ( list($k,$v) = each($this->_content) ) {
-          $ws += $v[$rweight][0]['value'];
-          if ( $ws >= $winner ) {
-            $this->zids->add($k);
-            break;
-          }
+        foreach ($this->_content as $k => $v) {
+            $ws += $v[$rweight][0]['value'];
+            if ( $ws >= $winner ) {
+                $this->zids->add($k);
+                break;
+            }
         }
       }
       $this->from_record = 0;
@@ -764,17 +762,13 @@ class itemview {
         $year  = (int)$this->slice_info['calendar_year'];
 
         $aliases = array (
-            "_#CV_NUM_Y" => $year,
-            "_#CV_NUM_M" => $month,
-            "_#CV_NUM_D" => $day,
-            "_#CV_TST_1" => mktime (0,0,0,$month,(int)$day,$year),
-            "_#CV_TST_2" => mktime (0,0,0,$month,(int)$day+1,$year));
+            '_#CV_NUM_Y' => $year,
+            '_#CV_NUM_M' => $month,
+            '_#CV_NUM_D' => $day,
+            '_#CV_TST_1' => mktime(0,0,0,$month,(int)$day,$year),
+            '_#CV_TST_2' => mktime(0,0,0,$month,(int)$day+1,$year));
 
-        reset ($aliases);
-        while (list ($alias,$replace) = each($aliases)) {
-            $txt = str_replace ($alias,$replace,$txt);
-        }
-        return $txt;
+        return strtr($txt, $aliases);
     }
 
     /** get_output_calendar function

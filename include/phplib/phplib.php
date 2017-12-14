@@ -314,10 +314,7 @@ class Session {
     */
     function freeze() {
         // If register_globals is off -> store session variables values
-        reset($_SESSION);
-
-        while(list($key,) = each($_SESSION)) {
-            // foreach ($_SESSION as $key => $value) {
+        foreach ($_SESSION as $key => $foo) {
             $_SESSION[$key] = $GLOBALS[$key];
         }
     }

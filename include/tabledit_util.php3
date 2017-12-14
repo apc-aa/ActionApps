@@ -54,8 +54,7 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
         echo "cmd: ";print_r ($cmd); echo "<br>val: ";print_r($val); echo"<br>";
     }
 
-    reset ($cmd);
-    while (list ($myviewid, $com) = each ($cmd)) {
+    foreach ($cmd as $myviewid => $com) {
         $myview = $getTableViewsFn ($myviewid, "form");
         SetColumnTypes($myview["fields"], $primary_aliases, $myview["table"], $myview["join"], false, $myview['primary']);
         foreach ($com as $command => $par) {
@@ -82,9 +81,8 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                 break;
             case "update_all":
                 if ($par) {
-                    reset ($val);
                     $ok = true;
-                    while (list ($key, $vals) = each ($val)) {
+                    foreach ($val as $key => $vals) {
                         RunColumnFunctions($vals, $myview["fields"], $myview["table"], $myview["join"]);
                         if ($key != $GLOBALS['new_key']) {
                             $ok = $ok && TableUpdate ( $vals, $myview["fields"], $primary_aliases, $myview["messages"]["error_update"], $myview["triggers"]);
@@ -101,10 +99,11 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
                 break;
             case "delete_all":
                 if ($com["run_delete_all"]) {
-                    reset ($par);
                     $ok = true;
-                    while ($ok && list ($key, $checked) = each ($par)) {
-                        $ok = TableDelete($myview["table"], $key, $myview["fields"], $primary_aliases, $myview["messages"]["error_delete"], $myview["triggers"]);
+                    foreach ($par as $key => $checked) {
+                        if ( !($ok = TableDelete($myview["table"], $key, $myview["fields"], $primary_aliases, $myview["messages"]["error_delete"], $myview["triggers"]))) {
+                            break;
+                        }
                     }
                 }
                 if ($ok) {
@@ -259,8 +258,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
     global $err;
     $varset = new CVarset;
     $vals = GetKeyValues($key, $primary_aliases[$table], $columns);
-    reset ($vals);
-    while (list ($column, $val) = each ($vals)) {
+    foreach ($vals as $column => $val) {
         $varset->addkey($column, "text", $val);
     }
 
@@ -305,16 +303,14 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
         return false;
 
     // prepare varsets with primary key values
-    reset ($primary_aliases);
-    while (list ($table, $primary) = each ($primary_aliases)) {
+    foreach ($primary_aliases as $table => $primary) {
         $varset = new CVarset;
         AddKeyValues($varset, $val, $primary, $columns);
-        $varsets [$table] = $varset;
+        $varsets[$table] = $varset;
     }
 
     // add non-key values
-    reset ($columns);
-    while (list ($alias, $col) = each ($columns)) {
+    foreach ($columns as $alias => $col) {
         if (isset ($val[$alias])) {
             $varset = &$varsets[$col["table"]];
             $value = $val[$alias];
@@ -334,8 +330,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
 
     $db = getDB();
     // run varsets
-    reset ($varsets);
-    while (list ($table) = each ($varsets)) {
+    foreach ($varsets as $table => $foo) {
         $varset = &$varsets[$table];
         if ($be_cautious) {
             $db->query($varset->makeSELECT ($table));
@@ -381,16 +376,14 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
     }
 
     // prepare varsets with primary key values
-    reset ($primary_aliases);
-    while (list ($table, $primary) = each ($primary_aliases)) {
+    foreach ($primary_aliases as $table => $primary) {
         $varset = new CVarset;
         AddKeyValues($varset, $val, $primary, $columns);
-        $varsets [$table] = $varset;
+        $varsets[$table] = $varset;
     }
 
     // add non-key values
-    reset ($columns);
-    while (list ($alias, $col) = each ($columns)) {
+    foreach ($columns as $alias => $col) {
         if (isset ($val[$alias])) {
             $varset = &$varsets[$col["table"]];
             $value = $val[$alias];
@@ -410,12 +403,10 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
 
     $db = getDB();
     // run varsets
-    reset ($varsets);
-    while (list ($table) = each ($varsets)) {
+    foreach ($varsets as $table => $foo ) {
         $varset   = &$varsets[$table];
         $auto_inc = false;
-        reset ($primary_aliases[$table]);
-        while (list ($alias) = each ($primary_aliases[$table])) {
+        foreach ($primary_aliases[$table] as $alias => $foo) {
             if ($columns[$alias]["auto_increment"]) {
                     $auto_inc = true;
             }
@@ -490,15 +481,13 @@ function RunColumnFunctions(&$val, $columns, $table, $join) {
     // copy values between joining fields
     if (is_array($join)) {
         foreach ( $join as $childtable => $joinprop) {
-            reset ($joinprop["joinfields"]);
-            while (list ($masterf, $childf) = each ($joinprop["joinfields"])) {
+            foreach ($joinprop["joinfields"] as $masterf => $childf) {
                 // find master and child field alias
-                reset ($columns);
-                while (list ($alias, $cprop) = each ($columns)) {
+                foreach ($columns as $alias => $cprop) {
                     if ($cprop["field"] == $masterf && $cprop["table"] == $table) {
                         $mastera = $alias;
                     }
-                    else if ($cprop["field"] == $childf && $cprop["table"] == $childtable) {
+                    elseif ($cprop["field"] == $childf && $cprop["table"] == $childtable) {
                         $childa = $alias;
                     }
                 }
@@ -541,8 +530,7 @@ function ProoveVals($val, $columns) {
  * @param $varset
  */
 function GetKey($primary, $columns, $varset) {
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
+    foreach ($primary as $alias => $foo) {
         $val   = $varset->get($columns[$alias]["field"]);
         $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : myspecialchars($val);
     }
@@ -585,8 +573,7 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
         exit;
     }
 
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
+    foreach ($primary as $alias => $foo) {
         $colname = $columns[$alias]["field"];
         $value   = $val[$alias];
         if ($auto_increment || !$columns[$alias]["auto_increment"]) {
@@ -605,8 +592,7 @@ function GetKeyValues($key_val, $primary, $columns) {
     $keys = split_escaped(":", $key_val, "#:");
     reset ($keys);
 
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
+    foreach ($primary as $alias => $foo) {
         list (,$value) = each ($keys);
         $colname = $columns[$alias]["field"];
         if ($columns[$alias]["view"]["unpacked"]) {

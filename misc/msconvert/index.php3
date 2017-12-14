@@ -60,7 +60,7 @@ if (!$userfile) {
             $insidesection=false;
             $buffer=array();
             $output=array();
-            while (list($linenum,$line)=each($out)){
+            foreach ($out as $linenum => $line) {
                 if (preg_match("/^<!--Section/",$line)) {
                     if ($insidesection==true) {
                         $output=array_merge ($output,$buffer);
@@ -84,7 +84,7 @@ if (!$userfile) {
             $insidesection=false;
             $buffer=array();
             $output=array();
-            while (list($linenum,$line)=each($out)){
+            foreach ($out as $linenum => $line) {
                 if (preg_match("/body/i",$line)) {
                     if ($insidesection==true) {
                         $output=array_merge ($output,$buffer);
@@ -107,7 +107,7 @@ if (!$userfile) {
             if (!$out) $out[]=" ";
             $insidesection=true;
             $output=array();
-            while (list($linenum,$line)=each($out)){
+            foreach ($out as $linenum => $line) {
                 if (preg_match("/<HR>/",$line)) {
                     $line=str_replace("<HR>","",$line);
                     $output[]=$line;
@@ -117,16 +117,12 @@ if (!$userfile) {
                 }
             }
         }
-        if ($view)
-        while (list($linenum,$line)=each($output)){
-            echo "$line\n";
+        if ($view AND count($output) ) {
+            echo join("\n",$output)."\n";
         }
-        reset($output);
         echo "<form name=\"aform\">";
         echo "<input type=hidden name=content value=\"";
-        while (list($linenum,$line)=each($output)){
-            $stringoutput .= $line;
-        }
+        $stringoutput = join('',$output);
         // we need to remove added background color, ...
         $stringoutput=preg_replace("/<\/?div.*>/i","",$stringoutput); // remove all DIVs
         $stringoutput=preg_replace("/ style=\".+\"/i","",$stringoutput); // remove all styles
@@ -146,9 +142,7 @@ if (!$userfile) {
     } else {
         // ERROR uploading...
         if ($my_uploader->errors) {
-            while (list($key, $var) = each($my_uploader->errors)){
-                echo $var . "<br>";
-            }
+            echo join("<br>",$my_uploader->errors)."<br>";
         }
     }
 }

@@ -146,9 +146,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr><td class="tabtxt" width="40%"><b><?php echo _m("Field") ?></b></td><td class="tabtxt" width="30%" align="center"><b><?php echo _m("Show") ?></b></td><td>&nbsp;</td></tr>
 <?php
-  reset($SHOWN_SEARCH_FIELDS);
   $number=0;
-  while ( list($name, $val) = each($SHOWN_SEARCH_FIELDS)) {
+  foreach ($SHOWN_SEARCH_FIELDS as $name => $val) {
       if ($DEFAULT_SEARCH_IN[$name]=="") {    // no default value for this field
           FieldInputShow("f$number", $val);
           $number++;
@@ -165,9 +164,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     <td class="tabtxt" width="30%" align="center"><b><?php echo _m("Show") ?></b></td>
     <td class="tabtxt" align="center"><b><?php echo _m("Default settings") ?></b></td></tr>
 <?php
-  reset($DEFAULT_SEARCH_IN);
   $i=0;
-  while ( list($name, $val) = each($DEFAULT_SEARCH_IN)) {
+  foreach ($DEFAULT_SEARCH_IN as $name => $val) {
       FieldInput("f$number", "d$i", $val);
       $number++; $i++;
   }

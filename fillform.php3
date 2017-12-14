@@ -120,15 +120,9 @@ require_once AA_INC_PATH."fillform.php3";
 
 pageOpen('noauth');
 
-function RestoreVariables() {
-    $r_state_vars = unserialize($GLOBALS['r_packed_state_vars']);
-    if (isset($r_state_vars) AND is_array($r_state_vars)) {
-        foreach ( $r_state_vars as $k=>$v ) {
-            $GLOBALS[$k] = $v;
-        }
-    }
+if (is_array($tmp_state_vars = unserialize($r_packed_state_vars))) {
+    RestoreVariables($tmp_state_vars);
 }
-RestoreVariables();
 
 echo fillFormFromVars($fillConds);
 

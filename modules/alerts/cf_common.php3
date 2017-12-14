@@ -33,10 +33,9 @@ require_once "../../include/formutil.php3";
 
 add_post2shtml_vars();
 
-global $LANGUAGE_CHARSETS;
-reset ($LANGUAGE_CHARSETS);
-while (list ($l) = each ($LANGUAGE_CHARSETS))
+foreach ($LANGUAGE_CHARSETS as $l => $foo) {
     $langs[$l] = $l;
+}
 
 $cf_fields = array (
     "lang" => array (

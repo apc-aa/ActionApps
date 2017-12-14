@@ -52,7 +52,7 @@ $db->query("DELETE FROM feedmap WHERE from_slice_id = '$p_from_slice_id' AND to_
 
 // insert into feedmap
 $catVS = new Cvarset();
-while (list($to_field_id,$val) = each($fmap)) {
+foreach ($fmap as $to_field_id => $val) {
 
     $catVS->clear();
     $catVS->add("from_slice_id", "unpacked", $from_slice_id);
@@ -93,7 +93,7 @@ while (list($to_field_id,$val) = each($fmap)) {
 
 // Write external fields, which did not mapped.
 if ($map_to && is_array($map_to)) {
-    while (list($from_field_id,) = each($map_to)) {
+    foreach ($map_to as $from_field_id => $foo) {
         $catVS->clear();
         $catVS->add("from_slice_id", "unpacked", $from_slice_id);
         $catVS->add("to_slice_id", "unpacked", $slice_id);

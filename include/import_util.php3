@@ -66,7 +66,7 @@ function createFieldNames($fileName,&$addParams) {
     }
 
     if ($addParams['caption']) {
-        while (list(,$v) = each($fn)) {
+        foreach ($fn as $v) {
             $fieldNames[$v] = $v;
         }
     } else {

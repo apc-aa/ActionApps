@@ -46,8 +46,7 @@ if (!is_array($list)) {
     echo "<h1>" . _m("Choose a Parameter Wizard") . "</h1>";
     echo '<FORM action="param_wizard_list.php3" method="get">';
     echo '<SELECT name=mylist MULTIPLE size="' . count($list) . '" style=".">';
-    reset($lists);
-    while (list (, $mylist) = each($lists)) {
+    foreach ($lists as $mylist) {
         $list = $$mylist;
         echo "<OPTION value='$mylist'>" . $list["name"] . "s";
     }
@@ -62,8 +61,7 @@ echo "<h1>" . $list["name"] . "s</h1>\n";
 
 echo '<FORM action="param_wizard_list.php3" method="get">' . "\n";
 echo _m("Change to: ") . "<SELECT name=mylist>\n";
-reset($lists);
-while (list (, $xlist) = each($lists)) {
+foreach ($lists as $xlist) {
     if ($xlist == $mylist)
         continue;
     $xxlist = $$xlist;
@@ -76,17 +74,15 @@ if ($list["hint"])
     echo $list["hint"] . "<br>";
 
 ksort($list["items"]);
-reset($list["items"]);
 echo "<table border=0>\n";
 $bottom_row = "<a href='#top'>" . _m("TOP") . "</a>\n";
-while (list ($name, $item) = each($list["items"])) {
+foreach ($list["items"] as $name => $item) {
     echo "<tr><td><b>$name</b></td><td><a href='#$name'>$item[name]</a></td></tr>\n";
     $bottom_row .= " - <a href='#$name'>$name</a>";
 }
 echo "</table>\n";
 
-reset($list["items"]);
-while (list ($name, $item) = each($list["items"])) {
+foreach ($list["items"] as $name => $item) {
     echo "<hr>";
     echo "<h2 id=$name>$name: $item[name]</h2>\n";
     echo processSlashes($item['desc']) . "<br>\n";
@@ -99,8 +95,7 @@ while (list ($name, $item) = each($list["items"])) {
         . "<TD><I>" . _m("type") . "</I></TD>"
         . "<TD><I>" . _m("description") . "</I></TD>"
         . "<TD><I>" . _m("example") . "</I></TD></TR>\n";
-        reset($params);
-        while (list (, $param) = each($params)) {
+        foreach ($params as $param) {
             echo "<TR>";
             echo "<TD><B>" . nl($param['name']) . "</B></TD><TD>";
             switch ($param['type']) {

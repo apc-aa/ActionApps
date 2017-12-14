@@ -405,6 +405,7 @@ class AA_Manager extends AA_Storable {
                 $this->msg[] = $action2do->perform($this, $GLOBALS['r_state'], $chb, $_REQUEST['akce_param']);
             }
         // older approach - @todo should be removed after we rewrite all managers
+        //                - now only in /modules/links/index.php3index.php3 - HM 2017
         } else {
             $action2do = $this->actions[$akce];
             $actions_perm_function = $this->actions_perm_function;
@@ -619,7 +620,7 @@ class AA_Manager extends AA_Storable {
 
                 if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
                     $i=1;  // we start on 1 because first option is "Select action:"
-                    while ( list( $action, $param ) = each ($this->actions) ) {
+                    foreach ($this->actions as $action => $param ) {
                         $actions_perm_function = $this->actions_perm_function;
                         if ( $actions_perm_function( $action ) ) {
                             $options .= '<option value="'. myspecialchars($action).'"> '.

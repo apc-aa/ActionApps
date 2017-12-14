@@ -44,11 +44,10 @@ require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 
 $db = getDB();
-reset ($edit);
 // Loop over each edit instance
-while (list($short_ids, $ar) = each($edit)) {
-    reset ($ar);
-    list ($field_id, $action) = each ($ar);
+foreach ($edit as $short_ids => $ar) {
+    $action   = reset($ar);
+    $field_id = key($ar);
     if ($action == "now()") {
         $action = now();
     }
@@ -59,12 +58,12 @@ while (list($short_ids, $ar) = each($edit)) {
     $content4id = array();
 
     // Now build fields for new content
-    while (list(,$field_id) = each($field_id_arr)) {
+    foreach($field_id_arr as $field_id) {
         $content4id[$field_id] = array(0 => array("value" => $action));
     }
 
     // Loop over items, setting fields
-    while (list(,$short_id) = each($short_id_arr)) {
+    foreach($short_id_arr as $short_id) {
       if ($short_id) { // skip potential empty last id
         $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
         if ($db->next_record()) {

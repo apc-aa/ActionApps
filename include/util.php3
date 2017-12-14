@@ -826,7 +826,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     // If its a tagged id, then set the "idtag..........." field
     if ( $zids->onetype() == 't') {
         $tags = $zids->gettags();
-        while ( list($k,$v) = each($tags)) {
+        foreach ($tags as $k => $v) {
             $content[$k]["idtag..........."][] = array("value" => $v);
         }
     }
@@ -1733,6 +1733,14 @@ function IsSigInt($var) {
 if(!function_exists("array_column")) {
     function array_column($array,$column_name) {
         return array_map(function($element) use($column_name) {return $element[$column_name];}, $array);
+    }
+}
+
+
+/** RestoreVariables to global context - kind of deprecated */
+function RestoreVariables(array $r_state_vars) {
+    foreach ($r_state_vars as $k => $v) {
+        $GLOBALS[$k] = $v;
     }
 }
 

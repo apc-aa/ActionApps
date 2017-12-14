@@ -168,8 +168,7 @@ function import_slice(&$slice){
         $sqltext = create_SQL_insert_statement ($slice, "module", ";id;owner;", ";id;name;deleted;slice_url;lang_file;created_at;created_by;owner;flag;","type=S")."\n";
         $db->query($sqltext);
         $fields = $slice["fields"];
-        reset($fields);
-        while (list(,$curf) = each($fields)) {
+        foreach ($fields as $curf) {
             $curf["slice_id"] = $slice["id"];
             // inserting to table fields
             $sqltext = create_SQL_insert_statement ($curf, "field", ";slice_id;","","")."\n";
@@ -331,15 +330,13 @@ if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
     echo "<b>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
     if (is_array($imported_list)) {
         echo "</p>"._m("Added were:")."</p>";
-        reset($imported_list);
-        while (list(,$desc)=each($imported_list)) {
+        foreach ($imported_list as $desc) {
             echo $desc."<br>";
         }
     }
     if (is_array($overwritten_list)) {
         echo "</p>"._m("Overwritten were:")."</p>";
-        reset($overwritten_list);
-        while (list(,$desc)=each($overwritten_list)) {
+        foreach ($overwritten_list as $desc) {
             echo $desc."<br>";
         }
     }
@@ -348,22 +345,19 @@ if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
     echo $data_showme;
     if (is_array($data_imported_list)) {
         echo "</p>"._m("Added were:")."</p>";
-        reset($data_imported_list);
-        while (list(,$desc)=each($data_imported_list)) {
+        foreach ($data_imported_list as $desc) {
             echo $desc."<br>";
         }
     }
     if (is_array($data_overwritten_list)) {
         echo "</p>"._m("Overwritten were:")."</p>";
-        reset($data_overwritten_list);
-        while (list(,$desc)=each($data_overwritten_list)) {
+        foreach ($data_overwritten_list as $desc) {
             echo $desc."<br>";
         }
     }
     if (is_array($data_import_failure)) {
         echo "</p>"._m("Failed were:")."</p>";
-        reset($data_import_failure);
-        while (list(,$desc)=each($data_import_failure)) {
+        foreach ($data_import_failure as $desc) {
             echo $desc."<br>";
         }
     }
@@ -384,8 +378,7 @@ if ($IDconflict) {?>
     <p align="center">
 <textarea name="conflicts_list" rows=<?php echo count($conflicts_ID) ?> cols="90">
 <?php
-    reset($conflicts_ID);
-    while (list($c_id,$name)=each($conflicts_ID)) {
+    foreach ($conflicts_ID as $c_id => $name) {
         echo $name.":\t".$c_id." -> ".$c_id."\n";
     }
 ?>
@@ -399,8 +392,7 @@ if ($view_IDconflict) { ?>
 <p align="center">
 <textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
 <?php
-    reset($view_conflicts_ID);
-    while (list($c_id,$name)=each($view_conflicts_ID)) {
+    foreach ($view_conflicts_ID as $c_id => $name) {
         echo $name.":\t".$c_id." -> ".$c_id."\n";
     }
 ?>
@@ -414,8 +406,7 @@ if ($data_IDconflict) { ?>
 <p align="center">
 <textarea name="data_conflicts_list" rows=<?php echo count($data_conflicts_ID) ?> cols="90">
 <?php
-    reset($data_conflicts_ID);
-    while (list($c_id,$name)=each($data_conflicts_ID)) {
+    foreach ($data_conflicts_ID as $c_id => $name) {
         echo substr($name,0,27).":\t".$c_id." -> ".$c_id."\n";
     }
 ?>

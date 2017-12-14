@@ -219,7 +219,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     $fields_to   = $destination->fields('record');
 
     // prepare new4id array before call StoreItem function
-    while (list($newfld,$newfldname) = each($fields_to)) {
+    foreach ($fields_to as $newfld => $newfldname) {
         $flag = $map[$newfld]['feedmap_flag'];
         $val  = $map[$newfld]['val'];
 
@@ -275,7 +275,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
         $new4id['status_code.....'][0]['value'] = ($approved=='y' ? 1 : 2);
     }
     $field_ids = array("post_date", "publish_date","expiry_date", "highlight", "posted_by", "edited_by", "last_edit");
-    while (list(,$fid) = each($field_ids)) {
+    foreach($field_ids as $fid) {
         $f_id = AA_Fields::createFieldId($fid);
         if (!$new4id[$f_id]) {
             $new4id[$f_id] = $content4id[$f_id];
@@ -319,7 +319,7 @@ function WhereFed($item_id) {
 function CreateFeedTree($sl_id, $from_category_id) {
     $slice_queue[$sl_id] = array('approved'=>"y", 'category'=>$from_category_id);
 
-    while (list($sl_id, $val) = each($slice_queue)) {
+    foreach($slice_queue as $sl_id => $val) {
         if ($val['approved'] == "y") {
             $from_category_id = $val['category'];
             if ($from_category_id) {
@@ -371,7 +371,7 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
     $content       = GetItemContent($item_id);
     $content4id    = $content[$item_id];   // shortcut
 
-    while (list($key,$fval) = each($oldcontent4id)) {
+    foreach($oldcontent4id as $key => $fval) {
         // skip field, if field from source item is not mapped to dest
         if ($map[$key]['feedmap_flag'] != FEEDMAP_FLAG_MAP) {
             continue;
@@ -399,7 +399,7 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
     $items = array($item_id => $slice_id);
 
     $db = getDB(); 	// do not use global db, because of conflict in UpdateFedItem - StoreItem
-    while (list($item_id,$slice_id) = each($items)) {
+    foreach($items as $item_id => $slice_id) {
         $p_item_id = q_pack_id($item_id);
 
         // get fed items

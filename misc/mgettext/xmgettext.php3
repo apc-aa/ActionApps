@@ -199,8 +199,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
         if ($stop_on_warning) exit;
     }
 
-    reset ($lang_list);
-    while (list($lang) = each ($lang_list)) {
+    foreach ($lang_list as $lang => $foo) {
         $langfile = str_replace ("??", $lang, $lang_files);
         // read the language constants
         $_m = "";

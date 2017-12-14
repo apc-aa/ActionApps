@@ -762,9 +762,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
         ldap_close($ds);
         if (is_array($groups)) {
-            while (list($key,) = each($groups)) {
-                $result[] = $key;                   // transform to a numbered array
-            }
+            $result = array_merge($result, array_keys($groups));  // transform to a numbered array
         }
 
         return $result;

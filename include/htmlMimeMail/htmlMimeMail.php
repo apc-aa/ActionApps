@@ -563,7 +563,7 @@ class htmlMimeMail {
     function buildMessage($params = array())
     {
         if (!empty($params)) {
-            while (list($key, $value) = each($params)) {
+            foreach ($params as $key => $value) {
                 $this->build_params[$key] = $value;
             }
         }

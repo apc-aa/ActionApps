@@ -112,9 +112,9 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
                 <input type=hidden name='arg[edit]' value='$arg[edit]'><br>";
             RawRichEditTextarea("",'rich', $value, 20, 80, "class", 1);
             $repl = array ("'"=>"\\'","\n"=>"\\n","\r"=>"\\r");
-            reset ($repl);
-            while (list ($find,$rep) = each ($repl))
+            foreach ($repl as $find => $rep) {
                 $value = str_replace ($find, $rep, $value);
+            }
             echo "<INPUT TYPE=HIDDEN NAME='arg[savefile]' VALUE='$value'>";
             echo fileAction ("savefile", _m("Save changes"));
         }

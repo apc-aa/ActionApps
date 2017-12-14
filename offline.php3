@@ -73,7 +73,7 @@ function IsDuplicated( $packet ) {
     if ( is_array($packet) || is_object($packet)) {
         $packet = serialize($packet);
     }
-    return DB_AA::test('offline', array(array('digest', md5($packet))))
+    return DB_AA::test('offline', array(array('digest', md5($packet))));
 }
 
 /** RegisterItem function
@@ -114,17 +114,16 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     $encoder       = new ConvertCharset;
 
     // prepare content4id array before call StoreItem function
-    while (list($key,$val) = each($vals)) {
-        if (isset($val) AND is_array($val)) {
+    foreach ($vals as $key => $val) {
+        if ( is_array($val) ) {
             switch( $val[0] ) {   // field type - defines action to do with content
                 case "base64":
                     $content4id[$key][0]['value'] = base64_decode($val[2]);
                     // $val[1] is filename - not used now
                     break;
                 default:                           // store multiple values
-                    reset($val);
                     $i=0;
-                    while (list(,$v) = each($val)) {
+                    foreach ($val as $v) {
                         $content4id[$key][$i]['value']   = $encoder->Convert($v, 'utf-8', $charset);
                         $content4id[$key][$i++]['flag'] |= FLAG_OFFLINE;  // mark as offline filled
                     }

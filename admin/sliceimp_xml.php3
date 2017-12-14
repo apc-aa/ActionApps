@@ -66,8 +66,8 @@ function bayfm_preimport($s) {
         if ($slvs = &$sl['VIEWS']) {
             print("<br>Processing Views, translating shortids");
 //            foreach ($slvs->a as $slv) { // $slv is a viewobj
-            $a = &$slvs->a; reset($a);
-            while (list($k,) = each($a)) { // $slv is a viewobj
+            $a = &$slvs->a;
+            foreach ($a as $k => $foo) {
                 $slv = &$slvs->a[$k];
                 $slvf = &$slv->fields; // Array of fields
                 $id = $slvf["id"];
@@ -81,8 +81,7 @@ function bayfm_preimport($s) {
         }
     }
     // Edit Items, translate vids in field "unspecified....1"
-    reset($s['SLICE']);
-    while (list($k,$sl) = each($s['SLICE'])) {
+    foreach ($s['SLICE'] as $k => $sl) {
         if (is_array($sl['DATA'])) {
             print("<br>Processing Data");
             foreach ($sl['DATA'] as $sld) {

@@ -114,8 +114,7 @@ FrmTabCaption(_m("Inter node export settings"));
         <select name="perms" size="5">
          <?php
            if ($perms && is_array($perms)) {
-               reset($perms);
-               while (list(,$perm) = each($perms)) {
+               foreach ($perms as $perm) {
                    $n = (!$perm['node']) ? "All Nodes" : $perm['node'];
                    $u = (!$perm['user']) ? "All Users" : $perm['user'];
                    $str = str_replace(" ","&nbsp;",substr($n."                              ",0,30)."  ");
@@ -136,9 +135,9 @@ FrmTabCaption(_m("Inter node export settings"));
         <select name="r_nodes" class="tabtxt" size="5">
         <?php
           if ($nodes && is_array($nodes)) {
-          reset($nodes);
-          while (list(,$n) = each($nodes))
-              echo "<option value=\"$n\"".($n==$node ? "SELECTED":"")." >$n</option>";
+              foreach ($nodes as $n) {
+                  echo "<option value=\"$n\"".($n==$node ? "SELECTED":"")." >$n</option>";
+              }
           }
         ?>
         </select>

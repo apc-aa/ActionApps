@@ -222,8 +222,9 @@ function endElement($parser, $name) {
     case "^RDF:RDF^RSS:ITEM":
       // dc elements decode
       if (isset($item['dc']))
-        while (list($k,$v) =each($item['dc']))
+        foreach ($item['dc'] as $k => $v) {
             $item['dc'][$k] = decode($v);
+        }
       if (!($item_uri)) { $item_uri = string2id($item['title'] . $item["link"] . $item['description']); } // RSS 0.9
       $aa_rss['items'][$item_uri] = $item;
       $item = array();

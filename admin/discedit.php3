@@ -167,7 +167,7 @@ if (!$outcome) {
 } else {
     foreach ($outcome as $d_id => $images) {
         $im = "";
-        while (list(,$img) = each($images)) {
+        foreach($images as $img) {
             $im .= GetImageSrc($img);
         }
         $im2 = "<tr><td>&nbsp;</td>

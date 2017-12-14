@@ -227,9 +227,8 @@ function GetEmailWhere() {
     }
     $myslices = GetUserSlices();
     if (is_array($myslices)) {
-        reset ($myslices);
-        while (list ($my_slice_id, $perms) = each ($myslices)) {
-            if (strchr ($perms, PS_FULLTEXT)) {
+        foreach ($myslices as $my_slice_id => $perms) {
+            if (strchr($perms, PS_FULLTEXT)) {
                 $restrict_slices[] = q_pack_id($my_slice_id);
             }
         }

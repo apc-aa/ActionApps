@@ -62,8 +62,7 @@ while ($db->next_record()) {
 
 do {
     if ( isset($E) AND is_array($E) ) {  // Export to any slice
-        reset($E);
-        while ( list(,$val) = each($E) ) {
+        foreach ($E as $val) {
             if ( $feedto[$val] ) {
                 $feedto[$val] = false;      // this feed is allready in database => don't change
                 continue;
@@ -78,9 +77,8 @@ do {
             AA_Log::write("FEED_ENBLE", "$slice_id,$val");
         }
   }
-  reset($feedto);
-    while ( list($to,$val) = each($feedto) ) {   // delete removed feeds
-        if ( $val ) {
+  foreach ($feedto as $to => $val) {
+      if ( $val ) {
             $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id='". q_pack_id($to). "'";
             $db->query( $SQL );
             AA_Log::write("FEED_DSBLE", "$slice_id,$val");
@@ -98,8 +96,7 @@ while ($db->next_record())
 
 do {
     if ( isset($I) AND is_array($I) ) {  // insert to categories
-        reset($I);
-        while ( list(,$val) = each($I) ) {
+        foreach ($I as $val) {
             if ( $feedfrom[$val] ) {
                 $feedfrom[$val] = false;      // this feed is allready in database => don't change
                 continue;
@@ -118,9 +115,8 @@ do {
         }
     }
 
-  reset($feedfrom);
-    while ( list($from,$val) = each($feedfrom) ) {   // delete removed feeds
-        if ( $val ) {
+  foreach ($feedfrom as $from => $val) {  // delete removed feeds
+      if ( $val ) {
             $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id='". q_pack_id($from). "'";
             $db->query( $SQL );
             AA_Log::write("FEED_DEL", "$slice_id,$val");

@@ -323,8 +323,7 @@ if ( $r_state['link_id'] ) {                  // not new link
 
         // add new proposals
         if ( isset($assignment_changes) AND is_array($assignment_changes) ) {
-            reset($assignment_changes);
-            while (list($k,) = each($assignment_changes)) {
+            foreach ($assignment_changes as $k => $foo) {
                 if ( $displayed_p[$k] )
                     continue;         // already displayed
                 $i = ++$idx;

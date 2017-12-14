@@ -189,7 +189,7 @@ function SetCheckboxContent(&$content, $d_id, $cnt) {
  */
 function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
     if ($showimages) {
-        while (list(, $img) = each($images)) {
+        foreach($images as $img) {
             $imgs.= $imgtags[$img];
         }
     } else {
@@ -275,7 +275,7 @@ function GetDiscussionTree(&$d_content) {
     if (!$d_content) {
         return false;
     }
-    while (list($d_id, $val) = each($d_content)) {
+    foreach($d_content as $d_id => $val) {
         if ($val["hide"] == true) {                  // if hidden => skip
             continue;
         }
@@ -317,7 +317,7 @@ function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
         return;
     }
 
-    while (list($dest_id,) = each($nodes)) {
+    foreach($nodes as $dest_id => $foo) {
         if (current($nodes)) {
             $images[$depth]   = D_VLINE_IMG;
             $images[$depth+1] = D_T_IMG;
@@ -339,7 +339,7 @@ function DeleteTree(&$tree, $d_id) {
     if (!($nodes = $tree[$d_id])) {
         return;
     }
-    while (list($dest_id,) = each($nodes)) {
+    foreach($nodes as $dest_id => $foo) {
         DeleteTree($tree,$dest_id);
     }
 }
@@ -354,7 +354,7 @@ function GetParent(&$tree, $d_id) {
         return false;
     }
     foreach ($tree as $source_id => $foo ) {
-        while (list($dest_id, ) = each($tree[$source_id])) {
+        foreach($tree[$source_id] as $dest_id => $foo) {
             if ($dest_id == $d_id) {
                 return $source_id;
             }
@@ -376,7 +376,7 @@ function DeleteNode(&$tree, &$d_content, $d_id) {
     }
     $parent = $d_content[$d_id]["d_parent........"][0]['value'];
 
-    while (list($child, ) = each($tree[$d_id])) {
+    foreach($tree[$d_id] as $child => $foo) {
         DB_AA::sql("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
     }
 }

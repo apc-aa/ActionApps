@@ -17,33 +17,33 @@ function CheckS( $s, $w ) {
     case 'z': return ($s && strpos( ' zmktas', $s )) ? $s : 'z';
     case 'n': return ($s && strpos( ' NFPIJV', $s )) ? $s : 'N';
   }
-}  
+}
 
 function CheckF( $f, $w ) {
   switch( $w ) {
     case 'z': return ($f && strpos( ' vzslgrkoi', $f )) ? $f : 'v';
     default:  return ($f && strpos( ' 123456789', $f )) ? $f : '1';
   }
-}  
+}
 
 function CheckR( $r, $w ) {
   switch( $w ) {
     case 'z': return ($r && strpos( ' psjekulraviomzrncx', $r )) ? $r : 'x';
     default:  return ($r && strpos( ' -', $r )) ? 'x' : $r;
   }
-}  
+}
 
 function CheckP( $p ) {
   return ((integer)$p>0) ? (integer)$p : 1;
-}  
+}
 
 function CheckT( $t ) {
   return '-';
-}  
+}
 
 function CheckX( $x ) {
   return ((integer)$x>0) ? (integer)$x : '-';
-}  
+}
 
 // ------------- functions definition end ------------------------------------
 
@@ -81,18 +81,18 @@ $formaty_arr = array( 'z' => 'zprávy',
 
 if ( !$apc ) {
   if ( $x ) {         // want to view text?
-    $SQL = "SELECT content.text, item.slice_id FROM item,content 
-             WHERE item.id=content.item_id 
-               AND item.short_id='$x' 
+    $SQL = "SELECT content.text, item.slice_id FROM item,content
+             WHERE item.id=content.item_id
+               AND item.short_id='$x'
                AND content.field_id='switch.........2'";
     $db->query($SQL);
     if ( $db->next_record() ) {
       $apc = $db->f('text');
-      // pomocna promena, ktera nam rekne, ze jde o staticky text a ne zpravu  
+      // pomocna promena, ktera nam rekne, ze jde o staticky text a ne zpravu
       $texty = ( unpack_id($db->f('slice_id')) == '21c8416923d4b6c58abc7ed664651802' );  // Ecn - texty
-    }   
+    }
     $apc .= substr('zzvx--',-( 6-strlen($apc) ));
-  } 
+  }
   elseif( IsInDomain('zpravodajstvi.ecn.cz') ) $apc = 'zzvx--';
   elseif( IsInDomain('enviro.ecn.cz') ) $apc = 'zzzx--';
   elseif( IsInDomain('soc.ecn.cz') ) $apc = 'zzsx--';
@@ -114,11 +114,11 @@ if ( !$apc ) {
   elseif( IsInDomain('objednavka.ecn.cz') ) $apc = 'e81x1-88866';
   elseif( IsInDomain('cenik.ecn.cz') ) $apc = 'e91x1--';
   else $apc = 'zzvx--';
-}  
+}
 
-if ( preg_match( "/^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)/", $apc, $vars )) 
+if ( preg_match( "/^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)/", $apc, $vars ))
   list($old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = $vars;
- else 
+ else
   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t) = array( 'z', 'z', 'v', 'x', '-', '-');
 
 if ( isset($w) ) {                          // w stands for WEB (like zpravodajstvi - z, econnect - e, nno - n
@@ -127,9 +127,9 @@ if ( isset($w) ) {                          // w stands for WEB (like zpravodajs
     case 'n':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'n', 'N', '1', '-', '-', '-', ''); break;
     case 'e':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'e', '1', '1', '-', '-', '-', '73161'); break;
   }
-}    
+}
 if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy - z, komentare - k, o Econnectu - 1) We use disjunct sets of subweb chracters, so zpravodajstvi uses [a-z], econnect uses [1-9], nno [A-Z]
-  $old_s=$s; 
+  $old_s=$s;
   $old_x='';
   $old_p='1';
   if ( $old_w != 'z' ) // the format in zpravodajstvi stays the same
@@ -139,15 +139,17 @@ if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy 
 if ( isset($f) ) {$old_f=$f; $old_x='';$old_p='1';}    // f stands for FILTER (like zivotni protredi - z, kultura - k) - used only on zpravodajsvi page yet
 if ( isset($r) ) {
   if ( isset($r) and is_array($r)) {
-    reset( $r );
-    while ( list($k,) = each($r) )
-      $max_index = max($max_index, $k);
+    foreach ($r as $k => $foo) {
+        $max_index = max($max_index, $k);
+    }
     $max_index = max( $max_index, strlen($old_r)-1 );
-    for ( $i=0; $i<=$max_index; $i++)
+    for ( $i=0; $i<=$max_index; $i++) {
       $new_r .= ($r[$i] ? $r[$i] : ( $old_r[$i] ? $old_r[$i] : 'x' ));
-    $old_r = $new_r;   
-  } else
+    }
+    $old_r = $new_r;
+  } else {
     $old_r = ($r ? $r : 'x');
+  }
   $old_x='';
   $old_p='1';
 }                                          // r stands for REGION (like Praha - a ...) or any other second filter - used on zpravodajsvi for region selection or in joblist for switching between grant categories and types
@@ -160,7 +162,7 @@ if ( isset($scrl) ) {      // page scroller
   $pagevar = "scr_".$scrl."_Go";
   $old_p = $$pagevar;
   $old_x='';
-} 
+}
 if ( ($old_p <= 0) OR ($old_p=='-') )
   $old_p = 1;
 
@@ -172,7 +174,7 @@ $old_r = CheckR( $old_r, $old_w );
 $old_p = CheckP( $old_p );
 $old_t = CheckT( $old_t );
 $old_x = CheckX( $old_x );
-  
+
 // pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
 list( $region_cesta, $region_z, $region_k ) = $regiony_arr[$old_r];
 $format_cesta = '&nbsp;&gt;&nbsp;'.$formaty_arr[$old_s];
@@ -192,7 +194,7 @@ $apc_state = array ('state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
                     'region_k' =>     ($region_k ?$region_k : ''),
                     'format_cesta' => ($format_cesta ? $format_cesta : '')
                     );
-                    
+
 // $r variable is could be array, so create variables like r0, r1, .. to be used in site
 for ( $i=0; $i< strlen($old_r); $i++)
   $apc_state['r'.$i] = $old_r[$i];

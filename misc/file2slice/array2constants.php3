@@ -59,20 +59,19 @@ $SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
                                      pri='100'";
 myQuery ($db, $SQL, $fire);
 
-reset( $constants2import );
-while ( list(,$cnst) = each($constants2import) ) {
-  $varset->clear();
-  $varset->set("name",  $cnst, "text");
-  $varset->set("value", $cnst, "text");
-  $varset->set("pri",   $pri += $priority_step, "number");
-  // $varset->set("class", $class[$key], "quoted");
-  $varset->set("id", new_id(), "unpacked" );
-  $varset->set("group_id", $group_id, "text" );
-  $SQL =  "INSERT INTO constant " . $varset->makeINSERT();
-  if ( !MyQuery ($db, $SQL, $fire )) {
-    $err["DB"] .= MsgErr("Can't copy constant");
-    break;
-  }
+foreach ($constants2import as $cnst) {
+    $varset->clear();
+    $varset->set("name",  $cnst, "text");
+    $varset->set("value", $cnst, "text");
+    $varset->set("pri",   $pri += $priority_step, "number");
+    // $varset->set("class", $class[$key], "quoted");
+    $varset->set("id", new_id(), "unpacked" );
+    $varset->set("group_id", $group_id, "text" );
+    $SQL =  "INSERT INTO constant " . $varset->makeINSERT();
+    if ( !MyQuery ($db, $SQL, $fire )) {
+        $err["DB"] .= MsgErr("Can't copy constant");
+        break;
+    }
 }
 
 

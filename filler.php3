@@ -453,8 +453,7 @@ if ($insert) {
         break;
     case ANONYMOUS_EDIT_PASSWORD:
         $permok = false;
-        reset ($fields);
-        while (list ($fid) = each($fields))
+        foreach ($fields as $fid => $foo) {
             if (substr ($fid,0,14) == "password......") {
               $password = $content4id[$fid][0]['value'];
               $old_password = $oldcontent4id[$fid][0]['value'];
@@ -465,6 +464,7 @@ if ($insert) {
                   || ( !in_array(substr($old_password,0,2), array('xx','$2')) && ($old_password == $password)));
                 break;
             }
+        }
         break;
     }
 

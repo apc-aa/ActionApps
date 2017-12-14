@@ -121,7 +121,7 @@ if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
     $from_fields += GetFields4Select($from_slice_id);
 } else {                                     // remote fields : from feedmap table
     if (isset($map_to) && is_array($map_to)) {
-        while (list($k,$v) = each($map_to)) {
+        foreach ($map_to as $k => $v) {
             $from_fields[$k] = $v;
         }
     }
@@ -148,8 +148,7 @@ function SelectValue(sel) {
 }
 
 
-function ChangeFromSlice()
-{
+function ChangeFromSlice() {
     var url = "<?php echo StateUrl(self_base() . "se_mapping.php3")?>"
     var from_sl = SelectValue('document.f.from_slice_id')
     if (from_sl == 0) {

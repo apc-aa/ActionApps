@@ -160,8 +160,7 @@ function Cancel() {
       <select name="nodes" class="tabtxt" size="5">
       <?php
         if (isset($nodes) && is_array($nodes)) {
-            reset($nodes);
-            while (list(,$name) = each($nodes)){
+            foreach ($nodes as $name) {
                 echo "<option value=\"$name\">$name</option>";
             }
         }

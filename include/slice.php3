@@ -78,7 +78,7 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
         echo _m("Select Category ") . "<select name=\"cat_id\">";
         $seloption=(($selected=="")?"selected":"");
         echo '<option value="all" $seloption>'._m("All categories").'</option>';
-        while (list($id,$name)= each($cats)) {
+        foreach ($cats as $id => $name) {
             $seloption=(($selected==$id)?"selected":"");
             echo "<option value=\"$id\" $seloption>".myspecialchars($name)."</option>";
         }
@@ -108,38 +108,12 @@ function ExitPage($msg='') {
 /** SotreVariables function
  *
  */
-function StoreVariables( $vars ) {
-    if ( isset($vars) AND is_array($vars) ) {
-        reset($vars);
-        while ( list(,$v) = each( $vars ) )
+function StoreVariables( array $vars ) {
+    $state_vars = array();
+    foreach ($vars as $v) {
         $state_vars[$v] = $GLOBALS[$v];
     }
     return $state_vars;
-}
-/** RestoreVariables function
- *
- */
-function RestoreVariables() {
-    global $r_state_vars;
-    if ( isset($r_state_vars) AND is_array($r_state_vars) ) {
-        reset($r_state_vars);
-        while ( list($k,$v) = each( $r_state_vars ) )
-        $GLOBALS[$k] = $v;
-    }
-}
-
-/** SubstituteAliases function
- * @param $als
- * @param $var
- */
-function SubstituteAliases( $als, &$var ) {
-    if ( !isset( $als ) OR !is_array( $als ) ) {  // substitute url aliases in cmd
-        return;
-    }
-    reset( $als );
-    while ( list($k,$v) = each( $als ) ) {
-        $var = str_replace ($k, $v, $var);
-    }
 }
 
 /** PutSearchLog function

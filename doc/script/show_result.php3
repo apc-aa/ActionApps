@@ -15,8 +15,8 @@
     if (! $result)
         return;
 
-    $resarr = unserialize (stripslashes($result));        
-    
+    $resarr = unserialize (stripslashes($result));
+
     // If there were too many errors, the array is not complete and thus
     // unserialize does not work.
     if (!is_array($resarr)) {
@@ -24,38 +24,37 @@
             and tell him about the message: '.$result.'</font><br>'."\n";
         return;
     }
-    
-    reset ($resarr);            
-    while (list ($error, $prop) = each ($resarr)) {
+
+    foreach($resarr as $error => $prop) {
         switch ($error) {
-    
-        // Success: everything went O.K.    
+
+        // Success: everything went O.K.
         case "success":
             if ($prop == "insert")
                 echo "Thank you! Please confirm your subscription by using the
                       URL which you receive in a short time in a welcome email.";
             else echo "OK. Changes were successful.";
             break;
-        
+
         // Called by fillform when the URL contains a parameter sent to readers in
         // confirmation emails.
         case "email_confirmed":
             echo "Thank you! You have just confirmed your subscription and from
                 now on you will receive our news by email.";
             break;
-        
+
         // Error when validating some field.
-        case "validate": 
+        case "validate":
             switch (key ($prop)) {
             case "con_email.......":
                 echo '<font class="tabtxt">
                     Error in email. This email address is already subscribed.
                     Please use another one.</font>';
-                break; 
+                break;
             case "headline........":
                 echo '<font class="tabtxt">
                     Error in username. This username is already used.
-                    Please try another. 
+                    Please try another.
                 </font>'."\n";
                 break;
             default:
@@ -63,18 +62,17 @@
                 break;
             }
             break;
-            
+
         // Error: permissions K.O.
         case "permissions":
             echo '<font class="tabtxt">Wrong password. You must
                     fill the correct password every time you send info.</font><br>'."\n";
             break;
-            
+
         // Other error.
-        default:                   
+        default:
             echo '<font class="tabtxt">Some error: '.$prop.'</font><br>'."\n";
             break;
         }
     }
 ?>
-   

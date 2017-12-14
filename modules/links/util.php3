@@ -110,9 +110,8 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
     $ids = explode(",",$path);
     if ( isset($ids) AND is_array($ids)) {
         $last=end($ids);
-        reset($ids);
         if ( $url ) {
-            while (list(,$catid) = each($ids)) {
+            foreach ($ids as $catid) {
                 if (--$skip >= 0) {
                     continue;
                 }
@@ -124,7 +123,7 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
                 $delimiter = $separator;
             }
         } else {
-            while (list(,$catid) = each($ids)) {
+            foreach ($ids as $catid) {
                 if (--$skip >= 0) {
                     continue;
                 }
@@ -249,14 +248,12 @@ function Links_GetLinkContent($zids) {
     $db->tquery($SQL);
     while ( $db->next_record() ) {
         $foo_id = $db->f('id');
-        reset( $db->Record );
-        while ( list( $key, $val ) = each( $db->Record )) {
-            if ( is_int($key))
-                continue;
-            if ( $changes_map[$foo_id] )    // this link is just change-link
+        foreach ($db->Record as  $key => $val ) {
+            if ( $changes_map[$foo_id] ) {    // this link is just change-link
                 $content[$changes_map[$foo_id]]["change_$key"][] = array('value' => $val);
-            else
+            } else {
                 $content[$foo_id][$key][] = array('value' => $val);
+            }
         }
     }
 
@@ -307,10 +304,7 @@ function Links_GetCategoryContent($zids) {
     $db->tquery($SQL);
     while ( $db->next_record() ) {
         $foo_id = $db->f('id');
-        reset( $db->Record );
-        while ( list( $key, $val ) = each( $db->Record )) {
-            if ( is_int($key))
-                continue;
+        foreach ($db->Record as  $key => $val ) {
             $content[$foo_id][$key][] = array('value' => $val);
         }
     }

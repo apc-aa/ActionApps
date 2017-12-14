@@ -99,22 +99,21 @@ function ignored_slice($si) {
 /** sliceshortcuts function
  * @param $ign
  */
-function sliceshortcuts($ign) {
-  global $sao;
-  print("<table cellspacing=\"1\">\n");
-  reset($sao);
-  while (list($si,$so) = each($sao)) {
-    //if ($debugsummarize) huhl("Slice Obj",$so);
-    if (!$ign || !ignored_slice($si)) {
-        $n = $so->name();
-         print("<tr><td><a href=\"#$si\">$si</a></td><td>$n</td><td>" .
-            ($so->deleted() ? "Deleted " : "") .
-            editslicefields($si) . " " . comparewith($si) .
-            "</td></tr>\n");
-    }
-  }
-  print("</table>\n");
-}
+ function sliceshortcuts($ign) {
+     global $sao;
+     print("<table cellspacing=\"1\">\n");
+     foreach ($sao as $si => $so) {
+         //if ($debugsummarize) huhl("Slice Obj",$so);
+         if (!$ign || !ignored_slice($si)) {
+             $n = $so->name();
+             print("<tr><td><a href=\"#$si\">$si</a></td><td>$n</td><td>" .
+                 ($so->deleted() ? "Deleted " : "") .
+                 editslicefields($si) . " " . comparewith($si) .
+                 "</td></tr>\n");
+         }
+     }
+     print("</table>\n");
+ }
 /** editsliceinfo function
  * @param $sid
  * @return string
@@ -231,8 +230,7 @@ function do_copyfield() {
 function mapslices() {
     global $sao;
     print("<ul>");
-    reset($sao);
-    while (list($sid,$so) = each($sao)) {
+    foreach ($sao as $sid => $so) {
         if (! $so->deleted() && !ignored_slice($sid)) {
             if ($pm) {   // first time round no model
                 $nearest = nearestSlice($so,$pm,1);
@@ -258,8 +256,7 @@ function nearestSlice($st,$possmodels) {
     global $sao;
     $sc_min = 999999;
     $sm_min = "";
-    reset($possmodels);
-    while (list(,$sm) = each($possmodels)) {
+    foreach ($possmodels as $sm) {
         if ($sm == $st->getId()) {
             continue;
         }
@@ -287,8 +284,7 @@ function compareSlices($st,$sm,$pr) {
         print("<ul>\n");
     }
     $score += compareSliceTableFields($st,$sm,$pr);
-    reset($ft[0]);
-    while (list($ftn,$fta) = each($ft[0])) {
+    foreach ($ft[0] as $ftn => $fta) {
         if (! $fm[0][$ftn]) {
             compareFields($ftn,$ft[0][$ftn],$CoreFields[0][AA_Fields::getFieldType($ftn)],$pr,"Added",$st,$sm);
             $score += $scoreAddOrMiss;
@@ -296,8 +292,7 @@ function compareSlices($st,$sm,$pr) {
             $score = $score + compareFields($ftn,$ft[0][$ftn],$fm[0][$ftn],$pr,"Common",$st,$sm);
         }
     }
-    reset($fm[0]);
-    while (list($fmn,$fma) = each($fm[0])) {
+    foreach ($fm[0] as $fmn => $fma) {
         if (! $ft[0][$fmn]) {
             if ($pr) print("<li>Missing field $fmn".url_copyfield($fmn)."\n");
             $score += $scoreAddOrMiss;
@@ -323,8 +318,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         if ($pr) print("<li>$pre field: $fn : " . (($fm["input_show"] == 1) ? url_showfield($fn) : "") . (($fm["required"] == 1) ? "not required " : "")) . "</li>\n" ;
         $score += $scoreUnshown;
     } else {
-      reset($ft);
-      while (list($ftk,$ftv) = each($ft)) {
+      foreach ($ft as $ftk => $ftv) {
           if ($ftk == "slice_id") {
               continue;
           }
@@ -394,8 +388,7 @@ function compareSliceTableFields($st,$sm,$pr) {
     $opened = 0;
     $ft = $slicetablefields[pack_id($st->getId())];
     $fm = $slicetablefields[pack_id($sm->getId())];
-      reset($ft);
-      while (list($ftk,$ftv) = each($ft)) {
+      foreach ($ft as $ftk => $ftv) {
           $hf = 0;
           $unp = 0;
           if (($ftk == "id") || ($ftk == "name") || ($ftk == "created_at")

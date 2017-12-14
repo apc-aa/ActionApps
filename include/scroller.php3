@@ -214,7 +214,7 @@ class AA_Scroller extends AA_Storable {
         $arr       = $this->navarray();
         $url       = $this->urldefault;
 
-        while (list($k, $v) = each($arr)) {
+        foreach ($arr as $k => $v) {
             echo $delimiter;
             $delimiter = " | ";
             if ($v) {

@@ -90,11 +90,7 @@ if ($update) {
 $SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
 $db->query($SQL);
 if ($db->next_record()) {
-    while (list($key,$val,,) = each($db->Record)) {
-        if (!ctype_digit((string)$key)) {
-            $$key = $val; // variables and database fields have identical names
-        }
-    }
+    RestoreVariables($db->Record);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

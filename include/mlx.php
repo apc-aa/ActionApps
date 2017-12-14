@@ -595,8 +595,7 @@ class MLXView {
             $arr[(string)$packedid] = 1;
         }
         $db = getDB();
-        reset($arr);
-        while(list($upContId,$count) = each($arr)) {
+        foreach ($arr as $upContId => $count) {
             if($count > 1) // already primary
                 continue;
             //speedup

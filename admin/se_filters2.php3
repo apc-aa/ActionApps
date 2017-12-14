@@ -89,7 +89,7 @@ if ($feed_id) { // cross server feeding
             $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['name']               = _m('Other categories');
         } else {                              // individual categories
             // set according the posted values
-            while (list($index,$id ) = each($_GET['F'])) {
+            foreach ($_GET['F'] as $index => $id ) {
                 $from_cat = ParseIdA($id, $app);
                 $ext_categs[$from_cat]['target_category_id'] = $_GET['T'][$index];
                 $ext_categs[$from_cat]['approved']           = $app;
@@ -135,9 +135,8 @@ if ($feed_id) { // cross server feeding
         if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add import from $val");
         }
-    } else if (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
-        reset($_GET['F']);
-        while ( list($index,$val) = each($_GET['F']) ) {
+    } elseif (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
+        foreach ($_GET['F'] as $index => $val) {
             $from_cat = ParseIdA($val, $app);
             $to_cat = $_GET['T'][$index];
             if ( ($to_cat == UNPACKED_THE_SAME_CAT) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"

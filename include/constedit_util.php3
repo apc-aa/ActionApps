@@ -421,8 +421,7 @@ function hcUpdate()
             $propagate_changes = false;
         }
 
-        reset ($changes);
-        while (list (,$change) = each($changes)) {
+        foreach ($changes as $change) {
             $column_id = 4;
             $column_ancestors = 5;
             for ($i = 0; $i < $column_id; ++$i) {
@@ -441,8 +440,7 @@ function hcUpdate()
                 $shortIDmap[$new_id] = $id;
                 $ancestors = "";
                 $path = explode(",",$change[$column_ancestors]);
-                reset ($path);
-                while (list (,$myid) = each ($path)) {
+                foreach ($path as $myid) {
                     if (!$myid) {
                         continue;
                     }
@@ -704,8 +702,7 @@ function refresh_constant_group($group_id, $items) {
 
     $priority = 100;
     if (is_array($items)) {
-        reset ($items);
-        while (list ($value, $name) = each ($items)) {
+        foreach ($items as $value => $name) {
             $varset->clear();
             $varset->add ("value", "text", $value);
             $varset->add ("name", "text", $name);

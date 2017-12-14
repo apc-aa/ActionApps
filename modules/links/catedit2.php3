@@ -245,10 +245,8 @@ if ($subcatIds) {
 }
 
 if (isset($ids) && is_array($ids) && $subcatIds!="") {
-    reset($ids);
     $pri = 0.0;
-
-    while ( list($key, $insertedId) = each($ids) ) {
+    foreach ($ids as $key => $insertedId) {
         $pri += 1.0;
 
         // new subcategory
@@ -280,10 +278,10 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 
 // unassign old base subcategories
 if (isset($oldBaseSubcat) AND is_array($oldBaseSubcat) ) {
-    reset($oldBaseSubcat);
-    while ( list($key, $val) = each($oldBaseSubcat) ) {
-        if ($val=="" )  // this category was reassigned
+    foreach ($oldBaseSubcat as $key => $val) {
+        if ($val=="" ) { // this category was reassigned
             continue;
+        }
             // Moves this category to another subtree or delete
             //   (if clear and no link to it)
         UnassignBaseCategory($cid, $val);

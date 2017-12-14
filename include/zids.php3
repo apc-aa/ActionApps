@@ -399,7 +399,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             return $this;  // Array is fine
         }
         $tags = array();
-        while ( list(,$v) = each($zids->a)) {
+        foreach ($zids->a as $v) {
             switch ($this->type) {
                 case 'p': $k = pack_id(id_t2l($v)); break;
                 default:
@@ -410,7 +410,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         }
         $b = array();
         if ( $this->count() > 0 ) {
-            while ( list(,$v) = each($this->a)) {
+            foreach ($this->a as $v) {
                 $b[] = $tags[$v];
             }
         }

@@ -40,15 +40,10 @@ $format = array (
     "caption" => array (
         "before" => "<b>",
         "after" => "</b>"));
-/*
-global $LANGUAGE_CHARSETS;
-reset ($LANGUAGE_CHARSETS);
-while (list ($l) = each ($LANGUAGE_CHARSETS))
-    $langs[$l] = $l;
-*/
+
+
 global $LANGUAGE_NAMES;
-reset ($LANGUAGE_NAMES);
-while (list ($l, $langname) = each ($LANGUAGE_NAMES)) {
+foreach ($LANGUAGE_NAMES as $l => $langname) {
     $biglangs[$l."_news_lang.php3"] = $langname;
     $langs[$l] = $langname;
 }
@@ -71,8 +66,7 @@ function CreateWhereFromList($column, $list, $type="number") {
     }
     else {
         $in = "";
-        reset ($list);
-        while (list (,$item) = each ($list)) {
+        foreach ($list as $item) {
             if ($in) {
                 $in .= ",";
             }

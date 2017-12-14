@@ -187,8 +187,7 @@ class AA_Condition extends AA_Object {
      *  Mainly for backward compatibility with old - array approach
      */
     function getArray() {
-        $ret['value']    = $this->value;
-        $ret['operator'] = $this->operator;
+        $ret = array('value'=> $this->value, 'operator' => $this->operator);
         foreach ($this->fields as $cond_field) {
             $ret[$cond_field] = 1;
         }
@@ -397,7 +396,7 @@ class AA_Set extends AA_Object {
      *  Should replace QueryZIDs() in future
      *  @param $restrict_zids - zids
      */
-    function query($restrict_zids=false, $limit=null) {
+    function query($restrict_zids=null, $limit=null) {
         return QueryZIDs($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
     }
 
@@ -1386,7 +1385,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 *                                     // view parameter instead)
 *   </pre>
 */
-function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE", $limit=null ) {
+function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=null, $defaultCondsOperator = "LIKE", $limit=null ) {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
@@ -1916,20 +1915,17 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
 
     // parse conditions ----------------------------------
     if (is_array($conds)) {
-        reset($conds);
         $tbl_count=0;
-        while ( list( , $cond) = each( $conds )) {
-            if ( !is_array($cond) OR !$cond['discussion']
-            OR !$cond['operator'] OR ($cond['value']=="")) {
+        foreach ($conds as $cond ) {
+            if ( !is_array($cond) OR !$cond['discussion'] OR !$cond['operator'] OR ($cond['value']=="")) {
               continue;             // bad condition - ignore
             }
 
             // fill arrays according to this condition
-            reset($cond);
-            while ( list( $fid, $vv) = each( $cond ))
+            foreach ($cond as  $fid => $vv) {
                 if ( $fid == 'discussion' ) {
                     unset ($select_cond);
-                    while ( list ($fid) = each ($vv)) {
+                    foreach ($vv as $fid => $foo) {
                         if ( in_array($fid,$fields) AND $cond['value'] > "" ) {
                             $select_cond[] = GetWhereExp( "discussion.$fid", $cond['operator'], $cond['value'] );
                         }
@@ -1938,6 +1934,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                         $select_conds[] = join ($select_cond, " OR ");
                     }
                 }
+            }
         }
     }
 /*
@@ -1945,10 +1942,10 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
   if ( !(isset($sort) AND is_array($sort)))
     $select_order = 'item.publish_date DESC';   // default item order
   else {
-    reset($sort);
+    foreach ( as $sort) {
     $delim='';
-    while ( list( , $srt) = each( $sort )) {
-      $fid = key($srt);
+    foreach ($sort as  $srt) {
+    $fid = key($srt);
       if ( !$fields[$fid] )  // bad field_id - skip
           continue;
 

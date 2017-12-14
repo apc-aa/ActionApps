@@ -24,8 +24,7 @@ if ($slices_chosen) {
         $slice_ids .= "'".q_pack_id($slice_id)."'";
     }
 
-    reset ($tables);
-    while (list ($table,$sql) = each ($tables)) {
+    foreach ($tables as $table =>$sql) {
         $db->query("DELETE FROM export_".$table);
         $db->query("INSERT INTO export_".$table." SELECT ".$table.".* FROM $table "
             .$sql." (".$slice_ids.")");
@@ -53,8 +52,7 @@ if ($slices_chosen) {
 
 HtmlPageBegin();
 
-reset ($tables);
-while (list ($table) = each ($tables)) {
+foreach ($tables as $table => $foo) {
     if ($tables_used) $tables_used .= ",";
     $tables_used .= $table;
 }

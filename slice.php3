@@ -222,8 +222,8 @@ if ($encap) {                    // adds values from QUERY_STRING_UNESCAPED
     }
 }
 
-if (($key != $lock) OR $scrl) {  // command is for other slice on page
-    RestoreVariables();          // or scroller
+if ( (($key != $lock) OR $scrl) AND is_array($r_state_vars) ) {  // command is for other slice on page
+    RestoreVariables($r_state_vars);          // or scroller
 }
 
 // url posted command to display specified text instead of slice content -------
@@ -410,7 +410,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
 // multiple items fulltext view ------------------------------------------------
 if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one after one
     //  $r_state_vars = StoreVariables(array("items")); // store in session
-    while (list($k) = each( $items )) {
+    foreach( $items as $k => $foo) {
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
     $zids     = new zids($ids,"l");
@@ -424,8 +424,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
  *         Parse parameters posted by query form and from $slice_info
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-$r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
- "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); // store in session, added mlx
+$r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name", "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); // store in session, added mlx
 
 // ***** CONDS *****
 
@@ -466,8 +465,11 @@ if (!isset($defaultCondsOperator)) {
 }
 if (is_array($conds)) {
     ParseEasyConds($conds, $defaultCondsOperator);
-    foreach ( $conds as $k => $v ) {
-        SubstituteAliases( $als, $conds[$k]['value'] );
+    if (is_array($als)) {
+        foreach ( $conds as $k => $v ) {
+            // SubstituteAliases( $als, $conds[$k]['value'] );
+            $conds[$k]['value'] = strtr($v['value'], $als);
+        }
     }
 } elseif ( is_string($conds) AND strlen($conds) ) {
     // we can use also conds=d-switch..........-=-1
@@ -485,8 +487,9 @@ if (is_array($conds)) {
 if ($order) {
     $set = new AA_Set;
     $set->addSortFromString($order);
-    $order = reset($set->getSort());  // get the first from array
-    list($order, $orderdirection) = each($order);
+    $orderarr       = reset($set->getSort());  // get the first from array
+    $orderdirection = reset($orderarr);
+    $order          = key($orderarr);
 }
 
 if ($debug) {

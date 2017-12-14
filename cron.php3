@@ -124,9 +124,9 @@ function cron($time = 0) {
 
                 $tr = $translate[$part];
                 if (is_array($tr)) {
-                    reset ($tr);
-                    while (list($search,$replace) = each($tr))
+                    foreach ($tr as $search => $replace) {
                         $value = str_replace ($search,$replace,$value);
+                    }
                 }
 
                 if (strstr($value,'/')) {
@@ -137,16 +137,16 @@ function cron($time = 0) {
                 }
                 else {
                     $ranges = explode(',',$value);
-                    reset ($ranges);
-                    while (list(,$range) = each ($ranges)) {
+                    foreach ($ranges as $range) {
                         if (strstr ($range,"-")) {
                             list($from,$to) = explode('-',$value);
                                 for ($i = $from; $i <= $to; $i++)
                                 if ($i <= $now_part && $i > $nearest_part)
                                     $nearest_part = $i;
                         }
-                        else if ($range <= $now_part && $range > $nearest_part)
+                        elseif ($range <= $now_part && $range > $nearest_part) {
                             $nearest_part = $range;
+                        }
                     }
                 }
                 $nearest[$part] = $nearest_part;

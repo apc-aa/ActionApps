@@ -64,8 +64,7 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
         }
     }
     elseif (is_array($v)) {
-        reset($v);
-        while (list($k1,$v1) = each($v)) {
+        foreach ($v as $k1 => $v1) {
             $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
         }
         return "$i<$start>$o$i</$end>";

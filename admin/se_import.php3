@@ -96,8 +96,7 @@ function InitPage() {
   ExportAllClick()
 }
 
-function UpdateImportExport(slice_id)
-{
+function UpdateImportExport(slice_id) {
   var url = "<?php echo StateUrl(self_base() . "se_import2.php3")?>"
   url += "&slice_id=" + slice_id
   url += "&to_all=" + (document.f.export_to_all.checked ? '1' : '0')
@@ -197,8 +196,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <select name="import_n" size="8" class="tabtxt">
   <?php
   if ( isset($importable) AND is_array($importable)) {
-      reset($importable);
-      while (list($s_id,$name) = each($importable)) {
+      foreach ($importable as $s_id => $name) {
           if ( $imported[$s_id] == "" ) {
               echo "<option value=\"$s_id\"> $name </option>";
           }
@@ -212,9 +210,8 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <select name="import_y" size="8" class="tabtxt">
   <?php
   if ( isset($imported) AND is_array($imported)) {
-    reset($imported);
-    while ( list($id, $name) = each($imported)) {
-      echo "<option value=\"$id\"> $name </option>";
+    foreach ($imported as $id => $name) {
+        echo "<option value=\"$id\"> $name </option>";
     }
   }     ?>
 </select>

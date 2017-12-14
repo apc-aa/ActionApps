@@ -59,11 +59,10 @@ echo("Number of results: $a<br>");
 echo("<table>");
 $i = 0;
 while ($db->next_record()) {
-   while ( list($key, $val) = each($retflds) ) {
+   foreach($retflds as $key => $val ) {
       printf("<tr><td><b>%s</b></td><td>%s</td></tr>", $val, $db->f($val));
       $rs[$i][$val] = $db->f($val);
    }
-   reset($retflds);
    $i++;
 }
 echo("</table>");

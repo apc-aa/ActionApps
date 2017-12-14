@@ -182,8 +182,7 @@ echo '<tr><td>&nbsp;</td><td>&nbsp;</td>';
 if (!$sortable_columns[$sort_key]) {
     $sort_key = "name";
 }
-reset ($sortable_columns);
-while (list ($sortk,$col) = each ($sortable_columns)) {
+foreach ($sortable_columns as $sortk => $col) {
     if ($sort_key == $sortk) {
         if ($sort_order) {
             $so = $sort_order;

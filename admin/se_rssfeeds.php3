@@ -176,9 +176,9 @@ function checkData() {
       <select name="rssfeeds" class="tabtxt" size=5>
       <?php
         if (isset($rssfeeds) && is_array($rssfeeds)) {
-          reset($rssfeeds);
-          while (list(,$name) = each($rssfeeds))
-            echo "<option value=\"$name\">$name</option>";
+          foreach ($rssfeeds as $name) {
+              echo "<option value=\"$name\">$name</option>";
+          }
         }
       ?>
       </select>

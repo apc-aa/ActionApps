@@ -157,11 +157,7 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
  FROM slice WHERE id='".q_pack_id($slice_id)."'";
 $db->query($SQL);
 if ($db->next_record()) {
-    while (list($key,$val,,) = each($db->Record)) {
-        if (!ctype_digit((string)$key)) {
-            $$key = $val; // variables and database fields have identical names
-        }
-    }
+    RestoreVariables($db->Record);
 }
 
 // grab variables from email_notify

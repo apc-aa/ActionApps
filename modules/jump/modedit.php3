@@ -103,11 +103,9 @@ if ($jump_id) {
     echo '<tr>
             <td>
                 <select name="jump_id" onchange="document.forms.choose.submit();">';
-                reset ($jumps);
-                while (list ($id,$name) = each ($jumps))
-                    echo "<option value=\"$id\""
-                    .($id == $jump_id ? " selected" : "")
-                    .">".myspecialchars($name);
+                foreach ($jumps as $id => $name) {
+                    echo "<option value=\"$id\"" .($id == $jump_id ? " selected" : "") .">".myspecialchars($name);
+                }
 
                 echo '</select>&nbsp;</td><td>
                 <input type=submit name="edit" value="'._m("Edit").'">
@@ -132,8 +130,7 @@ echo '
         <td class=tabtxt><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
      if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
-        reset($g_modules);
-        while (list($k, $v) = each($g_modules)) {
+        foreach ($g_modules as $k => $v) {
             echo "<option value=\"". myspecialchars($k)."\"";
             if ( $dest_id == $k ) echo " selected";
             echo ">". myspecialchars($v['name']);

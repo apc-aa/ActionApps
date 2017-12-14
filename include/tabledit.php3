@@ -217,18 +217,19 @@ class tabledit {
             $orderby = " ORDER BY ".$this->orderby.($this->orderdir == 'd' ? " DESC" : "");
         }
 
-        reset($this->cols);
-        while (list($cname,$cprop) = each($this->cols)) {
+        foreach ($this->cols as $cname => $cprop) {
             if ( $cprop['table'] == 'aa_notable' ) {
                 $collist[] = '"'. get_if($cprop['default'],'') . "\" as $cname";
                 continue;
             }
             $col = "";
-            if ($this->view["join"])
+            if ($this->view["join"]) {
                 $col = $cprop["table"].".";
+            }
             $col .= $cprop["field"];
-            if ($cprop["field"] != $cname)
+            if ($cprop["field"] != $cname) {
                 $col .= " ".$cname;
+            }
             $collist[] = $col;
         }
 
@@ -289,10 +290,9 @@ class tabledit {
             }
             freeDB($db);
 
-            reset($records);
             reset($all_keys);
             $irow = 0;
-            while (list(, $record) = each($records)) {
+            foreach ($records as $record) {
                 $new_record = $record == "new";
                 list(,$key) = each($all_keys);
                 // row number helps to use different CSS styles for even and odd rows
@@ -368,9 +368,8 @@ class tabledit {
             }
         }
         /*
-        reset($this->view["buttons_left"]);
-        while (list($button, $use) = each($this->view["buttons_left"])) {
-            $bt = $this->ButtonsText(false);
+        foreach ($this->view["buttons_left"] as $button => $use) {
+        $bt = $this->ButtonsText(false);
             $bt = $bt[$button];
             $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
             $header .= "<TD class=te_b_col_head align=center>".$alt."</TD>\n";
@@ -378,8 +377,7 @@ class tabledit {
 
         echo $header;
         $td = "<td class=\"te_".substr($this->type,1,1)."_td\">";
-        reset($this->cols);
-        while (list($colname,$column) = each($this->cols)) {
+        foreach ($this->cols as $colname => $column) {
             if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore") {
                 $caption = $column["caption"];
                 if ($column["required"] && substr($column["caption"], -1) != "*"
@@ -420,8 +418,7 @@ class tabledit {
             <tr><td class=\"te_b_col_head\" width=\"100\" valign=\"top\">";
         // icon explanation ("= update" etc.)
         if ($record_count && is_array($this->view["buttons_left"])) {
-            reset($this->view["buttons_left"]);
-            while (list($button, $use) = each($this->view["buttons_left"])) {
+            foreach ($this->view["buttons_left"] as $button => $use) {
                 $bt = $this->ButtonsText(false);
                 $bt = $bt[$button];
                 $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
@@ -955,8 +952,7 @@ class tabledit {
      * @param $record - identification of the parent row
      */
     function ShowChildren($record) {
-        reset($this->view["children"]);
-        while (list($chview, $child) = each($this->view["children"])) {
+        foreach ($this->view["children"] as $chview => $child) {
             $fn = $this->getTableViewsFn;
             $chtv = $fn($chview);
 
@@ -964,16 +960,13 @@ class tabledit {
 
             $varset = new CVarset;
 
-            reset($child["join"]);
-            while (list($masterf,$childf) = each($child["join"])) {
-                reset($chtv["fields"]);
-                while (list($alias, $cprop) = each($chtv["fields"])) {
+            foreach ($child["join"] as $masterf => $childf) {
+                foreach ($chtv["fields"] as $alias => $cprop) {
                     if ($cprop["field"] == $childf) {
                         break;
                     }
                 }
-                reset($this->cols);
-                while (list($malias, $mcprop) = each($this->cols)) {
+                foreach ($this->cols as $malias => $mcprop) {
                     if ($mcprop["field"] == $masterf) {
                         break;
                     }

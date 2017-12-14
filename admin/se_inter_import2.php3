@@ -67,7 +67,7 @@ if (!($aa_rss = aa_rss_parse($data,"establish_mode"))) {
     MsgPage(StateUrl(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 
-while (list($id,) = each($aa_rss['channels'])) {
+foreach ($aa_rss['channels'] as $id => $foo) {
     $chan[$id] = $aa_rss['channels'][$id]['title'];
 }
 

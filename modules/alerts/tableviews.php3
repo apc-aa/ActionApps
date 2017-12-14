@@ -257,10 +257,11 @@ function FindAlertsFilterPermissions() {
         return 0;
 
     $myslices = GetUserSlices();
-    reset ($myslices);
-    while (list ($my_slice_id, $perms) = each ($myslices))
-        if (strchr ($perms, PS_FULLTEXT))
+    foreach ($myslices as $my_slice_id => $perms) {
+        if ( strchr($perms, PS_FULLTEXT) ) {
             $restrict_slices[] = q_pack_id($my_slice_id);
+        }
+    }
     $_filter_permissions = array ();
 
     $db = getDB();
@@ -270,8 +271,9 @@ function FindAlertsFilterPermissions() {
                      INNER JOIN slice ON slice.id = view.slice_id
                      WHERE slice_id IN ('".join("','",$restrict_slices)."')");
         $_filter_permissions = array ();
-        while ($db->next_record())
+        while ($db->next_record()) {
             $_filter_permissions[] = $db->f("id");
+        }
     }
     freeDB($db);
     return $_filter_permissions;
@@ -288,8 +290,7 @@ function FindAlertsUserPermissions() {
         case 'hold': $where = "status_code = 2"; break;
         case 'trash':$where = "status_code = 3"; break;
         case 'app':
-        default: $where = "status_code = 1 AND start_date <= $now
-            AND expiry_date >= $now"; break;
+        default: $where = "status_code = 1 AND start_date <= $now AND expiry_date >= $now"; break;
     }
 
     $db = getDB();

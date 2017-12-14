@@ -92,9 +92,8 @@ $field_defaults = array (
 /** Returns $alerts_specific_fields with keys updated to the values needed. */
 function get_alerts_specific_fields($collectionid) {
     global $alerts_specific_fields;
-    reset ($alerts_specific_fields);
-    while (list ($field_id, $fprop) = each ($alerts_specific_fields)) {
-        $field_id = getAlertsField ($field_id, $collectionid);
+    foreach ($alerts_specific_fields as $field_id => $fprop) {
+        $field_id = getAlertsField($field_id, $collectionid);
         $retval[$field_id] = $fprop;
     }
     return $retval;
@@ -235,9 +234,8 @@ function getReaderManagementSlices () {
     $SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement'
         AND id <> '".addslashes($collectionprop["sliceid"])."'";
     if (is_array($slices)) {
-        reset ($slices);
         $delim = "";
-        while (list ($slice_id) = each ($slices)) {
+        foreach ($slices as $slice_id => $foo) {
             $where .= $delim . "'".q_pack_id ($slice_id)."'";
             $delim = ",";
         }

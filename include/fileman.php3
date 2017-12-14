@@ -139,8 +139,7 @@ function get_filetype($filepath) {
         return _m("Directory");
     } else {
         $ext = filesuffix($filepath);
-        reset ($filetypes);
-        while (list ($filetype, $val) = each ($filetypes)) {
+        foreach ($filetypes as $filetype => $val) {
             if (!$val["ext"]) {
                 continue;
             }
@@ -246,8 +245,7 @@ function file_table($path, $dirname)
     $files = get_file_array ($path, $dirname);
     if (is_array($files)) {
         // create the HTML code
-        reset($files);
-        while (list(,$file) = each($files)) {
+        foreach ($files as $file) {
             $href = StateUrl("fileman.php3?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
             $retval .= "<tr>
             <td>".($file['name']!=".." ? "<input type=\"checkbox\" name=\"chb[".$file['path']."]\">" : "&nbsp;")."</td>
@@ -345,8 +343,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
     // Delete
     else if ($cmd=='delete' && is_array($chb)) {
-        reset ($chb);
-        while (list ($arg) = each ($chb)) {
+        foreach ($chb as $arg => $foo) {
             $f = $basedir.$arg;
             if (is_dir ($f)) {
                 if (!is_dir_empty($f)) {
@@ -438,9 +435,9 @@ function get_files_subtree($mydir) {
                     $retval[] = $filename;
                 else {
                     $sub = get_files_subtree($mydir.$filename);
-                    reset ($sub);
-                    while (list (,$subfn) = each ($sub))
+                    foreach ($sub as $subfn) {
                         $retval[] = $filename."/".$subfn;
+                    }
                 }
             }
         }
@@ -467,8 +464,7 @@ function fileman_copy_template($srcdir, $dstdir) {
         return _m("Wrong directory name")." ($srcdir)";
     }
     $files = get_files_subtree ($srcdir);
-    reset ($files);
-    while (list (,$file) = each ($files)) {
+    foreach ($files as $file) {
         if (file_exists ($dstdir."/".$file)) {
             $errfiles[] = $file;
         }
@@ -476,8 +472,7 @@ function fileman_copy_template($srcdir, $dstdir) {
     if (is_array($errfiles)) {
         return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".join(", ",$errfiles).").";
     }
-    reset ($files);
-    while (list (,$file) = each ($files)) {
+    foreach ($files as $file) {
         $ft = get_filetype($srcdir."/".$file);
         if ($ft == _m("HTML file") || $ft == _m("Text file")) {
             $fd = fopen ($dstdir."/".$file, "w");
@@ -485,17 +480,14 @@ function fileman_copy_template($srcdir, $dstdir) {
                 return _m("Unable to create file")." $dstdir/$file.";
             }
             $fcontent = file ($srcdir."/".$file);
-            reset ($fcontent);
-            while (list (,$frow) = each ($fcontent)) {
-                reset ($aliases);
-                while (list ($alias,$replace) = each ($aliases)) {
+            foreach ($fcontent as $frow) {
+                foreach ($aliases as $alias => $replace) {
                     $frow = str_replace ($alias, $replace, $frow);
                 }
                 //if (get_magic_quotes_gpc()) $frow = stripslashes ($frow);
                 fwrite ($fd, $frow);
             }
-        }
-        else {
+        } else {
             copy ($srcdir."/".$file, $dstdir."/".$file);
         }
         chmod ($dstdir."/".$file, FILEMAN_MODE_FILE);
