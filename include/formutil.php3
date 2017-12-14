@@ -407,8 +407,8 @@ class inputform {
         global $slice_id;
         $retval = '';
 
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.js?v=1','',false));
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.js','',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.js?v='.AA_JS_VERSION,'',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.js?v='.AA_JS_VERSION,'',false));
 
         // $retval .= getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
         // $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
@@ -849,7 +849,7 @@ class AA_Inputfield {
                 case 'chb': $this->inputChBox();       break;
                 case 'hid': $this->hidden();           break;
                 case 'fld': $this->inputText(get_if($this->param[0],255), // maxlength
-                                                    get_if($this->param[1],60)); // fieldsize
+                                                    get_if($this->param[1],0)); // fieldsize
                                    break;
                 //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
@@ -877,12 +877,12 @@ class AA_Inputfield {
                             $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);  // if we fill it there, it is not refilled in inputSel()
                             $this->inputSelect($usevalue);
                             break;
-                case 'rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
-                            if ( !is_null($item) ) {
-                                $conds_str = $item->unalias($conds_str);
-                            }
-                            $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
-                            break;
+//                case 'rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
+//                            if ( !is_null($item) ) {
+//                                $conds_str = $item->unalias($conds_str);
+//                            }
+//                            $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
+//                            break;
                 case 'mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
@@ -958,6 +958,7 @@ class AA_Inputfield {
                 case 'mfl':
                 case 'rim':
                 case 'cod':
+                case 'rio':
                 default:    $this->inputWidget($item, $slice_id);
 
             }
@@ -1139,11 +1140,11 @@ class AA_Inputfield {
      * @param $v
      * @param $add
      */
-    function getRadioButtonTag(&$k, &$v, $add='') {
-        $name = $this->varname();
-        $ret  = "<label><input type=radio name='$name' value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
-        $ret .= $this->if_selected($k, " checked");
-        $ret .= '>'.myspecialchars($v).'</label>';
+    function getRadioButtonTag(&$k, &$v, $add='', $labeladd='') {
+        $name  = $this->varname();
+        $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret  .= $this->if_selected($k, " checked");
+        $ret  .= '>'.myspecialchars($v).'</label>';
         return $ret;
     }
 
@@ -1153,10 +1154,10 @@ class AA_Inputfield {
      * @param $v
      * @param $add
      */
-    function getOneChBoxTag(&$k, &$v, $add='', $id = '') {
+    function getOneChBoxTag(&$k, &$v, $add='', $id='', $labeladd='') {
         $id_attr = empty($id) ? '' : " id='$id'";
         $name    = $this->varname();
-        $ret = "\n<label><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret = "\n<label $labeladd><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
         $ret .= '>'.myspecialchars($v).'</label>';
         return $ret;
@@ -1250,7 +1251,10 @@ class AA_Inputfield {
             $attrs['placeholder'] = myspecialchars($placeholder);
         }
 
-        $attrs['size']      = get_if($size, $attrs['size'], 25);
+        $attrs['size']      = get_if($size, $attrs['size']);
+        if (!$attrs['size']) {
+            $attrs['style'] = 'width:95%';
+        }
         $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
 
         // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
@@ -1400,7 +1404,7 @@ class AA_Inputfield {
                 $parts["part$id2"] = array($lang, $classes);
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
-                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
                     $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
@@ -1415,7 +1419,7 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:100%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
             if (!$showhtmlarea AND $showrich_href ) {
                 $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
             }
@@ -1449,12 +1453,8 @@ class AA_Inputfield {
     * @param $conds_str
     * @param $sort_str
     */
-    function inputRadio($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false, $const_arr='') {
+    function inputRadio($ncols=0, $move_right=true) {
         list($name,$val,$add) = $this->prepareVars('multi');
-        if ( $whichitems < 1 ) {
-            $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $records = array();
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getRadioButtonTag($k, $v, $add);
@@ -1479,9 +1479,19 @@ class AA_Inputfield {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
+        $this->_fillSelected();         // fill selected array by all values in order we can print invlaid values later
         $records = array();
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getOneChBoxTag($k, $v, $add);
+        }
+        // now add all values, which is not in the array, but field has this value
+        // (this is slice inconsistence, which could go from feeding, ...)
+        if ( isset( $this->selected ) AND is_array( $this->selected )) {
+            foreach ( $this->selected as $k => $v ) {
+                if ( !isset($this->const_arr[$k]) ) {
+                    $records[] = $this->getOneChBoxTag($k, $k, $add, '', 'class=sel_missing');
+                }
+            }
         }
         $this->printInMatrix_Frm($records, $ncols, $move_right, $height);
     }
@@ -1904,7 +1914,7 @@ class AA_Inputfield {
         $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', true) : '';
 
         $this->field_name('plus');
-        $this->echovar( "<input type=text name=\"$name\" size=60". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">&nbsp;$link" );
+        $this->echovar( "<input type=text name=\"$name\" style=\"width:95%\"". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">&nbsp;$link" );
         $this->helps('plus');
 
         $this->name       = $text;
@@ -1942,7 +1952,7 @@ class AA_Inputfield {
         $out = "<select name=\"foo_$name\"";
         if ($secondfield) {
             $out .= " onchange=\"$name.value=this.options[this.selectedIndex].text;";
-            $out .= "$varsecfield.value=this.options[this.selectedIndex].value\">";
+            $out .= "$varsecfield.value=this.options[this.selectedIndex].value\">";      // could be just this.value, but in this case I want to be consistent with this.options[this.selectedIndex].text method above
         } else {
             $out .= ($adding ?
                      " onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">" :
@@ -1965,7 +1975,7 @@ class AA_Inputfield {
         $this->field_name('plus');
         $this->html_radio();
         $this->echovar( "<textarea name=\"$name\" rows=\"$rows\" cols=\"$cols\" wrap=\"virtual\"".getTriggers("textarea",$name).">$val</textarea>" );
-        $out  = "<select name=\"foo_$name\" onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
+        $out  = "<select name=\"foo_$name\" onchange=\"add_to_line($name, this.value)\">";
         $out .= $this->get_options( $this->const_arr );
         $out .= '</select>';
         $this->echovar( $out, 'presets' );

@@ -574,7 +574,11 @@ array("name"=>_m("Radio Button"),
         array("name"=>_m("Slice password"),
         "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
         "type"=>"STR",
-        "example"=>"")
+        "example"=>""),
+        array("name"=>_m("Direct options"),
+        "desc"=>_m("you can specify directly here by JSON - not using constants - in format [\"small\",\"medium\",\"big\"]"),
+        "type"=>"STR",
+        "example"=>"[\"Yes\",\"No\"]")
         ));
 $INPUT_TYPES["items"]["dte"]=
 array("name"=>_m("Date"),

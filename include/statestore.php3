@@ -128,7 +128,9 @@ abstract class AA_Serializable {
             foreach ($props as $name =>$property) {
                 $value = array_shift($splited);
                 if (isset($value)) {
-                    $params[$name] = $value;
+                    $params[$name] = $property->isMulti() ? json2asoc($value) : $value;  // const_arr for widget uses this, for example
+                    //$params[$name] = $property->isMulti() ? json2arr($value,true) : $value;  // const_arr for widget uses this, for example
+                    //$params[$name] = $value;
                 }
             }
             // is there rest? Add all the values to the last parameter
