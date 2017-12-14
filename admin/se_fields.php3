@@ -110,7 +110,7 @@ function ShowNewField($from_slice, $slice_id) {
           $slice_array = AA_Module::getUserModules('S');
           unset($slice_array[$template_id], $slice_array[$slice_id]);
           $slice_array = array_merge( array($template_id => '* Action Aplication Core', $slice_id => '* '.AA_Slice::getModuleName($slice_id)._m(' (this)')), $slice_array);
-          FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
+          FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
     echo "\n</td>
           </tr>
           <tr class=\"tabtxt\">
