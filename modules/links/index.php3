@@ -396,7 +396,7 @@ $cat_tree = $tree->getFrmTree(false, 'change', $links_info['start_id'],
 
 $r_state['bin_cnt'] = Links_CountLinkInBins($r_state['start_path']);
 
-echo '<script language="JavaScript" type="text/javascript"> <!--
+echo '<script type="text/javascript">
   // shortcut function for GoToCategoryID
   function SwitchToCat(cat) {
     GoToCategoryID(cat, eval(\'document.filterform.tree\'), \'patharea\', \'document.filterform.cat_id\');
@@ -405,8 +405,7 @@ echo '<script language="JavaScript" type="text/javascript"> <!--
   function EditCurrentCat() {
       document.location = "'.StateUrl('catedit.php3').'&cid=" + document.filterform.cat_id.value;
   }
-  //-->
-  </script>
+</script>
 </head>';
 
 // This is not definitive place for Bookmarks definition. It will be in database

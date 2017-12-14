@@ -28,9 +28,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-if (!defined("LINKS_ACTIONS_INCLUDED"))
-     define ("LINKS_ACTIONS_INCLUDED",1);
-else return;
 
 /**
  * Finds and returns asociation number (id of row in links_link_cat table)

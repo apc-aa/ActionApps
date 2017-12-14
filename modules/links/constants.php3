@@ -27,9 +27,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-if (!defined("LINKS_CONSTANTS_INCLUDED"))
-     define ("LINKS_CONSTANTS_INCLUDED",1);
-else return;
 
 /** Number of categories to show on linkedit page */
 define('CATEGORIES_COUNT_TO_MANAGE', 15);

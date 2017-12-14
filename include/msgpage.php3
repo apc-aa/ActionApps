@@ -29,19 +29,12 @@
 // Message page with menu. Can't be in util.php3 since of the menu usage.
 //
 
-if (!defined ("AA_MSGPAGE_INCLUDED")) {
-    define("AA_MSGPAGE_INCLUDED","1");
-} else {
-    return;
-}
-
 require_once AA_INC_PATH."constants.php3";
 if ( isset($g_modules[$slice_id])) {
     require_once menu_include();   //show navigation column depending on $show
 } else {
     require_once AA_INC_PATH."menu.php3";
 }
-
 
 /** MsgPageMenu function
  *  Displays page with message and link to $url
