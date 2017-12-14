@@ -533,11 +533,15 @@ class AA_Item {
             // hide email from spam robots
             if ($hide=='1') {
                 $linkpart=explode('@',str_replace("'", "\'", $url.'@'.DeHtml($txt, $html)),4);
-                $ret = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
-                if ($linkpart[3]) {
-                    $ret .= "'+'@'+'".$linkpart[3];
+                $link  = $linkpart[0]."'+'@'+'".$linkpart[1];
+                $inner = $linkpart[2] . ($linkpart[3] ? "'+'@'+'".$linkpart[3] : '');
+                if (!$add) {
+                    // new approach - do not support $add
+                    $ret = "<script>var el=document.createElement('a');el.setAttribute('href','$link');el.innerHTML='$inner';var scrs=document.getElementsByTagName('script');var scr=scrs[scrs.length-1];scr.parentNode.insertBefore(el,scr);</script>";
+                } else {
+                    // old, but hart to replace by createElement
+                    $ret = "<script>\n document.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $inner ."</a>')\n</script>";
                 }
-                $ret .= "</a>')\n// -->\n</script>";
                 return $ret;
             } else {
                 return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
