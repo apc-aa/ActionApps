@@ -452,9 +452,7 @@ class AA_Widget extends AA_Components {
             $value          = $content->getAaValue($aa_property->getId());
 
             $attrs = array('type'=>'text');
-            if (is_object($aa_property->validator)) {
-                $attrs = array_merge($attrs, $aa_property->validator->getHtmlInputAttr());
-            }
+            $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
             $attrs['size']      = get_if($this->getProperty('width'),          $attrs['size'], 60);
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
@@ -715,7 +713,7 @@ class AA_Widget_Txt extends AA_Widget {
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id        = AA_Form_Array::formName2Id($base_name);
-        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : 'style="width:100%"';
+        $widget_add     = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : 'style="width:99%"';
         $widget_add2    = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget         = '';
@@ -865,12 +863,9 @@ class AA_Widget_Mfl extends AA_Widget {
         $value         = $content->getAaValue($aa_property->getId());
 
         $attrs = array('type'=>'text');
-        if (is_object($aa_property->validator)) {
-            $attrs = array_merge($attrs, $aa_property->validator->getHtmlInputAttr());
-        }
+        $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
         AA::$debug && AA::$dbg->log('mfl',$aa_property,$attrs,$this->getProperty('width'));
-
 
         $attrs['size']      = get_if($this->getProperty('width'),          $attrs['size'], 60);
         $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
@@ -1006,7 +1001,8 @@ class AA_Widget_Rio extends AA_Widget {
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
     function getRadioButtonTag($option, $input_name, $input_id, $add='') {
-        $ret  = "\n<label><input type=radio name=\"$input_name\" id=\"$input_id\" value='". myspecialchars($option['k']) ."' $add";
+        $missing  = $option['mis'] ? ' class=aa-missing-option' : '';
+        $ret  = "\n<label$missing><input type=radio name=\"$input_name\" id=\"$input_id\" value='". myspecialchars($option['k']) ."' $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
@@ -2213,7 +2209,7 @@ class AA_Property extends AA_Storable {
     /** validate - standard validators are
      *  text | bool | int | float | email | alpha | long_id | short_id | alias | filename | login | password | unique | e_unique | url | all | enum
      */
-    var $validator;
+    protected $_validator;
 
     /** boolean - is it required? - like: true */
     var $required;
@@ -2278,7 +2274,7 @@ class AA_Property extends AA_Storable {
         $this->type                        = $type;
         $this->multi                       = $multi;
         $this->persistent                  = $persistent;
-        $this->validator                   = is_object($validator) ? $validator : AA_Validate::factoryCached($validator ? $validator : $type);
+        $this->_validator                  = is_object($validator) ? $validator : ($validator ?: $type);   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...
         $this->required                    = $required;
         $this->input_help                  = $input_help;
         $this->input_morehlp               = $input_morehlp;
@@ -2324,6 +2320,15 @@ class AA_Property extends AA_Storable {
     function getConstants()    { return $this->const_arr;    }
     function getTranslations() { return $this->translations; }
 
+    public function getValidator() {
+        if (!is_object($this->_validator)) {
+            if (is_null($this->_validator = AA_Validate::factoryCached($this->_validator))) {
+                $this->_validator = AA_Validate::factoryCached('all');
+            }
+        }
+        return $this->_validator;
+    }
+
     /** setters */
     function setHelp($val)     { $this->input_help = (string)$val; return $this; }
     function setExample($val)  { $this->example    =         $val; return $this; }
@@ -2331,7 +2336,7 @@ class AA_Property extends AA_Storable {
     /** set the Values array and also the validator */
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
-        $this->validator = new AA_Validate_Enum(array('possible_values'=>array_keys($this->const_arr)));
+        $this->_validator = new AA_Validate_Enum(array('possible_values'=>array_keys($this->const_arr)));
     }
 
     /** called before StoreItem to fill the field with correct data */
@@ -2352,14 +2357,15 @@ class AA_Property extends AA_Storable {
 
     /** Converts AA_Value to real property value (scallar, Array, ...) */
     function toValue($aa_value) {
+        $validator = $this->getValidator();
         if ($this->isMulti()) {
             $val = $aa_value->getValues();
             foreach($val as &$value) {
-                $this->validator->validate($value);
+                $validator->validate($value);
             }
         } else {
             $val = $aa_value->getValue();
-            $this->validator->validate($val);
+            $validator->validate($val);
         }
         return $val;
     }
@@ -2412,15 +2418,16 @@ class AA_Property extends AA_Storable {
     }
 
     function validate($value_arr, $detail=null) {
+        $validator = $this->getValidator();
         $valid  = true;
         foreach ( $value_arr as $v) {
-            $valid = $this->validator->validate($v);
+            $valid = $validator->validate($v);
             if ( !$valid ) {
                 break;
             }
         }
         if ($detail) {
-            return $valid ? array() : array($this->validator->lastErr(), $this->validator->lastErrMsg());
+            return $valid ? array() : array($validator->lastErr(), $validator->lastErrMsg());
         }
         return $valid;
     }
