@@ -112,7 +112,12 @@ function json2arr($string, $do_not_filter=false) {
 /** creates array form JSON array or returns single value array if not valid json */
 function json2asoc($string) {
     if ($string{0} != '{') {
-       return array();
+        if ($string{0} == '[') {
+            // returns "one" => "one", "two" => "two" for ["one","two"]
+            $values = json2arr($string, true);
+            return array_combine($values,$values);
+        }
+        return array();
     }
 
     if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
@@ -1944,7 +1949,9 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Escape apostrophs and convert HTML entities */
+/** Escape apostrophs and convert HTML entities
+ *  If you want to put the JS code in HTML: tag attribute, consider using onclick="{safe:{javascript:code...}}"
+ */
 class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -4414,7 +4421,9 @@ function expandFilenameWithHttp($parturl) {
     // return $file->contents();
 }
 
-/** Get $_SERVER[<variable>] value **/
+/** Get $_SERVER[<variable>] value
+ *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:REFERER},...
+ **/
 class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $variable
@@ -5142,6 +5151,7 @@ class AA_Requires {
           'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.core.min.js', 'sha384-Z64xo5gl0CGLf7pO6yQqbSz60LwUKgL7XrNEhh6nl+ZDQMwffbK0G+d4Nep52sIS'),
           'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/filesaver.js/1.3.3/FileSaver.min.js', 'sha384-VgWGwiEJnh9P379lbU8DxPcfRuFkfLl0uPuL9tolOHtm2tx8Qy8d/KtvovfM0Udh'),
           'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
+          'chartjs@2'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js', 'sha384-nRv0HFGGLzwztTHEFan7U3db1y93fniM9OS3rafR4sAobIWCQdowNsyIdnXV+Vez'),
           'tooltip@1'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tooltip.js@1.1.5/dist/umd/tooltip.min.js','sha256-Lvb2UFsgpQmrr0MtmcDmP9rE3d26ZfVNwhTi0OrHp5E=',array('popper@1')),
           'popper@1'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/popper.js@1.12.5/dist/umd/popper.min.js','sha256-jpW4gXAhFvqGDD5B7366rIPD7PDbAmqq4CO0ZnHbdM4='),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@2|aa-jslib@1','htm-aa-system@1')),
@@ -6160,7 +6170,7 @@ class AA_Password_Manager_Reader {
 
     function getChangeForm($key, $user) {
         if (!self::isValidKey($key, $user)) {
-            return self::_bad(_m("La clave ha caducado."));  // @todo get messages from somewhere
+            return self::_bad(_m("Bad or expired key."));  // @todo get messages from somewhere
         }
         return '
         <form name="pwdmanagerchangeform" method="post" action="" class="aapwdmanagerchangeform">
@@ -6680,7 +6690,7 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
      */
     function expand($field_id='', $index=0, $item_id='', $lang='') {
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
-        return (is_object($item) AND $item->isField($field_id)) ? $item->getval($field_id, (int)$index + ($lang ? AA_Content::getLangNumber($lang) : 0)) : '';
+        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? AA_Content::getLangNumber($lang) : 0)) : '';
     }
 }
 
@@ -6841,7 +6851,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
 }
 
 /** better than {xlang} - returns allways valid lang code - not only in sitemodule */
-class AA_Stringexpand_Lang extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Aalang extends AA_Stringexpand_Nevercache {
 
     /** expand function */
     function expand() {
