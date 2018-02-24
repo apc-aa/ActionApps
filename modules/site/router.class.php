@@ -325,6 +325,7 @@ class AA_Router_Seo extends AA_Router {
 
         $parsed_url = parse_url(trim($apc,' \t/') ? $apc : $home);
         $arr        = explode('/', trim($parsed_url['path'],'/'));
+        $langs      = array_filter($langs);   // sometimes there is [0] => '' for some reason...
         $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
 
         $matches    = array();
@@ -585,6 +586,7 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
  *               {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
  *  {xid:list} - returns ids list from start to current item in the tree - like:
  *               2587-2877-3004
+ *  {xid:this is my _#NAME____} - {item:{xid}:this is my _#NAME____}
  *  @param $param specifies, which information you want to get (see above)
  *  @param $url   if filled, returns the information about the specified
  *                url instead of the current item
@@ -599,7 +601,11 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
             return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
         }
         $router = AA_Router::singleton($router_class);
-        return $router->xid($param, $url);
+        if (empty($param) OR ctype_digit((string)$param) OR ($param=='path') OR ($param=='list')) {
+            return $router->xid($param, $url);
+        } else {
+            return AA::Stringexpander()->unalias('{item:'.$router->xid().':'.$param.'}');
+        }
     }
 }
 
