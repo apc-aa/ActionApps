@@ -1293,16 +1293,6 @@ function magic_add($str) {
     return (get_magic_quotes_gpc() ? $str : addslashes($str));
 }
 
-/** setdefault function
- * @param $var
- * @param $default
- */
-function setdefault(&$var, $default) {
-    if (!isset ($var)) {
-        $var = $default;
-    }
-}
-
 function ReadFileSafe($url) {
     if ( ((stripos($url, 'http://')===0) OR (stripos($url, 'https://')===0)) AND (stripos($url, '..')===false) ) {
         readfile($url);

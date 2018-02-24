@@ -18,6 +18,7 @@
            better setting and do not require jQuery
          - fixed problem with parsing {xflag}, {xlang}, {xpage} and pager
          - better contentcache for internal caching
+         -fix for php 7.2 (AA not yet tested in PHP 7.2)
 17-12-14 - removed live_checkbox.php3 - no longer used - we use {live} widgets
 (honzam)   for all Live Checkbox - even f_k, now (which do not use live_checkbox.php3)
 17-12-11 - fixed multiple text field live widget - allows delete of last text, now

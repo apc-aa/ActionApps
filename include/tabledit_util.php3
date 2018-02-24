@@ -142,25 +142,32 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
  */
 function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", $default_readonly=false, $primary="") {
     $primary_aliases = array();
+    $tables          = array();
 
     // set column defaults and find all tables used in $columns
     foreach ($columns as $colname => $foo) {
         $column = &$columns[$colname];
-        setDefault($column["table"], $default_table);
-        setDefault($column["field"], $colname);
-        setDefault($column["caption"], $colname);
-        setDefault($column["view"]["readonly"], $default_readonly || $column["view"]["type"] == "userdef" || $column["view"]["type"] == "calculated");
-        if ($column["view"]["type"] == "date") {
-            $cols = strlen (date ($column["view"]["format"], "31.12.1970"));
+        $column["table"]                = get_if($column["table"], $default_table);
+        $column["field"]                = get_if($column["field"], $colname);
+        $column["caption"]              = get_if($column["caption"], $colname);
+        if (!is_array($column["view"])) {
+            $column["view"] = array();
         }
-        setDefault($column["view"]["size"]["rows"], 4);
-        setDefault($column["view"]["html"], false);
-        setDefault($column["view"]["type"], $column["type"]);
+        $column["view"]["readonly"]     = get_if($column["view"]["readonly"], $default_readonly || $column["view"]["type"] == "userdef" || $column["view"]["type"] == "calculated");
+        if ($column["view"]["type"] == "date") {
+            $cols = strlen( date($column["view"]["format"], "31.12.1970") );
+        }
+        if (!is_array($column["view"]["size"])) {
+            $column["view"]["size"] = array();
+        }
+        $column["view"]["size"]["rows"] = get_if($column["view"]["size"]["rows"], 4);
+        $column["view"]["html"]         = get_if($column["view"]["html"], false);
+        $column["view"]["type"]         = get_if($column["view"]["type"], $column["type"]);
         if ($column["view"]["type"] == "hidden") {
             $column["view"]["type"] = "hide";
         }
 
-        $tables [$column["table"]] = 1;
+        $tables[$column["table"]] = 1;
     }
 
     $db = getDB();
@@ -236,7 +243,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
             }
 
             $_cols = $col["len"] ? min (80, $col["len"]) : 40;
-            setDefault($cprop["view"]["size"]["cols"], $_cols);
+            $cprop["view"]["size"]["cols"] = get_if($cprop["view"]["size"]["cols"], $_cols);
         }
     }
     freeDB($db);
