@@ -151,11 +151,22 @@ $hit_lid = null;
 $perm_mode  = (string)$module->getProperty('perm_mode');
 if ( ($perm_mode == '1') OR ($perm_mode == '2') ) {
     $seo_slices = $module->getRelatedSlices();
-    $rm_slices  = array_map('unpack_id', DB_AA::select('', 'SELECT id FROM slice', array(array('id', $seo_slices, 'l'), array('type', 'ReaderManagement'))));
+    $rm_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', array(array('id', $seo_slices, 'l'), array('type', 'ReaderManagement')));
     if ($perm_mode=='1') {
         $rm_slices = array_slice($rm_slices,0,1);
     }
     AA::$perm->restrictPermsTo($rm_slices);
+}
+
+if ($ga_id = (string)$module->getProperty('ga_id')) {
+    $ga_code = "<script async src=\"https://www.googletagmanager.com/gtag/js?id=$ga_id\"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '$ga_id');
+    </script>";
+    AA::Stringexpander()->addRequire($ga_code, 'AA_Req_Headcode');
 }
 
 
