@@ -159,7 +159,16 @@ class AA_Field {
 
     /** getDefault function
      */
-    function getDefault() {
+    function getDefault( $with_profile=false ) {
+        global $auth;
+
+        if ($with_profile) {
+            $profile   = AA_Profile::getProfile($auth->auth['uid'], $this->getSliceId()); // current user settings
+            if ($profile_value = $profile->getProperty('predefine', $this->getId())) {
+                return $profile->parseContentProperty($profile_value);
+            }
+        }
+
         // all default should have fnc:param format
         $val = ($generator = AA_Generator::factoryByString($this->data['input_default'])) ? $generator->generate() : new AA_Value();
         return $val->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
@@ -239,7 +248,7 @@ class AA_Field {
         }
         $translations = $this->getTranslations();
 
-        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
+        // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
         return new AA_Property( $this->getId(),
                                 $name ?: $this->getName(),
                                 $this->getProperty('text_stored') ? 'text' : 'int',
@@ -297,7 +306,13 @@ class AA_Field {
         $content->setOwnerId($this->getSliceId());
         if (is_object($preset_value)) {
             $content->setAaValue($this->getId(), $preset_value);
+        } else {
+            $def = $this->getDefault(true);
+            if (!$def->isEmpty()) {
+                $content->setAaValue($this->getId(), $def);
+            }
         }
+
         $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
 
         return $widget->getHtml($aa_property, $content, $function);
