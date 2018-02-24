@@ -377,13 +377,12 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
      *
      */
     function expand() {
-        global $contentcache;
         $arg_list = func_get_args();   // must be asssigned to the variable
         // replace inputform field
         // destroy all aliases, since the content of the variables could contain
         // aliases, but we don't want to unalias them. The _AA_ReMoVe_ string
         // will be removed in dequteColons
-        return str_replace('_#','__AA_ReMoVe#', $contentcache->get('inputvar:'. join(':',$arg_list)));
+        return str_replace('_#','__AA_ReMoVe#', AA::Contentcache()->get('inputvar:'. join(':',$arg_list)));
     }
 }
 
@@ -405,12 +404,9 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
     // cache is used by expand function itself
 
     function expand($name='', $expression='') {
-
-        if (!($name = trim($name))) {
-            return '';
+        if (strlen($name = trim($name))) {
+            AA::Contentcache()->set("define:$name", $expression);
         }
-        global $contentcache;
-        $contentcache->set("define:$name", $expression);
         return '';
     }
 }
@@ -424,9 +420,8 @@ class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
     // cache is used by expand function itself
 
     function expand($name='') {
-        global $contentcache;
         // replace inputform field
-        $expression = $contentcache->get("define:$name");
+        $expression = AA::Contentcache()->get("define:$name");
         // @todo - replace parameters
         return $expression;
     }
@@ -1302,10 +1297,9 @@ function parseLoop($out, &$item) {
  * @param $field
  */
 function getConstantsGroupID($slice_id, $field) {
-    global $contentcache;
     // GetCategoryGroup looks in database - there is a good chance, we will
     // expand {const_*} very soon (again), so we cache the result for future
-    return $contentcache->get_result("GetCategoryGroup", array($slice_id, $field));
+    return AA::Contentcache()->get_result("GetCategoryGroup", array($slice_id, $field));
 }
 
 /** getConstantValue function
@@ -1316,7 +1310,6 @@ function getConstantsGroupID($slice_id, $field) {
  group $group and name $field_name)
  */
 function getConstantValue($group, $what, $field_name) {
-    global $contentcache;
     switch ($what) { // this switch is for future changes in this code
         case "name" :
         case "value" :
@@ -1328,12 +1321,12 @@ function getConstantValue($group, $what, $field_name) {
         case "id" :
         case "level" :
         // get values from contentcache or use GetConstants function to get it from db
-            $val = $contentcache->get_result("GetConstants", array($group, 'pri', $what));
+            $val = AA::Contentcache()->get_result("GetConstants", array($group, 'pri', $what));
             return $val[$field_name];
             break;
         default :
             if (strlen($what)) {
-                $val = $contentcache->get_result("GetConstants", array($group, 'pri', 'short_id'));
+                $val = AA::Contentcache()->get_result("GetConstants", array($group, 'pri', 'short_id'));
                 $cid = $val[$field_name];
                 if ($cid) {
                     $content = GetConstantContent(new zids($cid, 's'));
@@ -1455,6 +1448,9 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
  *    {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>]]}
  *    {math:1+1-(2*6)}
  *    {math:478778:1:,: }
+ *    {math:478778:1:,:&#8239;} - correct French SI type of number format with thin space
+ *    {math:478778:1:FR}        - correct French SI type of number format with thin space
+ *    {math:478778:1:EN}        - correct English SI type of number format with thin space and decimal point
  */
 class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1468,7 +1464,18 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
         $ret      = (double)calculate($expression);
         if ( !empty($dec_point) OR !empty($thousands_sep) ) {
             $decimals      = get_if($decimals,0);
-            $dec_point     = get_if($dec_point, ',');
+            switch ($dec_point) {
+                case 'FR':
+                    $dec_point = ',';
+                    $thousands_sep = '&#8239;';  // non breaking thin space
+                    break;
+                case 'EN':
+                    $dec_point = '.';
+                    $thousands_sep = '&#8239;';  // non breaking thin space
+                    break;
+                default:
+                    $dec_point = get_if($dec_point, ',');
+            }
             $ret = number_format($ret, (int)$decimals, $dec_point, $thousands_sep);
         } elseif ($decimals !== '') {
             $decimals = get_if($decimals,0);
@@ -4473,7 +4480,7 @@ class AA_Unalias_Callback {
      * @param $itemview
      */
     function expand_bracketed($match) {
-        global $contentcache, $als, $errcheck;
+        global $als, $errcheck;
         $out = $match[1];
 
         // See http://apc-aa.sourceforge.net/faq#aliases for details
@@ -4626,8 +4633,10 @@ class AA_Unalias_Callback {
                 $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), substr($out,10));
                 // do not store in the pagecache, but store into contentcache
 
+
+
                 $showview   = new AA_Showview(ParseViewParameters(DeQuoteColons($param)));
-                return QuoteColons($contentcache->get_result(array($showview,'getViewOutput')));
+                return QuoteColons(AA::Contentcache()->get_result(array($showview,'getViewOutput')));
             }
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
@@ -4695,10 +4704,9 @@ class AA_Unalias_Callback {
  *
  */
 function StrExpand($class_name, $params, $context_arr=array(), $allow_quote_colons=false, $ignore_cache=false) {
-    global $contentcache;
     $stringexpand = new $class_name($context_arr);
     if ( $stringexpand->doCache() AND !$ignore_cache) {
-        $res = $contentcache->get_result_4_object(array($stringexpand, 'expand'), $params, $class_name, $stringexpand->additionalCacheParam());
+        $res = AA::Contentcache()->get_result_4_object(array($stringexpand, 'expand'), $params, $class_name, $stringexpand->additionalCacheParam());
     } else {
         $res = call_user_func_array( array($stringexpand,'expand'), $params);
     }
@@ -4706,11 +4714,9 @@ function StrExpand($class_name, $params, $context_arr=array(), $allow_quote_colo
 }
 
 function make_reference_callback($match) {
-    global $contentcache;
-
     $ref = 'R'. mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
     $txt = $match[1];          // for dereference
-    $contentcache->set("define:$ref", $txt);
+    AA::Contentcache()->set("define:$ref", $txt);
     return "{var:$ref}";
 }
 
@@ -4813,9 +4819,6 @@ class AA_Stringexpander {
         }
 
         $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
-
-        // make sure, that $contentcache is defined - we will use it in expand_bracketed()
-        contentcache::global_instance();
 
         // Note ereg was 15 seconds on one multi-line example cf .002 secs
         //    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
@@ -5041,13 +5044,19 @@ class AA_Req_Run extends AA_Req {
     }
 }
 
+class AA_Req_Headcode extends AA_Req_Run {
+    const CODE_POSITION = 'HEAD-B';
+
+    function getCode() {
+        return $this->script;
+    }
+}
+
 class AA_Req_Load extends AA_Req_Run {
     function getCode() {
         return "<script> document.addEventListener('DOMContentLoaded', function() { {$this->script} }); </script>";
     }
 }
-
-
 
 class AA_Requires {
     protected $reqs  = array();
@@ -5059,6 +5068,8 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Run');
         } elseif ($type == 'AA_Req_Load') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Load');
+        } elseif ($type == 'AA_Req_Headcode') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Headcode');
         } elseif ($type == 'AA_Req_Htm') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
         } elseif ((substr($require,-4)=='.css') OR strpos($require,'.css?') OR strpos($require,'.css ')) {
@@ -5152,8 +5163,7 @@ class AA_Requires {
           'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/filesaver.js/1.3.3/FileSaver.min.js', 'sha384-VgWGwiEJnh9P379lbU8DxPcfRuFkfLl0uPuL9tolOHtm2tx8Qy8d/KtvovfM0Udh'),
           'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
           'chartjs@2'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js', 'sha384-nRv0HFGGLzwztTHEFan7U3db1y93fniM9OS3rafR4sAobIWCQdowNsyIdnXV+Vez'),
-          'tooltip@1'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tooltip.js@1.1.5/dist/umd/tooltip.min.js','sha256-Lvb2UFsgpQmrr0MtmcDmP9rE3d26ZfVNwhTi0OrHp5E=',array('popper@1')),
-          'popper@1'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/popper.js@1.12.5/dist/umd/popper.min.js','sha256-jpW4gXAhFvqGDD5B7366rIPD7PDbAmqq4CO0ZnHbdM4='),
+          'tippy@2'                    => new AA_Req_Lib('https://unpkg.com/tippy.js@2.2.3/dist/tippy.all.min.js', 'sha384-7iCQEHkOskB8DnHBeVzB1nkyndqNZ1Tk7C4tc4hQkeSJpLDJ1CJWxmCPtnM6WoQ8'),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@2|aa-jslib@1','htm-aa-system@1')),
           'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@2|aa-jslib@1')),
           'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.js','',false)),
@@ -6975,8 +6985,8 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
      */
     function expand($element='', $html='') {
         if ($element AND $html) {
-            AA::Stringexpander()->addRequire('tooltip');
-            $script2run = "new Tooltip(document.getElementById('".escape4js($element)."'), { html:true, title: '".escape4js($html)."'}); \n";
+            AA::Stringexpander()->addRequire('tippy');
+            $script2run = "tippy('#".escape4js($element)."', {html: function() { el = document.createElement('div'); el.innerHTML='".escape4js($html)."'; return el; } }); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
             AA::Stringexpander()->addRequire('AA_Stringexpand_Tooltip::getBottomCode', 'AA_Req_Htm');
         }
@@ -6984,19 +6994,31 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
     }
 
     static function getBottomCode() {
-        //  .tooltip { background: #FFFED8; color: black; max-width: 200px; width: auto; border-radius: 3px; box-shadow: 0 0 2px rgba(0,0,0,0.5); padding: 10px; text-align: center; position: absolute; }
         return '
+<script>
+  tippy.defaults.arrow = true;
+  tippy.defaults.size = "small";
+  tippy.defaults.duration = 50;
+  tippy.defaults.theme = "aa";
+</script>
 <style>
- .tooltip { background: #FFFED8; color: black; max-width: 40vw; width: auto; border-radius: 3px; box-shadow: 0 0 2px rgba(0,0,0,0.5); padding:10px; position:absolute; z-index:2001;}
- .tooltip .tooltip-arrow { width: 0; height: 0; border: solid transparent 5px; position: absolute; margin: 5px; }
- .tooltip[x-placement^="top"]    { margin-bottom: 5px; }
- .tooltip[x-placement^="bottom"] { margin-top:    5px; }
- .tooltip[x-placement^="right"]  { margin-left:  5px;   }
- .tooltip[x-placement^="left"]   { margin-right: 5px;  }
- .tooltip[x-placement^="top"]    .tooltip-arrow { border-top-color: #FFFED8; border-bottom-width: 0; bottom: -5px; left: calc(50% - 5px); margin: 0 5px; }
- .tooltip[x-placement^="bottom"] .tooltip-arrow { border-bottom-color: #FFFED8; border-top-width: 0; top: -5px;    left: calc(50% - 5px); margin: 0 5px; }
- .tooltip[x-placement^="right"]  .tooltip-arrow { border-right-color: #FFFED8; border-left-width: 0; left: -5px;   top: calc(50% - 5px);  margin: 5px 0; }
- .tooltip[x-placement^="left"]   .tooltip-arrow { border-left-color: #FFFED8; border-right-width: 0; right: -5px;  top: calc(50% - 5px);  margin: 5px 0; }
+  .tippy-popper[x-placement^=\'top\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-top: 7px solid #FFFED8;  border-right: 7px solid transparent;  border-left: 7px solid transparent; }
+  .tippy-popper[x-placement^=\'bottom\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-bottom: 7px solid #FFFED8;  border-right: 7px solid transparent;  border-left: 7px solid transparent; }
+  .tippy-popper[x-placement^=\'left\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-left: 7px solid #FFFED8;  border-top: 7px solid transparent;  border-bottom: 7px solid transparent; }
+  .tippy-popper[x-placement^=\'right\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-right: 7px solid #FFFED8;  border-top: 7px solid transparent;  border-bottom: 7px solid transparent; }
+  .tippy-tooltip.aa-theme {
+    color: black;
+    background-color: #FFFED8;
+    box-shadow: 0 0 20px 4px rgba(154, 161, 177, 0.15), 0 4px 80px -8px rgba(36, 40, 47, 0.25), 0 4px 4px -2px rgba(91, 94, 105, 0.15);
+    border: 1px solid rgba(80, 80, 80, 0.5);
+  }
+  .tippy-tooltip.aa-theme .tippy-backdrop { background-color: #FFFED8; }
+  .tippy-tooltip.aa-theme .tippy-roundarrow { fill: #FFFED8; }
+  .tippy-tooltip.aa-theme[data-animatefill] { background-color: transparent; }
+  .tippy-popper > div {
+     max-width: 50vw;
+     text-align: left !important;
+  }
 </style>
 ';
     }
