@@ -53,7 +53,11 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 
 set_time_limit( 120 );
 
-$exporter = new AA_Slice_Exporter($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
+if ($_POST['b_export_type']=='doc') {
+    $exporter = new AA_Slice_Documentator($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
+} else {
+    $exporter = new AA_Slice_Exporter($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
+}
 
 if (isset($b_export_to_file)) {
     $exporter->exportToFile($slice_id, $export_slices, $SliceID);
@@ -67,11 +71,9 @@ if (isset($b_export_to_file)) {
 ?>
 <title><?php echo _m("Export slice structure")?></title>
 
-<script language="JavaScript" type="text/javascript">
-<!-- Hide script from old browsers
+<script type="text/javascript">
 
-  function b_export_date_onchange(vstup)
-  {
+  function b_export_date_onchange(vstup)  {
     error = 0; tecka = 0; den = 0; rok = 0; mesic = 0;
     for (index = 0; index < vstup.value.length; index++) {
         ch = vstup.value.charAt(index);
@@ -133,8 +135,8 @@ if (isset($b_export_to_file)) {
             return true;
         }
     }
-    //-->
 </script>
+
 </head>
 <body>
 <?php
@@ -148,19 +150,13 @@ if (isset($b_export_to_file)) {
 
 FrmTabCaption(_m("Export slice structure"));
 
-if ($SHOWTEXT == "") {
+if ($_POST['b_export_type']) {
+    $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
+} else {
+    $all_slices = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', array(array('type', 'S')), array('priority','name'));
 
 ?>
-    <form name="f" method="post" action="<?php echo StateUrl("sliceexp.php3") ?>" onsubmit="return validate2();">
-
-    <?php
-        $SQL= "SELECT id, name FROM slice ORDER BY name";
-        $db->query($SQL);
-        while ($db->next_record()) {
-            $all_slices[unpack_id($db->f(id))] = $db->f(name);
-        }
-    ?>
-
+    <form name="f" method="post" id=formf action="<?php echo StateUrl("sliceexp.php3") ?>" onsubmit="return validate2();">
     <tr><td class="tabtxt" colspan="2">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr><td class="tabtxt">
@@ -211,18 +207,19 @@ if ($SHOWTEXT == "") {
             <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></p>
             <b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
             <input type="text" name="SliceID" value="template" size="16" maxlength="16"></P>
-            <input type="hidden" name="SHOWTEXT" value="OHYES">
+            <input type="hidden" name="b_export_type" id="b_export_type" value="export">
         </td>
     </tr>
     <tr>
-        <td><input type="submit" name="b_export_type" value="<?php echo _m("Export to Backup") ?>"></td>
-        <td><input type="button" name="b_export_type" value="<?php echo _m("Export to another ActionApps") ?>" onClick="validate()"></td>
+        <td>
+          <input type="button" name="btn1" value="<?php echo _m("Export to Backup") ?>" onclick="document.getElementById('b_export_type').value='backup'; document.getElementById('formf').submit();">
+          <input type="button" name="btn2" value="<?php echo _m("Show Datastructure Documentation") ?>" onclick="document.getElementById('b_export_type').value='doc'; document.getElementById('formf').submit();">
+        </td>
+        <td><input type="button" name="btn3" value="<?php echo _m("Export to another ActionApps") ?>" onclick="validate()"></td>
     </tr>
     </form>
     </tr></td>
 <?php
-} else {
-    $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
 }
 ?>
 
