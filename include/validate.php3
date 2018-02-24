@@ -611,16 +611,35 @@ class AA_Validate_Eunique extends AA_Validate {
 }
 
 /** Test for text (any characters allowed)
- *  @todo Realy validate URL
  */
 class AA_Validate_Text extends AA_Validate {
+    var $maxlength;
+
+    static function getClassProperties()  {
+        return array (                      //           id            name              type    multi  persist validator, required, help, morehelp, example
+            'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
+            );
+    }
 
     /** validate function
      * @param $var
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
+        if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+        }
         return true;
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        $ret = array('type'=>'text');
+        if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
+        if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
+        return $ret;
     }
 }
 
