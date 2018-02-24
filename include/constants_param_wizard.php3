@@ -862,7 +862,13 @@ $INPUT_TYPES["items"]["hid"]=
 
 $INPUT_TYPES["items"]["inf"]=
     array("name"=>_m("Info text - output"),
-    "desc"=>_m("Just output field - prints the content. Used for computed fields, for example."));
+          "desc"=>_m("Just output field - prints the content. Used for computed fields, for example."),
+          "params"=>array(
+    array("name"=>_m("Code to show"),
+          "desc"=>_m("HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed"),
+          "type"=>"STR",
+          "example"=>"_#HEADLINE"))
+    );
 
 $INPUT_TYPES["items"]["pwd"]=
     array("name"=>_m("Password and Change Password"),

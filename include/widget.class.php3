@@ -681,6 +681,7 @@ class AA_Widget extends AA_Components {
                 case 'url':                    $ret[$pid] = new AA_Property( $pid, _m("URL"),                               'string', false, true, 'string', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml")); break;
                 case 'ajaxtype':               $ret[$pid] = new AA_Property( $pid, _m("Ajax inline"),                       'string', false, true, 'string', false, _m("If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)"), '', 'inline'); break;
                 case 'item_template':          $ret[$pid] = new AA_Property( $pid, _m("New item template ID"),              'string', false, true, 'string', false, _m("The ID of item in destination slice used as Template for new items (probably in Holding bin)"), '', '3e86c0be745dd7b35f406d6997c46b8e'); break;
+                case 'code':                   $ret[$pid] = new AA_Property( $pid, _m("Code to show"),                      'string', false, true, 'string', false, _m("HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed"), '', '_#HEADLINE'); break;
             }
         }
         return $ret;
@@ -2138,12 +2139,13 @@ class AA_Widget_Inf extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      static function getClassProperties()  {
-        return array ();
+        return AA_Widget::propertiesShop(array('code'));
     }
 
     function _getRawHtml($aa_property, $content, $type='normal') {
         $property_id  = $aa_property->getId();
-        $widget       = myspecialchars($content->getValue($property_id));
+        $code         = $this->getProperty('code', '{'.$property_id.'}');
+        $widget       = myspecialchars($content->unalias($code));
         $base_name    = AA_Form_Array::getName4Form($property_id, $content, $this->item_index);
         $base_id      = AA_Form_Array::formName2Id($base_name);
         $input_name   = $base_name."[0]";
