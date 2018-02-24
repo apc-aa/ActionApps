@@ -80,6 +80,7 @@ spl_autoload_register(function ($class_name) {
         case 'grabber':
         case 'difftext':
         case 'manager':
+        case 'adminpage':
         //  case 'widget':
         //  case 'field':
             require_once AA_INC_PATH. $core. '.class.php3';
@@ -182,9 +183,7 @@ class AA_Debug {
            echo '<tr><td>'.(1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])).'</td><td>'.(1000*($call[5]-$call[4])).'</td><td>'.str_repeat('.&nbsp;',$call[0]).safe($call[1]).'</td><td>'.safe($call[2]).($call[3]>200? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
         }
         echo '</table>';
-        if ($GLOBALS['contentcache']) {
-            $GLOBALS['contentcache']->duration_stat();
-        }
+        AA::Contentcache()->duration_stat();
     }
 
 
@@ -230,6 +229,7 @@ class AA {
     public  static $headers;    // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
     public  static $module_id;  // for admin pages - replace of older $slice_id
     private static $stringexpander = null;
+    private static $contentcache = null;
 
     static function getHeaders() {
         $ret = array();
@@ -246,6 +246,11 @@ class AA {
     /** @usage AA::Stringexpander()->unalias(); */
     static function Stringexpander() {
         return AA::$stringexpander ?: (AA::$stringexpander = new AA_Stringexpander());
+    }
+
+    /** @usage AA::Contentcache()->set(); */
+    static function Contentcache() {
+        return AA::$contentcache ?: (AA::$contentcache = new AA_Contentcache());
     }
 
     // typicaly called as AA::sendHeaders(AA::getHeaders());

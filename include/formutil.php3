@@ -530,8 +530,6 @@ class AA_Inputfield {
                            'const_arr'     => $arr
                          );
         $this->setFromArray($settings);
-
-        contentcache::global_instance();   // make sure $contentcache exists
     }
 
     /** getValue function
@@ -758,7 +756,6 @@ class AA_Inputfield {
      * @param $aliasname used for alias name different from 'inputvar'
      */
     function echovar($txt, $part='', $param='', $aliasname='') {
-        global $contentcache;
         if ( $this->result_mode == 'expand' ) {   // write directly to the output
             $this->echoo($txt);
         } else {
@@ -766,7 +763,7 @@ class AA_Inputfield {
                 $aliasname='inputvar';
             };
             $alias = $aliasname.':'.$this->id. ($part  ? ":$part"  : ''). ($param ? ":$param" : '');
-            $contentcache->set($alias, $txt);
+            AA::Contentcache()->set($alias, $txt);
             $this->echoo('{'.$alias.'}');
         }
     }
@@ -843,7 +840,7 @@ class AA_Inputfield {
             }
         } elseif (($this->mode == 'anonym') OR ($this->mode == 'normal')) {
             switch ($this->input_type) {
-                case 'inf': $this->staticText();       break;
+//                case 'inf': $this->staticText();       break;
 
                 case 'nul': break;
                 case 'chb': $this->inputChBox();       break;
@@ -959,6 +956,7 @@ class AA_Inputfield {
                 case 'rim':
                 case 'cod':
                 case 'rio':
+                case 'inf':
                 default:    $this->inputWidget($item, $slice_id);
 
             }

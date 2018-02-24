@@ -32,10 +32,6 @@ if ( file_exists( AA_INC_PATH."usr_aliasfnc.php3" ) ) {
 require_once AA_INC_PATH. "item_content.php3";
 require_once AA_BASE_PATH."modules/links/constants.php3";
 
-if ( !is_object($contentcache) ) {
-    $contentcache = new contentcache;
-}
-
 /** converts plain text to html
  * @param $txt
  */
@@ -1493,10 +1489,8 @@ class AA_Item {
      * @param $param
      */
     function l_p($col, $param="") {
-        global $contentcache;
 
-        $translate = $contentcache->get_result( 'GetTable2Array', array(
-            "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
+        $translate = AA::Contentcache()->get_result( 'GetTable2Array', array("SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
 
         list ($start, $format, $separator, $catseparator, $urlprm, $url_base, $restrict) = $this->subst_aliases(ParamExplode($param));
         if ( !$separator ) {

@@ -1239,7 +1239,7 @@ function gensalt($saltlen) {
  * @param $escape_pattern
  */
 function split_escaped($pattern, $string, $escape_pattern) {
-    $dummy = chr(0x1E);  // record separator ASCII character - we can use any othre, however
+    $dummy = chr(0x1E);  // record separator ASCII character - we can use any other, however
     while (strpos($string, $dummy) !== false) {
         $dummy .= '^';   // add another strange character to the
     }
@@ -1453,31 +1453,21 @@ class AA_Credentials {
     }
 }
 
-/** contentcache class - prevents from executing the same - time consuming code
+/** AA_Contentcache class - prevents from executing the same - time consuming code
  *  twice in one run of the script.
  *  Ussage:
  *    Instead of calling:
  *        $result = function_name(param1, param2);
  *    we will use
- *        $result = $contentcache->get_result("function_name", array(param1, param2));
+ *        $result = AA::Contentcache()->get_result("function_name", array(param1, param2));
  *    For the first time call the function_name is called, for second, third,...
  *    time calling, the result is returned from cache (for the same parameters)
  *
  *    The best to use this class for time-consuming functions with small results
  */
-class contentcache {
+class AA_Contentcache {
     // used for global cache of contents
     protected $content;   // array of cache entry - 'key'=>[result, generation_time, uses, identification]
-
-    /** global_instance function
-     *  "class function" obviously called as contentcache::global_instance();
-     *  This function makes sure, there is global instance of the class
-     */
-    function global_instance() {
-        if ( !isset($GLOBALS['contentcache']) ) {
-            $GLOBALS['contentcache'] = new contentcache;
-        }
-    }
 
     /** get_result function
      *  Calls $function with $params and returns its return value. The result
@@ -1489,9 +1479,9 @@ class contentcache {
      *                     then the $function parameter should be array
      *                     (see http://php.net/manual/en/function.call-user-func.php)
      *                     For static class methods:
-     *                        $result = $contentcache->get_result(array('Classname', 'function_name'), array(param1, param2));
+     *                        $result = AA::Contentcache()->get_result(array('Classname', 'function_name'), array(param1, param2));
      *                     For instance methods:
-     *                        $result = $contentcache->get_result(array($this, 'function_name'), array(param1, param2));
+     *                        $result = AA::Contentcache()->get_result(array($this, 'function_name'), array(param1, param2));
      *  @param $params   - array of function's parameters
      *  @param $additional_params - string
      *                   - special param for cache - it is not passed to the
@@ -1556,17 +1546,93 @@ class contentcache {
         return false;
     }
 
+    /** exists function
+     *  returns true or false if the key exists
+     * @param $access_code
+     */
+    function exists($access_code) {
+        return isset($this->content[hash('md5', $access_code)]);
+    }
+
+
     /** clear function
      * clear key or all content from contentcache
      * @param $key
      */
-    function clear($key="") {
-        if ($key) {
+    function clear($key=null) {
+        if (!is_null($key)) {
             unset($this->content[$key]);
         } else {
             unset($this->content);
         }
     }
+
+    /** push function
+     *  stores value for access_code to cache and backups the old values
+     *  each push, should have pop counterpart call, which restores previous value
+     *  used with push_arr for storing view qs parameters when entering view, for example
+     * @param $access_code
+     * @param $arr
+     */
+    function push($access_code, $val) {
+        if ( $this->exists($access_code) ) {
+            // backup access code - arr underscore before (with possible recursion)
+            $this->push('_'.$access_code, $this->get($access_code));
+        }
+        $this->set($access_code, $val);
+    }
+
+    /** push function
+     *  stores value for access_code to cache and backups the old values
+     *  each push, should have pop counterpart call, which restores previous value
+     *  used with push_arr for storing view qs parameters when entering view, for example
+     * @param $access_code
+     * @param $arr
+     */
+    function pop($access_code) {
+        $ret = $this->get($access_code);
+        if ( $this->exists('_'.$access_code) ) {
+            $this->set($access_code, $this->pop('_'.$access_code)); // with recurcsion
+        }
+        return $ret;
+    }
+
+    /** push_arr function
+     *  stores all values form array to cache and backups the old values
+     *  each push, should have pop_arr counterpart call, which restores previous values
+     *  used for storin view qs parameters when entering view, for example
+     * @param $access_code
+     * @param $arr
+     */
+ //  function push_arr($access_code, array $arr) {
+ //      foreach ($arr as $k => $v) {
+ //          $key = hash('md5', $k);
+ //          if ( isset($this->content[$key]) ) {
+ //              $this->set('_'.$k, $this->content[$key]);
+ //          }
+ //          $this->set($k, $v);
+ //      }
+ //      $this->set($access_code, array_keys($arr));
+ //  }
+ //
+ //  /** pop_arr function
+ //   *  restores previous values pushed by push_arr
+ //   * @param $access_code
+ //   */
+ //  function pop_arr($access_code) {
+ //      if (is_array($keys = $this->get($access_code))) {
+ //          foreach ($keys as $k => $v) {
+ //              $key = hash('md5', $k);
+ //              if ( isset($this->content[$key]) ) {
+ //                  $this->set('_'.$k, $this->content[$key]);
+ //              }
+ //              $this->set($k, $v);
+ //          }
+ //          $this->set($access_code, array_keys($arr));
+ //  }
+
+
+
 
     function duration_stat() {
         echo "<br><b>contentcache</b> (".count($this->content)." rows)<br>";

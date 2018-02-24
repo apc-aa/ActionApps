@@ -179,13 +179,12 @@ class PageCache  {
      * @param $action
      */
     function cacheMemDb($function, $params, $str2find, $action='get') {
-        global $contentcache;
         $key = get_hash($function, $params);
-        if ($res = $contentcache->get($key)) {
+        if ($res = AA::Contentcache()->get($key)) {
             return $res;
         }
         $res = $this->cacheDb($function, $params, $str2find, $action);
-        $contentcache->set($key,$res);
+        AA::Contentcache()->set($key,$res);
         return $res;
     }
 
@@ -195,8 +194,7 @@ class PageCache  {
      * @param $params
      */
     function cacheMem($function, $params) {
-        global $contentcache;
-        return $contentcache->get_result( $function, $params );
+        return AA::Contentcache()->get_result( $function, $params );
     }
 
     /** getById function
