@@ -1129,11 +1129,9 @@ class AA_Metabase {
 class AA_MetabaseTableEdit {
 
     /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
-    public static function defaultAddFormrows($tablename, $form) {
-        $metabase  = AA_Metabase::singleton();
-        $form->addProperties($metabase->getColumnProperties($tablename));
-        return $form;
-    }
+    // public static function defaultAddFormrows($tablename, $form) {
+    //     return $form->addProperties(static::getClassProperties());
+    // }
 
     /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
     public static function defaultGetClassProperties($tablename) {

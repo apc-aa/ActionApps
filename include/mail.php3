@@ -57,11 +57,11 @@ class AA_Mailtemplate implements iEditable {
 
         /** iEditable method - adds Object's editable properties to the $form */
     public static function addFormrows($form) {
-         AA_MetabaseTableEdit::defaultAddFormrows('email', $form);
+        return $form->addProperties(static::getClassProperties());
     }
 
     public static function getClassProperties()  {
-         return AA_MetabaseTableEdit::defaultGetClassProperties('email');
+        return AA_MetabaseTableEdit::defaultGetClassProperties('email');
     }
 
     public static function load($id, $type=null) {

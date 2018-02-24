@@ -47,12 +47,13 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 
 if ( $del ) {
+    DB_AA::delete('profile', array(array('id', $del), array('slice_id', $slice_id, 'l')));
     // slice identification is not neccessry
-    $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-        $err["DB"] = MsgErr("Can't delete profile");
-        exit;
-    }
+       // $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
+       // if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+       //     $err["DB"] = MsgErr("Can't delete profile");
+       //     exit;
+       // }
 
     $Msg = MsgOK(_m("Rule deleted"));
 }

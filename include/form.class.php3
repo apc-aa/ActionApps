@@ -227,11 +227,13 @@ class AA_Form extends AA_Object {
         foreach ($props as $prop ) {
             $prop->addPropertyFormrows($this);
         }
+        return $this;
     }
 
     function addRow($row) {
         $this->rows[] = $row;
     }
+
     function addRows($rows) {
         $this->rows = array_merge($this->rows,$rows);
     }
