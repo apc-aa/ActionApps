@@ -735,7 +735,7 @@ class AA_Module_Site extends AA_Module {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
             $home       = AA::Stringexpander()->unalias(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
-            return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, $this->_getModuleObjectProperty('web_languages'));
+            return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, array_filter($this->_getModuleObjectProperty('web_languages'))); // sometimes there is [0] => '' for some reason... so we array_filter
         }
         return null;
     }

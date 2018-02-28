@@ -1,3 +1,5 @@
+18-02-28 - fix of {pager} problem - even better
+18-02-27 - removed old and unused test.php scripts with possible security risks
 18-02-24 - new possibility to get data form current item 
 (honzam)     {xid:<some aa expression} like {xid:this is my _#NAME____} 
                - it is shortcut for {item:{xid}:this is my _#NAME____} 
