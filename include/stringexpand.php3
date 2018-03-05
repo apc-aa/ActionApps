@@ -680,6 +680,20 @@ class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** {twitter} Tweet share button
+ *  requires {generate:HEAD} in the sitemodule to load scripts
+ */
+class AA_Stringexpand_Twitter extends AA_Stringexpand_Nevercache {
+
+    function expand() {
+        AA::Stringexpander()->addRequire('https://platform.twitter.com/widgets.js async');  // for AA_AjaxSendForm
+        return '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="true">Tweet</a>';
+        // <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    }
+}
+
+
+
 /** Expands {protectmail:<email>[:<text>]} - hides mail into javascript
  *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
  *  @param $email    - e-mail to protect
@@ -3784,6 +3798,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
      * @param $widget_properties - not yet implemented
      */
     function expand($item_id='', $field_id='', $show_alias='', $onsuccess='', $widget_type=null, $widget_properties=null) {
+        //if ($_GET['editid']=='8765ba297ad79c68e7c66307fd3b0ff6') {
+        //    huhl($show_alias);
+        //}
+
         $ret = '';
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
@@ -4804,6 +4822,27 @@ class AA_Stringexpander {
         'version'          => 'aa_version'         // old AA_Stringexpand_Version'
     );
 
+
+    /** replaces inline aliasses {(....)} with {var:...} references (which will be later expanded into {...}) and defines appropriate contentcache entries
+     *  this alows to write expressions like
+     *    {item:6625:{(some text {headline........}...etc.)}}
+    */
+    static function ApplyInlineAlias($text) {
+        $last_replacements = 0;
+        do {
+            //   /{\(((?:.(?!{\())*)\)}/sU  - the expression is complicated because it
+            //                                solves also nesting - like:
+            //                                see {( some {( text )} which )} could {( be )} nested
+            if (is_null($text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
+                //huhl( "Error: preg_replace_callback", '/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements);
+                echo "Error: preg_replace_callback - make_reference_callback";
+                print_r($text);
+                print_r($last_replacements);
+            }
+        } while($last_replacements);
+        return $text;
+    }
+
      /** called as AA::Stringexpander()->unalias();
      * @param $text
      * @param $item
@@ -4826,23 +4865,12 @@ class AA_Stringexpander {
         $quotecolons_partly = 0;
         // to speeedup the process we check, if we have to look for {} pairs
         if (strpos($text, '{') !== false) {
-            $last_replacements  = 0;
             // to speeedup the process we check, if we have to look for {( ... )} pairs
             if (strpos($text, '{(') !== false) {
                 // replace all {(.....)} with {var:...}, which will be expanded into {...}
                 // this alows to write expressions like
                 //   {item:6625:{(some text {headline........}...etc.)}}
-                // /{\(((?:.(?!{\())*)\)}/sU  - the expression is complicated because it
-                //                              solves also nesting - like:
-                //                              see {( some {( text )} which )} could {( be )} nested
-                do {
-                    if (is_null($text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
-                        //huhl( "Error: preg_replace_callback", '/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements);
-                        echo "Error: preg_replace_callback - make_reference_callback";
-                        print_r($text);
-                        print_r($last_replacements);
-                    }
-                } while($last_replacements);
+                $text = AA_Stringexpander::ApplyInlineAlias($text);
             }
 
             $last_replacements  = 0;
@@ -4982,17 +5010,26 @@ class AA_Req {
 class AA_Req_Lib extends AA_Req {
     const CODE_POSITION = 'HEAD-B';
     protected $url;
+    protected $loadtype;
 
     function __construct($url, $integrity='', $depend=array()) {
         parent::__construct($depend, $integrity);
-        $this->url       = $url;
+        if (strpos(trim($url),' ')) {
+            $a = array_filter(explode(' ',$url, 2));
+            $this->url      = $a[0];
+            $this->loadtype = $a[1];
+        } else {
+            $this->url      = $url;
+            $this->loadtype = '';
+        }
     }
 
     function getCode() {
-        return "<script src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
+        return "<script" .($this->loadtype ? " {$this->loadtype}" : '') ." src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
     }
-
 }
+
+
 /** {require:/css/myprintstyle.css print} */
 class AA_Req_Css extends AA_Req {
     const CODE_POSITION = 'HEAD-A';
@@ -5072,7 +5109,7 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Headcode');
         } elseif ($type == 'AA_Req_Htm') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
-        } elseif ((substr($require,-4)=='.css') OR strpos($require,'.css?') OR strpos($require,'.css ')) {
+        } elseif ((substr($require,-4)=='.css') OR strpos($require,'css?') OR strpos($require,'.css ')) {   // allows also google fonts: fonts.googleapis.com/css?family=Open+Sans...
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
         } elseif (substr($require,-3)=='.js' OR (strpos($require,'/')!==false)) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
@@ -5157,6 +5194,7 @@ class AA_Requires {
           '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/fold/xml-fold.js', 'sha256-l/TrijjAvQgiGYppltKp2PLTBGe7s7tPiid0WoaLeMY='),
           '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.css', 'sha256-XyDJ6+MvRGhJHdk5i+vjmlocQ4lO6W2q5fahVAcYql0='),
           '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.js', 'sha256-/OCc+1HKfnjOGUtgcpPUGj14IzwliaF2X83ws+OlXaU=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
+          'select2@4'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js', 'sha384-uQwKPrmNkEOvI7rrNdCSs6oS1F3GvnZkmPtkntOSIiPQN4CCbFSxv+Bj6qe0mWDb',array('_css-select2@4', 'jquery@3')),
           'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js', 'sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=',array('jquery@3')),
           'tableexport@4'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
           'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.core.min.js', 'sha384-Z64xo5gl0CGLf7pO6yQqbSz60LwUKgL7XrNEhh6nl+ZDQMwffbK0G+d4Nep52sIS'),
@@ -5172,6 +5210,7 @@ class AA_Requires {
           'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js', 'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f'),
           'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.4.4/dist/vue.min.js', 'sha256-Ab5a6BPGk8Sg3mpdlsHzH6khPkniIWsvEuz8Fv/s9X8='),
           'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.4.4/dist/vue.js', 'sha256-ThERFdU1Vgoe2IPCiF6KzfeybDK1orpSbAGwZ4ncZFg='),
+          '_css-select2@4'             => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css', 'sha384-RdQbeSCGSeSdSlTMGnUr2oDJZzOuGjJAkQy1MbKMu8fZT5G0qlBajY0n0sY/hKMK'),
           '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
           '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
           'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css','',false))  ,
@@ -5893,7 +5932,12 @@ class AA_Stringexpand__ extends AA_Stringexpand {
             $text = $saliases[$name];
         }
 
-        return AA_Stringexpand::replaceParams($text, $arg_list);
+        $text = AA_Stringexpand::replaceParams($text, $arg_list);
+        if (strpos($text, '{(') !== false) {
+            // we want to use inline aliases also inside {_:aliases...}
+            $text = AA_Stringexpander::ApplyInlineAlias($text);
+        }
+        return $text;
     }
 }
 
@@ -6984,7 +7028,7 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
      * @param $selector
      */
     function expand($element='', $html='') {
-        if ($element AND $html) {
+        if ($element AND strlen($html)) {
             AA::Stringexpander()->addRequire('tippy');
             $script2run = "tippy('#".escape4js($element)."', {html: function() { el = document.createElement('div'); el.innerHTML='".escape4js($html)."'; return el; } }); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
