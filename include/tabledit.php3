@@ -468,11 +468,11 @@ class tabledit {
             exit;
         }
 
-        $this->view["addrecord"]           = get_if($this->view["addrecord"], true);
-        $this->view["listlen"]             = get_if($this->view["listlen"],   15);
-        $this->view["search"]              = get_if($this->view["search"],    $this->type == "browse");
-        $this->view["messages"]["no_item"] = get_if($this->view["messages"]["no_item"], _m("Nothing to be shown."));
-        $this->view["readonly"]            = get_if($this->view["readonly"],  true);
+        $this->view["addrecord"]           = isset($this->view["addrecord"])           ? $this->view["addrecord"]           : true;
+        $this->view["listlen"]             = isset($this->view["listlen"])             ? $this->view["listlen"]             : 15;
+        $this->view["search"]              = isset($this->view["search"])              ? $this->view["search"]              : $this->type == "browse";
+        $this->view["messages"]["no_item"] = isset($this->view["messages"]["no_item"]) ? $this->view["messages"]["no_item"] : _m("Nothing to be shown.");
+        $this->view["readonly"]            = isset($this->view["readonly"])            ? $this->view["readonly"]            : true;
 
         $this->view["attrs"]["table"] .= " class=te_".substr($this->type,0,1)."_table ";
 
@@ -777,8 +777,8 @@ class tabledit {
             }
         }
 
-        $this->view["buttons_left"] = get_if($this->view["buttons_left"], $bl);
-        $this->view["buttons_down"] = get_if($this->view["buttons_down"], $bd);
+        $this->view["buttons_left"] = isset($this->view["buttons_left"]) ? $this->view["buttons_left"] : $bl;
+        $this->view["buttons_down"] = isset($this->view["buttons_down"]) ? $this->view["buttons_down"] : $bd;
     }
 
     // -----------------------------------------------------------------------------------

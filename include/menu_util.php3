@@ -413,7 +413,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
             // submenu should be displayed.
             $function = $item["function"];
             showSubMenuRows( $function( $item["func_param"] ), $active );
-        } else {
+        } elseif (is_array($item)) {
             echo '<tr><td width="122" valign="TOP">&nbsp;';
             if (!isset ($item["cond"])) {
                 $item["cond"] = 1;

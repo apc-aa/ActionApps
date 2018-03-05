@@ -1,22 +1,31 @@
+18-03-05 - new {twitter} Tweet share button. It requires {generate:HEAD}
+(honzam)   in the sitemodule to load scripts
+         - new possibility to use inline expressions in {item} - just like
+             {item:6625:{(some text {headline........}...etc.)}}
+         - reworked Parameter Wizard for Input Types - the parameters are now
+           grabbed directly form Widgets
+         - Tags input type now uses Widgets for all - live, ajax as well as itemedit
+         - better warning Change Slice Id in Optimize actions
+         - better check for site module consistency - starting spot found
 18-02-28 - fix of {pager} problem - even better
 18-02-27 - removed old and unused test.php scripts with possible security risks
-18-02-24 - new possibility to get data form current item 
-(honzam)     {xid:<some aa expression} like {xid:this is my _#NAME____} 
-               - it is shortcut for {item:{xid}:this is my _#NAME____} 
-         - new shortcut for right number format in 
-           {math:<expression>[:<decimals>[:<dec_point_char>:<thousands_char>]]} 
-           - now you can specify EN or FR instead of <dec_point_char>:<thousands_char> 
-             which sets correct english SI or european SI formats - just like 
+18-02-24 - new possibility to get data form current item
+(honzam)     {xid:<some aa expression} like {xid:this is my _#NAME____}
+               - it is shortcut for {item:{xid}:this is my _#NAME____}
+         - new shortcut for right number format in
+           {math:<expression>[:<decimals>[:<dec_point_char>:<thousands_char>]]}
+           - now you can specify EN or FR instead of <dec_point_char>:<thousands_char>
+             which sets correct english SI or european SI formats - just like
              {math:478778:1:.:&#8239;} or {math:478778:1:,:&#8239;}
          - new possibility to add Google Analytics code automaticaly - just fill
-           the "Google analytics tracking id" in site setting and use 
+           the "Google analytics tracking id" in site setting and use
            {generate:HEAD} and {generate:FOOT} in yor sitemodule code
-         - new "Show Datastructure Documentation" possibility 
+         - new "Show Datastructure Documentation" possibility
            on AA -> Slice Export page which prints table with fields setting
          - new possibility to specify Code to show in "Info text - output" input type
          - new possibility to specify maxlength of Text Input
          - fix default values for fields filled by aa[] type of form
-         - switched form tooltipjs to tippy library for {tooltip:...} - it has 
+         - switched form tooltipjs to tippy library for {tooltip:...} - it has
            better setting and do not require jQuery
          - fixed problem with parsing {xflag}, {xlang}, {xpage} and pager
          - better contentcache for internal caching

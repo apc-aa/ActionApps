@@ -55,8 +55,9 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $db = getDB();
         $db->query("SELECT AF.description, AF.id FROM alerts_filter AF");
         if ($db->num_rows()) {
-            while ($db->next_record())
+            while ($db->next_record()) {
                 $collection_filters [$db->f("id")] = $db->f("description");
+            }
         }
         else {
             $collection_filters[-1] = _m("No selections defined. You must define some.");
