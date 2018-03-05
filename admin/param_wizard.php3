@@ -94,25 +94,30 @@ function GetWizardRow($name, $param) {
     $ret     = '';
     $example = processValue($param['example']);
     $hlp     = '';
-    switch ($param['type']) {
-        case 'INT':   $ret = "<input type=number name=\"$name\" size=20 value=\"$example\">";
+    switch (strtolower($param['type'])) {
+        case 'int':   $ret = "<input type=number name=\"$name\" size=20 value=\"$example\">";
                       break;
-        case 'STR':   $ret = "<input type=text name=\"$name\" style=\"width:95%\" value=\"$example\">";
-                      break;
-        case 'STRID': $ret = "<input type=text name=\"$name\" size=20 value=\"$example\">";
+        case 'strid': $ret = "<input type=text name=\"$name\" size=20 value=\"$example\">";     // old param wizard array
                       $hlp = "(" . _m("field&nbsp;id") . ")";
                       break;
-        case 'BOOL':  $ret = "<input type=text name=\"$name\" size=4 value=\"$example\">";
+        case 'bool':  $ret = "<input type=text name=\"$name\" size=4 value=\"$example\">";
                       $hlp = "(" . _m("boolean:&nbsp;0=false,1=true") . ")";
+                      break;
+        case 'str':                                                                             // old param wizard array
+        case 'string':
+        default:      $ret = "<input type=text name=\"$name\" style=\"width:95%\" value=\"$example\">";
                       break;
     }
     $ret .= "<span class=\"tabhlp\">$hlp<br>". processSlashes($param['desc']) . "</span>";
     return $ret;
 }
 
-
-$desc = $$list;
-$desc = $desc['items'][$item];
+if ($_GET['list']=='INPUT_TYPES') {
+    $desc = AA_Widget::getParamWizardArr($item);
+} else {
+    $desc = $$list;
+    $desc = $desc['items'][$item];
+}
 $title = firstbig($desc['name']) . " " . _m("Wizard");
 
 // by some item (I know only about the date input type) the parameters are divided with ' rather than :

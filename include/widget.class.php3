@@ -161,10 +161,10 @@ class AA_Widget extends AA_Components {
     var $item_index = 1;
 
     /** name function
-     *
      */
     function name()         {}
-    //    function description()  {}
+
+    function description()  {}
 
     /** returns if the widget handles multivalue or just single value   */
     function multiple()    { return false;   }
@@ -682,6 +682,33 @@ class AA_Widget extends AA_Components {
                 case 'ajaxtype':               $ret[$pid] = new AA_Property( $pid, _m("Ajax inline"),                       'string', false, true, 'string', false, _m("If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)"), '', 'inline'); break;
                 case 'item_template':          $ret[$pid] = new AA_Property( $pid, _m("New item template ID"),              'string', false, true, 'string', false, _m("The ID of item in destination slice used as Template for new items (probably in Holding bin)"), '', '3e86c0be745dd7b35f406d6997c46b8e'); break;
                 case 'code':                   $ret[$pid] = new AA_Property( $pid, _m("Code to show"),                      'string', false, true, 'string', false, _m("HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed"), '', '_#HEADLINE'); break;
+            }
+        }
+        return $ret;
+    }
+
+    /** getParamWizardArr - get array for ParamWizard from widgets
+     *  (replaces array in constants_param_wizard.php3)
+     *  called as AA_Widget::getParamWizardArr('fld');
+     */
+    static function getParamWizardArr($type) {
+        $ret = array();
+        if ( class_exists( $widget_class  = AA_Widget::constructClassName($type)) ) {
+            $ret['name']   = $widget_class::name();
+            $ret['desc']   = $widget_class::description();
+            $ret['params'] = array();
+
+            $props = $widget_class::getClassProperties();
+            if (key($props)=='const') { // const or slice is not presented in popup
+                array_shift($props);
+            }
+            foreach ($props as $prop) {
+                $ret['params'][] = array(
+                    'name' => $prop->getName(),
+                    'desc' => $prop->getHelp(),
+                    'type' => $prop->getType(),
+                    'example' => $prop->getExample()
+                    );
             }
         }
         return $ret;
@@ -1570,6 +1597,10 @@ class AA_Widget_Tag extends AA_Widget {
         return true;
     }
 
+    function requireLibs() {
+        return array('aa-jslib@2');
+    }
+
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
@@ -2319,6 +2350,7 @@ class AA_Property extends AA_Storable {
     function getName()         { return $this->name;         }
     function getType()         { return $this->type;         }
     function getHelp()         { return $this->input_help;   }
+    function getExample()      { return $this->example;      }
     function getConstants()    { return $this->const_arr;    }
     function getTranslations() { return $this->translations; }
 
