@@ -929,13 +929,6 @@ class AA_Inputfield {
                             $this->varname_modify('[]');         // use slightly modified varname
                             $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                             break;
-                case 'tag': $this->inputWidget($item, $slice_id);
-                            // list($constgroup, $slice_field, $whichitems, $conds, $sort, $addform, $add_slice_pwd) = $this->param;
-                            // // we do not use all the settings here (sort, addform, slicepwd) - we use it for ajax input
-                            // $this->varname_modify('[]');         // use slightly modified varname
-                            // $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value);  // if we fill it there, it is not refilled in inputSel()
-                            // $this->inputRelation(5, $sid, MAX_RELATED_COUNT, 'A', '', 'DR', $whichitems, $conds, $condsrw, $slice_field);
-                            break;
                 case 'wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd) = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
@@ -952,6 +945,7 @@ class AA_Inputfield {
                             $this->inputLocalURLPick($url);
                             break;
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
+                case 'tag':
                 case 'mfl':
                 case 'rim':
                 case 'cod':
