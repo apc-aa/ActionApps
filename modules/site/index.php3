@@ -59,17 +59,13 @@ $tree = new sitetree();
 
 if ( ($structre = AA_Module_Site::getModuleProperty($module_id,'structure')) != '') {
     $tree = unserialize($structre);
-} else {
+} elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', array(array('site_id', $module_id, 'l'), array('spot_id','1')))) {  // false if not found
     // get information about start spot (=start of the tree)
-    $SQL = "SELECT * FROM site_spot WHERE site_id = '$p_module_id' AND spot_id='1'";
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $tree = new sitetree($db->Record);
-    } else {
-        MsgErr(_m("Starting spot not found"));
-        page_close();
-        exit;
-    }
+    $tree = new sitetree($spotrow);
+} else {
+    MsgErr(_m("Starting spot not found"));
+    page_close();
+    exit;
 }
 
 //  try
