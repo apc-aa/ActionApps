@@ -1293,16 +1293,14 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
     * @return a message
     */
     function description() {
-        return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You need probably want to do it for all slices and site module");
+        return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!");
     }
-
-    /** implemented actions within this class */
-    function actions()      { return array('repair'); }
 
     /** Test function
     * @return true
     */
     function test() {
+        $this->message(_m('Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!'));
         return true;
     }
 
