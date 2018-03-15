@@ -80,7 +80,6 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 
 
 require_once "./include/config.php3";
-require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."view.php3";
@@ -138,4 +137,3 @@ if (AA::$debug) {
 }
 
 exit;
-?>

@@ -62,6 +62,7 @@ require_once AA_INC_PATH."notify.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."feeding.php3";
 
+define("WDDX_OK",         0);
 define("WDDX_DUPLICATED", 1);
 define("WDDX_BAD_PACKET", 2);
 
@@ -247,8 +248,7 @@ foreach ($packets as $packet) {;
 if ( $error ) {
   SendErrorPage( $error );
 } else {
-  SendOkPage( "$ok<br>". _m("Now you can dalete local file. ") .
-                  " <a href='$del_url'>"._m(" Delete ")."</a>", $del_url );
+  SendOkPage( "$ok<br>". _m("Now you can dalete local file. "). " <a href='$del_url'>"._m(" Delete ")."</a>");
 }
 
-?>
+

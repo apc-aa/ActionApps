@@ -78,4 +78,4 @@ if ($_GET['type']=='ajax') {
     }
     echo $html;
 }
-?>
+

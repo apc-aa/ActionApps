@@ -39,7 +39,7 @@ class DB_Oracle {
   var $revision = "1.2";
 
   /* public: constructor */
-  function DB_Oracle($query = "") {
+  function __construct($query = "") {
     if($query) {
       $this->query($query);
     }
@@ -57,8 +57,8 @@ class DB_Oracle {
   function connect() {
       ## see above why we do this
       if ($this->OraPutEnv) {
-        PutEnv("ORACLE_SID=$this->Database");
-        PutEnv("ORACLE_HOME=$this->Home");
+        putenv("ORACLE_SID=$this->Database");
+        putenv("ORACLE_HOME=$this->Home");
       }
       if ( 0 == $this->Link_ID ) {
         if($this->Debug) {
@@ -437,9 +437,9 @@ class DB_Oracle {
 }
 if(!class_exists("DB_Sql"))	{
     class DB_Sql extends DB_Oracle {
-        function DB_Sql($query = "") {
-            $this->DB_Oracle($query);
+        function __construct($query = "") {
+            DB_Oracle::__construct($query);
         }
     }
 }
-?>
+

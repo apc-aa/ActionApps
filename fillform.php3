@@ -93,8 +93,6 @@ $encap = ( ($encap=="false") ? false : true );
 
 /** APC-AA configuration file */
 require_once "include/config.php3";
-/** Defines simplified class for page scroller */
-require_once AA_INC_PATH."easy_scroller.php3";
 /** Set of useful functions used on most pages */
 require_once AA_INC_PATH."util.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
@@ -148,4 +146,4 @@ if ($show_result) {
     echo "</b>";
 }
 
-?>
+

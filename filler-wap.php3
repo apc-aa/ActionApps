@@ -25,7 +25,7 @@
  *
  * @package UserInput
  * @version $Id$
- * @author Honza Malík, Jakub Adámek, Econnect
+ * @author Honza Malï¿½k, Jakub Adï¿½mek, Econnect
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
 /*
@@ -51,4 +51,4 @@ $GLOBALS['wap'] = true;
 
 require_once "filler.php3";
 
-?>
+

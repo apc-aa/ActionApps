@@ -49,7 +49,7 @@ class DB_ODBC {
 
 
   /* public: constructor */
-  function DB_ODBC($query = "") {
+  function __construct($query = "") {
     if($query) {
       $this->query($query);
     }
@@ -588,9 +588,9 @@ The function halt()s if a lock cannot be obtained.
 }
 if(!class_exists("DB_Sql"))	{
     class DB_Sql extends DB_ODBC {
-        function DB_Sql($query = "") {
-            $this->DB_ODBC($query);
+        function __construct($query = "") {
+            DB_ODBC::__construct($query);
         }
     }
 }
-?>
+

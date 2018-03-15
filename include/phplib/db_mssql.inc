@@ -29,7 +29,7 @@ class DB_MSSQL {
   
   
   /* public: constructor */
-  function DB_MSSQL($query = "") {
+  function __construct($query = "") {
     if($query) {
       $this->query($query);
     }
@@ -186,9 +186,9 @@ class DB_MSSQL {
 }
 if(!class_exists("DB_Sql"))	{
 	class DB_Sql extends DB_MSSQL {
-		function DB_Sql($query = "") {
-			$this->DB_MSSQL($query);
+		function __construct($query = "") {
+			DB_MSSQL::__construct($query);
 		}
 	}
 }
-?>
+

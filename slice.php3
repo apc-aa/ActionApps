@@ -130,7 +130,6 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 $encap = ( ($encap=="false") ? false : true );
 
 require_once "./include/config.php3";
-require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."view.php3";
@@ -138,8 +137,6 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."mgettext.php3";
-require_once AA_INC_PATH."slice.class.php3";
-require_once AA_INC_PATH."hitcounter.class.php3";
 // function definitions:
 require_once AA_INC_PATH."slice.php3";
 
@@ -243,7 +240,7 @@ if ( $inc ) {                   // this section must be after add_vars()
         if (!$fp) {
             echo _m("No such file") ." $inc";
         } else {
-            FPassThru($fp);
+            fpassthru($fp);
         }
         ExitPage();
     }
@@ -363,8 +360,8 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
         $zid = new zids($sh_itm, 'l');
         AA_Hitcounter::hit($zid);
     }
-
-    if ( is_null($item = AA_Items::getItem($zid)) OR ($item->getStatusCode()<>1) ) {
+    
+    if ( !is_object($item = AA_Items::getItem($zid)) OR ($item->getStatusCode()<>1) ) {
        ExitPage();
     }
 
@@ -539,7 +536,7 @@ if ($mlxslice = MLXSlice($slice)) {
     $mlxView->preQueryZIDs($mlxslice,$conds);
 }
 
-$zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
+$zids = QueryZids( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
 
 if ($mlxslice) {
     $mlxView->postQueryZIDs($zids,$mlxslice,$slice_id);
@@ -550,7 +547,7 @@ if ($mlxslice) {
 if (!is_object($scr)) {
     $sess->register('scr');
     $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
-    $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
+    $scr = new AA_Scroller_Easy( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
 }
 
 // display 'All' option in scroller
@@ -620,4 +617,4 @@ if ($debug) {
 }
 
 ExitPage();
-?>
+

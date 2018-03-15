@@ -12,6 +12,7 @@
  * @version $Id$
  * @author
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @deprecated should be converted to widget
 */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -52,5 +53,5 @@ require_once AA_INC_PATH."itemfunc.php3";
 FrmJavascript('var listboxes = new Array();');
 if (!$varname) $varname = "hiercons";
 if ($param) show_fnc_hco($varname, "", "", $param, 0);
-?>
+
 

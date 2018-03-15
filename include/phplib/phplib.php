@@ -204,7 +204,7 @@ class Session {
     function put_id() {
         if (get_cfg_var('session.use_cookies') == 1) {
             $cookie_params = session_get_cookie_params();
-            setCookie($this->name, '', 0, $cookie_params['path'], $cookie_params['domain']);
+            setcookie($this->name, '', 0, $cookie_params['path'], $cookie_params['domain']);
             $_COOKIE[$this->name] = "";
         }
 
@@ -658,4 +658,4 @@ function page_close() {
         $sess->freeze();
     }
 }
-?>
+

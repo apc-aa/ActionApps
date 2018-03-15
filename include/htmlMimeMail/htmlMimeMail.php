@@ -10,7 +10,6 @@
 */
 
 require_once(__DIR__ . '/mimePart.php');
-require_once AA_INC_PATH."files.class.php3";  // file wrapper;
 
 class htmlMimeMail {
     /**
@@ -794,4 +793,4 @@ class htmlMimeMail {
         return implode(CRLF, $headers) . CRLF . CRLF . $this->output;
     }
 } // End of class.
-?>
+

@@ -62,7 +62,7 @@ function RedirectToCachedFile() {
         $phpThumb->DebugTimingMessage('skipped using cached image', __FILE__, __LINE__);
         $phpThumb->DebugMessage('Would have used cached file, but skipping due to phpThumbDebug', __FILE__, __LINE__);
         $phpThumb->DebugMessage('* Would have sent headers (1): Last-Modified: '.gmdate('D, d M Y H:i:s', $nModified).' GMT', __FILE__, __LINE__);
-        if ($getimagesize = @GetImageSize($phpThumb->cache_filename)) {
+        if ($getimagesize = @getimagesize($phpThumb->cache_filename)) {
             $phpThumb->DebugMessage('* Would have sent headers (2): Content-Type: '.phpthumb_functions::ImageTypeToMIMEtype($getimagesize[2]), __FILE__, __LINE__);
         }
         if (preg_match('#^'.preg_quote($nice_docroot).'(.*)$#', $nice_cachefile, $matches)) {
@@ -88,7 +88,7 @@ function RedirectToCachedFile() {
         }
         header('Last-Modified: '.gmdate('D, d M Y H:i:s', $nModified).' GMT');
         header('ETag: "'.md5_file($phpThumb->cache_filename).'"');
-        if ($getimagesize = @GetImageSize($phpThumb->cache_filename)) {
+        if ($getimagesize = @getimagesize($phpThumb->cache_filename)) {
             header('Content-Type: '.phpthumb_functions::ImageTypeToMIMEtype($getimagesize[2]));
         } elseif (preg_match('#\\.ico$#i', $phpThumb->cache_filename)) {
             header('Content-Type: image/x-icon');
@@ -117,7 +117,7 @@ if (!include_once(AA_PHPTHUMB_PATH.'phpthumb.class.php')) {  // Honza AA Change
 ob_end_clean();
 $phpThumb = new phpThumb();
 $phpThumb->DebugTimingMessage('phpThumb.php start', __FILE__, __LINE__, $starttime);
-$phpThumb->SetParameter('config_error_die_on_error', true);
+$phpThumb->setParameter('config_error_die_on_error', true);
 
 if (!phpthumb_functions::FunctionIsDisabled('set_time_limit')) {
     set_time_limit(60);  // shouldn't take nearly this long in most cases, but with many filters and/or a slow server...
@@ -474,7 +474,7 @@ while ($CanPassThroughDirectly && $phpThumb->src) {
     $SourceFilename = $phpThumb->ResolveFilenameToAbsolute($phpThumb->src);
 
     // security and size checks
-    if ($phpThumb->getimagesizeinfo = @GetImageSize($SourceFilename)) {
+    if ($phpThumb->getimagesizeinfo = @getimagesize($SourceFilename)) {
         $phpThumb->DebugMessage('Direct passthru GetImageSize() returned [w='.$phpThumb->getimagesizeinfo[0].';h='.$phpThumb->getimagesizeinfo[1].';t='.$phpThumb->getimagesizeinfo[2].']', __FILE__, __LINE__);
 
         if (!@$_GET['w'] && !@$_GET['wp'] && !@$_GET['wl'] && !@$_GET['ws'] && !@$_GET['h'] && !@$_GET['hp'] && !@$_GET['hl'] && !@$_GET['hs']) {
@@ -586,7 +586,7 @@ if ($phpThumb->rawImageData) {
             ImageSaveAlpha($phpThumb->gdimg_source, true);
         }
         $new_background_color = phpthumb_functions::ImageHexColorAllocate($phpThumb->gdimg_source, $bghexcolor, false, $alpha);
-        ImageFilledRectangle($phpThumb->gdimg_source, 0, 0, $phpThumb->w, $phpThumb->h, $new_background_color);
+        imagefilledrectangle($phpThumb->gdimg_source, 0, 0, $phpThumb->w, $phpThumb->h, $new_background_color);
     } else {
         $phpThumb->ErrorImage('failed to create "new" image ('.$phpThumb->w.'x'.$phpThumb->h.')');
     }
@@ -683,4 +683,4 @@ if (isset($_GET['phpThumbDebug']) && ($_GET['phpThumbDebug'] == '10')) {
 }
 ////////////////////////////////////////////////////////////////
 
-?>
+

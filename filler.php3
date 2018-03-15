@@ -126,9 +126,6 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."zids.php3";
-require_once AA_INC_PATH."slice.class.php3";
-require_once AA_INC_PATH."grabber.class.php3";
-require_once AA_INC_PATH.'scroller.php3';  // we need it, because there coud be scroller stored in session (in manager)
 
 
 function UseShowResult($txt,$url) {
@@ -166,8 +163,10 @@ function SendErrorPage($txt) {
         exit;
     }
     if ( !$_REQUEST["err_url"] ) {
-        if ($GLOBALS['debugfill']) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$_REQUEST["err_url"] );
-        echo HtmlPageBegin();
+        if ($GLOBALS['debugfill']) {
+            huhl("SendErrorPage with no url and txt=", $txt, " err_url=", $_REQUEST["err_url"]);
+        }
+        HtmlPageBegin();
         echo "</head><body>";
         if (is_array($txt)) {
             PrintArray($txt);
@@ -311,14 +310,13 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     } elseif ($_COOKIE['AA_Sess']) {
         // old unused approach
 
-        // require_once AA_INC_PATH."request.class.php3";
         // require_once AA_BASE_PATH."modules/site/router.class.php";
         // $options = array(
         //     'aa_url'          => AA_INSTAL_URL,
         //     'cookie_lifetime' => 60*60*24*365  // one year
         // );
         // // $client_auth - global - used in AA_Generator_Uid
-        // $client_auth = new AA_Client_Auth($options);
+        // $client_auth = new AA_ClientAuth($options);
         // if ($usr = $client_auth->checkAuth()) {
         //     $auth = $client_auth->getRemoteAuth();
         //     $GLOBALS['apc_state']['xuser'] = $usr;
@@ -492,4 +490,4 @@ if (is_array($result)) {
     SendOkPage( array("success" => $insert ? "insert" : "update" ), array($my_item_id));
 }
 
-?>
+

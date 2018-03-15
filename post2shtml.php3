@@ -148,4 +148,4 @@ function add_var3($varname, &$source, &$dest) {
         $dest[$varname] = $source;
     }
 }
-?>
+

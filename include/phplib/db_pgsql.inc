@@ -35,7 +35,7 @@ class DB_Pgsql {
   }
 
   /* public: constructor */
-  function DB_Pgsql($query = "") {
+  function __construct($query = "") {
     if($query) {
       $this->query($query);
     }
@@ -78,10 +78,10 @@ class DB_Pgsql {
     if ($this->Debug)
       printf("<br>Debug: query = %s<br>\n", $Query_String);
 
-    $this->Query_ID = pg_Exec($this->Link_ID, $Query_String);
+    $this->Query_ID = pg_exec($this->Link_ID, $Query_String);
     $this->Row   = 0;
 
-    $this->Error = pg_ErrorMessage($this->Link_ID);
+    $this->Error = pg_errormessage($this->Link_ID);
     $this->Errno = ($this->Error == "")?0:1;
     if (!$this->Query_ID) {
       $this->halt("Invalid SQL: ".$Query_String);
@@ -93,7 +93,7 @@ class DB_Pgsql {
   function next_record() {
     $this->Record = @pg_fetch_array($this->Query_ID, $this->Row++);
 
-    $this->Error = pg_ErrorMessage($this->Link_ID);
+    $this->Error = pg_errormessage($this->Link_ID);
     $this->Errno = ($this->Error == "")?0:1;
 
     if (is_array($this->Record)) {
@@ -110,7 +110,7 @@ class DB_Pgsql {
 
   function lock($table, $mode = "write") {
     if ($mode == "write") {
-      $result = pg_Exec($this->Link_ID, "lock table $table");
+      $result = pg_exec($this->Link_ID, "lock table $table");
     } else {
       $result = 1;
     }
@@ -118,7 +118,7 @@ class DB_Pgsql {
   }
 
   function unlock() {
-    return pg_Exec($this->Link_ID, "commit");
+    return pg_exec($this->Link_ID, "commit");
   }
 
 
@@ -131,8 +131,8 @@ class DB_Pgsql {
       $q  = sprintf("select nextid from %s where seq_name = '%s'",
                 $this->Seq_Table,
                 $seq_name);
-      $id  = @pg_Exec($this->Link_ID, $q);
-      $res = @pg_Fetch_Array($id, 0);
+      $id  = @pg_exec($this->Link_ID, $q);
+      $res = @pg_fetch_array($id, 0);
 
       /* No current value, make one */
       if (!is_array($res)) {
@@ -141,7 +141,7 @@ class DB_Pgsql {
                  $this->Seq_Table,
                  $seq_name,
                  $currentid);
-        $id = @pg_Exec($this->Link_ID, $q);
+        $id = @pg_exec($this->Link_ID, $q);
       } else {
         $currentid = $res["nextid"];
       }
@@ -150,7 +150,7 @@ class DB_Pgsql {
                $this->Seq_Table,
                $nextid,
                $seq_name);
-      $id = @pg_Exec($this->Link_ID, $q);
+      $id = @pg_exec($this->Link_ID, $q);
       $this->unlock();
     } else {
       $this->halt("cannot lock ".$this->Seq_Table." - has it been created?");
@@ -168,7 +168,7 @@ class DB_Pgsql {
        $this->connect();
        $id = pg_exec($this->Link_ID, "select * from $table");
        if ($id < 0) {
-          $this->Error = pg_ErrorMessage($id);
+          $this->Error = pg_errormessage($id);
           $this->Errno = 1;
           $this->halt("Metadata query failed.");
        }
@@ -179,18 +179,18 @@ class DB_Pgsql {
       }
     }
 
-    $count = pg_NumFields($id);
+    $count = pg_numfields($id);
 
     for ($i=0; $i<$count; $i++) {
       $res[$i]["table"] = $table;
-      $res[$i]["name"]  = pg_FieldName  ($id, $i);
-      $res[$i]["type"]  = pg_FieldType  ($id, $i);
-      $res[$i]["len"]   = pg_FieldSize  ($id, $i);
+      $res[$i]["name"]  = pg_fieldname  ($id, $i);
+      $res[$i]["type"]  = pg_fieldtype  ($id, $i);
+      $res[$i]["len"]   = pg_fieldsize  ($id, $i);
       $res[$i]["flags"] = "";
     }
 
     if ($table) {
-      pg_FreeResult($id);
+      pg_freeresult($id);
     }
 
     return $res;
@@ -256,9 +256,9 @@ class DB_Pgsql {
 }
 if(!class_exists("DB_Sql"))	{
     class DB_Sql extends DB_Pgsql {
-        function DB_Sql($query = "") {
-            $this->DB_Pgsql($query);
+        function __construct($query = "") {
+            DB_Pgsql::__construct($query);
         }
     }
 }
-?>
+

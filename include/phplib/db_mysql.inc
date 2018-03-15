@@ -351,7 +351,7 @@ class DB_Sql {
         if ($table) {
             $id = $this->query("SHOW FIELDS FROM $table");
             if (!$id) {
-                $this->halt("Metadata query failed (table $table).".$this->LinkID);
+                $this->halt("Metadata query failed (table $table).".$this->Link_ID);
                 return false;
             }
         } else {
@@ -451,4 +451,4 @@ class DB_Sql {
     }
 }
 
-?>
+

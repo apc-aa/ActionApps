@@ -26,7 +26,7 @@ class DB_msql {
   var $PConnect  = 0;     ## Set to 1 to use persistent database connections
 
   /* public: constructor */
-  function DB_msql($query = "") {
+  function __construct($query = "") {
     if($query) {
       $this->query($query);
     }
@@ -179,9 +179,9 @@ class DB_msql {
 }
 if(!class_exists("DB_Sql"))	{
 	class DB_Sql extends DB_msql {
-		function DB_Sql($query = "") {
-			$this->DB_msql($query);
+		function __construct($query = "") {
+			DB_msql::__construct($query);
 		}
 	}
 }
-?>
+
