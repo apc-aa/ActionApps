@@ -53,12 +53,14 @@ if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
 
 // ------------------------ Export --------------------------
 // feeding lookup
-$feedto["Init"] = false;  // create array
-$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
-$db->query($SQL);
-while ($db->next_record()) {
-    $feedto[unpack_id($db->f(to_id))] = true;
-}
+$feedto = DB_AA::select(array('unid'=>true), "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", array(array('from_id',$slice_id,'l')));
+
+//$feedto["Init"] = false;  // create array
+//$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
+//$db->query($SQL);
+//while ($db->next_record()) {
+//    $feedto[unpack_id($db->f('to_id'))] = true;
+//}
 
 do {
     if ( isset($E) AND is_array($E) ) {  // Export to any slice
@@ -88,11 +90,8 @@ do {
 
 // ------------------------ Import --------------------------
 // feeding lookup
-$feedfrom["Init"] = false;  // create array
-$SQL= "SELECT from_id FROM feeds WHERE to_id='$p_slice_id'";
-$db->query($SQL);
-while ($db->next_record())
-  $feedfrom[unpack_id($db->f(from_id))] = true;
+
+$feedfrom = DB_AA::select(array('unid'=>true), "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", array(array('to_id',$slice_id,'l')));
 
 do {
     if ( isset($I) AND is_array($I) ) {  // insert to categories
@@ -127,9 +126,9 @@ do {
 
 if ( count($err) <= 1 ) {
     if ( isset($I) AND is_array($I) ) {   // slice imports some slices
-        go_url( StateUrl(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
+        go_url( StateUrl(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     } else {
-        go_url( StateUrl(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
+        go_url( StateUrl(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     }
 } else {
   MsgPage(StateUrl(self_base()."se_import.php3"), $err);
@@ -137,4 +136,3 @@ if ( count($err) <= 1 ) {
 
 page_close();
 
-?>

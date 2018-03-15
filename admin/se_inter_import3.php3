@@ -52,7 +52,7 @@ foreach ($f_slices as $f_slice) {
                  WHERE slice_id='".q_pack_id($slice_id)."'
                    AND remote_slice_id='".q_pack_id($remote_slice_id)."'");
     if ($db->next_record()) {       // feed from $remote_slice_id to $slice_id is already contained in the table
-        $msg = rawurlencode(MsgOK(_m("The import was already created")));
+        $msg = rawurlencode(MsgOk(_m("The import was already created")));
         continue;
     }
 
@@ -106,9 +106,9 @@ foreach ($f_slices as $f_slice) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
-    $msg = rawurlencode(MsgOK(_m("The import was successfully created")));
+    $msg = rawurlencode(MsgOk(_m("The import was successfully created")));
 }
 
 go_url( StateUrl(self_base() . "se_inter_import.php3"). "&Msg=" . $msg );
 page_close()
-?>
+

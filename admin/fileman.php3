@@ -212,13 +212,12 @@ echo "</table>
 <tr><td>";
 echo '<table border="0" cellspacing="0" cellpadding="5" align="center">';
 
-$space = 0;
-echo "<tr height=\"$space\"><td class=\"tabtxt\" colspan=\"2\"></td></tr>";
+echo "<tr><td class=\"tabtxt\" colspan=\"2\"></td></tr>";
 echo inputplusaction("createfile",_m("Create new file"));
 echo "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"10485760\">";
 echo uilr("<input type=\"file\" name=\"uploadarg\">",
     fileAction("upload",_m("Upload file")." (max. 10 MB)"));
-echo "<tr height=\"$space\"><td class=\"tabtxt\" colspan=\"2\"></td></tr>";
+echo "<tr><td class=\"tabtxt\" colspan=\"2\"></td></tr>";
 
 $db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {

@@ -139,7 +139,6 @@ class AA_Csv_Importer {
  *
  */
     function check() {
-        global $sess;
         if (!CheckPerms( $this->auth_uid, "slice", $this->slice_id, PS_EDIT_ALL_ITEMS)) {
             MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to setting "));
             exit;
@@ -188,7 +187,6 @@ class AA_Csv_Importer {
  *
  */
     function upload() {
-        global $sess;
         $this->_prepare();
 
         //-----------------------------------------------------------------------------
@@ -222,7 +220,7 @@ class AA_Csv_Importer {
                 $itemContent->setSliceID($this->slice_id);
                 $added_to_db = $itemContent->storeItem($this->actionIfItemExists, array(false));     // not invalidate cache
                 if ($added_to_db == false) {
-                    $err = _m("Cannot store item to DB"). ' '. ItemContent::LastErrMsg();
+                    $err = _m("Cannot store item to DB"). ' '. ItemContent::lastErrMsg();
                 }
             }
             if ($err) {
@@ -295,7 +293,7 @@ class AA_Csv_Importer {
             }
             $itemContent->showAsRowInTable($slf);
         }
-        FrmTabEnd("");
+        FrmTabEnd();
         // end preview
     }
 
@@ -303,8 +301,6 @@ class AA_Csv_Importer {
  * @param $set_default
  */
     function printForm($set_default) {
-        global $sess;
-
         //----------------------------------------------------------------------------
         // Create output fields
 
@@ -384,14 +380,14 @@ class AA_Csv_Importer {
                <td class="tabtxt" align="center"><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
                <td class="tabtxt"><?php
                  echo _m("Map item id from"). '&nbsp';
-                 FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ? $this->itemIdMappedFrom : ( !$set_default ? $this->idFrom : $inFields[0]));
+                 FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ? $this->itemIdMappedFrom : ( !$set_default ? '' : $inFields[0]));
                  echo '<br>';
                  $mapping_options = array ( 'store'     => _m('unpacked long id (32 chracters)'),
                                             'unpack_id' => _m('packed long id (16 chracters)'),
                                             'string2id' => _m('string to be converted (string2id) - with param:'));
 
                  FrmSelectEasy("itemIdMappedActions",$mapping_options, !$set_default ? $this->itemIdMappedActions : 'store');
-                 echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. (!$set_default ? $this->itemIdMappedParams : '').'"></input>';
+                 echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. (!$set_default ? $this->itemIdMappedParams : '').'">';
                ?></td>
             </tr>
         <?php
@@ -421,7 +417,7 @@ class AA_Csv_Importer {
             FrmInputChBox('save_periodical', _m('Upload periodicaly'), $this->save_periodical);
         }
 
-        FrmTabEnd($form_buttons, $sess, $this->slice_id);
+        FrmTabEnd($form_buttons);
         echo "</form>";
     }
 

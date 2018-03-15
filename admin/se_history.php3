@@ -33,7 +33,6 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
-require_once AA_INC_PATH."manager.class.php3";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -70,7 +69,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
      *  @param $akce_param  Not used
      *  @return false or error message
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         global $pagecache;
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
@@ -115,7 +114,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         /** @todo Should be changed to different permission */
         return IfSlPerm(PS_EDIT);
     }
@@ -293,4 +292,4 @@ $manager->displayPage($zids, 'sliceadmin', 'history');
 
 page_close();
 
-?>
+

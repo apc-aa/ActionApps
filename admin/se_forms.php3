@@ -33,8 +33,6 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
-require_once AA_INC_PATH."manager.class.php3";
-require_once AA_INC_PATH."form.class.php3";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -83,4 +81,4 @@ require_once AA_INC_PATH."menu.php3";
 
 $manager->displayPage($zids, 'sliceadmin', 'forms');
 page_close();
-?>
+

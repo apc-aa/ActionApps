@@ -104,4 +104,4 @@ function failed($msg) {
     MsgPage($return_url,$msg);
     // Note MsgPage exits
 }
-?>
+

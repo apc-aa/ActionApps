@@ -32,14 +32,11 @@ require_once AA_INC_PATH . "view.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
 require_once AA_INC_PATH . "feeding.php3";
-require_once AA_INC_PATH . "profile.class.php3";
 require_once AA_INC_PATH . "itemfunc.php3";
 require_once AA_INC_PATH . "notify.php3";
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_INC_PATH . "formutil.php3";
-require_once AA_INC_PATH . "slice.class.php3";
 require_once AA_INC_PATH . "msgpage.php3";
-require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 
 function CountItemsInBins() {
@@ -48,14 +45,14 @@ function CountItemsInBins() {
     $now = now('step');
     $ret = array('folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0);
 
-    $db->tquery("SELECT status_code, count(*) as cnt FROM item
+    $db->query("SELECT status_code, count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                  GROUP BY status_code");
                  while ( $db->next_record() ) {
                      $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
                  }
 
-    $db->tquery("SELECT count(*) as cnt FROM item
+    $db->query("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
                    AND expiry_date <= '$now' ");
@@ -63,7 +60,7 @@ function CountItemsInBins() {
                        $ret['expired'] = $db->f('cnt');
                    }
 
-    $db->tquery("SELECT count(*) as cnt FROM item
+    $db->query("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
                    AND publish_date > '$now'
@@ -215,11 +212,11 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
                       'trash'  => AA_BIN_TRASH
                     );
 
-$zids = QueryZIDs( array($slice_id), $aa_set->getConds(), $aa_set->getSort(), $BIN_CONDS[$manager->getBin()]);
+$zids = QueryZids( array($slice_id), $aa_set->getConds(), $aa_set->getSort(), $BIN_CONDS[$manager->getBin()]);
 
 require_once AA_INC_PATH."menu.php3";
 
 $manager->displayPage($zids, 'itemmanager', $manager->getBin(), $profile->getProperty('ui_manager', 'css_add'));
 
 page_close();
-?>
+

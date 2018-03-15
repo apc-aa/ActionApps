@@ -119,13 +119,13 @@ echo $Msg;
     FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
     FrmInputText("author",_m("Author"), $author, 60, 25, true);
     FrmInputText("e_mail",_m("E-mail"), $e_mail, 60, 25, false);
-    FrmTextArea("body", _m("Text of discussion comment"), $body, 10, 40, false);
+    FrmTextarea("body", _m("Text of discussion comment"), $body, 10, 40, false);
     FrmDate("date", _m('Date'), $date, false, '', '', true);
     FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
     FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
     FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);
-    FrmTextArea("free1", _m("Free 1"), $free1, 5, 40, false);
-    FrmTextArea("free2", _m("Tracking"), $free2, 5, 40, false);
+    FrmTextarea("free1", _m("Free 1"), $free1, 5, 40, false);
+    FrmTextarea("free2", _m("Tracking"), $free2, 5, 40, false);
 ?>
 </table>
 <tr><td align="center">

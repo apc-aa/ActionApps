@@ -21,7 +21,7 @@ parent._navigator.location=this.url.value
 
 function feedFields()
 {
-top.opener.document.inputform.elements['<? echo $_GET["var_id"]; ?>'].value = document.forms[1].localURL.value;
+top.opener.document.inputform.elements['<?php echo $_GET["var_id"]; ?>'].value = document.forms[1].localURL.value;
 }
 
 function startURLcheck(){
@@ -51,7 +51,7 @@ document.forms[0].url.value=parent.frames[1].location;
  enctype="text/plain" method="post" name="navigator" onSubmit="changeURLlocation();return false;">
 <input type=button value=Back onClick="history.go(-1)">
 <input type=button value=Forward onClick="history.go(+1)">
-<input type=button value=Home onClick="parent.frames[1].location='<? echo htmlspecialchars($_GET["url"]); ?>'">
+<input type=button value=Home onClick="parent.frames[1].location='<?php echo htmlspecialchars($_GET["url"]); ?>'">
 <input
  size="60" name="url"
  value="http://"> <input

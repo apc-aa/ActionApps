@@ -43,15 +43,23 @@ if (!IsSuperadmin()) {
 }
 // ----------------------------------------------------------------------------------------
 
-function AdminLink($table, $id, $slice_id='') {
+function AdminLink($table, $id, $slice_id = '')
+{
     switch ($table) {
-    case 'item':    return AafinderItemLink($id,$slice_id);
-    case 'content': return AafinderItemLink($id,$slice_id);
-        case 'discussion': return AafinderItemLink($id,$slice_id);
-        case 'view':       return AafinderViewLink($id);
-        case 'slice':      return AafinderSliceLink($id);
-        case 'field':      return AafinderFieldLink($id,$slice_id);
-        case 'site_spot':  return AafinderSiteLink($id,$slice_id);
+        case 'item':
+            return AafinderItemLink($id, $slice_id);
+        case 'content':
+            return AafinderItemLink($id, $slice_id);
+        case 'discussion':
+            return AafinderItemLink($id, $slice_id);
+        case 'view':
+            return AafinderViewLink($id);
+        case 'slice':
+            return AafinderSliceLink($id);
+        case 'field':
+            return AafinderFieldLink($id, $slice_id);
+        case 'site_spot':
+            return AafinderSiteLink($id, $slice_id);
     }
 }
 
@@ -88,7 +96,7 @@ function query_search($where) {
 
     $num_rows = $db->num_rows();
 
-    $output .= $num_rows." "._m('Show results with string')."  <b><i>$where</i></b><br>";
+    $output = $num_rows." "._m('Show results with string')."  <b><i>$where</i></b><br>";
 
     $items = array(array(_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by' ));
     while ($db->next_record()) {
@@ -100,7 +108,7 @@ function query_search($where) {
         $items[]    = array("<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $db->f('status_code'), date('Y-m-d H:i',$db->f('post_date')), date('Y-m-d H:i',$db->f('last_edit')),$db->f('edited_by'));
     }
 
-    return GetHtmlTable($items, 'th'). '<br><br>';
+    return $output. GetHtmlTable($items, 'th'). '<br><br>';
 }
 
 function PrintItemInfo($item_id) {
@@ -109,7 +117,7 @@ function PrintItemInfo($item_id) {
     if ($item) {
         $long_id = $item->getItemID();
         $sid     = $item->getSliceID();
-        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$sid&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a>";
+        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>";
         echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
         $format = '_#HEADLINE';
         echo "<br>_#HEADLINE: ". $item->unalias($format);
@@ -123,11 +131,13 @@ function PrintItemInfo($item_id) {
     $long_id = $zid->longids(0);
     if ($long_id) {
         echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
-        print_r(GetTable2Array('SELECT * FROM item WHERE id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        print_r(DB_AA::select(array(), 'SELECT * FROM `item`', array(array('id',$long_id, 'l'))));
+        // GetTable2Array('SELECT * FROM item WHERE id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
         echo "</pre>";
 
         echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
-        print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        //print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        print_r(DB_AA::select(array(), 'SELECT * FROM `content`', array(array('item_id',$long_id, 'l'))));
         echo "</pre>";
 
         if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
@@ -140,11 +150,11 @@ function PrintItemInfo($item_id) {
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";
         }
-        if ($rec = GetTable2Array('SELECT * FROM object_text WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields')) {
+        if ($rec = DB_AA::select(array(), 'SELECT * FROM `object_text`', array(array('object_id',$long_id)))) {
             echo '<h3>'. _m('Object') .'</h3><pre>';
             print_r($rec);
-            print_r(GetTable2Array('SELECT * FROM object_integer WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
-            print_r(GetTable2Array('SELECT * FROM object_float   WHERE object_id = \''.quote($long_id).'\'', '', 'aa_fields'));
+            print_r(DB_AA::select(array(), 'SELECT * FROM `object_integer`', array(array('object_id',$long_id))));
+            print_r(DB_AA::select(array(), 'SELECT * FROM `object_float`', array(array('object_id',$long_id))));
             echo "</pre>";
         }
 
@@ -424,6 +434,7 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
     echo '<table>';
     foreach($table2search as $tbl => $tblinfo) {
         $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function($col) { return ($col['operators'] == 'text'); }));
+        //$fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), AA_Metabase::getModuleField($tbl)));
         $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), AA_Metabase::getModuleFields($tbl)));
 
         $addfields  = $tblinfo['id']       ? (', '.$tblinfo['id'] ).       ' as iid' : '';
@@ -547,4 +558,4 @@ FrmTabEnd();
 
 HtmlPageEnd();
 page_close ();
-?>
+

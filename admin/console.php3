@@ -33,7 +33,7 @@ require_once AA_INC_PATH."mgettext.php3";
 // ----------------------------------------------------------------------------------------
 
 if (!IsSuperadmin()) {
-    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
+    MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to add slice"));
     exit;
 }
 

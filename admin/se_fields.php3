@@ -58,7 +58,6 @@ $varset = new Cvarset();
  * @param $separate=false
  */
 function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $alias="", $separate=false, $analyze=false) {
-    global $sess;
     $name = safe($name); $pri=safe($pri);
 
     $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
@@ -207,7 +206,7 @@ if ($update) {
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         if (count($err) <= 1) {
-            $Msg = MsgOK(_m("Fields update successful"));
+            $Msg = MsgOk(_m("Fields update successful"));
             $update = false;   // displyas fields from database instead of posted values (next in the code)
             }
     } while (false);           //in order we can use "break;" statement
@@ -287,7 +286,7 @@ $form_buttons['slice_fields'] = array('value' => ($slice_fields ? 1 : 0));
 
 // one row for possible new field
 ShowNewField($from_slice, $slice_id);
-FrmTabEnd( $form_buttons, $sess, $slice_id);
+FrmTabEnd( $form_buttons);
 
 echo '</form>';
 

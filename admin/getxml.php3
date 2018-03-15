@@ -68,7 +68,6 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."csn_util.php3";
-require_once AA_INC_PATH."slice.class.php3";
 
 //-------------------------- Constants -----------------------------------------
 
@@ -120,7 +119,7 @@ function code($v, $cdata=false) {
  * @return "HTML"/"PLAIN"
  */
 function GetFlagFormat($flag) {
-    return ($flag & HTML_FORMAT) ? "HTML" : "PLAIN";
+    return ($flag & FLAG_HTML) ? "HTML" : "PLAIN";
 }
 /** Error function
  * @param $str
@@ -135,16 +134,17 @@ function Error($str) {
  * Find correct feeding slices
  * @param $node_name
  * @param $user
- * @return array of slice ids
+ * @return array of unpacked slice ids
  */
 function GetFeedingSlices( $node_name, $user) {
-    $db = getDB();
-    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='') AND (user='$user' OR user='')");
-    while ($db->next_record()) {
-        $slices[] = unpack_id($db->f(slice_id));
-    }
-    freeDB($db);
-    return $slices;
+    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid) FROM ef_permissions", array(array('node',array($node_name,'')),array('user',array($user,''))));
+//    $db = getDB();
+//    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='') AND (user='$user' OR user='')");
+//    while ($db->next_record()) {
+//        $slices[] = unpack_id($db->f('slice_id'));
+//    }
+//    freeDB($db);
+//    return $slices;
 }
 
 /** CheckFeedingPermissions function
@@ -153,7 +153,7 @@ function GetFeedingSlices( $node_name, $user) {
   * @param $slice_id
   * @param $node_name
   * @param $user
-  * @return next_record from db of permissions
+  * @return bool next_record from db of permissions
   */
 function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
     return (bool)DB_AA::select1("SELECT slice_id FROM ef_permissions WHERE slice_id='".q_pack_id($slice_id)."' AND (node='$node_name' OR node='') AND (user='$user' OR user='')", 'slice_id');
@@ -242,7 +242,7 @@ function GetBaseFieldContent(&$slice_fields, $ftype, &$content4id) {
     }
     $f    = GetBaseFieldId($slice_fields,$ftype);
     $cont = $content4id[$f][0];
-    return ($cont['flag'] & HTML_FLAG) ? strip_tags($cont['value']) : $cont['value'];
+    return ($cont['flag'] & FLAG_HTML) ? strip_tags($cont['value']) : $cont['value'];
 }
 /** GetXMLFieldData function
  * @param $slice_id
@@ -512,7 +512,7 @@ if ($ids) {
      */
     $ids           = explode('-',$ids);
     $restrict_zids = new zids($ids);
-    $zids          = QueryZIDs( array($slice_id), $conds, '', 'ALL', 0, $restrict_zids);
+    $zids          = QueryZids( array($slice_id), $conds, '', 'ALL', 0, $restrict_zids);
     $ids           = $zids->longids();
     if ($ids) {
         $content        = GetItemContent($ids);     // get the content of all items
@@ -547,7 +547,7 @@ if ($ids) {
     $ids  = "";
     $time = 0;
     while ($db->next_record()) {
-        $ids[] = unpack_id($db->f(id));
+        $ids[] = unpack_id($db->f('id'));
         $time  = max( $time, $db->f('publish_date'), $db->f('last_edit'));   // save time of the newest item
     }
     freeDB($db);
@@ -585,4 +585,4 @@ if ($slice_id && $ids) {        // feeding mode
 
 echo "</rdf:RDF>";
 
-?>
+

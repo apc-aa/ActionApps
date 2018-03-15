@@ -56,7 +56,6 @@
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH. 'import_util.php3';
-require_once AA_INC_PATH. 'files.class.php3';
 
 define("FILE_PREFIX", 'importdata');
 
@@ -167,11 +166,11 @@ function InitPage() {}
               for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
                   $caption[] = "Field ".($i+1);
               }
-              FrmTabRow($caption,true);
+              FrmTabRow($caption);
               FrmTabRow($csvRec);
               $numRows--;
           } else {
-              FrmTabRow($csvRec,true);
+              FrmTabRow($csvRec);
           }
           while ($numRows-- > 0) {
               $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
@@ -180,7 +179,7 @@ function InitPage() {}
               }
               FrmTabRow($csvRec);
           }
-          FrmTabEnd("");
+          FrmTabEnd();
           fclose($handle);
       }
       if ($err) {

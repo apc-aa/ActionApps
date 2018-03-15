@@ -53,7 +53,7 @@ $SQL= "SELECT name, id FROM feeds, slice
           AND feeds.to_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while ($db->next_record()) {
-    $impslices[unpack_id($db->f(id))] = $db->f(name);
+    $impslices[unpack_id($db->f('id'))] = $db->f('name');
 }
 
 // lookup external fed slices
@@ -62,16 +62,16 @@ $SQL = "SELECT remote_slice_id, remote_slice_name, node_name
         WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while ($db->next_record()) {
-    $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
-    $remote_slices[unpack_id($db->f(remote_slice_id))] = 1;       // mark slice as external
+    $impslices[unpack_id($db->f('remote_slice_id'))] = $db->f('node_name')." - ".$db->f('remote_slice_name');
+    $remote_slices[unpack_id($db->f('remote_slice_id'))] = 1;       // mark slice as external
 }
 // lookup RSS feeds
 $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds
        WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while ($db->next_record()) {
-    $u_remote_slice_id = attr2id($db->f(server_url));
-    $impslices[$u_remote_slice_id] = "RSS - ".$db->f(name);
+    $u_remote_slice_id = attr2id($db->f('server_url'));
+    $impslices[$u_remote_slice_id] = "RSS - ".$db->f('name');
     $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
 }
 
@@ -109,7 +109,7 @@ if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
 }
 
 // find out list of "to fields"
-$to_fields = GetFields4Select($slice_id);
+$to_fields = AA_Fields::getFields4Select($slice_id);
 
 // find out list of "from fields"
 $from_fields[_m("-- Not map --")]           = _m("-- Not map --");
@@ -118,7 +118,7 @@ $from_fields[_m("-- Joined fields --")]     = _m("-- Joined fields --");
 $from_fields[_m("-- RSS field or expr --")] = _m("-- RSS field or expr --");
 
 if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
-    $from_fields += GetFields4Select($from_slice_id);
+    $from_fields += AA_Fields::getFields4Select($from_slice_id);
 } else {                                     // remote fields : from feedmap table
     if (isset($map_to) && is_array($map_to)) {
         foreach ($map_to as $k => $v) {

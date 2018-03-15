@@ -122,7 +122,7 @@ if ($feed_id) { // cross server feeding
 
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);
-        if ( $id == UNPACKED_THE_SAME_CAT ) {           // the same category
+        if ( $id == UNPACKED_AA_THE_SAME_CATE ) {           // the same category
             $id = 0;
         }
         $catVS->clear();
@@ -139,7 +139,7 @@ if ($feed_id) { // cross server feeding
         foreach ($_GET['F'] as $index => $val) {
             $from_cat = ParseIdA($val, $app);
             $to_cat = $_GET['T'][$index];
-            if ( ($to_cat == UNPACKED_THE_SAME_CAT) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
+            if ( ($to_cat == UNPACKED_AA_THE_SAME_CATE) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
                 $to_cat = $from_cat;
             }
             $catVS->clear();
@@ -159,10 +159,10 @@ if ($feed_id) { // cross server feeding
 }
 
 if ( count($err) <= 1 ) {
-    go_url( StateUrl(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
+    go_url( StateUrl(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
 } else {
     MsgPageMenu(StateUrl(self_base()."se_import.php3"), $err, "admin");
 }
 
 page_close();
-?>
+

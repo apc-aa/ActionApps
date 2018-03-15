@@ -67,8 +67,8 @@ $SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
 $db->query($SQL);
 
 while ($db->next_record()) {
-    $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
-    $remote_slices[unpack_id($db->f(remote_slice_id))] = $db->f(feed_id);
+    $impslices[unpack_id($db->f('remote_slice_id'))] = $db->f('node_name')." - ".$db->f('remote_slice_name');
+    $remote_slices[unpack_id($db->f('remote_slice_id'))] = $db->f('feed_id');
 }
 
 if ( !isset($impslices) OR !is_array($impslices)){

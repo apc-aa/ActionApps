@@ -62,7 +62,7 @@ if (substr($data,0,1) != "<") {
 }                                                                   // from the server module
 
 // try to parse xml document
-if (!($aa_rss = aa_rss_parse($data,"establish_mode"))) {
+if (!($aa_rss = aa_rss_parse($data))) {
     AA_Log::write("CSN","Establishing mode: Unable to parse XML data");
     MsgPage(StateUrl(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
@@ -100,7 +100,7 @@ $form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m(
   FrmInputChBox('exact_copy', _m("Exact copy"), $exact_copy, false, '', 1, false,
                _m('The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master.'));
 
-  FrmTabEnd($form_buttons, $sess, $slice_id);
+  FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php

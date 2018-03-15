@@ -44,7 +44,6 @@ require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
-require_once AA_INC_PATH."slice.class.php3";
 //mimo include mlx functions
 require_once AA_INC_PATH."mlx.php";
 
@@ -89,8 +88,8 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
-    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION).  // for SelectRelations
-                               getFrmJavascript($js)));
+    // inputform.js for SelectRelations
+    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION).  getFrmJavascript($js));
 }
 
 // Allow edit current slice without slice_pwd
@@ -321,4 +320,4 @@ $form = new inputform($inputform_settings);
 $form->printForm($content4id, $slice, $edit);
 
 page_close();
-?>
+

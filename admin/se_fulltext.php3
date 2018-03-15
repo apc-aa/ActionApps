@@ -104,7 +104,7 @@ if ( $update ) {
 
         $SQL = "UPDATE slice SET ". $varset->makeUPDATE()." WHERE id='".q_pack_id($slice_id)."'";
 
-        if ( !$db->tquery($SQL)) {
+        if ( !$db->query($SQL)) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }
@@ -113,7 +113,7 @@ if ( $update ) {
 
     } while (false);
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("Fulltext format update successful"));
+        $Msg = MsgOk(_m("Fulltext format update successful"));
     }
 }
 
@@ -169,7 +169,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchtags.js" integrity="sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/fold/xml-fold.js" integrity="sha256-l/TrijjAvQgiGYppltKp2PLTBGe7s7tPiid0WoaLeMY=" crossorigin="anonymous"></script>
 <style>
-  .CodeMirror { height:auto; min-height: 100px; font-size: 12px}
+  .CodeMirror { height:auto; min-height: 100px; font-size: 12px; }
   .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
 </style>
 <script>
@@ -221,7 +221,7 @@ FrmInputChBox("discus_disabled", _m("New comments disabled"), $discus_disabled);
 $slice = AA_Slice::getModule($slice_id);
 PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $sess, $slice_id);
 
-FrmTabEnd("", $sess, $slice_id);
+FrmTabEnd();
 ?>
 </form>
 <script> CodeMirror.fromTextArea(document.getElementById('fulltext_format_bottom'), { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" }); </script>

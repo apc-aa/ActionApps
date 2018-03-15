@@ -80,17 +80,17 @@ echo '
 $fields = AA_Slice::getModule($slice_id)->fields('pri');
 
 echo '
-<tr><td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
+<tr><td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">
 <tr><td class="tabtit">'._m("Field IDs").':</td></tr>';
 foreach ($fields as $fid) {
     echo "<tr><td class=\"tabtxt\">$fid</td></tr>";
 }
 echo '</table>
 </td>
-<td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
+<td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">
 <tr><td class="tabtit">'._m("Triggers").':</td></tr>
 <tr><td class="tabtxt">'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
-<tr><td class="tabtxt"><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">';
+<tr><td class="tabtxt"><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">';
 echo '<tr><td class="tabtit"><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
 AA_Jstriggers::printSummary();
 echo '

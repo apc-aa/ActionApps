@@ -63,7 +63,7 @@ function showFeedActions($feed_id) {
                tv_field_value($feed_id,'fill','fire').
                tv_field_value($feed_id,'time','newest_item').
                tv_field_value($feed_id,'debugfeed','debug');
-    $out  = "<a href=\"javascript:OpenWindowTop($url)\" title=\"downloads remote items from the feed and possibly store it to the desired slice (if \"write\" checkbox is checked\">"._m('feed')."</a>&nbsp;";
+    $out  = "<a href=\"javascript:OpenWindowTop($url)\" title=\"downloads remote items from the feed and possibly store it to the desired slice (if 'write' checkbox is checked\">"._m('feed')."</a>&nbsp;";
     $out .= "<a href=\"javascript:OpenWindowTop('http://feedvalidator.org/check.cgi?url='+escape($url+'&display=1'))\" title=\"checks the validity of the feed by feedvalidator.org\">"._m('validate')."</a>&nbsp;";
     $out .= "<a href=\"javascript:OpenWindowTop($url+'&display=1')\" title=\"displays the source data in new window\">"._m('show')."</a>";
     return $out;
@@ -75,11 +75,9 @@ $tview = 'aarss_tv';
 
 /// this must be function
 /** GetAARSS_tv function
- * @param $viewID
- * @param $processForm
  * @return array
  */
-function GetAARSS_tv($viewID, $processForm = false) {
+function GetAARSS_tv() {
 
     $debug_params = array( 0 => '0 - none', 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9 - maximum');
     return array (
@@ -155,7 +153,7 @@ function GetAARSS_tv($viewID, $processForm = false) {
         ));
 }
 
-$aarss_tv = GetAARSS_tv('aarss_tv');
+$aarss_tv = GetAARSS_tv();
 
 TV_PageBegin($aarss_tv);
 FrmJavascriptFile('javascript/js_lib.js');
@@ -173,4 +171,4 @@ if ($err) echo "<b>$err</b>";
 HtmlPageEnd();
 page_close();
 
-?>
+

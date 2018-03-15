@@ -237,7 +237,7 @@ echo '
          are offered on this page.")
 .'</b></td></tr>';
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 if ($show_form) {
     echo '<tr><td><a id="form_content"></a><textarea cols="70" rows="40" style="width:100%" >';
@@ -249,4 +249,4 @@ if ($show_form) {
 echo "</table></form>";
 HtmlPageEnd();
 page_close();
-?>
+

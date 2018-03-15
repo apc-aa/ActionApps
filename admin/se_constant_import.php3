@@ -83,7 +83,7 @@ if ($update) {
         }
 
         if (count($err) <= 1) {
-            $Msg .= MsgOK(_m("Constants update successful"));
+            $Msg .= MsgOk(_m("Constants update successful"));
         }
         go_url(StateUrl(get_url($back_url, 'Msg='.urlencode($Msg))));
     } while( 0 );           // in order we can use "break;" statement
@@ -120,7 +120,7 @@ $delimiters = array(''   => '-none- (Name is the same as Value)',
                     '~'  => 'tilde ~');
 FrmInputSelect('delimiter', _m('Name - Value delimiter'), $delimiters, '', true);
 FrmTextarea('constant_list', _m("Constants"), $constant_list, 25, 60, false, _m('write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)'));
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php
