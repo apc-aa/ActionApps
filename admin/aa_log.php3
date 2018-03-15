@@ -32,7 +32,6 @@ require_once AA_INC_PATH . "varset.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
-require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 
 if ( !IsSuperadmin() ) {
@@ -57,4 +56,3 @@ require_once AA_INC_PATH."menu.php3";
 $manager->displayPage($zids, 'aaadmin', 'log');
 
 page_close();
-?>
