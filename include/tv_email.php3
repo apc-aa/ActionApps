@@ -116,7 +116,6 @@ function ShowEmailAliases() {
  * @param $viewID
  */
 function GetEmailTableView($viewID) {
-    global $slice_id;
     global $attrs_edit, $attrs_browse;
 
     if ($viewID == "email_edit") {
@@ -243,4 +242,4 @@ function GetEmailWhere() {
 function EmailAfterInsert($varset) {
     ShowRefreshWizardJavaScript();
 }
-?>
+

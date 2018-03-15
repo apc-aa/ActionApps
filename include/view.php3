@@ -28,11 +28,9 @@
 */
 require_once AA_INC_PATH . "mgettext.php3";
 require_once AA_INC_PATH . "itemview.php3";
-require_once AA_INC_PATH . "view.class.php3";
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_BASE_PATH. "modules/links/util.php3";
 require_once AA_BASE_PATH. "modules/links/linksearch.php3";
-require_once AA_INC_PATH . "hitcounter.class.php3";
 // add mlx functions
 require_once AA_INC_PATH . "mlx.php";
 
@@ -184,7 +182,6 @@ class AA_View_Commands {
      * @param string $cmd cmd[<vid>] string from url
      * @param array $als array of aliases used to expand inside cmd
      *                   (als[] obviously comes from url, as well)
-     * @return array separated cmd parameters
      */
     function parseCommand($cmd, $als=false) {
 
@@ -210,9 +207,8 @@ class AA_View_Commands {
                     // {view.php3?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
                     // (%23 is urlencoded %23)
                     if (substr($k,0,2) != '_#') {
-                        $k2 = '_#'.$k;
+                        $cmd_part = str_replace('_#'.$k, $v, $cmd_part);
                     }
-                    $cmd_part = str_replace($k2, $v, $cmd_part);
 
                     $cmd_part = str_replace($k,  $v, $cmd_part);
                 }
@@ -711,7 +707,7 @@ class AA_Showview {
                 AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
                 if ( isset($zids) AND ($zids->count() > 0) ) {
                     $slice = AA_Slice::getModule($slice_id);
-                    $zids  = QueryZIDs(false, '', '', $slice->isExpiredContentAllowed() ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE, 0, $zids);
+                    $zids  = QueryZids(false, '', '', $slice->isExpiredContentAllowed() ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE, 0, $zids);
                     AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
                     if ( $zids->count() > 0 ) {
                         //mlx stuff
@@ -789,7 +785,7 @@ class AA_Showview {
                     $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                 }
                 $bin   = ($zids AND $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
-                $zids2 = QueryZIDs($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, $bin, 0, $zids);
+                $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, $bin, 0, $zids);
 
                 if ($mlxslice) {
                     $GLOBALS['mlxView']->postQueryZIDs($zids2,$mlxslice,$slice_id);
@@ -862,4 +858,3 @@ class AA_Showview {
         return $this->_used_slice_id;
     }
 }
-?>

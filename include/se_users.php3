@@ -65,4 +65,4 @@ function ChangeRole() {
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
     }
 }
-?>
+

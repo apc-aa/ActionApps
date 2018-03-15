@@ -22,7 +22,7 @@
  *
  * @package   ImageManager
  * @version   $Id$
- * @author    Stanislav Kühn <kuhn@changenet.sk>
+ * @author    Stanislav Kï¿½hn <kuhn@changenet.sk>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
@@ -71,7 +71,7 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
     global $imageTable;
 
     //determine type, width, height of image.
-    $imginfo   = GetImageSize($simage);
+    $imginfo   = getimagesize($simage);
     $imagetype = $imageTable[$imginfo[2]]['e'];
 
     // if dimensions of new picture are not set, then do not resize
@@ -142,9 +142,9 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
             if (  $imageTable[$imginfo[2]]['t'])
                 // test for is_callable("ImageCreateTrueColor") doesn't work
                 // GD < 2 have this function, but not implemented
-                $dst_img=@ImageCreateTrueColor($new_w,$new_h);
+                $dst_img=@imagecreatetruecolor($new_w,$new_h);
             if (!$dst_img) {
-                $dst_img=ImageCreate($new_w,$new_h);
+                $dst_img=imagecreate($new_w,$new_h);
             }
             $f="ImageCreateFrom".$imagetype;
             $src_img=$f($simage);
@@ -195,7 +195,7 @@ $imageTable = array(
  */
 function PrintSupportedTypes() {
     global $imageTable;
-    $it = ImageTypes();
+    $it = imagetypes();
     foreach ( $imageTable as $k => $v) {
         print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
     }
@@ -205,10 +205,10 @@ function PrintSupportedTypes() {
  */
 function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
     global $imageTable;
-    if (!GDInstalled()) {
+    if (!GDinstalled()) {
         return false;
     }
-    if (ImageTypes() & $imageTable[$type]["b"]) {
+    if (imagetypes() & $imageTable[$type]["b"]) {
         return true;
     }
     // Note won't see this warning when run in itemedit cos redirects
@@ -222,4 +222,4 @@ function imgU($type) {
     global $imageTable;
     return ($imageTable[$type]["u"] ? $imageTable[$type]["u"] : ("Type ".$type));
 }
-?>
+

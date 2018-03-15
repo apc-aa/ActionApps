@@ -31,11 +31,8 @@
 //
 
 require_once AA_INC_PATH."logs.php3";
-require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."xml_rssparse.php3";
-require_once AA_INC_PATH."grabber.class.php3";
-require_once AA_INC_PATH."files.class.php3";  // file wrapper;
 
 
 /**  xml_fetch function
@@ -391,4 +388,4 @@ function contentvalue($item) {
     return array("value"=>$item['content'][$cont_flag], "flag"=>$flag);
 }
 
-?>
+

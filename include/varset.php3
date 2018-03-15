@@ -85,6 +85,9 @@ class Cvariable {
 
 class Cvarset {
     var $vars;          // array of variables
+    /**
+     * @var DB_AA
+     */
     var $last_used_db;  // database handler
     var $just_print;    // debug option - just prints the query (not implemented for all methods!!!)
 
@@ -276,7 +279,7 @@ class Cvarset {
         if ( $nohalt=='nohalt' ) {
             $retval = $this->last_used_db->query_nohalt($SQL);
         } else {
-            $retval = $this->last_used_db->tquery($SQL);
+            $retval = $this->last_used_db->query($SQL);
         }
         freeDB($this->last_used_db);
         return $retval;
@@ -859,4 +862,3 @@ class AA_ChangesMonitor {
 if (!class_exists('AA_Metabase')) {
     require_once AA_INC_PATH . "metabase.class.php3";
 }
-?>

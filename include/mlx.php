@@ -137,13 +137,11 @@ function __mlx_trace($v) {
  */
 function __mlx_fatal($msg) {
     global $err;
-    global $sess;
-    global $slice_id;
     if(is_array($msg)) {
         $msg = implode("<br>",$msg);
     }
     $err["MLX"] = MsgErr($msg);
-    MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+    MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
     die;
 }
 
@@ -166,7 +164,7 @@ class MLXCtrl {
      * @param $itemid
      * @param $mlxObj
      */
-    function MLXCtrl($itemid, $mlxObj) {
+    function __construct($itemid, $mlxObj) {
         $this->itemid = $itemid;
         $content      = GetItemContent($itemid);
         // get all fields from MLX control (language) slice
@@ -228,7 +226,7 @@ class MLX {
     var $slice = 0;
     var $langSlice = 0;
 //public:
-    function MLX(&$slice) {
+    function __construct(&$slice) {
         $this->slice = $slice;
         $this->langSlice  = MLXSlice($this->slice);
         $this->ctrlFields = AA_Slice::getModule($this->langSlice)->fields('record');
@@ -323,7 +321,6 @@ class MLX {
     {
         global $DOCUMENT_URI;
         global $PHP_SELF;
-        global $err;
         $mlxout   = MLX_HTML_TABHD;
         $mlx_url  = ($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
         $mlx_url .= "?".$this->getparamstring($params);
@@ -347,7 +344,7 @@ class MLX {
                         $kstr = 'v'.unpack_id($slfield['id']);
                         unset($GLOBALS[$kstr]);
                         unset($GLOBALS[$kstr."html"]);
-                        if (!$slfield[input_show]) {
+                        if (!$slfield['input_show']) {
                             continue;
                         }
 //						$this->dbg($slfield);
@@ -382,7 +379,7 @@ class MLX {
             $modstr = "";
             $extra  = "";
             // check if id begins with 'mlxctrl'
-            if (!isset($v[id]) || ( strpos($v[id],MLX_LANG2ID_TYPE) !== 0)) {
+            if (!isset($v['id']) || ( strpos($v['id'],MLX_LANG2ID_TYPE) !== 0)) {
                 continue;
             }
             $mlxout .= "<td valign='top' class='tabs";
@@ -391,7 +388,7 @@ class MLX {
             } elseif ($mlxid) {
                 $langid = $this->getLangItem($v['name'], $mlxid, $content4mlxid);
             }
-            $this->trace($action." ".$v[id]." ".$langid);
+            $this->trace($action." ".$v['id']." ".$langid);
             if ($lang != $v['name']) {
                 if ($langid) {
                     $href    = "id=$langid&edit=1&";
@@ -435,9 +432,7 @@ class MLX {
      * @param $content4id
      * @param $content4mlxid
      */
-    function getLangItem($lang, &$content4id, &$content4mlxid)
-    {
-        global $err;
+    function getLangItem($lang, &$content4id, &$content4mlxid) {
         if (is_array($content4id)) {
             $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']);
         } else {
@@ -520,7 +515,7 @@ class MLXView {
      * @param $mlx
      * @param $slice_id
      */
-    function MLXView($mlx,$slice_id=0) {
+    function __construct($mlx, $slice_id=0) {
         if($slice_id) {
             unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
         }
@@ -604,7 +599,7 @@ class MLXView {
 //                 $sql = "SELECT * from `content`"
 //                     ." WHERE `text`='".quote($upContId)."'"
 //                     ." AND field_id='".current($translations)."' LIMIT 1";
-//                 $db->tquery($sql);
+//                 $db->query($sql);
 //                 if($db->num_rows() > 0) {
 //                     if($GLOBALS['mlxdbg']) {
 //                         huhl($sql);
@@ -622,7 +617,7 @@ class MLXView {
                 ." WHERE (c1.item_id='".quote($upContId)."'"
                 ." AND c1.field_id='".MLX_CTRLIDFIELD."'"
                 ." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') LIMIT ".count($translations);
-            $db->tquery($sql);
+            $db->query($sql);
             unset($aMlxCtrl);
             while( $db->next_record() ) { //get all translations
                 $aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
@@ -685,7 +680,7 @@ class MLXView {
             ." WHERE (c1.item_id='".quote($p_itemid)."'"
             ." AND c1.field_id='".MLX_CTRLIDFIELD."'"
             ." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') ";/*LIMIT ".count($translations);*/
-        $db->tquery($sql);
+        $db->query($sql);
         $o   = "";
         $cnt = 0;
         while( $db->next_record() ) { //get all translations
@@ -735,7 +730,7 @@ class MLXView {
             ." WHERE (c1.item_id='".quote($p_itemid)."'"
             ." AND c1.field_id='".MLX_CTRLIDFIELD."'"
             ." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') LIMIT ".count($translations);
-        $db->tquery($sql);
+        $db->query($sql);
         $o    = "";
         $tmpl = $params[0];
         if(!$tmpl) {
@@ -862,7 +857,7 @@ class MLXGetText
     /** MLXGetText function
      *
      */
-    function MLXGetText() {
+    function __construct() {
         $ca = array('global');
         $this->setdomain($ca);
     }
@@ -962,7 +957,7 @@ class MLXGetText
                 ." AND ( c1.field_id='headline........'"
                 .(!$isDefLang?" OR c1.field_id='".$langField."'":"")
                 ."))";
-            $db->tquery($sql);
+            $db->query($sql);
         while( $db->next_record() ) {
             list($item_id,$field_id,$text) = $db->Record;
             $item_id  = unpack_id($item_id);
@@ -1032,7 +1027,6 @@ class MLXGetText
      * @param $slice_id
      */
     function addtext(&$args,$slice_id=0) {
-        global $event;
         __mlx_dbg($this->domains);
         __mlx_dbg($args,__function__);
         $old_varset = $GLOBALS['varset'];
@@ -1094,4 +1088,4 @@ function stringexpand_mlx() {
     }
     return $GLOBALS['mlxGetText']->command($arg_list);
 }
-?>
+

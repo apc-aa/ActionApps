@@ -38,7 +38,6 @@
 //require_once "../include/config.php3";
 //require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
-require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 
 class AA_Module {
     /** define, which class is used for module setting - like AA_Modulesettings_Slice */
@@ -233,7 +232,7 @@ class AA_Module {
             return $this->_getModuleTableProperty($prop);
         }
         if ($this->_isModuleObjectProperty($prop)) {
-            return $this->_getModuleobjectProperty($prop);
+            return $this->_getModuleObjectProperty($prop);
         }
         return null;
     }
@@ -325,7 +324,7 @@ class AA_Slice extends AA_Module {
         }
         $db = getDB();
         $SQL = "SELECT * FROM content WHERE item_id = '".q_pack_id($this->module_id)."' ORDER BY content.number";
-        $db->tquery($SQL);
+        $db->query($SQL);
         $content4id = array();
         while ($db->next_record()) {
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
@@ -735,7 +734,7 @@ class AA_Module_Site extends AA_Module {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
             $home       = AA::Stringexpander()->unalias(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' .substr($this->_getModuleTableProperty('lang_file'),0,2). '/';
-            return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, array_filter($this->_getModuleObjectProperty('web_languages'))); // sometimes there is [0] => '' for some reason... so we array_filter
+            return AA_Router::singleton('AA_Router_Seo', $this->getRelatedSlices(), $home, $this->_getModuleObjectProperty('web_languages'));
         }
         return null;
     }
@@ -888,4 +887,4 @@ class AA_Modulesettings_Site extends AA_Object {
             );
     }
 }
-?>
+

@@ -23,7 +23,6 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
 */
-require_once AA_INC_PATH ."statestore.php3";
 require_once AA_INC_PATH."sql_parser.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."pagecache.php3";
@@ -36,7 +35,7 @@ class AA_Operators {
     /** getEnum function
      *
      */
-    function getEnum() {
+    static function getEnum() {
         return array('enum', array('LIKE'      => _m('contains'),
                                    'CONTAIN'   => _m('contains'),        // CONTAIN and BEGIN are like LIKE and RLIKE, but:
                                    'BEGIN'     => _m('begins with'),     //    - do not stripslashes
@@ -93,7 +92,7 @@ class AA_Operators {
     /** getJsDefinition function
      *
      */
-    function getJsDefinition() {
+    static function getJsDefinition() {
         return '
             var operator_names  = new Array();
             var operator_values = new Array();
@@ -393,11 +392,11 @@ class AA_Set extends AA_Object {
     }
 
     /** New main function to get item ids from database based on conditions...
-     *  Should replace QueryZIDs() in future
+     *  Should replace QueryZids() in future
      *  @param $restrict_zids - zids
      */
     function query($restrict_zids=null, $limit=null) {
-        return QueryZIDs($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
+        return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
     }
 
     /** clear function
@@ -472,7 +471,6 @@ class AA_Set extends AA_Object {
         if (empty($conds_string)) {
             return;
         }
-        $conds = false;
         parse_str($conds_string, $aa_query_arr);
         // we also need PHP to think a['key'] is the same as a[key], that's why we
         // call NormalizeArrayIndex()
@@ -793,12 +791,12 @@ class AA_Set extends AA_Object {
         return $ret;
     }
 
-    /** check function
-     *  static - Checks if the condition is in right format - is valid
+    /**
+     *  Checks if the condition is in right format - is valid
      * @param $field
      * @param $value
      */
-    function check($field, $value) {
+    static function check($field, $value) {
         return ($field && ($value != 'AAnoCONDITION'));
     }
 
@@ -1291,7 +1289,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
     $arr           = array();       // result ids array
     $extended_attr = array();       // extended attributes stored in zids for grouping on multivalue fields
     if (!$empty_result_condition) {
-        $db->tquery($SQL);
+        $db->query($SQL);
         AA::$debug && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
 
         if (!$group_limit) {
@@ -1331,7 +1329,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 
 // -------------------------------------------------------------------------------------------
 
-/** QueryZIDs function - @deprecated - use $aa_set->query() instead
+/** QueryZids function - @deprecated - use $aa_set->query() instead
 *  Finds item IDs for items to be shown in a slice / view
 *
 *   @param array  $slices array of slices in which to look for items
@@ -1359,7 +1357,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 *
 *   @param bool   $use_cache should be the cache searched for the result? -- no longer used used
 *
-*   @return A zids object with a list of the ids that match the query.
+*   @return zids - A zids object with a list of the ids that match the query.
 *
 *   @global  bool $debug (in) many debug messages
 *   @global  bool $debugfields (in) useful mainly for multiple slices mode -- views info about field_ids
@@ -1385,7 +1383,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 *                                     // view parameter instead)
 *   </pre>
 */
-function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=null, $defaultCondsOperator = "LIKE", $limit=null ) {
+function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=null, $defaultCondsOperator = "LIKE", $limit=null ) {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
@@ -1395,7 +1393,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $slices = empty($slices) ? array() : (array)$slices;
     }
 
-    AA::$debug && AA::$dbg->log("QueryZIDs - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
+    AA::$debug && AA::$dbg->log("QueryZids - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
 
     if (is_object($restrict_zids) AND ($restrict_zids->count() == 0)) {
         return new zids(); // restrict_zids defined but empty - no result
@@ -1405,6 +1403,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
+
+    $select_order = '';
 
     // we need fields just in case we use sort or conds. Not necessary for
     // restrict_zids queries, where we often do not have slice id
@@ -1428,7 +1428,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
     }
 
-    AA::$debug && AA::$dbg->log("QueryZIDs: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
+    AA::$debug && AA::$dbg->log("QueryZids: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
 
     // parse conditions ----------------------------------
     if ( is_array($conds)) {
@@ -1747,7 +1747,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // .. removed 2/27/2005 Honza (was never used)
     // ---
 
-    AA::$debug && AA::$dbg->log("QueryZIDs:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
+    AA::$debug && AA::$dbg->log("QueryZids:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
 
     // construct query --------------------------
     $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
@@ -1801,7 +1801,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
     }
 
-    AA::$debug && AA::$dbg->log("QueryZIDs: SQL: $SQL");
+    AA::$debug && AA::$dbg->log("QueryZids: SQL: $SQL");
 
     // @todo - replace LEFT JOIN with INNER JOIN for conditions where posiible (for speedup)
     // if ($_GET['dd']>70) {
@@ -1812,7 +1812,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems, $select_limit_field);
 
     if ( $debug ) {
-        huhl("QueryZIDs: result:", $ret);
+        huhl("QueryZids: result:", $ret);
     }
     return $ret;
 }
@@ -1820,8 +1820,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 /** QueryConstantZIDs function
 *  Finds constant ZIDs for constants to be shown in a slice / view
 *   @param string $group_id   constant group to search in
-*   @param array  $conds      search conditions {see QueryZIDs, FAQ}
-*   @param array  $sort       sort fields       {see QueryZIDs, FAQ}
+*   @param array  $conds      search conditions {see QueryZids, FAQ}
+*   @param array  $sort       sort fields       {see QueryZids, FAQ}
 *   @param string $type       not used, yet
 *   @param array  $restrict_zids
 *       Use it if you want to choose only from a set of constants
@@ -1830,7 +1830,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 *
 *   @return A zids object with a list of the ids that match the query.
 *
-*   Parameter format example - {see QueryZIDs, FAQ}
+*   Parameter format example - {see QueryZids, FAQ}
 *   Fields definition - {see include/constants.php3}
 */
 function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $defaultCondsOperator = "RLIKE") {
@@ -1925,9 +1925,9 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
             foreach ($cond as  $fid => $vv) {
                 if ( $fid == 'discussion' ) {
                     unset ($select_cond);
-                    foreach ($vv as $fid => $foo) {
-                        if ( in_array($fid,$fields) AND $cond['value'] > "" ) {
-                            $select_cond[] = GetWhereExp( "discussion.$fid", $cond['operator'], $cond['value'] );
+                    foreach ($vv as $fid2 => $foo) {
+                        if ( in_array($fid2,$fields) AND $cond['value'] > "" ) {
+                            $select_cond[] = GetWhereExp( "discussion.$fid2", $cond['operator'], $cond['value'] );
                         }
                     }
                     if (is_array($select_cond)) {
@@ -2010,4 +2010,4 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
 }
 
 
-?>
+

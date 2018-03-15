@@ -168,7 +168,7 @@ class AA_View {
      *  static method
      * @param $text
      */
-    function getViewJumpLinks($text) {
+    static function getViewJumpLinks($text) {
         $ret = '';
         $matches = array();
         if ($text) {
@@ -202,16 +202,6 @@ class AA_View {
         $f = $this->getViewInfo();
         return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
-}
-
-/** VIEW_xml_unserialize function
- *  Companion of view->xml_serialize
- * @param $n
- * @param $a
- */
-function VIEW_xml_unserialize($n,$a) {
-    $v = new AA_View($n,$a);
-    return $v;
 }
 
 /** usualy called as $view = AA_Views::getView($vid); */
@@ -251,7 +241,7 @@ class AA_Views {
      *  main factory static method
      * @param $vid
      */
-    function & getView($vid) {
+    static function getView($vid) {
         $views = AA_Views::singleton();
         return $views->_getView($vid);
     }
@@ -281,7 +271,7 @@ class AA_Views {
      *  Returns an array of slice views, caching results in allknownviews
      * @param $slice_id
      */
-    function getSliceViews($slice_id) {
+    static function getSliceViews($slice_id) {
         $a = array();
         if ($slice_id) {
             $views = AA_Views::singleton();
@@ -301,14 +291,3 @@ class AA_Views {
     }
 }
 
-/** VIEWS_xml_unserialize function
- * @param $n
- * @param $a
- */
-function VIEWS_xml_unserialize($n,$a) {
-    $vs    = new AA_Views();
-    $vs->a = $a;
-    return $vs;
-}
-
-?>

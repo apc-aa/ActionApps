@@ -324,7 +324,7 @@ class LastEditList {
      */
     function setFromSlice($conds, &$slice) {
         ParseEasyConds($conds);
-        $zids    = QueryZIDs( array($slice->getId()), $conds, '', 'ALL');
+        $zids    = QueryZids( array($slice->getId()), $conds, '', 'ALL');
         $format  = array('odd_row_format' => '{id..............}-{last_edit.......}',
                          'row_delimiter'  => ',');
         $itemview = new itemview($format, '', '', $zids,
@@ -370,4 +370,3 @@ class LastEditList {
 }
 
 
-?>

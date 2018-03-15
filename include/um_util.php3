@@ -343,7 +343,6 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
  * @param $um_uedit_no_go_url
  */
 function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um_uedit_no_go_url) {
-    global $sess;
     $userrecord["uid"] = $uid;
     if (!($newuserid = AddUser($userrecord))) {
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
@@ -352,7 +351,7 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um
         if ($user_super) {	// set super admin privilege
             AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
         }
-        $Msg = MsgOK(_m("User successfully added to permission system"));
+        $Msg = MsgOk(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url) {
             go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'UsrSrch=1&usr='. urlencode($uid)), $Msg);
         }

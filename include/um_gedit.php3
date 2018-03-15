@@ -46,7 +46,7 @@ do  {
             if ($group_super) {	// set super admin privilege
                 AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
             }
-            $Msg = MsgOK(_m("Group successfully added to permission system"));
+            $Msg = MsgOk(_m("Group successfully added to permission system"));
             go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
         }
     } else {
@@ -88,4 +88,3 @@ do  {
     AddUserModulePerms( $new_module, $new_module_role, $selected_group, $perms_roles);
 
 } while (false);
-?>

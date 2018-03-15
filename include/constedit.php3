@@ -20,13 +20,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
- * @author    Jakub Adámek
+ * @author    Jakub Adï¿½mek
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
 */
-/*  Author: Jakub Adámek, February 2002
+/*  Author: Jakub Adï¿½mek, February 2002
 
     Hiearchical constant editor - allows to edit constants organized
     in a multi-level hierarchy. Called from the se_constant.php3 page.
@@ -94,7 +94,7 @@ if ($hide_value) {
     <tr><td colspan="2"><hr></td></tr>
     <tr><td colspan="2" align="center"><input type="button" onClick="hcSendAll('<?php echo $hcid ?>');" value="<?php echo _m("Save all changes to database")?>"></td></tr>
     <tr><td class="tabtxt" align="center" colspan="2"><?php echo _m("View settings") ?>: <input type="checkbox" name='hierarch' checked><?php echo _m("Hierarchical") ?>&nbsp;
-<input type="checkbox" name="hide_value" <?php if ($hide_value) echo "checked"; echo ">"._m("Hide value")?>&nbsp;
+<input type="checkbox" name="hide_value" <?php if ($hide_value) { echo "checked"; } echo ">"._m("Hide value")?>&nbsp;
 <input type="checkbox" name="levelsHorizontal" <?php if ($levelsHorizontal) echo "checked"; echo ">"._m("Levels horizontal"); ?>&nbsp;&nbsp;
 <?php echo _m("Level count")?>&nbsp;<input type="text" name="levelCount" value="<?php echo safe($levelCount); ?>" size=2></td></tr>
 </table>

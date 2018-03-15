@@ -103,4 +103,4 @@ if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
     echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No slices") ."</td></tr>";
 }
 
-?>
+

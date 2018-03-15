@@ -223,4 +223,4 @@ function GetMiscTableView($viewID) {
 
 
 } // end of GetTableView
-?>
+

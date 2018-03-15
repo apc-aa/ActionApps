@@ -30,8 +30,6 @@
  * @link      http://www.apc.org/ APC
 */
 
-require_once AA_INC_PATH. "statestore.php3";
-require_once AA_INC_PATH. "profile.class.php3";
 require_once AA_INC_PATH. "formutil.php3";
 
 /** searchlib for AA_Condition definition, ... */
@@ -337,7 +335,6 @@ class AA_Searchbar extends AA_Storable {
      *  Set searchbar state from form
      */
     function setFromForm() {
-        $srchbar = array();
         if ($this->show & MGR_SB_SEARCHROWS) {
             // cleaning all searchrows except 'readonly' searches
             $this->resetSearch();
@@ -602,28 +599,6 @@ class AA_Searchbar extends AA_Storable {
         return $val != "";
     }
 
-    /** print_order_bar function
-     * Prints one order bar (one row)
-     * @param int $bar which bar to print (index)
-     */
-    function print_order_bar($bar) {
-
-        list($dir, $fld) = ( isset($this->order_row[$bar]) AND
-                             is_array($this->order_row[$bar]) ) ?
-                                array(safe($this->order_row[$bar]['dir']),
-                                      $this->order_row[$bar]['field']) :
-                                array( "a", $this->order_fields[0]);
-
-        $searchtext  = _m('Order');
-        $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">".
-                           GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
-        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>".
-              str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
-        FrmSelectEasy("srchbr_order[$bar]", $this->order_fields, $fld);
-        echo '</td><td colspan="2" class="leftmenuy">';
-        FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
-        echo _m('Descending'). "</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
-    }
     /** print_bar_actions function
      *
      */
@@ -646,6 +621,28 @@ class AA_Searchbar extends AA_Storable {
                   echo "</td>";
               }
               echo "</tr>";
+    }
+    /** print_order_bar function
+     * Prints one order bar (one row)
+     * @param int $bar which bar to print (index)
+     */
+    function print_order_bar($bar) {
+
+        list($dir, $fld) = ( isset($this->order_row[$bar]) AND
+            is_array($this->order_row[$bar]) ) ?
+            array(safe($this->order_row[$bar]['dir']),
+                $this->order_row[$bar]['field']) :
+            array( "a", $this->order_fields[0]);
+
+        $searchtext  = _m('Order');
+        $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">".
+            GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
+        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>".
+            str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
+        FrmSelectEasy("srchbr_order[$bar]", $this->order_fields, $fld);
+        echo '</td><td colspan="2" class="leftmenuy">';
+        FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
+        echo _m('Descending'). "</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
     }
     /** print_bar_bookmarks function
      *
@@ -670,7 +667,6 @@ class AA_Searchbar extends AA_Storable {
      * Prints searchbar (search rows and order rows - based on current settings)
      */
     function printBar() {
-        global $slice_id;
 
         echo '<input type="hidden" name="srchbr_akce" value="1">
               <table width="100%" border="0" cellspacing="5" cellpadding="0"
@@ -966,4 +962,4 @@ class AA_Bookmarks {
         return $ret;
     }
 }
-?>
+

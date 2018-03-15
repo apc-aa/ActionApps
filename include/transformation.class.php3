@@ -52,7 +52,7 @@ abstract class AA_Transformation {
     /** transform function
      *
      */
-    function transform()    {}
+    function transform($field_id, $itemcontent, $silent=true)    {}
 
     /** _getVarname function
      *  Construct name of input form variable
@@ -75,7 +75,7 @@ abstract class AA_Transformation {
      * @param $classname
      * @return string
      */
-    function getRequestVariables($input_id, $classname) {
+    static function getRequestVariables($input_id, $classname) {
         $ret = array();
         if ( strtolower(substr($classname,0,18)) != 'aa_transformation_' ) {  // to lower - php4 fix
             return $ret;
@@ -772,7 +772,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
             if ($count AND $this->unalias) {
                 $text = $item->subst_alias($text);
             }
-            $ret->addValue($text, $source['value']);
+            $ret->addValue($text);
         }
         return $ret;
     }
@@ -913,4 +913,4 @@ class AA_Transformator {
     }
 }
 
-?>
+

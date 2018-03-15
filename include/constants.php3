@@ -268,7 +268,7 @@ $LANGUAGE_NAMES = array ("cz-utf8" => "Cestina (Unicode)",
                          "sk-utf8" => "Slovencina (Unicode)",
                          "ja"      => "Japanian",
                          "hr"      => "Hrvatski",
-                         "fr"      => "Français",
+                         "fr"      => "Franï¿½ais",
                          "bg"      => "Bulgarian",
                          "en-utf8" => "English (Unicode)"
                          );
@@ -902,7 +902,7 @@ function getViewTypesInfo() {
                                        'aditional3'=>array('default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'),
                                        'aditional4'=>array('default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'),
                                        'aliases' => 'discus');
-    $VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');
+    $VIEW_TYPES_INFO['disc2mail'] = array ('aliases' => 'disc2mail');
     $VIEW_TYPES_INFO['seetoo']     = array('modification'=>array('31'=>'related',
                                                              '32'=>'keyword with OR',
                                                              '33'=>'keyword with AND' ),
@@ -1004,4 +1004,4 @@ function getFilemanAccesses()
 //    "EDITOR" => _m("Slice Editor"),
     "ADMINISTRATOR" => _m("Slice Administrator"));
 }
-?>
+

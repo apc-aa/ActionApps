@@ -194,7 +194,6 @@ class AA_Supertree_Reverse extends AA_Supertree {
         $this->_modules = array_fill_keys($this->_restrict_slices, true);
 
         /** items, which are already in trash, or expired, ... */
-        $invalid  = array();
         $queue    = array($id);
 
         // prepare cond in order we can be as quick as possible
@@ -209,7 +208,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
             }
 
             $cond['value'] = $item_id;
-            $zids          = QueryZIDs($this->_restrict_slices, array($cond), $this->_sort);
+            $zids          = QueryZids($this->_restrict_slices, array($cond), $this->_sort);
 
             $next    = $zids->longids();
             $this->_i[$item_id] = $next;
@@ -275,4 +274,3 @@ class AA_Trees {
     }
 }
 
-?>

@@ -68,7 +68,7 @@ class AA_Validate extends AA_Serializable {
      *  Returns validators for standard data types
      *   @param $v_type is string, or array($type,$parameter)
      */
-    function factoryCached($v_type) {
+    static function factoryCached($v_type) {
         static $standard_validators = array();
 
         list ($type, $parameters) = is_array($v_type) ? $v_type : array($v_type, array());
@@ -129,13 +129,12 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** filter function - returns array of values matching the criteria
-     *  static class function
      *      AA_Validate::filter(array('my@mail.cz','your@mail.cz'), 'email')
      *      AA_Validate::filter($vararray, array('int', array('min'=>0, 'max'=>10))
      * @param $var
      * @param $type
      */
-    function filter($vararray, $type) {
+    static function filter($vararray, $type) {
         return array_filter((array)$vararray, array(self::factoryCached($type),'validate'));
     }
 
@@ -151,7 +150,7 @@ class AA_Validate extends AA_Serializable {
      * @param $err_msg
      * @param $getmsg
      */
-    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
+    static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
         static $lastErrMsg;
         if (!is_null($err_id)) {
@@ -164,7 +163,7 @@ class AA_Validate extends AA_Serializable {
     /** lastErrMsg function
      * @return last error message - it is grabbed from static variable
      *  of lastErr() method */
-    function lastErrMsg() {
+    static function lastErrMsg() {
         return self::lastErr(null, null, true);
     }
 
@@ -286,9 +285,9 @@ class AA_Validate_Date extends AA_Validate_Signed {
 }
 
 /** Test for Regular Expression
- *  @param   $regular_expression
- *  @param   $default_error_id
- *  @param   $default_error_msg
+ *  @param   $pattern
+ *  @param   $empty_expression
+ *  @param   $maxlength
  */
 class AA_Validate_Regexp extends AA_Validate {
     /** Regular Expression */
@@ -418,10 +417,10 @@ class AA_Validate_Float extends AA_Validate {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $default);
         }
         $var = (float)$var;
-        if ( !is_null($this->max) AND ($var > $this->max) ) {
+        if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
         }
-        if ( !is_null($this->min) AND ($var < $this->min) ) {
+        if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
@@ -443,7 +442,7 @@ class AA_Validate_Enum extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, $this->default_error_id, $this->default_error_msg, $default);
+        return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $default);
     }
 }
 
@@ -810,4 +809,4 @@ function NEW_checkEmail($email) {
     }
 }
 
-?>
+

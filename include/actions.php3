@@ -38,7 +38,6 @@
 */
 
 
-require_once AA_INC_PATH."manager.class.php3";
 
 /** AA_Manageraction - Item manager actions. Just create new class and assign
  *  it to your manager
@@ -128,7 +127,7 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
         AA_Manageraction_Item_MoveItem::doMove($zids, $this->to_bin);
@@ -136,7 +135,7 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         $current_bin     =  $manager->getBin();
 
         switch($this->to_bin) {
@@ -172,7 +171,7 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $sid = $manager->getModuleId();
 
         $zids = AA_Manageraction::getZidsSanitized($item_arr, $sid);
@@ -185,7 +184,7 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IfSlPerm(PS_EDIT_ALL_ITEMS, $manager->getModuleId());
     }
 }
@@ -222,7 +221,7 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
     * @param $akce_param  - not used
     * @return false or error message
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         if (strlen($akce_param) < 1) {
             return _m('No slice selected');
         }
@@ -239,7 +238,7 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return true;
     }
 }
@@ -314,8 +313,8 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     * @param  $akce_param  - not used
     * @return false or error message
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
-        global $event, $auth, $pagecache;
+    function perform($manager, &$state, $item_arr, $akce_param) {
+        global $pagecache;
         if (strlen($akce_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
         }
@@ -352,7 +351,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IfSlPerm(PS_DELETE_ITEMS, $this->slice_id);
     }
 }
@@ -388,7 +387,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
      *  @param $akce_param  Not used
      *  @return false or error message
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         global $pagecache, $slice_id, $event;
 
         if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
@@ -421,7 +420,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return (IfSlPerm(PS_DELETE_ITEMS) AND (!$this->selected OR ($manager->getBin() == 'trash')));
     }
@@ -454,7 +453,7 @@ class AA_Manageraction_Item_Modifycontent extends AA_Manageraction {
 
     // uses setOpenUrl() method to open search_replace.php3 window
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }
@@ -472,7 +471,7 @@ class AA_Manageraction_Item_Email extends AA_Manageraction {
 
     // uses setOpenUrl() method to open search_replace.php3 window
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         // $slice = AA_Slice::getModule($manager->getModuleId());
         // return ($slice->type() == 'ReaderManagement');
         return true; // allow in all slices
@@ -497,7 +496,7 @@ class AA_Manageraction_Item_Export extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
 
@@ -510,7 +509,7 @@ class AA_Manageraction_Item_Export extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }
@@ -530,7 +529,7 @@ class AA_Manageraction_Item_Tab extends AA_Manageraction {
     /** main executive function - Handler for Tab switch - switch between bins
      * @return false or error message
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
         return false;        // OK
@@ -551,7 +550,7 @@ class AA_Manageraction_Item_Gobookmark extends AA_Manageraction {
     /** main executive function - Handler for Tab switch - switch between bins
      * @return false or error message
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $manager->setFromBookmark($_GET['GoBookmark']);
         $manager->go2page(1);
         return false;        // OK
@@ -578,7 +577,7 @@ class AA_Manageraction_Taskmanager_Delete extends AA_Manageraction {
      *  @param $akce_param  Not used
      *  @return false or error message
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -601,7 +600,7 @@ class AA_Manageraction_Taskmanager_Delete extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         /** @todo Should be changed to different permission */
         return IfSlPerm(PS_EDIT);
     }
@@ -624,8 +623,7 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
      *  @param $akce_param  Not used
      *  @return false or error message
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
-        global $pagecache, $slice_id, $event;
+    function perform($manager, &$state, $item_arr, $akce_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -646,11 +644,11 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         /** @todo Should be changed to different permission */
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return IfSlPerm(PS_EDIT);
     }
 }
 
-?>
+

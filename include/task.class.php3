@@ -39,7 +39,7 @@ class AA_Plannedtask extends AA_Object {
     protected $event     = '';
     protected $time      = '';
     protected $shift     = 0;
-    protected $item      = '';
+    protected $item_id   = '';
 
     /** allows storing form in database
      *  AA_Object's method
@@ -105,7 +105,7 @@ class AA_Plannedtask extends AA_Object {
      *  results are not guarranted.
      */
     static function internal_expand($content, $info) {
-        $params  = func_get_args();
+        // $params  = func_get_args();
         $task_id = $content->getId();
         switch ($info) {
             case 'scheduledto':  $time = AA_Toexecute::scheduledTime(self::toexecuteSelector($task_id));
@@ -221,4 +221,4 @@ class AA_Plannedtask_Schedule {
 
 
 
-?>
+

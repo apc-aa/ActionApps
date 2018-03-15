@@ -42,6 +42,7 @@ define("APOS", "'");
 define("E_NO_ENDING_QUOTAPOS", 16);
 define("S_OK", 17);
 define("S_IMPLICIT", 18);
+define("S_NO_MORE_TOKENS", 19);
 
 // -------------- Syntax analysis ---------------------------------------------
 
@@ -279,10 +280,10 @@ function preProcess($toks) {
         }
     }
     if ( isset($newtoks) AND is_array($newtoks) ) {
-        Reset($newtoks);
-        while ( $t1 = Current($newtoks) ) {
+        reset($newtoks);
+        while ( $t1 = current($newtoks) ) {
             $newtoks2[] = $t1;
-            $t2 = Next($newtoks);
+            $t2 = next($newtoks);
             if ($t1["type"]==TOKEN_TYPE_STRING) {
                 if ( ($t2) && (($t2["type"]==TOKEN_TYPE_STRING) || ($t2["type"]==TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"]==TOKEN_TYPE_OPERATOR_NOT)))
                     $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND);
@@ -297,7 +298,7 @@ function preProcess($toks) {
  * @param $input
  */
 function lex($input) {
-    $length = StrLen($input);
+    $length = strlen($input);
     $i = 0;
     do {
         $r = getToken($input, $i, $length);
@@ -377,7 +378,7 @@ class Syntax {
      */
     function __construct($column, $operator, $t) {
         global $rl;
-        $operator = StrToUpper($operator);
+        $operator = strtoupper($operator);
         $this->column = $column;
         $this->operator = $rl["operator"][$operator];
         if ($this->operator == "") {
@@ -436,7 +437,7 @@ class Syntax {
             if ( ($foo = $this->Eap()) == "_SYNTAX_ERROR" ) {
                     return $foo;
             }
-            $val = $val . $foo;
+            $val .= $foo;
         }
         else {
       $GLOBALS["syntax_error"]="Syntax error at position ".$this->tList->getTokenBegin().". Found ".B($readable[$la])." while expecting ".B(SYNTAX_LEFT_PAR).", ".B(SYNTAX_STRING)." or ".B(SYNTAX_NOT).".<BR>\n";
@@ -491,7 +492,7 @@ class Syntax {
             if ( ($foo = $this->Tap()) == "_SYNTAX_ERROR" ) {
                 return $foo;
             }
-            $val = $val . $foo;
+            $val .= $foo;
         }
         else {
       $GLOBALS["syntax_error"]="Syntax error at position ".$this->tList->getTokenBegin().". Found ".B($readable[$la])." while expecting ".B(SYNTAX_LEFT_PAR).", ".B(SYNTAX_STRING)." or ".B(SYNTAX_NOT).".<BR>\n";
@@ -576,12 +577,12 @@ class Syntax {
             if ( ($foo = $this->E()) == "_SYNTAX_ERROR" ) {
                 return $foo;
             }
-            $val = $val . $foo;
+            $val .= $foo;
             if ( ($err = $this->tList->match(TOKEN_TYPE_RIGHT_PARENTHESIS) )) {
                 $GLOBALS["syntax_error"]=$err;
                 return "_SYNTAX_ERROR";
             }
-            $val = $val . SYNTAX_RIGHT_PAR;
+            $val .= SYNTAX_RIGHT_PAR;
         }
         else if ( $la == TOKEN_TYPE_STRING ) {    // G -> string
 //            echo("G->string<BR>\n");//debug
@@ -606,4 +607,4 @@ class Syntax {
 function B($text) {
     return "<b>".$text."</b>";
 }
-?>
+

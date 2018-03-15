@@ -43,7 +43,7 @@ class AA_Mysqlauth {
     *   @param array $item_ids non-quoted packed IDs
     *   @param $slice_id
     */
-    function deleteReaders( $item_ids, $slice_id ) {
+    static function deleteReaders( $item_ids, $slice_id ) {
         $db = getDB();
         $db->query ("SELECT type, auth_field_group FROM slice WHERE id='".q_pack_id( $slice_id )."'");
         $db->next_record();
@@ -71,14 +71,14 @@ class AA_Mysqlauth {
     *   @param array $item_ids non-quoted packed IDs
     *   @param $slice_id
     */
-    function updateReaders( $item_ids, $slice_id ) {
+    static function updateReaders( $item_ids, $slice_id ) {
         $sl_type             = AA_Slice::getModuleProperty($slice_id,'type');
         $sl_auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
         if (($sl_type != "ReaderManagement") OR !$sl_auth_field_group) {
             return;
         }
 
-        // This select follows the idea of QueryZIDs: it uses several times the
+        // This select follows the idea of QueryZids: it uses several times the
         // table content to place several fields on one row.
         $zids    = new zids($item_ids, 'p');
         $readers = AA_Mysqlauth::getReadersData($slice_id, $zids);
@@ -99,9 +99,9 @@ class AA_Mysqlauth {
      * @param $slice_id
      * @param $restrict_zids = false
      */
-    function getReadersData($slice_id, $restrict_zids=false) {
+    static function getReadersData($slice_id, $restrict_zids=false) {
         $auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
-        $zids  = QueryZIDs( array($slice_id), '', '', 'ALL', 0, $restrict_zids);
+        $zids  = QueryZids( array($slice_id), '', '', 'ALL', 0, $restrict_zids);
         return GetItemContent($zids, false, true, array('id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD));
     }
 
@@ -113,8 +113,9 @@ class AA_Mysqlauth {
     *
     *   This function should be called once a day from cron.
     */
-    function maintenance() {
+    static function maintenance() {
         $db = getDB();
+        $result = array();
 
         // Create the array $oldusers with user names
         $db->query("SELECT username FROM auth_user");
@@ -196,6 +197,7 @@ class AA_Mysqlauth {
         }
 
         if ($GLOBALS["log_auth_results"]) {
+            $log = '';
             // Log the results
             if (!is_array($result)) {
                 $log = "Nothing changed.";
@@ -216,7 +218,7 @@ class AA_Mysqlauth {
     /** AA_Mysqlauth::deleteReader function
      * @param $username
      */
-    function deleteReader($username) {
+    static function deleteReader($username) {
         DB_AA::delete('auth_user', array(array('username', $username)));
         AA_Mysqlauth::updateGroups($username);
     }
@@ -227,7 +229,7 @@ class AA_Mysqlauth {
      * @param $password
      * @param $groups
      */
-    function updateReader($username, $password, $groups) {
+    static function updateReader($username, $password, $groups) {
         DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES ('".addslashes($username)."', '".addslashes($password)."', ".time().")");
         AA_Mysqlauth::updateGroups($username, $groups);
     }
@@ -236,7 +238,7 @@ class AA_Mysqlauth {
     /** AA_Mysqlauth::isActive function
      * @param $reader
      */
-    function isActive($reader) {
+    static function isActive($reader) {
         return ($reader->getValue('status_code.....') == SC_ACTIVE) AND
                ($reader->getValue('publish_date....') <= time()) AND
                ($reader->getValue('expiry_date.....') >= time());
@@ -253,7 +255,7 @@ class AA_Mysqlauth {
     *   @param $username
     *   @param $groups
     */
-    function updateGroups($username, $groups = array()) {
+    static function updateGroups($username, $groups = array()) {
         DB_AA::delete('auth_group', array(array('username', $username)));
 
         $final_groups = array();
@@ -293,7 +295,7 @@ class AA_Mysqlauth {
      * @param $oldvalue
      * @param $newvalue
      */
-    function changeGroups($constant_id, $oldvalue, $newvalue) {
+    static function changeGroups($constant_id, $oldvalue, $newvalue) {
         if (empty($newvalue) OR ($oldvalue == $newvalue)) {
             return;
         }
@@ -321,4 +323,3 @@ class AA_Mysqlauth {
         }
     }
 }
-?>

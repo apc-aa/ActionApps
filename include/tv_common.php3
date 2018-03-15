@@ -100,4 +100,4 @@ function SelectModule($all = false) {
     return GetTable2Array($SQL, $key="unpack:id", 'name');
 }
 
-?>
+

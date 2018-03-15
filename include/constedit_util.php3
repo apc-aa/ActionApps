@@ -453,7 +453,7 @@ function hcUpdate()
             }
             else {
                 if ($propagate_changes) {
-                    $db->tquery("SELECT id, value FROM constant WHERE short_id=$new_id");
+                    $db->query("SELECT id, value FROM constant WHERE short_id=$new_id");
                     if ($db->next_record()) {
                         propagateChanges(unpack_id($db->f("id")), $newvalue, addslashes($db->f("value")));
                     }
@@ -600,7 +600,7 @@ function add_constant_group($group_id, $constants2import)
     }
 
     $SQL = "SELECT * FROM constant WHERE group_id = '$group_id'";
-    $db->tquery($SQL);
+    $db->query($SQL);
     if ($db->next_record()) {
         return _m("This constant group already exists");
     }
@@ -716,4 +716,4 @@ function refresh_constant_group($group_id, $items) {
     freeDB($db);
     return $existed;
 }
-?>
+
