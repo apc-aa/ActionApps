@@ -9,7 +9,7 @@
  *
  * It provides:
  *
- *   AA_Client_Auth - for client authentization (@see /doc/script/example_auth)
+ *   AA_ClientAuth - for client authentization (@see /doc/script/example_auth)
  *
  *   AA_Request
  *   AA_Response
@@ -277,7 +277,7 @@ class AA_Request {
 }
 
 
-class AA_Client_Auth {
+class AA_ClientAuth {
     /** path to AA auth script - like: http://example.org/apc-aa/auth.php */
     var $_aa_responder_script;
 
@@ -355,4 +355,4 @@ class AA_Client_Auth {
     }
 }
 
-?>
+

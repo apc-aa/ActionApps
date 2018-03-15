@@ -195,7 +195,7 @@ if (!is_callable('_m')) {
 if (!is_callable('GetTable2Array')) {
     function GetTable2Array($SQL, $key="id", $values='aa_all') {
         $db = getDB();
-        $db->tquery($SQL);
+        $db->query($SQL);
         while ($db->next_record()) {
             if ($values == 'aa_all') {
                 $val = $db->Record;
@@ -374,4 +374,4 @@ elseif ( $_GET['dotest']) {
 if (!$_GET['silent']) {
     echo '</body></html>';
 }
-?>
+

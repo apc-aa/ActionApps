@@ -85,7 +85,6 @@
     margin: 2px;
     border-radius: 3px;
     border: #FFFFD8 1px solid;
-    line-height: 1.6;
     white-space: nowrap;
     color: #3D4B52;
     box-shadow: 0 0 3px #7C7C7C;
@@ -380,8 +379,7 @@ body {
 }
 /* ico */
 .aa-ico {
-    background-repeat: no-repeat;
-    background-position: center;
+    background: no-repeat center;
     opacity: 0.6;
 }
 i.aa-ico {
@@ -424,8 +422,6 @@ i.aa-ico {
     background-color: #333333;
     border: solid 1px #484848;
     border-radius: 4px;
-    -webkit-transition: all 0.4s ease-out;
-    -moz-transition: all 0.4s ease-out;
     transition: all 0.4s ease-out;
     position: relative;
     margin-left: 10px;
@@ -438,8 +434,6 @@ i.aa-ico {
     background-color: #808080;
     border-radius: 100%;
     border: none;
-    -webkit-transition: all 0.2s ease-out;
-    -moz-transition: all 0.2s ease-out;
     transition: all 0.2s ease-out;
     position: absolute;
 }
@@ -461,9 +455,41 @@ i.aa-ico {
     float: right;
     top: 2px;
 }
+.aa-tools-switch {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    z-index: 100;
+    cursor: pointer;
+}
+
+i.aa-tool-edit {
+    background: #fff url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIlJREFUeNpi/P//PwNDnhQDHtAOxO+AuJuFAT/oAuJSKJuZiUiFIMDPRKTCDiCuxKa4F01hK0ghiMGERWERmsIaGIfxf64kjG0GxCdxKUQ22RKI7wNxIi6FIMCCZD0PEDsDsSEQX8Dma5DJNlCThaBOuYArLEEmxwJxLhDPAuJfYNFJz7AqBggwAIXQGu8Sl1hbAAAAAElFTkSuQmCC") no-repeat center;
+    border: solid #ff6d19 1px;
+    border-radius: 5px;
+    position: absolute;
+    right: 12px;
+    z-index: 100;
+    cursor: pointer;
+}
+i.aa-tool-show {
+    background: #fff url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAALCAYAAACgR9dcAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAARJJREFUeNqs0iFoAlEYwHHvgjs0GFzxmNViWJo4WDJYVlwyqUGDZVc2FoTBQAwLCzMMk7I286rgNRHDdItiGgzBTVhQNMjtf/DJXrGoB793733vu/vevXea4ziebS9tfw9bpo82h2vM4McUBp7w7Kl+zdfpuvJgitZGCTX8IIglmhK3JU+pbJm39K9wwpuHjN/oH6GLGCY4wyF6eCCvrDmXoQSDF0QJTGQVK9pXLKRyhjmduJd+AEMU3GWfoo+IshcDxOWbkxhJ3JAC70jrDCp0PtDgzUFJuscY5/jFncQPyPnk3kb+f7ct84I2izBu0JFlu995jKqs4JGCrU1HVZSK7oSJbzkVd1/q6lHt9JP8CTAA6qpa9sV4duoAAAAASUVORK5CYII=") no-repeat center;
+    border: solid #ff6d19 1px;
+    border-radius: 5px;
+    position: absolute;
+    right: 12px;
+        z-index: 100;
+        cursor: pointer;
+}
+i.ico.aa-tool-edit:hover {
+    box-shadow: 0 0 5px rgb(255, 109, 25);
+}
+
 /*aa-tools - end---------------------------*/
 
-.CodeMirror { height:auto; min-height: 100px; font-size: 12px}
+.CodeMirror { height:auto; min-height: 100px; font-size: 12px;}
 .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
 
 /* rim widget */

@@ -714,7 +714,7 @@ class browser extends uploader {
             $type = $img->getType();
 
             if ($type !== false) {
-                $size = $img->getSize($file);
+                $size = $img->getSize();
                 if (is_array($size) && count($size)) {
                     $thumb_file = "$thumbDir/" . basename($file);
                     if (!is_file($thumb_file))

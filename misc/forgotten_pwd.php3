@@ -132,13 +132,13 @@ function GetUserData($identification,$findby="headline........") {
 
     // getReaderManagement slices
     $db = getDB();
-    $db->tquery("SELECT id FROM slice WHERE type='ReaderManagement'");
+    $db->query("SELECT id FROM slice WHERE type='ReaderManagement'");
     while ($db->next_record()) {
         $slices[] = unpack_id($db->f('id'));
     }
     freeDB($db);
     // get item id of current user
-    $zid = QueryZIDs($slices, $conds, '', 'ACTIVE', 1, false, '=' );
+    $zid = QueryZids($slices, $conds, '', 'ACTIVE', 1, false, '=' );
     //var_dump($conds);
     if ( $zid->count()<1 )      return false;
 

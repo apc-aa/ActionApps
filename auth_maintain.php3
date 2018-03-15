@@ -10,6 +10,6 @@
 
 require_once "include/auth.php3";
 
-if ($maintain_auth) 
+if ($maintain_auth) {
     AA_Mysqlauth::maintenance();
-?>
+}

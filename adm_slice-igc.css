@@ -137,7 +137,7 @@
     
     .aaPostbyF  {
     	color : #AAAAAA;
-    	font-style : Arial, Helvetica, sans;
+		font-family: Arial, Helvetica, sans-serif;
     	font-size : medium;
     }
     
@@ -149,7 +149,7 @@
     
     .aaPostbyC  {
     	color : #FFCC33;
-    	font-style : Arial, Helvetica, sans;
+    	font-family: Arial, Helvetica, sans-serif;
     	font-size : medium;
     }
     

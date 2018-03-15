@@ -65,4 +65,3 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
     else echo '<font color="red">All logs are created.</font>';
 }
 
-?>

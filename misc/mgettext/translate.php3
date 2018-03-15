@@ -98,4 +98,4 @@ function translate_files($old_lang_file, $src_dir, $dst_dir) {
     closedir($dir);
 }
 
-?>
+

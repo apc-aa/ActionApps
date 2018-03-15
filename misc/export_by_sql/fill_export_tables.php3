@@ -1,4 +1,8 @@
 <?php
+/**
+ * @deprecated should be converted fo optimize actions, if needed. Honza 2018-03-13
+ */
+
 require_once __DIR__. "/../../include/init_page.php3";
 require_once AA_INC_PATH."util.php3";
 
@@ -31,7 +35,6 @@ if ($slices_chosen) {
         echo "INSERT INTO export_".$table.": ".$db->affected_rows()." rows<br>\n";
     }
 
-    $show_types = inputShowFuncTypes ();
     $db->query ("SELECT input_show_func FROM field WHERE slice_id IN (".$slice_ids.")");
     $groups = "";
     while ($db->next_record()) {

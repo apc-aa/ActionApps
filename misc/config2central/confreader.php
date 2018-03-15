@@ -45,4 +45,4 @@ $conf = array( 'dns_conf'                  => '',
              );
 
 echo serialize($conf);
-?>
+

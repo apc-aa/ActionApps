@@ -52,4 +52,3 @@ if(!$keystr) {
 }
 echo $GLOBALS['pagecache']->getById($keystr);
 
-?>

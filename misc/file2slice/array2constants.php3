@@ -27,15 +27,15 @@ function myQuery ($db, $SQL, $fire) {
 // as $group_id group
 
 $constants2import = array (
-'Bystøice nad Pernštejnem',
-'Chotìboø',
-'Havlíèkùv Brod',
+'Bystï¿½ice nad Pernï¿½tejnem',
+'Chotï¿½boï¿½',
+'Havlï¿½ï¿½kï¿½v Brod',
 'Humpolec',
 'Jihlava',
-'Jihlava, kraj Vysoèina',
-'Moravské Budìjovice',
-'Námìš nad Oslavou',
-'Nové Mìsto na Moravì'
+'Jihlava, kraj Vysoï¿½ina',
+'Moravskï¿½ Budï¿½jovice',
+'Nï¿½mìš nad Oslavou',
+'Novï¿½ Mï¿½sto na Moravï¿½'
 );
 // ---------------------- Just do it -----------------------------------------
 
@@ -68,7 +68,7 @@ foreach ($constants2import as $cnst) {
     $varset->set("id", new_id(), "unpacked" );
     $varset->set("group_id", $group_id, "text" );
     $SQL =  "INSERT INTO constant " . $varset->makeINSERT();
-    if ( !MyQuery ($db, $SQL, $fire )) {
+    if ( !myQuery ($db, $SQL, $fire )) {
         $err["DB"] .= MsgErr("Can't copy constant");
         break;
     }
@@ -81,4 +81,4 @@ if (count($err) > 1) {
 } else
   print("<br><b>Import successful!</b>");
 
-?>
+

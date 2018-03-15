@@ -290,4 +290,4 @@ function phpThumbURL($ParameterString, $path_to_phpThumb='phpThumb.php') {
     $ParameterString = implode($PHPTHUMB_CONFIG['high_security_url_separator'], $ParamterStringEncodedArray);
     return $path_to_phpThumb.'?'.$ParameterString.$PHPTHUMB_CONFIG['high_security_url_separator'].'hash='.md5($ParameterString.$PHPTHUMB_CONFIG['high_security_password']);
 }
-?>
+

@@ -52,7 +52,7 @@ if ((substr($source,0,7) != 'http://') AND (substr($source,0,8) != 'https://')) 
 $encoder = new ConvertCharset;
 echo $encoder->Convert(file_get_contents($source), $from, $to);
 
-?>
+
 
 
 

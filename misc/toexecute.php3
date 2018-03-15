@@ -39,14 +39,9 @@ require_once AA_INC_PATH."varset.php3";
 /** */
 require_once AA_INC_PATH."util.php3";
 
-//require_once AA_INC_PATH."item.php3";
-//require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."pagecache.php3";
-//require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH.  "toexecute.class.php3";
 require_once AA_INC_PATH.  "mail.php3";
 require_once AA_BASE_PATH. "modules/links/cattree.php3";
-require_once AA_INC_PATH.  "hitcounter.class.php3";
 
 /** This script is possible to run from commandline (so also from cron). The
  * benefit is, that the script then can run as long as you want - it is not
@@ -84,5 +79,5 @@ if (AA::$debug) {
 
 
 
-?>
+
 

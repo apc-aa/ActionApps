@@ -110,7 +110,6 @@ $lang_groups ["output"] =
            "include/discussion.php3",
            "include/item.php3",
            "include/scroller.php3",
-           "include/easy_scroller.php3",
            "include/itemview.php3");
 // _param_wizard_lang.php3 language files, used only in the parameter wizard
 $lang_groups ["param_wizard"] =
@@ -164,7 +163,7 @@ $translate_lang_file = str_replace ("??","en",$old_lang_files);
 if ($cmd == "create logs") {
     create_logs($lang_list, $old_lang_files, $log_files);
 } elseif ($cmd == "update language files" && is_array ($update)) {
-    update_language_files($aadir, $destdir, false);
+    update_language_files($aadir, $destdir);
 } elseif ($cmd == "convert scripts") {
     translate_aa_files($aadir, $translateddir);
 }
@@ -345,4 +344,4 @@ echo '
 </FORM>
 </BODY>
 </HTML>';
-?>
+

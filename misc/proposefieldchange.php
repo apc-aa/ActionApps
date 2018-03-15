@@ -27,7 +27,6 @@ require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."itemfunc.php3";
-require_once AA_INC_PATH."grabber.class.php3";
 
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
@@ -41,10 +40,10 @@ if ( get_magic_quotes_gpc() ) {
 
 /** not quoted, G() will also return paramaters from SSI, it should do also input checks in future */
 class AA_V {
-    function P($var) { return $_POST[$var];   }
-    function G($var) { return $_GET[$var];    }
-    function C($var) { return $_COOKIE[$var]; }
-    function Parr()  { return $_POST;         }
+    static function P($var) { return $_POST[$var];   }
+    static function G($var) { return $_GET[$var];    }
+    static function C($var) { return $_COOKIE[$var]; }
+    static function Parr()  { return $_POST;         }
 }
 
 /** field_content is AA_Value object */
@@ -70,7 +69,7 @@ class AA_Grabber_Assignmentform extends AA_Grabber {
     var $_index;              /**  */
 
     function __construct() {
-        $_items = array();
+        $this->_items = array();
     }
 
     /** Name of the grabber - used for grabber selection box */
@@ -173,7 +172,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         $saver->run();
 
         $pagecache->invalidateFor("slice_id=de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values
-        echo "Uoženo";
+        echo "Uoï¿½eno";
     } else {
         echo "Nic neulozeno";
     }
@@ -255,4 +254,4 @@ elseif (AA_V::P('change_id')) {
 }
 
 exit;
-?>
+

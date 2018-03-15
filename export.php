@@ -58,7 +58,6 @@ require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
-require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."exporter.class.php3";
 
@@ -79,4 +78,4 @@ $exportset->export();
 page_close();
 exit;
 
-?>
+

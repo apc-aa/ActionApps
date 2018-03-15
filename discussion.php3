@@ -70,8 +70,6 @@ function PutSearchLog() {
 
 /** APC-AA configuration file */
 require_once "./include/config.php3";
-/** Defines simplified class for page scroller */
-require_once AA_INC_PATH."easy_scroller.php3";
 /** Set of usefull functions used on most pages */
 require_once AA_INC_PATH."util.php3";
 /** Mail sending functions */
@@ -129,4 +127,4 @@ if ($searchlog) {
     PutSearchLog();
 }
 exit;
-?>
+

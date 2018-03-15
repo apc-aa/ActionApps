@@ -1,7 +1,6 @@
 <?php
 require_once "./../../include/config.php3";
 require_once (AA_INC_PATH."util.php3");
-require_once (AA_INC_PATH."files.class.php3");
 
 if (!$view)     $view     = false;
 if (!$encoding) $encoding = CONV_DEFAULTENCODING;
@@ -68,8 +67,8 @@ if (!$userfile) {
                     } else $buffer=array();
                     $insidesection=true;
                 } else {
-                    $line=str_replace("&scaron;","š",$line);
-                    $line=str_replace("&Scaron;","Š",$line);
+                    $line=str_replace("&scaron;","ï¿½",$line);
+                    $line=str_replace("&Scaron;","ï¿½",$line);
                     $buffer[]=$line;
                 }
             }

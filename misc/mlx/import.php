@@ -110,11 +110,11 @@ class MLXImport {
                     $content[$k] = $v;
             foreach($this->required as $k)
                 if(!$content[$k])
-                    $this->fatal("required field $k missing in content: ".$content['headline........'][0][value]);
+                    $this->fatal("required field $k missing in content: ".$content['headline........'][0]['value']);
 //			__mlx_dbg($content,$lang);
-            if(!$content['lang_code.......'][0][value])
-                $content['lang_code.......'][0][value] = $mlxl;
-            else if($content['lang_code.......'][0][value] != $mlxl)
+            if(!$content['lang_code.......'][0]['value'])
+                $content['lang_code.......'][0]['value'] = $mlxl;
+            else if($content['lang_code.......'][0]['value'] != $mlxl)
                 $this->fatal("different language in item from data! $mlxl!=".var_export($content,true));
             // get an id for the content
             $cntitemid = new_id();
@@ -123,11 +123,11 @@ class MLXImport {
             $this->mlxObj->update($content,$cntitemid,$action,$mlxl,$mlxid);
             if(!$mlxid) {
                 // save the item id of the the mlx control item
-                $mlxid = unpack_id($content[MLX_CTRLIDFIELD][0][value]);
+                $mlxid = unpack_id($content[MLX_CTRLIDFIELD][0]['value']);
                 // preserve info for rollback (not implemented)
                 $this->added[$mlxid]['mlxid'] = $mlxid;
                 if($mlxl == 'EN') //q&d
-                    $this->added[$mlxid]['headline........'] = $content['headline........'][0][value];
+                    $this->added[$mlxid]['headline........'] = $content['headline........'][0]['value'];
             }
             // store the content
             $added += StoreItem( $cntitemid, $this->slice_id, $content, ($action=='insert') );     // invalidatecache, feed
@@ -154,7 +154,7 @@ class MLXImport {
         foreach($content as $field=>$arVal) {
             $conds[$field] = $arVal[0]['value'];
         }
-        $zids = QueryZIDs($this->slice_id, $conds,'','ACTIVE',0,false, '=');
+        $zids = QueryZids($this->slice_id, $conds,'','ACTIVE',0,false, '=');
         return ($GLOBALS['QueryIDsCount'] == 0) ? false : $zids->longids();
     }
 //protected:
@@ -204,4 +204,4 @@ if($_REQUEST['test']) {
         $retval = test_misc_mlx_import();
     echo "test ".($retval?'ok':'failed');
 }
-?>
+

@@ -73,4 +73,4 @@ $db->query("OPTIMIZE TABLE polls_designs");
 $db->query("OPTIMIZE TABLE site");
 $db->query("OPTIMIZE TABLE site_spot");
 
-?>
+

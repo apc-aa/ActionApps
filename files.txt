@@ -63,7 +63,6 @@
   loginform.html    Displays login form
 
   scroller.php3     Defines class for page scroller
-  easy_scroller.php3 Defines simplified class for page scroller
   date.php3         Defines class for date manipulation
   item.php3         Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...)
   varset.php3       Defines class for inserting and updating database fields

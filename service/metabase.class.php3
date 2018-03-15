@@ -437,7 +437,6 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
      */
     function getSearchArray() {
         $fieldarr = array();
-        $i = 1;
         foreach ($this->c as $column_name => $column) {
             // @todo - make alias field type aware
             $fieldarr[$column_name] = $column->getFieldDef();
@@ -1089,4 +1088,4 @@ class AA_Metabase {
     }
 }
 
-?>
+

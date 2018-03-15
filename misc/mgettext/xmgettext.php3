@@ -474,7 +474,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
  */
         //if ($find) echo $find;
         //if ($quotes != $old_quotes) echo "row $irow: $quotes<br>";
-        $old_quotes = $quotes;
+        //$old_quotes = $quotes;
 
         if (!$comment) {
             switch ($find) {
@@ -571,4 +571,4 @@ function isspace($c) {
     return strchr(" \t\r\n", $c);
 }
 
-?>
+

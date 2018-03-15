@@ -276,7 +276,7 @@ class Cvarset {
         if ( $nohalt=='nohalt' ) {
             $retval = $this->last_used_db->query_nohalt($SQL);
         } else {
-            $retval = $this->last_used_db->tquery($SQL);
+            $retval = $this->last_used_db->query($SQL);
         }
         freeDB($this->last_used_db);
         return $retval;
@@ -486,4 +486,3 @@ class Cvarset {
 if (!class_exists('AA_Metabase')) {
     require_once AA_INC_PATH . "metabase.class.php3";
 }
-?>

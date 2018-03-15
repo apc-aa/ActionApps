@@ -330,7 +330,7 @@ class image_gd extends image {
     protected function imageFilledRectangle($x1, $y1, $x2, $y2, $color) {
         $color = $this->gdColor($color);
         if ($color === false) return false;
-        return imageFilledRectangle($this->image, $x1, $y1, $x2, $y2, $color);
+        return imagefilledrectangle($this->image, $x1, $y1, $x2, $y2, $color);
     }
 
     protected function imageCopyResampled(
@@ -347,6 +347,6 @@ class image_gd extends image {
         if (is_null($dstH)) $dstH = $this->height - $dstY;
         if (is_null($srcW)) $srcW = $srcWidth - $srcX;
         if (is_null($srcH)) $srcH = $srcHeight - $srcY;
-        return imageCopyResampled($this->image, $src, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
+        return imagecopyresampled($this->image, $src, $dstX, $dstY, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
     }
 }

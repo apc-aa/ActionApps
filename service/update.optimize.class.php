@@ -60,7 +60,7 @@ class AA_Optimize {
      *  Called as AA_Optimize::justPrint();
      *  @todo convert to static class variable (after migration to PHP5)
      */
-    function justPrint($state=null) {
+    static function justPrint($state=null) {
         static $just_print = false;
         if (!is_null($state)) {
             $just_print = $state;
@@ -2024,4 +2024,4 @@ class AA_Optimize_Generate_Metabase extends AA_Optimize {
     }
 }
 
-?>
+
