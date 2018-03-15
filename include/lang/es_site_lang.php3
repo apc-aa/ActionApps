@@ -36,23 +36,23 @@ $_m["You don't have permissions to delete a site."]
 
 // modules/site/moddelete.php3, row 38
 $_m["Module not found."]
- = "No se encontró el módulo";
+ = "No se encontrï¿½ el mï¿½dulo";
 
 // modules/site/moddelete.php3, row 63
 $_m["Slice successfully deleted, tables are optimized"]
- = "Canal borrado con éxito; tablas optimizados";
+ = "Canal borrado con ï¿½xito; tablas optimizados";
 
 // modules/site/index.php3, row 45
 $_m["You do not have permission to edit items in this slice"]
- = "Ud. no tiene permisos para editar ítems en este canal";
+ = "Ud. no tiene permisos para editar ï¿½tems en este canal";
 
 // modules/site/index.php3, row 70
 $_m["Starting spot not found"]
- = "No se encontró el nodo inicial";
+ = "No se encontrï¿½ el nodo inicial";
 
 // modules/site/index.php3, row 141
 $_m["Editor window - site code manager"]
- = "Edición - Administrador de sitios";
+ = "Ediciï¿½n - Administrador de sitios";
 
 // modules/site/index.php3, row 161
 $_m["Add&nbsp;spot"]
@@ -60,7 +60,7 @@ $_m["Add&nbsp;spot"]
 
 // modules/site/index.php3, row 162
 $_m["Add&nbsp;choice"]
- = "Nueva&nbsp;opción";
+ = "Nueva&nbsp;opciï¿½n";
 
 // modules/site/index.php3, row 165
 $_m["Move&nbsp;up"]
@@ -85,7 +85,7 @@ $_m["Delete"]
 
 // modules/site/index.php3, row 174
 $_m["Are you sure you want to delete the spot?"]
- = "Está seguro de borrar este nodo?";
+ = "Estï¿½ seguro de borrar este nodo?";
 
 // modules/site/index.php3, row 177
 $_m["Enable"]
@@ -101,7 +101,7 @@ $_m["Spot&nbsp;variables"]
 
 // modules/site/util.php3, row 139, 158
 $_m["Add"]
- = "Añadir";
+ = "Aï¿½adir";
 
 // modules/site/util.php3, row 149
 $_m["Spot&nbsp;conditions"]
@@ -117,11 +117,11 @@ $_m["View site"]
 
 // modules/site/menu.php3, row 55, 56
 $_m["Code&nbsp Manager"]
- = "Código&nbsp;del&nbsp;sitio";
+ = "Cï¿½digo&nbsp;del&nbsp;sitio";
 
 // modules/site/menu.php3, row 61, 62
 $_m["Module Settings"]
- = "Propiedades del módulo";
+ = "Propiedades del mï¿½dulo";
 
 // modules/site/menu.php3, row 68
 $_m["AA"]
@@ -129,11 +129,11 @@ $_m["AA"]
 
 // modules/site/menu.php3, row 69
 $_m["AA Administration"]
- = "Administración AA";
+ = "Administraciï¿½n AA";
 
 // modules/site/modedit.php3, row 52
 $_m["You have not permissions to add slice"]
- = "No tiene permisos para añadir un canal";
+ = "No tiene permisos para aï¿½adir un canal";
 
 // modules/site/modedit.php3, row 57
 $_m["You have not permissions to edit this slice"]
@@ -149,7 +149,7 @@ $_m["Site Admin"]
 
 // modules/site/modedit.php3, row 191
 $_m["Add Site"]
- = "Añadir sitio";
+ = "Aï¿½adir sitio";
 
 // modules/site/modedit.php3, row 191
 $_m["Edit Site"]
@@ -173,7 +173,7 @@ $_m["URL"]
 
 // modules/site/modedit.php3, row 204
 $_m["The file will probably contain just the following include:"]
- = "Este archivo probablemente sólo contendrá la siguente linea de código:";
+ = "Este archivo probablemente sï¿½lo contendrï¿½ la siguente linea de cï¿½digo:";
 
 // modules/site/modedit.php3, row 205
 $_m["Owner"]
@@ -197,7 +197,7 @@ $_m["Used Language File"]
 
 // modules/site/modedit.php3, row 214
 $_m["Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."]
- = "Archivo de control del sito - debe estar en la carpeta modules/site/sites. El nombre que especifique será precedido por 'site_', de modo que si escribe por ejemplo 'apc.php', el archivo será modules/site/sites/site_apc.php.";
+ = "Archivo de control del sito - debe estar en la carpeta modules/site/sites. El nombre que especifique serï¿½ precedido por 'site_', de modo que si escribe por ejemplo 'apc.php', el archivo serï¿½ modules/site/sites/site_apc.php.";
 
 // modules/site/router.class.php, row 95
 $_m["Next"]
@@ -207,4 +207,4 @@ $_m["Next"]
 $_m["Previous"]
  = "";
 
-?>
+

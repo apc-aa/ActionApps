@@ -51,7 +51,7 @@ $_m["All categories"]
 
 // include/discussion.php3, row 206, 253
 $_m["Show selected"]
- = "Zeige ausgewählte";
+ = "Zeige ausgewï¿½hlte";
 
 // include/discussion.php3, row 207, 255
 $_m["Show all"]
@@ -59,7 +59,7 @@ $_m["Show all"]
 
 // include/discussion.php3, row 209, 257
 $_m["Add new"]
- = "Hinzufügen";
+ = "Hinzufï¿½gen";
 
 // include/discussion.php3, row 215
 $_m["Alias for subject of the discussion comment"]
@@ -174,7 +174,7 @@ $_m["alias for Item ID"]
 
 // include/item.php3, row 96
 $_m["alias for Short Item ID"]
- = "Alias für kurze Artikel-ID";
+ = "Alias fï¿½r kurze Artikel-ID";
 
 // include/item.php3, row 102, 103
 $_m["alias used on admin page index.php3 for itemedit url"]
@@ -266,7 +266,7 @@ $_m["off"]
 
 // include/item.php3, row 1583
 $_m["Back"]
- = "Zurück";
+ = "Zurï¿½ck";
 
 // include/item.php3, row 1584
 $_m["Home"]
@@ -319,7 +319,7 @@ $_m["All"]
 
 // include/easy_scroller.php3, row 146, 272
 $_m["Previous"]
- = "Zurück";
+ = "Zurï¿½ck";
 
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
@@ -339,7 +339,7 @@ $_m["February"]
 
 // include/util.php3, row 1878
 $_m["March"]
- = "März";
+ = "Mï¿½rz";
 
 // include/util.php3, row 1878
 $_m["April"]
@@ -401,4 +401,4 @@ $_m["Retype New Password"]
 
 $_m["To save changes click here or outside the field."]
  = "";
-?>
+

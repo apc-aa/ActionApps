@@ -314,11 +314,11 @@ $_m["All"]
 
 // include/easy_scroller.php3, row 146, 272
 $_m["Previous"]
- = "Elõzõ";
+ = "Elï¿½zï¿½";
 
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "Következõ";
+ = "Kï¿½vetkezï¿½";
 
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
@@ -398,4 +398,4 @@ $_m["Retype New Password"]
 
 $_m["To save changes click here or outside the field."]
  = "";
-?>
+

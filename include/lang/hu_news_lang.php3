@@ -3199,7 +3199,7 @@ $_m["Preview"]
 // admin/se_csv_import.php3, row 252
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "Következõ";
+ = "Kï¿½vetkezï¿½";
 
 // admin/usershow.php3, row 93
 $_m["Show selected users"]
@@ -3934,7 +3934,7 @@ $_m["Compared and Updated ActionApps"]
 
 // include/easy_scroller.php3, row 146, 272
 $_m["Previous"]
- = "Elõzõ";
+ = "Elï¿½zï¿½";
 
 // include/easy_scroller.php3, row 167
 // include/scroller.php3, row 314
@@ -6958,4 +6958,4 @@ $_m["http#://www.ecn.cz/articles/solar.shtml"]
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "";
 
-?>
+

@@ -12,13 +12,13 @@ $mgettext_lang = "hr";
 
 # Unused messages
 $_m["Collection Form Wizard"]
- = "Èarobnjak za forme kolekcija";
+ = "ï¿½arobnjak za forme kolekcija";
 
 $_m["Add Users"]
  = "Dodajte korisnike/ice";
 
 $_m["Some errors occured: "]
- = "Pojavile su se greške:";
+ = "Pojavile su se greï¿½ke:";
 
 $_m["Enter email addresses one on a row, you may add first and last name separated by whitespace (spaces, tabs), e.g."]
  = "Unesite pojednu e-mail adresu u redak, razdvojite ime i prezime razmakom";
@@ -30,25 +30,25 @@ $_m["Confirmation"]
  = "Potvrda";
 
 $_m["Send a confirmation email to users (recommended)."]
- = "Šalje e-mail potvrde korisnicima/icama (preporuèeno)";
+ = "ï¿½alje e-mail potvrde korisnicima/icama (preporuï¿½eno)";
 
 $_m["Subscribe users immediately (use carefully)."]
  = "Odmah upisuje nove pretplatnike/ice (koristite s oprezom)";
 
 $_m["Set the bin, into which the users will be added, on Alerts Admin."]
- = "Postavlja spremnik u koji æe bti dodani korisnici/ice, na upozorenjima za Admina";
+ = "Postavlja spremnik u koji ï¿½e bti dodani korisnici/ice, na upozorenjima za Admina";
 
 $_m["Go"]
  = "Krenite";
 
 $_m["%1 new users were created and %2 users were subscribed (including the new ones)."]
- = "\$1 novi korisnici/ice su kreirani i %2 korisnika/ica je pretplaæeno (ukljuèujuæi nove)";
+ = "\$1 novi korisnici/ice su kreirani i %2 korisnika/ica je pretplaï¿½eno (ukljuï¿½ujuï¿½i nove)";
 
 $_m["is already in the database with another name: "]
- = "veæ postoji u bazi sa drugim imenom";
+ = "veï¿½ postoji u bazi sa drugim imenom";
 
 $_m["is already subscribed to this collection.<br>"]
- = "veè je pretplaæen/a na tu kolekciju";
+ = "veï¿½ je pretplaï¿½en/a na tu kolekciju";
 
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            to superadmins.\n"
@@ -60,40 +60,40 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
- = "Ova tablica postavlja rukovanje sa podacima nepotvrðenih korisnika/ica. Dostupna je samo\n"
+ = "Ova tablica postavlja rukovanje sa podacima nepotvrï¿½enih korisnika/ica. Dostupna je samo\n"
    ."            superadminima.\n"
-   ."            Možete obrisati nepotvrðene korisnike/ice nakon odreðenog broja dana i / ili poslati e-mail \n"
-   ."            u kojem tražite potvrdu\n"
-   ."            nakon manjeg broja dana. Za iskljèivanje bilo koje akcije,\n"
-   ."            postavite broj dana na 0. Dva zadnja polja su samo za vašu informaciju.<br>\n"
+   ."            Moï¿½ete obrisati nepotvrï¿½ene korisnike/ice nakon odreï¿½enog broja dana i / ili poslati e-mail \n"
+   ."            u kojem traï¿½ite potvrdu\n"
+   ."            nakon manjeg broja dana. Za iskljï¿½ivanje bilo koje akcije,\n"
+   ."            postavite broj dana na 0. Dva zadnja polja su samo za vaï¿½u informaciju.<br>\n"
    ."            <br>\n"
    ."            Za okretanje skripte, morate imati postavljen cron sa pokrenutim retkom\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
-   ."            Za više informacija, pogledajte <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
+   ."            Za viï¿½e informacija, pogledajte <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>.";
 
 $_m["Example"]
  = "Primjer";
 
 $_m["digest"]
- = "Zbirni sadržaj";
+ = "Zbirni sadrï¿½aj";
 
 $_m["Define selections in slices from which you want to send Alerts, \n"
    ."        in views of type Alerts Selection Set"]
- = "Odredite dijelove stranica sa kojih želite slati upozorenja";
+ = "Odredite dijelove stranica sa kojih ï¿½elite slati upozorenja";
 
 # End of unused messages
 // modules/alerts/synchro2.php3, row 42
 // modules/alerts/cf_common.php3, row 69
 $_m["How often"]
- = "Koliko èesto";
+ = "Koliko ï¿½esto";
 
 // modules/alerts/synchro2.php3, row 44, 52
 $_m["How often for {ALERNAME}"]
- = "Koliko èesto za {ALERNAME}";
+ = "Koliko ï¿½esto za {ALERNAME}";
 
 // modules/alerts/synchro2.php3, row 49
 $_m["not subscribed"]
- = "nije pretplaæen/a";
+ = "nije pretplaï¿½en/a";
 
 // modules/alerts/synchro2.php3, row 66
 // modules/alerts/send_emails.php3, row 126
@@ -140,7 +140,7 @@ $_m["weekly"]
 
 // modules/alerts/util.php3, row 61
 $_m["monthly"]
- = "mjeseèno";
+ = "mjeseï¿½no";
 
 // modules/alerts/util.php3, row 67
 $_m["Active"]
@@ -148,11 +148,11 @@ $_m["Active"]
 
 // modules/alerts/util.php3, row 68
 $_m["Holding bin"]
- = "prostor za dokumente na èekanju";
+ = "prostor za dokumente na ï¿½ekanju";
 
 // modules/alerts/util.php3, row 69
 $_m["Trash bin"]
- = "smeæe";
+ = "smeï¿½e";
 
 // modules/alerts/cf_common.php3, row 44
 $_m["Language"]
@@ -181,11 +181,11 @@ $_m["Change password"]
 
 // modules/alerts/cf_common.php3, row 80
 $_m["Retype new password"]
- = "Ponovo upišite novu lozinku";
+ = "Ponovo upiï¿½ite novu lozinku";
 
 // modules/alerts/send_emails.php3, row 53
 $_m["Send now an example alert email to"]
- = "Pošaljite primjer e-maila upozorenja";
+ = "Poï¿½aljite primjer e-maila upozorenja";
 
 // modules/alerts/send_emails.php3, row 63, 68
 $_m["as if"]
@@ -201,11 +201,11 @@ $_m["Reader"]
 
 // modules/alerts/send_emails.php3, row 76
 $_m["Send alerts"]
- = "Pošaljite upozorenja";
+ = "Poï¿½aljite upozorenja";
 
 // modules/alerts/send_emails.php3, row 83
 $_m["Send now alerts to all users subscribed to "]
- = "Pošaljite upozorenja svim pretplaèenim korisnicima/icama";
+ = "Poï¿½aljite upozorenja svim pretplaï¿½enim korisnicima/icama";
 
 // modules/alerts/send_emails.php3, row 83
 $_m["Warning: This is a real command!"]
@@ -225,7 +225,7 @@ $_m["Slice"]
 
 // modules/alerts/send_emails.php3, row 125
 $_m["View (Selection set)"]
- = "Pogled (podešavanje dijelova stranica)";
+ = "Pogled (podeï¿½avanje dijelova stranica)";
 
 // modules/alerts/send_emails.php3, row 131
 $_m["Define selections in slices from which you want to send Alerts,\n"
@@ -256,11 +256,11 @@ $_m["Settings"]
 
 // modules/alerts/menu.php3, row 111
 $_m["Send emails"]
- = "Pošaljite e-mailove";
+ = "Poï¿½aljite e-mailove";
 
 // modules/alerts/menu.php3, row 114
 $_m["Reader management"]
- = "Potavke èitatelja/ica";
+ = "Potavke ï¿½itatelja/ica";
 
 // modules/alerts/menu.php3, row 115
 $_m["Documentation"]
@@ -268,11 +268,11 @@ $_m["Documentation"]
 
 // modules/alerts/menu.php3, row 117
 $_m["Common"]
- = "Uobièajeno";
+ = "Uobiï¿½ajeno";
 
 // modules/alerts/menu.php3, row 119
 $_m["Email templates"]
- = "E-mail predlošci";
+ = "E-mail predloï¿½ci";
 
 // modules/alerts/synchro.php3, row 42
 $_m["Slice Synchro"]
@@ -280,15 +280,15 @@ $_m["Slice Synchro"]
 
 // modules/alerts/synchro.php3, row 47
 $_m["Synchronization with Reader Management Slice"]
- = "Sinkronizacija sa stranicom za ureðivanje podataka o èitateljima/icama";
+ = "Sinkronizacija sa stranicom za ureï¿½ivanje podataka o ï¿½itateljima/icama";
 
 // modules/alerts/synchro.php3, row 72
 $_m["Not Yet Set"]
- = "Još nije postavljeno";
+ = "Joï¿½ nije postavljeno";
 
 // modules/alerts/synchro.php3, row 81
 $_m["Choose Reader Management Slice"]
- = "Odaberite stranicu za ureðivanje podataka o korisnicima/icama";
+ = "Odaberite stranicu za ureï¿½ivanje podataka o korisnicima/icama";
 
 // modules/alerts/synchro.php3, row 82
 $_m["This Alerts Collection takes user data from the slice"]
@@ -300,7 +300,7 @@ $_m["Change to: "]
 
 // modules/alerts/synchro.php3, row 94
 $_m["and delete the %1-specific fields from %2"]
- = "i briše %1-specific polja iz %2";
+ = "i briï¿½e %1-specific polja iz %2";
 
 // modules/alerts/synchro.php3, row 98
 $_m["Change"]
@@ -313,7 +313,7 @@ $_m["Add %1-specific fields to %2"]
 // modules/alerts/synchro.php3, row 111
 $_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."]
- = "Dodaje samo polja sa oznakama koje još ne postoje na stranici.";
+ = "Dodaje samo polja sa oznakama koje joï¿½ ne postoje na stranici.";
 
 // modules/alerts/synchro.php3, row 116
 $_m["Field Name"]
@@ -329,7 +329,7 @@ $_m["Add or refresh fields"]
 
 // modules/alerts/synchro.php3, row 128
 $_m["This command can not be used until you choose the Reader Management Slice."]
- = "Ne možete koristiti ovu naredbu dok ne izaberete stranicu za ureðivanje podtaka o korisnicima/icama";
+ = "Ne moï¿½ete koristiti ovu naredbu dok ne izaberete stranicu za ureï¿½ivanje podtaka o korisnicima/icama";
 
 // modules/alerts/tableviews.php3, row 61
 $_m["No selections defined. You must define some."]
@@ -341,7 +341,7 @@ $_m["Alerts Selections"]
 
 // modules/alerts/tableviews.php3, row 103
 $_m["Choose selections which form the Alert email."]
- = "Odaberite selekcije koje èine mail upozorenja";
+ = "Odaberite selekcije koje ï¿½ine mail upozorenja";
 
 // modules/alerts/tableviews.php3, row 110
 $_m["selection"]
@@ -381,7 +381,7 @@ $_m["Use AA Admin / Delete<br>to delete permanently"]
 
 // modules/alerts/tableviews.php3, row 180
 $_m["welcome email"]
- = "E-mail dobrodošlice";
+ = "E-mail dobrodoï¿½lice";
 
 // modules/alerts/tableviews.php3, row 187, 236
 $_m["alert email"]
@@ -397,15 +397,15 @@ $_m["created by"]
 
 // modules/alerts/tableviews.php3, row 212, 231
 $_m["You don't have permissions to edit any collection or no collection exists."]
- = "Nemate dozvolu za ureðivanje bilo koje kolekcije ili kolekcija ne postoji";
+ = "Nemate dozvolu za ureï¿½ivanje bilo koje kolekcije ili kolekcija ne postoji";
 
 // modules/alerts/tableviews.php3, row 225, 226
 $_m["Send Emails"]
- = "Šalje e-mail poruke";
+ = "ï¿½alje e-mail poruke";
 
 // modules/alerts/tableviews.php3, row 232
 $_m["Here you send the Alert emails manually."]
- = "Ovdje ruèno šaljete poruke upozorenja";
+ = "Ovdje ruï¿½no ï¿½aljete poruke upozorenja";
 
 // modules/alerts/tableviews.php3, row 266
 $_m["confirm mail"]
@@ -413,11 +413,11 @@ $_m["confirm mail"]
 
 // modules/alerts/tableviews.php3, row 267, 274
 $_m["number of days, 0 = off"]
- = "broj dana 0 = iskljuèeno";
+ = "broj dana 0 = iskljuï¿½eno";
 
 // modules/alerts/tableviews.php3, row 273
 $_m["delete not confirmed"]
- = "brisanje nij potvrðeno";
+ = "brisanje nij potvrï¿½eno";
 
 // modules/alerts/tableviews.php3, row 280
 $_m["last confirm mail"]
@@ -425,7 +425,7 @@ $_m["last confirm mail"]
 
 // modules/alerts/tableviews.php3, row 287
 $_m["last delete not confirmed"]
- = "zadnje brisanje nije potvrðeno";
+ = "zadnje brisanje nije potvrï¿½eno";
 
 // modules/alerts/tableviews.php3, row 303
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
@@ -448,4 +448,4 @@ $_m["no"]
 $_m["yes"]
  = "da";
 
-?>
+

@@ -12,31 +12,31 @@ $mgettext_lang = "es";
 
 # Unused messages
 $_m["Collection Form Wizard"]
- = "Colección desde asistente";
+ = "Colecciï¿½n desde asistente";
 
 $_m["Add Users"]
- = "Añadir Usuarios";
+ = "Aï¿½adir Usuarios";
 
 $_m["Some errors occured: "]
  = "Se produjeron Errores:";
 
 $_m["Enter email addresses one on a row, you may add first and last name separated by whitespace (spaces, tabs), e.g."]
- = "Escriba las direcciones email, una por fila. Puede añadir nombres y apellidos separados por espacios: ";
+ = "Escriba las direcciones email, una por fila. Puede aï¿½adir nombres y apellidos separados por espacios: ";
 
 $_m["Proove the email addresses format is correct."]
  = "Comprobar que el formato de las direcciones es correcto";
 
 $_m["Confirmation"]
- = "Confirmación";
+ = "Confirmaciï¿½n";
 
 $_m["Send a confirmation email to users (recommended)."]
- = "Enviar mensaje de confirmación a los usuarios (recomendado).";
+ = "Enviar mensaje de confirmaciï¿½n a los usuarios (recomendado).";
 
 $_m["Subscribe users immediately (use carefully)."]
  = "Suscribir immediatamente (use con cuidado).";
 
 $_m["Set the bin, into which the users will be added, on Alerts Admin."]
- = "Asignar la carpeta donde se añaden los usuarios en Admin Alertas.";
+ = "Asignar la carpeta donde se aï¿½aden los usuarios en Admin Alertas.";
 
 $_m["Go"]
  = "Adelante";
@@ -45,10 +45,10 @@ $_m["%1 new users were created and %2 users were subscribed (including the new o
  = "%1 nuevos usuarios creados y %2 usuarios suscritos (incluyendo los nuevos).";
 
 $_m["is already in the database with another name: "]
- = "ya está en la base de datos con otro nombre:";
+ = "ya estï¿½ en la base de datos con otro nombre:";
 
 $_m["is already subscribed to this collection.<br>"]
- = "ya está suscrito a esta colección.<br>";
+ = "ya estï¿½ suscrito a esta colecciï¿½n.<br>";
 
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            to superadmins.\n"
@@ -60,10 +60,10 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
- = "Esta tabla configura la manera como se manejan o no los usuarios confirmados. Solamente pueden acceder a ella los superadministradores. Usted puede borrar usuarios no confirmados después de un número de días y/o enviarles un correo-e solicitando una confirmación después de un número menor de días. Para apagar alguna de las funciones defina el número de días como 0. Los dos últimos campos son para su información solamente.<br>\n"
+ = "Esta tabla configura la manera como se manejan o no los usuarios confirmados. Solamente pueden acceder a ella los superadministradores. Usted puede borrar usuarios no confirmados despuï¿½s de un nï¿½mero de dï¿½as y/o enviarles un correo-e solicitando una confirmaciï¿½n despuï¿½s de un nï¿½mero menor de dï¿½as. Para apagar alguna de las funciones defina el nï¿½mero de dï¿½as como 0. Los dos ï¿½ltimos campos son para su informaciï¿½n solamente.<br>\n"
    ."            <br>\n"
    ."            Para ejecutar el script, Usted debe configurar el cron con una file ejecutando misc/alerts/admin_mails.php3.<br>\n"
-   ."            Para mayor información, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
+   ."            Para mayor informaciï¿½n, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
 
 $_m["Example"]
  = "Ejemplo";
@@ -73,7 +73,7 @@ $_m["digest"]
 
 $_m["Define selections in slices from which you want to send Alerts, \n"
    ."        in views of type Alerts Selection Set"]
- = "Define las selecciones en los canales desde donde Usted desea enviar las alertas, utilizando las vistas de la Selección de Alertas";
+ = "Define las selecciones en los canales desde donde Usted desea enviar las alertas, utilizando las vistas de la Selecciï¿½n de Alertas";
 
 # End of unused messages
 // modules/alerts/synchro2.php3, row 42
@@ -106,7 +106,7 @@ $_m["Selecetion IDs for {ALERNAME}"]
 
 // modules/alerts/synchro2.php3, row 194
 $_m["%1 field(s) added"]
- = "%1 campo(s) añadido(s)";
+ = "%1 campo(s) aï¿½adido(s)";
 
 // modules/alerts/synchro2.php3, row 220
 $_m["%1 field(s) and %2 constant group(s) deleted"]
@@ -122,7 +122,7 @@ $_m["You have not permissions to add slice"]
 
 // modules/alerts/util.php3, row 57
 $_m["instant"]
- = "instantáneo";
+ = "instantï¿½neo";
 
 // modules/alerts/util.php3, row 59
 $_m["daily"]
@@ -183,7 +183,7 @@ $_m["Send now an example alert email to"]
 
 // modules/alerts/send_emails.php3, row 63, 68
 $_m["as if"]
- = "como sí";
+ = "como sï¿½";
 
 // modules/alerts/send_emails.php3, row 64, 69, 84
 $_m["Go!"]
@@ -195,7 +195,7 @@ $_m["Reader"]
 
 // modules/alerts/send_emails.php3, row 76
 $_m["Send alerts"]
- = "Envíe alertas";
+ = "Envï¿½e alertas";
 
 // modules/alerts/send_emails.php3, row 83
 $_m["Send now alerts to all users subscribed to "]
@@ -203,7 +203,7 @@ $_m["Send now alerts to all users subscribed to "]
 
 // modules/alerts/send_emails.php3, row 83
 $_m["Warning: This is a real command!"]
- = "Atención: Este es un comando real!";
+ = "Atenciï¿½n: Este es un comando real!";
 
 // modules/alerts/send_emails.php3, row 87
 $_m["Last time the alerts were sent on:"]
@@ -219,7 +219,7 @@ $_m["Slice"]
 
 // modules/alerts/send_emails.php3, row 125
 $_m["View (Selection set)"]
- = "Ver (Selección)";
+ = "Ver (Selecciï¿½n)";
 
 // modules/alerts/send_emails.php3, row 131
 $_m["Define selections in slices from which you want to send Alerts,\n"
@@ -229,7 +229,7 @@ $_m["Define selections in slices from which you want to send Alerts,\n"
 // modules/alerts/menu.php3, row 52, 53
 // modules/alerts/tableviews.php3, row 148, 149
 $_m["Alerts Settings"]
- = "Configuración Alertas";
+ = "Configuraciï¿½n Alertas";
 
 // modules/alerts/menu.php3, row 86
 $_m["AA"]
@@ -237,7 +237,7 @@ $_m["AA"]
 
 // modules/alerts/menu.php3, row 87
 $_m["AA Administration"]
- = "Administración AA";
+ = "Administraciï¿½n AA";
 
 // modules/alerts/menu.php3, row 100
 // modules/alerts/tableviews.php3, row 253, 254
@@ -246,7 +246,7 @@ $_m["Alerts Admin"]
 
 // modules/alerts/menu.php3, row 104
 $_m["Settings"]
- = "Configuración";
+ = "Configuraciï¿½n";
 
 // modules/alerts/menu.php3, row 111
 $_m["Send emails"]
@@ -254,15 +254,15 @@ $_m["Send emails"]
 
 // modules/alerts/menu.php3, row 114
 $_m["Reader management"]
- = "Administración Suscriptores";
+ = "Administraciï¿½n Suscriptores";
 
 // modules/alerts/menu.php3, row 115
 $_m["Documentation"]
- = "Documentación";
+ = "Documentaciï¿½n";
 
 // modules/alerts/menu.php3, row 117
 $_m["Common"]
- = "Común";
+ = "Comï¿½n";
 
 // modules/alerts/menu.php3, row 119
 $_m["Email templates"]
@@ -270,23 +270,23 @@ $_m["Email templates"]
 
 // modules/alerts/synchro.php3, row 42
 $_m["Slice Synchro"]
- = "Sincronización Canal";
+ = "Sincronizaciï¿½n Canal";
 
 // modules/alerts/synchro.php3, row 47
 $_m["Synchronization with Reader Management Slice"]
- = "Sincronización con el canal de Administración de Lectura";
+ = "Sincronizaciï¿½n con el canal de Administraciï¿½n de Lectura";
 
 // modules/alerts/synchro.php3, row 72
 $_m["Not Yet Set"]
- = "No configurado aún";
+ = "No configurado aï¿½n";
 
 // modules/alerts/synchro.php3, row 81
 $_m["Choose Reader Management Slice"]
- = "Seleccione el Canal de Administración de Lectura";
+ = "Seleccione el Canal de Administraciï¿½n de Lectura";
 
 // modules/alerts/synchro.php3, row 82
 $_m["This Alerts Collection takes user data from the slice"]
- = "Esta colección de alertas toma información del usuario desde el canal";
+ = "Esta colecciï¿½n de alertas toma informaciï¿½n del usuario desde el canal";
 
 // modules/alerts/synchro.php3, row 88
 $_m["Change to: "]
@@ -294,7 +294,7 @@ $_m["Change to: "]
 
 // modules/alerts/synchro.php3, row 94
 $_m["and delete the %1-specific fields from %2"]
- = "y borre los %1-campos específicos de %2";
+ = "y borre los %1-campos especï¿½ficos de %2";
 
 // modules/alerts/synchro.php3, row 98
 $_m["Change"]
@@ -302,12 +302,12 @@ $_m["Change"]
 
 // modules/alerts/synchro.php3, row 108
 $_m["Add %1-specific fields to %2"]
- = "Añada %1-campos específicos de %2";
+ = "Aï¿½ada %1-campos especï¿½ficos de %2";
 
 // modules/alerts/synchro.php3, row 111
 $_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."]
- = "Añada solamente campos con IDs que aún no existen en el canal. Refresque el grupo de constantes que contiene las selecciones si ya existen.";
+ = "Aï¿½ada solamente campos con IDs que aï¿½n no existen en el canal. Refresque el grupo de constantes que contiene las selecciones si ya existen.";
 
 // modules/alerts/synchro.php3, row 116
 $_m["Field Name"]
@@ -319,11 +319,11 @@ $_m["Field ID"]
 
 // modules/alerts/synchro.php3, row 127
 $_m["Add or refresh fields"]
- = "Añada o refresque campos";
+ = "Aï¿½ada o refresque campos";
 
 // modules/alerts/synchro.php3, row 128
 $_m["This command can not be used until you choose the Reader Management Slice."]
- = "Este comando no puede ser utilizado hasta que Usted no seleccione el Canal de Administración de Lectura";
+ = "Este comando no puede ser utilizado hasta que Usted no seleccione el Canal de Administraciï¿½n de Lectura";
 
 // modules/alerts/tableviews.php3, row 61
 $_m["No selections defined. You must define some."]
@@ -335,11 +335,11 @@ $_m["Alerts Selections"]
 
 // modules/alerts/tableviews.php3, row 103
 $_m["Choose selections which form the Alert email."]
- = "Seleccione las opciomes que formarán la alerta de correo-e";
+ = "Seleccione las opciomes que formarï¿½n la alerta de correo-e";
 
 // modules/alerts/tableviews.php3, row 110
 $_m["selection"]
- = "selección";
+ = "selecciï¿½n";
 
 // modules/alerts/tableviews.php3, row 120
 $_m["order"]
@@ -347,7 +347,7 @@ $_m["order"]
 
 // modules/alerts/tableviews.php3, row 152
 $_m["Core settings for the Alerts."]
- = "Configuración base para las Alertas";
+ = "Configuraciï¿½n base para las Alertas";
 
 // modules/alerts/tableviews.php3, row 161
 $_m["alerts ID"]
@@ -391,15 +391,15 @@ $_m["created by"]
 
 // modules/alerts/tableviews.php3, row 212, 231
 $_m["You don't have permissions to edit any collection or no collection exists."]
- = "Usted no tiene permisos para editar ninguna colección o la colección no existe";
+ = "Usted no tiene permisos para editar ninguna colecciï¿½n o la colecciï¿½n no existe";
 
 // modules/alerts/tableviews.php3, row 225, 226
 $_m["Send Emails"]
- = "Envía correos-e";
+ = "Envï¿½a correos-e";
 
 // modules/alerts/tableviews.php3, row 232
 $_m["Here you send the Alert emails manually."]
- = "Acá Usted puede enviar una alerta de correo manualmente";
+ = "Acï¿½ Usted puede enviar una alerta de correo manualmente";
 
 // modules/alerts/tableviews.php3, row 266
 $_m["confirm mail"]
@@ -407,7 +407,7 @@ $_m["confirm mail"]
 
 // modules/alerts/tableviews.php3, row 267, 274
 $_m["number of days, 0 = off"]
- = "número de días, 0 = apagado";
+ = "nï¿½mero de dï¿½as, 0 = apagado";
 
 // modules/alerts/tableviews.php3, row 273
 $_m["delete not confirmed"]
@@ -415,11 +415,11 @@ $_m["delete not confirmed"]
 
 // modules/alerts/tableviews.php3, row 280
 $_m["last confirm mail"]
- = "último correo confirmado";
+ = "ï¿½ltimo correo confirmado";
 
 // modules/alerts/tableviews.php3, row 287
 $_m["last delete not confirmed"]
- = "último borrado no confirmado";
+ = "ï¿½ltimo borrado no confirmado";
 
 // modules/alerts/tableviews.php3, row 303
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
@@ -442,4 +442,4 @@ $_m["no"]
 $_m["yes"]
  = "si";
 
-?>
+

@@ -388,4 +388,4 @@ $_m["Password changed."]
 $_m["An error occurred during password change - please contact: %1."]
  = "";
 
-?>
+

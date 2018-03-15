@@ -12,30 +12,30 @@ $mgettext_lang = "sk";
 
 # Unused messages
 $_m["Constant unique id"]
- = "Identifikacné císlo hodnoty";
+ = "Identifikacnï¿½ cï¿½slo hodnoty";
 
 $_m[" Alias for text of the discussion comment"]
- = " Alias pre text príspevku";
+ = " Alias pre text prï¿½spevku";
 
 $_m[" Alias for written by"]
- = " Alias pre autora príspevku";
+ = " Alias pre autora prï¿½spevku";
 
 $_m[" Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
- = " Alias pre èíslo èlánku<br>\n"
-   ."                             <i>Požitie: </i>v kóde formulára<br>\n"
-   ."                             <i>Príklad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">";
+ = " Alias pre ï¿½ï¿½slo ï¿½lï¿½nku<br>\n"
+   ."                             <i>Poï¿½itie: </i>v kï¿½de formulï¿½ra<br>\n"
+   ."                             <i>Prï¿½klad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">";
 
 $_m[" Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"]
- = " Alias pre císlo príspevku<br>\n"
-   ."                             <i>Požitie: </i>v kóde formulára<br>\n"
-   ."                             <i>Príklad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">";
+ = " Alias pre cï¿½slo prï¿½spevku<br>\n"
+   ."                             <i>Poï¿½itie: </i>v kï¿½de formulï¿½ra<br>\n"
+   ."                             <i>Prï¿½klad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">";
 
 $_m["Alias pro IP address of author's computer"]
- = "Alias pre IP adresu autorovho pocítaca";
+ = "Alias pre IP adresu autorovho pocï¿½taca";
 
 # End of unused messages
 // ./slice.php3, row 179
@@ -65,7 +65,7 @@ $_m["page length (number of items)"]
 // ./slice.php3, row 569
 // include/view.php3, row 593
 $_m["No item found"]
- = "Nenalezena žádná zpráva";
+ = "Nenalezena ï¿½ï¿½dnï¿½ zprï¿½va";
 
 // include/slice.php3, row 78
 $_m["Select Category "]
@@ -77,19 +77,19 @@ $_m["All categories"]
 
 // include/discussion.php3, row 206, 253
 $_m["Show selected"]
- = "Zobraz vybrané";
+ = "Zobraz vybranï¿½";
 
 // include/discussion.php3, row 207, 255
 $_m["Show all"]
- = "Zobraz všetko";
+ = "Zobraz vï¿½etko";
 
 // include/discussion.php3, row 209, 257
 $_m["Add new"]
- = "Pridaj nový";
+ = "Pridaj novï¿½";
 
 // include/discussion.php3, row 215
 $_m["Alias for subject of the discussion comment"]
- = "Alias pre predmet príspevku";
+ = "Alias pre predmet prï¿½spevku";
 
 // include/discussion.php3, row 216
 $_m["Alias for text of the discussion comment"]
@@ -105,15 +105,15 @@ $_m["Alias for author's e-mail"]
 
 // include/discussion.php3, row 219
 $_m["Alias for url address of author's www site"]
- = "Alias pre adresu WWW stránok autora ";
+ = "Alias pre adresu WWW strï¿½nok autora ";
 
 // include/discussion.php3, row 220
 $_m["Alias for description of author's www site"]
- = "Alias pre popis WWW stránok autora";
+ = "Alias pre popis WWW strï¿½nok autora";
 
 // include/discussion.php3, row 221
 $_m["Alias for publish date"]
- = "Alias pre dátum a cas odoslania príspevku";
+ = "Alias pre dï¿½tum a cas odoslania prï¿½spevku";
 
 // include/discussion.php3, row 222
 $_m["Alias for IP address of author's computer"]
@@ -121,11 +121,11 @@ $_m["Alias for IP address of author's computer"]
 
 // include/discussion.php3, row 223
 $_m["Alias for checkbox used for choosing discussion comment"]
- = "Alias pre checkbox pre vybranie príspevku";
+ = "Alias pre checkbox pre vybranie prï¿½spevku";
 
 // include/discussion.php3, row 224
 $_m["Alias for images"]
- = "Alias pre obrázky";
+ = "Alias pre obrï¿½zky";
 
 // include/discussion.php3, row 225
 $_m["Alias for comment ID<br>\n"
@@ -149,31 +149,31 @@ $_m["Alias for item ID<br>\n"
 $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"]
- = "Alias pre odkaz na text príspevku<br>\n"
-   ."                             <i>Použitie: </i>v kóde pre prehladové zobrazenie príspevkov<br>\n"
-   ."                             <i>Príklad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>";
+ = "Alias pre odkaz na text prï¿½spevku<br>\n"
+   ."                             <i>Pouï¿½itie: </i>v kï¿½de pre prehladovï¿½ zobrazenie prï¿½spevkov<br>\n"
+   ."                             <i>Prï¿½klad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>";
 
 // include/discussion.php3, row 229
 $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"]
- = "Alias pre odkaz na formulár<br>\n"
-   ."                             <i>Použitie: </i>v kóde pre plné znenie príspevku<br>\n"
-   ."                             <i>Príklad: </i>&lt;a href=_#URLREPLY&gt;Odpovedat&lt;/a&gt;";
+ = "Alias pre odkaz na formulï¿½r<br>\n"
+   ."                             <i>Pouï¿½itie: </i>v kï¿½de pre plnï¿½ znenie prï¿½spevku<br>\n"
+   ."                             <i>Prï¿½klad: </i>&lt;a href=_#URLREPLY&gt;Odpovedat&lt;/a&gt;";
 
 // include/discussion.php3, row 230
 $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"]
  = "Alias pre odkaz na diskusiu<br>\n"
-   ."                             <i>Požitie: </i>v kóde formulára<br>\n"
-   ."                             <i>Príklad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">";
+   ."                             <i>Poï¿½itie: </i>v kï¿½de formulï¿½ra<br>\n"
+   ."                             <i>Prï¿½klad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">";
 
 // include/discussion.php3, row 231
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
- = "Alias pre tlacítka Zobrazit všetko, Zobrazit vybrané, Pridat nový<br>\n"
-   ."                             <i>Použitie: </i>v spodnom HTML kóde";
+ = "Alias pre tlacï¿½tka Zobrazit vï¿½etko, Zobrazit vybranï¿½, Pridat novï¿½<br>\n"
+   ."                             <i>Pouï¿½itie: </i>v spodnom HTML kï¿½de";
 
 // include/discussion.php3, row 413
 $_m["3rd parameter filled in DiscussionMailList field"]
@@ -186,7 +186,7 @@ $_m["%1th parameter filled in DiscussionMailList field"]
 // include/item.php3, row 92
 // include/itemview.php3, row 108
 $_m["number of found items"]
- = "poèet nalezených èlánkù";
+ = "poï¿½et nalezenï¿½ch ï¿½lï¿½nkï¿½";
 
 // include/item.php3, row 93
 $_m["index of item within whole listing (begins with 0)"]
@@ -198,19 +198,19 @@ $_m["index of item within a page (it begins from 0 on each page listed by pagesc
 
 // include/item.php3, row 95
 $_m["alias for Item ID"]
- = "alias pre èíslo èlánku";
+ = "alias pre ï¿½ï¿½slo ï¿½lï¿½nku";
 
 // include/item.php3, row 96
 $_m["alias for Short Item ID"]
- = "alias pre skrátené císlo clánku";
+ = "alias pre skrï¿½tenï¿½ cï¿½slo clï¿½nku";
 
 // include/item.php3, row 102, 103
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "alias používaný v administratívnych stránkách index.php3 pre URL itemedit.php3";
+ = "alias pouï¿½ï¿½vanï¿½ v administratï¿½vnych strï¿½nkï¿½ch index.php3 pre URL itemedit.php3";
 
 // include/item.php3, row 104
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Alias používaný v administratívnych stránkách index.php3 pre URL discedit.php3";
+ = "Alias pouï¿½ï¿½vanï¿½ v administratï¿½vnych strï¿½nkï¿½ch index.php3 pre URL discedit.php3";
 
 // include/item.php3, row 105
 $_m["Title of Slice for RSS"]
@@ -222,11 +222,11 @@ $_m["Link to the Slice for RSS"]
 
 // include/item.php3, row 107
 $_m["Short description (owner and name) of slice for RSS"]
- = "Krátký popis (vlastník a meno) modulu pre RSS";
+ = "Krï¿½tkï¿½ popis (vlastnï¿½k a meno) modulu pre RSS";
 
 // include/item.php3, row 108
 $_m["Date RSS information is generated, in RSS date format"]
- = "Dátum v RSS prehlade je generovaný vo formáte RSS";
+ = "Dï¿½tum v RSS prehlade je generovanï¿½ vo formï¿½te RSS";
 
 // include/item.php3, row 109
 $_m["Slice name"]
@@ -254,15 +254,15 @@ $_m["Constant priority"]
 
 // include/item.php3, row 143
 $_m["Constant group id"]
- = "Skupina hodnôt";
+ = "Skupina hodnï¿½t";
 
 // include/item.php3, row 144
 $_m["Category class (for categories only)"]
- = "Nadkategórie (použitelné len pre kategórie)";
+ = "Nadkategï¿½rie (pouï¿½itelnï¿½ len pre kategï¿½rie)";
 
 // include/item.php3, row 145
 $_m["Constant number"]
- = "Poradové císlo hodnoty";
+ = "Poradovï¿½ cï¿½slo hodnoty";
 
 // include/item.php3, row 146
 $_m["Constant unique id (32-haxadecimal characters)"]
@@ -294,7 +294,7 @@ $_m["off"]
 
 // include/item.php3, row 1583
 $_m["Back"]
- = "Spät";
+ = "Spï¿½t";
 
 // include/item.php3, row 1584
 $_m["Home"]
@@ -355,14 +355,14 @@ $_m["Next"]
 
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
- = "Nebol vybraný žiaden príspevok";
+ = "Nebol vybranï¿½ ï¿½iaden prï¿½spevok";
 // include/util.php3, row 1878
 $_m["January"]
- = "Január";
+ = "Januï¿½r";
 
 // include/util.php3, row 1878
 $_m["February"]
- = "Február";
+ = "Februï¿½r";
 
 // include/util.php3, row 1878
 $_m["March"]
@@ -370,19 +370,19 @@ $_m["March"]
 
 // include/util.php3, row 1878
 $_m["April"]
- = "Apríl";
+ = "Aprï¿½l";
 
 // include/util.php3, row 1878
 $_m["May"]
- = "Máj";
+ = "Mï¿½j";
 
 // include/util.php3, row 1878
 $_m["June"]
- = "Jún";
+ = "Jï¿½n";
 
 // include/util.php3, row 1879
 $_m["July"]
- = "Júl";
+ = "Jï¿½l";
 
 // include/util.php3, row 1879
 $_m["August"]
@@ -394,7 +394,7 @@ $_m["September"]
 
 // include/util.php3, row 1879
 $_m["October"]
- = "Október";
+ = "Oktï¿½ber";
 
 // include/util.php3, row 1879
 $_m["November"]
@@ -429,4 +429,4 @@ $_m["Retype New Password"]
 $_m["To save changes click here or outside the field."]
  = "";
 
-?>
+

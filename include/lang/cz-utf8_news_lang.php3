@@ -7345,4 +7345,4 @@ $_m["http#://www.ecn.cz/articles/solar.shtml"]
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "POZOR: webík: %s nevypadá jako rozbalené id";
 
-?>
+

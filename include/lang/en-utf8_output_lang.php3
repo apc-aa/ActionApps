@@ -348,4 +348,4 @@ $_m["Retype New Password"]
 
 $_m["To save changes click here or outside the field."]
  = "";
-?>
+

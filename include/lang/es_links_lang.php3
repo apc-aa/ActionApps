@@ -18,7 +18,7 @@ $_m["No permissions to manage links"]
  = "No tiene permisos para administrar enlaces";
 
 $_m["No permissions to info page"]
- = "No tiene permisos para la página de información";
+ = "No tiene permisos para la pï¿½gina de informaciï¿½n";
 
 $_m["name"]
  = "nombre";
@@ -48,15 +48,15 @@ $_m["OK"]
 
 // modules/links/index.php3, row 45
 $_m["No permissions to edit links"]
- = "No tiene permisos para editar vínculos";
+ = "No tiene permisos para editar vï¿½nculos";
 
 // modules/links/index.php3, row 238
 $_m["HINT: \"social ecology\" AND environment"]
- = "Truco: \"ecología social\" AND ambiente";
+ = "Truco: \"ecologï¿½a social\" AND ambiente";
 
 // modules/links/index.php3, row 265
 $_m["Perform action on selected items"]
- = "Realice la acción en los ítems seleccionados";
+ = "Realice la acciï¿½n en los ï¿½tems seleccionados";
 
 // modules/links/index.php3, row 269
 $_m["Check Link"]
@@ -88,7 +88,7 @@ $_m["Move to Trash"]
 
 // modules/links/index.php3, row 292
 $_m["Add to category"]
- = "Añadir categoria";
+ = "Aï¿½adir categoria";
 
 // modules/links/index.php3, row 296
 $_m["Move to category"]
@@ -108,7 +108,7 @@ $_m["Links to check"]
 
 // modules/links/index.php3, row 384
 $_m["Last edited"]
- = "Ultima edición";
+ = "Ultima ediciï¿½n";
 
 // modules/links/index.php3, row 412
 $_m["Show Links"]
@@ -148,7 +148,7 @@ $_m["Original name"]
 // modules/links/link.class.php3, row 641
 // modules/links/linkedit.php3, row 435
 $_m["Description"]
- = "Descripción";
+ = "Descripciï¿½n";
 
 // modules/links/constants.php3, row 57, 110
 // modules/links/link.class.php3, row 645
@@ -158,7 +158,7 @@ $_m["Link type"]
 
 // modules/links/constants.php3, row 58
 $_m["Rate"]
- = "Calificación";
+ = "Calificaciï¿½n";
 
 // modules/links/constants.php3, row 59
 $_m["Votes"]
@@ -179,7 +179,7 @@ $_m["Editor"]
 
 // modules/links/constants.php3, row 63
 $_m["Last edit date"]
- = "Fecha de última edición";
+ = "Fecha de ï¿½ltima ediciï¿½n";
 
 // modules/links/constants.php3, row 64
 $_m["Revised by"]
@@ -187,7 +187,7 @@ $_m["Revised by"]
 
 // modules/links/constants.php3, row 65
 $_m["Revision date"]
- = "Fecha de revisión";
+ = "Fecha de revisiï¿½n";
 
 // modules/links/constants.php3, row 66
 // modules/links/link.class.php3, row 651
@@ -203,7 +203,7 @@ $_m["Url"]
 
 // modules/links/constants.php3, row 68
 $_m["Last vote time"]
- = "Ultima fecha de votación";
+ = "Ultima fecha de votaciï¿½n";
 
 // modules/links/constants.php3, row 69
 $_m["Flag"]
@@ -219,27 +219,27 @@ $_m["Editor's note"]
 
 // modules/links/constants.php3, row 71
 $_m["Organization city"]
- = "Ciudad de la organización";
+ = "Ciudad de la organizaciï¿½n";
 
 // modules/links/constants.php3, row 72
 $_m["Organization street"]
- = "Dirección de la organización";
+ = "Direcciï¿½n de la organizaciï¿½n";
 
 // modules/links/constants.php3, row 73
 $_m["Organization post code"]
- = "Código postal de la organización";
+ = "Cï¿½digo postal de la organizaciï¿½n";
 
 // modules/links/constants.php3, row 74
 $_m["Organization phone"]
- = "Teléfono de la organización";
+ = "Telï¿½fono de la organizaciï¿½n";
 
 // modules/links/constants.php3, row 75
 $_m["Organization fax"]
- = "Fax de la organización";
+ = "Fax de la organizaciï¿½n";
 
 // modules/links/constants.php3, row 76
 $_m["Organization e-mail"]
- = "Correo-e de la organización";
+ = "Correo-e de la organizaciï¿½n";
 
 // modules/links/constants.php3, row 77
 // modules/links/linkedit.php3, row 466
@@ -248,27 +248,27 @@ $_m["Folder"]
 
 // modules/links/constants.php3, row 78
 $_m["Last validation date"]
- = "Ultima fecha de validación";
+ = "Ultima fecha de validaciï¿½n";
 
 // modules/links/constants.php3, row 79
 $_m["Validation codes"]
- = "Códigos de validación";
+ = "Cï¿½digos de validaciï¿½n";
 
 // modules/links/constants.php3, row 80
 $_m["Validity Rank"]
- = "Validez de calificación";
+ = "Validez de calificaciï¿½n";
 
 // modules/links/constants.php3, row 81
 $_m["Region id"]
- = "Id de la región";
+ = "Id de la regiï¿½n";
 
 // modules/links/constants.php3, row 82
 $_m["Region name"]
- = "Nombre de la región";
+ = "Nombre de la regiï¿½n";
 
 // modules/links/constants.php3, row 83
 $_m["Region level"]
- = "Nivel de la región";
+ = "Nivel de la regiï¿½n";
 
 // modules/links/constants.php3, row 84
 $_m["Language id"]
@@ -309,7 +309,7 @@ $_m["Category link count"]
 // modules/links/catedit.php3, row 94
 // modules/links/catedit2.php3, row 206
 $_m["Category description"]
- = "Descripción de categoria";
+ = "Descripciï¿½n de categoria";
 
 // modules/links/constants.php3, row 93, 174
 $_m["Category editor's note"]
@@ -354,11 +354,11 @@ $_m["Link original name"]
 
 // modules/links/constants.php3, row 109
 $_m["Link description"]
- = "Descripción del enlace";
+ = "Descripciï¿½n del enlace";
 
 // modules/links/constants.php3, row 111
 $_m["Link rate"]
- = "Calificación del enlace";
+ = "Calificaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 112
 $_m["Link votes"]
@@ -366,7 +366,7 @@ $_m["Link votes"]
 
 // modules/links/constants.php3, row 113
 $_m["Link - last vote date"]
- = "Enlace - Ultima fecha de votación";
+ = "Enlace - Ultima fecha de votaciï¿½n";
 
 // modules/links/constants.php3, row 114
 $_m["Link - created by"]
@@ -374,15 +374,15 @@ $_m["Link - created by"]
 
 // modules/links/constants.php3, row 115
 $_m["Link creation date"]
- = "Fecha de creación del enlace";
+ = "Fecha de creaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 116
 $_m["Link - last edited by"]
- = "Enlaces - ultima edición por";
+ = "Enlaces - ultima ediciï¿½n por";
 
 // modules/links/constants.php3, row 117
 $_m["Link - last edit date"]
- = "Enlaces - ultima fecha de edición";
+ = "Enlaces - ultima fecha de ediciï¿½n";
 
 // modules/links/constants.php3, row 118
 $_m["Link - checked by"]
@@ -390,7 +390,7 @@ $_m["Link - checked by"]
 
 // modules/links/constants.php3, row 119
 $_m["Link - last checked date"]
- = "Enlaces - última fecha de revisión";
+ = "Enlaces - ï¿½ltima fecha de revisiï¿½n";
 
 // modules/links/constants.php3, row 120
 $_m["Link author's e-mail"]
@@ -410,11 +410,11 @@ $_m["Link flag"]
 
 // modules/links/constants.php3, row 124
 $_m["Link - validity rank"]
- = "Enlace - Calificación de validez";
+ = "Enlace - Calificaciï¿½n de validez";
 
 // modules/links/constants.php3, row 125
 $_m["Link - last validation date"]
- = "Enlace - última fecha de validación";
+ = "Enlace - ï¿½ltima fecha de validaciï¿½n";
 
 // modules/links/constants.php3, row 126
 $_m["Link editor's note"]
@@ -422,31 +422,31 @@ $_m["Link editor's note"]
 
 // modules/links/constants.php3, row 127
 $_m["Link organization city"]
- = "Ciudad de la Organización del enlace";
+ = "Ciudad de la Organizaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 128
 $_m["Link organization street"]
- = "Dirección de la Organización del enlace";
+ = "Direcciï¿½n de la Organizaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 129
 $_m["Link organization post code"]
- = "Código postal de la Organización del enlace";
+ = "Cï¿½digo postal de la Organizaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 130
 $_m["Link organization phone"]
- = "Teléfono de la Organización del enlace";
+ = "Telï¿½fono de la Organizaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 131
 $_m["Link organization fax"]
- = "Fax de la Organización del enlace";
+ = "Fax de la Organizaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 132
 $_m["Link organization e-mail"]
- = "Correo-e de la Organización del enlace";
+ = "Correo-e de la Organizaciï¿½n del enlace";
 
 // modules/links/constants.php3, row 133
 $_m["Link folder (status code) - 1~Active, 2~Holding, 3~Trash"]
- = "Carpeta del enlace (código de estado) - 1~Aprobado, 2~Por Aprobar, 3~Papelera";
+ = "Carpeta del enlace (cï¿½digo de estado) - 1~Aprobado, 2~Por Aprobar, 3~Papelera";
 
 // modules/links/constants.php3, row 134
 $_m["Link - ids of regions (comma separated)"]
@@ -482,7 +482,7 @@ $_m["State of link in this category (visible/highlighted)"]
 
 // modules/links/constants.php3, row 142
 $_m["Link - validity color"]
- = "Enlaces - Validación del color";
+ = "Enlaces - Validaciï¿½n del color";
 
 // modules/links/constants.php3, row 143
 $_m["Paths to the categories"]
@@ -490,15 +490,15 @@ $_m["Paths to the categories"]
 
 // modules/links/constants.php3, row 144
 $_m["Number of found Links"]
- = "Número de enlaces encontrados";
+ = "Nï¿½mero de enlaces encontrados";
 
 // modules/links/constants.php3, row 145
 $_m["Link to link editing page (for admin interface only)"]
- = "Enlaces a los enlaces de la poágina (solamente para la interfaz de administración)";
+ = "Enlaces a los enlaces de la poï¿½gina (solamente para la interfaz de administraciï¿½n)";
 
 // modules/links/constants.php3, row 146
 $_m["Category listing with links (for admin interface only)"]
- = "Listados de categorias con enlaces (solamente para la interfaz de administración)";
+ = "Listados de categorias con enlaces (solamente para la interfaz de administraciï¿½n)";
 
 // modules/links/constants.php3, row 158
 $_m["Path"]
@@ -514,7 +514,7 @@ $_m["Note"]
 
 // modules/links/constants.php3, row 172
 $_m["Number of links in category"]
- = "Número de enlaces en la categoria";
+ = "Nï¿½mero de enlaces en la categoria";
 
 // modules/links/constants.php3, row 175
 $_m["Crossreferenced category"]
@@ -588,7 +588,7 @@ $_m["New subcategory"]
 
 // modules/links/catedit.php3, row 124
 $_m["Add"]
- = "Añadir";
+ = "Aï¿½adir";
 
 // modules/links/catedit.php3, row 126
 $_m["Remove selected subcategory?"]
@@ -620,11 +620,11 @@ $_m["Continue"]
 
 // modules/links/modedit.php3, row 57
 $_m["No permission to add module"]
- = "No hay permisos para añadir módulo";
+ = "No hay permisos para aï¿½adir mï¿½dulo";
 
 // modules/links/modedit.php3, row 62
 $_m["No permission to edit module"]
- = "No tiene permisos para editar el módulo";
+ = "No tiene permisos para editar el mï¿½dulo";
 
 // modules/links/modedit.php3, row 80, 219, 222
 $_m["Start category id"]
@@ -632,7 +632,7 @@ $_m["Start category id"]
 
 // modules/links/modedit.php3, row 81, 225, 228
 $_m["Tree start id"]
- = "Id del árbol de inicio";
+ = "Id del ï¿½rbol de inicio";
 
 // modules/links/modedit.php3, row 82, 226, 229
 $_m["Select start id"]
@@ -644,15 +644,15 @@ $_m["ActionApps - Links Admin"]
 
 // modules/links/modedit.php3, row 195
 $_m["Add Links module"]
- = "Añadir módulo de enlaces";
+ = "Aï¿½adir mï¿½dulo de enlaces";
 
 // modules/links/modedit.php3, row 195
 $_m["Edit Links module"]
- = "Editar módulo de enlaces";
+ = "Editar mï¿½dulo de enlaces";
 
 // modules/links/modedit.php3, row 201
 $_m["Module Links data"]
- = "Módulo de información de enlaces";
+ = "Mï¿½dulo de informaciï¿½n de enlaces";
 
 // modules/links/modedit.php3, row 203
 $_m["ID"]
@@ -660,15 +660,15 @@ $_m["ID"]
 
 // modules/links/modedit.php3, row 204
 $_m["Title"]
- = "Título";
+ = "Tï¿½tulo";
 
 // modules/links/modedit.php3, row 205
 $_m["URL of .shtml page"]
- = "URL para página .shtml";
+ = "URL para pï¿½gina .shtml";
 
 // modules/links/modedit.php3, row 206
 $_m["Use following SSI command to include links to the page: "]
- = "Utilice el siguiente SSI para incluir enlaces a la página:";
+ = "Utilice el siguiente SSI para incluir enlaces a la pï¿½gina:";
 
 // modules/links/modedit.php3, row 207
 $_m["Owner"]
@@ -708,7 +708,7 @@ $_m["In category"]
 
 // modules/links/check_url.php3, row 29
 $_m["Link is not assigned to any category"]
- = "El enlace no está asignado a ninguna categoria";
+ = "El enlace no estï¿½ asignado a ninguna categoria";
 
 // modules/links/check_url.php3, row 29
 $_m["Edit"]
@@ -720,7 +720,7 @@ $_m["Rewrites link in bottom form"]
 
 // modules/links/check_url.php3, row 34
 $_m["Page with the specified Url is not in database, yet"]
- = "La página con el Url especificado no está aún en la base de datos";
+ = "La pï¿½gina con el Url especificado no estï¿½ aï¿½n en la base de datos";
 
 // modules/links/check_url.php3, row 38
 // include/util.php3, row 1383
@@ -737,11 +737,11 @@ $_m["Subcategory deleted"]
 
 // modules/links/catedit2.php3, row 157
 $_m["Can't delete category which contains links"]
- = "No se puede borrar una categoria que tiene vínculos";
+ = "No se puede borrar una categoria que tiene vï¿½nculos";
 
 // modules/links/catedit2.php3, row 209
 $_m["Additional information"]
- = "Información adicional";
+ = "Informaciï¿½n adicional";
 
 // modules/links/catedit2.php3, row 219
 $_m["Category data changed"]
@@ -773,7 +773,7 @@ $_m["No permission to delete link from the category - link set as PROPOSAL to DE
 
 // modules/links/actions.php3, row 124, 194
 $_m["Can't get asociation informations"]
- = "No es posible obtener información de asociación";
+ = "No es posible obtener informaciï¿½n de asociaciï¿½n";
 
 // modules/links/actions.php3, row 159
 $_m["No permission to approve link to given category"]
@@ -790,12 +790,12 @@ $_m["No permission to move link"]
 // modules/links/link.class.php3, row 639
 // modules/links/linkedit.php3, row 429
 $_m["Page name"]
- = "Nombre de página";
+ = "Nombre de pï¿½gina";
 
 // modules/links/link.class.php3, row 640
 // modules/links/linkedit.php3, row 432
 $_m["Original page name"]
- = "Nombre original de la página";
+ = "Nombre original de la pï¿½gina";
 
 // modules/links/link.class.php3, row 646
 // modules/links/linkedit.php3, row 518
@@ -810,12 +810,12 @@ $_m["Street"]
 // modules/links/link.class.php3, row 648
 // modules/links/linkedit.php3, row 522
 $_m["Post code"]
- = "Código postal";
+ = "Cï¿½digo postal";
 
 // modules/links/link.class.php3, row 649
 // modules/links/linkedit.php3, row 524
 $_m["Phone"]
- = "Teléfono";
+ = "Telï¿½fono";
 
 // modules/links/link.class.php3, row 650
 // modules/links/linkedit.php3, row 526
@@ -824,15 +824,15 @@ $_m["Fax"]
 
 // modules/links/moddelete.php3, row 34
 $_m["You don't have permissions to delete a links module."]
- = "Usted no tiene permisos para borrar el módulo de enlaces";
+ = "Usted no tiene permisos para borrar el mï¿½dulo de enlaces";
 
 // modules/links/moddelete.php3, row 38
 $_m["Module not found."]
- = "Módulo no encontrado";
+ = "Mï¿½dulo no encontrado";
 
 // modules/links/moddelete.php3, row 60
 $_m["Links module successfully deleted"]
- = "Módulo de enlaces borrado satisfactoriamente";
+ = "Mï¿½dulo de enlaces borrado satisfactoriamente";
 
 // modules/links/linkedit.php3, row 36
 $_m["Accept"]
@@ -854,7 +854,7 @@ $_m["Add Link"]
 
 // modules/links/linkedit.php3, row 86
 $_m["Link do not exist or the base category is not set"]
- = "El enlace no existe o la categoría base no está seleccionada";
+ = "El enlace no existe o la categorï¿½a base no estï¿½ seleccionada";
 
 // modules/links/linkedit.php3, row 248, 266
 $_m["Proposal to uncheck"]
@@ -866,7 +866,7 @@ $_m["Proposal to check"]
 
 // modules/links/linkedit.php3, row 297
 $_m["Proposal to add"]
- = "Propuesta para añadir";
+ = "Propuesta para aï¿½adir";
 
 // modules/links/linkedit.php3, row 299
 $_m["Proposal to del"]
@@ -896,7 +896,7 @@ $_m["View"]
 
 // modules/links/linkedit.php3, row 419
 $_m["You can check, if the page is not in database already"]
- = "Usted puede revisar, si la página no está en la base de datos aún";
+ = "Usted puede revisar, si la pï¿½gina no estï¿½ en la base de datos aï¿½n";
 
 // modules/links/linkedit.php3, row 424
 $_m["Do not fill, please:"]
@@ -904,15 +904,15 @@ $_m["Do not fill, please:"]
 
 // modules/links/linkedit.php3, row 430
 $_m["English name of the page"]
- = "Nombre en Español de la página";
+ = "Nombre en Espaï¿½ol de la pï¿½gina";
 
 // modules/links/linkedit.php3, row 433
 $_m["Name of the page in original language"]
- = "Nombre original de la página en lenguaje original";
+ = "Nombre original de la pï¿½gina en lenguaje original";
 
 // modules/links/linkedit.php3, row 436
 $_m["Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters."]
- = "No utilice etiquetas de HTML y no escriba palabras como \"mejor página\", ... La máxima longitud de la descripción debe ser de 250 caracteres.";
+ = "No utilice etiquetas de HTML y no escriba palabras como \"mejor pï¿½gina\", ... La mï¿½xima longitud de la descripciï¿½n debe ser de 250 caracteres.";
 
 // modules/links/linkedit.php3, row 443
 $_m["Select the type, if the link belongs to some special category"]
@@ -924,11 +924,11 @@ $_m["Author's e-mail"]
 
 // modules/links/linkedit.php3, row 456
 $_m["You can type any message here - it is never shown on the website"]
- = "Usted puede escribir mensajes aquí - estos no serán mostrados en el sitio";
+ = "Usted puede escribir mensajes aquï¿½ - estos no serï¿½n mostrados en el sitio";
 
 // modules/links/linkedit.php3, row 461
 $_m["Last checked"]
- = "Ultima revisión";
+ = "Ultima revisiï¿½n";
 
 // modules/links/linkedit.php3, row 461, 462, 463
 $_m["n/j/Y"]
@@ -936,7 +936,7 @@ $_m["n/j/Y"]
 
 // modules/links/linkedit.php3, row 462
 $_m["Last changed"]
- = "Ultima modificación";
+ = "Ultima modificaciï¿½n";
 
 // modules/links/linkedit.php3, row 463
 $_m["Inserted"]
@@ -960,7 +960,7 @@ $_m["go to the category you want to select and click on the right arrow button t
 
 // modules/links/linkedit.php3, row 516
 $_m["Organization"]
- = "Organización";
+ = "Organizaciï¿½n";
 
 // modules/links/linkedit.php3, row 533
 $_m["Regions and languages"]
@@ -968,7 +968,7 @@ $_m["Regions and languages"]
 
 // modules/links/linkedit.php3, row 536
 $_m["Region"]
- = "Región";
+ = "Regiï¿½n";
 
 // modules/links/linkedit.php3, row 536
 $_m["select up to 4 regions"]
@@ -976,11 +976,11 @@ $_m["select up to 4 regions"]
 
 // modules/links/linkedit.php3, row 537
 $_m["select pege's languages"]
- = "seleccione páginas de lenguajes";
+ = "seleccione pï¿½ginas de lenguajes";
 
 // modules/links/menu.php3, row 72
 $_m["Add new link"]
- = "Añadir nuevo enlace";
+ = "Aï¿½adir nuevo enlace";
 
 // modules/links/menu.php3, row 78, 79
 $_m["Link Manager"]
@@ -1044,7 +1044,7 @@ $_m["My own links"]
 
 // modules/links/menu.php3, row 148
 $_m["Main settings"]
- = "Configuración principal";
+ = "Configuraciï¿½n principal";
 
 // modules/links/menu.php3, row 151
 $_m["Links"]
@@ -1052,7 +1052,7 @@ $_m["Links"]
 
 // modules/links/menu.php3, row 152
 $_m["Design"]
- = "Diseño";
+ = "Diseï¿½o";
 
 // modules/links/menu.php3, row 157
 $_m["New Category View"]
@@ -1084,11 +1084,11 @@ $_m["Module ID"]
 
 // include/manager.class.php3, row 147
 $_m["No item found"]
- = "No se encuentran ítems";
+ = "No se encuentran ï¿½tems";
 
 // include/manager.class.php3, row 198
 $_m["Publish date"]
- = "Fecha de publicación";
+ = "Fecha de publicaciï¿½n";
 
 // include/manager.class.php3, row 198
 $_m["Headline"]
@@ -1112,7 +1112,7 @@ $_m["Go"]
 
 // include/manager.class.php3, row 614
 $_m["Items Page"]
- = "Página de ítems";
+ = "Pï¿½gina de ï¿½tems";
 
 // include/manager.class.php3, row 663
 $_m["Action ID"]
@@ -1176,11 +1176,11 @@ $_m["Clear"]
 
 // include/searchbar.class.php3, row 620
 $_m["Stored search name"]
- = "Nombre de búsqueda";
+ = "Nombre de bï¿½squeda";
 
 // include/searchbar.class.php3, row 621
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
- = "Usted tiene permisos para añadir búsquedas globalmente. Desea añadir esta búsqueda como global (común a todos los usuarios)?";
+ = "Usted tiene permisos para aï¿½adir bï¿½squedas globalmente. Desea aï¿½adir esta bï¿½squeda como global (comï¿½n a todos los usuarios)?";
 
 // include/searchbar.class.php3, row 621
 $_m["Store"]
@@ -1188,11 +1188,11 @@ $_m["Store"]
 
 // include/searchbar.class.php3, row 636
 $_m["Stored searches"]
- = "Búsquedas almacenadas";
+ = "Bï¿½squedas almacenadas";
 
 // include/searchbar.class.php3, row 642
 $_m["Are you sure to refine current search?"]
- = "Está seguro de refinar la búsqueda actual";
+ = "Estï¿½ seguro de refinar la bï¿½squeda actual";
 
 // include/searchbar.class.php3, row 642
 $_m["Update"]
@@ -1208,7 +1208,7 @@ $_m["Rename"]
 
 // include/searchbar.class.php3, row 644
 $_m["Are you sure to delete selected search?"]
- = "Está seguro de borrar la búsqueda seleccionada?";
+ = "Estï¿½ seguro de borrar la bï¿½squeda seleccionada?";
 
 // include/searchbar.class.php3, row 644
 $_m["Delete"]
@@ -1302,4 +1302,4 @@ $_m["November"]
 $_m["December"]
  = "Diciembre";
 
-?>
+

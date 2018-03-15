@@ -39,7 +39,7 @@ $_m["page length (number of items)"]
 // ./slice.php3, row 569
 // include/view.php3, row 593
 $_m["No item found"]
- = "¹àÌÜ¤¬¸«ÉÕ¤«¤ê¤Þ¤»¤ó";
+ = "ï¿½ï¿½ï¿½Ü¤ï¿½ï¿½ï¿½ï¿½Õ¤ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
 
 // include/slice.php3, row 78
 $_m["Select Category "]
@@ -165,7 +165,7 @@ $_m["index of item within a page (it begins from 0 on each page listed by pagesc
 
 // include/item.php3, row 95
 $_m["alias for Item ID"]
- = "¹àÌÜ ID¤Î ÊÌÌ¾";
+ = "ï¿½ï¿½ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½Ì¾";
 
 // include/item.php3, row 96
 $_m["alias for Short Item ID"]
@@ -371,4 +371,4 @@ $_m["November"]
 $_m["December"]
  = "";
 
-?>
+

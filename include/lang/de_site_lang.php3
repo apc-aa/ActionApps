@@ -187,6 +187,6 @@ $_m["Next"]
 
 // modules/site/router.class.php, row 96
 $_m["Previous"]
- = "Zurück";
+ = "Zurï¿½ck";
 
-?>
+

@@ -495,4 +495,4 @@ $_m["Selected"]
  $_m["Delete"]
  = " Odstranit ";
 
-?>
+

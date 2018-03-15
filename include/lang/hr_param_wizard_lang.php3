@@ -12,19 +12,19 @@ $mgettext_lang = "hr";
 
 # Unused messages
 $_m["field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"]
- = "Polje æe biti prikazano u kuæici izbora";
+ = "Polje ï¿½e biti prikazano u kuï¿½ici izbora";
 
 $_m["show all"]
- = "Prikaži sve";
+ = "Prikaï¿½i sve";
 
 $_m["used only for slices - if set (=1), then all items are shown (including expired and pending ones)"]
  = "Koristi se samo za stranice - ako je postavljeno (=1), prikazane su sve stavke";
 
 $_m["Defines, which buttons to show in item selection:<br>A - 'Add'<br>M - 'Add Mutual<br>B - 'Backward'.<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."]
- = "Odreðuje koje æe gumbe prikazati u selektoru stavki";
+ = "Odreï¿½uje koje ï¿½e gumbe prikazati u selektoru stavki";
 
 $_m["Show move buttons"]
- = "Prikazuje još kontrola";
+ = "Prikazuje joï¿½ kontrola";
 
 $_m["Show buttons for moving items up and down"]
  = "Pokazuje gumbe za micanje stavki gore i dolje";
@@ -39,26 +39,26 @@ $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter
  = "Uzmite prvi paragraf";
 
 $_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
- = "ispisuje <i>polje</i> kao širinu slikovne datoteke(visina='xxx' širina='yyy')";
+ = "ispisuje <i>polje</i> kao ï¿½irinu slikovne datoteke(visina='xxx' ï¿½irina='yyy')";
 
 $_m["print HTML"]
  = "ispisuje HTML";
 
 $_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
- = "ispisuje <i>sadržaj</i> polja (ili <i>unalias string</i>) ovisno o html oznaci.)";
+ = "ispisuje <i>sadrï¿½aj</i> polja (ili <i>unalias string</i>) ovisno o html oznaci.)";
 
 # End of unused messages
 // admin/param_wizard.php3, row 94
 $_m["Wizard"]
- = "èarobnjak";
+ = "ï¿½arobnjak";
 
 // admin/param_wizard.php3, row 174
 $_m["This is an undocumented %s. We don't recommend to use it."]
- = "Ovo je nedokumentiran %s. Ne preporuèamo korištenje!";
+ = "Ovo je nedokumentiran %s. Ne preporuï¿½amo koriï¿½tenje!";
 
 // admin/param_wizard.php3, row 175
 $_m["Close the wizard"]
- = "Zatvorite èarobnjaka";
+ = "Zatvorite ï¿½arobnjaka";
 
 // admin/param_wizard.php3, row 189
 $_m["Available parameters: "]
@@ -90,7 +90,7 @@ $_m["Have a look at these examples of parameters sets:"]
 
 // admin/param_wizard.php3, row 234
 $_m["Show"]
- = "Prikaži";
+ = "Prikaï¿½i";
 
 // admin/param_wizard.php3, row 244
 $_m["OK - Save"]
@@ -98,11 +98,11 @@ $_m["OK - Save"]
 
 // admin/param_wizard.php3, row 245
 $_m["Cancel"]
- = "Poništi";
+ = "Poniï¿½ti";
 
 // admin/param_wizard.php3, row 246
 $_m["Show example params"]
- = "Pokažite parametre primjera";
+ = "Pokaï¿½ite parametre primjera";
 
 // admin/param_wizard.php3, row 248
 $_m["OK"]
@@ -138,27 +138,27 @@ $_m["File = uploaded file"]
 
 // include/constants_param_wizard.php3, row 70
 $_m["Stores the uploaded file and a link to it, parameters only apply if type is image/something."]
- = "Sprema poslanu datoteku i vezu na nju, parametri se primjennjuju samo kao je datoteka tipa slika/nešto.";
+ = "Sprema poslanu datoteku i vezu na nju, parametri se primjennjuju samo kao je datoteka tipa slika/neï¿½to.";
 
 // include/constants_param_wizard.php3, row 72
 $_m["Mime types accepted"]
- = "Prihvaæa myme tip";
+ = "Prihvaï¿½a myme tip";
 
 // include/constants_param_wizard.php3, row 73
 $_m["Only files of matching mime types will be accepted"]
- = "Samo datoteke sa sukladnim myme tipovima æe biti prihvaæene";
+ = "Samo datoteke sa sukladnim myme tipovima ï¿½e biti prihvaï¿½ene";
 
 // include/constants_param_wizard.php3, row 76
 $_m["Maximum image width"]
- = "Najveæa dozvoljena širina slikovne datoteke";
+ = "Najveï¿½a dozvoljena ï¿½irina slikovne datoteke";
 
 // include/constants_param_wizard.php3, row 79
 $_m["Maximum image height"]
- = "Najveæa dozvoljena visina slikovne datoteke";
+ = "Najveï¿½a dozvoljena visina slikovne datoteke";
 
 // include/constants_param_wizard.php3, row 80
 $_m["The image will be resampled to be within these limits, while retaining aspect ratio."]
- = "Slika æe biti promijenjena unutar tih granica zadržavajuæi razmjere";
+ = "Slika ï¿½e biti promijenjena unutar tih granica zadrï¿½avajuï¿½i razmjere";
 
 // include/constants_param_wizard.php3, row 83
 $_m["Other fields"]
@@ -191,11 +191,11 @@ $_m["If set to 1 the image will be downsized exactly to the specified dimensions
 
 // include/constants_param_wizard.php3, row 102
 $_m["User ID = always store current user ID"]
- = "Korisnièki ID = uvijek sprema trenutni korisnièki ID";
+ = "Korisniï¿½ki ID = uvijek sprema trenutni korisniï¿½ki ID";
 
 // include/constants_param_wizard.php3, row 105, 156
 $_m["Login name"]
- = "Korisnièko ime";
+ = "Korisniï¿½ko ime";
 
 // include/constants_param_wizard.php3, row 107
 $_m["Item IDs"]
@@ -207,7 +207,7 @@ $_m["Now = always store current time"]
 
 // include/constants_param_wizard.php3, row 110
 $_m["Inserts the current time, no matter what the user sets."]
- = "Umeæe stvarno trenutno vrijeme";
+ = "Umeï¿½e stvarno trenutno vrijeme";
 
 // include/constants_param_wizard.php3, row 112, 246, 689
 $_m["Password and Change Password"]
@@ -277,11 +277,11 @@ $_m["Number of days"]
 
 // include/constants_param_wizard.php3, row 154
 $_m["User ID"]
- = "Korisnièki ID";
+ = "Korisniï¿½ki ID";
 
 // include/constants_param_wizard.php3, row 158
 $_m["Now, i.e. current date"]
- = "Sada, sadašnji datum";
+ = "Sada, sadaï¿½nji datum";
 
 // include/constants_param_wizard.php3, row 160
 $_m["Variable"]
@@ -293,11 +293,11 @@ $_m["A dangerous function. Do not use."]
 
 // include/constants_param_wizard.php3, row 163
 $_m["Random string"]
- = "Sluèajni odabir";
+ = "Sluï¿½ajni odabir";
 
 // include/constants_param_wizard.php3, row 164
 $_m["Random alphanumeric [A-Z0-9] string."]
- = "Brojèano slovèani niz [A-Z0-9] sluèajnog odabira";
+ = "Brojï¿½ano slovï¿½ani niz [A-Z0-9] sluï¿½ajnog odabira";
 
 // include/constants_param_wizard.php3, row 166
 $_m["String length"]
@@ -310,7 +310,7 @@ $_m["Field to check"]
 // include/constants_param_wizard.php3, row 171
 $_m["If you need a unique code, you must send the field ID,\n"
    ."                  the function will then look into this field to ensure uniqueness."]
- = "Ako želite jedinstveni kod, morate poslati ID polja";
+ = "Ako ï¿½elite jedinstveni kod, morate poslati ID polja";
 
 // include/constants_param_wizard.php3, row 174, 239
 $_m["Slice only"]
@@ -319,7 +319,7 @@ $_m["Slice only"]
 // include/constants_param_wizard.php3, row 176, 241
 $_m["Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"]
- = "Da li želite provjeriti jedinstvenost samo za ovu ili za sve stranice";
+ = "Da li ï¿½elite provjeriti jedinstvenost samo za ovu ili za sve stranice";
 
 // include/constants_param_wizard.php3, row 183
 $_m["Input Validate Type"]
@@ -364,7 +364,7 @@ $_m["Unique = proove uniqueness"]
 // include/constants_param_wizard.php3, row 203
 $_m["Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."]
- = "Provjerava samo da li je ve vrijednost veæ korištena";
+ = "Provjerava samo da li je ve vrijednost veï¿½ koriï¿½tena";
 
 // include/constants_param_wizard.php3, row 205, 235
 $_m["Field ID"]
@@ -372,7 +372,7 @@ $_m["Field ID"]
 
 // include/constants_param_wizard.php3, row 206, 236
 $_m["Field in which to look for matching values."]
- = "Polje u kojem možete potražiti zadani vrijednost";
+ = "Polje u kojem moï¿½ete potraï¿½iti zadani vrijednost";
 
 // include/constants_param_wizard.php3, row 209
 $_m["Scope"]
@@ -438,7 +438,7 @@ $_m["Hierarchical constants"]
 
 // include/constants_param_wizard.php3, row 260
 $_m["A view with level boxes allows to choose constants."]
- = "Prozor sa kuæicama nivoa omoguæava vam da izaberete konstante";
+ = "Prozor sa kuï¿½icama nivoa omoguï¿½ava vam da izaberete konstante";
 
 // include/constants_param_wizard.php3, row 262
 $_m["Level count"]
@@ -446,23 +446,23 @@ $_m["Level count"]
 
 // include/constants_param_wizard.php3, row 263
 $_m["Count of level boxes"]
- = "Broj kuæica razina";
+ = "Broj kuï¿½ica razina";
 
 // include/constants_param_wizard.php3, row 266
 $_m["Box width"]
- = "Širina prozora";
+ = "ï¿½irina prozora";
 
 // include/constants_param_wizard.php3, row 267
 $_m["Width in characters"]
- = "Širina u znakovima";
+ = "ï¿½irina u znakovima";
 
 // include/constants_param_wizard.php3, row 270
 $_m["Size of target"]
- = "Odredišna velièina";
+ = "Odrediï¿½na veliï¿½ina";
 
 // include/constants_param_wizard.php3, row 271
 $_m["Lines in the target select box"]
- = "Broj linija u udredišnom prozoru";
+ = "Broj linija u udrediï¿½nom prozoru";
 
 // include/constants_param_wizard.php3, row 274
 $_m["Horizontal"]
@@ -470,15 +470,15 @@ $_m["Horizontal"]
 
 // include/constants_param_wizard.php3, row 275
 $_m["Show levels horizontally"]
- = "Pokažite razine vodoravno";
+ = "Pokaï¿½ite razine vodoravno";
 
 // include/constants_param_wizard.php3, row 278
 $_m["First selectable"]
- = "Prvi moguæi odabir";
+ = "Prvi moguï¿½i odabir";
 
 // include/constants_param_wizard.php3, row 279
 $_m["First level which will have a Select button"]
- = "Prva razina koja æe imati gumb: Odaberite";
+ = "Prva razina koja ï¿½e imati gumb: Odaberite";
 
 // include/constants_param_wizard.php3, row 282
 $_m["Level names"]
@@ -490,15 +490,15 @@ $_m["Names of level boxes, separated by tilde (~). Replace the default Level 0, 
 
 // include/constants_param_wizard.php3, row 285
 $_m["Top level~Second level~Keyword"]
- = "Prva razina~Druga razina~Kljuèna rijeè";
+ = "Prva razina~Druga razina~Kljuï¿½na rijeï¿½";
 
 // include/constants_param_wizard.php3, row 287
 $_m["Text Area"]
- = "Tekstualno podruèje";
+ = "Tekstualno podruï¿½je";
 
 // include/constants_param_wizard.php3, row 288
 $_m["Text area with 60 columns"]
- = "Podruèje za tekst sa 60 redova";
+ = "Podruï¿½je za tekst sa 60 redova";
 
 // include/constants_param_wizard.php3, row 290, 298
 $_m["row count"]
@@ -526,7 +526,7 @@ $_m["type"]
 
 // include/constants_param_wizard.php3, row 307
 $_m["type: class (default) / iframe"]
- = "upišite: class (default) / iframe";
+ = "upiï¿½ite: class (default) / iframe";
 
 // include/constants_param_wizard.php3, row 309
 $_m["class"]
@@ -542,19 +542,19 @@ $_m["A text field."]
 
 // include/constants_param_wizard.php3, row 314, 378
 $_m["max characters"]
- = "Najveæi dozvoljeni broj znakova";
+ = "Najveï¿½i dozvoljeni broj znakova";
 
 // include/constants_param_wizard.php3, row 315
 $_m["max count of characters entered (maxlength parameter)"]
- = "Najveæi dozvoljeni broj unešenih znakova";
+ = "Najveï¿½i dozvoljeni broj uneï¿½enih znakova";
 
 // include/constants_param_wizard.php3, row 318, 382
 $_m["width"]
- = "Širina";
+ = "ï¿½irina";
 
 // include/constants_param_wizard.php3, row 319
 $_m["width of the field in characters (size parameter)"]
- = "Širina polja u znakovima";
+ = "ï¿½irina polja u znakovima";
 
 // include/constants_param_wizard.php3, row 324
 $_m["Multiple Text Field"]
@@ -643,15 +643,15 @@ $_m["Text Field with Presets"]
 
 // include/constants_param_wizard.php3, row 376
 $_m["Text field with values names list. When you choose a name from the list, the appropriate value is printed in the text field"]
- = "Tekstualno polje sa listom imena vrijednosti. Kada izaberete ime iz liste, bit æe prikazana odgovarajuæa vrijednost u tekstualnom polju ";
+ = "Tekstualno polje sa listom imena vrijednosti. Kada izaberete ime iz liste, bit ï¿½e prikazana odgovarajuï¿½a vrijednost u tekstualnom polju ";
 
 // include/constants_param_wizard.php3, row 379
 $_m["max count of characteres entered in the text field (maxlength parameter)"]
- = "Najveæi dozvoljeni broj znakova koji se unosi u tekstualno polje";
+ = "Najveï¿½i dozvoljeni broj znakova koji se unosi u tekstualno polje";
 
 // include/constants_param_wizard.php3, row 383
 $_m["width of the text field in characters (size parameter)"]
- = "Širina tekstualnog polja u znakovaima (parametar velièine)";
+ = "ï¿½irina tekstualnog polja u znakovaima (parametar veliï¿½ine)";
 
 // include/constants_param_wizard.php3, row 394
 $_m["adding"]
@@ -667,7 +667,7 @@ $_m["secondfield"]
 
 // include/constants_param_wizard.php3, row 399
 $_m["field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"]
- = "ID polja drugog tekstualnog polja, gdje æe biti prikazana vrijednost polja za izbor ";
+ = "ID polja drugog tekstualnog polja, gdje ï¿½e biti prikazana vrijednost polja za izbor ";
 
 // include/constants_param_wizard.php3, row 401, 918
 $_m["source_href....."]
@@ -679,15 +679,15 @@ $_m["add2constant"]
 
 // include/constants_param_wizard.php3, row 403
 $_m["if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"]
- = "Ako je postavljeno na 1, korisnièki upis vrijednosti je spremljenu konstante(Samo ako vrijednost veæ nije upisana)";
+ = "Ako je postavljeno na 1, korisniï¿½ki upis vrijednosti je spremljenu konstante(Samo ako vrijednost veï¿½ nije upisana)";
 
 // include/constants_param_wizard.php3, row 427
 $_m["Text Area with Presets"]
- = "Podruèje za tekst sa pretpostavljenim vrijednostima";
+ = "Podruï¿½je za tekst sa pretpostavljenim vrijednostima";
 
 // include/constants_param_wizard.php3, row 428
 $_m["Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area"]
- = "Tekstualno podruèje sa listom vrijednosti. Kad izaberete ime iz liste, odgovarajuæa vrijednost je prikazana u tekstualnom polju";
+ = "Tekstualno podruï¿½je sa listom vrijednosti. Kad izaberete ime iz liste, odgovarajuï¿½a vrijednost je prikazana u tekstualnom polju";
 
 // include/constants_param_wizard.php3, row 430
 $_m["rows"]
@@ -711,7 +711,7 @@ $_m["Radio Button"]
 
 // include/constants_param_wizard.php3, row 440
 $_m["Radio button group - the user may choose one value of the list. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Gumb izbora - možete izabrati samo jednu vrijednost";
+ = "Gumb izbora - moï¿½ete izabrati samo jednu vrijednost";
 
 // include/constants_param_wizard.php3, row 442, 501
 $_m["Columns"]
@@ -727,7 +727,7 @@ $_m["Move right"]
 
 // include/constants_param_wizard.php3, row 447, 506
 $_m["Should the function move right or down to the next value?"]
- = "Da li da se funkcija pomakne desno ili dolje na slijedeæu vrijednost";
+ = "Da li da se funkcija pomakne desno ili dolje na slijedeï¿½u vrijednost";
 
 // include/constants_param_wizard.php3, row 450, 509, 542, 637, 659
 $_m["Slice field"]
@@ -743,23 +743,23 @@ $_m["Date"]
 
 // include/constants_param_wizard.php3, row 476
 $_m["you can choose an interval from which the year will be offered"]
- = "Možete izabrati interval iz kojeg æe biti odabrana godina";
+ = "Moï¿½ete izabrati interval iz kojeg ï¿½e biti odabrana godina";
 
 // include/constants_param_wizard.php3, row 478
 $_m["Starting Year"]
- = "Poèetna godina";
+ = "Poï¿½etna godina";
 
 // include/constants_param_wizard.php3, row 479
 $_m["The (relative) start of the year interval"]
- = "Poèetak godišnjeg intervala";
+ = "Poï¿½etak godiï¿½njeg intervala";
 
 // include/constants_param_wizard.php3, row 482
 $_m["Ending Year"]
- = "Završna godina";
+ = "Zavrï¿½na godina";
 
 // include/constants_param_wizard.php3, row 483
 $_m["The (relative) end of the year interval"]
- = "Kraj godišnjeg intervala";
+ = "Kraj godiï¿½njeg intervala";
 
 // include/constants_param_wizard.php3, row 486
 $_m["Relative"]
@@ -771,27 +771,27 @@ $_m["If this is 1, the starting and ending year will be taken as relative - the 
 
 // include/constants_param_wizard.php3, row 490
 $_m["Show time"]
- = "Pokaži vrijeme";
+ = "Pokaï¿½i vrijeme";
 
 // include/constants_param_wizard.php3, row 491
 $_m["show the time box? (1 means Yes, undefined means No)"]
- = "Pokaži kuæicu sa vremenom (1 je Da, nedefinirano Ne)";
+ = "Pokaï¿½i kuï¿½icu sa vremenom (1 je Da, nedefinirano Ne)";
 
 // include/constants_param_wizard.php3, row 495
 $_m["Checkbox"]
- = "Kuæica za odabir";
+ = "Kuï¿½ica za odabir";
 
 // include/constants_param_wizard.php3, row 496
 $_m["The field value will be represented by a checkbox."]
- = "Vrijednost polja æe biti prikazana u kuæici za izbor";
+ = "Vrijednost polja ï¿½e biti prikazana u kuï¿½ici za izbor";
 
 // include/constants_param_wizard.php3, row 498
 $_m["Multiple Checkboxes"]
- = "Višestruke kuæice izbora";
+ = "Viï¿½estruke kuï¿½ice izbora";
 
 // include/constants_param_wizard.php3, row 499
 $_m["Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Kuæice za višestruki izbor";
+ = "Kuï¿½ice za viï¿½estruki izbor";
 
 // include/constants_param_wizard.php3, row 510
 $_m["Field (or format string) that will be displayed as checbox options (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"]
@@ -799,11 +799,11 @@ $_m["Field (or format string) that will be displayed as checbox options (from re
 
 // include/constants_param_wizard.php3, row 535
 $_m["Multiple Selectbox"]
- = "Višestruka kuæica izbora";
+ = "Viï¿½estruka kuï¿½ica izbora";
 
 // include/constants_param_wizard.php3, row 536
 $_m["Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Kuæice za višestruki izbor iz ponuðenog";
+ = "Kuï¿½ice za viï¿½estruki izbor iz ponuï¿½enog";
 
 // include/constants_param_wizard.php3, row 568
 $_m["File"]
@@ -811,7 +811,7 @@ $_m["File"]
 
 // include/constants_param_wizard.php3, row 569
 $_m["File upload - a text field with the file find button"]
- = "Slanje datoteka - tekstualno polje sa gumbom za pronaði datoteku";
+ = "Slanje datoteka - tekstualno polje sa gumbom za pronaï¿½i datoteku";
 
 // include/constants_param_wizard.php3, row 571
 $_m["Allowed file types"]
@@ -827,7 +827,7 @@ $_m["Label"]
 
 // include/constants_param_wizard.php3, row 576
 $_m["To be printed before the file upload field"]
- = "Bite æe prikazano prije polja za slanje datoteka";
+ = "Bite ï¿½e prikazano prije polja za slanje datoteka";
 
 // include/constants_param_wizard.php3, row 578
 $_m["File: "]
@@ -843,7 +843,7 @@ $_m["appears beneath the file upload field"]
 
 // include/constants_param_wizard.php3, row 582
 $_m["You can select a file ..."]
- = "Možete izabrati datoteku ...";
+ = "Moï¿½ete izabrati datoteku ...";
 
 // include/constants_param_wizard.php3, row 584
 $_m["Related Item Window"]
@@ -851,7 +851,7 @@ $_m["Related Item Window"]
 
 // include/constants_param_wizard.php3, row 585
 $_m["List of items connected with the active one - by using the buttons Add and Delete you show a window, where you can search in the items list"]
- = "Lista stavki povezanih sa aktivnom stavkom - koristeæi Dodajte i Obrišite prikazat æe se prozor gdje možete pretraživati listu stavki";
+ = "Lista stavki povezanih sa aktivnom stavkom - koristeï¿½i Dodajte i Obriï¿½ite prikazat ï¿½e se prozor gdje moï¿½ete pretraï¿½ivati listu stavki";
 
 // include/constants_param_wizard.php3, row 588
 $_m["Row count in the list"]
@@ -941,15 +941,15 @@ $_m["Two Windows. <br><br>It uses the Constants select box - if you choose a con
 
 // include/constants_param_wizard.php3, row 651
 $_m["Title of \"Offer\" selectbox"]
- = "Naslov od \"Ponuda\" kuæica odabira";
+ = "Naslov od \"Ponuda\" kuï¿½ica odabira";
 
 // include/constants_param_wizard.php3, row 654
 $_m["Our offer"]
- = "Naša ponuda";
+ = "Naï¿½a ponuda";
 
 // include/constants_param_wizard.php3, row 655
 $_m["Title of \"Selected\" selectbox"]
- = "Naslov od \"Odabrano\" kuæica odabira";
+ = "Naslov od \"Odabrano\" kuï¿½ica odabira";
 
 // include/constants_param_wizard.php3, row 658
 $_m["Selected"]
@@ -965,7 +965,7 @@ $_m["Hidden field"]
 
 // include/constants_param_wizard.php3, row 686
 $_m["The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."]
- = "Vrijednost polja bit æe prikazana kao  &lt;input type='hidden'. Vjerojatno æete postaviti to polje sa java skript okidaèem korištenim na nekom drugom polju.";
+ = "Vrijednost polja bit ï¿½e prikazana kao  &lt;input type='hidden'. Vjerojatno ï¿½ete postaviti to polje sa java skript okidaï¿½em koriï¿½tenim na nekom drugom polju.";
 
 // include/constants_param_wizard.php3, row 694
 $_m["Password input boxes allowing to send password (for password-protected items)\n"
@@ -977,11 +977,11 @@ $_m["Password input boxes allowing to send password (for password-protected item
 
 // include/constants_param_wizard.php3, row 696
 $_m["Field size"]
- = "Velièina polja";
+ = "Veliï¿½ina polja";
 
 // include/constants_param_wizard.php3, row 697
 $_m["Size of the three fields"]
- = "Velièina tri polja";
+ = "Veliï¿½ina tri polja";
 
 // include/constants_param_wizard.php3, row 700
 $_m["Label for Change Password"]
@@ -1001,47 +1001,47 @@ $_m["Label for Retype New Password"]
 
 // include/constants_param_wizard.php3, row 705
 $_m["Replaces the default \"Retype New Password\""]
- = "Zamjenjuje pretpostavljeno \"Upišite novu lozinku\"";
+ = "Zamjenjuje pretpostavljeno \"Upiï¿½ite novu lozinku\"";
 
 // include/constants_param_wizard.php3, row 707
 $_m["Retype the new password"]
- = "Upišite ponovo novu lozinku";
+ = "Upiï¿½ite ponovo novu lozinku";
 
 // include/constants_param_wizard.php3, row 708
 $_m["Label for Delete Password"]
- = "Oznaka za Obrišite lozinku";
+ = "Oznaka za Obriï¿½ite lozinku";
 
 // include/constants_param_wizard.php3, row 709
 $_m["Replaces the default \"Delete Password\""]
- = "Zamjenjuje pretpostavljeno \"Upišite novu lozinku\"";
+ = "Zamjenjuje pretpostavljeno \"Upiï¿½ite novu lozinku\"";
 
 // include/constants_param_wizard.php3, row 711
 $_m["Delete password (set to empty)"]
- = "Briše lozinku (postavlja na 0)";
+ = "Briï¿½e lozinku (postavlja na 0)";
 
 // include/constants_param_wizard.php3, row 712
 $_m["Help for Change Password"]
- = "Pomoæ za promjenu lozinke";
+ = "Pomoï¿½ za promjenu lozinke";
 
 // include/constants_param_wizard.php3, row 713
 $_m["Help text under the Change Password box (default: no text)"]
- = "Tekst pomoæi unutar Polja za promjenu lozinke (pretpostavljeno: nema teksta)";
+ = "Tekst pomoï¿½i unutar Polja za promjenu lozinke (pretpostavljeno: nema teksta)";
 
 // include/constants_param_wizard.php3, row 715
 $_m["To change password, enter the new password here and below"]
- = "Za promjenu lozinke, upipšite novu lozinku ovdje i ispod";
+ = "Za promjenu lozinke, upipï¿½ite novu lozinku ovdje i ispod";
 
 // include/constants_param_wizard.php3, row 716
 $_m["Help for Retype New Password"]
- = "Pomoæ za Upišite novu lozinku";
+ = "Pomoï¿½ za Upiï¿½ite novu lozinku";
 
 // include/constants_param_wizard.php3, row 717
 $_m["Help text under the Retype New Password box (default: no text)"]
- = "Tekst pomoæi ispod kuæice za unos nove lozinke (pretpostavljeno: nema teksta)";
+ = "Tekst pomoï¿½i ispod kuï¿½ice za unos nove lozinke (pretpostavljeno: nema teksta)";
 
 // include/constants_param_wizard.php3, row 720
 $_m["Retype the new password exactly the same as you entered into \"Change Password\"."]
- = "Upišite istu lozinku kao u \"Promjenite lozinku\".";
+ = "Upiï¿½ite istu lozinku kao u \"Promjenite lozinku\".";
 
 // include/constants_param_wizard.php3, row 724
 $_m["Do not show"]
@@ -1093,19 +1093,19 @@ $_m["null function"]
 
 // include/constants_param_wizard.php3, row 752
 $_m["prints nothing"]
- = "Ne ispisuje ništa";
+ = "Ne ispisuje niï¿½ta";
 
 // include/constants_param_wizard.php3, row 753
 $_m["abstract"]
- = "Skraæeni tekst";
+ = "Skraï¿½eni tekst";
 
 // include/constants_param_wizard.php3, row 754
 $_m["prints abstract (if exists) or the beginning of the <b>fulltext</b>"]
- = "Printa skraæeni tekst (ako postoji) na poèetku Punog teksta";
+ = "Printa skraï¿½eni tekst (ako postoji) na poï¿½etku Punog teksta";
 
 // include/constants_param_wizard.php3, row 756
 $_m["length"]
- = "Dužina";
+ = "Duï¿½ina";
 
 // include/constants_param_wizard.php3, row 757
 $_m["max number of characters grabbed from the <b>fulltext</b> field"]
@@ -1133,11 +1133,11 @@ $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at leas
 
 // include/constants_param_wizard.php3, row 768
 $_m["extended fulltext link"]
- = "Veza na prošireni puni tekst";
+ = "Veza na proï¿½ireni puni tekst";
 
 // include/constants_param_wizard.php3, row 769
 $_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>."]
- = "Prikazuje tekst ili sadržaj polja sa vezom na puni tekst.";
+ = "Prikazuje tekst ili sadrï¿½aj polja sa vezom na puni tekst.";
 
 // include/constants_param_wizard.php3, row 771, 854
 $_m["link only"]
@@ -1169,7 +1169,7 @@ $_m["redirect"]
 
 // include/constants_param_wizard.php3, row 780, 859
 $_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
- = "Web adresa druge stranice koja pokazuje sadržaj stavke.";
+ = "Web adresa druge stranice koja pokazuje sadrï¿½aj stavke.";
 
 // include/constants_param_wizard.php3, row 783
 $_m["text"]
@@ -1177,7 +1177,7 @@ $_m["text"]
 
 // include/constants_param_wizard.php3, row 784
 $_m["The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim"]
- = "Tekst popraæen vezom.";
+ = "Tekst popraï¿½en vezom.";
 
 // include/constants_param_wizard.php3, row 787
 $_m["condition field"]
@@ -1213,15 +1213,15 @@ $_m["condition"]
 
 // include/constants_param_wizard.php3, row 800
 $_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
- = "Vrlo snažna funkcija za razne promjene";
+ = "Vrlo snaï¿½na funkcija za razne promjene";
 
 // include/constants_param_wizard.php3, row 803
 $_m["you may use \"!\" to reverse (negate) the condition"]
- = "Možete koristiti \"!\" za poništavanje uvjeta";
+ = "Moï¿½ete koristiti \"!\" za poniï¿½tavanje uvjeta";
 
 // include/constants_param_wizard.php3, row 806, 922
 $_m["begin"]
- = "poèetak";
+ = "poï¿½etak";
 
 // include/constants_param_wizard.php3, row 807
 $_m["text to print before <i>field</i>, if condition is true"]
@@ -1241,7 +1241,7 @@ $_m["text to print after <i>field</i>, if condition is true"]
 
 // include/constants_param_wizard.php3, row 814
 $_m["else"]
- = "inaèe";
+ = "inaï¿½e";
 
 // include/constants_param_wizard.php3, row 815
 $_m["text to print when condition is not satisfied"]
@@ -1261,7 +1261,7 @@ $_m["field to compare with the <b>condition</b> - if not filled, <i>field</i> is
 
 // include/constants_param_wizard.php3, row 822
 $_m["skip_the_field"]
- = "Preskoèite polje";
+ = "Preskoï¿½ite polje";
 
 // include/constants_param_wizard.php3, row 823
 $_m["if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)"]
@@ -1269,7 +1269,7 @@ $_m["if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else<
 
 // include/constants_param_wizard.php3, row 827
 $_m["This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content"]
- = "Primjer je upotrebljiv na primjer za isticanje polja - pokazuje Da ili Ne ovisno o sadržaju polja";
+ = "Primjer je upotrebljiv na primjer za isticanje polja - pokazuje Da ili Ne ovisno o sadrï¿½aju polja";
 
 // include/constants_param_wizard.php3, row 828
 $_m["1:Yes::No::1"]
@@ -1277,7 +1277,7 @@ $_m["1:Yes::No::1"]
 
 // include/constants_param_wizard.php3, row 829
 $_m["When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing"]
- = "Kada je e-mail polje ispunjeno, ispisuje nešto kao \"Email: email@apc.org\", kada je prazno, ne ispisuje ništa";
+ = "Kada je e-mail polje ispunjeno, ispisuje neï¿½to kao \"Email: email@apc.org\", kada je prazno, ne ispisuje niï¿½ta";
 
 // include/constants_param_wizard.php3, row 830
 $_m["!:Email#:&nbsp;"]
@@ -1285,7 +1285,7 @@ $_m["!:Email#:&nbsp;"]
 
 // include/constants_param_wizard.php3, row 831
 $_m["Print image height attribute, if <i>the field</i> is filled, nothing otherwise."]
- = "Ispisuje visinu tekstualne datoteke, ako je <i>polje </i> popunjeno, inaèe ništa";
+ = "Ispisuje visinu tekstualne datoteke, ako je <i>polje </i> popunjeno, inaï¿½e niï¿½ta";
 
 // include/constants_param_wizard.php3, row 832
 $_m["!:height="]
@@ -1297,7 +1297,7 @@ $_m["date"]
 
 // include/constants_param_wizard.php3, row 834
 $_m["prints date in a user defined format"]
- = "Prikazuje datum u korisnièki definiranom formatu";
+ = "Prikazuje datum u korisniï¿½ki definiranom formatu";
 
 // include/constants_param_wizard.php3, row 836
 $_m["format"]
@@ -1321,7 +1321,7 @@ $_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
 
 // include/constants_param_wizard.php3, row 844
 $_m["disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item"]
- = "Ureðivanje diskusija";
+ = "Ureï¿½ivanje diskusija";
 
 // include/constants_param_wizard.php3, row 846
 $_m["edit"]
@@ -1333,11 +1333,11 @@ $_m["return url"]
 
 // include/constants_param_wizard.php3, row 848
 $_m["Return url being called from, usually leave blank and allow default"]
- = "Povratna web adresa je pozvana sa, obièno ostavlja prazno i dozvoljava pretpostavljeno";
+ = "Povratna web adresa je pozvana sa, obiï¿½no ostavlja prazno i dozvoljava pretpostavljeno";
 
 // include/constants_param_wizard.php3, row 850
 $_m["/mysite.shtml"]
- = "Vaša stranica";
+ = "Vaï¿½a stranica";
 
 // include/constants_param_wizard.php3, row 851
 $_m["fulltext link"]
@@ -1345,11 +1345,11 @@ $_m["fulltext link"]
 
 // include/constants_param_wizard.php3, row 852
 $_m["Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\""]
- = "Ispisuje Ime web adres unutar veze na puni tekst - dozvoljava korištenje vanjskih stavki. Koristi se odmah nakon\"\\<a href=\"";
+ = "Ispisuje Ime web adres unutar veze na puni tekst - dozvoljava koriï¿½tenje vanjskih stavki. Koristi se odmah nakon\"\\<a href=\"";
 
 // include/constants_param_wizard.php3, row 855
 $_m["field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)."]
- = "ID polja (kao 'samo veza') gdje je spremljen preklopnik izmeðu vanjskih i unutarnjih funkcija. Obièno je to polje prikazano sa kuæicom za oznaèavanje. Ako je oznaèeno, <i>polje</i> se prikazuje, ako nije, prikazuje se veza na puni tekst(ovisi i o <b>preusmjeravanju</b>).";
+ = "ID polja (kao 'samo veza') gdje je spremljen preklopnik izmeï¿½u vanjskih i unutarnjih funkcija. Obiï¿½no je to polje prikazano sa kuï¿½icom za oznaï¿½avanje. Ako je oznaï¿½eno, <i>polje</i> se prikazuje, ako nije, prikazuje se veza na puni tekst(ovisi i o <b>preusmjeravanju</b>).";
 
 // include/constants_param_wizard.php3, row 866
 $_m["image height"]
@@ -1357,15 +1357,15 @@ $_m["image height"]
 
 // include/constants_param_wizard.php3, row 867
 $_m["An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". "]
- = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briše html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguèuje bolji naèin za to sa parametrima \":height=\". ";
+ = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briï¿½e html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguï¿½uje bolji naï¿½in za to sa parametrima \":height=\". ";
 
 // include/constants_param_wizard.php3, row 868
 $_m["print HTML multiple"]
- = "Višestruki prikaz HTML-a";
+ = "Viï¿½estruki prikaz HTML-a";
 
 // include/constants_param_wizard.php3, row 869
 $_m["prints <i>the field</i> content depending on the html flag (escape html special characters or just print)"]
- = "Prikazuje <i>sadržaj</i>  polja ovisno o oznaci html (izbjegava posebne znakove ili samo prikaz)";
+ = "Prikazuje <i>sadrï¿½aj</i>  polja ovisno o oznaci html (izbjegava posebne znakove ili samo prikaz)";
 
 // include/constants_param_wizard.php3, row 871
 $_m["delimiter"]
@@ -1373,19 +1373,19 @@ $_m["delimiter"]
 
 // include/constants_param_wizard.php3, row 872
 $_m["if specified, a field with multiple values is displayed with the values delimited by it"]
- = "Ako je oznaèeno, polje sa višestrukim vrijednostima se prikazuje sa razdvojenim vrijednostima";
+ = "Ako je oznaï¿½eno, polje sa viï¿½estrukim vrijednostima se prikazuje sa razdvojenim vrijednostima";
 
 // include/constants_param_wizard.php3, row 875
 $_m["image src"]
- = "Izvorišna slikovna datoteka";
+ = "Izvoriï¿½na slikovna datoteka";
 
 // include/constants_param_wizard.php3, row 876
 $_m["prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. "]
- = "prikazuje <i>polje</i> kao izvorišnu slikovnu datoteku (\\<img src=...\\>) - NEMA SLIKOVNE DATOTEKE za prazno. Isto možete napraviti sa f_c funkcijom sa parametrima  :::NO_PICTURE. ";
+ = "prikazuje <i>polje</i> kao izvoriï¿½nu slikovnu datoteku (\\<img src=...\\>) - NEMA SLIKOVNE DATOTEKE za prazno. Isto moï¿½ete napraviti sa f_c funkcijom sa parametrima  :::NO_PICTURE. ";
 
 // include/constants_param_wizard.php3, row 877
 $_m["image size"]
- = "Velièina slikovne datoteke";
+ = "Veliï¿½ina slikovne datoteke";
 
 // include/constants_param_wizard.php3, row 878
 $_m["prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
@@ -1397,19 +1397,19 @@ $_m["specifies returned information: <br> - <i>html</i> - (default) - returns im
 
 // include/constants_param_wizard.php3, row 885
 $_m["expanded string"]
- = "prošireni kod";
+ = "proï¿½ireni kod";
 
 // include/constants_param_wizard.php3, row 886
 $_m["expands the string in the parameter"]
- = "proširuje kod u parametar";
+ = "proï¿½iruje kod u parametar";
 
 // include/constants_param_wizard.php3, row 888
 $_m["string to expand"]
- = "kod za proširiti";
+ = "kod za proï¿½iriti";
 
 // include/constants_param_wizard.php3, row 889
 $_m["if specified then this string is expanded, if not specified then expands the contents of the field"]
- = "ako je oznaèeno, proširuje se tekst, ako nije, onda se proširuje sadržaj polja";
+ = "ako je oznaï¿½eno, proï¿½iruje se tekst, ako nije, onda se proï¿½iruje sadrï¿½aj polja";
 
 // include/constants_param_wizard.php3, row 892
 $_m["substring with case change"]
@@ -1421,11 +1421,11 @@ $_m["prints a part of <i>the field</i>"]
 
 // include/constants_param_wizard.php3, row 895
 $_m["start"]
- = "poèetak";
+ = "poï¿½etak";
 
 // include/constants_param_wizard.php3, row 896
 $_m["position of substring start (0=first, 1=second, -1=last,-2=two from end)"]
- = "mjesto poèetka subkoda (0=prvi, 1=drugi, -1=zadnji,-2=dva od kraja)";
+ = "mjesto poï¿½etka subkoda (0=prvi, 1=drugi, -1=zadnji,-2=dva od kraja)";
 
 // include/constants_param_wizard.php3, row 899
 $_m["count"]
@@ -1449,11 +1449,11 @@ $_m["add string"]
 
 // include/constants_param_wizard.php3, row 908
 $_m["if string is shorted, <i>add string</i> is appended to the string (probably something like [...])"]
- = "ako je kod skraæen, <i>dodajte kod</i> se dodaje kodu (vjerojatno nešto kao [...])";
+ = "ako je kod skraï¿½en, <i>dodajte kod</i> se dodaje kodu (vjerojatno neï¿½to kao [...])";
 
 // include/constants_param_wizard.php3, row 911
 $_m["Auto Update Checkbox"]
- = "kuæica za odabir automatskog obnavljanja";
+ = "kuï¿½ica za odabir automatskog obnavljanja";
 
 // include/constants_param_wizard.php3, row 912
 $_m["linked field"]
@@ -1461,7 +1461,7 @@ $_m["linked field"]
 
 // include/constants_param_wizard.php3, row 913
 $_m["prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>"]
- = "ispisuje <i>polje</i> kao vezu ako<b>web adresa veze</b> nije NULA, inaèe ispisuje samo <i>polje</i>";
+ = "ispisuje <i>polje</i> kao vezu ako<b>web adresa veze</b> nije NULA, inaï¿½e ispisuje samo <i>polje</i>";
 
 // include/constants_param_wizard.php3, row 915
 $_m["link URL"]
@@ -1489,15 +1489,15 @@ $_m["field/text"]
 
 // include/constants_param_wizard.php3, row 927
 $_m["if this parameter is a field id, the field's content is used, else it is used verbatim"]
- = "ako je parametar ID polja, koristi se sadržaj polja, inaæe se koristi verbatim";
+ = "ako je parametar ID polja, koristi se sadrï¿½aj polja, inaï¿½e se koristi verbatim";
 
 // include/constants_param_wizard.php3, row 930
 $_m["else_field/text"]
- = "polje drugaèije vrijednosti/tekst";
+ = "polje drugaï¿½ije vrijednosti/tekst";
 
 // include/constants_param_wizard.php3, row 931
 $_m["if <i>the field</i> is empty, only this text (or field content) is printed"]
- = "ako je <i>polje</i>prazno, samo ovaj tekst (ili sadržaj polja) se prikazuje";
+ = "ako je <i>polje</i>prazno, samo ovaj tekst (ili sadrï¿½aj polja) se prikazuje";
 
 // include/constants_param_wizard.php3, row 934
 $_m["linktype"]
@@ -1505,7 +1505,7 @@ $_m["linktype"]
 
 // include/constants_param_wizard.php3, row 935
 $_m["mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter"]
- = "mailto / href (pretpostavljeno je mailto) - moguæe je koristiti f_m funkciju za linkove takoðer - samo upišite 'href' kao parametar";
+ = "mailto / href (pretpostavljeno je mailto) - moguï¿½e je koristiti f_m funkciju za linkove takoï¿½er - samo upiï¿½ite 'href' kao parametar";
 
 // include/constants_param_wizard.php3, row 937
 $_m["href"]
@@ -1525,7 +1525,7 @@ $_m["'New' sign"]
 
 // include/constants_param_wizard.php3, row 947
 $_m["prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."]
- = "ispisuje 'Novo' ili 'Staro' ili bilo koji tekst u <b>noviji tekst</b> ili <b>stariji tekst</b> ovisno o <b>vremenu</b>. Vrijeme je izraženo u minutama od trenutnog vremena";
+ = "ispisuje 'Novo' ili 'Staro' ili bilo koji tekst u <b>noviji tekst</b> ili <b>stariji tekst</b> ovisno o <b>vremenu</b>. Vrijeme je izraï¿½eno u minutama od trenutnog vremena";
 
 // include/constants_param_wizard.php3, row 949
 $_m["time"]
@@ -1569,7 +1569,7 @@ $_m["id"]
 
 // include/constants_param_wizard.php3, row 962
 $_m["prints unpacked id (use it, if you watn to show 'item id' or 'slice id')"]
- = "prikazuje raspakirani ID (koristite ga, ako želite prikazati'ID stavke' ili 'ID stranice')";
+ = "prikazuje raspakirani ID (koristite ga, ako ï¿½elite prikazati'ID stavke' ili 'ID stranice')";
 
 // include/constants_param_wizard.php3, row 963
 $_m["text (blurb) from another slice"]
@@ -1577,15 +1577,15 @@ $_m["text (blurb) from another slice"]
 
 // include/constants_param_wizard.php3, row 964
 $_m["prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."]
- = "ispisuje 'blurb' (dio teksta) sa druge stranice, baziran najednostavnom uvjetu.<br>Ako je <i>polje</i> (ili polje oznaèeno kao <b>traženi tekst</b>) u trenutnoj stranici se poklapa sa sadržajem <b>traženog polja</b> u <b>blurbSliceId</b>, vraæa sadržaj <b>fieldToReturn</b> u<b>blurbSliceID</b>.";
+ = "ispisuje 'blurb' (dio teksta) sa druge stranice, baziran najednostavnom uvjetu.<br>Ako je <i>polje</i> (ili polje oznaï¿½eno kao <b>traï¿½eni tekst</b>) u trenutnoj stranici se poklapa sa sadrï¿½ajem <b>traï¿½enog polja</b> u <b>blurbSliceId</b>, vraï¿½a sadrï¿½aj <b>fieldToReturn</b> u<b>blurbSliceID</b>.";
 
 // include/constants_param_wizard.php3, row 966
 $_m["stringToMatch"]
- = "Traženi tekst";
+ = "Traï¿½eni tekst";
 
 // include/constants_param_wizard.php3, row 967
 $_m["By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text."]
- = "Pretpostavljeno je <i>polje</i>. Može biti oblikovano ili kao ID polja(zaglavlje..........) ILI kao statièki tekst ";
+ = "Pretpostavljeno je <i>polje</i>. Moï¿½e biti oblikovano ili kao ID polja(zaglavlje..........) ILI kao statiï¿½ki tekst ";
 
 // include/constants_param_wizard.php3, row 970
 $_m["blurbSliceId"]
@@ -1601,11 +1601,11 @@ $_m["41415f436f72655f4669656c64732e2e"]
 
 // include/constants_param_wizard.php3, row 974
 $_m["fieldToMatch"]
- = "traženo polje";
+ = "traï¿½eno polje";
 
 // include/constants_param_wizard.php3, row 975
 $_m["field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>"]
- = "ID polja od polja u <b>ID blurb stranice</b> gdje æete tražiti <b>odgovarajuæi podatak</b>";
+ = "ID polja od polja u <b>ID blurb stranice</b> gdje ï¿½ete traï¿½iti <b>odgovarajuï¿½i podatak</b>";
 
 // include/constants_param_wizard.php3, row 977
 $_m["headline........"]
@@ -1617,7 +1617,7 @@ $_m["fieldToReturn"]
 
 // include/constants_param_wizard.php3, row 979
 $_m["field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)"]
- = "ID polja u polju <b>blurbSliceId</b> gdje je spremljen blurb tekst (što se ispisuje)";
+ = "ID polja u polju <b>blurbSliceId</b> gdje je spremljen blurb tekst (ï¿½to se ispisuje)";
 
 // include/constants_param_wizard.php3, row 982
 $_m["RSS tag"]
@@ -1625,7 +1625,7 @@ $_m["RSS tag"]
 
 // include/constants_param_wizard.php3, row 983
 $_m["serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags."]
- = "služi za internu uporabu predefiniranih RSS sinonima (npr. _#RSS_TITL). Dodaje RSS 0.91 kompatibilan kod";
+ = "sluï¿½i za internu uporabu predefiniranih RSS sinonima (npr. _#RSS_TITL). Dodaje RSS 0.91 kompatibilan kod";
 
 // include/constants_param_wizard.php3, row 984, 987, 1093
 $_m["default"]
@@ -1633,7 +1633,7 @@ $_m["default"]
 
 // include/constants_param_wizard.php3, row 985
 $_m["prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>."]
- = "ispisuje<i>polje</i> ili pretpostavljenui vrijednost ako je <i>polje</i> prazno. Isto možete napraviti sa  f_c funkcijom  sa parametrima :::<b>pretpostavljeno</b>.";
+ = "ispisuje<i>polje</i> ili pretpostavljenui vrijednost ako je <i>polje</i> prazno. Isto moï¿½ete napraviti sa  f_c funkcijom  sa parametrima :::<b>pretpostavljeno</b>.";
 
 // include/constants_param_wizard.php3, row 988
 $_m["default value"]
@@ -1641,7 +1641,7 @@ $_m["default value"]
 
 // include/constants_param_wizard.php3, row 990
 $_m["javascript: window.alert('No source url specified')"]
- = "javascript: window.alert('Nije odreðen izvor datoteke')";
+ = "javascript: window.alert('Nije odreï¿½en izvor datoteke')";
 
 // include/constants_param_wizard.php3, row 991
 $_m["print field"]
@@ -1689,7 +1689,7 @@ $_m["Allows to transform the field value to another value.<br>Usage: <b>content_
 
 // include/constants_param_wizard.php3, row 1013, 1021, 1029, 1037, 1045, 1053, 1061, 1069, 1077, 1085
 $_m["content"]
- = "sadržaj";
+ = "sadrï¿½aj";
 
 // include/constants_param_wizard.php3, row 1014, 1022, 1030, 1038, 1046, 1054, 1062, 1070, 1078, 1086
 $_m["string for comparison with <i>the field</i> for following return value"]
@@ -1701,23 +1701,23 @@ $_m["return value"]
 
 // include/constants_param_wizard.php3, row 1018, 1026, 1034, 1042, 1050, 1058, 1066, 1074, 1082, 1090
 $_m["string to return if previous content matches - You can use field_id too"]
- = "tekst koji se ispisuje ako se prethodni sadržaj poklapa s upitom - možete koristiti i ID polja takoðer";
+ = "tekst koji se ispisuje ako se prethodni sadrï¿½aj poklapa s upitom - moï¿½ete koristiti i ID polja takoï¿½er";
 
 // include/constants_param_wizard.php3, row 1020, 1028, 1036, 1044, 1052, 1060, 1068, 1076, 1084, 1092
 $_m["Environment"]
- = "Okružje";
+ = "Okruï¿½je";
 
 // include/constants_param_wizard.php3, row 1094
 $_m["if no content matches, use this string as return value"]
- = "Ako nema sadržaja koji odgovara upitu, koristi ovaj redak kao povratnu vrijednost";
+ = "Ako nema sadrï¿½aja koji odgovara upitu, koristi ovaj redak kao povratnu vrijednost";
 
 // include/constants_param_wizard.php3, row 1097
 $_m["user function"]
- = "korisnièka funkcija";
+ = "korisniï¿½ka funkcija";
 
 // include/constants_param_wizard.php3, row 1098
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
- = "korisnièki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
+ = "korisniï¿½ki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
 
 // include/constants_param_wizard.php3, row 1100
 $_m["function"]
@@ -1749,11 +1749,11 @@ $_m["allows to manipulate the views. This is a complicated and powerful function
 
 // include/constants_param_wizard.php3, row 1111
 $_m["complex parameter"]
- = "Složeni parametar";
+ = "Sloï¿½eni parametar";
 
 // include/constants_param_wizard.php3, row 1112
 $_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
- = "ovaj parametar je isti kao onaj koji se koristi u view.php3 parametru- vidi ÈPP";
+ = "ovaj parametar je isti kao onaj koji se koristi u view.php3 parametru- vidi ï¿½PP";
 
 // include/constants_param_wizard.php3, row 1114
 $_m["vid=4&amp;cmd[23]=v-25"]
@@ -1761,11 +1761,11 @@ $_m["vid=4&amp;cmd[23]=v-25"]
 
 // include/constants_param_wizard.php3, row 1115
 $_m["image width"]
- = "Širina slikovne datoteke";
+ = "ï¿½irina slikovne datoteke";
 
 // include/constants_param_wizard.php3, row 1116
 $_m["An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "]
- = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briše html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguèuje bolji naèin za to sa parametrima \":height=\". ";
+ = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briï¿½e html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguï¿½uje bolji naï¿½in za to sa parametrima \":height=\". ";
 
 // include/constants_param_wizard.php3, row 1121
 $_m["Transformation action"]
@@ -1781,11 +1781,11 @@ $_m["Simply store a value from the input field"]
 
 // include/constants_param_wizard.php3, row 1128
 $_m["Remove string"]
- = "Briše kod";
+ = "Briï¿½e kod";
 
 // include/constants_param_wizard.php3, row 1129
 $_m["Remove all occurences of a string from the input field."]
- = "Briše sva pojavljivanja tog koda iz polja za unos";
+ = "Briï¿½e sva pojavljivanja tog koda iz polja za unos";
 
 // include/constants_param_wizard.php3, row 1131, 1149, 1166
 $_m["string parameter"]
@@ -1809,7 +1809,7 @@ $_m["Add http prefix"]
 
 // include/constants_param_wizard.php3, row 1142
 $_m["Adds 'http://' prefix to the field if not beginning with 'http://' and not empty."]
- = "Dodaje 'http://' prefiks polu ako ne poèinje sa 'http://' i nije prazno.";
+ = "Dodaje 'http://' prefiks polu ako ne poï¿½inje sa 'http://' i nije prazno.";
 
 // include/constants_param_wizard.php3, row 1146
 $_m["Store parameter"]
@@ -1841,7 +1841,7 @@ $_m["Split input field by string"]
 
 // include/constants_param_wizard.php3, row 1164
 $_m["Split input field by string parameter and store the result as multi-value."]
- = "Razdvaja polje unosa po parametrima koda i sprema rezultat kao višestruku vrijednost";
+ = "Razdvaja polje unosa po parametrima koda i sprema rezultat kao viï¿½estruku vrijednost";
 
 // include/constants_param_wizard.php3, row 1167
 $_m["string which separates the values of the input field"]
@@ -1865,15 +1865,15 @@ $_m["Store these default values for the following output fields. The other outpu
    ."    <tr><td>Edited by</td><td>Active user</td><td></td></tr>\n"
    ."      </table>\n"
    ."    "]
- = "Sprema pretpostavljene vrijednosti za slijedeæa izlazna polja. Ostala izlazna polja bit æe ispunjena <i>Sa</i> polja (ako je izabrano). Inaæe se ispunjava sa <i>Parametri akcije</i> kodom.\n"
+ = "Sprema pretpostavljene vrijednosti za slijedeï¿½a izlazna polja. Ostala izlazna polja bit ï¿½e ispunjena <i>Sa</i> polja (ako je izabrano). Inaï¿½e se ispunjava sa <i>Parametri akcije</i> kodom.\n"
    ."    <table>\n"
    ."        <tr><td><b>Izlazno polje</b></td><td><b>Vrijednost</b></td><td><b>Opis</b></td></tr></b>\n"
-   ."    <tr><td>Kod statusa</td><td>1</td><td>Stavka æe biti spremljena u Aktivnim stavkama(Savjet: postavite na 2 za stavke na èekanju)</td></tr>\n"
+   ."    <tr><td>Kod statusa</td><td>1</td><td>Stavka ï¿½e biti spremljena u Aktivnim stavkama(Savjet: postavite na 2 za stavke na ï¿½ekanju)</td></tr>\n"
    ."    <tr><td>Broj prikaza</td><td>0</td><td></td></tr>\n"
-   ."        <tr><td>Datum objave</td><td>Današnji datum</td><td></td></tr>\n"
-   ."    <tr><td>Poslano dana</td><td>Dnašnji datum</td><td></td></tr>\n"
-   ."    <tr><td>Datum zadnjeg ureðivanja</td><td>Današnji datum</td><td></td></tr>\n"
-   ."    <tr><td>Datum istjeka</td><td>Današnji datum + 10 godina</td><td></td></tr>\n"
+   ."        <tr><td>Datum objave</td><td>Danaï¿½nji datum</td><td></td></tr>\n"
+   ."    <tr><td>Poslano dana</td><td>Dnaï¿½nji datum</td><td></td></tr>\n"
+   ."    <tr><td>Datum zadnjeg ureï¿½ivanja</td><td>Danaï¿½nji datum</td><td></td></tr>\n"
+   ."    <tr><td>Datum istjeka</td><td>Danaï¿½nji datum + 10 godina</td><td></td></tr>\n"
    ."    <tr><td>Poslao/la</td><td>Aktivni korisnik/ica</td><td></td></tr>\n"
    ."    <tr><td>Uredio/la</td><td>Aktivni korisnik/ica</td><td></td></tr>\n"
    ."      </table>\n"
@@ -1881,11 +1881,11 @@ $_m["Store these default values for the following output fields. The other outpu
 
 // doc/param_wizard_list.php3, row 36
 $_m["Param Wizard Summary"]
- = "Opis - èarobnjak parametara";
+ = "Opis - ï¿½arobnjak parametara";
 
 // doc/param_wizard_list.php3, row 45
 $_m["Choose a Parameter Wizard"]
- = "Odaberite èarobnjak parametara";
+ = "Odaberite ï¿½arobnjak parametara";
 
 // doc/param_wizard_list.php3, row 54, 71
 $_m["Go"]
@@ -1909,7 +1909,7 @@ $_m["name"]
 
 // doc/param_wizard_list.php3, row 97
 $_m["description"]
- = "objašnjenje";
+ = "objaï¿½njenje";
 
 // doc/param_wizard_list.php3, row 98
 $_m["example"]
@@ -1931,4 +1931,4 @@ $_m["field id"]
 $_m["boolean: 0=false,1=true"]
  = "booleova algebra: 0=neistinito,1=istinito";
 
-?>
+

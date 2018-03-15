@@ -478,4 +478,4 @@ $_m["Upload"]
  $_m["An error occurred during password change - please contact: %1."]
  = "";
 
-?>
+

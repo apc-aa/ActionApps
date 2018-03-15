@@ -185,4 +185,4 @@ $_m["Used Language File"]
 $_m["Defaults for polls in this module"]
  = "";
 
-?>
+

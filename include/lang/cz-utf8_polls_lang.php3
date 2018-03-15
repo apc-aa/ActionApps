@@ -186,4 +186,4 @@ $_m["Used Language File"]
 $_m["Defaults for polls in this module"]
  = "Dafaultní hodnoty pro ankety v tomto modulu";
 
-?>
+
