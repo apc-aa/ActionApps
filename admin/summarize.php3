@@ -28,7 +28,6 @@
 */
 
 require_once "../include/init_page.php3"; // Loads variables etc
-require_once AA_INC_PATH."slice.class.php3";  // for slices
 require_once AA_INC_PATH."formutil.php3";  // for FrmJavascriptCached()
 
 //$debug = 1;
@@ -39,7 +38,7 @@ require_once AA_INC_PATH."formutil.php3";  // for FrmJavascriptCached()
 if (0) {
     $db->query("SELECT * FROM slice LIMIT 1");
     $db->next_record();
-    huhl(GetTable2Array("SELECT * FROM slice LIMIT 1",NoCoLuMn,1));
+    huhl(GetTable2Array("SELECT * FROM slice LIMIT 1",'NoCoLuMn',1));
 }
 
 // These parameters effect how slices compare to each other
@@ -75,7 +74,7 @@ function initSummarize() {
     global $sao,$slicetablefields;
     $db = getDB();
     $SQL = "SELECT id FROM slice ORDER BY created_at";
-    $db -> tquery($SQL);
+    $db -> query($SQL);
     while ($db->next_record()) {
         $sao[unpack_id($db->f("id"))] = AA_Slice::getModule(unpack_id($db->f("id")));
     }
@@ -192,7 +191,7 @@ function copyslicefield($new) {
   global $slice_id, $slicefieldcopy;
   $db  = getDB();
   $SQL = "UPDATE slice SET ".$slicefieldcopy."='".quote($new)."' WHERE id='".q_pack_id($slice_id)."'";
-  $db -> tquery($SQL);
+  $db -> query($SQL);
   freeDB($db);
 }
 /** do_showfield function
@@ -203,7 +202,7 @@ function do_showfield() {
   $db = getDB();
   $GLOBALS['debug']=1;
   $SQL = "UPDATE field SET input_show=1 WHERE (id='".$showfield."') AND (slice_id='".q_pack_id($slice_id)."')";
-  $db -> tquery($SQL);
+  $db -> query($SQL);
   $GLOBALS['debug']=0;
   freeDB($db);
 }
@@ -214,13 +213,13 @@ function do_copyfield() {
   global $copyfield,$slice_id,$nearest;
   $db = getDB();
   $SQL = "CREATE TEMPORARY TABLE temp1 SELECT * FROM field WHERE (id='".$copyfield."') AND (slice_id='".q_pack_id($nearest)."')";
-  $db -> tquery($SQL);
+  $db -> query($SQL);
   $SQL = "UPDATE temp1 SET slice_id = '".q_pack_id($slice_id)."'";
-  $db -> tquery($SQL);
+  $db -> query($SQL);
   $SQL = "INSERT INTO field SELECT * FROM temp1";
-  $db -> tquery($SQL);
+  $db -> query($SQL);
   $SQL = "DROP TABLE temp1";
-  $db -> tquery($SQL);
+  $db -> query($SQL);
   print "<p>Copied field $copyfield from $nearest</p>";
   freeDB($db);
 }
@@ -233,7 +232,7 @@ function mapslices() {
     foreach ($sao as $sid => $so) {
         if (! $so->deleted() && !ignored_slice($sid)) {
             if ($pm) {   // first time round no model
-                $nearest = nearestSlice($so,$pm,1);
+                $nearest = nearestSlice($so,$pm);
                 $sno = $sao[$nearest];
                 print("<li><a name=\"$sid\"></a>$sid: '" . $so->name() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
                 compareSlices($so,$sno,1);
@@ -289,7 +288,7 @@ function compareSlices($st,$sm,$pr) {
             compareFields($ftn,$ft[0][$ftn],$CoreFields[0][AA_Fields::getFieldType($ftn)],$pr,"Added",$st,$sm);
             $score += $scoreAddOrMiss;
         } else {
-            $score = $score + compareFields($ftn,$ft[0][$ftn],$fm[0][$ftn],$pr,"Common",$st,$sm);
+            $score += compareFields($ftn, $ft[0][$ftn], $fm[0][$ftn], $pr, "Common", $st, $sm);
         }
     }
     foreach ($fm[0] as $fmn => $fma) {

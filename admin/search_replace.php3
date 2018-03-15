@@ -29,7 +29,6 @@
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH. "formutil.php3";
-require_once AA_INC_PATH. "searchbar.class.php3";
 require_once AA_INC_PATH. "varset.php3";
 require_once AA_INC_PATH. "transformation.class.php3";
 
@@ -62,7 +61,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
             $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent);
         }
 
-        $Msg     = MsgOK(_m("Items selected: %1, Items sucessfully updated: %2", array($zids->count(), $updated_items)));
+        $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", array($zids->count(), $updated_items)));
         if ((string)$group == (string)"sel_item") {
             $sel = "LIST";
         } elseif ((string)$group == (string)"testitemgroup") {
@@ -140,4 +139,4 @@ echo "\n  </form>";
 FrmItemListForm($items);
 echo "\n  </body>\n</html>";
 page_close();
-?>
+

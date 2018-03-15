@@ -150,7 +150,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
     } while (false);
 
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
+        $Msg = MsgOk( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
         go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
     }
 }
@@ -355,7 +355,7 @@ $form_buttons["submit_action"] = array("value"=>"0");
 $form_buttons["cancel"]        = array("url"=>"um_uedit.php3");
 
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 if ( !$add_submit AND !$usr_new) {
     PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);

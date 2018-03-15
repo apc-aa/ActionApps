@@ -37,10 +37,10 @@ require_once "../include/init_page.php3";
  */
 function GetModuleTemplateSelecbox($type, $g_modules) {
     if (isset($g_modules) AND is_array($g_modules) ) {
-        reset ($g_modules);
-        while (list ($mid,$mod) = each ($g_modules)) {
-            if ( $mod['type']==$type )
+        foreach ($g_modules as $mid => $mod) {
+            if ( $mod['type']==$type ) {
                 $ret .=  "\n  <option value=\"x$mid\">".$mod['name']."</option>";
+            }
         }
     }
     return $ret ? "<select name=\"template[$type]\">$ret\n</select>" : false;
@@ -63,6 +63,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo "<h1><b>" . _m("Create New Slice / Module") ."</b></h1>";
   PrintArray($err);
   echo $Msg;
+
 ?>
 
 <center>
@@ -76,10 +77,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <br><br>
 <?php
-  FrmTabCaption(_m("Modules"));
-  reset ($MODULES);
-    while (list ($type, $module) = each ($MODULES)) {
-        if ($module["hide_create_module"]) {
+    FrmTabCaption(_m("Modules"));
+    foreach ($MODULES as $type => $module) {
+      if ($module["hide_create_module"]) {
             continue;
         }
         if ($module["show_templates"]) {

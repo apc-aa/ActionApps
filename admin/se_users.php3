@@ -56,7 +56,7 @@ function IfLink( $cond, $url, $txt ) {
  * @param $editor_perm
  */
 function PrintUser($perm, $usr_id, $editor_perm) {
-    global $perms_roles, $sess;
+    global $perms_roles;
 
     $username   = perm_username($usr_id);
     $usr_id_enc = rawurlencode($usr_id);

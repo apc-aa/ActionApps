@@ -34,7 +34,6 @@ require_once menu_include();   //show navigation column depending on $show
  * @return prints html page beginning
  */
 function TV_PageBegin(&$config_arr) {
-    global $sess;
     if (! $config_arr["cond"] ) {
         MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
         exit;
@@ -82,12 +81,10 @@ $sess->register("tview");
 $tview = 'rss_tv';
 
 /** GetRSS_tv function
- * @param $viewID
- * @param $processForm = false
  * @return array
  */
 /// this must be function
-function GetRSS_tv($viewID, $processForm = false) {
+function GetRSS_tv() {
 
     $debug_params = array( 0 => '0 - none', 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9 - maximum');
     return array (
@@ -135,7 +132,7 @@ function GetRSS_tv($viewID, $processForm = false) {
         ));
 }
 
-$rss_tv = GetRSS_tv('rss_tv');
+$rss_tv = GetRSS_tv();
 
 TV_PageBegin($rss_tv);
 FrmJavascriptFile('javascript/js_lib.js');
@@ -156,4 +153,4 @@ HtmlPageEnd();
 page_close ();
 
 
-?>
+

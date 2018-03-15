@@ -55,12 +55,12 @@ if ( $del ) {
        //     exit;
        // }
 
-    $Msg = MsgOK(_m("Rule deleted"));
+    $Msg = MsgOk(_m("Rule deleted"));
 }
 
 if ( $add ) {
-    if (!AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html)) {
-        $Msg = MsgOK(_m("Error: Can't add rule"));
+    if (!AA_Profile::addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html)) {
+        $Msg = MsgOk(_m("Error: Can't add rule"));
     }
 }
 

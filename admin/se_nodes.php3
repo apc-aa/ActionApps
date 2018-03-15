@@ -35,58 +35,56 @@
 
 require_once "../include/init_page.php3";
 
-if ( !isSuperadmin() ) {
+if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
     exit;
 }
-$err["Init"]="";
-require_once AA_INC_PATH."formutil.php3";
+$err["Init"] = "";
+require_once AA_INC_PATH . "formutil.php3";
 
- if ($mode == "edit") {
-     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");
-     if ($db->next_record()) {
-         $old_node_name = $sel_node_name;
-         $node_name = $db->f(name);
-         $server_url = $db->f(server_url);
-         $password = $db->f(password);
-         $new_mode="update";
-     }
-  } else {
-      switch ($mode) {
-          case "delete" :
-              $db->query("DELETE FROM nodes WHERE name='$sel_node_name'");
-              $db->query("DELETE FROM ef_permissions WHERE node='$sel_node_name'");
-              break;
+if ($mode == "edit") {
+    $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");
+    if ($db->next_record()) {
+        $old_node_name = $sel_node_name;
+        $node_name = $db->f('name');
+        $server_url = $db->f('server_url');
+        $password = $db->f('password');
+        $new_mode = "update";
+    }
+} else {
+    switch ($mode) {
+        case "delete" :
+            $db->query("DELETE FROM nodes WHERE name='$sel_node_name'");
+            $db->query("DELETE FROM ef_permissions WHERE node='$sel_node_name'");
+            break;
 
-          case "insert" :
-              $db->query("SELECT * FROM nodes WHERE name='$node_name'");
-              if ($db->next_record()) {
-                  $err["DB"] .= MsgErr("Can't add node $node_name");
-              } else {
-                  $SQL = "INSERT INTO nodes VALUES('$node_name','$server_url','$password')";
-                  if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-                      $err["DB"] .= MsgErr("Can't add node $node_name");
-                  }
-              }
-              break;
+        case "insert" :
+            $db->query("SELECT * FROM nodes WHERE name='$node_name'");
+            if ($db->next_record()) {
+                $err["DB"] .= MsgErr("Can't add node $node_name");
+            } else {
+                $SQL = "INSERT INTO nodes VALUES('$node_name','$server_url','$password')";
+                if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+                    $err["DB"] .= MsgErr("Can't add node $node_name");
+                }
+            }
+            break;
 
-          case "update" :
-              $db->query("UPDATE nodes SET name='$node_name', server_url='$server_url',
+        case "update" :
+            $db->query("UPDATE nodes SET name='$node_name', server_url='$server_url',
                                           password='$password' WHERE name='$old_node_name'");
-              break;
+            break;
 
-          case "add" : $new_mode = "insert"; break;
-      }
-      $node_name = $server_url = $password = "";
-      $new_mode = "insert";
+        case "add" :
+            $new_mode = "insert";
+            break;
+    }
+    $node_name = $server_url = $password = "";
+    $new_mode = "insert";
 
-   }
-
-$db->query('SELECT * FROM nodes ORDER BY name ');
-$nodes="";
-while ($db->next_record()) {
-    $nodes[] = $db->f(name);
 }
+
+$nodes = DB_AA::select('', "SELECT `name` FROM `nodes`");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -187,7 +185,7 @@ function Cancel() {
     <input type="hidden" name="old_node_name" value="<?php echo safe($old_node_name) ?>">
     <input type="hidden" name="sel_node_name">
 <?php
-    FrmTabEnd($form_buttons, $sess, $slice_id);
+    FrmTabEnd($form_buttons);
 
     echo "
     </form>";

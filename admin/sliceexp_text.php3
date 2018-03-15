@@ -34,9 +34,7 @@
 
 
 require_once AA_INC_PATH . "searchlib.php3";
-require_once AA_INC_PATH . "slice.class.php3";
 require_once AA_INC_PATH . "xml_serializer.php3";
-require_once AA_INC_PATH . "convert_charset.class.php3";
 
 class AA_Slice_Exporter {
     var $type;
@@ -153,7 +151,7 @@ class AA_Slice_Exporter {
         } else {
             $conds="";
         }
-        $zids=QueryZIDs(array($slobj->getId()), $conds, "", "ALL");
+        $zids=QueryZids(array($slobj->getId()), $conds, "", "ALL");
         if ($zids->count() == 0) {
             if ($this->spec_date) {
                 fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$this->from_date." to ".$this->to_date.").\n</comment>\n");
@@ -472,4 +470,3 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
 
 }
 
-?>

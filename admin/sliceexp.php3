@@ -174,8 +174,8 @@ if ($_POST['b_export_type']) {
         <table>
         <tr>
             <td class="tabtxt"><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
-            <td class="tabtxt"><?php echo _m("From ") ?><input type="text" name="b_export_from_date" length="10" maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
-            <td class="tabtxt"><?php echo _m("to") ?><input type="text" name="b_export_to_date" length="10"  maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
+            <td class="tabtxt"><?php echo _m("From ") ?><input type="text" name="b_export_from_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
+            <td class="tabtxt"><?php echo _m("to") ?><input type="text" name="b_export_to_date" maxlength="10" width="10" onChange="b_export_date_onchange(this)"></td>
         </tr>
         </table>
         </td>

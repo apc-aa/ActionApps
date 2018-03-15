@@ -38,4 +38,3 @@ header("Location: ". get_admin_url('index.php3', '', false));
 
 //page_close();  NO!!!
 
-?>

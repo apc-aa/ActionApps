@@ -62,7 +62,7 @@ if ( $update ) {
     }
 
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("User data modified"));
+        $Msg = MsgOk(_m("User data modified"));
     }
 } else {
     // !update - get data
@@ -113,7 +113,7 @@ FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
 //  FrmInputText("user_mail3", _m("E-mail")." 3",    $user_mail3, 50, 50, false);
 //  FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false); // can't be changed by user itself
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php

@@ -300,10 +300,7 @@ if ($data_conflicts_list) {
 }
 
 if ($slice_def != "") {
-    $err = sliceimp_xml_parse($slice_def,false,$force_this_slice);
-    if ($err != "") {
-        si_err($err);
-    }
+    sliceimp_xml_parse($slice_def,false,$force_this_slice);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

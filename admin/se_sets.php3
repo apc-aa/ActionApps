@@ -81,7 +81,7 @@ if ( $update ) {
     } while (false);
 
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("Sets stored successfully"));
+        $Msg = MsgOk(_m("Sets stored successfully"));
     }
 }
 
@@ -119,20 +119,20 @@ foreach( $set_ids as $i => $set_id ) {
     FrmHidden("objid[$k]", $set->getId());
     FrmStaticText(_m('ID'), $set->getId());
     FrmInputText("name[$k]", _m("Set name %1",   array($k)), $set->getName(),             32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-    FrmTextArea("sli[$k]", _m("Slices %1",       array($k)), join('-',$set->getModules()), 2, 60, false, _m('possibly dash separated'));
-    FrmTextArea("cond[$k]",  _m("Conditions %1", array($k)), $set->getCondsAsString(),     4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+    FrmTextarea("sli[$k]", _m("Slices %1",       array($k)), join('-',$set->getModules()), 2, 60, false, _m('possibly dash separated'));
+    FrmTextarea("cond[$k]",  _m("Conditions %1", array($k)), $set->getCondsAsString(),     4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
     FrmInputText("sort[$k]", _m("Sort %1",       array($k)), $set->getSortAsString(),    500, 60, false, _m('Use "headline.......,publish_date....-" or "sort[]" conditions'));
 }
 
 ++$k;
 FrmInputText("name[$k]", _m("Set name %1", array($k)), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-FrmTextArea("sli[$k]", _m("Slices %1",     array($k)), '',  2, 60, false, _m('possibly dash separated'));
-FrmTextArea("cond[$k]",  _m("Conditions %1", array($k)), '',  4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+FrmTextarea("sli[$k]", _m("Slices %1",     array($k)), '',  2, 60, false, _m('possibly dash separated'));
+FrmTextarea("cond[$k]",  _m("Conditions %1", array($k)), '',  4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
 FrmInputText("sort[$k]", _m("Sort %1",       array($k)), '', 500, 60,false, _m('Use "headline........,publish_date....-" or "sort[]" conditions'));
 FrmHidden("setcount", $k);
 
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php

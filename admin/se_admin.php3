@@ -76,12 +76,12 @@ if ($update) {
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         // set the
-        AddProfileProperty('*', $slice_id, 'input_view', '', '', $inputform_sel, '');
+        AA_Profile::addProfileProperty('*', $slice_id, 'input_view', '', '', $inputform_sel, '');
 
     } while(false);
 
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("Admin fields update successful"));
+        $Msg = MsgOk(_m("Admin fields update successful"));
     }
 }
 
@@ -155,7 +155,7 @@ FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputf
              _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
 $slice = AA_Slice::getModule($slice_id);
 PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons);
-FrmTabEnd("", false, true);
+FrmTabEnd();
 ?>
 </form>
 <?php

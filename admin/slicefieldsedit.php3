@@ -42,7 +42,6 @@ require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
-require_once AA_INC_PATH."slice.class.php3";
 
 if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
     require_once AA_INC_PATH."usr_validate.php3";
@@ -135,7 +134,7 @@ if ($edit) {
     $content4id = $slice->get_dynamic_setting_content(true);
     if ( !$content4id ) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+        MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
         exit;
     }
 } else {
@@ -177,4 +176,4 @@ $form = new inputform($inputform_settings);
 $form->printForm($content4id, $slice, $edit, true);
 
 page_close();
-?>
+

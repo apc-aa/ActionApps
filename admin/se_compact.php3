@@ -89,10 +89,10 @@ if ( $update ) {
             break;   // not necessary - we have set the halt_on_error
         }
 
-        $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
     }while(false);
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("Design of compact design successfully changed"));
+        $Msg = MsgOk(_m("Design of compact design successfully changed"));
     }
 }
 
@@ -192,7 +192,7 @@ function EnableClick(cond,what) {
   FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
 
   // lookup slice fields
-  $lookup_fields = GetFields4Select($slice_id, false, 'name', true);
+  $lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true);
 
   FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
                _m("HTML code which appears at the top of slice area")
@@ -236,7 +236,7 @@ function EnableClick(cond,what) {
   $slice = AA_Slice::getModule($slice_id);
   PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $sess, $slice_id);
 
-  FrmTabEnd("", false, true);
+  FrmTabEnd();
 ?>
 </form>
 <?php HtmlPageEnd();

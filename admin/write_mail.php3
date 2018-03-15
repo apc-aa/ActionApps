@@ -31,7 +31,6 @@
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH. "formutil.php3";
-require_once AA_INC_PATH. "searchbar.class.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 require_once AA_INC_PATH. "varset.php3";
 
@@ -129,7 +128,7 @@ if ( !$send ) {               // for the first time - directly from item manager
                 $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
                 $users_count = $zids->count();
             }
-            $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", array($users_count, $mails_sent, $mail_id)));
+            $Msg = MsgOk(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", array($users_count, $mails_sent, $mail_id)));
 
             if ((string)$group == (string)"sel_item") {
                 $sel = "LIST";
@@ -144,7 +143,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             AA_Log::write("EMAIL_SENT",array($mail_id, $users_count, $mails_sent),$sel);
             // remove temporary email template from database
             $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
-            if ( !$db->tquery($SQL)) {
+            if ( !$db->query($SQL)) {
                 $err["DB"] = MsgErr( _m("Can't update email template") );
                 break;    // not necessary - we have set the halt_on_error
             }
@@ -205,8 +204,7 @@ FrmInputFile(  'attachment3',   _m('Attachement 3'), $attachment3, false, "*/*")
 
 
 FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),
-                 'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')),
-          $sess, $slice_id);
+                 'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));
 
 // list selected items to special form - used by manager.js to show items (recipients)
 echo "\n  </form>";
@@ -217,4 +215,4 @@ FrmItemListForm($items);
 
 echo "\n  </body>\n</html>";
 page_close();
-?>
+

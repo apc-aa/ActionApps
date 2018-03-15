@@ -99,7 +99,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
     require_once AA_INC_PATH."um_gedit.php3";
 
     if (count($err) <= 1) {
-        $Msg = MsgOK(_m("Group successfully added to permission system"));
+        $Msg = MsgOk(_m("Group successfully added to permission system"));
         go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
     }
 }
@@ -288,7 +288,7 @@ if ( !$add_submit AND !$grp_new) {
     $mod_types = PrintModulePermModificator($selected_group, $form_buttons);   // shared with um_gedit.php3
 }
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 echo '</form>';
 

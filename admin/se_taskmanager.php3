@@ -32,7 +32,6 @@ require_once AA_INC_PATH . "varset.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
-require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH. "actions.php3";
 require_once AA_BASE_PATH. "central/include/actionapps.class.php";
 
@@ -108,4 +107,4 @@ require_once AA_INC_PATH."menu.php3";
 
 $manager->displayPage($zids, 'sliceadmin', 'taskmanager');
 page_close();
-?>
+

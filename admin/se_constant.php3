@@ -116,7 +116,7 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
 
     if ($oldvalue) {
         // we have to join also item table in order we make sure field is in right slice
-        $db->tquery("
+        $db->query("
         SELECT item_id,field_id
           FROM content, item, field
          WHERE content.item_id=item.id
@@ -135,7 +135,7 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
     }
     foreach ( $items2update as $field => $zids ) {
         $SQL = "UPDATE content SET text='$newvalue' WHERE ". $zids->sqlin('item_id') ." AND field_id='".addslashes($field)."' AND text='$oldvalue'";
-        $db->tquery($SQL);
+        $db->query($SQL);
     }
     freeDB($db);
 
@@ -171,7 +171,7 @@ if ($update) {
                 break;
             }
             $SQL = "SELECT * FROM constant WHERE group_id = '$new_group_id'";
-            $db->tquery($SQL);
+            $db->query($SQL);
             if ($db->next_record()) {
                 $err["DB"] = _m("This constant group already exists");
             } else {
@@ -186,17 +186,17 @@ if ($update) {
 
         if ($group_id) {
             // if there is no group owner, promote this slice to owner
-            $db->tquery("SELECT * FROM constant_slice WHERE group_id='$group_id'");
+            $db->query("SELECT * FROM constant_slice WHERE group_id='$group_id'");
             if (!$db->next_record()) {
-                $db->tquery("
+                $db->query("
                 INSERT INTO constant_slice (slice_id,group_id,propagate)
                 VALUES ('$p_slice_id','$group_id',".($propagate_changes ? 1 : 0).");");
             } else {
-                $db->tquery("
+                $db->query("
                 UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
                 WHERE group_id = '$group_id'");
                 if ($new_owner_id) {
-                    $db->tquery("
+                    $db->query("
                     UPDATE constant_slice SET slice_id='".addslashes(pack_id($new_owner_id))."'
                     WHERE group_id = '$group_id'");
                     $chown = 0;
@@ -223,7 +223,7 @@ if ($update) {
             $p_cid       = q_pack_id($category_id);
             // if name is empty, delete the constant
             if ($foonam == "") {
-                if (!$db->tquery("DELETE FROM constant WHERE id='$p_cid'")) {
+                if (!$db->query("DELETE FROM constant WHERE id='$p_cid'")) {
                     $err["DB"] .= MsgErr("Can't delete constant");
                     break;
                 }
@@ -233,12 +233,12 @@ if ($update) {
             $varset->set("name",  $name[$key], "quoted");
             $varset->set("value", $value[$key], "quoted");
             $varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
-            $db->tquery("SELECT * FROM constant WHERE id='$p_cid'");
+            $db->query("SELECT * FROM constant WHERE id='$p_cid'");
             if ($db->next_record()) {
                 if ($propagate_changes) {
                     propagateChanges($category_id, $value[$key], addslashes($db->f('value')));
                 }
-                if (!$db->tquery("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE id='$p_cid'")) {
+                if (!$db->query("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE id='$p_cid'")) {
                     $err["DB"] .= MsgErr("Can't update constant");
                     break;
                 }
@@ -255,7 +255,7 @@ if ($update) {
 
         if (count($err) <= 1) {
             $from_form = false;
-            $Msg .= MsgOK(_m("Constants update successful"));
+            $Msg .= MsgOk(_m("Constants update successful"));
         }
     } while( 0 );           // in order we can use "break;" statement
 }
@@ -332,7 +332,7 @@ if ($group_id) {
 }
 
 // Find the slice owner of this group
-$db->tquery("
+$db->query("
     SELECT * FROM constant_slice INNER JOIN slice
     ON constant_slice.slice_id = slice.id
     WHERE group_id='$group_id'");
@@ -395,7 +395,7 @@ for ($j=0; $j<10; $j++) {
 
 $lastIndex = $i-1;    // lastindex used in javascript (below) to get number of rows
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 echo '
 </form>

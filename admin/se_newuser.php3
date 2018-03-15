@@ -80,7 +80,7 @@ if ( $update ) {
         }
     }while(false);
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("User successfully added to permission system"));
+        $Msg = MsgOk(_m("User successfully added to permission system"));
         $url = con_url(StateUrl(self_base() . "se_users.php3"),"Msg=".rawurlencode($Msg));
         $url = con_url($url, "UsrSrch=".rawurlencode(_m("Search")));
         $url = con_url($url, "usr=".rawurlencode($user_login));

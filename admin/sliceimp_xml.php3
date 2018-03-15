@@ -67,8 +67,8 @@ function bayfm_preimport($s) {
             print("<br>Processing Views, translating shortids");
 //            foreach ($slvs->a as $slv) { // $slv is a viewobj
             $a = &$slvs->a;
-            foreach ($a as $k => $foo) {
-                $slv = &$slvs->a[$k];
+            foreach ($a as $k2 => $foo) {
+                $slv = &$slvs->a[$k2];
                 $slvf = &$slv->fields; // Array of fields
                 $id = $slvf["id"];
                 $newid = $id+1000;
@@ -100,8 +100,7 @@ exit;
  * @param $str
  */
 function si_err($str) {
-    global $sess;
-    MsgPage(StateUrl(self_base())."index.php3", $str, "standalone");
+    MsgPage(StateUrl(self_base())."index.php3", $str);
     exit;
 }
 
@@ -210,15 +209,17 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                     if ($dry_run) {
                         huhl("Would import data to ",$sld['ITEM_ID'],$content4id);
                     } else {
-                        import_slice_data( $force_this_slice ? $GLOBALS['slice_id'] : $sl['ID'],
-                                           $sld['ITEM_ID'], $content4id, true, true);
+                        import_slice_data( $force_this_slice ? $GLOBALS['slice_id'] : $sl['ID'], $sld['ITEM_ID'], $content4id, true, true);
                     }
                 }
             } // loop over each item
         } // loop over each slice
     } // Version 1.1
-    else si_err(_m("ERROR: Unsupported version for import").$s['VERSION']);
+    else {
+        si_err(_m("ERROR: Unsupported version for import").$s['VERSION']);
+    }
 }
+
 /** import_views function
  * @param $slvs (by link)
  * @param $slice_id_new
@@ -233,8 +234,9 @@ function import_views(&$slvs, $slice_id_new) {
     $db = getDB();
 
     // Get all views in current AA
-    $av = GetViewsWhere();
-
+    // $av = GetViewsWhere();
+    $av = DB_AA::select(array('vid'=>1), "SELECT view.* as vid FROM `view`, `slice`", array(array('slice.id', 'view.slice_id', 'j'),array('slice.deleted', '1', '<>')));
+    
     /** Several cases here
       *  If there is a conflict, then
       *  - Overwrite           => just go ahead, use changed id if available
@@ -337,4 +339,4 @@ function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_
     }
     return "INSERT INTO ".$table." (".$sqlfields.") VALUES (".$sqlvalues.")";
 }
-?>
+

@@ -45,7 +45,6 @@ require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "util.php3";
 
-require_once AA_INC_PATH . "manager.class.php3";
 
 /** RELATED SELECTION WINDOW - managed by MANAGER CLASS */
 
@@ -182,7 +181,7 @@ FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);  // for SelectRel
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-$zids = QueryZIDs(array($module_id), $conds, $sort, $frombins);
+$zids = QueryZids(array($module_id), $conds, $sort, $frombins);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form
@@ -202,4 +201,4 @@ echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.
 HtmlPageEnd();
 page_close();
 
-?>
+

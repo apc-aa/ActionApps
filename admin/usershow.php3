@@ -32,14 +32,11 @@ require_once AA_INC_PATH . "view.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
 require_once AA_INC_PATH . "feeding.php3";
-require_once AA_INC_PATH . "profile.class.php3";
 require_once AA_INC_PATH . "itemfunc.php3";
 require_once AA_INC_PATH . "notify.php3";
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_INC_PATH . "formutil.php3";
-require_once AA_INC_PATH . "slice.class.php3";
 require_once AA_INC_PATH . "msgpage.php3";
-require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 
 // new manager class approach ------------------------------------------------
@@ -147,7 +144,7 @@ if ( $r_userstate['items'] ) {
     $zids->setFromItemArr($r_userstate['items']);
 }
 
-$zids = QueryZIDs( array($slice_id), $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
+$zids = QueryZids( array($slice_id), $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form
@@ -172,4 +169,4 @@ echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.
 
 HtmlPageEnd();
 page_close();
-?>
+

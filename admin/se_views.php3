@@ -54,7 +54,7 @@ if ( $del ) {
     }
     $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    $Msg = MsgOK(_m("View successfully deleted"));
+    $Msg = MsgOk(_m("View successfully deleted"));
 }
 /** PrintViewRow function
  * @param $id
@@ -62,7 +62,6 @@ if ( $del ) {
  * @param $type
  */
 function PrintViewRow($id, $name, $type) {
-    global $sess;
     $VIEW_TYPES = getViewTypes();
     $name = safe($name); $id = safe($id);
 
@@ -141,7 +140,7 @@ while ( $db->next_record() ) {
   // row for new view creaded from view type selection
 echo "</td>
      </tr>";
-    FrmTabseparator(_m("Create new view"));
+    FrmTabSeparator(_m("Create new view"));
 echo "
       <tr class=\"tabtxt\">
         <td>"._m("by&nbsp;type:")."</td>
@@ -195,4 +194,3 @@ echo _m("<br>To include slice in your webpage type next line \n                 
 HtmlPageEnd();
 page_close();
 
-?>

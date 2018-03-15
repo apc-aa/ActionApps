@@ -290,7 +290,7 @@ if ( $update ) {
     } while(false);
 
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("View successfully changed"));
+        $Msg = MsgOk(_m("View successfully changed"));
         // in order we reread the data from the database (see below)
         unset($update);
     }
@@ -359,7 +359,7 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
     $lookup_fields += $field_func();
 } else {
-    $lookup_fields = GetFields4Select($slice_id, false, 'name', true, true);
+    $lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true, true);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -455,7 +455,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 $slice = AA_Slice::getModule($slice_id);
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-    case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
+    case 'disc2mail':   PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
     case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);
                         break;
     case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']),$slice->fields('record'), false, $form_buttons, $sess, $slice_id);
@@ -479,4 +479,3 @@ if ( $view_id ) {
 }
 HtmlPageEnd();
 page_close();
-?>

@@ -109,6 +109,6 @@ if ($map_to && is_array($map_to)) {
 }
 
 go_url( StateUrl(self_base() . "se_mapping.php3") . "&from_slice_id=".rawurlencode($from_slice_id) .
-        "&Msg=" . rawurlencode(MsgOK(_m("Fields' mapping update succesful"))));
+        "&Msg=" . rawurlencode(MsgOk(_m("Fields' mapping update succesful"))));
 page_close();
-?>
+

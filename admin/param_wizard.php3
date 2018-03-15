@@ -46,14 +46,6 @@ mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once AA_INC_PATH . "constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-/** firstBig function
- * @param $s
- * @return $s with a capital first letter
- */
-
-function firstBig($s) {
-    return strtoupper($s[0]) . substr($s, 1);
-}
 
 /** processSlashes function
  * @param $s
@@ -118,7 +110,7 @@ if ($_GET['list']=='INPUT_TYPES') {
     $desc = $$list;
     $desc = $desc['items'][$item];
 }
-$title = firstbig($desc['name']) . " " . _m("Wizard");
+$title = ucfirst($desc['name']) . " " . _m("Wizard");
 
 // by some item (I know only about the date input type) the parameters are divided with ' rather than :
 // so I allow to use ' when all params are INT or BOOL

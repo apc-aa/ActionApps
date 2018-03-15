@@ -103,11 +103,12 @@ if ($mode == "edit" || $mode == "test") {
 
 }
 
-$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
-$rssfeeds=array();
-while ($db->next_record()) {
-    $rssfeeds[] = $db->f(name);
-}
+$rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", array(array('slice_id',$slice_id,'l')), array('name'));
+//$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
+//$rssfeeds=array();
+//while ($db->next_record()) {
+//    $rssfeeds[] = $db->f('name');
+//}
 
 ?>
  <title><?php echo _m("Remote RSS Feed administration");?></title>

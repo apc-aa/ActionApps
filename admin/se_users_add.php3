@@ -34,7 +34,7 @@
  */
 function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     // $usr_id is DN in LDAP
-    global $sess, $perms_roles;
+    global $perms_roles;
     $username = perm_username($usr_id);
     $usr_id   = rawurlencode($usr_id);
 
@@ -125,7 +125,7 @@ if ($GrpSrch || $UsrSrch) {
     }
 
 }
-FrmTabEnd($form_buttons, false, $slice_id);
+FrmTabEnd($form_buttons);
 
 ?>
 <br><br><small><?php echo _m("List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query", array(MAX_ENTRIES_SHOWN)) ?></small>

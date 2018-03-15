@@ -73,7 +73,7 @@ if ($del) {
     }
     $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    $Msg = MsgOK(_m("Field delete OK"));
+    $Msg = MsgOk(_m("Field delete OK"));
     go_url($back_admin_url);  // back to field page
 }
 
@@ -231,7 +231,7 @@ if ($update) {
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         if ( count($err) <= 1 ) {
-            $Msg = MsgOK(_m("Fields update successful"));
+            $Msg = MsgOk(_m("Fields update successful"));
             go_url( $return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) : $back_admin_url );  // back to field page
         }
     } while (0);           //in order we can use "break;" statement
@@ -501,7 +501,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     }
 }
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 echo "\n </form>";
 

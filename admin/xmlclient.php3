@@ -78,7 +78,6 @@ require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."statestore.php3"; // AA_Object definition
 require_once AA_INC_PATH."csn_util.php3"; // defines HTML and PLAIN as well as other functions
 require_once AA_INC_PATH."xml_fetch.php3";
 require_once AA_INC_PATH."xml_rssparse.php3";
@@ -86,8 +85,6 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
 require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."slice.class.php3";
-require_once AA_INC_PATH."grabber.class.php3";
 
 if ($debugfeed >= 8) {
     print("\n<br>XMLCLIENT STARTING");
@@ -239,4 +236,4 @@ if ($feed_id) {          // just one specified APC feed
     }
 }
 
-?>
+

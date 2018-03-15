@@ -51,17 +51,19 @@ switch ($mode) {
       break;
 }
 
-$db->query("SELECT * FROM ef_permissions WHERE slice_id='$p_slice_id' ORDER BY node,user ");
-$perms="";
-while ($db->next_record()) {
-    $perms[] = array( node=>$db->f(node), user=>$db->f(user));
-}
+$perms = DB_AA::select(array(), "SELECT `node`, `user` FROM `ef_permissions`", array(array('slice_id',$slice_id, 'l')), array('node','user'));
+//$db->query("SELECT * FROM ef_permissions WHERE slice_id='$p_slice_id' ORDER BY node,user ");
+//$perms="";
+//while ($db->next_record()) {
+//    $perms[] = array( 'node'=>$db->f('node'), 'user'=>$db->f('user'));
+//}
 
-$db->query("SELECT * FROM nodes ORDER BY name ");
-$nodes="";
-while ($db->next_record()) {
-    $nodes[] = $db->f(name);
-}
+$nodes = DB_AA::select('', "SELECT `name` FROM `nodes`", '', array('name'));
+//$db->query("SELECT * FROM nodes ORDER BY name ");
+//$nodes="";
+//while ($db->next_record()) {
+//    $nodes[] = $db->f('name');
+//}
 
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
