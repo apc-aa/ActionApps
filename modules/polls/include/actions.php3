@@ -66,7 +66,7 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
         $SQL = "UPDATE polls SET status_code = '".$this->to_bin."' WHERE ". $zids->sqlin('id', true);
@@ -75,7 +75,7 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         $current_bin     =  $manager->getBin();
 
         switch($this->to_bin) {
@@ -122,7 +122,7 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
      *  @param $item_arr    Items to delete (if 'selected' is $param)
      *  @param $akce_param  Not used
      */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
         if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
             return _m("You have not permissions to remove polls");
         }
@@ -154,10 +154,10 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return (IfSlPerm(PS_DELETE_ITEMS) AND (!$this->selected OR ($manager->getBin() == 'folder3')));
     }
 }
 
-?>
+

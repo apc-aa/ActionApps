@@ -57,5 +57,5 @@ DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not chang
 page_close();                                // to save session variables
 go_url(con_url(StateUrl(AA_INSTAL_PATH . "admin/slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
-?>
+
 

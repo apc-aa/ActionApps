@@ -109,7 +109,7 @@ if ( $insert || $update ) {
 
             echo $SQL;
             $debug=1;
-            if (!$db->tquery($SQL)) {  // not necessary - we have set the halt_on_error
+            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change site");
                 break;
             }
@@ -217,7 +217,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     FrmInputChBox("set_cookies",   _m("Use cookies"),        $set_cookies);
     FrmInputText("cookies_prefix", _m("Cookies prefix"),     $cookies_prefix);
 //    FrmInputText("params",        _m("Parameters"),         $params);     // @todo - add paramwizard
-    FrmTabEnd($form_buttons, $sess, $module_id);
+    FrmTabEnd($form_buttons);
 
 echo "\n </form>";
 HtmlPageEnd();

@@ -47,37 +47,37 @@ function CheckX( $x ) {
 
 // ------------- functions definition end ------------------------------------
 
-define('L_D_ADD_NEW','Pøidat reakci');
-define('L_D_SHOW_SELECTED','Zobrazit vybrané');
-define('L_D_SHOW_ALL','Zobrazit vše');
-define('L_D_SELECTED_NONE','Není vybrán žádný pøíspìvek');
+define('L_D_ADD_NEW','Pï¿½idat reakci');
+define('L_D_SHOW_SELECTED','Zobrazit vybranï¿½');
+define('L_D_SHOW_ALL','Zobrazit vï¿½e');
+define('L_D_SELECTED_NONE','Nenï¿½ vybrï¿½n ï¿½ï¿½dnï¿½ pï¿½ï¿½spï¿½vek');
 
 $regiony_arr = array(  // path, searchstring for zpravodajstvi, searchstrig for tiskove zpravy
   "p" => array( "&nbsp;&gt;&nbsp;Praha",                    "Praha",          "Praha"),
-  "s" => array( "&nbsp;&gt;&nbsp;Støedoèeský&nbsp;kraj",    "Støedoèeský",    "Støedoèeský"),
-  "j" => array( "&nbsp;&gt;&nbsp;Jihoèeský&nbsp;kraj",      "Jihoèeský",      "Jihoèeský"),
-  "e" => array( "&nbsp;&gt;&nbsp;Plzeòský&nbsp;kraj",       "Plzeòský",       "Plzeòský"),
-  "k" => array( "&nbsp;&gt;&nbsp;Karlovarský&nbsp;kraj",    "Karlovarský",    "Karlovarský"),
-  "u" => array( "&nbsp;&gt;&nbsp;Ústecký&nbsp;kraj",        "Ústecký",        "Ústecký"),
-  "l" => array( "&nbsp;&gt;&nbsp;Liberecký&nbsp;kraj",      "Liberecký",      "Královehradecký"),
-  "r" => array( "&nbsp;&gt;&nbsp;Královéhradecký&nbsp;kraj","Královehradecký","Královehradecký"),
-  "a" => array( "&nbsp;&gt;&nbsp;Pardubický&nbsp;kraj",     "Pardubický",     "Pardubický"),
-  "v" => array( "&nbsp;&gt;&nbsp;Vysoèina",                 "Vysoèina",       "Vysoèina"),
-  "i" => array( "&nbsp;&gt;&nbsp;Jihomoravský&nbsp;kraj",   "Jihomoravský",   "Jihomoravský"),
-  "o" => array( "&nbsp;&gt;&nbsp;Olomoucký&nbsp;kraj",      "Olomoucký",      "Olomoucký"),
-  "m" => array( "&nbsp;&gt;&nbsp;Moravskoslezský&nbsp;kraj","Moravskoslezský","Moravskoslezský"),
-  "z" => array( "&nbsp;&gt;&nbsp;Zlínský&nbsp;kraj",        "Zlínský",        "Zlínský"),
-  "r" => array( "&nbsp;&gt;&nbsp;ÈR",                       "Èeská",          "ÈR"),
+  "s" => array( "&nbsp;&gt;&nbsp;Stï¿½edoï¿½eskï¿½&nbsp;kraj",    "Stï¿½edoï¿½eskï¿½",    "Stï¿½edoï¿½eskï¿½"),
+  "j" => array( "&nbsp;&gt;&nbsp;Jihoï¿½eskï¿½&nbsp;kraj",      "Jihoï¿½eskï¿½",      "Jihoï¿½eskï¿½"),
+  "e" => array( "&nbsp;&gt;&nbsp;Plzeï¿½skï¿½&nbsp;kraj",       "Plzeï¿½skï¿½",       "Plzeï¿½skï¿½"),
+  "k" => array( "&nbsp;&gt;&nbsp;Karlovarskï¿½&nbsp;kraj",    "Karlovarskï¿½",    "Karlovarskï¿½"),
+  "u" => array( "&nbsp;&gt;&nbsp;ï¿½steckï¿½&nbsp;kraj",        "ï¿½steckï¿½",        "ï¿½steckï¿½"),
+  "l" => array( "&nbsp;&gt;&nbsp;Libereckï¿½&nbsp;kraj",      "Libereckï¿½",      "Krï¿½lovehradeckï¿½"),
+  "r" => array( "&nbsp;&gt;&nbsp;Krï¿½lovï¿½hradeckï¿½&nbsp;kraj","Krï¿½lovehradeckï¿½","Krï¿½lovehradeckï¿½"),
+  "a" => array( "&nbsp;&gt;&nbsp;Pardubickï¿½&nbsp;kraj",     "Pardubickï¿½",     "Pardubickï¿½"),
+  "v" => array( "&nbsp;&gt;&nbsp;Vysoï¿½ina",                 "Vysoï¿½ina",       "Vysoï¿½ina"),
+  "i" => array( "&nbsp;&gt;&nbsp;Jihomoravskï¿½&nbsp;kraj",   "Jihomoravskï¿½",   "Jihomoravskï¿½"),
+  "o" => array( "&nbsp;&gt;&nbsp;Olomouckï¿½&nbsp;kraj",      "Olomouckï¿½",      "Olomouckï¿½"),
+  "m" => array( "&nbsp;&gt;&nbsp;Moravskoslezskï¿½&nbsp;kraj","Moravskoslezskï¿½","Moravskoslezskï¿½"),
+  "z" => array( "&nbsp;&gt;&nbsp;Zlï¿½nskï¿½&nbsp;kraj",        "Zlï¿½nskï¿½",        "Zlï¿½nskï¿½"),
+  "x" => array( "&nbsp;&gt;&nbsp;ï¿½R",                       "ï¿½eskï¿½",          "ï¿½R"),
   "n" => array( "&nbsp;&gt;&nbsp;Slovensko",                "Slovensko",      "Slovensko"),
-  "c" => array( "&nbsp;&gt;&nbsp;Svìt",                     "Zahranièí",      "Maïarsko+or+Nìmecko+or+Polsko+or+Rakousko+or+Ukrajina+or+Evropa+or+Rusko+or+Amerika+or+Asie+or+Afrika+or+Austrálie+or+Antarktida+or+Svìt")
+  "c" => array( "&nbsp;&gt;&nbsp;Svï¿½t",                     "Zahraniï¿½ï¿½",      "Maï¿½arsko+or+Nï¿½mecko+or+Polsko+or+Rakousko+or+Ukrajina+or+Evropa+or+Rusko+or+Amerika+or+Asie+or+Afrika+or+Austrï¿½lie+or+Antarktida+or+Svï¿½t")
 );
 
-$formaty_arr = array( 'z' => 'zprávy',
+$formaty_arr = array( 'z' => 'zprï¿½vy',
                       'm' => 'kauzy',
-                      'k' => 'komentáøe',
-                      't' => 'tiskové&nbsp;zprávy',
-                      'a' => 'kampanì',
-                      's' => 'ze&nbsp;svìta');
+                      'k' => 'komentï¿½ï¿½e',
+                      't' => 'tiskovï¿½&nbsp;zprï¿½vy',
+                      'a' => 'kampanï¿½',
+                      's' => 'ze&nbsp;svï¿½ta');
 
 if ( !$apc ) {
   if ( $x ) {         // want to view text?
@@ -201,4 +201,3 @@ for ( $i=0; $i< strlen($old_r); $i++)
 
 if ( $dbg )
   print_r($apc_state);
-?>

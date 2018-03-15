@@ -3,7 +3,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, March 2003
+ * @author Jakub Adï¿½mek <jakubadamek@ecn.cz>, Econnect, March 2003
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -97,4 +97,3 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
     freeDB($db);
 }
 
-?>

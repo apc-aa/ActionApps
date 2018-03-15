@@ -32,7 +32,6 @@ require_once AA_INC_PATH. "pagecache.php3";
 require_once AA_BASE_PATH."modules/links/linksearch.php3";
 require_once AA_BASE_PATH."modules/links/constants.php3";
 require_once AA_BASE_PATH."modules/links/actions.php3";
-require_once AA_INC_PATH. "manager.class.php3";
 require_once AA_BASE_PATH."modules/links/cattree.php3";
 require_once AA_BASE_PATH."modules/links/util.php3";      // module specific utils
 
@@ -123,29 +122,29 @@ function Links_DeleteTrash($value, $param) {
 
     // first delete the trashed links
     $SQL = 'DELETE links_links FROM links_links WHERE links_links.folder=3';
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     // now we fix all incionsistences in the database (most of them caused by previous deletion)
 
     // delete all proposals which do not have its counterpart in list of links
     $SQL = 'DELETE p FROM links_links AS p INNER JOIN links_changes ON p.id = links_changes.proposal_link_id LEFT JOIN links_links AS s ON s.id = links_changes.changed_link_id WHERE s.id IS NULL';
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     // delete propasal - link relation
     $SQL = 'DELETE links_changes FROM links_changes LEFT JOIN links_links ON links_changes.changed_link_id = links_links.id WHERE links_links.id IS NULL';
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     // delete all unmatched language relations
     $SQL = 'DELETE links_link_lang FROM links_link_lang LEFT JOIN links_links ON links_link_lang.link_id = links_links.id WHERE links_links.id IS NULL';
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     // delete all unmatched region relations
     $SQL = 'DELETE links_link_reg FROM links_link_reg LEFT JOIN links_links ON links_link_reg.link_id = links_links.id WHERE links_links.id IS NULL';
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     // and now remove all category assignments for deleted links
     $SQL = 'DELETE links_link_cat FROM links_link_cat LEFT JOIN links_links ON links_link_cat.what_id = links_links.id WHERE links_links.id IS NULL';
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     freeDB($db);
 }
@@ -188,7 +187,7 @@ function Links_CountLinkInBins($cat_path) {
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder<3))';
-    $db->tquery($SQL);
+    $db->query($SQL);
     if ( $db->next_record() ) {
         $ret['unasigned'] = $db->f('count');
     }
@@ -197,7 +196,7 @@ function Links_CountLinkInBins($cat_path) {
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder=3))';
-    $db->tquery($SQL);
+    $db->query($SQL);
     if ( $db->next_record() ) {
         $ret['unasigned3'] = $db->f('count');
     }
@@ -211,7 +210,7 @@ function Links_CountLinkInBins($cat_path) {
                AND (links_link_cat.proposal = 'y')
                AND (links_link_cat.base = 'y')
                AND (links_links.folder < 2)";
-    $db->tquery($SQL);
+    $db->query($SQL);
     if ( $db->next_record() ) {
         $ret['new'] = $db->f('count');
     }
@@ -236,7 +235,7 @@ function Links_CountLinkInBins($cat_path) {
                          AND (links_link_cat.base = 'y')
                          AND (links_link_cat.proposal = 'n')))
                AND (links_links.folder < 2)";
-    $db->tquery($SQL);
+    $db->query($SQL);
     if ( $db->next_record() ) {
         $ret['changed'] = $db->f('count');
     }
@@ -251,7 +250,7 @@ function Links_CountLinkInBins($cat_path) {
                AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
                AND links_links.folder > 1
              GROUP BY links_links.folder";
-    $db->tquery($SQL);
+    $db->query($SQL);
     while ( $db->next_record() ) {
         $ret['folder'.($db->f('folder'))] = $db->f('count');
     }
@@ -476,4 +475,4 @@ $r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
 
 HtmlPageEnd();
 page_close();
-?>
+

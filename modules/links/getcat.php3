@@ -53,4 +53,4 @@ $tree->update();
 $tree->walkTree($start, 'PrintCategory');
 
 echo '</BODY></HTML>';
-?>
+

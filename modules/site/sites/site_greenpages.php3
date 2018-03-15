@@ -71,6 +71,6 @@ $slices4cache = array(
 $als['editme'] = '{switch({t})e:<a href="_#EDITITEM"><img src="' . AA_INSTAL_PATH . 'images/edit.gif"></a>}'; //Use {editme}
 $als['additem'] = '{switch({t})e:<a href="{alias::f_e:add}"><img src="' . AA_INSTAL_PATH . 'images/add.gif"></a>}'; //Use {additem}
 
-?>
+
 
 

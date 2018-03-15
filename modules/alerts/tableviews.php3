@@ -56,7 +56,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $db->query("SELECT AF.description, AF.id FROM alerts_filter AF");
         if ($db->num_rows()) {
             while ($db->next_record()) {
-                $collection_filters [$db->f("id")] = $db->f("description");
+                $collection_filters[$db->f("id")] = $db->f("description");
             }
         }
         else {
@@ -70,8 +70,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                         view ON slice.id = view.slice_id INNER JOIN
                         alerts_filter DF ON DF.vid = view.id";
         $SQL .= " ORDER BY DF.description";
-        $db->tquery ($SQL);
-        global $sess;
+        $db->query ($SQL);
         $myslices = GetUserSlices();
         while ($db->next_record()) {
             $txt = myspecialchars($db->f("fdesc"));
@@ -318,4 +317,3 @@ function AlertsModeditAfterInsert($varset) {
     $change_id = unpack_id($varset->get ("id"));
     AddPermObject($change_id, "slice");
 }
-?>

@@ -141,9 +141,9 @@ echo '
      </tr>
      <tr><td class=tabtxt><b>"._m("Module ID").":</b></td><td>$jump_id</td></tr>";
 FrmTabEnd(array("update"=>array("value"=>($jump_id ? _m("Update") : _m("Create"))),
-                "cancel"=>array("url"=>AA_INSTAL_PATH."admin/um_uedit.php3")), $sess, $slice_id);
+                "cancel"=>array("url"=>AA_INSTAL_PATH."admin/um_uedit.php3")));
 echo "</form>";
 HtmlPageEnd();
 page_close();
-?>
+
 

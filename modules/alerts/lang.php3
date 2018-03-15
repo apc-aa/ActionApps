@@ -36,4 +36,4 @@ if (!$lang) {
 mgettext_bind($lang, 'alerts');
 
 require_once "util.php3";
-?>
+

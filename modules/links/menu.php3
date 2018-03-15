@@ -196,7 +196,7 @@ function CreateMenu4Views( $foo ) {
     $db = getDB();
 
     $SQL = "SELECT id, name, type FROM view WHERE slice_id='". q_pack_id($slice_id)."'";
-    $db->tquery( $SQL );
+    $db->query( $SQL );
     while ($db->next_record()) {
         $menu['view'.$db->f('id')] = CreateMenuItem( $db->f('name'),  // label, href [, cond]
             'admin/se_view.php3?view_id='.$db->f('id').'&view_type='.$db->f('type'));
@@ -204,4 +204,4 @@ function CreateMenu4Views( $foo ) {
     freeDB($db);
     return $menu;
 }
-?>
+

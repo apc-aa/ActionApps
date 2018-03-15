@@ -51,7 +51,6 @@ require_once AA_INC_PATH. "item.php3";
 require_once AA_INC_PATH. "itemview.php3";
 require_once AA_BASE_PATH."modules/polls/include/util.php3";
 require_once AA_BASE_PATH."modules/polls/include/stringexpand.php3";
-require_once AA_BASE_PATH."modules/polls/include/poll.class.php3";
 
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
@@ -82,4 +81,4 @@ require_once AA_INC_PATH."locsess.php3";
 echo AA_Poll::processPoll($_REQUEST);
 
 exit;
-?>
+

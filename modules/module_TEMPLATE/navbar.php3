@@ -86,4 +86,3 @@ echo "
 PrintModuleSelection();
 
 echo "</TD></TR></TABLE>";
-?>

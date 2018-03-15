@@ -33,7 +33,7 @@ http://www.apc.org/
 require_once "alerts_sending.php3";
 
 function ShowCollectionAddOns() {
-    global $example, $fire, $auth, $sess, $collectionprop, $collectionid;
+    global $example, $fire, $auth, $collectionid;
 
     initialize_last();
 
@@ -104,7 +104,6 @@ function ShowCollectionAddOns() {
 }
 
 function showSelectionTable() {
-    global $sess;
     $db = getDB();
     $db->query (
         "SELECT view.slice_id, slice.name AS slice_name,
@@ -164,4 +163,3 @@ function showSelectionTable() {
     echo "</TABLE>";
 }
 
-?>

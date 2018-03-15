@@ -176,4 +176,4 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") 
     return GetZidsFromSQL($SQL, 'id');
 }
 
-?>
+

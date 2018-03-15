@@ -26,7 +26,6 @@
 */
 
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
-require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 
 class AA_Poll {
     var $name;         // The name of the poll
@@ -181,7 +180,7 @@ class AA_Poll {
             if ($_COOKIE[$cookie] == "1") {
                 $vote_invalid = "Cookie";
             } else {
-                setCookie($cookie, "1");
+                setcookie($cookie, "1");
             }
         }
 
@@ -217,10 +216,10 @@ class AA_Poll {
         echo $this->getOutput($design);
     }
 
-    /** static class function - called like $set=AA_Poll::generateSet()
+    /** called like $set=AA_Poll::generateSet()
      *  It creates the set based on the conds and sort array
      */
-    function generateSet($pid,$conds=null,$sort=null) {
+    static function generateSet($pid,$conds=null,$sort=null) {
         $set = new AA_Set;
         $set->addCondition(new AA_Condition('module_id',   '==', q_pack_id($pid)));
         // there is also one poll which acts as template - managed from Polls Admin
@@ -257,10 +256,10 @@ class AA_Poll {
         return $set;
     }
 
-    /** static class function - called like: echo AA_Poll::processPoll($_REQUEST)
+    /** called like: echo AA_Poll::processPoll($_REQUEST)
      *  It process all the options/vodes and displays the result for the poll
      */
-    function processPoll($request) {
+    static function processPoll($request) {
 
         if (isset($request['vote_id']) AND isset($request['poll_id']) AND !isset($request['novote'])) {
             $poll = AA_Polls::getPoll($request['poll_id']);
@@ -311,7 +310,7 @@ class AA_Polls {
      *  This function makes sure, there is just ONE static instance if the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function singleton() {
+    static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
             // Now create the AA_Polls object
@@ -321,10 +320,10 @@ class AA_Polls {
     }
 
     /** getPoll function
-     *  main factory static method
+     *  main factory  method
      * @param $poll_id
      */
-    function & getPoll($poll_id) {
+    static function getPoll($poll_id) {
         $polls = AA_Polls::singleton();
         return $polls->_getPoll($poll_id);
     }
@@ -359,4 +358,4 @@ class AA_Polls {
     }
 }
 
-?>
+

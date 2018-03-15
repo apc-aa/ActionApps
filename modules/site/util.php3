@@ -28,7 +28,7 @@ define ('MODW_FLAG_COLLAPSE',  4);   // (visualy) Collapsed spot
 
 
 function SiteAdminPage($spot_id, $add = null) {
-    global $sess, $slice_id;
+    global $slice_id;
     $url = get_url($_SERVER['PHP_SELF'], array('spot_id'=>$spot_id, 'slice_id'=>$slice_id));   // Always used this way
     if ($add) {
         $url = get_url($url, $add);
@@ -129,15 +129,14 @@ function ModW_PrintChoice_End($spot_id, $depth, $choices_index, $choices_count) 
 }
 
 function ModW_PrintVariables( $spot_id, $vars ) {
-    global $sess;
     FrmTabCaption();
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
     if (isset($vars) AND is_array($vars)) {
         foreach ($vars as $k => $v) {
-            echo "$v <span align=right><a href=\"". SiteAdminPage($spot_id, "delvar=". urlencode($k)) ."\">"._m("Delete")."</a></span><br>";
+            echo "$v <span><a href=\"". SiteAdminPage($spot_id, "delvar=". urlencode($k)) ."\">"._m("Delete")."</a></span><br>";
         }
     }
-    echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
+    echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
     ModW_HiddenRSpotId();
     echo StateHidden();
     echo "</form></td></tr>";
@@ -145,7 +144,6 @@ function ModW_PrintVariables( $spot_id, $vars ) {
 }
 
 function ModW_PrintConditions($spot_id, $conds, $vars) {
-    global $sess;
     FrmTabCaption();
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
     if ( isset($vars) AND is_array($vars) ) {
@@ -154,7 +152,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
             if ($conds[$v]) {
                 $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
                 $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
-                echo "$v ($match->op) <strong>$match->val</strong> <span align=right><a href=\"". SiteAdminPage($spot_id, 'delcond='. urlencode($v)) ."\">"._m("Delete")."</a></span>$warning<br>";
+                echo "$v ($match->op) <strong>$match->val</strong> <span><a href=\"". SiteAdminPage($spot_id, 'delcond='. urlencode($v)) ."\">"._m("Delete")."</a></span>$warning<br>";
             } else {
                 echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
                          $k
@@ -165,7 +163,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
                          </select>
                          <input type='text' name='addcond' value='' size='50'>
                      <input type='hidden' name='addcondvar' value='$v'>
-                     <span align=right><a href='javascript:document.fcond$i.submit()'>"._m("Add")."</a></span>";
+                     <span><a href='javascript:document.fcond$i.submit()'>"._m("Add")."</a></span>";
                 echo StateHidden();
                 ModW_HiddenRSpotId();
                 echo "</form>";
@@ -178,8 +176,6 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
 }
 
 function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
-    global $sess;
-
     $db  = getDB();
     $SQL = "SELECT * FROM site_spot WHERE site_id = '". q_pack_id($site_id). "' AND spot_id = '$spot_id'";
     $db->query($SQL);
@@ -196,7 +192,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     ModW_HiddenRSpotId();
     FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
     FrmTextarea('content', '', $content, 30, 80, false, AA_View::getViewJumpLinks($content), "", true);
-    FrmTabEnd(array('submit'), $sess);
+    FrmTabEnd(array('submit'));
     echo "</form>";
 }
-?>
+

@@ -44,4 +44,3 @@ else
     echo "<HTML><BODY>Something is wrong. I didn't find any record for this slice in the <B>jump</B> table.</BODY></HTML>";
 
 page_close();
-?>

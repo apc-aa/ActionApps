@@ -30,7 +30,6 @@ http://www.apc.org/
 
 /** For Links_QueryZids() - called also from /misc/toexecute.php3 */
 require_once AA_BASE_PATH. "modules/links/linksearch.php3";
-require_once AA_INC_PATH.  "toexecute.class.php3";
 
 
 /** Category assignments - stores which category is subcategory of another */
@@ -80,7 +79,7 @@ class cattree {
     /** "class function" obviously called as cattree::global_instance();
     *  This function makes sure, there is global instance of the class
     */
-    function global_instance() {
+    static function global_instance() {
         if ( !isset($GLOBALS['cattree']) ) {
             $GLOBALS['cattree'] = new cattree();
         }
@@ -543,16 +542,10 @@ class bitfield {
      *  - each character represents one bit - itis not ideal solution, but
      *  better than nothing - you can change it
      */
-    var $field;
+    var $field   = '';
     /** Current length of bitfield - count of bits from 0 to max index which
      *  is set */
-    var $length;
-
-    /** default values for all bits are "not set" (=false) */
-    function __construct() {
-        $field = '';
-        $length = 0;
-    }
+    var $length = 0;
 
     /** Sets $pos-th bit to true or false. Positions are counted from 0 */
     function setbit($pos, $val=true) {
@@ -570,4 +563,3 @@ class bitfield {
 
 }
 
-?>

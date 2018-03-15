@@ -5,7 +5,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adï¿½mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -78,4 +78,4 @@ $cf_fields = array (
         "checkbox"=>"chpwd",
         "label"=>_m("Retype new password"))
 );
-?>
+

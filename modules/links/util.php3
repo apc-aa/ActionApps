@@ -233,7 +233,7 @@ function Links_GetLinkContent($zids) {
     $SQL = "SELECT changed_link_id, proposal_link_id FROM links_changes
              WHERE changed_link_id $sel_in
                AND rejected='n'";              // get only not rejected changes
-    $db->tquery($SQL);
+    $db->query($SQL);
     while ( $db->next_record() ) {
         $changes_ids[] = $db->f('proposal_link_id');
         $changes_map[$db->f('proposal_link_id')] = $db->f('changed_link_id');
@@ -245,7 +245,7 @@ function Links_GetLinkContent($zids) {
 
     // get link data (including data of link changes)
     $SQL = "SELECT * FROM links_links WHERE id $sel_in $changes_where";
-    $db->tquery($SQL);
+    $db->query($SQL);
     while ( $db->next_record() ) {
         $foo_id = $db->f('id');
         foreach ($db->Record as  $key => $val ) {
@@ -301,7 +301,7 @@ function Links_GetCategoryContent($zids) {
 
     // get category data (including data of link changes)
     $SQL = "SELECT * FROM links_categories WHERE id $sel_in";
-    $db->tquery($SQL);
+    $db->query($SQL);
     while ( $db->next_record() ) {
         $foo_id = $db->f('id');
         foreach ($db->Record as  $key => $val ) {
@@ -319,7 +319,6 @@ function Links_GetCategoryContent($zids) {
  * @return boolean true or false
  */
 function Links_IsPublic() {
-    global $perms_roles;
     return $GLOBALS['perms_roles']['AUTHOR']['perm'] == $GLOBALS['permission_to']["slice"][$GLOBALS['slice_id']];
 }
 
@@ -390,37 +389,37 @@ function Links_Assign2Category($lid, $categs, $proposal=false) {
     }
 }
 
-$GENERAL_CATS['Neziskové organizace']                       = array( 'pri' => 1010, 'super' => 'Organizace' );
-$GENERAL_CATS['Nadace a nadaèní fondy']                     = array( 'pri' => 1020, 'super' => 'Organizace' );
-$GENERAL_CATS['Státní správa a samospráva']                 = array( 'pri' => 1030, 'super' => 'Organizace' );
+$GENERAL_CATS['Neziskovï¿½ organizace']                       = array( 'pri' => 1010, 'super' => 'Organizace' );
+$GENERAL_CATS['Nadace a nadaï¿½nï¿½ fondy']                     = array( 'pri' => 1020, 'super' => 'Organizace' );
+$GENERAL_CATS['Stï¿½tnï¿½ sprï¿½va a samosprï¿½va']                 = array( 'pri' => 1030, 'super' => 'Organizace' );
 $GENERAL_CATS['Firmy']                                      = array( 'pri' => 1100, 'super' => 'Organizace' );
-$GENERAL_CATS['Politické strany a hnutí']                   = array( 'pri' => 1110, 'super' => 'Organizace' );
-$GENERAL_CATS['Mezistátní organizace']                      = array( 'pri' => 1120, 'super' => 'Organizace' );
-$GENERAL_CATS['Profesní sdružení']                          = array( 'pri' => 1130, 'super' => 'Organizace' );
-$GENERAL_CATS['Vìdecké a výzkumné organizace']              = array( 'pri' => 1140, 'super' => 'Organizace' );
-$GENERAL_CATS['Vzdìlávací a výchovné organizace']           = array( 'pri' => 1150, 'super' => 'Organizace' );
-$GENERAL_CATS['Církve a náboženské spoleènosti']            = array( 'pri' => 1160, 'super' => 'Organizace' );
-$GENERAL_CATS['Zdravotnické organizace']                    = array( 'pri' => 1170, 'super' => 'Organizace' );
-$GENERAL_CATS['Kulturní organizace']                        = array( 'pri' => 1180, 'super' => 'Organizace' );
+$GENERAL_CATS['Politickï¿½ strany a hnutï¿½']                   = array( 'pri' => 1110, 'super' => 'Organizace' );
+$GENERAL_CATS['Mezistï¿½tnï¿½ organizace']                      = array( 'pri' => 1120, 'super' => 'Organizace' );
+$GENERAL_CATS['Profesnï¿½ sdruï¿½enï¿½']                          = array( 'pri' => 1130, 'super' => 'Organizace' );
+$GENERAL_CATS['Vï¿½deckï¿½ a vï¿½zkumnï¿½ organizace']              = array( 'pri' => 1140, 'super' => 'Organizace' );
+$GENERAL_CATS['Vzdï¿½lï¿½vacï¿½ a vï¿½chovnï¿½ organizace']           = array( 'pri' => 1150, 'super' => 'Organizace' );
+$GENERAL_CATS['Cï¿½rkve a nï¿½boï¿½enskï¿½ spoleï¿½nosti']            = array( 'pri' => 1160, 'super' => 'Organizace' );
+$GENERAL_CATS['Zdravotnickï¿½ organizace']                    = array( 'pri' => 1170, 'super' => 'Organizace' );
+$GENERAL_CATS['Kulturnï¿½ organizace']                        = array( 'pri' => 1180, 'super' => 'Organizace' );
 
-$GENERAL_CATS['Zpravodajské weby, noviny a èasopisy']       = array( 'pri' => 2001, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Rozhlas a televize']                         = array( 'pri' => 2010, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['E-mailové konference a diskusní skupiny']    = array( 'pri' => 2020, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Názory a komentáøe']                         = array( 'pri' => 2030, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Knihovny, knihkupectví, literatura']         = array( 'pri' => 2040, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Adresáøe, databáze']                         = array( 'pri' => 2050, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Katalogy odkazù, rozcestníky, vyhledavaèe']  = array( 'pri' => 2060, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Právní pøedpisy']                            = array( 'pri' => 2070, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Studie, statistiky, hodnotící zprávy']       = array( 'pri' => 2080, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Dokumenty, publikace, studijní texty']       = array( 'pri' => 2090, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Zpravodajskï¿½ weby, noviny a ï¿½asopisy']       = array( 'pri' => 2001, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Rozhlas a televize']                         = array( 'pri' => 2010, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['E-mailovï¿½ konference a diskusnï¿½ skupiny']    = array( 'pri' => 2020, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Nï¿½zory a komentï¿½ï¿½e']                         = array( 'pri' => 2030, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Knihovny, knihkupectvï¿½, literatura']         = array( 'pri' => 2040, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Adresï¿½ï¿½e, databï¿½ze']                         = array( 'pri' => 2050, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Katalogy odkazï¿½, rozcestnï¿½ky, vyhledavaï¿½e']  = array( 'pri' => 2060, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Prï¿½vnï¿½ pï¿½edpisy']                            = array( 'pri' => 2070, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Studie, statistiky, hodnotï¿½cï¿½ zprï¿½vy']       = array( 'pri' => 2080, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
+$GENERAL_CATS['Dokumenty, publikace, studijnï¿½ texty']       = array( 'pri' => 2090, 'super' => 'Zpravodajstvï¿½, informaï¿½nï¿½ zdroje, dokumenty' );
 
-$GENERAL_CATS['Odborné konference, semináøe, kurzy']        = array( 'pri' => 3001, 'super' => 'Akce' );
-$GENERAL_CATS['Politická jednání a konference']             = array( 'pri' => 3010, 'super' => 'Akce' );
-$GENERAL_CATS['Výstavy a veletrhy']                         = array( 'pri' => 3020, 'super' => 'Akce' );
-$GENERAL_CATS['Tábory a víkendovky']                        = array( 'pri' => 3030, 'super' => 'Akce' );
+$GENERAL_CATS['Odbornï¿½ konference, seminï¿½ï¿½e, kurzy']        = array( 'pri' => 3001, 'super' => 'Akce' );
+$GENERAL_CATS['Politickï¿½ jednï¿½nï¿½ a konference']             = array( 'pri' => 3010, 'super' => 'Akce' );
+$GENERAL_CATS['Vï¿½stavy a veletrhy']                         = array( 'pri' => 3020, 'super' => 'Akce' );
+$GENERAL_CATS['Tï¿½bory a vï¿½kendovky']                        = array( 'pri' => 3030, 'super' => 'Akce' );
 $GENERAL_CATS['Festivaly']                                  = array( 'pri' => 3040, 'super' => 'Akce' );
-$GENERAL_CATS['Kalendáøe akcí']                             = array( 'pri' => 3050, 'super' => 'Akce' );
-$GENERAL_CATS['Ostatní akce']                               = array( 'pri' => 3060, 'super' => 'Akce' );
+$GENERAL_CATS['Kalendï¿½ï¿½e akcï¿½']                             = array( 'pri' => 3050, 'super' => 'Akce' );
+$GENERAL_CATS['Ostatnï¿½ akce']                               = array( 'pri' => 3060, 'super' => 'Akce' );
 
  /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
 function  Links_LoadGlobalCategories() {
@@ -502,4 +501,3 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     return $out;
 }
 
-?>

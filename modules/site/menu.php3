@@ -93,4 +93,4 @@ function get_aamenus_sites() {
     return array_merge($aamenus, GetCommonMenu($profile));
 }
 
-?>
+

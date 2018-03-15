@@ -111,4 +111,4 @@ function get_aamenus_alerts() {
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));
 }
-?>
+

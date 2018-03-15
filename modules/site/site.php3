@@ -25,9 +25,7 @@ $timestart = microtime(true);
 require_once "../../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."zids.php3";
-require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."hitcounter.class.php3";
 require_once AA_INC_PATH."locauth.php3";
 
 $auth4cache = '';
@@ -218,7 +216,6 @@ if ( !isset($apc_state) )  {
 require_once AA_BASE_PATH."modules/site/util.php3";                      // module specific utils
 require_once AA_BASE_PATH."modules/site/sitetree.php3";
 require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
@@ -356,4 +353,4 @@ function ModW_arr2str($varnames, $arr) {
 // to include this script (honzam)
 exit;
 
-?>
+

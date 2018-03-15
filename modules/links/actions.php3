@@ -258,4 +258,3 @@ function Links_Move2CatLink($param, $lid, $akce_param) {
     return false;
 }
 
-?>

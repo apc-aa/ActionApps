@@ -4,7 +4,7 @@
  * Adds Alerts-specific fields to the Reader Management Slice.
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adï¿½mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -139,4 +139,3 @@ echo "\n</td></tr></table></form>";
 
 HtmlPageEnd();
 page_close();
-?>

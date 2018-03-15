@@ -69,7 +69,7 @@ if (isset($width) && isset($height) && isset($color)){
     
     $image   = imagecreate($width, $height);
     $rgb     = mkcolor($color);
-    $bgcolor = ImageColorAllocate($image, $rgb["red"], $rgb["green"], $rgb["blue"]);
+    $bgcolor = imagecolorallocate($image, $rgb["red"], $rgb["green"], $rgb["blue"]);
     imagefill($image, 0,0, $bgcolor);
     
     imagejpeg($image);
@@ -78,4 +78,3 @@ if (isset($width) && isset($height) && isset($color)){
     echo "Ko";
 }
 
-?>

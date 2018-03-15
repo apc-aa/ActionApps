@@ -550,7 +550,7 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
     }
 
     echo '</td></tr>';
-    FrmTabEnd( $form_buttons, $sess, $slice_id);
+    FrmTabEnd( $form_buttons);
     echo '
  </form>
     <form name="f_hidden" method="get" action="check_url.php3" target="message">
@@ -566,4 +566,3 @@ echo '
 unset($checked_url);
 
 page_close();
-?>

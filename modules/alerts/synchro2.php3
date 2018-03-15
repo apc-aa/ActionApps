@@ -252,4 +252,3 @@ function getReaderManagementSlices () {
     freeDB($db);
     return $retval;
 }
-?>

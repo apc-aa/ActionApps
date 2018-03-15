@@ -168,4 +168,3 @@ $url .= http_build_query( array( 'apc_state'    => $apc_state,
 readfile($url);
 exit;
 
-?>

@@ -121,7 +121,7 @@ function UnassignBaseCategory($parent, $child) {
         DeleteCatAssignment($parent, $child);
         ChangeCatPermAsIn($child, $newParent);
 
-        $r_msg[] = MsgOK(_m('Category reassigned'));
+        $r_msg[] = MsgOk(_m('Category reassigned'));
         freeDB($db);
         return;
     }
@@ -133,7 +133,7 @@ function UnassignBaseCategory($parent, $child) {
         DeleteCatAssignment($parent, $child);
         DelPermObject($child, 'category');
 
-        $r_msg[] = MsgOK(_m('Subcategory deleted'));
+        $r_msg[] = MsgOk(_m('Subcategory deleted'));
     } else {
         $r_err[] = MsgErr(_m('Can\'t delete category which contains links'));
     }
@@ -197,7 +197,7 @@ if (count($r_err) <= 1) {
     $varset->add("note",        "quoted", $note);
     $varset->add("nolinks",     "quoted", $nolinks ? 1 : 0);
     $db->query("UPDATE links_categories SET ". $varset->makeUPDATE() . " WHERE id=$cid");
-    $r_msg[] = MsgOK(_m('Category data changed'));
+    $r_msg[] = MsgOk(_m('Category data changed'));
 } else {
     page_close();
     go_url( StateUrl(self_base() . "catedit.php3"));
@@ -220,13 +220,13 @@ $SQL = "DELETE FROM links_cat_cat
                WHERE category_id=$cid
                  AND base = 'n'";
 
-$db->tquery($SQL);
+$db->query($SQL);
 
 // Lookup old base subcategories
 $SQL = "SELECT what_id FROM links_cat_cat
                WHERE category_id=$cid";  // no necessary to add base='y'
 
-$db->tquery($SQL);                            //    - 'n' was deleted
+$db->query($SQL);                            //    - 'n' was deleted
 
 while ( $db->next_record() )
     $oldBaseSubcat[$db->f('what_id')] = $db->f('what_id');
@@ -238,7 +238,7 @@ if ($subcatIds) {
                            AND (base='y')
                            AND (category_id<>$cid)";
 
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     while ( $db->next_record() )
         $newNotBaseSubcat[$db->f('what_id')] = $db->f('what_id');
@@ -255,13 +255,13 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 
             // adds perms too
             Links_AssignCategory($cid, $foo_id, $pri, LINKS_BASE_CAT, $states[$key]);
-            $r_msg[] = MsgOK( _m('New category created') );
+            $r_msg[] = MsgOk( _m('New category created') );
         }
 
         // existing but not base in here
         elseif ($newNotBaseSubcat[$insertedId]) {
             Links_AssignCategory($cid, $insertedId, $pri, LINKS_NOT_BASE_CAT, $states[$key]);
-            $r_msg[] = MsgOK( _m('Foreign category assigned') );
+            $r_msg[] = MsgOk( _m('Foreign category assigned') );
         }
 
         // existing but base (so assignment must exist before)
@@ -290,4 +290,3 @@ if (isset($oldBaseSubcat) AND is_array($oldBaseSubcat) ) {
 
 page_close();
 go_url( StateUrl(self_base() . "index.php3"));
-?>

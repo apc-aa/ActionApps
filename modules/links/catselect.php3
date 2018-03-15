@@ -62,4 +62,4 @@ echo '
 </html>';
 
 page_close();
-?>
+

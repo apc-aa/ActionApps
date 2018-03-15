@@ -154,4 +154,3 @@ function unsubscribe_reader($slice_id, $au, $c) {
     freeDB($db);
     return false;
 }
-?>

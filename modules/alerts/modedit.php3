@@ -5,7 +5,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adï¿½mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
     $set_tview                   = "modedit";
@@ -13,4 +13,3 @@
     $no_slice_id                 = true;
 
     require_once "tabledit.php3";
-?>

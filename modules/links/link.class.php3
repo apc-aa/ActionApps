@@ -129,7 +129,9 @@ class linkassignment {
         if ( ($this->state == 'hidden') AND ( !$base OR
                                               ($base AND ($base->getState() != 'hidden') AND !$base->isProposal() ))) {
             $problem[] = problem_report($base ? 'hidden_when_base_is_approved': 'hidden_and_no_base',$this->category);
-            DoSQL("UPDATE links_link_cat SET state='visible' WHERE a_id='".$this->id."'");
+            //DoSQL("UPDATE links_link_cat SET state='visible' WHERE a_id='".$this->id."'");
+            DB_AA::update('links_link_cat', array(array('state', 'visible')), array(array('a_id',$this->id)));
+
         }
         if ( ($this->state == 'hidden') AND !$this->proposal ) {
             $problem[] = problem_report('hidden_and_not_proposal',$this->category);
@@ -141,7 +143,8 @@ class linkassignment {
         }
         if ( $this->base AND ($this->state == 'hidden') ) {
             $problem[] = problem_report('hidden_and_base',$this->category);
-            DoSQL("UPDATE links_link_cat SET state='visible', proposal='y' WHERE a_id='".$this->id."'");
+            //DoSQL("UPDATE links_link_cat SET state='visible', proposal='y' WHERE a_id='".$this->id."'");
+            DB_AA::update('links_link_cat', array(array('state', 'visible'),array('proposal', 'y')), array(array('a_id',$this->id)));
         }
         return $problem;
     }
@@ -246,7 +249,6 @@ class linkassignment {
 
 
     function dbSave() {
-        $db = getDB();
         if ( !$this->category OR !$this->link ) return false;
         $varset = new Cvarset();
 
@@ -259,9 +261,7 @@ class linkassignment {
                                       'proposal'       => $this->proposal ? 'y' : 'n',
                                       'proposal_delete'=> $this->proposal_delete ? 'y' : 'n'));
 
-        $SQL = 'INSERT INTO links_link_cat '. $varset->makeINSERT();
-        $db->tquery($SQL);
-        freeDB($db);
+        $varset->doINSERT('links_link_cat');
     }
 
     function getCategory()          { return $this->category;        }
@@ -322,7 +322,6 @@ class assignmentset {
 
     /** Load category set from Input Form */
     function loadFromForm() {
-        global $selcatCount;   // selcatSelect* and selcatState* are global too!!!
         $new_ass = new assignmentset();
         $base = true;          // mark first assignment as base
         for ( $i=0; $i<$GLOBALS['selcatCount']; $i++) {
@@ -413,7 +412,6 @@ class assignmentset {
     /** Set specified caregory assignment as base */
     function set_base($category_id) {
         if ( !isset($this->assignments) ) return false;
-        $base = false;   // not found yet
         foreach ( $this->assignments as $k => $ass ) {
             $this->assignments[$k]->setBase( $this->assignments[$k]->getCategory()==$category_id );
         }
@@ -604,7 +602,7 @@ debug('assignmentset.change: completely done', $this->assignments);
 
     function check_problems() {
         $problem = $this->check_assignments();
-        $problem = $problem + $this->check_bases();
+        $problem += $this->check_bases();
         return $problem;
     }
 
@@ -613,7 +611,7 @@ debug('assignmentset.change: completely done', $this->assignments);
         $problem = array();
         $base = $this->getBase();
         foreach ( (array)$this->assignments as $ass ) {
-            $problem = $problem + $ass->check_problems($base);
+            $problem += $ass->check_problems($base);
         }
         return $problem;
     }
@@ -656,12 +654,13 @@ $LINK_INNER_FIELDS = array('id', 'rate', 'votes', 'plus_votes', 'created_by', 'e
 
 /** Linkobj */
 class linkobj {
-    var $lid;         // link id
-    var $data;        // link data
-    var $region;      // array of regions
-    var $language;    // array of languages 'lang =>1'
-    var $assignments; // stores in which categories links should appear
-    var $changes;     // proposed data changes
+    var       $lid;         // link id
+    var       $data;        // link data
+    var       $region;      // array of regions
+    var       $language;    // array of languages 'lang =>1'
+    var       $assignments; // stores in which categories links should appear
+    var       $changes;     // proposed data changes
+    protected $problem;     //
 
     function __construct($lid=null) {
         $this->lid         = $lid;
@@ -717,7 +716,7 @@ class linkobj {
 
         // lookup - changes proposal
         $SQL= "SELECT proposal_link_id, rejected FROM links_changes WHERE changed_link_id='$lid'";
-        $db->tquery($SQL);
+        $db->query($SQL);
         while ($db->next_record()) {
             debug('changes Record:', $db->Record);
             $ch_link = new linkobj($db->f('proposal_link_id'));
@@ -888,11 +887,11 @@ class linkobj {
 
 
     function save() {
-        global $auth, $r_state, $LINK_DATA_FIELDS, $LINK_INNER_FIELDS, $debug;
+        global $auth, $r_state, $LINK_DATA_FIELDS, $LINK_INNER_FIELDS;
 
         debug("SAVE: ", $this);
         $this->load();     // make sure the data are filled (used mainly for changes)
-debug("SAVE (loaded): ", $this);
+        debug("SAVE (loaded): ", $this);
 
         // if the link is empty (no data filled), do not store it to the database
         if ( $this->isEmpty() ) {
@@ -938,15 +937,15 @@ debug("SAVE (loaded): ", $this);
             $varset->add("votes",      "number", 2);
             $varset->add("plus_votes", "number", 1);
 
-            $db->tquery("INSERT INTO links_links ". $varset->makeINSERT());
+            $db->query("INSERT INTO links_links ". $varset->makeINSERT());
             // get inserted link id
             if (!($this->lid = $db->last_insert_id())) {
-                huh("Error - Last inserted ID is lost");
+                huhl("Error - Last inserted ID is lost");
                 exit;
             }
         } else {            // insert
             $varset->addkey("id",       "number", $this->lid);
-            $db->tquery($varset->makeINSERTorUPDATE('links_links'));
+            $db->query($varset->makeINSERTorUPDATE('links_links'));
             // now you can delete all old link settings
             $this->dbDeleteSetting();
         }
@@ -954,13 +953,13 @@ debug("SAVE (loaded): ", $this);
         // Regions
         foreach ( (array)$this->region as $id => $foo ) {
             $SQL = 'INSERT INTO links_link_reg (link_id, region_id) VALUES ('.$this->lid.", $id)";
-            $db->tquery($SQL);
+            $db->query($SQL);
         }
 
         // Languages
         foreach ( (array)$this->language as $id => $foo ) {
             $SQL = 'INSERT INTO links_link_lang (link_id, lang_id) VALUES ('.$this->lid.", $id)";
-            $db->tquery($SQL);
+            $db->query($SQL);
         }
 
         // Proposals
@@ -969,7 +968,7 @@ debug("SAVE (loaded): ", $this);
                 $ch_id = $change['link']->save();
                 if ( $ch_id ) {   // change link could be empty => not stored => skip
                     $SQL = 'INSERT INTO links_changes (changed_link_id, proposal_link_id, rejected) VALUES ('.$this->lid.', '.$ch_id.', \'n\')';
-                    $db->tquery($SQL);
+                    $db->query($SQL);
                 }
             }
         }
@@ -1075,7 +1074,7 @@ debug("SAVE (loaded): ", $this);
             if ( $general ) {
                 $names[$general]++;
             } elseif (  substr($path,0,12) == '1,2,4,39,71,' ) {  //Ekolink statni sprava
-                $names['Státní správa a samospráva']++;
+                $names['Stï¿½tnï¿½ sprï¿½va a samosprï¿½va']++;
             } elseif ( (substr($path,0,4) == '1,2,') AND
                        (substr($path,0,9) != '1,2,1222,') AND
                        (substr($path,0,9) != '1,2,1223,') AND
@@ -1096,7 +1095,7 @@ debug("SAVE (loaded): ", $this);
             $this->problem[] = problem_report('thematic_link_assigned_in_general_repairable',$names,$thematic);
             echo "<br>$SQL";
             $db = getDB();
-            $db->tquery($SQL);
+            $db->query($SQL);
             freeDB($db);
         }
         elseif ( (count($names)>0) AND !$this->data['type'] ) {
@@ -1113,7 +1112,7 @@ debug("SAVE (loaded): ", $this);
         $lid = $this->lid;
         if ( !$lid ) return;
         // delete the main link data
-        $db->tquery("DELETE from links_links where id='$lid'");
+        $db->query("DELETE from links_links where id='$lid'");
         freeDB($db);
     }
 
@@ -1130,15 +1129,15 @@ debug("SAVE (loaded): ", $this);
                                       WHERE changed_link_id='$lid'",
                                       '', 'proposal_link_id');
         // remove links changes
-        $db->tquery("DELETE FROM links_changes   WHERE changed_link_id='$lid'");
+        $db->query("DELETE FROM links_changes   WHERE changed_link_id='$lid'");
         // remove links changing
-        $db->tquery("DELETE FROM links_changes   WHERE proposal_link_id='$lid'");
+        $db->query("DELETE FROM links_changes   WHERE proposal_link_id='$lid'");
         // remove assignments
-        $db->tquery("DELETE from links_link_cat  WHERE what_id='$lid'");
+        $db->query("DELETE from links_link_cat  WHERE what_id='$lid'");
         // remove languages assignments
-        $db->tquery("DELETE from links_link_lang WHERE link_id='$lid'");
+        $db->query("DELETE from links_link_lang WHERE link_id='$lid'");
         // remove languages assignments
-        $db->tquery("DELETE from links_link_reg  WHERE link_id='$lid'");
+        $db->query("DELETE from links_link_reg  WHERE link_id='$lid'");
 
         foreach ( (array)$to_delete as $link2del ) {
             $link_2_delete = new linkobj($link2del);
@@ -1153,4 +1152,4 @@ debug("SAVE (loaded): ", $this);
         $this->dbDeleteData();
     }
 }
-?>
+

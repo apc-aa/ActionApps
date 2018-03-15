@@ -42,4 +42,3 @@ echo '
 
 page_close();
 exit;
-?>

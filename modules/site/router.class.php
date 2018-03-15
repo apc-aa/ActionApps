@@ -282,12 +282,11 @@ class AA_Router_Seo extends AA_Router {
         //huhl($GLOBALS['auth'], $GLOBALS['sess']);
 
         //if ( $_COOKIE['AA_Sess'] OR $_REQUEST['username'] ) {
-        //    require_once AA_INC_PATH."request.class.php3";
         //    $options = array(
         //        'aa_url'          => AA_INSTAL_URL,
         //        'cookie_lifetime' => 60*60*24*365  // one year
         //    );
-        //    $client_auth = new AA_Client_Auth($options);
+        //    $client_auth = new AA_ClientAuth($options);
         //
         //    if (isset($_GET['logout'])) {
         //        $client_auth->logout();
@@ -623,4 +622,4 @@ class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
         return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? (int)$level : '' )];
     }
 }
-?>
+

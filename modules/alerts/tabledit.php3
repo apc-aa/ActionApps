@@ -108,7 +108,7 @@ if (!$err && $tview == "email_edit") {
 }
 
 if (!$err && $tview == "acf") {
-    ShowSelectionTable();
+    showSelectionTable();
 }
 
 if ($no_slice_id) {
@@ -117,4 +117,4 @@ if ($no_slice_id) {
     HtmlPageEnd();
 }
 page_close();
-?>
+

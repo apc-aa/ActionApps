@@ -5,7 +5,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adï¿½mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -29,4 +29,3 @@ http://www.apc.org/
 require_once __DIR__. "/../../include/init_page.php3";
 require_once AA_INC_PATH."go_url.php3";
 go_url(AA_INSTAL_PATH ."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .$slice_id."]=1&slice_id=$slice_id");
-?>

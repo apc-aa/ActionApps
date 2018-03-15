@@ -55,12 +55,12 @@ if ( $r_state['link_id'] ) {
     $result = $old_link->tryChange($new_link);
     debug('linkedit2: now call oldlink save. oldlink:', $old_link);
     $r_state['link_id'] = $old_link->save();
-    $r_msg[] = MsgOK(($result=='PROPOSAL') ?
+    $r_msg[] = MsgOk(($result=='PROPOSAL') ?
                _m('Link change proposal inserted') : _m('Link inserted'));
     // $event->comes('LINK_UPDATED', $r_state["module_id"], 'Links',  $categs2assign, $isGlobalcat, $isGlobalcat);
 } else {
     $r_state['link_id'] = $new_link->save();
-    $r_msg[] = MsgOK(_m('Link inserted'));
+    $r_msg[] = MsgOk(_m('Link inserted'));
     // $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign, Links_IsGlobalCategory($type), false);
 }
 Links_CountAllLinks();  // update number of links info
@@ -69,4 +69,4 @@ page_close();
 debug('<a href="'.$senderUrlOK.'">'._m('Continue').'</a>');
 go_url( $senderUrlOK );
 exit;
-?>
+

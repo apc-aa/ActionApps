@@ -77,7 +77,7 @@ $tree->printTreeData($tree_to_begin);
 
 echo '
  <style>
-  //body_white_color { color: //000000; }
+  #body_white_color { color: #000000; }
  </style>
 </head>
 <body id="body_white_color">
@@ -134,7 +134,7 @@ if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
                      'subcatIds'    => array('type'=>"hidden"),   // to this variable store assigned subcategory ids (by javascript)
                      'subcatNames'  => array('type'=>"hidden"),   // to this variable store assigned subcategory names (by javascript)
                      'subcatStates' => array('type'=>"hidden")),   // to this variable store assigned subcategory states (by javascript)
-               $sess);                    // add session_id
+             );                    // add session_id
 echo '
     </form>
   </body>
@@ -145,4 +145,3 @@ unset($r_err);
 unset($r_msg);
 
 page_close();
-?>

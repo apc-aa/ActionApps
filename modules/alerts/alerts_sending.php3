@@ -27,7 +27,6 @@ http://www.apc.org/
 */
 
 require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
@@ -214,7 +213,7 @@ class AA_Collection {
             AND CH.collectionid='".$this->id."'";
         $db = getDB();
         if ($item_id) {
-            $db->tquery("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
+            $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
             if (!$db->next_record()) {
                 freeDB($db);
                 return "";
@@ -227,7 +226,7 @@ class AA_Collection {
         initialize_last();
         $slices = array();
 
-        $db->tquery($SQL);
+        $db->query($SQL);
         while ($db->next_record()) {
             $last                                  = $db->f("last");
             $sid                                   = unpack_id($db->f("slice_id"));
@@ -285,7 +284,7 @@ class AA_Collection {
                        .")";
             }
 
-            $db->tquery($SQL);
+            $db->query($SQL);
 
             $all_ids = array();
             while ($db->next_record()) {
@@ -300,7 +299,7 @@ class AA_Collection {
                     $zids  = new zids(null, "p");
                     if ($all_ids) {
                         // find items for the given filter
-                        $zids = QueryZIDs(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
+                        $zids = QueryZids(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
                     }
 
                     $retval[$fid] = array (
@@ -318,7 +317,7 @@ class AA_Collection {
             $varset->addkey("howoften", "text", $ho);
             $varset->addkey("collectionid", "text", $this->id);
             $varset->add ("last", "number", $now);
-            $db->tquery($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
+            $db->query($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
         }
 
         //print_r ($retval);
@@ -362,7 +361,7 @@ class AA_Collection {
                     parse_str( $last_fprop["sort"], $dbconds_arr);
                     $sort      = $dbconds_arr['sort'];
                     $set       = &get_view_settings_cached($last_fprop["vid"]);
-                    $user_zids = QueryZIDs(array(unpack_id($set["info"]->f("slice_id"))), "", $sort, "ACTIVE", 0, $user_zids);
+                    $user_zids = QueryZids(array(unpack_id($set["info"]->f("slice_id"))), "", $sort, "ACTIVE", 0, $user_zids);
                 }
 
                 $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
@@ -444,21 +443,21 @@ function initialize_last() {
     foreach ($hos as $ho => $v ) {
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
-        $db->tquery("SELECT C.id FROM alerts_collection C LEFT JOIN
+        $db->query("SELECT C.id FROM alerts_collection C LEFT JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
             WHERE last IS NULL");
         while ($db->next_record()) {
-            $db2->tquery("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
+            $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
                 VALUES ('".$db->f("id")."', '$ho', ".$init[$ho].")");
         }
 
         // the same as above, but for rows, which exist but with last=0
-        $db->tquery("SELECT C.id FROM alerts_collection C INNER JOIN
+        $db->query("SELECT C.id FROM alerts_collection C INNER JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
         while ($db->next_record()) {
             DB_AA::update('alerts_collection_howoften', array(array('last',$init[$ho],'i')), array(array('collectionid', $db->f("id")),array('howoften', $ho)));
-           // $db2->tquery("UPDATE alerts_collection_howoften SET last=".$init[$ho]
+           // $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
            //     ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
         }
     }
@@ -524,4 +523,4 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
 
 // -------------------------------------------------------------------------------------
 
-?>
+

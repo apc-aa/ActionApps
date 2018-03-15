@@ -7,7 +7,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Adï¿½mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -104,5 +104,5 @@ if ($howoften_options[$howoften]) {
     //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }
 
-?>
+
 

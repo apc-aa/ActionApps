@@ -32,7 +32,6 @@ require_once AA_INC_PATH . "varset.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
-require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 require_once AA_BASE_PATH. "modules/polls/include/actions.php3";
 require_once AA_BASE_PATH. "modules/polls/include/util.php3";
@@ -122,4 +121,3 @@ require_once AA_BASE_PATH."modules/polls/include/menu.php3";
 
 $manager->displayPage($zids, 'pollsmanager', $manager->getBin());
 page_close();
-?>

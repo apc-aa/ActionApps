@@ -63,9 +63,9 @@ if ( ($structre = AA_Module_Site::getModuleProperty($module_id,'structure')) != 
     // get information about start spot (=start of the tree)
     $tree = new sitetree($spotrow);
 } else {
-    MsgErr(_m("Starting spot not found"));
-    page_close();
-    exit;
+        MsgErr(_m("Starting spot not found"));
+        page_close();
+        exit;
 }
 
 //  try
@@ -184,7 +184,7 @@ $functions = array ('spot'          => 'ModW_PrintSpotName_Start',
                     'before_choice' => 'ModW_PrintChoice_Start',
                     'after_choice'  => 'ModW_PrintChoice_End');
 
-$tree->walkTree($apc_state, 1, $functions, 'collapsed', 0, 'ModW_PrintSpotName_End');
+$tree->walkTree($apc_state, 1, $functions, 'collapsed', 0);
 
 echo '</td><td valign="top">';
 
@@ -197,4 +197,3 @@ echo ' </body>
 
 page_close();
 exit;
-?>

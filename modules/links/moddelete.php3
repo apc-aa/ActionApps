@@ -8,4 +8,3 @@
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
     require_once "../../admin/slicedel2.php3";
-?>
