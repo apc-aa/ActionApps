@@ -30,7 +30,6 @@
 */
 
 require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 
 class AA_Mailman {
 
@@ -112,4 +111,3 @@ class AA_Mailman {
     }
 }
 
-?>

@@ -36,12 +36,9 @@
 
 require_once AA_INC_PATH."constedit_util.php3";
 require_once AA_INC_PATH."javascript.php3";
-require_once AA_INC_PATH."profile.class.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."stringexpand.php3";
-require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."validate.php3";
-require_once AA_INC_PATH."field.class.php3";
 
 // IsUserNameFree() function deffinition here
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
@@ -132,6 +129,7 @@ class inputform {
                           // template holds view_id of such template
                           // view type 'inputform'
     var $formheading;     // add extra form heading here (default none, used by MLX)
+    var $hidden;          //
     var $msg;             // stores return code from functions
 
     // computed values form form fields
@@ -173,7 +171,7 @@ class inputform {
      *                         which are stored in content table
      */
     function printForm($content4id, $slice, $edit, $slice_fields=false) {
-        global $sess, $auth;
+        global $auth;
 
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used and
@@ -298,7 +296,7 @@ class inputform {
         $buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - @todo
 
 
-        FrmTabEnd( $buttons, $sess, $slice->getId() );
+        FrmTabEnd( $buttons);
 
         if ( $form_parts ) {
             FrmJavascript('document.getElementById("inputtabrows").style.display = \'\';
@@ -464,6 +462,7 @@ class AA_Inputfield {
                            //  - we generate html variable name from id: v435...
     var $input_type;       // shortcut of 'input type' (like 'fld','sel','mse')
     var $varname;          // name of the field in html form
+    var $varname_modified; // modified name of the field in html form
     var $param;            // parameter array for this inputtype (already exploded)
     var $name;             // user frieldly name 'Publish Date'
     var $value;            // current value of the field in [0]['value'] form
@@ -1036,9 +1035,6 @@ class AA_Inputfield {
      */
     function get_convertors() {
         global $CONV_HTMLFILTERS;
-        global $CONV_HTMLFILTERS_DOC;
-        global $CONV_HTMLFILTERS_PDF;
-        global $CONV_HTMLFILTERS_XLS;
         if ( isset($CONV_HTMLFILTERS) AND is_array($CONV_HTMLFILTERS) ) {
             $delim='';
             foreach ( $CONV_HTMLFILTERS as $format => $program) {
@@ -1332,7 +1328,7 @@ class AA_Inputfield {
         if ( $safing ) {
             $val=myspecialchars($val);
         }
-        $this->echoo('<tr height="1" colspan="2"><td height="1">');
+        $this->echoo('<tr><td height="1" colspan="2">');
         $this->echovar( "<input type=\"hidden\" name=\"$name\" value=\"$val\">" );
         $this->echoo("</td></tr>\n");
     }
@@ -1611,7 +1607,7 @@ class AA_Inputfield {
         $this->field_name('plus');
         $ret       ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
-        $option_no = count($this->const_arr) + ($this->required ? 0:1);
+        // $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
         // removed - since it was never used and it just works - $minrows is not filled here
         // while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
@@ -2756,7 +2752,7 @@ function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $vali
     echo '</td>
         </tr>';
     if ($buttons) {
-        echo "<tr><td bgcolor=". COLOR_TABBG." hegiht=\"6\"></td></tr>";
+        echo "<tr><td bgcolor=". COLOR_TABBG." height=\"6\"></td></tr>";
     }
     if ( $subtitle ) {
         echo "\n      <tr><td class=\"tabtit\"><b>&nbsp;$subtitle</b></td></tr>";
@@ -2781,16 +2777,13 @@ function FrmTabSeparatorNoHidden( $subtitle , $buttons='' ) {
 /** FrmTabEnd function
  * Prints form table end with buttons (@see FrmInputButtons)
  * @param $buttons
- * @param $sess
- * @param $slice_id
- * @param $valign
  */
-function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
+function FrmTabEnd( $buttons=false ) {
     echo '    </table>
             </td>
           </tr>';
     if ( $buttons ) {
-        FrmInputButtons($buttons, $slice_id, $valign, true, COLOR_TABTITBG, false, 'bottom');
+        FrmInputButtons($buttons, '', 'middle', true, COLOR_TABTITBG, false, 'bottom');
     }
     echo '
         </table>';
@@ -2818,7 +2811,7 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
     if ( isset($buttons) AND is_array($buttons) ) {
 
         if ($prefix) {
-            $prefix = $prefix. '_';
+            $prefix .= '_';
         }
 
         foreach ( $buttons as  $name => $properties ) {
@@ -2857,9 +2850,6 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
                     break;
                 case 'cancel':
                     $url = get_if($properties['url'],self_server().$_SERVER['PHP_SELF']);
-                    if ($slice_id) {
-                        $url = con_url($url, 'slice_id='.$slice_id);
-                    }
                     if (!$properties['url']) {
                         $url = con_url($url,'cancel=1');
                     }
@@ -2915,9 +2905,6 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
     }
 
     echo StateHidden();
-    if ( $slice_id ) {
-        echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
-    }
 
     echo "</td>";
     if ($tr) {
@@ -3208,7 +3195,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
                 $conds = $set->getConds();
                 $sort  = $set->getSort();
         }
-        $zids  = QueryZIDs( array($slice_id), $conds, $sort,  $bins);
+        $zids  = QueryZids( array($slice_id), $conds, $sort,  $bins);
     }
     return $zids;
 }
@@ -3260,7 +3247,6 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
 
      FrmTabSeparator(_m("Use these aliases for database fields") , $buttons, $sess, $slice_id);
 
-     $count = 0;
      if (is_array($aliases)) {
          foreach ($aliases as $ali => $v ) {
              // if it is possible point to alias editing page
@@ -3277,4 +3263,4 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
      }
 }
 
-?>
+

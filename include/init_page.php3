@@ -92,8 +92,6 @@ if ($free) {
 }
 
 require_once AA_INC_PATH. "locauth.php3";
-require_once AA_INC_PATH. "scroller.php3";
-require_once AA_INC_PATH. "searchbar.class.php3";  // search_row is stored to session, so we need to have definition already loaded
 
 // Save before getting the session stored variables
 // Now it should not be in session so mayby the $pass_sliceid is not necessary and we van use just slice_id
@@ -176,8 +174,6 @@ if (!$no_slice_id) {
         $auth->auth_loginform('<div style="color:red;"><b>'._m("No slice found for you").'</b></div>');
         //$auth->relogin();
         exit;
-        MsgPage(StateUrl(self_base())."index.php3", _m("No slice found for you"));
-        exit;
     }
 
 
@@ -239,4 +235,4 @@ AA::$langnum      = array(AA_Content::getLangNumber(AA::$lang)); // array of pre
 AA::$slice_id     = AA::$module_id;
 $r_last_module_id = AA::$module_id; // we need it only in filebrowser of CKEditor
 
-?>
+

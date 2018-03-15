@@ -56,11 +56,11 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         $this->setFlag(!is_null($flag) ? $flag : ( (is_array($value) AND is_array($value[0])) ? $value[0]['flag'] : 0));
     }
 
-    /** Static for creating value from any value
+    /** For creating value from any value
      *  Called as
      *     AA_Value::factory($val);
      */
-    function factory($val) {
+    static function factory($val) {
         if (is_object($val)) {
             if (strtolower(get_class($val)) == 'aa_value') {
                 return $val;
@@ -87,11 +87,11 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $aav;
     }
 
-    /** Static for creating value from array[][value]
+    /** for creating value from array[][value]
      *  Called as
      *     AA_Value::factoryFromContent($arr);
      */
-    function factoryFromContent($arr) {
+    static function factoryFromContent($arr) {
         $aav = new AA_Value();
         // preserves keys - necessary for translated values
         foreach($arr as $key => $val) {
@@ -500,7 +500,7 @@ class ItemContent extends AA_Content {
      * @param $err_msg
      * @param $getmsg
      */
-    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
+    static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
         static $lastErrMsg;
         if (!is_null($err_id)) {
@@ -514,7 +514,7 @@ class ItemContent extends AA_Content {
      *  Return last error message - it is grabbed from static variable
      *  of lastErr() method
      */
-    function lastErrMsg() {
+    static function lastErrMsg() {
         return ItemContent::lastErr(null, null, true);
     }
 
@@ -662,7 +662,6 @@ class ItemContent extends AA_Content {
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
      */
     function isActive($bin=AA_BIN_ACTIVE) {
-        $ret = false;
 
         if ( (($status=$this->getStatusCode()) == 1) AND ($bin & AA_BIN_ACTIVE)) {
             $now = now('step');
@@ -1286,7 +1285,6 @@ class ItemContent extends AA_Content {
                 if (!is_array($cont)) {
                     continue;
                 }
-                $set      = false;
                 unset($parameters);
                 unset($thumbnails);
                 foreach ($cont as $numkey => $v) {
@@ -1401,4 +1399,4 @@ function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     return $updated_items;
 }
 
-?>
+

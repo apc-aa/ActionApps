@@ -185,8 +185,8 @@ class ConvertCharset {
         $this->to_charset   = $to_charset;
     }
 
-    /** Static function called like $encoder = ConvertCharset::singleton($from, $to) */
-    function singleton($from_charset = null, $to_charset = null) {
+    /** Called like $encoder = ConvertCharset::singleton($from, $to) */
+    static function singleton($from_charset = null, $to_charset = null) {
         static $instance = null;
         if (is_null($instance)) {
             $instance = new ConvertCharset($from_charset, $to_charset);
@@ -487,7 +487,7 @@ class ConvertCharset {
                 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
                 'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
                 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
-                'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'Ý'=>'Y', 'ý'=>'y', 'þ'=>'b',
+                'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b',
                 'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r', 'Ě'=>'E', 'ě'=>'e', 'ř'=>'r', 'Ř'=>'R', 'ť'=>'t', 'Ť'=>'T', 'Ď'=>'D',
                 'ď'=>'d', 'ň'=>'n', 'Ň'=>'N', 'ů'=>'u', 'Ů'=>'U'
             );
@@ -517,9 +517,8 @@ class ConvertCharset {
                  **/
                 for ($i = 0, $fmax=strlen($StringToChange); $i < $fmax; $i++) {
 
-                    $HexChar = "";
                     $UnicodeHexChar = "";
-                    $HexChar = strtoupper(dechex(ord($StringToChange[$i])));
+                    $HexChar        = strtoupper(dechex(ord($StringToChange[$i])));
                     // This is fix from Mario Klingemann, it prevents
                     // droping chars below 16 because of missing leading 0 [zeros]
                     if (strlen($HexChar)==1) $HexChar = "0".$HexChar;
@@ -629,4 +628,3 @@ class ConvertCharset {
 
 } //class ends here
 
-?>

@@ -27,7 +27,6 @@
  *
 */
 
-require_once AA_INC_PATH.  "toexecute.class.php3";
 
 /**
  * Hits logged to two temporary tables - hit_short_id (for short item ids) and
@@ -72,7 +71,7 @@ class AA_Hitcounter {
      *  We use two temporary tables - hit_short_id (for short item ids) and
      *  hit_long_id (for long item ids).
      */
-    function hit($zids) {
+    static function hit($zids) {
         if (!is_object($zids) OR $zids->is_empty()) {
             return;
         }
@@ -140,8 +139,6 @@ class AA_Hitcounter_Update {
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.
         $time = time() - 2;
-
-        $counts = array();
 
         // first look to the short id hit table;
         $hits_s = GetTable2Array("SELECT id, count(*) as count FROM hit_short_id WHERE time < $time GROUP BY id", 'id', 'count');
@@ -293,7 +290,7 @@ class AA_Hitcounter_Group {
         $toexecute        = new AA_Toexecute;
         // run for all the days from $oldest to week ago
         $no_task = 0;
-        for ($begin = $grouping_start; $begin + $step >= $oldest; $begin = $begin - $step) {
+        for ($begin = $grouping_start; $begin + $step >= $oldest; $begin -= $step) {
             $toexecute->laterOnce($this, array($begin, $step), "AA_Hitcounter_Group_$begin", 40, time() + 60*60*24); // once a day
 
             // by default we plan all the task
@@ -375,4 +372,3 @@ class AA_ComputedfieldsItem_Updater {
 }
 
 
-?>

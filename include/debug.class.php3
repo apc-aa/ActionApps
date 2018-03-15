@@ -485,4 +485,4 @@ class PhpConsoleEvent {
         public $line;
 }
 
-?>
+

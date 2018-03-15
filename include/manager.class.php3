@@ -33,9 +33,6 @@
  *
 */
 
-require_once AA_INC_PATH . "searchbar.class.php3";
-require_once AA_INC_PATH . "statestore.php3";
-require_once AA_INC_PATH . "request.class.php3";
 
 /**
  * AA_Manager class - used for 'item' manipulation 'managers' pages
@@ -662,7 +659,7 @@ class AA_Manager extends AA_Storable {
                         // -->
                       </script>';
             }
-            echo "</td>\n</tr>\n<tr height=\"3\"><td id=\"makrekactionparams\"></td></tr>\n<tr><td>";
+            echo "</td>\n</tr>\n<tr><td id=\"makrekactionparams\"></td></tr>\n<tr><td>";
 
         }
 
@@ -746,11 +743,11 @@ class AA_Manageraction extends AA_Storable {
     * @param $item_arr
     * @param $akce_param
     */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, &$state, $item_arr, $akce_param) {
     }
 
     /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
+    function isPerm($manager) {
         return true;
     }
 
@@ -799,4 +796,4 @@ class AA_Manageractions {
     }
 }
 
-?>
+

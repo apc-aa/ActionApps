@@ -973,7 +973,7 @@ class AA_Item {
                          c1.text        = '".addslashes($stringToMatch)."'";
         }
         $db = getDB();
-        $db->tquery($SQL);
+        $db->query($SQL);
         $res =( $db->next_record() ? $db->f('text') : "" );
         freeDB($db);
         return $res;
@@ -1007,7 +1007,7 @@ class AA_Item {
         static $title, $link, $description, $q_owner;
 
         if ($col == 'SLICEdate') {
-            return $this->RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
+            return $this->RSS_restrict( gmdate("D, d M Y H:i:s "). "GMT", 100);
         }
 
         $slice_id   = $this->getSliceID();
@@ -1092,7 +1092,7 @@ class AA_Item {
                 $param = $p[0];
             }
         }
-        return $param ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getFlag($col));
+        return strlen($param) ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getFlag($col));
     }
 
     /** f_s function
@@ -1287,8 +1287,6 @@ class AA_Item {
      */
 
     function f_v($col, $param="") {
-        global $vid, $als, $conds, $param_conds, $item_ids, $use_short_ids;
-
         // if no parameter specified, the content of this field specifies view id
         if ( !$param ) {
             $param = "vid=".$this->getval($col);
@@ -1556,13 +1554,12 @@ class AA_Item {
 
     /** Noncaching equivalent to AA_Items::getItem()
      *
-     *  Static methods
      *  Creates item object just from item id and fills all necessary structures
      *
      *  @param  zid     - an item id - zid object, unpacked or short id
      *  @param  renew   - regenerate the item form database
      */
-    function getItem($zid) {
+    static function getItem($zid) {
         if (empty($zid)) {
             return false;
         }
@@ -1591,7 +1588,7 @@ class AA_Items {
      *  This function makes sure, there is just ONE static instance if the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function singleton() {
+    static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
             // Now create the AA_Items object
@@ -1610,7 +1607,7 @@ class AA_Items {
      *  @param  zid     - an item id - zid object, unpacked or short id
      *  @param  renew   - regenerate the item form database
      */
-    function getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
+    static function getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
         if (empty($zid)) {
             return false;
         }
@@ -1762,4 +1759,4 @@ class AA_Items {
         return $item;
     }
 }
-?>
+

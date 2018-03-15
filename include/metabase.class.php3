@@ -964,7 +964,7 @@ class AA_Metabase {
 
     /** AA_Metabase::queryZids - Finds link IDs for links according to given  conditions
      *  @param array  $settings - array - just one parameter: table, where to search
-     *  @param array  $set      - AA_Set object which specifies Sortorder and Conditions
+     *  @param AA_Set $set      - AA_Set object which specifies Sortorder and Conditions
      *                          - there we store also BINs conditions, since each
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
@@ -1128,22 +1128,22 @@ class AA_Metabase {
 
 class AA_MetabaseTableEdit {
 
-    /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
+    /** helps other classes to implement AA_iEditable method addFormrow - adds Object's editable properties to the $form */
     // public static function defaultAddFormrows($tablename, $form) {
     //     return $form->addProperties(static::getClassProperties());
     // }
 
-    /** helps other classes to implement iEditable method addFormrow - adds Object's editable properties to the $form */
+    /** helps other classes to implement AA_iEditable method addFormrow - adds Object's editable properties to the $form */
     public static function defaultGetClassProperties($tablename) {
         return AA_Metabase::singleton()->getColumnProperties($tablename);
     }
 
-    /** helps other classes to implement iEditable method factoryFromForm - creates Object from the form data */
+    /** helps other classes to implement AA_iEditable method factoryFromForm - creates Object from the form data */
     //public static function defaultFactoryFromForm($tablename, $oowner, $otype=null) {}
-    /** helps other classes to implement iEditable method save - save the object to the database */
+    /** helps other classes to implement AA_iEditable method save - save the object to the database */
     //public        function defaultSave($tablename) {}
 
 
 }
 
-?>
+

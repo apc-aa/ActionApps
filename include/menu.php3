@@ -137,7 +137,7 @@ function get_aamenus() {
         "sets"          => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_sets.php3",                  "label"=>_m("Sets of Items")),
 
         "header4"       => _m("Content Pooling"),
-        "nodes"         => array("cond"=>isSuperadmin(),        "href"=>"admin/se_nodes.php3",                 "label"=>_m("Nodes")),
+        "nodes"         => array("cond"=>IsSuperadmin(),        "href"=>"admin/se_nodes.php3",                 "label"=>_m("Nodes")),
         "import"        => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_import.php3",                "label"=>_m("Inner Node Feeding")),
         "n_import"      => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_inter_import.php3",          "label"=>_m("Inter Node Import")),
         "n_export"      => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_inter_export.php3",          "label"=>_m("Inter Node Export")),
@@ -155,7 +155,7 @@ function get_aamenus() {
         "anonym_wizard" => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/anonym_wizard.php3",            "label"=>_m("Anonymous Form Wizard")),
         "email"         => array("cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
         "taskmanager"   => array("cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_taskmanager.php3",           "label"=>_m("Task Manager")),
-        "tasks"         => array("cond"=>isSuperadmin(),        "href"=>"admin/se_tasks.php3",                 "label"=>_m("Planed Tasks")),
+        "tasks"         => array("cond"=>IsSuperadmin(),        "href"=>"admin/se_tasks.php3",                 "label"=>_m("Planed Tasks")),
     ));
 
     $slice = AA_Slice::getModule($slice_id);
@@ -245,4 +245,4 @@ function AddAlertsModules(&$submenu, $collections, $header, $help) {
     }
 }
 
-?>
+

@@ -158,4 +158,4 @@ echo "</form>";
 echo "</td></tr></table>";
 HtmlPageEnd();
 page_close();
-?>
+

@@ -32,7 +32,6 @@
 */
 
 require_once AA_INC_PATH . "stringexpand.php3";
-require_once AA_INC_PATH . "hitcounter.class.php3";
 
 /**
  * itemview class - used to display set of items or links or ...
@@ -465,8 +464,6 @@ class itemview {
    * @param $view_type
    */
   function get_output($view_type="") {
-    global $debug;
-
     if ($view_type == "discussion") {
       $CurItem = new AA_Item("", $this->aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
@@ -980,4 +977,4 @@ class itemview {
 
 };   //class itemview
 
-?>
+

@@ -29,7 +29,7 @@
 */
 
 function GetCommonMenu($profile) {
-    global $sess, $r_state;
+    global $r_state;
 
     $menu = array();
 
@@ -114,7 +114,7 @@ function GetCommonMenu($profile) {
             "item6"       => array("cond"=>IsSuperadmin(),              "href"=>"central/index.php3?DeleteTrash=1",                           "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
             "importcsv"   => array("cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")),
             "debug"       => array("cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
-            "line"        => ""
+            "line2"       => ""
     ));
 
     return $menu;
@@ -133,7 +133,7 @@ function GetLabel($profile, $property, $selector, $default_text) {
  *
  */
 function PrintModuleSelection() {
-    global $slice_id, $g_modules, $sess, $MODULES;
+    global $slice_id, $g_modules;
     global $auth; // for profiles
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
@@ -225,7 +225,7 @@ function PrintModuleSelection() {
  * @param $showSub -- show the submenu (left navigation bar) ?
  */
 function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
-    global $slice_id, $useOnLoad, $sess, $auth;
+    global $slice_id, $useOnLoad, $auth;
     global $menu_function;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
@@ -413,7 +413,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
             // submenu should be displayed.
             $function = $item["function"];
             showSubMenuRows( $function( $item["func_param"] ), $active );
-        } elseif (is_array($item)) {
+        } else {
             echo '<tr><td width="122" valign="TOP">&nbsp;';
             if (!isset ($item["cond"])) {
                 $item["cond"] = 1;
@@ -466,4 +466,4 @@ function showSubmenu($aamenu, $active) {
 function CreateMenuItem( $label, $href, $cond = true ) {
     return array('label' => $label, 'href' => $href, 'cond' => $cond);
 }
-?>
+

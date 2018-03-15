@@ -129,7 +129,7 @@ function fillForm() {
                   // which is out of the protected folder
             } else {
                 $db = getDB();
-                $db->tquery(
+                $db->query(
                   "SELECT item.id FROM content INNER JOIN item
                    ON content.item_id = item.id
                    WHERE item.slice_id='".q_pack_id($slice_id)."'
@@ -151,7 +151,7 @@ function fillForm() {
                  WHERE item.slice_id='".q_pack_id($slice_id)."'
                  AND content.field_id='".FIELDID_ACCESS_CODE."'
                  AND content.text='".$GLOBALS["ac"]."'";
-            $db->tquery($SQL);
+            $db->query($SQL);
             if ($db->num_rows() != 1) {
                 huhe("Warning, invalid access code '",$GLOBALS["ac"],"'");
                 freeDB($db);
@@ -195,9 +195,9 @@ function fillForm() {
  * @param $oldcontent4id
  */
 function fillFormWithContent($oldcontent4id) {
-    global $form, $suffix, $conds, $dateConds, $my_item_id, $checkbox;
+    global $form, $suffix, $my_item_id;
 
-    $timezone = getTimeZone();
+    $timezone = GetTimeZone();
     $js = "var fillform_fields". $suffix. " = new Array (\n";
 
     $first = true;
@@ -290,7 +290,7 @@ function fillConds() {
     }
 
     if (is_array($dateConds)) {
-        $timezone = getTimeZone();
+        $timezone = GetTimeZone();
         foreach ($dateConds as $i => $dateField) {
             if (isset($conds[$i]['value']) AND $conds[$i]['value']) {
                 $js .= "setControlOrAADate ('$form','$dateField','". strtotime($conds[$i]['value'])."','',0,$timezone);\n";
@@ -304,4 +304,4 @@ function fillConds() {
     }
     return getFrmJavascript($js);
 }
-?>
+

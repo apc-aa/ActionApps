@@ -27,9 +27,7 @@
  *
 */
 
-
-
-define('FILE_ERROR_NO_SOURCE',        100);
+DEFINE('FILE_ERROR_NO_SOURCE',        100);
 define('FILE_ERROR_COPY_FAILED',      101);
 define('FILE_ERROR_DST_DIR_FAILED',   102);
 define('FILE_ERROR_NOT_UPLOADED',     104);
@@ -93,7 +91,7 @@ class Files {
      */
     function _destinationDirCreate($path, $perms) {
         if (!$path OR !is_dir($path)) {
-            if (!Files::CreateFolder($path, $perms)) {
+            if (!Files::createFolder($path, $perms)) {
                 Files::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
                 return false;
             }
@@ -138,7 +136,7 @@ class Files {
 
         // upload file - todo: error is not returned, if not exist
 
-        if (($dest_file = Files::uploadFile($filevarname, Files::aaDestinationDir(), '', 'overwrite', $file_name)) === false) {
+        if (($dest_file = Files::uploadFile($filevarname, Files::aadestinationDir(), '', 'overwrite', $file_name)) === false) {
             return false;  // error code is already set from Files::uploadFile()
         }
 
@@ -585,10 +583,6 @@ class AA_File_Wrapper {
         return feof($this->fp);
     }
 
-    function getExif(){
-        return new AA_Exif($this->url);
-    }
-
     function getUrl(){
         return $this->url;
     }
@@ -602,20 +596,20 @@ class AA_File_Wrapper {
      * @param $url string
      * @return AA_File_Wrapper
      */
-    function &wrapper($url) {
+    function wrapper($url) {
         $info = parse_url($url);
         if (ini_get('allow_url_fopen')) {
             $wrapper = new AA_File_Wrapper($url, $info);
         } else {
             switch (@$info['scheme']) {
                 case 'http':
-                    $wrapper = new AA_HTTP_File_Wrapper($url, $info);
+                    $wrapper = new AA_File_HTTP_Wrapper($url, $info);
                     break;
                 case 'https':
-                    $wrapper = new AA_HTTPS_File_Wrapper($url, $info);
+                    $wrapper = new AA_File_HTTPS_Wrapper($url, $info);
                     break;
                 case 'ftp':
-                    $wrapper = new AA_FTP_File_Wrapper($url, $info);
+                    $wrapper = new AA_File_FTP_Wrapper($url, $info);
                     break;
                 default:
                     $wrapper = new AA_File_Wrapper($url, $info);
@@ -629,12 +623,12 @@ class AA_File_Wrapper {
 /**
  * HTTP protocol class.
  */
-class AA_HTTP_File_Wrapper extends AA_File_Wrapper {
+class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
     var $headers;
     var $defaultPort;
     var $defaultHost;
     var $defaultPath;
-    /** AA_HTTP_File_Wrapper function
+    /** AA_File_HTTP_Wrapper function
      * @param $url
      * @param $info
      */
@@ -713,8 +707,8 @@ class AA_HTTP_File_Wrapper extends AA_File_Wrapper {
 /**
  * HTTPS protocol class.
  */
-class AA_HTTPS_File_Wrapper extends AA_HTTP_File_Wrapper {
-    /** AA_HTTPS_File_Wrapper function
+class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
+    /** AA_File_HTTPS_Wrapper function
      * @param $url
      * @param $info
      */
@@ -731,7 +725,7 @@ class AA_HTTPS_File_Wrapper extends AA_HTTP_File_Wrapper {
 /**
  * FTP protocol class.
  */
-class AA_FTP_File_Wrapper extends AA_File_Wrapper {
+class AA_File_FTP_Wrapper extends AA_File_Wrapper {
 
     var $ctrl;
     /** open function
@@ -853,348 +847,6 @@ class AA_FTP_File_Wrapper extends AA_File_Wrapper {
     }
 }
 
-/**
- * AA_File_Info class
- *
- * Copyright (c) 2007 Jan Cerny
- * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
- * (@see http://pkp.sfu.ca/ojs)
- *
- * Class abstracting getting of file metadata
- *
- * @todo:
- *
- * Usage:  $file_info = &AA_File_info::wrapper
- */
-
-class AA_File_Info {
-    /** @var $url string URL to the file */
-    var $url;
-    /** @var $size int bytes of the file */
-    var $size;
-
-    /**
-     * Constructor.
-     * @param $url string
-     */
-    function __construct($url) {
-        $this->url = $url;
-        $this->size = filesize($this->url);
-    }
-
-    /**
-     * Read and return size of file
-     * @return array of string
-     */
-    function getInfo() {
-        return array('file_size' => $this->getSize(true));
-    }
-
-    /**
-     * Read and return size of file
-     * @param $optimize boolean
-     * @return int / string file size without / with unit
-     */
-    function getSize($optimize = false) {
-        if ($optimize) {
-            if ($this->size < 1024) {
-                return $this->size . ' bytes';
-            } elseif ($this->size >= 1024 && $this->size < 1024*1024) {
-                return sprintf('%01.2f',$this->size/1024.0).' Kb';
-            } else {
-                return sprintf('%01.2f',$this->size/(1024.0*1024)).' Mb';
-            }
-        } else {
-            return $this->size;
-        }
-    }
-
-    /**
-     * Return instance of a class for reading the specified URL.
-     * @param $url string
-     * @return file info wrapper (type by $url)
-     */
-    function &wrapper($url) {
-        $info = parse_url($url);
-        /*if (ini_get('allow_url_fopen')) {
-            $wrapper = new AA_File_Wrapper($url, $info);
-        } else {*/
-        switch (strtolower(substr($info['path'], strrpos($info['path'], '.')+1 ))) { //parse extension
-            case 'jpg':
-                    $wrapper = new AA_Jpg_Image_File_Info($url);
-                    break;
-            case 'gif':
-            case 'png':
-                    $wrapper = new  AA_Image_File_Info($url);
-                    break;
-            default:
-                    $wrapper = new AA_File_Info($url);
-            }
-        return $wrapper;
-    }
-}
-
-/**
- * AA_Image_File_Info class
- */
-class AA_Image_File_Info extends AA_File_Info {
-    /** @var $img_height int height of image */
-    var $img_height;
-    /** @var $img_width int width of image */
-    var $img_width;
-    /** @var img_type string type of image according PHP IMAGETYPE_XXX constants */
-    var $img_type;
-
-    /**
-     * Constructor.
-     * @param $url string
-     */
-    function __construct($url) {
-        parent::__construct($url);
-        //print_r(getimagesize($this->url));
-        $size = getimagesize($this->url);
-        list($this->img_width, $this->img_height) = $size;
-        $this->img_type = $size['mime'];
-    }
-
-    /**
-     * Read and return infor array
-     * @return array of strings - infos
-     */
-    function getInfo() {
-        $return_array = parent::getInfo();
-        $return_array += array( 'img_height' => $this->getImgHeight(),
-                                'img_width'  => $this->getImgWidth(),
-                                'img_type'   => $this->getImgType());
-        return $return_array;
-    }
-
-    function getImgHeight() {
-        return $this->img_height;
-    }
-
-    function getImgWidth() {
-        return $this->img_width;
-    }
-
-    function getImgType() {
-        return $this->img_type;
-    }
-}
-
-/**
- * AA_Jpg_Image_File_Info class
- */
-class AA_Jpg_Image_File_Info extends AA_Image_File_Info {
-    /** @var $make string Exif make name */
-    var $make;
-    /** @var $model string Exif model name */
-    var $model;
-    /** @var $exposure_time string Exif exposure time */
-    var $exposure_time;
-    /** @var $aperture string Exif aperture */
-    var $aperture;
-    /** @var $focal_length string Exif foca_length */
-    var $focal_length;
-    /** @var $data_taken string Exif data taken*/
-    var $data_taken;
-    /** @var $whole_exif string whole Exif as a string */
-    var $whole_exif;
-    /** @var $orientation int Exif orientation of image */
-    var $orientation; //only for rotation
-
-    /**
-     * Constructor.
-     * @param $url string
-     */
-    function __construct($url) {
-        parent::__construct($url);
-        $this->exifParse();
-    }
-
-    /**
-     * Read and return infor array
-     * @return array of strings - infos
-     */
-    function getInfo() {
-        $return_array = parent::getInfo();
-        $return_array += array( 'make'          => $this->getMake(),
-                                'model'         => $this->getModel(),
-                                'exposure_time' => $this->getExposureTime(),
-                                'aperture'      => $this->getAperture(),
-                                'focal_length'  => $this->getFocalLength(),
-                                'data_taken'    => $this->getDataTaken(),
-                                'orientation'   => $this->getOrientation(),
-                                'whole_exif'    => $this->getWholeExif());
-        return $return_array;
-    }
-
-    /**
-     * Read and parse the Exif of a picture
-     * @return boolean wheather read
-     */
-    function exifParse() {
-        if (!is_readable($this->url)) return false;
-
-        //if ($this->img_type != IMAGETYPE_JPEG) return false; //not a jpg file
-
-        $exif = exif_read_data($this->url,ANY_TAG,true);
-        if (!$exif) return false;
-
-        $this->exifParsed = array();
-
-        if (isset($exif['IFD0']['Make'])) {
-            $this->make = $exif['IFD0']['Make'];
-        }
-        if (isset($exif['IFD0']['Model'])) {
-            $this->model = $exif['IFD0']['Model'];
-        }
-
-        if (isset($exif['COMPUTED']['ExposureTime'])) {
-            $this->exposure_time = $exif['COMPUTED']['ExposureTime'];
-        } elseif (isset($exif['EXIF']['ExposureTime'])){
-            $this->exifParseFracval($exif['EXIF']['ExposureTime'], $num, $den);
-            $exTime = $num / ($den ? $den : 1);
-            if ($exTime <= 0.5 ) {
-                $this->exposure_time = sprintf("%0.3f s (1/%d)", $exTime, 1/$exTime);
-            } else {
-                $this->exposure_time = sprintf("%3.2f s", $exTime);
-            }
-        }
-
-        if (isset($exif['EXIF']['FNumber'])){
-            $this->exifParseFracval($exif['EXIF']['FNumber'], $num, $den);
-            $this->aperture = "f/".$num / ($den ? $den : 1);
-        } elseif (isset($exif['COMPUTED']['ApertureFNumber'])) {
-            $this->aperture = $exif['COMPUTED']['ApertureFNumber'];
-        }
-
-        if (isset($exif['EXIF']['FocalLength'])){
-            $this->exifParseFracval($exif['EXIF']['FocalLength'], $num, $den);
-            $this->focal_length = sprintf("%d mm", $num / ($den ? $den : 1));
-        }
-
-        if (isset($exif['EXIF']['DateTimeDigitized'])) {
-            $this->data_taken = $exif['EXIF']['DateTimeDigitized'];
-        }
-
-        foreach ($exif as $key => $section) {
-            foreach ($section as $name => $val) {
-                $this->whole_exif .= "$key.$name: $val<br />\n";
-            }
-        }
-
-        if (isset($exif['IFD0']['Orientation'])) {
-            $this->orientation = $exif['IFD0']['Orientation'];
-        }
-
-        return true;
-    }
-
-    function exifParseFracval($val, &$num, &$den) {
-       $num = intval(strtok($val, "/"));
-       $den = intval(strtok("/"));
-    }
-
-    function getMake() {
-        return $this->make;
-    }
-
-    function getModel() {
-        return $this->model;
-    }
-
-    function getExposureTime() {
-        return $this->exposure_time;
-    }
-
-    function getAperture() {
-        return $this->aperture;
-    }
-    function getFocalLength() {
-        return $this->focal_length;
-    }
-
-    function getDataTaken() {
-        return $this->data_taken;
-    }
-    function getWholeExif() {
-        return $this->whole_exif;
-    }
-    function getOrientation() {
-        return $this->orientation;
-    }
-}
-
-/**
- * AA_Image_Manipulator class
- *
- * Copyright (c) 2007 Jan Cerny
- * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
- * (@see http://pkp.sfu.ca/ojs)
- *
- * Class abstracting manipulating with images
- *
- * @todo:
- *
- */
-
-class AA_Image_Manipulator {
-    /** @var $url string URL to the file */
-    var $url;
-
-    /**
-     * Constructor.
-     * @param $url string
-     */
-    function __construct($url) {
-        $this->url = $url;
-    }
-
-    /**
-     * Rotate image by given angle
-     * @param $angle float angle of rotation
-     * @param $bg_color int color of uncovered zone after rotation
-     * @return return value of imagejpeg() function
-     */
-    function rotateIt($angle, $bg_color) {
-        $rot_img = imagecreatefromjpeg($this->url);
-        $rot_img = imagerotate($rot_img, $angle, $bg_color);
-        $ret_val = imagejpeg($rot_img , $this->url);
-        imagedestroy($rot_img);
-        return $ret_val;
-    }
-
-    /**
-     * Rotate image by given Exif orientation or read it themself
-     * @param $orientation int Exif orientation
-     * @return return value of $this->rotateIt() function
-     */
-    function rotateAccordingToExif($orientation = 0) {
-        if (!is_readable($this->url)) return false;
-
-        if ($orientation == 0) {
-            $file_info = new AA_Jpg_Image_File_Info($this->url);
-            $orientation = $file_info->getOrientation();
-        }
-
-        switch($orientation) {
-            case 3: //if upper left
-                $ret_val = $this->rotateIt(180, 0);
-                break;
-            case 6: //if lower right
-               $ret_val = $this->rotateIt(270, 0);
-               break;
-            case 8: // end if upper right
-               $ret_val = $this->rotateIt(90, 0);
-               break;
-            default: // no rotate needed
-               $ret_val = false;
-        }
-
-        return $ret_val;
-    }
-}
 
 /**
  * AA_Directory_Wrapper class
@@ -1292,7 +944,7 @@ class AA_Directory_Wrapper {
     /** Repository of static variables (trick for PHP4)
      *  The trick for static class variables is used */
     function _getStatic($varname) {
-        return _setStatic($varname, null, false);
+        return self::_setStatic($varname, null, false);
     }
 
     /**
@@ -1558,4 +1210,4 @@ class AA_Directory_Wrapper {
     }
 }
 
-?>
+

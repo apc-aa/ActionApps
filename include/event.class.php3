@@ -204,7 +204,7 @@ class NewDiscussionCommentEvent {
      * @param $selector
      */
     function __construct( $params, $type, $class, $selector ) {
-        $email = unserialize($params);
+        $this->email = unserialize($params);
     }
 
     /** matches function
@@ -231,28 +231,28 @@ class NewDiscussionCommentEvent {
 
 //todo
         // get discussion item content
-        $columns = GetDiscussionContentSQL(
-           "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
-           $d_item_id, "", true, $html, "");
-        $columns = reset($columns);  // get first element
-
-        // get aliases
-        $aliases = GetDiscussionAliases();
-        for ( $i=2, $ino=count($item_params); $i<$ino; ++$i) {
-            FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
-        }
-
-        $CurItem = new AA_Item($columns, $aliases);
-
-        // newer version based on email templates
-        if ( $vid{0} == 't' ) {   // email template
-            $mail_id = substr($vid,1);
-            AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
-            return false;
-        }
-
-        $function = $this->funct;
-        return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
+//        $columns = GetDiscussionContentSQL(
+//           "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
+//           $d_item_id, "", true, $html, "");
+//        $columns = reset($columns);  // get first element
+//
+//        // get aliases
+//        $aliases = GetDiscussionAliases();
+//        for ( $i=2, $ino=count($item_params); $i<$ino; ++$i) {
+//            FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
+//        }
+//
+//        $CurItem = new AA_Item($columns, $aliases);
+//
+//        // newer version based on email templates
+//        if ( $vid{0} == 't' ) {   // email template
+//            $mail_id = substr($vid,1);
+//            AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
+//            return false;
+//        }
+//
+//        $function = $this->funct;
+//        return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
     }
 }
 
@@ -548,7 +548,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     $SQL = "SELECT pri, description, name FROM constant
              WHERE group_id='$LINK_TYPE_CONSTANTS'
                AND value='$name'";
-    $db->tquery($SQL);
+    $db->query($SQL);
     if ( $db->next_record() ) {
         $general_cat = $db->Record;
     } else {
@@ -855,4 +855,4 @@ function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_par
 
 
 
-?>
+

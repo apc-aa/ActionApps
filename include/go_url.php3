@@ -150,5 +150,3 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
     exit;
 }
 
-require_once(AA_INC_PATH. "request.class.php3");
-?>

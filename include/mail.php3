@@ -19,25 +19,23 @@
  *
  * @package   Include
  * @version   $Id$
- * @author    Jakub Adámek, Econnect
+ * @author    Jakub Adï¿½mek, Econnect
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
 */
 
-// (c) Jakub Adámek, Econnect, December 2002
+// (c) Jakub Adï¿½mek, Econnect, December 2002
 
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."item_content.php3";
-require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
 require_once AA_INC_PATH."validate.php3";
-require_once AA_INC_PATH."toexecute.class.php3";
 
 
-class AA_Mailtemplate implements iEditable {
+class AA_Mailtemplate implements AA_iEditable {
     protected $record;
 
     function __construct($id=null) {
@@ -55,7 +53,7 @@ class AA_Mailtemplate implements iEditable {
     public function getOwnerId()                             { return $this->record['owner_module_id']; }
     public function getProperty($property_id, $default=null) { return $this->record[$property_id]; }
 
-        /** iEditable method - adds Object's editable properties to the $form */
+        /** AA_iEditable method - adds Object's editable properties to the $form */
     public static function addFormrows($form) {
         return $form->addProperties(static::getClassProperties());
     }
@@ -69,9 +67,9 @@ class AA_Mailtemplate implements iEditable {
     }
 
 
-    /** iEditable method - creates Object from the form data */
+    /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {}
-    /** iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database */
     public        function save() {}
 }
 
@@ -259,9 +257,9 @@ class AA_Mail extends htmlMimeMail {
      * @param $to         array()
      * @param $item
      *
-     * Static function called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
+     * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
      */
-     function sendTemplate($mail_id, $to, $item=null, $later=true) {
+     static function sendTemplate($mail_id, $to, $item=null, $later=true) {
         // email has the templates in it
         $mail = new AA_Mail;
         if (!$mail->setFromTemplate($mail_id, $item)) {
@@ -283,7 +281,7 @@ class AA_Mail extends htmlMimeMail {
      * @param $mail_id
      * @param $zids
      */
-    function sendToReader($mail_id, $zids) {
+    static function sendToReader($mail_id, $zids) {
         $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
         if (count($chunks)==1) {
             // less than 50 mails - schedule right now
@@ -348,7 +346,7 @@ function html2text($html) {
     $html = html_entity_decode(str_ireplace(array('&nbsp;','&ensp;','&emsp;','&thinsp;'), array(' ',' ',' ',' '), $html));
 
     // Strip diacritics
-    // $html = strtr( $html, "áäèïéìíåòóöø¹»úùüı¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜİ®",
+    // $html = strtr( $html, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø©ï¿½ï¿½ï¿½ï¿½İ®",
     //                       "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
 
     // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
@@ -426,4 +424,4 @@ function html2text($html) {
     return $html;
 }
 
-?>
+

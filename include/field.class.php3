@@ -38,7 +38,9 @@ class AA_Field {
     /** class and propertioes for slice deffined fields (replaces input_show_func functionality)  */
     var $widget_params;
 
-    /** Default widget - as parsed from field data (input_show_func) */
+    /** Default widget - as parsed from field data (input_show_func)
+     *  @var AA_Widget
+     */
     var $widget;
 
     /** AA_Field function
@@ -81,42 +83,42 @@ class AA_Field {
     }
 
     /** storageColumn function
-     *  @return the table and column, where the field is stored
+     *  @return string - the table and column, where the field is stored
      */
     function storageColumn() {
         return $this->data['in_item_tbl'] ?:  ($this->data['text_stored'] ? 'text' : 'number');
     }
 
     /** storageTable function
-     *  @return the table and column, where the field is stored
+     *  @return string - the table and column, where the field is stored
      */
     function storageTable() {
         return $this->data['in_item_tbl'] ? 'item' : 'content';
     }
 
     /** getProperty function
-     *  @return field data
+     *  @return mixed - field data
      */
     function getProperty($property) {
         return $this->data[$property];
     }
 
     /** getId
-     * @return id of the field
+     * @return string - id of the field
      */
     function getId() {
         return $this->getProperty('id');
     }
 
     /** getName function
-     * @return name of the field
+     * @return string - name of the field
      */
     function getName() {
         return $this->getProperty('name');
     }
 
     /** getSliceId function
-     * @return long id of the slice of this field
+     * @return string - long id of the slice of this field
      */
     function getSliceId() {
         return unpack_id($this->getProperty('slice_id'));
@@ -135,7 +137,7 @@ class AA_Field {
      *                       usualy not used - right now we use it just for constants_sel.php3
      * @param $properties  - array of properties to redefine for $widget_type
      */
-    function &getWidget($widget_type=null, $properties=array()) {
+    function getWidget($widget_type=null, $properties=array()) {
         if ( is_null($this->widget) ) {
 
             // $this->widget = AA_Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
@@ -171,6 +173,7 @@ class AA_Field {
 
         // all default should have fnc:param format
         $val = ($generator = AA_Generator::factoryByString($this->data['input_default'])) ? $generator->generate() : new AA_Value();
+
         return $val->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
     }
 
@@ -209,7 +212,7 @@ class AA_Field {
     }
 
     /** getSearchType function
-     * @return text | numeric | date | constants
+     * @return array - [text | numeric | date | constants, [relation,<slice_id>] or [constants,<constants_name>]]
      */
     function getSearchType() {
         $field_type = 'numeric';
@@ -319,7 +322,7 @@ class AA_Field {
     }
 
     /** getRelation function
-     *  @return slice_id if constants are from slice, empty string otherwise
+     *  @return array - [relation,<slice_id>] or [constants,<constants_name>]
      */
     function getRelation() {
         $showfunc = AA_Widget::parseClassProperties($this->data['input_show_func']);
@@ -330,7 +333,7 @@ class AA_Field {
         return (substr($showfunc['const'],0,7) == "#sLiCe-") ? array('relation', substr($showfunc['const'],7)) : array('constants', $showfunc['const']);
     }
 
-    /** isMultiline - @return if the default widget allows block elements  */
+    /** isMultiline - @return bool - if the default widget allows block elements  */
     function isMultiline() {
         $params = AA_Widget::parseClassProperties($this->data['input_show_func']);
         return in_array($params['class'], array('AA_Widget_Txt','AA_Widget_Tpr','AA_Widget_Edt'));
@@ -345,7 +348,7 @@ class AA_Field {
 
 class AA_Fields implements Iterator {
 
-    /** array of object of AA_Field type */
+    /**  @var AA_Field[] - array of object of AA_Field type */
     var $fields;
 
     /** id of slice/module ... for which the fields are used */
@@ -410,7 +413,7 @@ class AA_Fields implements Iterator {
     }
 
     /** getField function
-     *  @return the field (copy - just because of syntax - it is not possible
+     *  @return AA_Field - the field (copy - just because of syntax - it is not possible
      *  to return null in &function())
      * @param $field_id
      */
@@ -540,7 +543,7 @@ class AA_Fields implements Iterator {
         $i = 0;
         $ret = array();
         foreach ( $this->fields as $field_id => $field ) { // in priority order
-            list($field_type,$field_add) = $field->getSearchType();
+            list($field_type, ) = $field->getSearchType();
             if ($field_type=='relation') {
                 $field_type = 'constants';     // @todo - deal with relations in search
             }
@@ -556,21 +559,23 @@ class AA_Fields implements Iterator {
      *  Returns true, if the passed field id looks like slice setting field
      *  "slice fields" are not used for items, but rather for slice setting.
      *  Such fields are destinguished by underscore on first letter of field_id
-     *  - static class function
      * @param $field_id
      */
-    function isSliceField($field_id) {
+    static function isSliceField($field_id) {
         return $field_id AND ($field_id{0} == '_');
     }
 
     /** createFieldId function
      *  Create field id from type and number
-     *  - static class function
      * @param $ftype
      * @param $no
      */
-    function createFieldId($ftype, $no="0", $id_type='.') {
-        if ((string)$no == "0") {
+    static function createFieldId($ftype, $no="0", $id_type='.') {
+        $no = (int)$no;
+        if ($no<0 OR $no>99999) {   // maybe the upper boundary could be bigger?
+            return '';
+        }
+        if ($no == 0) {
             $no = "";    // id for 0 is "xxxxx..........."
         }
         return $ftype. substr( str_pad($no, 16, $id_type, STR_PAD_LEFT), -(16-strlen($ftype)));
@@ -581,7 +586,7 @@ class AA_Fields implements Iterator {
      *  - static class function
      * @param $id
      */
-    function getFieldType($id) {
+    static function getFieldType($id) {
         $id = ltrim($id, "_");  // slice (module) fields are prefixed by underscore
         $dot_pos = strpos($id, ".");
         return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
@@ -589,59 +594,38 @@ class AA_Fields implements Iterator {
 
     /** getFieldNo function
      *  get field number from id ('.', '0', '1', '12', ... )
-     *  - static class function
      * @param $id
      */
-    function getFieldNo($id) {
+    static function getFieldNo($id) {
         return (string)substr(strrchr($id,'.'), 1);
     }
 
-    /** createSliceField function
-     *  creates slice field
-     *  - static class function
-     * @param $type
+    /** getFields4Select function
+     * @param $slice_id
+     * @param $slice_fields
+     * @param $order
+     * @param $add_empty
      */
-    function createSliceField($type) {
-        //todo
-
-    //    $varset = new CVarset();
-    //
-    //
-    //    // copy fields
-    //            // use the same setting for new field as template in AA_Core_Fields..
-    //            $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
-    //            $varset->setFromArray($field_types[$type]);   // from template for this field
-    //
-    //            // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
-    //            // identifiers (without dots!) by default. However if user add new
-    //            // "template" field to the AA_Core_Fields.. slice, then the identifier
-    //            // is full (it contains dots). We need base identifier, for now.
-    //            // Also we will add underscore for all "slice fields" - the ones
-    //            // which are not set for items, but rather for slice (settings)
-    //            $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($type);
-    //
-    //            // get new field id
-    //            $SQL = "SELECT id FROM field
-    //                    WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
-    //            $max = -1;  // Was 0
-    //            $db->query($SQL);   // get all fields with the same type in this slice
-    //            while ( $db->next_record() ) {
-    //                $max = max( $max, AA_Fields::getFieldNo($db->f('id')), 0);
-    //            }
-    //            $max++;
-    //            //create name like "time...........2"
-    //            $fieldid = AA_Fields::createFieldId($ftype_base, $max);
-    //
-    //            $varset->set("slice_id", $slice_id, "unpacked" );
-    //            $varset->set("id", $fieldid, "quoted" );
-    //            $varset->set("name",  $val, "quoted");
-    //            $varset->set("input_pri", $pri[$key], "number");
-    //            $varset->set("required", ($req[$key] ? 1 : 0), "number");
-    //            $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
-    //            if (!$varset->doInsert('field')) {
-    //                $err["DB"] .= MsgErr("Can't copy field");
-    //                break;
-    //            }
+    static function getFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false, $add_all=false) {
+        $where = array(array('slice_id',$slice_id,'l'));
+        if ($slice_fields == 'all') {
+            // all fields (item as well as slice fields) - no additional conditions
+            //$slice_fields_where = '';
+        } elseif (!$slice_fields) {
+            // only item fields (not begins with underscore)
+            $where[] = array('id', '\_%', 'NOT LIKE');
+        } else {
+            // only slice fields (begins with underscore)
+            $where[] = array('id', '\_%', 'LIKE');
+        }
+        $lookup_fields = DB_AA::select(array('id'=>'name'), 'SELECT `id`, `name` FROM `field`', $where, array($order));
+        if ($add_empty) {
+            $lookup_fields = array_merge(array(''=>' '), $lookup_fields);  // default - none
+        }
+        if ($add_all) {
+            $lookup_fields['all_fields'] = _m('-- any text field --');
+        }
+        return $lookup_fields;
     }
 
     /** Iterator interface */
@@ -651,39 +635,3 @@ class AA_Fields implements Iterator {
     public function next()    { if (is_null($this->fields)) {$this->load();} next($this->prifields);                          }
     public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->prifields) !== false);    }
 }
-
-/** GetFields4Select function
- * @param $slice_id
- * @param $slice_fields
- * @param $order
- * @param $add_empty
- */
-function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false, $add_all=false) {
-    $p_slice_id = q_pack_id($slice_id);
-    $db = getDB();
-    if ($slice_fields == 'all') {
-        // all fields (item as well as slice fields)
-        $slice_fields_where = '';
-    } elseif (!$slice_fields) {
-        // only item fields (not begins with underscore)
-        $slice_fields_where = "AND id NOT LIKE '\_%'";
-    } else {
-        // only slice fields (begins with underscore)
-        $slice_fields_where = "AND id LIKE '\_%'";
-    }
-    $db->query("SELECT id, name FROM field WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY $order");
-    $lookup_fields = array();
-    if ($add_empty) {
-        $lookup_fields[''] = " ";  // default - none
-    }
-    while ($db->next_record()) {
-        $lookup_fields[$db->f('id')] = $db->f('name');
-    }
-    if ($add_all) {
-        $lookup_fields['all_fields'] = _m('-- any text field --');
-    }
-    freeDB($db);
-    return $lookup_fields;
-}
-
-?>

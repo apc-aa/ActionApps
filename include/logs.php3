@@ -29,7 +29,6 @@
  *
 */
 
-require_once AA_INC_PATH. "toexecute.class.php3";
 
 /*
 Events logged into AA log
@@ -231,4 +230,4 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
 }
 
 
-?>
+

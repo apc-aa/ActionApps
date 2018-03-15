@@ -33,8 +33,6 @@ require_once AA_INC_PATH."javascript.php3";
 require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."item_content.php3";
 require_once AA_INC_PATH."event.class.php3";
-require_once AA_INC_PATH."profile.class.php3";
-require_once AA_INC_PATH."files.class.php3";
 
 if ( !is_object($event) ) {
     $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
@@ -132,7 +130,7 @@ class AA_Generator_Txt extends AA_Generator {
 
     /** generate() velue of currrent timestamp */
     function generate() {
-        return new AA_Value($this->text);
+        return strlen($this->text) ? new AA_Value($this->text) : new AA_Value(); 
     }
 }
 
@@ -221,7 +219,7 @@ class AA_Generator_Mul extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     function generate() {
-        return new AA_Value(explode(($this->delimiter ?: '|'), $this->text));
+        return new AA_Value(array_filter(explode(($this->delimiter ?: '|'), $this->text),'strlen'));
     }
 }
 
@@ -960,7 +958,9 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 case 'user':
                     // this is under development.... setu, 2002-0301
                     // value can be modified by $$varname = "new value";
-                    $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
+                    if (function_exists('usr_validate')) {
+                        $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
+                    }
                     break;
                 //case 'text':
                 //case 'url':
@@ -976,4 +976,4 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
     }
 }
 
-?>
+

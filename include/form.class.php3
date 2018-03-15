@@ -345,7 +345,7 @@ class AA_Form extends AA_Object {
         return $content;
     }
 
-    /** iEditable method - creates Object from the form data */
+    /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {
         $grabber = new AA_Objectgrabber_Form();
         $grabber->prepare();    // maybe some initialization in grabber
@@ -369,11 +369,11 @@ class AA_Form extends AA_Object {
         return $object;
     }
 
-    /** iEditable method - adds Object's editable properties to the $form */
+    /** AA_iEditable method - adds Object's editable properties to the $form */
     // public static function addFormrows($form);
 
-    /** iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database */
     // public        function save();
 }
 
-?>
+

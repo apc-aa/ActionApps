@@ -25,7 +25,6 @@
  * @link      http://www.apc.org/ APC
  *
 */
-require_once AA_INC_PATH. 'files.class.php3';
 
 // array params: column header, default sort order
 $sortable_columns = array (
@@ -237,9 +236,7 @@ function get_file_array($path, $dirname) {
  * @param $path
  * @param $dirname
  */
-function file_table($path, $dirname)
-{
-    global $sess;
+function file_table($path, $dirname) {
     global $directory;
 
     $files = get_file_array ($path, $dirname);
@@ -533,4 +530,4 @@ $fileman_js = "
         }
     // -->
     </script>";
-?>
+

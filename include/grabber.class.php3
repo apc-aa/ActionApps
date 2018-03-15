@@ -510,7 +510,6 @@ class AA_Grabber_Aarss extends AA_Grabber {
      * @param $fire
      */
     function __construct($feed_id, &$feed, $fire) {
-        global $debugfeed;
 
         /** Process one feed and returns parsed RSS (both AA and other)
          *  in $this->aa_rss */
@@ -816,7 +815,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         $ic = new ItemContent($content4id);
         $ic->setValue('externally_fed..', $this->feed['name']);  // TODO - move one layer up - to saver transactions
-        $ic->setItemId($item_id);
+        $ic->setItemID($item_id);
         return $ic;
     }
     /** finish function
@@ -828,7 +827,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
             //update the newest item
             $SQL = "UPDATE external_feeds SET newest_item='".quote($this->aa_rss['channels'][$this->r_slice_id]['timestamp'])."'
                      WHERE feed_id='".quote($this->feed_id)."'";
-            $db->tquery($SQL);
+            $db->query($SQL);
             freeDB($db);
         }
     }
@@ -870,7 +869,7 @@ class AA_Grabber_Form extends AA_Grabber {
     private   $_last_store_mode;
 
     function __construct() {
-        $_items = array();
+        $this->_items = array();
     }
 
     /** Name of the grabber - used for grabber selection box */
@@ -969,7 +968,7 @@ class AA_Grabber_Form extends AA_Grabber {
             if ( $store_mode = $UPDATE_MODES[$dirty_item_id{0}] ) {
                 $item_id    = substr($dirty_item_id, 1);
                 $item       = AA_Item::getItem($item_id);
-                $item_fields['slice_id________'] = pack_id($item->getSliceId());
+                $item_fields['slice_id________'] = pack_id($item->getSliceID());
             }
             // new items
             else {
@@ -1656,7 +1655,7 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
             $item->setValue('headline........', (string)$polozka->stk_name);
             $item->setValue('status_code.....', '2');  // nove importujeme do zasobniku
         }
-        $item->setItemId($item_id);
+        $item->setItemID($item_id);
 
         return $item;
     }
@@ -1709,12 +1708,12 @@ class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
         $response_att = $polozka->attributes();
 
 
-        $zids     = new zids($response_att['id'], 's');
+        //$zids     = new zids($response_att['id'], 's');
         $item_id  = AA::Stringexpander()->unalias('{item:'.$response_att['id'].':_#ITEM_ID_}');
         $poznamka = AA::Stringexpander()->unalias('{item:'.$response_att['id'].':source.........2}');
 
         $item = new ItemContent();
-        $item->setItemId($item_id);
+        $item->setItemID($item_id);
 
         $item->setValue('source.........1', (string)$response_att['state']);    // stav importu
         // poznamku pripojujeme na zacatek
@@ -1785,14 +1784,14 @@ class AA_Grabber_CTK extends AA_Grabber {
         };
 
         $item = new ItemContent();
-        $item->setItemId(new_id());
-        $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Název
+        $item->setItemID(new_id());
+        $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Nï¿½zev
         $item->setValue('place..........3', iconv('UTF-8', 'windows-1250', mb_strtoupper($domicil, 'UTF-8')));                          // Domicil
-        $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveøejnìní - 20160127T145301+01:00
-#        $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveøejnìní - zruesno lde emailu 7.12.2016
+        $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveï¿½ejnï¿½nï¿½ - 20160127T145301+01:00
+#        $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveï¿½ejnï¿½nï¿½ - zruesno lde emailu 7.12.2016
         $item->setValue('expiry_date.....', '1577836800');                                                                              // Datum expirace - 1.1.2020 - tedy do konce smlouvy s CTK
-        $item->setValue('full_text......1', iconv('UTF-8', 'windows-1250', $ftext));                                                    // Plný text
-        $item->setValue('source.........1', 'ÈTK');                                                                                     // Zdroj
+        $item->setValue('full_text......1', iconv('UTF-8', 'windows-1250', $ftext));                                                    // Plnï¿½ text
+        $item->setValue('source.........1', 'ï¿½TK');                                                                                     // Zdroj
         $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
         $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
 
@@ -1806,4 +1805,4 @@ class AA_Grabber_CTK extends AA_Grabber {
 
 }
 
-?>
+

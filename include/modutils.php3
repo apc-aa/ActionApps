@@ -96,7 +96,6 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
     $varset     = new CVarset();
 
     if ( $module_id )  {
-        $p_module_id = q_pack_id($module_id);
         $varset->add("name", "quoted", $name);
         $varset->add("slice_url", "quoted", $slice_url);
         $varset->add("priority", "number", $priority);
@@ -186,4 +185,4 @@ function ExitIfCantDelete( $del ) {
 function DeleteModule( $del ) {
     DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', array(array('id', $del, 'l')));
 }
-?>
+
