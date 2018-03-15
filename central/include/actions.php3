@@ -116,7 +116,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
         $db  = getDB();
 
         $SQL = "SELECT * FROM central_conf WHERE id IN ('".join_and_quote("','",$item_ids)."')";
-        $db->tquery($SQL);
+        $db->query($SQL);
         $ret = '';
         while ($db->next_record()) {
             $params   = 'dbpw5='.substr($db->f('db_pwd'),0,5).'&silent=1&fire=1&'.$this->update_action.'=1';
@@ -226,7 +226,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
      *  @param $akce_param  Not used
      */
     function perform($manager, &$state, $item_arr, $akce_param) {
-        if ( !isSuperadmin() ) {    // permission to delete items?
+        if ( !IsSuperadmin() ) {    // permission to delete items?
             return _m("You have not permissions to remove items");
         }
 
@@ -348,4 +348,4 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
 }
 
 
-?>
+

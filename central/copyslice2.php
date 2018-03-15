@@ -21,7 +21,6 @@ http://www.apc.org/
 
 require_once __DIR__. '/include/init_central.php';
 require_once AA_INC_PATH.     'formutil.php3';
-require_once AA_INC_PATH.     'files.class.php3';
 require_once AA_INC_PATH.     'msgpage.php3';
 
 pageOpen();
@@ -137,7 +136,7 @@ FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, fa
 FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
 FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, @reset($_POST['sync_alerts']), 10);
 FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </FORM>
 <?php

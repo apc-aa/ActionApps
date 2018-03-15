@@ -77,4 +77,4 @@ if ($err) {
 
 HtmlPageEnd();
 page_close();
-?>
+

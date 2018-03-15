@@ -34,7 +34,6 @@ require_once AA_INC_PATH . "varset.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
-require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_BASE_PATH. "central/include/actionapps.class.php";
 require_once AA_BASE_PATH. "central/include/actions.php3";
 
@@ -50,7 +49,7 @@ function CountItemsInBins() {
     $db = getDB();
 
     $ret = array('folder1'=>0, 'folder2'=>0, 'folder3' => 0);
-    $db->tquery("SELECT status_code, count(*) as cnt FROM central_conf
+    $db->query("SELECT status_code, count(*) as cnt FROM central_conf
                  GROUP BY status_code");
                  while ( $db->next_record() ) {
                      $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
@@ -125,4 +124,4 @@ require_once AA_INC_PATH."menu.php3";
 $manager->displayPage($zids, 'central', $manager->getBin());
 
 page_close();
-?>
+

@@ -34,4 +34,4 @@ $ACTIONAPPS[] = array( 'name'=>'Example AA Dev',  'url'=>'https://example.org/ap
 $ACTIONAPPS[] = array( 'name'=>'Example AAA',     'url'=>'https://example.org/aa/',          'user'=>'superuser2', 'pwd'=>'superpassword2');
 $ACTIONAPPS[] = array( 'name'=>'Example AA test', 'url'=>'http://test.example.org/apc-aa/',  'user'=>'superuser3', 'pwd'=>'superpassword3');
 
-?>
+

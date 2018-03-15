@@ -22,7 +22,6 @@ http://www.apc.org/
 
 require_once __DIR__. "/include/init_central.php";
 require_once AA_INC_PATH.     'formutil.php3';
-require_once AA_INC_PATH.     'files.class.php3';
 require_once AA_INC_PATH.     "msgpage.php3";
 
 pageOpen();
@@ -60,7 +59,7 @@ $form_buttons = array ("submit");
 FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
 FrmInputSelect('comparation_aa', _m('AA to compare'),    $aas_array, $_POST['comparation_aa'], true, _m('ActionApps installation to check for differences (just checking right now - noting is changed by this step)'));
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </FORM>
 <?php

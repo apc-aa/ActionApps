@@ -21,7 +21,6 @@ http://www.apc.org/
 
 require_once __DIR__. "/include/init_central.php";
 require_once AA_INC_PATH.     'formutil.php3';
-require_once AA_INC_PATH.     'files.class.php3';
 require_once AA_INC_PATH.     "msgpage.php3";
 
 pageOpen();
@@ -80,7 +79,7 @@ FrmStaticText( $aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_
 foreach($tmplate_slices as $sid => $name) {
     FrmInputSelect('sync_slices['.$sid.']', $name, $cmp_slices, $_POST['sync_slices'], true);
 }
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </FORM>
 <?php

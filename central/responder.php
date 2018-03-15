@@ -65,7 +65,7 @@ class AA_Responder_Logout extends AA_Responder {
     function isPerm() { return true; }
 
     function run() {
-        global $sess, $auth;
+        global $sess;
         $ret = array('sessid'=>$sess->id, 'command' => $GLOBALS['request']->getCommand());
         if (is_object($sess)) {
             $sess->delete();
@@ -180,7 +180,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
         $item         = AA_Item::getItem(new zids($this->item_id));
         $iid          = $item->getItemID();
-        $slice        = AA_Slice::getModule($item->getSliceId());
+        $slice        = AA_Slice::getModule($item->getSliceID());
 
         // Use right language (from slice settings) - languages are used for button texts, ...
         $lang         = $slice->getLang();
@@ -265,7 +265,7 @@ class AA_Responder_Tags extends AA_Responder {
     /** array of module types to get */
     var $slice_id;
     var $input;
-    var $field;
+    var $field_id;
 
     function  __construct($param=null) {
         // the slice id and the field id defines the field, where the widget is DEFINED
@@ -311,7 +311,7 @@ class AA_Responder_Widget_Selection extends AA_Responder {
     /** array of module types to get */
     var $slice_id;
     var $input;
-    var $field;
+    var $field_id;
 
     function  __construct($param=null) {
         // the slice id and the field id defines the field, where the widget is DEFINED
@@ -451,4 +451,4 @@ $response->respond();
 exit;
 
 
-?>
+

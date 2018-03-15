@@ -28,7 +28,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once AA_INC_PATH. 'files.class.php3';
 
 /**
  * AA_Actionapps class - holds information about one AA installation
@@ -73,11 +72,11 @@ class AA_Actionapps {
     }
 
     /** getActionapps function
-     *  static - main factory static method called like:
+     *  main factory static method called like:
      *     $aa = AA_Actionapps::getActionapps($aa_id);
      * @param $aa_id
      */
-    function & getActionapps($aa_id) {
+    static function getActionapps($aa_id) {
         static $aas = array();
         if (!isset($aas[$aa_id])) {
             $aa_ic       = Central_GetAaContent(new zids($aa_id, 's'));
@@ -219,7 +218,7 @@ class AA_Actionapps {
 
     /// Static methods
     /** create array of all Approved AAs from central database */
-    function getArray() {
+    static function getArray() {
 
         $ret    = array();
         $conds  = array();
@@ -347,9 +346,8 @@ class AA_Module_Definition_Chunk {
 
     /** Creates array of chunks from given data. The data are splited to more
      *  chunks, if it is bigger than limit.
-     *  static class member method
      **/
-    function factoryArray($module_id, $table, $rows) {
+    static function factoryArray($module_id, $table, $rows) {
         $chunks = array();
 
         // maximum 1000 rows in one chunk
@@ -389,11 +387,15 @@ class AA_Module_Definition_Chunk {
                 foreach ($keys[$table] as $col) {
                     $ident[] = $data[$col];
                 }
+                huhl($table, $col, $ident, $ident, $data, '--------------------');
+
                 if ($res = $metabase->doInsert($table, $data, 'nohalt')) {
                     $msgs['ok'][$table][] = $ident;
                 } else {
                     $msgs['err'][$table][] = $ident;
                 }
+                huhl($res, '--------------------');
+
             }
         }
         $ret = array();
@@ -541,7 +543,7 @@ class AA_Difference {
 
     /// Static
 
-    function _compareArray($template_arr, $destination_arr, $identifier, $ignore) {
+    static function _compareArray($template_arr, $destination_arr, $identifier, $ignore) {
         $diff       = array();
         if (! is_array($template_arr) AND is_array($destination_arr)) {
             return array( 0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', array($identifier->toString())), new AA_Sync_Action('DELETE', $identifier)));
@@ -840,4 +842,4 @@ function Central_QueryZids($conds, $sort="", $type="app") {
     return GetZidsFromSQL($SQL, 'id');
 }
 
-?>
+

@@ -21,9 +21,7 @@ http://www.apc.org/
 
 require_once __DIR__. "/include/init_central.php";
 require_once AA_INC_PATH.     'formutil.php3';
-require_once AA_INC_PATH.     'files.class.php3';
 require_once AA_INC_PATH.     "msgpage.php3";
-require_once AA_INC_PATH.     "toexecute.class.php3";
 
 
 function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
@@ -183,7 +181,7 @@ foreach ($_POST['sync_slices'] as $k => $v) {
 }
 //FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
 // prepared for multiple update
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </FORM>
 <?php
