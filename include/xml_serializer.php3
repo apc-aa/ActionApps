@@ -253,4 +253,3 @@ function test_xmlserializer() {
 
 //test_xmlserializer();
 
-?>

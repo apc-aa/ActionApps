@@ -26,4 +26,3 @@
 */
 
 // no longer used
-?>

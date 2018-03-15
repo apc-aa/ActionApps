@@ -31,6 +31,10 @@
 
 class AA_Exporter extends AA_Object {
     var $field_set;
+
+    /**
+     * @var AA_Grabber
+     */
     var $grabber;
 
     function __construct($params) {
@@ -257,8 +261,6 @@ class AA_Exporter_Html extends AA_Exporter {
     }
 
     function _outputStart($item)  {
-        $this->_charset = $this->grabber->getCharset();
-
         $ret  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
         $ret .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$this->getCharset().'"><title>ActionApps Export</title></head><body><table border="1">';
 
@@ -379,7 +381,7 @@ class AA_Fieldset {
     /** array of fields or definitions
      *  (element could be "headline........" as well as "_#HEADLINE _#ABSTRACT")
      *  the type is stored in $_type array
-     * /
+     */
     var $_fields;
 
     /** array of types of fields - corresponds to $_fields array
@@ -449,7 +451,6 @@ class AA_Exportsetings extends AA_Object {
      *  AA_Object's method
      */
     static function getClassProperties() {
-        $props = array();
 
         $bins_arr = array(
             AA_BIN_ALL      => _m('All'),
@@ -578,4 +579,3 @@ class AA_Exportsetings extends AA_Object {
 }
 
 
-?>

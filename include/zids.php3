@@ -471,7 +471,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     function translate($type) {
         $db = getDB();
         $SQL = "SELECT id, short_id FROM item WHERE ". $this->sqlin();
-        $db->tquery($SQL);
+        $db->query($SQL);
         while ( $db->next_record() ) {
             $unpacked_id = unpack_id($db->f('id'));
             $this->l2s[$unpacked_id] = $db->f('short_id');
@@ -649,4 +649,3 @@ function id_t2l(&$str) {
 }
 
 
-?>

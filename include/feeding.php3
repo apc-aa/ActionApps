@@ -195,7 +195,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     }
 
     // don't feed if the item is already fed.
-    if (isItemFed($item_id, $destination_id)) {
+    if (IsItemFed($item_id, $destination_id)) {
         return false;
     }
 
@@ -467,4 +467,3 @@ function FeedItem($item_id) {
         }
     }
 }
-?>

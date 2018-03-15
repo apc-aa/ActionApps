@@ -176,7 +176,7 @@ class AA_Linkcheck {
                                            valid_rank='" .$val["valid_rank"]. "',
                                            validated='"  .$val["timestamp"].  "'
                     WHERE id = '".$l_id."'";
-            $db->tquery($SQL);
+            $db->query($SQL);
         }
         freeDB();
     }
@@ -237,7 +237,7 @@ class AA_Linkcheck {
             */
             // linear function
             $n1 = (self::$HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"]/($i+1));
-            $num = $num + $n1;
+            $num += $n1;
         }
         // returned number - 1000 is the biggest number, with worst error codes, we want to return
         // 14.64... is the count of linear function with the worst error code weights
@@ -248,4 +248,4 @@ class AA_Linkcheck {
 
 } // end - class AA_Linkcheck
 
-?>
+

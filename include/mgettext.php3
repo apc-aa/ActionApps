@@ -141,4 +141,4 @@ function GetLang($lang_file) {
     return isset($GLOBALS['LANGUAGE_NAMES'][$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
 }
 
-?>
+

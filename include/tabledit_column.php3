@@ -349,4 +349,4 @@ function ShowColumnValueReadOnly($cview, $show_val, $val, $name="") {
     echo $show_val;
 }
 
-?>
+

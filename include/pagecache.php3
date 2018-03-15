@@ -40,7 +40,6 @@
  */
 
 require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."toexecute.class.php3";
 
 class AA_Cacheentry {
     protected $c = '';      // content
@@ -330,7 +329,7 @@ class AA_Pagecache_Purge {
      *  Clears all old cached data
      */
     function toexecutelater($cache_time) {
-        $tm   = time();
+        // $tm   = time();
         // we tired to speed up the deletion by multi-table delete:
         // DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find
         //  WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache.stored<'1200478499'
@@ -410,4 +409,4 @@ class CacheStr2find {
 }
 
 $GLOBALS['pagecache'] = new PageCache(CACHE_TTL);
-?>
+

@@ -441,4 +441,4 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         return DB_AA::select(array('userid'=>'perm'), "SELECT userid, perm FROM `perms`", array(array('object_type', $objectType), array('objectid', $objectID)));
     }
 }
-?>
+

@@ -343,7 +343,7 @@ function ChangeCatPermAsIn($category, $template) {
  * @param $slice_id
  */
 function FilemanPerms($slice_id) {
-    global $sess, $errcheck;
+    global $errcheck;
     // Sets the fileman_dir var:
     global $fileman_dir;
     if (! $slice_id) {
@@ -496,7 +496,6 @@ class AA_Perm {
     }
 
     public function findUserByLogin($user_login) {
-        $users = array();
         foreach ($this->perm_systems as $perm_sys) {
             if ($user = $perm_sys->findUserByLogin($user_login)) {
                 return $user;
@@ -760,7 +759,7 @@ class AA_Permsystem {
     function getIDsInfo($uid)                                   {}
     function getGroupMembers($group_id)                         {}
     function getMembership($id, $flags=0)                       { return array(); }
-    function getObjectsPerms()                                  { return array(); }
+    function getObjectsPerms($objectID, $objectType)            { return array(); }
     function getJoinedPerms($uid, $objectType, $groups=array()) { return array(); }
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
@@ -849,7 +848,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      */
     private function _findUserPattern($pattern) {
         $db = getDB();
-        $db->tquery("SELECT content.text AS name, content.item_id AS id
+        $db->query("SELECT content.text AS name, content.item_id AS id
                        FROM slice
                  INNER JOIN item ON slice.id = item.slice_id
                  INNER JOIN content ON item.id=content.item_id
@@ -866,7 +865,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     public function findGroups($pattern) {
         $db = getDB();
-        $db->tquery("SELECT module.id,module.name FROM slice,module
+        $db->query("SELECT module.id,module.name FROM slice,module
                       WHERE slice.type = 'ReaderManagement'
                         AND slice.id   = module.id
                         AND module.deleted < '1'
@@ -1030,7 +1029,14 @@ function GetAuthData( $user_id = false ) {
 
 
 class AA_Reader {
-    function _find($field, $value, $slices, $bin ) {
+    /**
+     * @param $field
+     * @param $value
+     * @param $slices
+     * @param $bin
+     * @return mixed
+     */
+    protected static function _find($field, $value, $slices, $bin ) {
         if (!is_array($slices)) {
             $slices  = getReaderSlices();
         }
@@ -1047,13 +1053,19 @@ class AA_Reader {
      * @param $username
      * @param $bin
      */
-    function name2Id($username, $slices=null, $bin=null ) {
+    static function name2Id($username, $slices=null, $bin=null ) {
         return AA_Reader::_find(FIELDID_USERNAME, $username, $slices, $bin );
     }
 
-    function email2Id($email, $slices=null, $bin=null) {
+    /**
+     * @param $email
+     * @param null $slices
+     * @param null $bin
+     * @return mixed
+     */
+    static function email2Id($email, $slices=null, $bin=null) {
         return AA_Reader::_find(FIELDID_EMAIL, $email, $slices, $bin);
     }
 }
 
-?>
+

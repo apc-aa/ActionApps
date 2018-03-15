@@ -29,7 +29,6 @@
 require_once AA_INC_PATH."tabledit_column.php3";
 require_once AA_INC_PATH."tabledit_util.php3";
 require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."scroller.php3";
 
 /// identifies new record
 $new_key = "__new__";
@@ -196,7 +195,7 @@ class tabledit {
         $scrname = "te_".$this->viewID;
         global $$scrname;
         $scroll = $$scrname;
-        $scrurl = StateUrl($_SERVER[PHP_SELF]."?set_tview=".$this->gotoview2());
+        $scrurl = StateUrl($_SERVER['PHP_SELF']."?set_tview=".$this->gotoview2());
 
         if (is_object($scroll)) {
             $scroll->metapage = $this->view["listlen"];
@@ -732,7 +731,7 @@ class tabledit {
     /** SetDefaultButtons function
      *
      */
-    function SetDefaultButtons()
+    function setDefaultButtons()
     {
         $bl = $this->view["buttons_left"];
         $bd = $this->view["buttons_down"];
@@ -998,4 +997,4 @@ class tabledit {
 }
 // END of class tabledit
 
-?>
+

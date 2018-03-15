@@ -48,17 +48,31 @@ require_once(AA_INC_PATH.'phplib/phplib.php');
 
 spl_autoload_register(function ($class_name) {
     $PAIRS = array(
-        'AA_Perm'            => 'include/perm_core.php3',
-        'AA_Permsystem_Sql'  => 'include/perm_sql.php3',
-        'AA_Permsystem_Ldap' => 'include/perm_ldap.php3',
-        'AA_Array'           => 'include/table.class.php3',
-        'ConvertCharset'     => 'include/convert_charset.class.php3',
-        'AA_Items'           => 'include/item.php3',
-        'AA_Form_Array'      => 'include/widget.class.php3',
-        'AA_Mysqlauth'       => 'include/auth.php3',
-        'AA_Scroller'        => 'include/scroller.php3',
-        'AA_Actionapps'      => 'central/include/actionapps.class.php',
-        'AA_Mailman'         => 'include/mailman.php3'
+        'AA_Actionapps'                  => 'central/include/actionapps.class.php',
+        'AA_Auth'                        => 'include/locauth.php3',
+        'AA_Components'                  => 'include/statestore.php3',
+        'AA_Computedfields_Updater'      => 'include/hitcounter.class.php3',
+        'AA_ComputedfieldsItem_Updater'  => 'include/hitcounter.class.php3',
+        'AA_Fields'                      => 'include/field.class.php3',
+        'AA_Form_Array'                  => 'include/widget.class.php3',
+        'AA_Formatter'                   => 'include/widget.class.php3',
+        'AA_iEditable'                   => 'include/statestore.php3',
+        'AA_Items'                       => 'include/item.php3',
+        'AA_Mailman'                     => 'include/mailman.php3',
+        'AA_Mysqlauth'                   => 'include/auth.php3',
+        'AA_Object'                      => 'include/statestore.php3',
+        'AA_Perm'                        => 'include/perm_core.php3',
+        'AA_Permsystem_Ldap'             => 'include/perm_ldap.php3',
+        'AA_Permsystem_Sql'              => 'include/perm_sql.php3',
+        'AA_Property'                    => 'include/widget.class.php3',
+        'AA_Poll'                        => 'modules/polls/include/poll.class.php3',
+        'AA_Polls'                       => 'modules/polls/include/poll.class.php3',
+        'AA_Serializable  '              => 'include/statestore.php3',
+        'AA_Storable'                    => 'include/statestore.php3',
+        'AA_Widget_Formrow'              => 'include/form.class.php3',
+        'ConvertCharset'                 => 'include/convert_charset.class.php3',
+        'Files'                          => 'include/files.class.php3',
+        'zids'                           => 'include/zids.php3'
         );
 
     if ($PAIRS[$class_name]) {
@@ -73,29 +87,72 @@ spl_autoload_register(function ($class_name) {
     $core = $matches[1];
 
     switch ($core) {
-        case 'form':
-        case 'table':
-        case 'debug':
-        case 'transformation':
-        case 'grabber':
-        case 'difftext':
-        case 'manager':
         case 'adminpage':
-        //  case 'widget':
-        //  case 'field':
-            require_once AA_INC_PATH. $core. '.class.php3';
+        case 'debug':
+        case 'difftext':
+        case 'field':
+        case 'form':
+        case 'grabber':
+        case 'hitcounter':
+        case 'manager':
+        case 'profile':
+        case 'request':
+        case 'searchbar':
+        case 'slice':
+        case 'table':
+        case 'toexecute':
+        case 'transformation':
+        case 'widget':
+        case 'view':
+            require_once __DIR__. '/'. $core. '.class.php3';
+            return;
+        case 'module':
+        case 'modulesettings':
+            require_once __DIR__. '/slice.class.php3';
+            return;
+        case 'response':
+        case 'clientauth':
+        case 'http':
+            require_once __DIR__. '/request.class.php3';
+            return;
+        case 'scroller':
+            require_once __DIR__. '/scroller.php3';
             return;
         case 'plannedtask':
-            require_once AA_INC_PATH. 'task.class.php3';
+            require_once __DIR__. '/task.class.php3';
             return;
+        case 'bookmarks':
+            require_once __DIR__. '/searchbar.class.php3';
+            return;
+        case 'views':
+            require_once __DIR__. '/view.class.php3';
+            return;
+        case 'saver':
         case 'objectgrabber':
-            require_once AA_INC_PATH. 'grabber.class.php3';
+            require_once __DIR__. '/grabber.class.php3';
+        case 'trees':
+        case 'supertree':
+            require_once __DIR__. '/tree.class.php3';
+            return;
+        case 'array':
+            require_once __DIR__. '/table.class.php3';
+            return;
+        case 'manageraction':
+        case 'manageractions':
+            require_once __DIR__. '/manager.class.php3';
             return;
         case 'validate':
-            require_once AA_INC_PATH. 'validate.php3';
+            require_once __DIR__. '/validate.php3';
             return;
         case 'exportsetings':
-            require_once AA_INC_PATH. 'exporter.class.php3';
+            require_once __DIR__. '/exporter.class.php3';
+            return;
+        case 'formrow':
+            require_once __DIR__. '/form.class.php3';
+            return;
+        case 'file':
+        case 'directory':
+            require_once __DIR__. '/files.class.php3';
             return;
       }
 
@@ -106,7 +163,7 @@ spl_autoload_register(function ($class_name) {
     if (defined('AA_CUSTOM_DIR')) {
         foreach ($CUSTOM_INC_FILES as $inc_def => $inc_file) {
             if (strpos($class_name, $inc_def) === 0 ) {
-                include_once(AA_INC_PATH. 'custom/'. AA_CUSTOM_DIR. '/'. $inc_file);
+                include_once(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/'. $inc_file);
             }
         }
     }
@@ -471,6 +528,8 @@ class DB_AA extends DB_Sql {
      *     <        - integer           <                single             array('date', 1478547854, '<')
      *     >=       - integer           >=               single             array('date', 1478547854, '>=')
      *     <=       - integer           <=               single             array('date', 1478547854, '<=')
+     *     <>       - integer           <>               single             array('date', 1478547854, '<>')
+     *     !=       - integer           <>               single             array('date', 1478547854, '!=')   // the same as above - "<>"
      *     ISNULL   -                   IS NULL                             array('number', 'ISNULL')
      *     NOTNULL  -                   IS NOT NULL                         array('number', 'NOTNULL')
      *     LIKE     -                   LIKE             single             array('id', '\_%', 'LIKE')
@@ -484,7 +543,7 @@ class DB_AA extends DB_Sql {
             // $vardef is array(varname, type, value)
             list($name, $value, $type) = $vardef;
             $type = (string)$type;
-            if (in_array($type, array('>','<','<=','>='))) {
+            if (in_array($type, array('>','<','<=','>=', '<>', '!='))) {
                 $operator = $type;
                 $type     = 'i';
             } elseif ( ($type == 'LIKE') OR ($type == 'NOT LIKE') ) {
@@ -539,7 +598,7 @@ class DB_AA extends DB_Sql {
     }
 
 
-    /** tquery function
+    /** query function
      * @param $SQL
      */
     function query($SQL) {
@@ -547,13 +606,6 @@ class DB_AA extends DB_Sql {
         $ret = parent::query($SQL);
         AA::$debug&16 && AA::$dbg->traceend('Query', (stripos($SQL, "SELECT") === 0) ? $this->num_rows() : $this->affected_rows());
         return $ret;
-    }
-
-    /** tquery function
-     *  @deprecated - use query
-     */
-    function tquery($SQL) {
-        return $this->query($SQL);
     }
 
     /** query_nohalt function
@@ -700,4 +752,3 @@ function pageOpen($type = '') {
         $auth->start();
     }
 }
-?>

@@ -161,10 +161,10 @@ class AA_Widget extends AA_Components {
     var $item_index = 1;
 
     /** name function
+     *
      */
     function name()         {}
-
-    function description()  {}
+    //    function description()  {}
 
     /** returns if the widget handles multivalue or just single value   */
     function multiple()    { return false;   }
@@ -598,9 +598,8 @@ class AA_Widget extends AA_Components {
      *   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
      *   is called to grab the value (or multivalues) from the submitted form
      *
-     *  static class method (...mostly)
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = array();
 
@@ -946,7 +945,7 @@ class AA_Widget_Mfl extends AA_Widget {
      *
      *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = array();
 
@@ -1048,7 +1047,6 @@ class AA_Widget_Rio extends AA_Widget {
         $required    = $aa_property->isRequired() ? 'required' : '';
         $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
-        $widget      = '';
 
         $use_name     = $this->getProperty('use_name', false);
 
@@ -1142,9 +1140,8 @@ class AA_Widget_Dte extends AA_Widget {
      *   (or multivalues) from the submitted form
      *
      *  @param $data4field - array('y'=>array(), 'm'=>array(), 'd'=>array(), 't'=>array())
-     *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
 
         $years  = (array)$data4field['y'];
         $months = (array)$data4field['m'];
@@ -1242,10 +1239,8 @@ class AA_Widget_Chb extends AA_Widget {
      *  @param $data4field - array('def'=>val, '0'=>val)
      *   This method coverts such data to AA_Value.
      *
-     *
-     *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = array();
 
@@ -1304,7 +1299,6 @@ class AA_Widget_Mch extends AA_Widget {
         $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[mch]';
         $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
-        $ret           = '';
 
         $use_name     = $this->getProperty('use_name', false);
         $height       = (int)$this->getProperty('height');
@@ -1348,10 +1342,8 @@ class AA_Widget_Mch extends AA_Widget {
      *  @param $data4field - array('def'=>val, '0'=>val)
      *   This method coverts such data to AA_Value.
      *
-     *
-     *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = array();
 
@@ -1436,7 +1428,7 @@ class AA_Widget_Fil extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return AA_Widget::propertiesShop(array('allowed_ftypes','label', 'hint','display_url'));
+        return AA_Widget::propertiesShop(array('allowed_ftypes','label', 'hint', 'display_url'));
     }
 
     /** @return AA_Value for the data send by the widget
@@ -1456,9 +1448,8 @@ class AA_Widget_Fil extends AA_Widget {
      *   insert_fnc_fil() knows about the new file for upload
      *
      *  @param $data4field - array('var'=>array(), 'url'=>array())
-     *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
 
         //huhl($data4field, $_FILES);
 
@@ -1511,6 +1502,10 @@ class AA_Widget_Fil extends AA_Widget {
             }
             $delim        = '<br />';
         }
+        
+        if ($_GET['dd']=='wer') {
+            huhl($display_url, $widget, $value, $value->count(), $content, $this);
+        }
         // no input was printed, we need to print one
         if ( !$widget AND ($display_url == 0)) {
             $input_name   = $base_name ."[fil][url][0]";
@@ -1520,7 +1515,8 @@ class AA_Widget_Fil extends AA_Widget {
         $input_name = $base_name ."[fil][var][0]";
 
         if ($type=='normal') {
-            $widget .= '    <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">'. "<!--$type -->";
+            $required = ($aa_property->isRequired() AND !$value->count() AND ($display_url > 0)) ? 'required' : '';
+            $widget .= '    <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" '.$required.'>'. "<!--$type -->";
         } else {
             $url_params = array('inline'      => 1,
                                 'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', AA_ITEM_JSON)'
@@ -1626,8 +1622,8 @@ class AA_Widget_Tag extends AA_Widget {
         // we send to responder the slice and field id of the field with the DEFINITION
         // I do not want to transport all the settings over GET parameter
 
-        $def_field_id = $aa_property->getId();
-        $def_slice_id = $content->getOwnerId();
+        // $def_field_id = $aa_property->getId();
+        // $def_slice_id = $content->getOwnerId();
 
         $opts     = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
         $json_val = array();
@@ -1654,10 +1650,8 @@ class AA_Widget_Tag extends AA_Widget {
      *  @param $data4field - array('0'=>values separated by |||)
      *   This method coverts such data to AA_Value.
      *
-     *
-     *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = array();
 
@@ -1858,7 +1852,7 @@ HTML;
         return $ret;
     }
 
-    function getValue($data4field) {
+    static function getValue($data4field) {
         return AA_Widget_Mch::getValue($data4field);
     }
 }
@@ -2104,10 +2098,8 @@ class AA_Widget_Pwd extends AA_Widget {
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][pwd][new]=MyPassword
      *  @param $data4field - array('pwd'=>MyPassword)
      *   This method coverts such data to AA_Value.
-     *
-     *  static class method
      */
-    function getValue($data4field) {
+    static function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
         if (is_array($data4field) AND isset($data4field['new1'])) {
             return new AA_Value(ParamImplode(array('AA_PASSWD',$data4field['new1'],$data4field['new2'],$data4field['old'])), $flag);
@@ -2278,7 +2270,7 @@ class AA_Property extends AA_Storable {
     var $content_type_switch_default;
 
     /** @todo some kind of perms - who can edit/change, ... - not defined, yet */
-    var $perms;
+    var $perm;
 
     /** array of constants used for selections (selectbox, radio, ...) */
     var $const_arr = array();
@@ -2301,7 +2293,7 @@ class AA_Property extends AA_Storable {
      * @param $show_content_type_switch
      * @param $content_type_switch_default
      */
-    function __construct($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
+    function __construct($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perm=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
         $this->id                          = $id;
         $this->name                        = $name;
         $this->type                        = $type;
@@ -2314,7 +2306,7 @@ class AA_Property extends AA_Storable {
         $this->example                     = $example;
         $this->show_content_type_switch    = $show_content_type_switch;
         $this->content_type_switch_default = $content_type_switch_default;
-        $this->perm                        = $perms;
+        $this->perm                        = $perm;
         $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
         $this->default                     = $default;
         $this->translations                = is_array($translations) ? $translations : array();
@@ -2350,7 +2342,6 @@ class AA_Property extends AA_Storable {
     function getName()         { return $this->name;         }
     function getType()         { return $this->type;         }
     function getHelp()         { return $this->input_help;   }
-    function getExample()      { return $this->example;      }
     function getConstants()    { return $this->const_arr;    }
     function getTranslations() { return $this->translations; }
 
@@ -2413,7 +2404,6 @@ class AA_Property extends AA_Storable {
                 return call_user_func_array(array($this->type, 'addFormrows'), array($form));
             }
             throw new Exception('Can\'t generate widget for '.$this->type.' object property');
-            return null;
         }
 
         return $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
@@ -2509,7 +2499,7 @@ class AA_Property extends AA_Storable {
             if ( is_array($value) ) {
                 // all keys are numeric
                 foreach($value as $k => $v) {
-                    $ret = $ret & $this->_saveSingle($v, $object_id, $k, $owner_id);
+                    $ret &= $this->_saveSingle($v, $object_id, $k, $owner_id);
                 }
 //            } elseif (!empty($value)) {
 //                throw new Exception('Property marked as multi but do not contain array value');
@@ -2560,7 +2550,6 @@ class AA_Property extends AA_Storable {
             return true;
         }
         throw new Exception('object is not AA_Storable - ', $this->id);
-        return false;
     }
 
     /** _saveRow function
@@ -2593,13 +2582,13 @@ class AA_Formatter {
      *   We use just two, at this moment - HTML (=1) and PLAIN (=2)
      *   (we will continue on bit basis, so next formatter would be xxx (=4))
      */
-    function getStandardFormattersBitfield() {
+    static function getStandardFormattersBitfield() {
         // @todo move to const in php5
         return 65535;
     }
 
     /** no formaters */
-    function getNoneFormattersBitfield() {
+    static function getNoneFormattersBitfield() {
         return 0;
     }
 
@@ -2607,9 +2596,8 @@ class AA_Formatter {
      *  @param $formatter_type
      *  @return (bit) id of the formatter_type (HTML or PLAIN, at this moment)
      */
-    function getFlag($formatter_type) {
+    static function getFlag($formatter_type) {
         return ($formatter_type == 'HTML') ? 1 : 2;
     }
 }
 
-?>

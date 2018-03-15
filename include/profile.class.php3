@@ -58,7 +58,7 @@ class AA_Profile {
      *  Profiles should be used like $profile = AA_Profile::getProfile($user_id, $module_id);
      * @param $slice_id
      */
-    function & getProfile($user_id, $module_id) {
+    static function getProfile($user_id, $module_id) {
         // AA_Profiles array
         static $instances = array();
         if (empty($instances[$user_id])) {
@@ -225,9 +225,8 @@ class AA_Profile {
     }
 
     /** Copies the profile form one user to another
-     *  @static
      **/
-    function copyProfile($slice_id, $from_uid, $to_uid) {
+    static function copyProfile($slice_id, $from_uid, $to_uid) {
         $p_slice_id = q_pack_id($slice_id);
         $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$from_uid')");
         $varset     = new CVarset;
@@ -277,7 +276,7 @@ class AA_Profile {
             return false;
         }
         $db = getDB();
-        if (!$db->tquery($SQL) AND $err) {
+        if (!$db->query($SQL) AND $err) {
             $this->err["DB"] = $err;
         }
         $last_id = $db->last_insert_id();
@@ -285,84 +284,83 @@ class AA_Profile {
         freeDB($db);
         return $last_id;
     }
-}
-/** AddProfileProperty function
- * @param $uid
- * @param $slice_id
- * @param $property
- * @param $field_id
- * @param $fnction
- * @param $param
- * @param $html
- */
-function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
-    $profile = AA_Profile::getProfile($uid, $slice_id); // user settings
-    switch($property) {
-        case 'listlen':
-        case 'input_view':
-        case 'admin_perm':
-            if ( (($property=='admin_perm') AND (strlen($param)==32) ) OR ($param > 0) ) {
-                $profile->deleteProperty($property);
-                $profile->insertProperty($property, '0', $param);
-                $Msg = MsgOK(_m("Rule added"));
-            } else {
-                $profile->deleteProperty($property);
-                $Msg = MsgOK(_m("Rule deleted"));
-            }
-            break;
-        case 'admin_order':
-            if ( $field_id ) {
-                $profile->deleteProperty($property, $field_id);
-                $profile->insertProperty($property, $field_id, $field_id.$fnction);
-                $Msg = MsgOK(_m("Rule added"));
-            }
-            break;
-        case 'admin_search':
-            if ( $field_id ) {
-                $profile->deleteProperty($property, $field_id);
-                // 0 is just placeholder - normaly we use it for html flag
-                // @todo - do it better with some classes and custom parameters
-                $profile->insertProperty($property, $field_id, "0:$fnction:$param");
-                $Msg = MsgOK(_m("Rule added"));
-            }
-            break;
-        case 'hide':
-        case 'ui_manager_hide':
-        case 'ui_inputform_hide':
-            if ( $field_id ) {
-                $profile->deleteProperty($property, $field_id);
-                $profile->insertProperty($property, $field_id, '1');
-                $Msg = MsgOK(_m("Rule added"));
-            }
-            break;
-        case 'show':
-            if ( $field_id ) {
-                $profile->deleteProperty('hide',      $field_id);
-                $profile->insertProperty('hide',      $field_id, '0');  // clear preset value for hide
-                $profile->deleteProperty('hide&fill', $field_id);
-                $profile->insertProperty('hide&fill', $field_id, '0'); // clear preset value for hide&fill
-                $Msg = MsgOK(_m("Rule added"));
-            }
-            break;
-        case 'fill':
-        case 'hide&fill':
-        case 'predefine':
-            if ( $field_id ) {
-                $profile->deleteProperty($property,$field_id);
-                $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
-                $Msg = MsgOK(_m("Rule added"));
-            }
-            break;
-        case 'ui_manager':
-        case 'ui_inputform':
-            if ( $field_id ) {
-                $profile->deleteProperty($property,$field_id);
-                $profile->insertProperty($property, $field_id, "$param");
-                $Msg = MsgOK(_m("Rule added"));
-            }
-            break;
-    }
-    return $Msg;
-}
 
-?>
+    /** addProfileProperty function
+     * @param $uid
+     * @param $slice_id
+     * @param $property
+     * @param $field_id
+     * @param $fnction
+     * @param $param
+     * @param $html
+     */
+    static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
+        $profile = AA_Profile::getProfile($uid, $slice_id); // user settings
+        switch($property) {
+            case 'listlen':
+            case 'input_view':
+            case 'admin_perm':
+                if ( (($property=='admin_perm') AND (strlen($param)==32) ) OR ($param > 0) ) {
+                    $profile->deleteProperty($property);
+                    $profile->insertProperty($property, '0', $param);
+                    $Msg = MsgOk(_m("Rule added"));
+                } else {
+                    $profile->deleteProperty($property);
+                    $Msg = MsgOk(_m("Rule deleted"));
+                }
+                break;
+            case 'admin_order':
+                if ( $field_id ) {
+                    $profile->deleteProperty($property, $field_id);
+                    $profile->insertProperty($property, $field_id, $field_id.$fnction);
+                    $Msg = MsgOk(_m("Rule added"));
+                }
+                break;
+            case 'admin_search':
+                if ( $field_id ) {
+                    $profile->deleteProperty($property, $field_id);
+                    // 0 is just placeholder - normaly we use it for html flag
+                    // @todo - do it better with some classes and custom parameters
+                    $profile->insertProperty($property, $field_id, "0:$fnction:$param");
+                    $Msg = MsgOk(_m("Rule added"));
+                }
+                break;
+            case 'hide':
+            case 'ui_manager_hide':
+            case 'ui_inputform_hide':
+                if ( $field_id ) {
+                    $profile->deleteProperty($property, $field_id);
+                    $profile->insertProperty($property, $field_id, '1');
+                    $Msg = MsgOk(_m("Rule added"));
+                }
+                break;
+            case 'show':
+                if ( $field_id ) {
+                    $profile->deleteProperty('hide',      $field_id);
+                    $profile->insertProperty('hide',      $field_id, '0');  // clear preset value for hide
+                    $profile->deleteProperty('hide&fill', $field_id);
+                    $profile->insertProperty('hide&fill', $field_id, '0'); // clear preset value for hide&fill
+                    $Msg = MsgOk(_m("Rule added"));
+                }
+                break;
+            case 'fill':
+            case 'hide&fill':
+            case 'predefine':
+                if ( $field_id ) {
+                    $profile->deleteProperty($property,$field_id);
+                    $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
+                    $Msg = MsgOk(_m("Rule added"));
+                }
+                break;
+            case 'ui_manager':
+            case 'ui_inputform':
+                if ( $field_id ) {
+                    $profile->deleteProperty($property,$field_id);
+                    $profile->insertProperty($property, $field_id, "$param");
+                    $Msg = MsgOk(_m("Rule added"));
+                }
+                break;
+        }
+        return $Msg;
+    }
+}

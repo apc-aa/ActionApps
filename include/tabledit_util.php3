@@ -278,12 +278,12 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
             return false;
         }
     }
-    if (! callTrigger($triggers, "BeforeDelete", $varset)) {
+    if (! CallTrigger($triggers, "BeforeDelete", $varset)) {
         freeDB($db);
         return false;
     }
     $retval = $db->query($varset->makeDELETE ($table));
-    callTrigger($triggers, "AfterDelete", $varset);
+    CallTrigger($triggers, "AfterDelete", $varset);
     freeDB($db);
     return $retval;
 }
@@ -347,12 +347,12 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
                 return false;
             }
         }
-        if (! callTrigger($triggers, "BeforeUpdate", $varset)) {
+        if (! CallTrigger($triggers, "BeforeUpdate", $varset)) {
             freeDB($db);
             return false;
         }
         $db->query($varset->makeUPDATE($table));
-        callTrigger($triggers, "AfterUpdate", $varset);
+        CallTrigger($triggers, "AfterUpdate", $varset);
     }
     freeDB($db);
 
@@ -413,7 +413,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
     foreach ($varsets as $table => $foo ) {
         $varset   = &$varsets[$table];
         $auto_inc = false;
-        foreach ($primary_aliases[$table] as $alias => $foo) {
+        foreach ($primary_aliases[$table] as $alias => $foo2) {
             if ($columns[$alias]["auto_increment"]) {
                     $auto_inc = true;
             }
@@ -426,12 +426,12 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
                 return "";
             }
         }
-        if (! callTrigger($triggers, "BeforeInsert", $varset)) {
+        if (! CallTrigger($triggers, "BeforeInsert", $varset)) {
             freeDB($db);
             return "";
         }
         $db->query($varset->makeINSERT($table));
-        callTrigger($triggers, "AfterInsert", $varset);
+        CallTrigger($triggers, "AfterInsert", $varset);
 
         if ($table == $key_table) {
             $newkey = $auto_inc ? $db->last_insert_id() : GetKey($primary_aliases[$table], $columns, $varset);
@@ -702,4 +702,4 @@ function CallTrigger($triggers, $event, $varset) {
 }
 
 
-?>
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of AA_Storable class - abstract class which
  * implements two methods for storing and restoring class data (used in
@@ -58,6 +59,7 @@ abstract class AA_Serializable {
      *
      * @param $string     like dte:1:10:1 in field.input_show_func
      * @param $class_mask like 'AA_Widget' or empty if it is the same class
+     * @return AA_Generator
      */
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);
@@ -281,7 +283,7 @@ class AA_Storable extends AA_Serializable {
     }
 }
 
-class AA_Object extends AA_Storable implements iEditable {
+class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** Object ID   - 32 characters long hexadecimal number */
     var $aa_id;
@@ -360,7 +362,7 @@ class AA_Object extends AA_Storable implements iEditable {
         return $this->$property_id = $value;
     }
 
-    /** iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database */
     public function save() {
         if ( !$this->aa_owner ) {
             throw new Exception('No owner set for property '. $this->id. ' - '. $this->name);
@@ -479,7 +481,7 @@ class AA_Object extends AA_Storable implements iEditable {
      * @param $obj_type
      * @param $owner
      */
-    function getNameArray($obj_type, $owner) {
+    static function getNameArray($obj_type, $owner) {
         if ( empty($owner) ) {
             return array();
         }
@@ -492,14 +494,14 @@ class AA_Object extends AA_Storable implements iEditable {
         return is_array($ret) ? $ret : array();
     }
 
-    function loadProperty($id, $property) {
+    static function loadProperty($id, $property) {
         return DB_AA::select1('SELECT value FROM `object_text`', 'value', array(array('object_id',$id),array('property',$property)));
     }
 
-    /** static called as AA_Object::loadProperties($ids, 'name')
+    /** called as AA_Object::loadProperties($ids, 'name')
      *  @return properties always in array   ['obj1'=>[valA,valB,...], 'obj2'=>[valC], ...]
      */
-    function loadProperties($ids, $property) {
+    static function loadProperties($ids, $property) {
         return DB_AA::select( array('object_id'=> '+value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids), array('property', $property)));
     }
 
@@ -592,7 +594,7 @@ class AA_Object extends AA_Storable implements iEditable {
    // */
    //    // @todo !!! - rewrite it.
    //    // do the same as in queryZids for any object
-    function querySet($type, $set, $restrict_zids=null) {
+    static function querySet($type, $set, $restrict_zids=null) {
 
         $owners = $set->getModules();
         $conds  = $set->getConds();
@@ -751,9 +753,8 @@ class AA_Object extends AA_Storable implements iEditable {
     }
 
     /** getSearchArray function
-     *  @static
      */
-    function _getSearchArray($properties) {
+    static function _getSearchArray($properties) {
         $i   = 0;
         $ret = array();
         $props = array_merge(array('aa_name' => self::getPropertyObject('aa_name')), $properties);
@@ -792,9 +793,8 @@ class AA_Object extends AA_Storable implements iEditable {
     }
 
     /** generateAliases
-     *  @static
      */
-    function _generateAliases($properties) {
+    static function _generateAliases($properties) {
         // the order is important - must be in the same order as search fields (for getManagerConf)
         $aliases["_#AA_NAME_"] = GetAliasDef( "f_1", 'aa_name', 'aa_name');
         foreach ($properties as $prop_id => $property) {
@@ -890,10 +890,10 @@ class AA_Object extends AA_Storable implements iEditable {
                  'order_row_count_min'  => 1,
                  'add_empty_search_row' => true,
                  'function'             => false  // name of function for aditional action hooked on standard filter action
-//                 'default_sort'         => array( 0 => array('time' => 'd'))  // it would be nice to add default sort, but we di not have creation_time or something like that
+//                 'default_sort'         => array( 0 => array('time' => 'd'))  // it would be nice to add default sort, but we do not have creation_time or something like that
                                  ),
              'scroller'  => array(
-                 'listlen'              => 100
+                 'listlen'              => 200
                                  ),
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
@@ -927,7 +927,7 @@ class AA_Object extends AA_Storable implements iEditable {
         return $manager_settings;
     }
 
-    /** iEditable method - creates Object from the form data */
+    /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {
         $grabber = new AA_Objectgrabber_Form();
         $grabber->prepare();    // maybe some initialization in grabber
@@ -952,7 +952,7 @@ class AA_Object extends AA_Storable implements iEditable {
         return $object;
     }
 
-    /** iEditable method - adds Object's editable properties to the $form */
+    /** AA_iEditable method - adds Object's editable properties to the $form */
     public static function addFormrows($form) {
 
 //        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));  // use default widget for the field
@@ -970,12 +970,12 @@ class AA_Object extends AA_Storable implements iEditable {
 }
 
 /** With this interface the object can be edited by AA_Form */
-interface iEditable {
-    /** iEditable method - adds Object's editable properties to the $form */
+interface AA_iEditable {
+    /** AA_iEditable method - adds Object's editable properties to the $form */
     public static function addFormrows($form);
-    /** iEditable method - creates Object from the form data */
+    /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null);
-    /** iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database */
     public        function save();
 }
 
@@ -1027,4 +1027,4 @@ class AA_Components extends AA_Object {
     }
 }
 
-?>
+

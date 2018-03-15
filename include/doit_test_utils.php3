@@ -41,4 +41,3 @@ function ptest( $boolean, $label) {
 
   $boolean ? $num_pass++ : $num_fail++;
 }
-?>

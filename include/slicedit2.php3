@@ -35,4 +35,3 @@ function get_template_and_lang($template_id) {
     return $ret;
 }
 
-?>

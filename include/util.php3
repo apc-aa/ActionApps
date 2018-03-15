@@ -28,16 +28,13 @@
 // Miscellaneous utility functions
 //
 
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."constants.php3";
-require_once AA_INC_PATH."mgettext.php3";
-require_once AA_INC_PATH."zids.php3";
-require_once AA_INC_PATH."logs.php3";
-require_once AA_INC_PATH."go_url.php3";
-require_once AA_INC_PATH."statestore.php3";
-require_once AA_INC_PATH."widget.class.php3";
-require_once AA_INC_PATH."field.class.php3";
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__. '/locsess.php3';
+require_once __DIR__. '/constants.php3';
+require_once __DIR__. '/mgettext.php3';
+require_once __DIR__. '/zids.php3';
+require_once __DIR__. '/logs.php3';
+require_once __DIR__. '/go_url.php3';
+require_once __DIR__. '/formutil.php3';
 
 /** identity function - used for chaining with constructor
  *  Ussage: with(new AA_Some_Object())->set(something);
@@ -78,7 +75,7 @@ function expand_return_url($session=true) {
  * @param $add_param
  */
 function go_return_or_url($url, $usejs=false, $session=false) {
-    global $return_url,$sess;
+    global $return_url;
 
     if ($return_url) {
         go_url(expand_return_url($session), '', $usejs);
@@ -93,7 +90,7 @@ function go_return_or_url($url, $usejs=false, $session=false) {
  * @param $s
  */
 function endslash(&$s) {
-    if (strlen ($s) AND substr ($s,-1) != "/") {
+    if (strlen($s) AND substr($s,-1) != "/") {
         $s .= "/";
     }
 }
@@ -409,7 +406,7 @@ function is_marked_by($id, $mark) {
 function string2id($str) {
     do {
         $id  = hash('md5',$str);
-        $str = $str . " ";
+        $str .= " ";
     } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
@@ -496,7 +493,7 @@ function PrintArray($a) {
  * Prepare OK Message
  * @param $txt
  */
-function MsgOK($txt){
+function MsgOk($txt){
     return "<div class=\"okmsg\">$txt</div>";
 }
 
@@ -504,7 +501,7 @@ function MsgOK($txt){
  * Prepare Err Message
  * @param $txt
  */
-function MsgERR($txt){
+function MsgErr($txt){
     return "<div class=\"err\">$txt</div>";
 }
 
@@ -555,7 +552,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $fields = ($db_column==$db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
     $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
-    $db->tquery($SQL);
+    $db->query($SQL);
 
     while ($db->next_record()) {
         $key = GrabConstantColumn($db, $keycolumn);
@@ -761,8 +758,6 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     $db = getDB();
     $db->query($SQL);
 
-    $n_items = 0;
-
     // returned ids (possibly removed items in trash, ...)
     $long_ids    = array();
     $unpermitted = array();
@@ -927,13 +922,13 @@ function GetItemContentMinimal($zids, $fields2get=false) {
     }
     $sel_in = $zids->sqlin( '' );
     $content = array();
+    $n_items = 0;
 
     if ($sel_in) {
         // get content from item table
         $db    = getDB();
         $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
-        $db->tquery($SQL);
-        $n_items = 0;
+        $db->query($SQL);
         while ( $db->next_record() ) {
             $n_items++;
             $foo_id = unpack_id($db->f("id"));
@@ -978,7 +973,7 @@ function GetConstantContent( $zids ) {
     $db = getDB();
 
     $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
-    $db->tquery( $SQL );
+    $db->query( $SQL );
     $content = array();
     $i=1;
     while ($db->next_record()) {
@@ -1086,7 +1081,7 @@ function url2bin($data) {
  * @param bool   $js_lib      if true, includes js_lib.js javascript
  * @param $lang
  */
-function HtmlPageBegin($js_lib=false, $lang=null, $ace='') {
+function HtmlPageBegin($js_lib=false, $lang=null) {
     AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang ?: get_mgettext_lang()];
     $headers = AA::getHeaders();
     // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
@@ -1132,31 +1127,13 @@ function HtmlPageEnd() {
 </body>
 </html>";
 }
-/** getHtmlPage function
- * @param $param
+
+/**
+ * @param $code
+ * @return string
  */
-function getHtmlPage($param='') {
-    $ret  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
-    $ret .= "\n<html>\n<head>";
-    if ($param['title']) {
-        $ret .= "\n    <title>".$param['title']."</title>";
-    }
-    foreach ( (array)$param['css'] as $css ) {
-        $ret .= "\n    <link rel=\"StyleSheet\" href=\"".$css."\" type=\"text/css\">";
-    }
-    foreach ( (array)$param['js'] as $js ) {
-        $ret .= "\n    ". getJavascriptFile( $js );
-    }
-    $ret .= "\n</head>\n<body>\n";
-    $ret .= $param['body'];
-    $ret .= "\n</body>\n</html>";
-    return $ret;
-}
-/** FrmHtmlPage function
- * @param $param
- */
-function FrmHtmlPage($param='') {
-    echo getHtmlPage($param);
+function getHtmlPage($code) {
+    return "<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n  $code \n</body>\n</html>";
 }
 
 /** MsgPage function
@@ -1362,7 +1339,7 @@ function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path=
     if ( $width ) {
         $size = "width=\"$width\" height=\"$height\"";
     } else {
-        $im_size = @GetImageSize($image_path);
+        $im_size = @getimagesize($image_path);
         $size = $im_size[3];
     }
     return "<img border=\"0\" src=\"$image_url\" alt=\"$alt\" $title $size $add>";
@@ -1399,7 +1376,7 @@ class AA_Credentials {
      *  This function makes sure, there is just ONE static instance if the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function singleton() {
+    static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
             // Now create the AA_Credentials object
@@ -1437,8 +1414,8 @@ class AA_Credentials {
     }
 
     /** wrapper function
-     *  static function called as AA_Credentials::encrypt($reading_password) */
-    function encrypt($pwd) {
+     *  called as AA_Credentials::encrypt($reading_password) */
+    static function encrypt($pwd) {
         return hash('md5', $pwd);
     }
 }
@@ -1780,7 +1757,10 @@ function IsAlias($identifier) {
 
 /** is signed int (ctype_digit do not allow signed numbers) */
 function IsSigInt($var) {
-    return is_int(filter_var($var, FILTER_VALIDATE_INT));
+    if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
+        return true;
+    }
+    return (strlen($var) AND is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
 }
 
 /** Defines array_column() for PHP version < 5.5
@@ -1801,4 +1781,3 @@ function RestoreVariables(array $r_state_vars) {
 }
 
 
-?>

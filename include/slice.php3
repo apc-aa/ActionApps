@@ -77,7 +77,7 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
         }
         echo _m("Select Category ") . "<select name=\"cat_id\">";
         $seloption=(($selected=="")?"selected":"");
-        echo '<option value="all" $seloption>'._m("All categories").'</option>';
+        echo "<option value=all $seloption>"._m("All categories").'</option>';
         foreach ($cats as $id => $name) {
             $seloption=(($selected==$id)?"selected":"");
             echo "<option value=\"$id\" $seloption>".myspecialchars($name)."</option>";
@@ -132,4 +132,3 @@ function PutSearchLog() {
     DB_AA::sql("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
 }
 
-?>

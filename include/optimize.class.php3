@@ -628,8 +628,6 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
             if (!$db->next_record()) {
                 continue;
             }
-            $table_SQL = $db->f('Create Table');
-
         }
         freeDb($db);
         return $ret;
@@ -1239,7 +1237,7 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     */
     function test() {
         $metabase = AA_Metabase::singleton();
-        $tables   = $metabase->getTableNames();
+        //$tables   = $metabase->getTableNames();
         $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
         $count    = 0;
         foreach ($engines as $tablename => $engine) {
@@ -1259,7 +1257,7 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
      */
     function repair() {
         $metabase = AA_Metabase::singleton();
-        $tables   = $metabase->getTableNames();
+        //$tables   = $metabase->getTableNames();
         $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
         $converted = 0;
         foreach ($engines as $tablename => $engine) {
@@ -1295,6 +1293,9 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
     function description() {
         return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!");
     }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
 
     /** Test function
     * @return true
@@ -1345,4 +1346,4 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
 }
 
 
-?>
+

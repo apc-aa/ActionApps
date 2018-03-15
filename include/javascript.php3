@@ -47,7 +47,7 @@ class AA_Jstriggers {
     /** getTrig function
      *
      */
-    function loadTriggers($slice_id) {
+    static function loadTriggers($slice_id) {
         if (!is_null(AA_Jstriggers::$js_trig)) {
             return AA_Jstriggers::$js_trig;
         }
@@ -75,7 +75,7 @@ class AA_Jstriggers {
      * @param $upacked_fieldid
      * @param $add
      */
-    function get($control, $unpacked_fieldid='', $add="") {
+    static function get($control, $unpacked_fieldid='', $add="") {
 
 
         $js_trig     = AA_Jstriggers::loadTriggers($GLOBALS['slice_id']);
@@ -128,7 +128,7 @@ class AA_Jstriggers {
         return $retval;
     }
 
-    function printSummary() {
+    static function printSummary() {
         foreach (AA_Jstriggers::$js_triggers as $control => $trigs) {
             echo '<tr><td class="tabtxt">'.$control.'</td><td class="tabtxt">'.join($trigs,", ").'</td></tr>';
         }
@@ -140,4 +140,3 @@ function getTriggers($control, $unpacked_fieldid='', $add="") {
     return AA_Jstriggers::get($control, $unpacked_fieldid, $add);
 }
 
-?>

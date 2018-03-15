@@ -56,7 +56,7 @@ class AA_Profile_Rule {
  * @param $col4
  */
 function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
-  global $sess, $uid;
+  global $uid;
   echo "<tr class=\"tabtxt\">
           <td>$prop&nbsp;</td>
           <td>$col1&nbsp;</td>
@@ -134,7 +134,7 @@ function PrintRule($rule, $fields) {
  *  @param $func    bool - should we show html chackbox?
  */
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
-    global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $fields;
+    global $PROPERTY_TYPES, $lookup_fields;
     echo "<tr class=\"tabtxt\">
            <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
            <td>";
@@ -162,4 +162,4 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     </tr>";
 }
 
-?>
+

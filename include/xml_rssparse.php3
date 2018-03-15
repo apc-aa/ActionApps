@@ -34,7 +34,6 @@
 //       conforms to the RSS 1.0. Normally it parses document, which was created by aa server module (see
 //       getxml.php3)
 
-require_once AA_INC_PATH."convert_charset.class.php3";
 
 // An array mapping all the name spaces we've seen in RSS feeds to abbreviations
 // Only a few of the abbreviations are likely to be used below
@@ -369,4 +368,4 @@ from fielddata_content_format
 $item[content][0 | 1] = $fulltext_content  where 0|1
 from $content_format in RDF/ITEM/ITEMS/BAG/LI/ITEM | RDF/ITEM/ENCODED
 */
-?>
+

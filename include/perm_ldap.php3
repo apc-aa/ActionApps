@@ -419,12 +419,12 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
  */
 function InitLDAP() {
     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    $ds = LDAP_Connect($aa_default_ldap['host'], $aa_default_ldap['port']);	// connect LDAP server
+    $ds = ldap_connect($aa_default_ldap['host'], $aa_default_ldap['port']);	// connect LDAP server
     if (!$ds) {   				// not connect
         return false;
     }
 
-    if (!LDAP_Bind($ds, $aa_default_ldap['binddn'], $aa_default_ldap['bindpw'])) {
+    if (!ldap_bind($ds, $aa_default_ldap['binddn'], $aa_default_ldap['bindpw'])) {
         return false;  		// not authentificed
     }
     return $ds;
@@ -462,7 +462,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      *  (acording to org - ecn.cz ..)
      * @param $org
      */
-    function getLdap($org='') {
+    static function getLdap($org='') {
         // default ldap server for all searches
         return array( "host"   => LDAP_HOST,
                       "binddn" => LDAP_BINDDN,
@@ -508,20 +508,20 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $LDAPserver = AA_Permsystem_Ldap::getLdap();
         }
 
-        $ds = LDAP_Connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
+        $ds = ldap_connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
         if (!$ds) {                 			// not connected
             return false;
         }
 
         if ($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
             $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
-            if (@LDAP_Bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'] )) {
-                $r = LDAP_search($ds, $LDAPserver['people'], $search, array(""));
-                $arr = LDAP_get_entries($ds,$r);
+            if (@ldap_bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'] )) {
+                $r = ldap_search($ds, $LDAPserver['people'], $search, array(""));
+                $arr = ldap_get_entries($ds,$r);
                 if ( $arr["count"] > 0 ) {
                     $userdn = $arr[0]["dn"];
                 } else {
-                    @LDAP_Close($ds);
+                    @ldap_close($ds);
                     return false;
                 }
             }
@@ -529,10 +529,10 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $userdn = "uid=$username,".$LDAPserver['people'];
         }
 
-        if (@LDAP_Bind($ds, $userdn, $password)) {  // try to authenticate
+        if (@ldap_bind($ds, $userdn, $password)) {  // try to authenticate
             $return_val = $userdn;
         }
-        @LDAP_Close($ds);
+        @ldap_close($ds);
         return $return_val;
     }
 
@@ -563,7 +563,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             // LDAP sizelimit exceed
             return ((ldap_errno($ds)==4) ? "too much" : array());
         }
-        $arr = LDAP_get_entries($ds,$res);
+        $arr = ldap_get_entries($ds,$res);
 
         for ($i=0; $i<$arr['count']; ++$i) {
             $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0], "mail"=>$arr[$i]['mail'][0]);
@@ -599,7 +599,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             // LDAP sizelimit exceed
             return ((ldap_errno($ds)==4) ? "too much" : false);
         }
-        $arr = LDAP_get_entries($ds,$res);
+        $arr = ldap_get_entries($ds,$res);
 
         $result = array();
         for ($i=0; $i<$arr['count']; ++$i) {
@@ -851,4 +851,4 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         return $info;
      }
 }
-?>
+

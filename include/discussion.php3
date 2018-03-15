@@ -109,8 +109,7 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
     $db = getDB();
 
     $SQL = 'SELECT * FROM discussion WHERE '. $zids->sqlin('id');
-    $db->tquery( $SQL );
-    $i=1;
+    $db->query( $SQL );
     $col              = array();
     $d_content        = array();
     $unsorted_content = array();
@@ -354,7 +353,7 @@ function GetParent(&$tree, $d_id) {
         return false;
     }
     foreach ($tree as $source_id => $foo ) {
-        foreach($tree[$source_id] as $dest_id => $foo) {
+        foreach($tree[$source_id] as $dest_id => $foo2) {
             if ($dest_id == $d_id) {
                 return $source_id;
             }
@@ -397,10 +396,10 @@ function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
     $db = getDB();
     // check perms -  if the item is in the right slice
     $SQL = "SELECT slice_id FROM item WHERE id='$p_item_id'";
-    $db->tquery($SQL);
+    $db->query($SQL);
     $db->next_record();
     if (unpack_id($db->f('slice_id')) == $slice_id) {
-        $db->tquery("DELETE FROM discussion WHERE item_id='".q_pack_id($item_id)."' $where");
+        $db->query("DELETE FROM discussion WHERE item_id='".q_pack_id($item_id)."' $where");
     }
     freeDB($db);
 }
@@ -415,7 +414,7 @@ function updateDiscussionCount($item_id) {
     $p_item_id = q_pack_id($item_id);
     $db = getDB();
     $SQL       = "SELECT * FROM discussion WHERE item_id='$p_item_id'";
-    $db->tquery($SQL);
+    $db->query($SQL);
     while ($db->next_record()) {
         $all++;
         if ($db->f('state') == '1') {   // hidden comment
@@ -424,7 +423,7 @@ function updateDiscussionCount($item_id) {
     }
 
     $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id='$p_item_id'";
-    $db->tquery($SQL);
+    $db->query($SQL);
     freeDB($db);
 }
 
@@ -434,9 +433,9 @@ function updateDiscussionCount($item_id) {
  *  used just for help display in admin/se_view.php3
  */
 function GetDiscussion2MailAliases() {
-    $aliases["_#ITEMPAR3"] = GetAlias("", "", _m("3rd parameter filled in DiscussionMailList field"));
+    $aliases["_#ITEMPAR3"] = GetAliasDef("", "", _m("3rd parameter filled in DiscussionMailList field"));
     for ($i = 4; $i < 10; ++$i) {
-        $aliases["_#ITEMPAR$i"] = GetAlias("", "", _m("%1th parameter filled in DiscussionMailList field", array ($i)));
+        $aliases["_#ITEMPAR$i"] = GetAliasDef("", "", _m("%1th parameter filled in DiscussionMailList field", array ($i)));
     }
     return $aliases;
 }
@@ -453,7 +452,7 @@ function GetDiscussion2MailAliases() {
  */
 function send2mailList($d_item_id, $new_id) {
     $db = getDB();
-    $db->tquery("SELECT content.text FROM
+    $db->query("SELECT content.text FROM
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
                  AND field.slice_id = item.slice_id
@@ -486,7 +485,7 @@ function send2mailList($d_item_id, $new_id) {
                 freeDB($db);
                 return;
             }
-            $db->tquery("SELECT * FROM view WHERE id=$vid");
+            $db->query("SELECT * FROM view WHERE id=$vid");
             if ($db->next_record()) {
                 $view_info = $db->Record;
 
@@ -527,7 +526,7 @@ function send2mailList($d_item_id, $new_id) {
                     $mail->setHeader("Sender",    $mail["sender"]);
                 }
 
-                $db->tquery("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
+                $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
                 $db->next_record();
                 $mail->setCharset($GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)]);
                 $mail->send(array($maillist));
@@ -537,4 +536,4 @@ function send2mailList($d_item_id, $new_id) {
     freeDB($db);
 }
 
-?>
+
