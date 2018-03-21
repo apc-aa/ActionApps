@@ -59,7 +59,12 @@ class AA_Form_Array {
     *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-    */
+    *
+     * @throws Exception
+     * @param $property_id string
+     * @param $content AA_Item
+     * @param $item_index int
+     */
     static public function getName4Form($property_id, $content, $item_index=1) {
         $form_field_id = self::getVarFromFieldId($property_id);
 
@@ -68,7 +73,7 @@ class AA_Form_Array {
             return "aa[u$oid][$form_field_id]";
         }
 
-        $oowner = $content->getOwnerId();
+        $oowner = $content->getOwnerID();
         if ( !$oowner ) {
             throw new Exception('No owner specifield for '. $form_field_id);
         }
@@ -164,7 +169,9 @@ class AA_Widget extends AA_Components {
      *
      */
     function name()         {}
-    //    function description()  {}
+
+    /** necessary for parameter wizard */
+    function description()  {}
 
     /** returns if the widget handles multivalue or just single value   */
     function multiple()    { return false;   }
@@ -197,6 +204,10 @@ class AA_Widget extends AA_Components {
 
     /** returns array(ids => formated text) for the current widget based on
      *  the widget settings
+     * @param $content AA_Item
+     * @param $restrict_zids zids[]
+     * @param $searchterm
+     * @param $ignore_filters bool
      */
     public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm='', $ignore_filters=false) {
 
@@ -211,7 +222,7 @@ class AA_Widget extends AA_Components {
 
         $constgroup      = $this->getProperty('const');
         if ( !$constgroup ) {  // no constants or slice defined
-            return;                           //  = array();
+            return array();
         }
 
                            // $restrict_zids could be removed from this check. Honza 2015-06-11
@@ -248,7 +259,7 @@ class AA_Widget extends AA_Components {
             if (!$slice_field) {
                 $slice_field = GetHeadlineFieldID($sid, "headline.");
                 if (!$slice_field) {
-                    return array(); //  = array();
+                    return array();
                 }
             }
             $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
@@ -272,15 +283,10 @@ class AA_Widget extends AA_Components {
       * This function is rewritten fill_const_arr().
       */
     private function _fillConstArr($content) {
-        if ( isset($this->_const_arr) AND is_array($this->_const_arr) ) {  // already filled
-            return;
+        if ( !is_array($this->_const_arr) ) {  // already filled
+            // not filled, yet - so fill it
+            $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
         }
-        // not filled, yet - so fill it
-        $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
-        if ( !isset($this->_const_arr) OR !is_array($this->_const_arr) ) {
-            $this->_const_arr = array();
-        }
-        return;
     }
 
     /** returns $ret_val if given $option is selected for current field
@@ -292,6 +298,7 @@ class AA_Widget extends AA_Components {
 
     /**
      *  This method is rewritten _fillSelected() method form formutil.php3
+     * @param $aa_value AA_Value
      */
     function _fillSelected($aa_value) {
         $this->_selected = array();
@@ -421,6 +428,13 @@ class AA_Widget extends AA_Components {
         return !$cond ? '' : '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH."images/px.gif\" style=\"position:absolute; $pos:$offset"."px; top:-3px;\">";
     }
 
+    /**
+     * @param $aa_property AA_Property
+     * @param $content AA_Item
+     * @param string $type
+     * @return array
+     * @throws Exception
+     */
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id     = AA_Form_Array::formName2Id($base_name);
@@ -495,7 +509,7 @@ class AA_Widget extends AA_Components {
          return $ret;
      }
 
-    /** @return widget HTML for using in form
+    /** @return string widget HTML for using in form
      *  @param  $aa_property - the variable
      *  @param  $content     - contain the value of property to display
      *                       - never empty - it contain at least aa_owner for
@@ -505,7 +519,7 @@ class AA_Widget extends AA_Components {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
-    /** @return just widget HTML for using in form - without label...
+    /** @return string - just widget HTML for using in form - without label...
      *  @param  $aa_property - the variable
      *  @param  $content     - contain the value of property to display
      *                       - never empty - it contain at least aa_owner for
@@ -515,7 +529,7 @@ class AA_Widget extends AA_Components {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
     }
 
-    /** @return just widget HTML for using in form - without label... */
+    /** @return string - just widget HTML for using in form - without label... */
     function getEditfullHtml($aa_property, $content, $function=null) {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
@@ -2342,6 +2356,7 @@ class AA_Property extends AA_Storable {
     function getName()         { return $this->name;         }
     function getType()         { return $this->type;         }
     function getHelp()         { return $this->input_help;   }
+    function getExample()      { return $this->example;   }
     function getConstants()    { return $this->const_arr;    }
     function getTranslations() { return $this->translations; }
 
@@ -2461,7 +2476,7 @@ class AA_Property extends AA_Storable {
         return !in_array($this->type, array('text', 'string', 'int', 'bool', 'float'));
     }
 
-    /** @return the table, where the property would be stored */
+    /** @return string - table, where the property would be stored */
     static function storageType($type) {  // AA_Object needs to access the method
         switch ($type) {
         case 'string':

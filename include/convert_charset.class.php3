@@ -185,7 +185,9 @@ class ConvertCharset {
         $this->to_charset   = $to_charset;
     }
 
-    /** Called like $encoder = ConvertCharset::singleton($from, $to) */
+    /** Called like $encoder = ConvertCharset::singleton($from, $to)
+     * @return ConvertCharset
+     */
     static function singleton($from_charset = null, $to_charset = null) {
         static $instance = null;
         if (is_null($instance)) {
@@ -193,7 +195,6 @@ class ConvertCharset {
         }
         return $instance;
     }
-
 
     /**
      * CharsetChange::NumUnicodeEntity()

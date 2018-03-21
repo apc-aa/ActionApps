@@ -1256,7 +1256,6 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
      * @return bool
      */
     function repair() {
-        $metabase = AA_Metabase::singleton();
         //$tables   = $metabase->getTableNames();
         $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
         $converted = 0;

@@ -338,8 +338,7 @@ class AA_Mail_Scheduler {
 /** html2text function
  *  Strips the HTML tags and lot more to get a plain text mail version.
  *   Replaces URL links by the link in compound brackets behind the linked text.
- *   Removes diacritics.
- * @param $html
+ * @param $html string
  */
 function html2text($html) {
 

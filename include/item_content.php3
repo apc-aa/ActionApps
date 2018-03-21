@@ -1068,8 +1068,7 @@ class ItemContent extends AA_Content {
             } else {
                 $diff = $itemContent->diff($oldItemContent);
                 if (count($diff)) {
-                    $changes = AA_ChangesMonitor::singleton();
-                    $changes->addHistory($diff);
+                    AA_ChangesMonitor::singleton()->addHistory($diff);
                 }
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event

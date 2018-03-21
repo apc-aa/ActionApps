@@ -240,9 +240,8 @@ if (is_array($_POST['aa']) AND IsAjaxCall()) {
 
     $parts = AA::Stringexpander()->getDependentParts($saver->changedModules());
     if (AA::$encoding != 'utf-8') {
-        $convertor = ConvertCharset::singleton();
         foreach ($parts as $k => $v) {
-            $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
+            $parts[$k] = ConvertCharset::singleton()->Convert($v, AA::$encoding, 'utf-8');
         }
     }
     echo json_encode($parts);
@@ -260,9 +259,8 @@ if (isset($_GET['aaedit']) AND IsAjaxCall()) {
     //echo $parts;
     //echo AA::Stringexpander();
     if (AA::$encoding != 'utf-8') {
-        $convertor = ConvertCharset::singleton();
         foreach ($parts as $k => $v) {
-            $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
+            $parts[$k] = ConvertCharset::singleton()->Convert($v, AA::$encoding, 'utf-8');
         }
     }
     echo json_encode($parts);

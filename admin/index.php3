@@ -74,8 +74,7 @@ function CountItemsInBins() {
 }
 
 // Allow edit current slice without slice_pwd
-$credentials = AA_Credentials::singleton();
-$credentials->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice($slice_id);
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;

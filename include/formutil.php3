@@ -647,7 +647,7 @@ class AA_Inputfield {
       * Fills array used for list selection. Fill it from constant group or
       * slice.
       * It never refills the array (and we relly on this fact in the code)
-      * @return unpacked slice_id if array is filled from slice
+      * @return string - unpacked slice_id if array is filled from slice
       * (not so important value, isn't?)
       * @param $slice_field
       * @param $conds
@@ -3002,12 +3002,11 @@ function getFrmJavascript( $jscode ) {
  * @param $name
  */
 function getFrmJavascriptCached( $jscode, $name ) {
-    global $pagecache;
     $key  = get_hash('jscache', $jscode);
 
-    if (!$pagecache->getById($key)) {     // not in cache, yet
+    if (!AA::Pagecache()->getById($key)) {     // not in cache, yet
         $str2find = new CacheStr2find($name, 'js');
-        $pagecache->store($key, $jscode, $str2find, true);
+        AA::Pagecache()->store($key, $jscode, $str2find, true);
     }
     return getFrmJavascriptFile( 'cached.php3?keystr='.$key, 'async defer' );
 }

@@ -42,8 +42,7 @@ require_once AA_INC_PATH . "actions.php3";
 // new manager class approach ------------------------------------------------
 
 // Allow edit current slice without slice_pwd
-$credentials = AA_Credentials::singleton();
-$credentials->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice($slice_id);
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;
@@ -51,7 +50,6 @@ $module_id = $slice_id;
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
 
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slice::getModule($module_id);
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {

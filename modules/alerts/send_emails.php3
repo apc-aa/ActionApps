@@ -65,7 +65,7 @@ function ShowCollectionAddOns() {
     FrmTabSeparator("", array('example[go]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
 
     // send to selected user
-    $reader_mails = $collection->getReadersSelectArray(true);
+    $reader_mails = $collection->getReadersSelectArray();
     asort($reader_mails);
 
     FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"]);

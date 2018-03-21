@@ -270,14 +270,14 @@ function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $
  */
 function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort) {
     if (!trim($constgroup)) {
-        return false;
+        return array();
     }
 
     $conds = String2Conds( $conds );
     $sort  = String2Sort( $sort ? $sort : 'sort[0][const_pri]=a');
     $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids);
     if ( $zids->count() <= 0 ) {
-        return false;
+        return array();
     }
 
     $content = GetConstantContent($zids);
@@ -306,6 +306,7 @@ function GetItemFromContent($content) {
 }
 
 class AA_Item {
+    /** @var ItemContent  */
     var $content4id;     // ItemContent array for this Item (like from GetItemContent)
     var $format;         // format string with aliases
     var $remove;         // remove string
@@ -399,6 +400,7 @@ class AA_Item {
     /** getValues function
      * shortcut for ItemContent->getValues()
      * @param $field_id
+     * @return array
      */
     function getValuesArray($field_id) {
         return $this->content4id->getValuesArray($field_id);
@@ -406,6 +408,7 @@ class AA_Item {
 
     /** getAaValue function
      * @param $field_id
+     * @return AA_Value
      */
     function getAaValue($field_id){
         return $this->content4id->getAaValue($field_id);
@@ -415,6 +418,7 @@ class AA_Item {
 
     /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     * @return bool
      */
     function isActive($bin=AA_BIN_ACTIVE) {
         return $this->content4id->isActive($bin);
@@ -445,7 +449,7 @@ class AA_Item {
     }
 
     /** getItemID function */
-    function getItemID() {
+    function getItemId() {
         return $this->content4id->getItemID();
     }
 
@@ -1604,8 +1608,9 @@ class AA_Items {
      *  database just once during the page creation.
      *
      *  Creates item object just from item id and fills all necessary structures
-     *  @param  zid     - an item id - zid object, unpacked or short id
-     *  @param  renew   - regenerate the item form database
+     *  @param  $zid zids    - an item id - zid object, unpacked or short id
+     *  @param  $crypted_additional_slice_pwd string
+     *  @param  $renew bool  - regenerate the item form database
      */
     static function getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
         if (empty($zid)) {
@@ -1735,12 +1740,14 @@ class AA_Items {
         }
     }
 
-    /** returns AA_Item or false (if not cached) */
+    /** @returns AA_Item or null (if not cached)
+     *  @param $zid zids
+     */
     function _getFromCache($zid) {
         if ( $zid->use_short_ids() ) {
             $id = $zid->id(0);
             // is it cached under its id (we expect short id here)
-            return isset($this->_i[$id]) ? $this->_i[$id] : false;
+            return isset($this->_i[$id]) ? $this->_i[$id] : null;
         }
 
         // long or packed
@@ -1749,9 +1756,13 @@ class AA_Items {
         if ( isset($this->_l2s[$id]) AND isset($this->_i[$this->_l2s[$id]]) ) {
             return $this->_i[$this->_l2s[$id]];
         }
-        return false;
+        return null;
     }
 
+    /**
+     * @param $item AA_Item
+     * @return AA_Item
+     */
     function _store($item) {
         $short_id                       = $item->getval('short_id........');
         $this->_i[$short_id]            = &$item;    // cache it

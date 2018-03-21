@@ -70,7 +70,6 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
      *  @return false or error message
      */
     function perform($manager, &$state, $item_arr, $akce_param) {
-        global $pagecache;
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
@@ -108,7 +107,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
                 $updated_items = 1;
             }
         }
-        $pagecache->invalidateFor("slice_id=". $sid);   // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=". $sid);   // invalidate old cached values
 
         return false;     // OK
     }

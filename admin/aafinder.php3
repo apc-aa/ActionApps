@@ -158,13 +158,12 @@ function PrintItemInfo($item_id) {
             echo "</pre>";
         }
 
-        $changes = AA_ChangesMonitor::singleton();
         echo '<h3>'. _m('History') .'</h3>';
         //echo "<pre>";
         //print_r($changes->getHistory(array($long_id)));
         //echo "</pre>";
 
-        $changes->display(array($long_id));
+        AA_ChangesMonitor::singleton()->display(array($long_id));
       //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
       //  print_r($changes->getProposals(array($long_id)));
       //  echo "</pre>";
@@ -434,8 +433,7 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
     echo '<table>';
     foreach($table2search as $tbl => $tblinfo) {
         $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function($col) { return ($col['operators'] == 'text'); }));
-        //$fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), AA_Metabase::getModuleField($tbl)));
-        $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), AA_Metabase::getModuleFields($tbl)));
+        $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), array(AA_Metabase::getModuleField($tbl))));
 
         $addfields  = $tblinfo['id']       ? (', '.$tblinfo['id'] ).       ' as iid' : '';
         $addfields .= $tblinfo['slice_id'] ? (', '.$tblinfo['slice_id'] ). ' as sid' : '';

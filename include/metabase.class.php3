@@ -825,7 +825,7 @@ class AA_Metabase {
             $join_sql     = "INNER JOIN $module_table ON $tablename.". $j['scr_field']."=$module_table.".$j['dest_field'];
         }
 
-        $module_field = $this->getModuleField($module_table);
+        $module_field = AA_Metabase::getModuleField($module_table);
         if (!$module_field) {
             // you can't use this function for that table - this is programmers mistake - correct the code
             echo "table $tablename not supported in AA_Metabase::getModuleRows() - no module field";

@@ -171,7 +171,7 @@ spl_autoload_register(function ($class_name) {
 
 class AA_Debug {
     protected $_starttime;
-    protected $_duration = array();
+    protected $_duration   = array();
     protected $_tracestack = array();
     protected $_calls      = array();
 
@@ -286,7 +286,8 @@ class AA {
     public  static $headers;    // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
     public  static $module_id;  // for admin pages - replace of older $slice_id
     private static $stringexpander = null;
-    private static $contentcache = null;
+    private static $contentcache   = null;
+    private static $pagecache      = null;
 
     static function getHeaders() {
         $ret = array();
@@ -300,14 +301,25 @@ class AA {
         return $ret;
     }
 
-    /** @usage AA::Stringexpander()->unalias(); */
+    /** @usage AA::Stringexpander()->unalias();
+     *  @return  AA_Stringexpander
+     */
     static function Stringexpander() {
         return AA::$stringexpander ?: (AA::$stringexpander = new AA_Stringexpander());
     }
 
-    /** @usage AA::Contentcache()->set(); */
+    /** @usage AA::Contentcache()->set();
+     *  @return  AA_Contentcache
+     */
     static function Contentcache() {
         return AA::$contentcache ?: (AA::$contentcache = new AA_Contentcache());
+    }
+
+    /** @usage AA::Pagecache()->invalidateFor();
+     *  @return  Pagecache
+     */
+    static function Pagecache() {
+        return AA::$pagecache ?: (AA::$pagecache = new PageCache(CACHE_TTL));
     }
 
     // typicaly called as AA::sendHeaders(AA::getHeaders());

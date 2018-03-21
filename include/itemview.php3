@@ -168,8 +168,8 @@ class itemview {
         }
         $key = get_hash('outp', $keystr, $this->disc, $this->aliases, PageCache::globalKeyArray());
 
-        global $str2find_passon, $pagecache;
-        if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($key)) ) {
+        global $str2find_passon;
+        if ( !$GLOBALS['nocache'] && ($res = AA::Pagecache()->get($key)) ) {
             return $res;
         }
 
@@ -177,7 +177,7 @@ class itemview {
         $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
         $res             = $this->get_output($view_type);
         $str2find_passon->add(unpack_id($this->slice_info["id"]), 'slice_id');
-        $pagecache->store($key, $res, $str2find_passon);
+        AA::Pagecache()->store($key, $res, $str2find_passon);
         $str2find_passon->add_str2find($str2find_save); // and append saved for above
 
         return $res;

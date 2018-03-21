@@ -845,8 +845,7 @@ class AA_Showview {
                 $this->_view_param['convertfrom'] = $slice->getCharset();
             }
             if ($this->_view_param['convertto'] != $this->_view_param['convertfrom'] ) {
-                $encoder                 = ConvertCharset::singleton();
-                $ret                     = $encoder->Convert($ret, $this->_view_param['convertfrom'], $this->_view_param['convertto']);
+                $ret                     = ConvertCharset::singleton()->Convert($ret, $this->_view_param['convertfrom'], $this->_view_param['convertto']);
                 AA::$headers['encoding'] = $this->_view_param['convertto'];
             }
         }

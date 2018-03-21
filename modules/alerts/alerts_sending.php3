@@ -87,9 +87,9 @@ class AA_Collection {
         return $aa_set->query();
     }
 
-    function getReadersSelectArray($ignore_reading_password, $how_often = null) {
+    function getReadersSelectArray($how_often = null) {
         $ret = array();
-        $content4ids = GetItemContent($this->getReaders($how_often), false, $ignore_reading_password, array(FIELDID_USERNAME, FIELDID_EMAIL));
+        $content4ids = GetItemContent($this->getReaders($how_often), false, true, array(FIELDID_USERNAME, FIELDID_EMAIL));
         if ( is_array($content4ids) ) {
             foreach ($content4ids as $reader_id => $content4id ) {
                 $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')', "() \t\n\r\0\x0B");
@@ -101,8 +101,7 @@ class AA_Collection {
     function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
 
         // allow to access Reader data (and the data of all the slices with the same password)
-        $credentials = AA_Credentials::singleton();
-        $credentials->loadFromSlice($this->_get('reader_slice_id'));
+        AA_Credentials::singleton()->loadFromSlice($this->_get('reader_slice_id'));
 
         $GLOBALS['apc_state']['xlang'] = substr(AA_Module_Alerts::getModule($this->_get('alerts_module_id'))->getLang(),0,2);
 

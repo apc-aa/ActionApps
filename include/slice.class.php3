@@ -472,7 +472,7 @@ class AA_Slice extends AA_Module {
      *  fetch the fields
      * @param $return_type
      * @param $slice_fields
-     * @return an array with two elements [0] is array in form
+     * @return array with two elements [0] is array in form
      * wanted by Storeitem etc, [1] is array of fields in priority order
      */
     function fields( $return_type = null, $slice_fields = false ) {
@@ -496,8 +496,7 @@ class AA_Slice extends AA_Module {
      */
     function get_dynamic_setting_content($ignore_reading_password = false) {
         if (!$ignore_reading_password) {
-            $credentials = AA_Credentials::singleton();
-            if (!$credentials->checkCryptedPassword($this->getProperty('reading_password'))) {
+            if (!AA_Credentials::singleton()->checkCryptedPassword($this->getProperty('reading_password'))) {
                 if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
                     huhe(_m("Error: Missing Reading Password"));
                 }

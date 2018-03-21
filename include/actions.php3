@@ -64,13 +64,12 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     }
 
 
-    /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
-    */
+    /**
+     * @param $zids    zids
+     * @param $to_bin  int
+     */
     function doMove($zids, $to_bin) {
-        global $auth, $event, $pagecache;
+        global $auth, $event;
         $PERMS = array(1 => PS_ITEMS2ACT, 2 => PS_ITEMS2HOLD, 3 => PS_ITEMS2TRASH);
 
         $to_bin = (int)$to_bin;
@@ -117,7 +116,7 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
                     }
                 }
                 $event->comes('ITEMS_MOVED', $sid, 'S', $item_ids, $to_bin );
-                $pagecache->invalidateFor("slice_id=$sid");  // invalidate old cached values
+                AA::Pagecache()->invalidateFor("slice_id=$sid");  // invalidate old cached values
             }
         }
     }
@@ -314,7 +313,6 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     * @return false or error message
     */
     function perform($manager, &$state, $item_arr, $akce_param) {
-        global $pagecache;
         if (strlen($akce_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
         }
@@ -344,8 +342,8 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
 
         DB_AA::sql("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
 
-        $pagecache->invalidateFor("slice_id=". $this->slice_id);  // invalidate old cached values
-        $pagecache->invalidateFor("slice_id=". $dest_slice_id);   // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=". $this->slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=". $dest_slice_id);   // invalidate old cached values
 
         return false;                                  // OK - no error
     }
@@ -388,7 +386,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
      *  @return false or error message
      */
     function perform($manager, &$state, $item_arr, $akce_param) {
-        global $pagecache, $slice_id, $event;
+        global $slice_id, $event;
 
         if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
             return _m("You have not permissions to remove items");
@@ -415,7 +413,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         // delete content of all fields
         AA_Items::deleteItems($items_to_delete);
 
-        $pagecache->invalidateFor("slice_id=$slice_id");
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");
         return false;     // OK
     }
 

@@ -93,8 +93,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
 }
 
 // Allow edit current slice without slice_pwd
-$credentials = AA_Credentials::singleton();
-$credentials->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice($slice_id);
 
 if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED

@@ -43,8 +43,7 @@ $items     = $chb;
 //}
 
 // Allow to use current slice data without slice_pwd
-$credentials = AA_Credentials::singleton();
-$credentials->loadFromSlice($slice_id);
+AA_Credentials::singleton()->loadFromSlice($slice_id);
 
 $slice       = AA_Slice::getModule($slice_id);
 
