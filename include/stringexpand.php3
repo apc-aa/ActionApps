@@ -1035,7 +1035,7 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
                 </form>
               </header>
               <section class=itemgroup>";
-        $ret .= AA_Stringexpand::unalias("{view.php3?vid=". str_replace('AA_LS_QUERY', $default, $view_param). "}");
+        $ret .= AA::Stringexpander()->unalias("{view.php3?vid=". str_replace('AA_LS_QUERY', $default, $view_param). "}");
         $ret .= "      </section>
             </article>";
         return $ret;
@@ -2208,6 +2208,23 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** converts html to text */
+class AA_Stringexpand_Html2text extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** Do not trim all parameters (maybe we can?) */
+    function doTrimParams() { return false; }
+
+    /** expand function
+     * @param $html string
+     */
+    function expand($html='') {
+        return html2text($html);
+    }
+}
+
+
 /** Base64url version of base64
  *  name={bin2url:Mojžíš}
  *  id={bin2url:{encrypt:{id..............}:password}}
@@ -2858,7 +2875,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
                 if ($item) {
                     $slice = AA_Slice::getModule($item->getSliceID());
                     $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
-                    $ret  .= AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
+                    $ret  .= AA::Stringexpander()->unalias($text, $slice->getProperty('fulltext_remove'), $item);
                 }
             }
         }
@@ -2938,9 +2955,9 @@ class AA_Stringexpand_Backlinks extends AA_Stringexpand {
     function expand($item_id=null, $slice_ids=null, $sort=null) {
         $item = AA_Items::getItem($item_id);
         if ($item) {
-            $slice_ids = $slice_ids ? $slice_ids : '{site:{modulefield:{slice_id........}:site_ids}:modules}';
+            $slice_ids = $slice_ids ?: '{site:{modulefield:{slice_id........}:site_ids}:modules}';
             $sort      = $sort      ? (($sort == '-') ? '': $sort) : 'slice_id........,publish_date....-';
-            return AA_Stringexpand::unalias("{ids:$slice_ids:d-all_fields-=-{id..............}:$sort}", '', $item);
+            return AA::Stringexpander()->unalias("{ids:$slice_ids:d-all_fields-=-{id..............}:$sort}", '', $item);
         }
         return '';
     }
@@ -3159,7 +3176,7 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
         if (empty($sort_string) OR !is_array($sort = String2Sort($sort_string))) {
             $sort = null;
         }
-        $current_ids = explode('-', AA_Stringexpand::unalias('{xid:list}'));
+        $current_ids = explode('-', AA::Stringexpander()->unalias('{xid:list}'));
 
         $supertree = AA_Trees::getSupertree(get_if($relation_field, 'relation........'), 1, $sort);
         return $supertree->getMenu($long_ids, $current_ids, $code);
@@ -3270,7 +3287,7 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
         $add = '';
 
         if (($unique_slices == 'all') AND is_object($this->item)) {
-            $unique_slices = AA_Stringexpand::unalias("{site:{modulefield:{slice_id........}:site_ids}:modules}", '', $this->item);
+            $unique_slices = AA::Stringexpander()->unalias("{site:{modulefield:{slice_id........}:site_ids}:modules}", '', $this->item);
         }
         if ( !empty($unique_slices) ) {
             // we do not want to create infinitive loop for wrong parameters
@@ -4104,7 +4121,7 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
                     // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
-                    $ret     = AA_Stringexpand::unalias("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
+                    $ret     = AA::Stringexpander()->unalias("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
 
                     AA::Stringexpander()->addRequire('ckeditor');
                     $script2run = '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
@@ -4460,8 +4477,6 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      * @param $conds
      */
     function expand($dictionaries='', $text='', $format='', $conds='') {
-        global $pagecache;
-
         // sometimes this function last to much time - try to extend it
         if (($max_execution_time = ini_get('max_execution_time')) > 0) {
             set_time_limit($max_execution_time+20);
@@ -4473,7 +4488,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
         // (we call it through the pagecache in order it is called only once for
         // the same parameters)
-        $replace_pairs = $pagecache->cacheMemDb(array('AA_Stringexpand_Dictionary','getDictReplacePairs'), array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
+        $replace_pairs = AA::Pagecache()->cacheMemDb(array('AA_Stringexpand_Dictionary','getDictReplacePairs'), array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
 
         // we do not want to replace text in the html tags, so we substitute all
         // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
@@ -4812,7 +4827,7 @@ class AA_Unalias_Callback {
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                       if ($out[1] == "#") {
                           if (isset($als[substr($out,2)])) {
-                              return QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
+                              return QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
                           } elseif (isset($this->item)) {
                               // just alias or not so common: {_#SOME_ALSand maybe some text}
                               return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
@@ -4822,7 +4837,7 @@ class AA_Unalias_Callback {
                           //     return $this->_localcache[$loccache_id];
                           // }
                           // if (isset($als[substr($out,2)])) {
-                          //     return ($this->_localcache[$loccache_id] = QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
+                          //     return ($this->_localcache[$loccache_id] = QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
                           // } elseif (isset($this->item)) {
                           //     // just alias or not so common: {_#SOME_ALSand maybe some text}
                           //     return ($this->_localcache[$loccache_id] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
@@ -4889,7 +4904,7 @@ class AA_Unalias_Callback {
             }
             elseif( substr($out, 0, 5) == "math(" ) {
                 // replace math
-                return QuoteColons( parseMath(DeQuoteColons(AA_Stringexpand::unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
+                return QuoteColons( parseMath(DeQuoteColons(AA::Stringexpander()->unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
             elseif( substr($out, 0, 5) == "list:" ) {
                 return QuoteColons(parseLoop($out, $this->item));
@@ -4948,12 +4963,12 @@ class AA_Unalias_Callback {
         // anything inside the value, and then makes sure any remaining quotes
         // don't interfere with caller
         if (isset($GLOBALS['apc_state'][$out])) {
-            return QuoteColons(AA_Stringexpand::unalias($GLOBALS['apc_state'][$out], '', $this->item, false, $this->itemview));
+            return QuoteColons(AA::Stringexpander()->unalias($GLOBALS['apc_state'][$out], '', $this->item, false, $this->itemview));
         }
         // Pass these in URLs like als[foo]=bar,
         // Note that 8 char aliases like als[foo12345] will expand with _#foo12345
         elseif (isset($als[$out])) {
-            return QuoteColons(AA_Stringexpand::unalias($als[$out], '', $this->item, false, $this->itemview));
+            return QuoteColons(AA::Stringexpander()->unalias($als[$out], '', $this->item, false, $this->itemview));
         }
         elseif (substr($out,0,8) == "mlx_view") {
             if(!$GLOBALS['mlxView']) {
@@ -5210,10 +5225,10 @@ class AA_Stringexpander {
      * @param $remove
      * @param $item
      */
-    function unaliasArray(&$arr, $remove="", $item=null) {
+    function unaliasArray(&$arr) {
         if (is_array( $arr )) {
             foreach ( $arr as $k => $text ) {
-                $arr[$k] = AA_Stringexpand::unalias($text, $remove, $item);
+                $arr[$k] = $this->unalias($text);
             }
         }
     }
@@ -5835,7 +5850,7 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
      */
     function expand($string='') {
         $item   = $this ? $this->item : null;
-        return AA_Stringexpand::unalias($string,'',$item);
+        return AA::Stringexpander()->unalias($string,'',$item);
     }
 }
 
@@ -6044,7 +6059,7 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
         $size  = get_if($size, 48);
         $title = (strpos($name,'@')===false) ? $name : substr($name,0,strpos($name,'@'));
 
-        if ($img = AA_Stringexpand::unalias("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
+        if ($img = AA::Stringexpander()->unalias("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
             return $img;
         }
         $nplus    = $title . '--';
@@ -7066,13 +7081,13 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
         $ret= array();
 
         foreach($arr as $str) {
-            $ret[] = AA_Stringexpand::unalias(str_replace(array('_#1','_#loop'),$str,$text),'',$item);
+            $ret[] = AA::Stringexpander()->unalias(str_replace(array('_#1','_#loop'),$str,$text),'',$item);
         }
         return join($outputdelimiter, $ret);
 
         //$arr = array_filter(array_map('trim', $arr), 'strlen');
         //array_walk($arr, function(&$value, $key, $param) {
-        //    $value = AA_Stringexpand::unalias(str_replace('_#1',$value,$param[1]),'',$param[0]);
+        //    $value = AA::Stringexpander()->unalias(str_replace('_#1',$value,$param[1]),'',$param[0]);
         //}, array($item, $text));
         //return join($outputdelimiter, $arr);
     }
@@ -7269,13 +7284,13 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $items = AA_Items::getItems($zids);
         $i = 0;
         foreach($items as $long_id=>$item) {
-            $frame = trim(AA_Stringexpand::unalias($code, '', $item));
+            $frame = trim(AA::Stringexpander()->unalias($code, '', $item));
             if ($frame) {
                 $frames[]  = "<div class=rot-hide style=\"$showfirst $extrastyle\">$frame</div>";
                 $showfirst = 'display:none;';
                 if ($li_code) {
                     $active = $i ? '' : ' active';
-                    $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id'); \" onmouseover=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id');\">".trim(AA_Stringexpand::unalias($li_code, '', $item))."</li>";
+                    $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id'); \" onmouseover=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id');\">".trim(AA::Stringexpander()->unalias($li_code, '', $item))."</li>";
                 }
             }
             ++$i;
