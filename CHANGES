@@ -1,3 +1,7 @@
+18-03-18 - code cleanup
+(honzam)    - pagecache global instance moved to AA::
+            - better use of singleton (chained method call)
+            - unified return types of some functions
 18-03-15 - many files are now autoloaded
 (honzam)    -code cleanup
             - removed closing php tag
