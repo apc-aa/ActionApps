@@ -1,4 +1,5 @@
-18-03-18 - code cleanup
+18-03-18 - new {html2text:<some HTML code>} function which removes html tags
+         - code cleanup
 (honzam)    - pagecache global instance moved to AA::
             - better use of singleton (chained method call)
             - unified return types of some functions
