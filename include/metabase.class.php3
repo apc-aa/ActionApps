@@ -615,7 +615,7 @@ class AA_Metabase {
     }
 
     /** static method */
-    function getModuleField($tablename) {
+    static function getModuleField($tablename) {
         $fields = self::getModuleFields();
         return $fields[$tablename];
     }
@@ -1145,5 +1145,3 @@ class AA_MetabaseTableEdit {
 
 
 }
-
-
