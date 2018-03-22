@@ -15,7 +15,7 @@ $_m["Constant unique id"]
  = "id unic al constantei";
 
 $_m[" Alias for text of the discussion comment"]
- = " Pseudonim pentru textul comentariului la discuï¿½ie";
+ = " Pseudonim pentru textul comentariului la discuþie";
 
 $_m[" Alias for written by"]
  = " Pseudonim pentru scris de";
@@ -24,14 +24,14 @@ $_m[" Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
  = " Pseudonim pentru ID comentariu<br>\n"
-   ."                             <i>Utilizare: </i>ï¿½n codul formularului<br>\n"
+   ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">";
 
 $_m[" Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"]
  = " Pseudonim pentru ID element<br>\n"
-   ."                             <i>Utilizare: </i>ï¿½n codul formularului<br>\n"
+   ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">";
 
 $_m["Alias pro IP address of author's computer"]
@@ -77,19 +77,19 @@ $_m["All categories"]
 
 // include/discussion.php3, row 206, 253
 $_m["Show selected"]
- = "Afiï¿½eazï¿½ selectat";
+ = "Afiºeazã selectat";
 
 // include/discussion.php3, row 207, 255
 $_m["Show all"]
- = "Afiï¿½eazï¿½ tot";
+ = "Afiºeazã tot";
 
 // include/discussion.php3, row 209, 257
 $_m["Add new"]
- = "Adaugï¿½ nou";
+ = "Adaugã nou";
 
 // include/discussion.php3, row 215
 $_m["Alias for subject of the discussion comment"]
- = "Pseudonim pentru subiectul la comentariu discuï¿½ie";
+ = "Pseudonim pentru subiectul la comentariu discuþie";
 
 // include/discussion.php3, row 216
 $_m["Alias for text of the discussion comment"]
@@ -113,7 +113,7 @@ $_m["Alias for description of author's www site"]
 
 // include/discussion.php3, row 221
 $_m["Alias for publish date"]
- = "Pseudonim pentru data publicï¿½rii";
+ = "Pseudonim pentru data publicãrii";
 
 // include/discussion.php3, row 222
 $_m["Alias for IP address of author's computer"]
@@ -121,7 +121,7 @@ $_m["Alias for IP address of author's computer"]
 
 // include/discussion.php3, row 223
 $_m["Alias for checkbox used for choosing discussion comment"]
- = "Pseudonim pentru cï¿½suï¿½a folositï¿½ la alegerea comentariului discuï¿½iei";
+ = "Pseudonim pentru cãsuþa folositã la alegerea comentariului discuþiei";
 
 // include/discussion.php3, row 224
 $_m["Alias for images"]
@@ -149,8 +149,8 @@ $_m["Alias for item ID<br>\n"
 $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"]
- = "Pseudonim pentru link la textul comentariului la discuï¿½ie<br>\n"
-   ."                             <i>Utilizare: </i>ï¿½n codul HTML pentru vederea sumar al comentariului<br>\n"
+ = "Pseudonim pentru link la textul comentariului la discuþie<br>\n"
+   ."                             <i>Utilizare: </i>în codul HTML pentru vederea sumar al comentariului<br>\n"
    ."                             <i>Exemplu: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>";
 
 // include/discussion.php3, row 229
@@ -158,22 +158,22 @@ $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"]
  = "Pseudonim pentru link la formular<br>\n"
-   ."                             <i>Utilizare: </i>ï¿½n codul HTML pentru vederea de text ï¿½ntreg al comentariului<br>\n"
-   ."                             <i>Exemplu: </i>&lt;a href=_#URLREPLY&gt;Rï¿½spuns&lt;/a&gt;";
+   ."                             <i>Utilizare: </i>în codul HTML pentru vederea de text întreg al comentariului<br>\n"
+   ."                             <i>Exemplu: </i>&lt;a href=_#URLREPLY&gt;Rãspuns&lt;/a&gt;";
 
 // include/discussion.php3, row 230
 $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"]
- = "Pseudonim pentru link la discuï¿½ie<br>\n"
-   ."                             <i>Utilizare: </i>ï¿½n codul formularului<br>\n"
+ = "Pseudonim pentru link la discuþie<br>\n"
+   ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">";
 
 // include/discussion.php3, row 231
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
- = "Pseudonim pentru butoane Afiï¿½eazï¿½ tot, Afiï¿½eazï¿½ selectat, Adaugï¿½ nou<br>\n"
-   ."                             <i>Utilizare: </i> ï¿½n codul HTML de la sfï¿½rï¿½it";
+ = "Pseudonim pentru butoane Afiºeazã tot, Afiºeazã selectat, Adaugã nou<br>\n"
+   ."                             <i>Utilizare: </i> în codul HTML de la sfîrºit";
 
 // include/discussion.php3, row 413
 $_m["3rd parameter filled in DiscussionMailList field"]
@@ -206,27 +206,27 @@ $_m["alias for Short Item ID"]
 
 // include/item.php3, row 102, 103
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "denumire utilizatï¿½ ï¿½n pagina admin index.php3 pentru url editare element";
+ = "denumire utilizatã în pagina admin index.php3 pentru url editare element";
 
 // include/item.php3, row 104
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Pseudonim folosit ï¿½n pagina admin index.php3 pentru editare url discuï¿½ii";
+ = "Pseudonim folosit în pagina admin index.php3 pentru editare url discuþii";
 
 // include/item.php3, row 105
 $_m["Title of Slice for RSS"]
- = "Titlul secï¿½iunii pentru RSS";
+ = "Titlul secþiunii pentru RSS";
 
 // include/item.php3, row 106
 $_m["Link to the Slice for RSS"]
- = "Link la secï¿½iunea pentru RSS";
+ = "Link la secþiunea pentru RSS";
 
 // include/item.php3, row 107
 $_m["Short description (owner and name) of slice for RSS"]
- = "Descriere scurtï¿½ (proprietar ï¿½i nume) a secï¿½iunii pentru RSS";
+ = "Descriere scurtã (proprietar ºi nume) a secþiunii pentru RSS";
 
 // include/item.php3, row 108
 $_m["Date RSS information is generated, in RSS date format"]
- = "Informaï¿½ia datï¿½ RSS este generat, ï¿½n format datï¿½ RSS";
+ = "Informaþia datã RSS este generat, în format datã RSS";
 
 // include/item.php3, row 109
 $_m["Slice name"]
@@ -242,15 +242,15 @@ $_m["HTML markup direction tag (e.g. DIR=RTL)"]
 
 // include/item.php3, row 140
 $_m["Constant name"]
- = "Nume constantï¿½";
+ = "Nume constantã";
 
 // include/item.php3, row 141
 $_m["Constant value"]
- = "Valoare constantï¿½";
+ = "Valoare constantã";
 
 // include/item.php3, row 142
 $_m["Constant priority"]
- = "Prioritate constantï¿½";
+ = "Prioritate constantã";
 
 // include/item.php3, row 143
 $_m["Constant group id"]
@@ -258,11 +258,11 @@ $_m["Constant group id"]
 
 // include/item.php3, row 144
 $_m["Category class (for categories only)"]
- = "Clasï¿½ categorie (numai pentru categorii)";
+ = "Clasã categorie (numai pentru categorii)";
 
 // include/item.php3, row 145
 $_m["Constant number"]
- = "Numï¿½r constante";
+ = "Numãr constante";
 
 // include/item.php3, row 146
 $_m["Constant unique id (32-haxadecimal characters)"]

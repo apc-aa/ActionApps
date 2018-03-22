@@ -12,25 +12,25 @@ $mgettext_lang = "ja";
 
 # Unused messages
 $_m["No permission"]
- = "ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "µö²Ä¤¬¤¢¤ê¤Þ¤»¤ó";
 
 $_m["Pending"]
- = "ï¿½Ôµï¿½ï¿½ï¿½";
+ = "ÂÔµ¡Ãæ";
 
 $_m["Change current permissions"]
- = "ï¿½ï¿½ï¿½ß¤Îµï¿½ï¿½Ä¤ï¿½ï¿½Ñ¹ï¿½";
+ = "¸½ºß¤Îµö²Ä¤òÊÑ¹¹";
 
 $_m["ActionApps"]
- = "APC ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×¥ï¿½";
+ = "APC ¥¢¥¯¥·¥ç¥ó ¥¢¥×¥ê";
 
 $_m["Admin - User Management"]
- = "ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Ñ¼Ô´ï¿½ï¿½ï¿½";
+ = "´ÉÍý - ÍøÍÑ¼Ô´ÉÍý";
 
 $_m["<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>"]
- = "<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½</b>&quot; page.</p>";
+ = "<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>¥¹¥é¥¤¥¹</b>&quot; page.</p>";
 
 $_m["Remove"]
- = "ï¿½ï¿½ï¿½";
+ = "ºï½ü";
 
 # End of unused messages
 // ./auth.php, row 50
@@ -96,7 +96,7 @@ $_m["Template"]
 // include/mlx.php, row 408
 // include/sliceadd.php3, row 75, 98
 $_m["Add"]
- = "ï¿½É²ï¿½";
+ = "ÄÉ²Ã";
 
 // ./diff.diff, row 1107
 // include/sliceadd.php3, row 79
@@ -205,7 +205,7 @@ $_m["Restore Data from Backup Tables"]
 // admin/um_gedit.php3, row 50
 // admin/se_newuser.php3, row 42
 $_m["No permission to create new user"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¼Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "¿·¤·¤¤ÍøÍÑ¼Ô¤òºîÀ®¤¹¤ëµö²Ä¤¬¤¢¤ê¤Þ¤»¤ó";
 
 // admin/um_uedit.php3, row 71, 86, 109
 // admin/um_gedit.php3, row 75, 83
@@ -219,7 +219,7 @@ $_m["Too many users or groups found."]
 // admin/se_users_add.php3, row 121
 // include/um_gsrch.php3, row 34
 $_m["No user (group) found"]
- = "ï¿½ï¿½ï¿½Ñ¼ï¿½(ï¿½ï¿½ï¿½ë¡¼ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½Õ¤ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "ÍøÍÑ¼Ô(¥°¥ë¡¼¥×)¤¬¸«ÉÕ¤«¤ê¤Þ¤»¤ó";
 
 // admin/um_uedit.php3, row 77, 80, 96
 // admin/um_gedit.php3, row 68
@@ -229,7 +229,7 @@ $_m["Too much groups found."]
 // admin/um_uedit.php3, row 77, 80
 // admin/um_gedit.php3, row 68
 $_m["No groups found"]
- = "ï¿½ï¿½ï¿½ë¡¼ï¿½×¤ï¿½ï¿½ï¿½ï¿½Õ¤ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "¥°¥ë¡¼¥×¤¬¸«ÉÕ¤«¤ê¤Þ¤»¤ó";
 
 // admin/um_uedit.php3, row 151
 // admin/se_newuser.php3, row 83
@@ -244,7 +244,7 @@ $_m["User data modified"]
 
 // admin/um_uedit.php3, row 161
 $_m["User management - Users"]
- = "ï¿½ï¿½ï¿½Ñ¼Ô´ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Ñ¼Ô·ï¿½";
+ = "ÍøÍÑ¼Ô´ÉÍý - ÍøÍÑ¼Ô·²";
 
 // admin/um_uedit.php3, row 171
 $_m["Are you sure you want to delete selected user from whole permission system?"]
@@ -253,20 +253,20 @@ $_m["Are you sure you want to delete selected user from whole permission system?
 // admin/um_uedit.php3, row 208
 // include/menu_aa.php3, row 48
 $_m["New User"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¼ï¿½";
+ = "¿·¤·¤¤ÍøÍÑ¼Ô";
 
 // admin/um_uedit.php3, row 208, 288
 // admin/um_passwd.php3, row 103
 // include/menu_aa.php3, row 47
 $_m["Edit User"]
- = "ï¿½ï¿½ï¿½Ñ¼Ô¤ï¿½ï¿½Ô½ï¿½";
+ = "ÍøÍÑ¼Ô¤ÎÊÔ½¸";
 
 // admin/um_uedit.php3, row 215
 // admin/um_gedit.php3, row 261
 // admin/se_users_add.php3, row 68
 // include/menu_aa.php3, row 46
 $_m["Users"]
- = "ï¿½ï¿½ï¿½Ñ¼Ô·ï¿½";
+ = "ÍøÍÑ¼Ô·²";
 
 // admin/um_uedit.php3, row 223, 314
 // admin/um_gedit.php3, row 171, 273
@@ -276,7 +276,7 @@ $_m["Users"]
 // include/tabledit.php3, row 574
 // include/searchbar.class.php3, row 553, 616
 $_m["Search"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "¸¡º÷";
 
 // admin/um_uedit.php3, row 237
 // admin/aarsstest.php3, row 154
@@ -310,7 +310,7 @@ $_m["Delete"]
 // admin/setup.php3, row 101, 237
 // include/um_util.php3, row 310
 $_m["Login name"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¾";
+ = "¥í¥°¥¤¥óÌ¾";
 
 // admin/um_uedit.php3, row 290
 // admin/um_passwd.php3, row 105
@@ -320,7 +320,7 @@ $_m["User Id"]
 // admin/um_uedit.php3, row 292
 // admin/se_newuser.php3, row 107
 $_m["New user"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¼ï¿½";
+ = "¿·µ¬ÍøÍÑ¼Ô";
 
 // admin/um_uedit.php3, row 295
 // admin/aarsstest.php3, row 151
@@ -331,7 +331,7 @@ $_m["New user"]
 // admin/setup.php3, row 102, 238
 // include/um_util.php3, row 315
 $_m["Password"]
- = "ï¿½Ñ¥ï¿½ï¿½ï¡¼ï¿½ï¿½";
+ = "¥Ñ¥¹¥ï¡¼¥É";
 
 // admin/um_uedit.php3, row 296
 // admin/um_passwd.php3, row 108
@@ -339,7 +339,7 @@ $_m["Password"]
 // admin/slicewiz.php3, row 84
 // include/um_util.php3, row 316
 $_m["Retype password"]
- = "ï¿½Ñ¥ï¿½ï¿½ï¡¼ï¿½É¤ò·«¤ï¿½ï¿½Ö¤ï¿½";
+ = "¥Ñ¥¹¥ï¡¼¥É¤ò·«¤êÊÖ¤¹";
 
 // admin/um_uedit.php3, row 297
 // admin/um_passwd.php3, row 109
@@ -348,7 +348,7 @@ $_m["Retype password"]
 // admin/setup.php3, row 104, 242
 // include/um_util.php3, row 312
 $_m["First name"]
- = "Ì¾ï¿½ï¿½";
+ = "Ì¾Á°";
 
 // admin/um_uedit.php3, row 298
 // admin/um_passwd.php3, row 110
@@ -356,7 +356,7 @@ $_m["First name"]
 // admin/slicewiz.php3, row 86
 // include/um_util.php3, row 311
 $_m["Surname"]
- = "ï¿½ï¿½";
+ = "À«";
 
 // admin/um_uedit.php3, row 299
 // admin/um_passwd.php3, row 111
@@ -366,12 +366,12 @@ $_m["Surname"]
 // admin/setup.php3, row 106, 244
 // include/um_util.php3, row 322, 323, 324
 $_m["E-mail"]
- = "E-ï¿½á¡¼ï¿½ï¿½";
+ = "E-¥á¡¼¥ë";
 
 // admin/um_uedit.php3, row 302
 // admin/setup.php3, row 96
 $_m["Superadmin account"]
- = "Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "Ä¶´ÉÍý¼Ô ¥¢¥«¥¦¥ó¥È";
 
 // admin/um_uedit.php3, row 308
 // admin/um_gedit.php3, row 162
@@ -379,15 +379,15 @@ $_m["Superadmin account"]
 // include/um_gsrch.php3, row 41
 // include/menu_aa.php3, row 50
 $_m["Groups"]
- = "ï¿½ï¿½ï¿½ë¡¼ï¿½×·ï¿½";
+ = "¥°¥ë¡¼¥×·²";
 
 // admin/um_uedit.php3, row 310
 $_m["All Groups"]
- = "ï¿½ï¿½ï¿½Æ¤Î¥ï¿½ï¿½ë¡¼ï¿½ï¿½";
+ = "Á´¤Æ¤Î¥°¥ë¡¼¥×";
 
 // admin/um_uedit.php3, row 312
 $_m["User's Groups"]
- = "ï¿½ï¿½ï¿½Ñ¼Ô¤Î¥ï¿½ï¿½ë¡¼ï¿½ï¿½";
+ = "ÍøÍÑ¼Ô¤Î¥°¥ë¡¼¥×";
 
 // admin/se_inter_import2.php3, row 34
 // admin/se_mapping.php3, row 36
@@ -480,7 +480,7 @@ $_m["More help"]
 // admin/se_compact.php3, row 189
 // admin/se_fulltext.php3, row 136
 $_m["Default"]
- = "ï¿½ï¿½Î¬ï¿½ï¿½";
+ = "¾ÊÎ¬ÃÍ";
 
 // admin/se_inputform.php3, row 120
 $_m["Input show function"]
@@ -577,7 +577,7 @@ $_m["Number"]
 // admin/sliceimp.php3, row 484
 // include/formutil.php3, row 202, 2698
 $_m["Insert"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "ÁÞÆþ";
 
 // admin/se_inputform.php3, row 415
 $_m["Defines how value is stored in database."]
@@ -627,7 +627,7 @@ $_m["_# + 8 UPPERCASE letters or _"]
 // include/um_gedit.php3, row 32
 // include/tv_email.php3, row 107, 166
 $_m["Description"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "µ­½Ò";
 
 // admin/sliceexp.php3, row 44
 // admin/sliceimp.php3, row 41
@@ -751,7 +751,7 @@ $_m["You have no permission to set configuration parameters of this slice"]
 // include/constants.php3, row 505, 547, 565, 614, 646, 673, 695, 735, 762, 786, 818
 // include/tableviews.php3, row 158
 $_m["Top HTML"]
- = "ï¿½ï¿½Æ¬ï¿½ï¿½HTML";
+ = "ÀèÆ¬¤ÎHTML";
 
 // admin/se_admin.php3, row 57, 148
 $_m["Item format"]
@@ -762,7 +762,7 @@ $_m["Item format"]
 // include/constants.php3, row 510, 549, 567, 618, 648, 675, 698, 740, 764, 791, 823
 // include/tableviews.php3, row 162
 $_m["Bottom HTML"]
- = "ï¿½Ç¸ï¿½ï¿½HTML";
+ = "ºÇ¸å¤ÎHTML";
 
 // admin/se_admin.php3, row 59, 154
 // admin/se_compact.php3, row 59, 233
@@ -794,7 +794,7 @@ $_m["Admin fields update successful"]
 
 // admin/se_admin.php3, row 115, 132
 $_m["Admin - design Item Manager view"]
- = "ï¿½ï¿½ï¿½ï¿½ - design ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½ view";
+ = "´ÉÍý - design ¹àÌÜ´ÉÍý view";
 
 // admin/se_admin.php3, row 143
 $_m["Listing of items in Admin interface"]
@@ -1330,18 +1330,18 @@ $_m["redefine inputform UI - (empty values = do not show)"]
 // admin/discedit2.php3, row 54, 122
 // admin/se_users_add.php3, row 48
 $_m["Author"]
- = "ï¿½ï¿½ï¿½";
+ = "ºî¼Ô";
 
 // admin/se_users.php3, row 101
 // admin/slicewiz.php3, row 81
 // admin/se_users_add.php3, row 51
 $_m["Editor"]
- = "ï¿½Ô½ï¿½ï¿½ï¿½";
+ = "ÊÔ½¸¼Ô";
 
 // admin/se_users.php3, row 103
 // admin/se_users_add.php3, row 54
 $_m["Administrator"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "´ÉÍý¼Ô";
 
 // admin/se_users.php3, row 105
 // include/um_util.php3, row 100, 162
@@ -1354,7 +1354,7 @@ $_m["Profile"]
 
 // admin/se_users.php3, row 117, 124
 $_m["Admin - Permissions"]
- = "ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½";
+ = "´ÉÍý - µö²Ä";
 
 // admin/se_users.php3, row 137
 $_m["Change current permisions"]
@@ -1579,11 +1579,11 @@ $_m["Error: You have no rights to edit item."]
 // admin/itemedit.php3, row 284
 // include/menu.php3, row 73
 $_m["Add Item"]
- = "ï¿½ï¿½ï¿½Ü¤ï¿½ï¿½É²ï¿½";
+ = "¹àÌÜ¤ÎÄÉ²Ã";
 
 // admin/itemedit.php3, row 284
 $_m["Edit Item"]
- = "ï¿½ï¿½ï¿½Ü¤ï¿½ï¿½Ô½ï¿½";
+ = "¹àÌÜ¤ÎÊÔ½¸";
 
 // admin/se_sets.php3, row 44
 $_m["You have not permissions to change sets"]
@@ -1691,7 +1691,7 @@ $_m["Export selected items to selected slice"]
 // include/menu.php3, row 136
 // include/sliceadd.php3, row 55, 84
 $_m["Slice"]
- = "ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½";
+ = "¥¹¥é¥¤¥¹";
 
 // admin/feed_to.php3, row 63
 $_m["Holding bin"]
@@ -1702,7 +1702,7 @@ $_m["Holding bin"]
 // admin/se_filters.php3, row 278
 // include/menu.php3, row 187, 243
 $_m["Active"]
- = "ï¿½ï¿½Æ°ï¿½ï¿½";
+ = "³èÆ°Ãæ";
 
 // admin/feed_to.php3, row 65
 $_m["Do not export to this slice"]
@@ -1976,7 +1976,7 @@ $_m["Item: "]
 // include/modutils.php3, row 72
 // include/slicedit.php3, row 154
 $_m["Title"]
- = "ï¿½ï¿½Ì¾";
+ = "ÂêÌ¾";
 
 // admin/discedit.php3, row 135
 $_m["IP Address"]
@@ -2030,7 +2030,7 @@ $_m["Search form criteria"]
 // admin/anonym_wizard.php3, row 210
 // admin/se_views.php3, row 77
 $_m["Show"]
- = "É½ï¿½ï¿½";
+ = "É½¼¨";
 
 // admin/se_search.php3, row 159
 $_m["Search in fields"]
@@ -2038,7 +2038,7 @@ $_m["Search in fields"]
 
 // admin/se_search.php3, row 166
 $_m["Default settings"]
- = "ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "¾ÊÎ¬»þ¤ÎÀßÄê";
 
 // admin/se_search.php3, row 181
 // admin/sliceimp.php3, row 486, 521
@@ -2047,7 +2047,7 @@ $_m["Default settings"]
 // include/formutil.php3, row 200, 204, 2720
 // include/widget.class.php3, row 285
 $_m["Cancel"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "ÃæÃÇ";
 
 // admin/se_inter_import.php3, row 73
 $_m["Missing!!!"]
@@ -2097,7 +2097,7 @@ $_m["Group successfully added to permission system"]
 
 // admin/um_gedit.php3, row 111
 $_m["User management - Groups"]
- = "ï¿½ï¿½ï¿½Ñ¼Ô´ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ë¡¼ï¿½ï¿½";
+ = "ÍøÍÑ¼Ô´ÉÍý - ¥°¥ë¡¼¥×";
 
 // admin/um_gedit.php3, row 121
 $_m["Are you sure you want to delete selected group from whole permission system?"]
@@ -2124,15 +2124,15 @@ $_m["Group"]
 
 // admin/um_gedit.php3, row 221
 $_m["Edit group"]
- = "ï¿½ï¿½ï¿½ë¡¼ï¿½×¤ï¿½ï¿½Ô½ï¿½";
+ = "¥°¥ë¡¼¥×¤ÎÊÔ½¸";
 
 // admin/um_gedit.php3, row 223
 $_m["New group"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¡¼ï¿½ï¿½";
+ = "¿·µ¬¥°¥ë¡¼¥×";
 
 // admin/um_gedit.php3, row 253
 $_m["Group Id"]
- = "ï¿½ï¿½ï¿½ë¡¼ï¿½ï¿½ Id";
+ = "¥°¥ë¡¼¥× Id";
 
 // admin/um_gedit.php3, row 255
 // admin/se_constant.php3, row 181, 413
@@ -2142,19 +2142,19 @@ $_m["Group Id"]
 // include/fileman.php3, row 32
 // include/tableviews.php3, row 131, 152
 $_m["Name"]
- = "Ì¾ï¿½ï¿½";
+ = "Ì¾Á°";
 
 // admin/um_gedit.php3, row 257
 $_m["Superadmin group"]
- = "Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½Ô¥ï¿½ï¿½ë¡¼ï¿½ï¿½";
+ = "Ä¶´ÉÍý¼Ô¥°¥ë¡¼¥×";
 
 // admin/um_gedit.php3, row 269
 $_m["All Users"]
- = "ï¿½ï¿½ï¿½Æ¤Î¥ï¿½ï¿½ë¡¼ï¿½ï¿½";
+ = "Á´¤Æ¤Î¥°¥ë¡¼¥×";
 
 // admin/um_gedit.php3, row 271
 $_m["Group's Users"]
- = "ï¿½ï¿½ï¿½ë¡¼ï¿½×¤ï¿½ï¿½ï¿½ï¿½Ñ¼ï¿½";
+ = "¥°¥ë¡¼¥×¤ÎÍøÍÑ¼Ô";
 
 // admin/aa_synchronize.php3, row 46
 $_m["Authentification failed, try again"]
@@ -2363,7 +2363,7 @@ $_m["You have not permissions to change compact view formatting"]
 // admin/se_compact.php3, row 56, 203
 // include/constants.php3, row 506, 548, 615, 647, 674, 736, 787, 819
 $_m["Odd Rows"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "´ñ¿ô¹Ô";
 
 // admin/se_compact.php3, row 60, 235
 $_m["'No item found' message"]
@@ -2372,7 +2372,7 @@ $_m["'No item found' message"]
 // admin/se_compact.php3, row 62, 207
 // include/constants.php3, row 508, 616, 738, 789, 821
 $_m["Even Rows"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "¶ö¿ô¹Ô";
 
 // admin/se_compact.php3, row 65, 224
 $_m["Category top HTML"]
@@ -2393,7 +2393,7 @@ $_m["Design of compact design successfully changed"]
 // admin/se_compact.php3, row 142, 181
 // admin/se_newuser.php3, row 93
 $_m["Admin - design Index view"]
- = "ï¿½ï¿½ï¿½ï¿½ - design Index view";
+ = "´ÉÍý - design Index view";
 
 // admin/se_compact.php3, row 181
 $_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
@@ -2572,7 +2572,7 @@ $_m["Fields"]
 
 // admin/se_fields.php3, row 243
 $_m["Required"]
- = "É¬ï¿½ï¿½";
+ = "É¬Í×";
 
 // admin/se_fields.php3, row 246
 $_m["Aliases"]
@@ -2621,7 +2621,7 @@ $_m["Use HTML tags"]
 // admin/se_notify.php3, row 83
 // include/slicedit.php3, row 85
 $_m["You have not permissions to edit this slice"]
- = "ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "¥¹¥é¥¤¥¹¤òÊÔ½¸¤¹¤ëµö²Ä¤¬¤¢¤ê¤Þ¤»¤ó";
 
 // admin/se_notify.php3, row 187, 191, 204
 $_m["Email Notifications of Events"]
@@ -2662,7 +2662,7 @@ $_m["Not allowed"]
 // admin/slicedit.php3, row 43
 // include/menu.php3, row 190, 244
 $_m["Hold bin"]
- = "ï¿½ï¿½Î±È¢";
+ = "ÊÝÎ±È¢";
 
 // admin/slicedit.php3, row 47
 // include/formutil.php3, row 3014
@@ -2700,7 +2700,7 @@ $_m["Slice Administration"]
 // admin/slicedit.php3, row 134
 // admin/setup.php3, row 289
 $_m["Add Slice"]
- = "ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½ï¿½ï¿½ï¿½É²ï¿½";
+ = "¥¹¥é¥¤¥¹¤òÄÉ²Ã";
 
 // admin/slicedit.php3, row 134
 $_m["Admin - Slice settings"]
@@ -2722,8 +2722,8 @@ $_m["Priority (order in slice-menu)"]
 // admin/se_views.php3, row 193
 $_m["<br>To include slice in your webpage type next line \n"
    ."                         to your shtml code: "]
- = "<br>ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½ï¿½ò¤¢¤Ê¤ï¿½ï¿½Î¥Ú¡ï¿½ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ï¿½Ë¤ï¿½ï¿½ë¤¿ï¿½ï¿½Ë¤ï¿½ \n"
-   ."                         ï¿½Ê²ï¿½ï¿½ï¿½shtmlï¿½ï¿½ï¿½ï¿½ï¿½É¤ï¿½ï¿½É²Ã¤ï¿½ï¿½Æ²ï¿½ï¿½ï¿½ï¿½ï¿½: ";
+ = "<br>¥¹¥é¥¤¥¹¤ò¤¢¤Ê¤¿¤Î¥Ú¡¼¥¸¤Î°ìÉô¤Ë¤¹¤ë¤¿¤á¤Ë¤Ï \n"
+   ."                         °Ê²¼¤Îshtml¥³¡¼¥É¤òÄÉ²Ã¤·¤Æ²¼¤µ¤¤: ";
 
 // admin/slicedit.php3, row 160
 // include/modutils.php3, row 73
@@ -2748,11 +2748,11 @@ $_m["New Owner's E-mail"]
 // include/constants.php3, row 539, 639, 662, 689, 720, 779, 811, 843
 // include/slicedit.php3, row 159
 $_m["Listing length"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½ï¿½";
+ = "°ìÍ÷¤ÎÄ¹¤µ";
 
 // admin/slicedit.php3, row 168
 $_m["Deleted"]
- = "ï¿½ï¿½ï¿½Ãºï¿½";
+ = "Ëõ¾ÃºÑ";
 
 // admin/slicedit.php3, row 170
 // include/slicedit.php3, row 160
@@ -2928,7 +2928,7 @@ $_m["Modules"]
 // include/slicedit.php3, row 90
 // include/sliceadd.php3, row 35
 $_m["You have not permissions to add slice"]
- = "ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½ï¿½ï¿½ï¿½É²Ã¤ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "¥¹¥é¥¤¥¹¤òÄÉ²Ã¤¹¤ëµö²Ä¤¬¤¢¤ê¤Þ¤»¤ó";
 
 // admin/aafinder.php3, row 49, 51, 186
 // include/menu_aa.php3, row 71
@@ -3150,7 +3150,7 @@ $_m["View items"]
 // admin/search_replace.php3, row 758
 // include/manager.class.php3, row 590
 $_m["Selected items"]
- = "ï¿½ï¿½ï¿½ò¤µ¤ì¤¿ï¿½ï¿½ï¿½Ü·ï¿½";
+ = "ÁªÂò¤µ¤ì¤¿¹àÌÜ·²";
 
 // admin/search_replace.php3, row 763
 $_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
@@ -3397,7 +3397,7 @@ $_m["by&nbsp;type:"]
 // admin/se_views.php3, row 154, 174
 // include/formutil.php3, row 1608, 1615
 $_m["New"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "¿·µ¬";
 
 // admin/se_views.php3, row 159
 $_m["by&nbsp;template:"]
@@ -3634,7 +3634,7 @@ $_m["-- The same --"]
 
 // admin/se_filters.php3, row 152, 251
 $_m["Admin - Content Pooling - Filters"]
- = "ï¿½ï¿½ï¿½ï¿½ - Content Pooling - Filters";
+ = "´ÉÍý - Content Pooling - Filters";
 
 // admin/se_filters.php3, row 225
 $_m["No From category selected!"]
@@ -3650,15 +3650,15 @@ $_m["Filter for imported slice"]
 
 // admin/se_filters.php3, row 271
 $_m["Categories"]
- = "Ê¬ï¿½ï¿½";
+ = "Ê¬Îà";
 
 // admin/se_filters.php3, row 289
 $_m["All Categories"]
- = "ï¿½ï¿½ï¿½Æ¤ï¿½Ê¬ï¿½ï¿½";
+ = "Á´¤Æ¤ÎÊ¬Îà";
 
 // admin/se_filters.php3, row 296, 319
 $_m["No category defined"]
- = "Ê¬ï¿½à¤¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¤ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "Ê¬Îà¤¬ÄêµÁ¤µ¤ì¤Æ¤¤¤Þ¤»¤ó";
 
 // admin/se_filters.php3, row 355, 355
 // include/manager.class.php3, row 585
@@ -3731,12 +3731,12 @@ $_m["Can't assign super access permission."]
 
 // admin/se_users_add.php3, row 65
 $_m["Search user or group"]
- = "ï¿½ï¿½ï¿½Ñ¼Ô¤ï¿½ï¿½ï¿½ï¿½ë¡¼ï¿½×¤Î¸ï¿½ï¿½ï¿½";
+ = "ÍøÍÑ¼Ô¤«¥°¥ë¡¼¥×¤Î¸¡º÷";
 
 // admin/se_users_add.php3, row 82
 // include/um_util.php3, row 118
 $_m["Assign new permissions"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "¿·¤·¤¤µö²Ä¤òÂåÆþ";
 
 // admin/se_users_add.php3, row 119
 $_m["Try to be more specific."]
@@ -4622,7 +4622,7 @@ $_m["Bad"]
 
 // include/formutil.php3, row 193
 $_m["Update & View"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+ = "¹¹¿·¤·¤Æ ¸«¤ë";
 
 // include/formutil.php3, row 197
 $_m["Insert as new"]
@@ -4667,7 +4667,7 @@ $_m["Enter the value"]
 // include/formutil.php3, row 1619
 // include/menu.php3, row 145
 $_m["Change"]
- = "ï¿½Ñ¹ï¿½";
+ = "ÊÑ¹¹";
 
 // include/formutil.php3, row 1658
 $_m["Item"]
@@ -5009,7 +5009,7 @@ $_m["index of item within a page (it begins from 0 on each page listed by pagesc
 // include/item.php3, row 95
 // include/field.class.php3, row 397
 $_m["alias for Item ID"]
- = "ï¿½ï¿½ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½Ì¾";
+ = "¹àÌÜ ID¤Î ÊÌÌ¾";
 
 // include/item.php3, row 96
 // include/field.class.php3, row 398
@@ -5120,15 +5120,15 @@ $_m["Home"]
 
 // include/actions.php3, row 60
 $_m["Move to Active"]
- = "ï¿½ï¿½Æ°ï¿½ï¿½Ø°ï¿½Æ°";
+ = "³èÆ°Ãæ¤Ø°ÜÆ°";
 
 // include/actions.php3, row 61
 $_m["Move to Holding bin"]
- = "ï¿½ï¿½Î±È¢ï¿½Ø°ï¿½Æ°";
+ = "ÊÝÎ±È¢¤Ø°ÜÆ°";
 
 // include/actions.php3, row 62
 $_m["Move to Trash"]
- = "ï¿½ï¿½ï¿½ï¿½È¢ï¿½Ë°ï¿½Æ°";
+ = "¥´¥ßÈ¢¤Ë°ÜÆ°";
 
 // include/actions.php3, row 157, 250
 $_m["No slice selected"]
@@ -5281,7 +5281,7 @@ $_m["Reader Management Slice"]
 
 // include/menu_util.php3, row 106, 182
 $_m["New slice"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é¥¤ï¿½ï¿½";
+ = "¿·µ¬¥¹¥é¥¤¥¹";
 
 // include/menu_util.php3, row 173
 $_m["Reader management"]
@@ -5402,11 +5402,11 @@ $_m["Internal error when changing user role."]
 
 // include/menu.php3, row 64
 $_m["View site"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½È¤ò¸«¤ï¿½";
+ = "¥µ¥¤¥È¤ò¸«¤ë";
 
 // include/menu.php3, row 79, 80, 151
 $_m["Item Manager"]
- = "ï¿½ï¿½ï¿½Ü´ï¿½ï¿½ï¿½";
+ = "¹àÌÜ´ÉÍý";
 
 // include/menu.php3, row 87
 $_m["Slice Admin"]
@@ -5430,11 +5430,11 @@ $_m["AA Central"]
 
 // include/menu.php3, row 135
 $_m["Main settings"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "¼ç¤ÊÀßÄê";
 
 // include/menu.php3, row 137
 $_m["Category"]
- = "Ê¬ï¿½ï¿½";
+ = "Ê¬Îà";
 
 // include/menu.php3, row 139
 $_m["Slice Fields"]
@@ -5447,15 +5447,15 @@ $_m["Email Notification"]
 // include/menu.php3, row 143
 // include/um_util.php3, row 90, 99
 $_m["Permissions"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "µö²Ä";
 
 // include/menu.php3, row 144
 $_m["Assign"]
- = "ï¿½ï¿½ï¿½ï¿½";
+ = "ÂåÆþ";
 
 // include/menu.php3, row 147
 $_m["Design"]
- = "ï¿½Ç¥ï¿½ï¿½ï¿½ï¿½ï¿½";
+ = "¥Ç¥¶¥¤¥ó";
 
 // include/menu.php3, row 148
 $_m["Index"]
@@ -5463,7 +5463,7 @@ $_m["Index"]
 
 // include/menu.php3, row 149
 $_m["Fulltext"]
- = "ï¿½ï¿½Ê¸";
+ = "Á´Ê¸";
 
 // include/menu.php3, row 150
 $_m["Views"]
@@ -5528,15 +5528,15 @@ $_m["Folders"]
 
 // include/menu.php3, row 188
 $_m["... pending"]
- = "ï¿½Ôµï¿½ï¿½ï¿½";
+ = "ÂÔµ¡Ãæ";
 
 // include/menu.php3, row 189
 $_m["... expired"]
- = "ï¿½ï¿½ï¿½ï¿½ï¿½Ú¤ï¿½";
+ = "´ü¸ÂÀÚ¤ì";
 
 // include/menu.php3, row 191, 245
 $_m["Trash bin"]
- = "ï¿½ï¿½ï¿½ï¿½È¢";
+ = "¥´¥ßÈ¢";
 
 // include/menu.php3, row 194
 $_m["Bookmarks"]
@@ -5548,7 +5548,7 @@ $_m["Setting"]
 
 // include/menu.php3, row 204, 251
 $_m["Empty trash"]
- = "ï¿½ï¿½ï¿½ï¿½È¢ï¿½ï¿½ï¿½ï¿½Ë¤ï¿½ï¿½ï¿½";
+ = "¥´¥ßÈ¢¤ò¶õ¤Ë¤¹¤ë";
 
 // include/menu.php3, row 204, 251
 $_m["Are You sure to empty trash?"]
@@ -5809,7 +5809,7 @@ $_m["Module ID"]
 
 // include/manager.class.php3, row 147
 $_m["No item found"]
- = "ï¿½ï¿½ï¿½Ü¤ï¿½ï¿½ï¿½ï¿½Õ¤ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "¹àÌÜ¤¬¸«ÉÕ¤«¤ê¤Þ¤»¤ó";
 
 // include/manager.class.php3, row 198
 $_m["Publish date"]
@@ -6161,7 +6161,7 @@ $_m["You do not have permission to edit items in the slice"]
 
 // include/init_page.php3, row 198
 $_m["No slice found for you"]
- = "ï¿½ï¿½ï¿½Ê¤ï¿½ï¿½Î¥ï¿½ï¿½é¥¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½";
+ = "¤¢¤Ê¤¿¤Î¥¹¥é¥¤¥¹¤¬¸«¤Ä¤«¤ê½ÐÍè¤Þ¤»¤ó";
 
 // include/tv_misc.php3, row 66, 67
 $_m["Wizard Welcomes"]

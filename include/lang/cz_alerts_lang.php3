@@ -13,103 +13,103 @@ $mgettext_lang = "cz";
 # Unused messages
 $_m["Define selections in slices from which you want to send Alerts, \n\n\n"
    ."        in views of type Alerts Selection Set"]
- = "Vytvoï¿½te vï¿½bï¿½ry ve webï¿½cï¿½h, z nichï¿½ chcete posï¿½lat novinky,\n\n\n"
-   ."     v pohledech typu Zasï¿½lï¿½nï¿½ - vï¿½bï¿½ry";
+ = "Vytvoøte výbìry ve webícíh, z nichž chcete posílat novinky,\n\n\n"
+   ."     v pohledech typu Zasílání - výbìry";
 
 $_m["First set the Alert Email in the Settings menu."]
- = "Nejprve nastavte Email se zprï¿½vou v Nastavenï¿½";
+ = "Nejprve nastavte Email se zprávou v Nastavení";
 
 $_m["Alert Email for this Collection: "]
- = "Email se zprï¿½vou pro tento modul: ";
+ = "Email se zprávou pro tento modul: ";
 
 $_m["Edit"]
  = "Upravit";
 
 $_m["Choose another"]
- = "Zvolte jinï¿½";
+ = "Zvolte jiný";
 
 $_m["Send now an example email to"]
- = "Poslat ukï¿½zkovï¿½ email na";
+ = "Poslat ukázkový email na";
 
 $_m["%1 email sent"]
- = "%1 emailï¿½ poslï¿½no";
+ = "%1 emailù posláno";
 
 $_m["Wrong user ID"]
- = "Chybnï¿½ ID uï¿½ivatele";
+ = "Chybné ID uživatele";
 
 $_m["Wrong password."]
- = "ï¿½patnï¿½ heslo";
+ = "Špatné heslo";
 
 $_m["Adds only fields the IDs of which don't yet exist in the slice.\n\n"
    ."    Refreshes the filters constant group if it already exists."]
- = "Pï¿½idï¿½ pouze polï¿½ï¿½ka jejichï¿½ ID jeï¿½tï¿½ neexistujï¿½ ve webï¿½ku. \n"
-   ."    Obnovï¿½ skupinu hodnot s vï¿½bï¿½ry pokud tato jiï¿½ existuje.";
+ = "Pøidá pouze políèka jejichž ID ještì neexistují ve webíku. \n"
+   ."    Obnoví skupinu hodnot s výbìry pokud tato již existuje.";
 
 $_m["The two given passwords differ."]
- = "Zadanï¿½ kopie hesla se liï¿½ï¿½.";
+ = "Zadané kopie hesla se liší.";
 
 $_m["Define selections in slices from which you want to send Alerts, \n\n"
    ."        in views of type Alerts Selection Set"]
- = "Vytvoï¿½te vï¿½bï¿½ry ve webï¿½cï¿½h, z nichï¿½ chcete posï¿½lat novinky,\n"
-   ."     v pohledech typu Zasï¿½lï¿½nï¿½ - vï¿½bï¿½ry";
+ = "Vytvoøte výbìry ve webícíh, z nichž chcete posílat novinky,\n"
+   ."     v pohledech typu Zasílání - výbìry";
 
 $_m["Choose Filters"]
- = "Zvolte Vï¿½bï¿½ry";
+ = "Zvolte Výbìry";
 
 $_m["Please confirm your subscription"]
- = "Prosï¿½m potvrï¿½te svou pï¿½ihlï¿½ku";
+ = "Prosím potvrïte svou pøihlášku";
 
 $_m["<p>Hello,</p><p>you didn't yet confirm your subscription to AA Alerts. You can't receive any emails until you do so. \n"
    ."                Please click on URL:</p>%1<p>or copy the URL to your web browser. \n"
    ."             The confirmation is done in order that we can see you did not subscribe by mistake and your e-mail is working.</p><p>Yours<br>&nbsp; &nbsp; &nbsp;APC Alerts moderators</p>"]
- = "<p>Dobrï¿½ den,</p><p>nepotvrdil(a) jste svï¿½ pï¿½ihlï¿½enï¿½ do Zasï¿½lï¿½nï¿½ zprï¿½v. \n"
-   ."     Nemï¿½ï¿½ete dostï¿½vat e-maily, dokud tak neuï¿½inï¿½te. \n"
-   ."                Klepnï¿½te prosï¿½m na URL:</p>%1<p>nebo URL zkopï¿½rujte do svï¿½ho webovï¿½ho prohlï¿½eï¿½e. \n"
-   ."             Potvrzenï¿½ se vyï¿½aduje proto, abychom vï¿½dï¿½li, ï¿½e nejste pï¿½ihlï¿½en(a) omylem a ï¿½e Vï¿½ e-mail funguje.</p><p>Vaï¿½i<br>&nbsp; &nbsp; &nbsp;moderï¿½toï¿½i Zasï¿½lï¿½nï¿½ zprï¿½v</p>";
+ = "<p>Dobrý den,</p><p>nepotvrdil(a) jste své pøihlášení do Zasílání zpráv. \n"
+   ."     Nemùžete dostávat e-maily, dokud tak neuèiníte. \n"
+   ."                Klepnìte prosím na URL:</p>%1<p>nebo URL zkopírujte do svého webového prohlížeèe. \n"
+   ."             Potvrzení se vyžaduje proto, abychom vìdìli, že nejste pøihlášen(a) omylem a že Váš e-mail funguje.</p><p>Vaši<br>&nbsp; &nbsp; &nbsp;moderátoøi Zasílání zpráv</p>";
 
 $_m["Links"]
- = "Sprï¿½va odkazï¿½";
+ = "Správa odkazù";
 
 $_m["Polls"]
  = "Ankety";
 
 $_m["Alerts"]
- = "Zasï¿½lï¿½nï¿½ e-mailï¿½";
+ = "Zasílání e-mailù";
 
 $_m["Reader Management Slice"]
- = "Sprï¿½va ï¿½tenï¿½ï¿½ï¿½";
+ = "Správa ètenáøù";
 
 $_m["Define selections in slices from which you want to send Alerts,\n\n"
    ."        in views of type Alerts Selection Set"]
- = "Vytvoï¿½te vï¿½bï¿½ry ve webï¿½cï¿½h, z nichï¿½ chcete posï¿½lat novinky,\n"
-   ."     v pohledech typu Zasï¿½lï¿½nï¿½ - vï¿½bï¿½ry";
+ = "Vytvoøte výbìry ve webícíh, z nichž chcete posílat novinky,\n"
+   ."     v pohledech typu Zasílání - výbìry";
 
 $_m["Collection Form Wizard"]
- = "Prï¿½vodce Formulï¿½ï¿½em pro Zasï¿½lï¿½nï¿½";
+ = "Prùvodce Formuláøem pro Zasílání";
 
 $_m["Add Users"]
- = "Pï¿½idat ï¿½tenï¿½ï¿½e";
+ = "Pøidat ètenáøe";
 
 $_m["Some errors occured: "]
- = "Nastaly nï¿½jakï¿½ chyby: ";
+ = "Nastaly nìjaké chyby: ";
 
 $_m["Enter email addresses one on a row, you may add first and last name separated by whitespace (spaces, tabs), e.g."]
- = "Vloï¿½te emailovï¿½ adresy - kaï¿½dou na zvlï¿½tnï¿½ ï¿½ï¿½dek. Na ï¿½ï¿½dek mï¿½ï¿½ete vloï¿½it i kï¿½estnï¿½ jmï¿½no a pï¿½ï¿½jmenï¿½ (oddï¿½lenï¿½ mezerou ï¿½i tabulï¿½torem).";
+ = "Vložte emailové adresy - každou na zvláštní øádek. Na øádek mùžete vložit i køestní jméno a pøíjmení (oddìlené mezerou èi tabulátorem).";
 
 $_m["Confirmation"]
- = "Potvrzenï¿½";
+ = "Potvrzení";
 
 $_m["Send a confirmation email to users (recommended)."]
- = "Zaslat potvrzovacï¿½ email uï¿½ivatelï¿½m (doporuï¿½eno)";
+ = "Zaslat potvrzovací email uživatelùm (doporuèeno)";
 
 $_m["Subscribe users immediately (use carefully)."]
- = "Zapsat (subscribe) uï¿½ivatele okamï¿½itï¿½ (opatrnï¿½ s touto volbou)";
+ = "Zapsat (subscribe) uživatele okamžitì (opatrnì s touto volbou)";
 
 $_m["Go"]
- = "Proveï¿½";
+ = "Proveï";
 
 $_m["Example"]
- = "Pï¿½ï¿½klad";
+ = "Pøíklad";
 
 $_m["digest"]
  = "souhrn";
@@ -118,38 +118,38 @@ $_m["digest"]
 // modules/alerts/synchro2.php3, row 42
 // modules/alerts/cf_common.php3, row 69
 $_m["How often"]
- = "Jak ï¿½asto";
+ = "Jak èasto";
 
 // modules/alerts/synchro2.php3, row 44, 52
 $_m["How often for {ALERNAME}"]
- = "Jak ï¿½asto pro {ALERNAME}";
+ = "Jak èasto pro {ALERNAME}";
 
 // modules/alerts/synchro2.php3, row 49
 $_m["not subscribed"]
- = "neodebï¿½rat";
+ = "neodebírat";
 
 // modules/alerts/synchro2.php3, row 66
 // modules/alerts/send_emails.php3, row 126
 // modules/alerts/menu.php3, row 107
 // modules/alerts/tableviews.php3, row 100
 $_m["Selections"]
- = "Vï¿½bï¿½ry";
+ = "Výbìry";
 
 // modules/alerts/synchro2.php3, row 67
 $_m["Selections for {ALERNAME}"]
- = "Vï¿½bï¿½ry pro {ALERNAME}";
+ = "Výbìry pro {ALERNAME}";
 
 // modules/alerts/synchro2.php3, row 74
 $_m["Selecetion IDs for {ALERNAME}"]
- = "ID vï¿½bï¿½rï¿½ pro {ALERNAME}";
+ = "ID výbìrù pro {ALERNAME}";
 
 // modules/alerts/synchro2.php3, row 194
 $_m["%1 field(s) added"]
- = "%1 polï¿½ï¿½ek pï¿½idï¿½no";
+ = "%1 políèek pøidáno";
 
 // modules/alerts/synchro2.php3, row 220
 $_m["%1 field(s) and %2 constant group(s) deleted"]
- = "%1 polï¿½ï¿½ek a %2 skupin hodnot smazï¿½no";
+ = "%1 políèek a %2 skupin hodnot smazáno";
 
 // modules/alerts/synchro2.php3, row 247
 $_m["not set"]
@@ -157,35 +157,35 @@ $_m["not set"]
 
 // modules/alerts/tabledit.php3, row 68
 $_m["You have not permissions to add slice"]
- = "Nemï¿½te prï¿½va pro pï¿½idï¿½nï¿½ webï¿½ku";
+ = "Nemáte práva pro pøidání webíku";
 
 // modules/alerts/util.php3, row 57
 $_m["instant"]
- = "okamï¿½itï¿½";
+ = "okamžitì";
 
 // modules/alerts/util.php3, row 59
 $_m["daily"]
- = "dennï¿½";
+ = "dennì";
 
 // modules/alerts/util.php3, row 60
 $_m["weekly"]
- = "tï¿½dnï¿½";
+ = "týdnì";
 
 // modules/alerts/util.php3, row 61
 $_m["monthly"]
- = "mï¿½sï¿½ï¿½nï¿½";
+ = "mìsíènì";
 
 // modules/alerts/util.php3, row 67
 $_m["Active"]
- = "Aktivnï¿½";
+ = "Aktivní";
 
 // modules/alerts/util.php3, row 68
 $_m["Holding bin"]
- = "Zï¿½sobnï¿½k";
+ = "Zásobník";
 
 // modules/alerts/util.php3, row 69
 $_m["Trash bin"]
- = "Koï¿½";
+ = "Koš";
 
 // modules/alerts/cf_common.php3, row 44
 $_m["Language"]
@@ -202,23 +202,23 @@ $_m["Password"]
 
 // modules/alerts/cf_common.php3, row 58
 $_m["First name"]
- = "Kï¿½estnï¿½ jmï¿½no";
+ = "Køestní jméno";
 
 // modules/alerts/cf_common.php3, row 62
 $_m["Last name"]
- = "Pï¿½ï¿½jmenï¿½";
+ = "Pøíjmení";
 
 // modules/alerts/cf_common.php3, row 75
 $_m["Change password"]
- = "Zmï¿½nit heslo";
+ = "Zmìnit heslo";
 
 // modules/alerts/cf_common.php3, row 80
 $_m["Retype new password"]
- = "Zopakujte novï¿½ heslo";
+ = "Zopakujte nové heslo";
 
 // modules/alerts/send_emails.php3, row 53
 $_m["Send now an example alert email to"]
- = "Poslat ukï¿½zkovï¿½ email se zprï¿½vami na";
+ = "Poslat ukázkový email se zprávami na";
 
 // modules/alerts/send_emails.php3, row 63, 68
 $_m["as if"]
@@ -226,7 +226,7 @@ $_m["as if"]
 
 // modules/alerts/send_emails.php3, row 64, 69, 84
 $_m["Go!"]
- = "Proveï¿½!";
+ = "Proveï!";
 
 // modules/alerts/send_emails.php3, row 67
 $_m["Reader"]
@@ -238,27 +238,27 @@ $_m["Send alerts"]
 
 // modules/alerts/send_emails.php3, row 83
 $_m["Send now alerts to all users subscribed to "]
- = "Poslat novinky uï¿½ivatelï¿½m zapsanï¿½m pro ";
+ = "Poslat novinky uživatelùm zapsaným pro ";
 
 // modules/alerts/send_emails.php3, row 83
 $_m["Warning: This is a real command!"]
- = "Pozor: Toto je skuteï¿½nï¿½ pï¿½ï¿½kaz!";
+ = "Pozor: Toto je skuteèný pøíkaz!";
 
 // modules/alerts/send_emails.php3, row 87
 $_m["Last time the alerts were sent on:"]
- = "Naposled byly novinky poslï¿½ny:";
+ = "Naposled byly novinky poslány:";
 
 // modules/alerts/send_emails.php3, row 97
 $_m["%1 email(s) sent"]
- = "%1 emailï¿½ poslï¿½no";
+ = "%1 emailù posláno";
 
 // modules/alerts/send_emails.php3, row 124
 $_m["Slice"]
- = "Webï¿½k";
+ = "Webík";
 
 // modules/alerts/send_emails.php3, row 125
 $_m["View (Selection set)"]
- = "Pohled (Vï¿½bï¿½ry)";
+ = "Pohled (Výbìry)";
 
 // modules/alerts/send_emails.php3, row 131
 $_m["Define selections in slices from which you want to send Alerts,\n"
@@ -268,7 +268,7 @@ $_m["Define selections in slices from which you want to send Alerts,\n"
 // modules/alerts/menu.php3, row 52, 53
 // modules/alerts/tableviews.php3, row 148, 149
 $_m["Alerts Settings"]
- = "Nastavenï¿½ Zasï¿½lï¿½nï¿½";
+ = "Nastavení Zasílání";
 
 // modules/alerts/menu.php3, row 86
 $_m["AA"]
@@ -276,16 +276,16 @@ $_m["AA"]
 
 // modules/alerts/menu.php3, row 87
 $_m["AA Administration"]
- = "Nastavenï¿½ AA";
+ = "Nastavení AA";
 
 // modules/alerts/menu.php3, row 100
 // modules/alerts/tableviews.php3, row 253, 254
 $_m["Alerts Admin"]
- = "Nastavenï¿½ Zasï¿½lï¿½nï¿½";
+ = "Nastavení Zasílání";
 
 // modules/alerts/menu.php3, row 104
 $_m["Settings"]
- = "Nastavenï¿½";
+ = "Nastavení";
 
 // modules/alerts/menu.php3, row 111
 $_m["Send emails"]
@@ -293,7 +293,7 @@ $_m["Send emails"]
 
 // modules/alerts/menu.php3, row 114
 $_m["Reader management"]
- = "Sprï¿½va ï¿½tenï¿½ï¿½ï¿½";
+ = "Správa ètenáøù";
 
 // modules/alerts/menu.php3, row 115
 $_m["Documentation"]
@@ -301,105 +301,105 @@ $_m["Documentation"]
 
 // modules/alerts/menu.php3, row 117
 $_m["Common"]
- = "Spoleï¿½nï¿½";
+ = "Spoleèné";
 
 // modules/alerts/menu.php3, row 119
 $_m["Email templates"]
- = "ï¿½ablony emailï¿½";
+ = "Šablony emailù";
 
 // modules/alerts/synchro.php3, row 42
 $_m["Slice Synchro"]
- = "Synchro s webï¿½kem";
+ = "Synchro s webíkem";
 
 // modules/alerts/synchro.php3, row 47
 $_m["Synchronization with Reader Management Slice"]
- = "Synchronizace s webï¿½kem spravujï¿½cï¿½m ï¿½tenï¿½ï¿½e";
+ = "Synchronizace s webíkem spravujícím ètenáøe";
 
 // modules/alerts/synchro.php3, row 72
 $_m["Not Yet Set"]
- = "Jeï¿½tï¿½ nenastaveno";
+ = "Ještì nenastaveno";
 
 // modules/alerts/synchro.php3, row 81
 $_m["Choose Reader Management Slice"]
- = "Zvolte webï¿½k se Sprï¿½vou ï¿½tenï¿½ï¿½ï¿½";
+ = "Zvolte webík se Správou Ètenáøù";
 
 // modules/alerts/synchro.php3, row 82
 $_m["This Alerts Collection takes user data from the slice"]
- = "Toto Zasï¿½lï¿½nï¿½ pouï¿½ï¿½vï¿½ ï¿½tenï¿½ï¿½skï¿½ data z webï¿½ku";
+ = "Toto Zasílání používá ètenáøská data z webíku";
 
 // modules/alerts/synchro.php3, row 88
 $_m["Change to: "]
- = "Zmï¿½nit na: ";
+ = "Zmìnit na: ";
 
 // modules/alerts/synchro.php3, row 94
 $_m["and delete the %1-specific fields from %2"]
- = "a smazat polï¿½ï¿½ka specifickï¿½ pro %1 z %2";
+ = "a smazat políèka specifická pro %1 z %2";
 
 // modules/alerts/synchro.php3, row 98
 $_m["Change"]
- = "Zmï¿½nit";
+ = "Zmìnit";
 
 // modules/alerts/synchro.php3, row 108
 $_m["Add %1-specific fields to %2"]
- = "Pï¿½idat polï¿½ï¿½ka specifickï¿½ pro %1 do %2";
+ = "Pøidat políèka specifická pro %1 do %2";
 
 // modules/alerts/synchro.php3, row 111
 $_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."]
- = "Pï¿½idï¿½ pouze polï¿½ï¿½ka jejichï¿½ ID jeï¿½tï¿½ neexistujï¿½ ve webï¿½ku. \n"
-   ."    Obnovï¿½ skupinu hodnot s vï¿½bï¿½ry pokud tato jiï¿½ existuje.";
+ = "Pøidá pouze políèka jejichž ID ještì neexistují ve webíku. \n"
+   ."    Obnoví skupinu hodnot s výbìry pokud tato již existuje.";
 
 // modules/alerts/synchro.php3, row 116
 $_m["Field Name"]
- = "Nï¿½zev Polï¿½ï¿½ka";
+ = "Název Políèka";
 
 // modules/alerts/synchro.php3, row 117
 $_m["Field ID"]
- = "ID Polï¿½ï¿½ka";
+ = "ID Políèka";
 
 // modules/alerts/synchro.php3, row 127
 $_m["Add or refresh fields"]
- = "Pï¿½idat nebo obnovit polï¿½ï¿½ka";
+ = "Pøidat nebo obnovit políèka";
 
 // modules/alerts/synchro.php3, row 128
 $_m["This command can not be used until you choose the Reader Management Slice."]
- = "Tento pï¿½ï¿½kaz nemï¿½ï¿½ete pouï¿½ï¿½t dokud nezvolï¿½te Webï¿½k se Sprï¿½vou ï¿½tenï¿½ï¿½ï¿½.";
+ = "Tento pøíkaz nemùžete použít dokud nezvolíte Webík se Správou Ètenáøù.";
 
 // modules/alerts/tableviews.php3, row 61
 $_m["No selections defined. You must define some."]
- = "ï¿½ï¿½dnï¿½ vï¿½bï¿½ry nejsou definovanï¿½.";
+ = "Žádné výbìry nejsou definované.";
 
 // modules/alerts/tableviews.php3, row 99
 $_m["Alerts Selections"]
- = "Zasï¿½lï¿½nï¿½ - Vï¿½bï¿½ry";
+ = "Zasílání - Výbìry";
 
 // modules/alerts/tableviews.php3, row 103
 $_m["Choose selections which form the Alert email."]
- = "Zvolte vï¿½bï¿½ry, kterï¿½ tvoï¿½ï¿½ zasï¿½lanï¿½ email.";
+ = "Zvolte výbìry, které tvoøí zasílaný email.";
 
 // modules/alerts/tableviews.php3, row 110
 $_m["selection"]
- = "vï¿½bï¿½r";
+ = "výbìr";
 
 // modules/alerts/tableviews.php3, row 120
 $_m["order"]
- = "poï¿½adï¿½";
+ = "poøadí";
 
 // modules/alerts/tableviews.php3, row 152
 $_m["Core settings for the Alerts."]
- = "Zï¿½kladnï¿½ nastavenï¿½ Zasï¿½lï¿½nï¿½.";
+ = "Základní nastavení Zasílání.";
 
 // modules/alerts/tableviews.php3, row 161
 $_m["alerts ID"]
- = "ID zasï¿½lï¿½nï¿½";
+ = "ID zasílání";
 
 // modules/alerts/tableviews.php3, row 168
 $_m["name"]
- = "nï¿½zev";
+ = "název";
 
 // modules/alerts/tableviews.php3, row 170
 $_m["form URL"]
- = "URL formulï¿½ï¿½e";
+ = "URL formuláøe";
 
 // modules/alerts/tableviews.php3, row 172
 $_m["language"]
@@ -407,15 +407,15 @@ $_m["language"]
 
 // modules/alerts/tableviews.php3, row 175
 $_m["deleted"]
- = "vymazï¿½n";
+ = "vymazán";
 
 // modules/alerts/tableviews.php3, row 176
 $_m["Use AA Admin / Delete<br>to delete permanently"]
- = "Pouï¿½ijte AA / Smazat<br>k trvalï¿½mu odstranï¿½nï¿½";
+ = "Použijte AA / Smazat<br>k trvalému odstranìní";
 
 // modules/alerts/tableviews.php3, row 180
 $_m["welcome email"]
- = "uvï¿½tacï¿½ email";
+ = "uvítací email";
 
 // modules/alerts/tableviews.php3, row 187, 236
 $_m["alert email"]
@@ -423,35 +423,35 @@ $_m["alert email"]
 
 // modules/alerts/tableviews.php3, row 197
 $_m["created at"]
- = "vytvoï¿½eno kdy";
+ = "vytvoøeno kdy";
 
 // modules/alerts/tableviews.php3, row 204
 $_m["created by"]
- = "vytvoï¿½eno kï¿½m";
+ = "vytvoøeno kým";
 
 // modules/alerts/tableviews.php3, row 212, 231
 $_m["You don't have permissions to edit any collection or no collection exists."]
- = "Nemï¿½te prï¿½vo editovat ï¿½ï¿½dnï¿½ zasï¿½lï¿½nï¿½ nebo ï¿½ï¿½dnï¿½ neexistuje.";
+ = "Nemáte právo editovat žádné zasílání nebo žádné neexistuje.";
 
 // modules/alerts/tableviews.php3, row 225, 226
 $_m["Send Emails"]
- = "Posï¿½lï¿½nï¿½ Emailï¿½";
+ = "Posílání Emailù";
 
 // modules/alerts/tableviews.php3, row 232
 $_m["Here you send the Alert emails manually."]
- = "Zde mï¿½ï¿½ete odeslat maily ze Zasï¿½lï¿½nï¿½ ruï¿½nï¿½.";
+ = "Zde mùžete odeslat maily ze Zasílání ruènì.";
 
 // modules/alerts/tableviews.php3, row 266
 $_m["confirm mail"]
- = "potvrzovacï¿½ mail";
+ = "potvrzovací mail";
 
 // modules/alerts/tableviews.php3, row 267, 274
 $_m["number of days, 0 = off"]
- = "poï¿½et dnï¿½, 0 = vypnuto";
+ = "poèet dní, 0 = vypnuto";
 
 // modules/alerts/tableviews.php3, row 273
 $_m["delete not confirmed"]
- = "smazat nepotvrzenï¿½";
+ = "smazat nepotvrzené";
 
 // modules/alerts/tableviews.php3, row 280
 $_m["last confirm mail"]

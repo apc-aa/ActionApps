@@ -12,7 +12,7 @@ $mgettext_lang = "hr";
 
 # Unused messages
 $_m["Delete&nbsp;spot"]
- = "Obriï¿½ite toï¿½ku";
+ = "Obrišite toèku";
 
 $_m["Submit"]
  = "Potvrdi";
@@ -24,10 +24,10 @@ $_m["Update"]
  = "Obnovite";
 
 $_m["Reset form"]
- = "Ponovo uï¿½itajte formu";
+ = "Ponovo uèitajte formu";
 
 $_m["Cancel"]
- = "Poniï¿½tite";
+ = "Poništite";
 
 # End of unused messages
 // modules/site/moddelete.php3, row 34
@@ -36,27 +36,27 @@ $_m["You don't have permissions to delete a site."]
 
 // modules/site/moddelete.php3, row 38
 $_m["Module not found."]
- = "Modul nije pronaï¿½en";
+ = "Modul nije pronaðen";
 
 // modules/site/moddelete.php3, row 63
 $_m["Slice successfully deleted, tables are optimized"]
- = "Stranica je uspjeï¿½no obrisana, stranice optimizirane";
+ = "Stranica je uspješno obrisana, stranice optimizirane";
 
 // modules/site/index.php3, row 45
 $_m["You do not have permission to edit items in this slice"]
- = "Nemate dozvolu za ureï¿½ivanje ovog odsjeï¿½ka";
+ = "Nemate dozvolu za ureðivanje ovog odsjeèka";
 
 // modules/site/index.php3, row 70
 $_m["Starting spot not found"]
- = "Poï¿½etna toï¿½ka nije pronaï¿½ena";
+ = "Poèetna toèka nije pronaðena";
 
 // modules/site/index.php3, row 141
 $_m["Editor window - site code manager"]
- = "Prozor za ureï¿½ivanje koda stranice";
+ = "Prozor za ureðivanje koda stranice";
 
 // modules/site/index.php3, row 161
 $_m["Add&nbsp;spot"]
- = "Dodajte toï¿½ku";
+ = "Dodajte toèku";
 
 // modules/site/index.php3, row 162
 $_m["Add&nbsp;choice"]
@@ -81,7 +81,7 @@ $_m["Move&nbsp;right"]
 // modules/site/index.php3, row 173
 // modules/site/util.php3, row 136, 154
 $_m["Delete"]
- = "Obriï¿½ite";
+ = "Obrišite";
 
 // modules/site/index.php3, row 174
 $_m["Are you sure you want to delete the spot?"]
@@ -97,7 +97,7 @@ $_m["Disable"]
 
 // modules/site/util.php3, row 133
 $_m["Spot&nbsp;variables"]
- = "Varijable toï¿½ke";
+ = "Varijable toèke";
 
 // modules/site/util.php3, row 139, 158
 $_m["Add"]
@@ -105,11 +105,11 @@ $_m["Add"]
 
 // modules/site/util.php3, row 149
 $_m["Spot&nbsp;conditions"]
- = "Uvjeti toï¿½ke";
+ = "Uvjeti toèke";
 
 // modules/site/util.php3, row 187
 $_m["Spot name"]
- = "Ime toï¿½ke";
+ = "Ime toèke";
 
 // modules/site/menu.php3, row 49
 $_m["View site"]
@@ -117,7 +117,7 @@ $_m["View site"]
 
 // modules/site/menu.php3, row 55, 56
 $_m["Code&nbsp Manager"]
- = "Ureï¿½ivanje koda";
+ = "Ureðivanje koda";
 
 // modules/site/menu.php3, row 61, 62
 $_m["Module Settings"]
@@ -137,7 +137,7 @@ $_m["You have not permissions to add slice"]
 
 // modules/site/modedit.php3, row 57
 $_m["You have not permissions to edit this slice"]
- = "Nemate dozvolu za ureï¿½ivanje ove stranice";
+ = "Nemate dozvolu za ureðivanje ove stranice";
 
 // modules/site/modedit.php3, row 75, 214
 $_m["State file"]
@@ -173,7 +173,7 @@ $_m["URL"]
 
 // modules/site/modedit.php3, row 204
 $_m["The file will probably contain just the following include:"]
- = "Datoteka ï¿½e vjerojatno sadrï¿½avati samo slijedeï¿½i ukljuï¿½i:";
+ = "Datoteka æe vjerojatno sadržavati samo slijedeæi ukljuæi:";
 
 // modules/site/modedit.php3, row 205
 $_m["Owner"]
@@ -193,11 +193,11 @@ $_m["Deleted"]
 
 // modules/site/modedit.php3, row 213
 $_m["Used Language File"]
- = "Koriï¿½tena jeziï¿½na datoteka";
+ = "Korištena jezièna datoteka";
 
 // modules/site/modedit.php3, row 214
 $_m["Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."]
- = "Kontrolna datoteka stranica - bit ï¿½e smjeï¿½tena u mapi /modules/site/sites/ . Ime koje odaberete imat ï¿½e prefiks 'site_' ,  na primjer ako je ime datoteke zamir.php, kontrolna datoteka bit ï¿½e /modules/site/sites/site_zamir.php";
+ = "Kontrolna datoteka stranica - bit æe smještena u mapi /modules/site/sites/ . Ime koje odaberete imat æe prefiks 'site_' ,  na primjer ako je ime datoteke zamir.php, kontrolna datoteka bit æe /modules/site/sites/site_zamir.php";
 
 // modules/site/router.class.php, row 95
 $_m["Next"]

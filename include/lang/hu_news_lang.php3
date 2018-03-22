@@ -3199,7 +3199,7 @@ $_m["Preview"]
 // admin/se_csv_import.php3, row 252
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "Kï¿½vetkezï¿½";
+ = "Következõ";
 
 // admin/usershow.php3, row 93
 $_m["Show selected users"]
@@ -3934,7 +3934,7 @@ $_m["Compared and Updated ActionApps"]
 
 // include/easy_scroller.php3, row 146, 272
 $_m["Previous"]
- = "Elï¿½zï¿½";
+ = "Elõzõ";
 
 // include/easy_scroller.php3, row 167
 // include/scroller.php3, row 314

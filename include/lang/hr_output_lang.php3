@@ -47,7 +47,7 @@ $_m["page length (number of items)"]
 // ./slice.php3, row 569
 // include/view.php3, row 593
 $_m["No item found"]
- = "Nije pronaï¿½ena stavka";
+ = "Nije pronaðena stavka";
 
 // include/slice.php3, row 78
 $_m["Select Category "]
@@ -59,11 +59,11 @@ $_m["All categories"]
 
 // include/discussion.php3, row 206, 253
 $_m["Show selected"]
- = "Prikaï¿½i odabrano";
+ = "Prikaži odabrano";
 
 // include/discussion.php3, row 207, 255
 $_m["Show all"]
- = "Prikaï¿½i sve";
+ = "Prikaži sve";
 
 // include/discussion.php3, row 209, 257
 $_m["Add new"]
@@ -99,11 +99,11 @@ $_m["Alias for publish date"]
 
 // include/discussion.php3, row 222
 $_m["Alias for IP address of author's computer"]
- = "Sinonim za IP adresu raï¿½unala autora/ice";
+ = "Sinonim za IP adresu raèunala autora/ice";
 
 // include/discussion.php3, row 223
 $_m["Alias for checkbox used for choosing discussion comment"]
- = "Sinonim za kuï¿½icu koriï¿½tenu za odabir komentara diskusije";
+ = "Sinonim za kuæicu korištenu za odabir komentara diskusije";
 
 // include/discussion.php3, row 224
 $_m["Alias for images"]
@@ -148,11 +148,11 @@ $_m["Alias for link to discussion<br>\n"
 // include/discussion.php3, row 231
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
- = "Sinonim za gumbe Prikaï¿½i sve, Prikaï¿½i odabrano, Dodaj novo";
+ = "Sinonim za gumbe Prikaži sve, Prikaži odabrano, Dodaj novo";
 
 // include/discussion.php3, row 413
 $_m["3rd parameter filled in DiscussionMailList field"]
- = "treï¿½i parametar ispunjen u polju mailimng lista diskusija";
+ = "treæi parametar ispunjen u polju mailimng lista diskusija";
 
 // include/discussion.php3, row 415
 $_m["%1th parameter filled in DiscussionMailList field"]
@@ -161,7 +161,7 @@ $_m["%1th parameter filled in DiscussionMailList field"]
 // include/item.php3, row 92
 // include/itemview.php3, row 108
 $_m["number of found items"]
- = "broj pronaï¿½enih stavki";
+ = "broj pronaðenih stavki";
 
 // include/item.php3, row 93
 $_m["index of item within whole listing (begins with 0)"]
@@ -181,11 +181,11 @@ $_m["alias for Short Item ID"]
 
 // include/item.php3, row 102, 103
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "sinonim koriï¿½ten na admin stranici index.php3 za ureï¿½ivanje web adresa stavki";
+ = "sinonim korišten na admin stranici index.php3 za ureðivanje web adresa stavki";
 
 // include/item.php3, row 104
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "sinonim koriï¿½ten na admin stranici index.php3 za ureï¿½ivanje web adresa diskusija";
+ = "sinonim korišten na admin stranici index.php3 za ureðivanje web adresa diskusija";
 
 // include/item.php3, row 105
 $_m["Title of Slice for RSS"]
@@ -225,7 +225,7 @@ $_m["Constant value"]
 
 // include/item.php3, row 142
 $_m["Constant priority"]
- = "Vaï¿½nost konstante";
+ = "Važnost konstante";
 
 // include/item.php3, row 143
 $_m["Constant group id"]
@@ -245,7 +245,7 @@ $_m["Constant unique id (32-haxadecimal characters)"]
 
 // include/item.php3, row 147
 $_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
- = "Jedinstvena oznaka konstante (samorastuï¿½a od '1' za svaku konstantu na sistemu";
+ = "Jedinstvena oznaka konstante (samorastuèa od '1' za svaku konstantu na sistemu";
 
 // include/item.php3, row 148
 $_m["Constant description"]
@@ -253,7 +253,7 @@ $_m["Constant description"]
 
 // include/item.php3, row 149
 $_m["Constant level (used for hierachical constants)"]
- = "Nivo konstante (koriï¿½ten za konstante po vaï¿½nosti)";
+ = "Nivo konstante (korišten za konstante po važnosti)";
 
 // include/item.php3, row 189
 $_m["Alias for %1"]
@@ -261,11 +261,11 @@ $_m["Alias for %1"]
 
 // include/item.php3, row 1415
 $_m["on"]
- = "Ukljuï¿½eno";
+ = "Ukljuèeno";
 
 // include/item.php3, row 1415
 $_m["off"]
- = "Iskljuï¿½eno";
+ = "Iskljuèeno";
 
 // include/item.php3, row 1583
 $_m["Back"]
@@ -273,7 +273,7 @@ $_m["Back"]
 
 // include/item.php3, row 1584
 $_m["Home"]
- = "Povratak na poï¿½etnu stranicu";
+ = "Povratak na poèetnu stranicu";
 
 // include/scroller.php3, row 78
 $_m["Pgcnt"]
@@ -326,7 +326,7 @@ $_m["Previous"]
 
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "Slijedeï¿½e";
+ = "Slijedeæe";
 
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
@@ -334,15 +334,15 @@ $_m["No comment was selected"]
 
  // include/util.php3, row 1878
 $_m["January"]
- = "Sijeï¿½anj";
+ = "Sijeèanj";
 
 // include/util.php3, row 1878
 $_m["February"]
- = "Veljaï¿½a";
+ = "Veljaèa";
 
 // include/util.php3, row 1878
 $_m["March"]
- = "Oï¿½ujak";
+ = "Ožujak";
 
 // include/util.php3, row 1878
 $_m["April"]

@@ -15,10 +15,10 @@ $_m["The same url as "]
  = "Ista web adresa kao";
 
 $_m["Page is already in database"]
- = "Stranica veï¿½ postoji u bazi";
+ = "Stranica veæ postoji u bazi";
 
 $_m["Page is already in database, but it is not displayed in any category, now"]
- = "Stranica je veï¿½ u bazi, ali za sada nije prikazana ni u jednoj kategoriji";
+ = "Stranica je veæ u bazi, ali za sada nije prikazana ni u jednoj kategoriji";
 
 $_m["Use these aliases for database fields"]
  = "Koristite ove sinonime za polja u bazi";
@@ -51,7 +51,7 @@ $_m["OK"]
 
 // modules/links/index.php3, row 45
 $_m["No permissions to edit links"]
- = "Nemate dozvolu za ureï¿½ivanje veza";
+ = "Nemate dozvolu za ureðivanje veza";
 
 // modules/links/index.php3, row 238
 $_m["HINT: \"social ecology\" AND environment"]
@@ -67,11 +67,11 @@ $_m["Check Link"]
 
 // modules/links/index.php3, row 272
 $_m["Highlight Link"]
- = "Oznaï¿½ite vezu";
+ = "Oznaèite vezu";
 
 // modules/links/index.php3, row 275
 $_m["Dehighlight Link"]
- = "Odznaï¿½ite vezu";
+ = "Odznaèite vezu";
 
 // modules/links/index.php3, row 278
 $_m["Remove from category"]
@@ -83,11 +83,11 @@ $_m["Move to Active"]
 
 // modules/links/index.php3, row 285
 $_m["Move to Holding bin"]
- = "Preselite u mapu za ï¿½ekanje";
+ = "Preselite u mapu za èekanje";
 
 // modules/links/index.php3, row 289
 $_m["Move to Trash"]
- = "Preselite u smeï¿½e";
+ = "Preselite u smeæe";
 
 // modules/links/index.php3, row 292
 $_m["Add to category"]
@@ -99,7 +99,7 @@ $_m["Move to category"]
 
 // modules/links/index.php3, row 325
 $_m["ActionApps - Links Manager"]
- = "APC - AA - Ureï¿½ivanje veza";
+ = "APC - AA - Ureðivanje veza";
 
 // modules/links/index.php3, row 382
 $_m["All my links"]
@@ -111,11 +111,11 @@ $_m["Links to check"]
 
 // modules/links/index.php3, row 384
 $_m["Last edited"]
- = "Zadnje ureï¿½eno";
+ = "Zadnje ureðeno";
 
 // modules/links/index.php3, row 412
 $_m["Show Links"]
- = "Prikaï¿½i veze";
+ = "Prikaži veze";
 
 // modules/links/index.php3, row 416
 $_m["Edit Category"]
@@ -123,7 +123,7 @@ $_m["Edit Category"]
 
 // modules/links/index.php3, row 425
 $_m["Show subtree links"]
- = "Pokaï¿½ite veze pofkategorija";
+ = "Pokažite veze pofkategorija";
 
 // modules/links/getcat.php3, row 45
 $_m["Category Tree"]
@@ -151,7 +151,7 @@ $_m["Original name"]
 // modules/links/link.class.php3, row 641
 // modules/links/linkedit.php3, row 435
 $_m["Description"]
- = "Objaï¿½njenje";
+ = "Objašnjenje";
 
 // modules/links/constants.php3, row 57, 110
 // modules/links/link.class.php3, row 645
@@ -182,7 +182,7 @@ $_m["Editor"]
 
 // modules/links/constants.php3, row 63
 $_m["Last edit date"]
- = "Datum zadnjeg ureï¿½ivanja";
+ = "Datum zadnjeg ureðivanja";
 
 // modules/links/constants.php3, row 64
 $_m["Revised by"]
@@ -230,7 +230,7 @@ $_m["Organization street"]
 
 // modules/links/constants.php3, row 73
 $_m["Organization post code"]
- = "Poï¿½tanski broj organizacije";
+ = "Poštanski broj organizacije";
 
 // modules/links/constants.php3, row 74
 $_m["Organization phone"]
@@ -284,7 +284,7 @@ $_m["Language"]
 
 // modules/links/constants.php3, row 86
 $_m["Language short name"]
- = "Skraï¿½eno ime jezika";
+ = "Skraæeno ime jezika";
 
 // modules/links/constants.php3, row 87, 170
 $_m["Category id"]
@@ -324,7 +324,7 @@ $_m["Base"]
 
 // modules/links/constants.php3, row 95, 163
 $_m["State"]
- = "Drï¿½ava";
+ = "Država";
 
 // modules/links/constants.php3, row 96
 $_m["Change proposal"]
@@ -336,7 +336,7 @@ $_m["To be deleted"]
 
 // modules/links/constants.php3, row 98, 162
 $_m["Priority"]
- = "Vaï¿½nost";
+ = "Važnost";
 
 // modules/links/constants.php3, row 99
 // modules/links/linkedit.php3, row 39
@@ -433,7 +433,7 @@ $_m["Link organization street"]
 
 // modules/links/constants.php3, row 129
 $_m["Link organization post code"]
- = "Veza na poï¿½tanski broj organizacije";
+ = "Veza na poštanski broj organizacije";
 
 // modules/links/constants.php3, row 130
 $_m["Link organization phone"]
@@ -449,7 +449,7 @@ $_m["Link organization e-mail"]
 
 // modules/links/constants.php3, row 133
 $_m["Link folder (status code) - 1~Active, 2~Holding, 3~Trash"]
- = "Mapa veza - oznake aktivnosti 1~aktivno, 2~na ï¿½ekanju, 3~smeï¿½e";
+ = "Mapa veza - oznake aktivnosti 1~aktivno, 2~na èekanju, 3~smeæe";
 
 // modules/links/constants.php3, row 134
 $_m["Link - ids of regions (comma separated)"]
@@ -481,7 +481,7 @@ $_m["Category names (comma separated)"]
 
 // modules/links/constants.php3, row 141
 $_m["State of link in this category (visible/highlighted)"]
- = "Stanje veze u ovoj kategoriji (vidkjivo/oznaï¿½eno)";
+ = "Stanje veze u ovoj kategoriji (vidkjivo/oznaèeno)";
 
 // modules/links/constants.php3, row 142
 $_m["Link - validity color"]
@@ -493,15 +493,15 @@ $_m["Paths to the categories"]
 
 // modules/links/constants.php3, row 144
 $_m["Number of found Links"]
- = "Broj pronaï¿½enih veza";
+ = "Broj pronaðenih veza";
 
 // modules/links/constants.php3, row 145
 $_m["Link to link editing page (for admin interface only)"]
- = "Veza na stranicu za ureï¿½ivanje veza (samo admin suï¿½elje)";
+ = "Veza na stranicu za ureðivanje veza (samo admin suèelje)";
 
 // modules/links/constants.php3, row 146
 $_m["Category listing with links (for admin interface only)"]
- = "Izlist kategorija sa vezama (samo admin suï¿½elje)";
+ = "Izlist kategorija sa vezama (samo admin suèelje)";
 
 // modules/links/constants.php3, row 158
 $_m["Path"]
@@ -533,20 +533,20 @@ $_m["Is this category general one? (1/0)"]
 
 // modules/links/constants.php3, row 178
 $_m["Print category priority, if category is general one."]
- = "Prikaï¿½ite vaï¿½nost kategorije, ako je ovo glavna kategorija";
+ = "Prikažite važnost kategorije, ako je ovo glavna kategorija";
 
 // modules/links/catedit.php3, row 38
 // modules/links/catedit2.php3, row 196
 $_m["No permission to edit category"]
- = "Nemate dozvolu za ureï¿½ivanje kategorija";
+ = "Nemate dozvolu za ureðivanje kategorija";
 
 // modules/links/catedit.php3, row 61
 $_m["ActionApps - Category Edit"]
- = "APC AA - ureï¿½ivanje kategorija";
+ = "APC AA - ureðivanje kategorija";
 
 // modules/links/catedit.php3, row 84
 $_m["Category Edit"]
- = "Ureï¿½ivanje kategorija";
+ = "Ureðivanje kategorija";
 
 // modules/links/catedit.php3, row 90
 $_m["Category"]
@@ -599,7 +599,7 @@ $_m["Remove selected subcategory?"]
 
 // modules/links/catedit.php3, row 126
 $_m["Del"]
- = "Obriï¿½ite";
+ = "Obrišite";
 
 // modules/links/catedit.php3, row 127
 $_m["Change state"]
@@ -627,19 +627,19 @@ $_m["No permission to add module"]
 
 // modules/links/modedit.php3, row 62
 $_m["No permission to edit module"]
- = "Nemate dozvolu za ureï¿½ivanje modula";
+ = "Nemate dozvolu za ureðivanje modula";
 
 // modules/links/modedit.php3, row 80, 219, 222
 $_m["Start category id"]
- = "Oznaka poï¿½etne kategorije";
+ = "Oznaka poèetne kategorije";
 
 // modules/links/modedit.php3, row 81, 225, 228
 $_m["Tree start id"]
- = "Oznaka poï¿½etka stabla mape";
+ = "Oznaka poèetka stabla mape";
 
 // modules/links/modedit.php3, row 82, 226, 229
 $_m["Select start id"]
- = "Odaberite poï¿½etnu oznaku";
+ = "Odaberite poèetnu oznaku";
 
 // modules/links/modedit.php3, row 189
 $_m["ActionApps - Links Admin"]
@@ -671,7 +671,7 @@ $_m["URL of .shtml page"]
 
 // modules/links/modedit.php3, row 206
 $_m["Use following SSI command to include links to the page: "]
- = "Koristite slijedeï¿½u SSI naredbu za ukljuï¿½iti veze na stranicu";
+ = "Koristite slijedeæu SSI naredbu za ukljuèiti veze na stranicu";
 
 // modules/links/modedit.php3, row 207
 $_m["Owner"]
@@ -691,7 +691,7 @@ $_m["Deleted"]
 
 // modules/links/modedit.php3, row 215
 $_m["Used Language File"]
- = "Koriï¿½tena jeziï¿½na datoteka";
+ = "Korištena jezièna datoteka";
 
 // modules/links/cattree.php3, row 424
 $_m["Switch to category"]
@@ -719,7 +719,7 @@ $_m["Edit"]
 
 // modules/links/check_url.php3, row 29
 $_m["Rewrites link in bottom form"]
- = "Ponovno piï¿½e veze u formu u zaglavlju";
+ = "Ponovno piše veze u formu u zaglavlju";
 
 // modules/links/check_url.php3, row 34
 $_m["Page with the specified Url is not in database, yet"]
@@ -740,7 +740,7 @@ $_m["Subcategory deleted"]
 
 // modules/links/catedit2.php3, row 157
 $_m["Can't delete category which contains links"]
- = "Ne mogu obrisati kategoriju koja sadrï¿½i veze";
+ = "Ne mogu obrisati kategoriju koja sadrži veze";
 
 // modules/links/catedit2.php3, row 209
 $_m["Additional information"]
@@ -760,7 +760,7 @@ $_m["Foreign category assigned"]
 
 // modules/links/actions.php3, row 63
 $_m["Can't get link data"]
- = "Ne mogu pronaï¿½i podatke o vezi";
+ = "Ne mogu pronaèi podatke o vezi";
 
 // modules/links/actions.php3, row 66, 88
 $_m["No permission to change state of the link"]
@@ -768,7 +768,7 @@ $_m["No permission to change state of the link"]
 
 // modules/links/actions.php3, row 84, 111, 156, 181
 $_m["Can't find link in given category"]
- = "Ne mogu pronaï¿½i vezu u datoj kategoriji";
+ = "Ne mogu pronaæi vezu u datoj kategoriji";
 
 // modules/links/actions.php3, row 117, 187
 $_m["No permission to delete link from the category - link set as PROPOSAL to DELETE from given category"]
@@ -784,7 +784,7 @@ $_m["No permission to approve link to given category"]
 
 // modules/links/actions.php3, row 226
 $_m["Base category not found"]
- = "Glavna kategorija nije pronaï¿½ena";
+ = "Glavna kategorija nije pronaðena";
 
 // modules/links/actions.php3, row 230
 $_m["No permission to move link"]
@@ -813,7 +813,7 @@ $_m["Street"]
 // modules/links/link.class.php3, row 648
 // modules/links/linkedit.php3, row 522
 $_m["Post code"]
- = "Poï¿½tanski broj";
+ = "Poštanski broj";
 
 // modules/links/link.class.php3, row 649
 // modules/links/linkedit.php3, row 524
@@ -831,11 +831,11 @@ $_m["You don't have permissions to delete a links module."]
 
 // modules/links/moddelete.php3, row 38
 $_m["Module not found."]
- = "Modul nije pronaï¿½en";
+ = "Modul nije pronaðen";
 
 // modules/links/moddelete.php3, row 60
 $_m["Links module successfully deleted"]
- = "Modul veza je uspjeï¿½no obrisan";
+ = "Modul veza je uspješno obrisan";
 
 // modules/links/linkedit.php3, row 36
 $_m["Accept"]
@@ -861,11 +861,11 @@ $_m["Link do not exist or the base category is not set"]
 
 // modules/links/linkedit.php3, row 248, 266
 $_m["Proposal to uncheck"]
- = "Ponuda za odznaï¿½iti";
+ = "Ponuda za odznaèiti";
 
 // modules/links/linkedit.php3, row 249, 267
 $_m["Proposal to check"]
- = "Ponuda za oznaï¿½iti";
+ = "Ponuda za oznaèiti";
 
 // modules/links/linkedit.php3, row 297
 $_m["Proposal to add"]
@@ -899,7 +899,7 @@ $_m["View"]
 
 // modules/links/linkedit.php3, row 419
 $_m["You can check, if the page is not in database already"]
- = "Moï¿½ete provjeriti da li stranica veï¿½ postoji u bazi";
+ = "Možete provjeriti da li stranica veæ postoji u bazi";
 
 // modules/links/linkedit.php3, row 424
 $_m["Do not fill, please:"]
@@ -927,7 +927,7 @@ $_m["Author's e-mail"]
 
 // modules/links/linkedit.php3, row 456
 $_m["You can type any message here - it is never shown on the website"]
- = "Ovdje moï¿½ete upisati bilo kakvu poruku - nije nikad prikazana na web stranici";
+ = "Ovdje možete upisati bilo kakvu poruku - nije nikad prikazana na web stranici";
 
 // modules/links/linkedit.php3, row 461
 $_m["Last checked"]
@@ -947,7 +947,7 @@ $_m["Inserted"]
 
 // modules/links/linkedit.php3, row 470
 $_m["Show in category"]
- = "Prikaï¿½ite u kategoriji";
+ = "Prikažite u kategoriji";
 
 // modules/links/linkedit.php3, row 477
 $_m["select the category"]
@@ -959,7 +959,7 @@ $_m["Selected categories"]
 
 // modules/links/linkedit.php3, row 480
 $_m["go to the category you want to select and click on the right arrow button to select"]
- = "Preselite se u kategoriju koju ï¿½elite i odaberite klikom na desnu strelicu";
+ = "Preselite se u kategoriju koju želite i odaberite klikom na desnu strelicu";
 
 // modules/links/linkedit.php3, row 516
 $_m["Organization"]
@@ -975,7 +975,7 @@ $_m["Region"]
 
 // modules/links/linkedit.php3, row 536
 $_m["select up to 4 regions"]
- = "Odaberite najviï¿½e 4 regije";
+ = "Odaberite najviše 4 regije";
 
 // modules/links/linkedit.php3, row 537
 $_m["select pege's languages"]
@@ -987,7 +987,7 @@ $_m["Add new link"]
 
 // modules/links/menu.php3, row 78, 79
 $_m["Link Manager"]
- = "Ureï¿½ivanje veze";
+ = "Ureðivanje veze";
 
 // modules/links/menu.php3, row 85, 86
 $_m["Link Admin"]
@@ -1019,11 +1019,11 @@ $_m["New Links"]
 
 // modules/links/menu.php3, row 116
 $_m["Holding bin"]
- = "Mapa za dokumente na ï¿½ekanju";
+ = "Mapa za dokumente na èekanju";
 
 // modules/links/menu.php3, row 119
 $_m["Trash"]
- = "Smeï¿½e";
+ = "Smeæe";
 
 // modules/links/menu.php3, row 122
 $_m["Unasigned"]
@@ -1087,7 +1087,7 @@ $_m["Module ID"]
 
 // include/manager.class.php3, row 147
 $_m["No item found"]
- = "Nije pronaï¿½ena stavka";
+ = "Nije pronaðena stavka";
 
 // include/manager.class.php3, row 198
 $_m["Publish date"]
@@ -1147,7 +1147,7 @@ $_m["Order row"]
 
 // include/searchbar.class.php3, row 553, 616
 $_m["Search"]
- = "Pretraï¿½ite";
+ = "Pretražite";
 
 // include/searchbar.class.php3, row 558
 $_m["And"]
@@ -1155,11 +1155,11 @@ $_m["And"]
 
 // include/searchbar.class.php3, row 567
 $_m["contains"]
- = "sadrï¿½i";
+ = "sadrži";
 
 // include/searchbar.class.php3, row 568
 $_m["begins with"]
- = "poï¿½inje sa";
+ = "poèinje sa";
 
 // include/searchbar.class.php3, row 569
 $_m["is"]
@@ -1223,7 +1223,7 @@ $_m["Select one..."]
 
 // include/util.php3, row 981, 1038
 $_m["Error: Missing Reading Password"]
- = "Greï¿½ka: nedostaje lozinka za ï¿½itanje";
+ = "Greška: nedostaje lozinka za èitanje";
 
 // include/util.php3, row 1375
 $_m["Toolkit news message"]
@@ -1231,11 +1231,11 @@ $_m["Toolkit news message"]
 
 // include/util.php3, row 1608
 $_m["Internal error. File upload: Dir does not exist?!"]
- = "Interna greï¿½ka. Slanje datoteke: Ne postoji odrediï¿½na mapa";
+ = "Interna greška. Slanje datoteke: Ne postoji odredišna mapa";
 
 // include/util.php3, row 1612
 $_m["File with this name already exists."]
- = "Veï¿½ postoji datoteka s tim imenom";
+ = "Veæ postoji datoteka s tim imenom";
 
 // include/util.php3, row 1619
 $_m["Can't move image  %s to %s"]
@@ -1247,11 +1247,11 @@ $_m["alerts alert"]
 
 // include/util.php3, row 1868
 $_m["alerts welcome"]
- = "Dobro doï¿½li";
+ = "Dobro došli";
 
 // include/util.php3, row 1869
 $_m["slice wizard welcome"]
- = "Dobro doï¿½li - Urednik stranica";
+ = "Dobro došli - Urednik stranica";
 
 // include/util.php3, row 1870
 $_m["other"]
@@ -1259,15 +1259,15 @@ $_m["other"]
 
 // include/util.php3, row 1878
 $_m["January"]
- = "Sijeï¿½anj";
+ = "Sijeèanj";
 
 // include/util.php3, row 1878
 $_m["February"]
- = "Veljaï¿½a";
+ = "Veljaèa";
 
 // include/util.php3, row 1878
 $_m["March"]
- = "Oï¿½ujak";
+ = "Ožujak";
 
 // include/util.php3, row 1878
 $_m["April"]

@@ -21,7 +21,7 @@ $_m["Function used for displaying in inputform. Some of them use the Constants,s
  = "Funktion um dieses Feld in der Eingabemaske zu zeigen. Einige erlauben folgende Parameter:";
 
 $_m["Parameters are divided by double dot (:) or (in some special cases) by apostrophy (')."]
- = "Textfeld - Anzahl der Zeilen<br>Textfeld - Maximal und angezeigte Lï¿½nge (Vorgabe 255:60).";
+ = "Textfeld - Anzahl der Zeilen<br>Textfeld - Maximal und angezeigte Länge (Vorgabe 255:60).";
 
 $_m["Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days"]
  = "<b>Vorbelegung des Feldes</b>\n"
@@ -35,33 +35,33 @@ $_m["If default-type is Text, this sets the default text.<BR>If the default-type
    ."                          <BR>Wenn oben 'Date': Datum plus hier angegebene Tage.";
 
 $_m["Validate function"]
- = "Eingabe-ï¿½berprï¿½fung";
+ = "Eingabe-Überprüfung";
 
 $_m["This defines how the value is stored in the database.  Generally, use 'Text'.<BR>File will store an uploaded file.<BR>Now will insert the current time, no matter what the user sets.  Uid will insert the identity of the Current user, no matter what the user sets.  Boolean will store either 1 or 0.  "]
  = "Definition, wie der Wert in der Datenbank gespeichert wird. Im allg. 'Text' benutzen.\n"
-   ."<BR>'File' fï¿½r Datei-Upload.\n"
-   ."<BR>'Now': aktuelles Datum ohne Berï¿½cksichtigung der Eingaben.\n"
-   ."<BR>'Uid': aktuelle Benutzer-ID ohne Berï¿½cksichtigung der Eingaben.\n"
+   ."<BR>'File' für Datei-Upload.\n"
+   ."<BR>'Now': aktuelles Datum ohne Berücksichtigung der Eingaben.\n"
+   ."<BR>'Uid': aktuelle Benutzer-ID ohne Berücksichtigung der Eingaben.\n"
    ."<BR>'Boolean': 1 oder 0 (Ja/Nein).";
 
 $_m["HTML coded as default"]
  = "Standard: HTML-codiert";
 
 $_m["When you go to Admin-Design, you use an Alias to show this field"]
- = "Unter 'Design ï¿½ndern' folgende 'Aliase' benutzen, um dieses Feld zu zeigen";
+ = "Unter 'Design ändern' folgende 'Aliase' benutzen, um dieses Feld zu zeigen";
 
 $_m["Function which handles the database field and displays it on page<BR>usually, use 'print'.<BR>"]
  = "Funktion, die das Feld auf der Seite anzeigt. \n"
    ."  												<BR>Im allgemeinen verwenden Sie 'Anzeigen'.<BR>";
 
 $_m["Parameter passed to alias handling function. For detail see include/item.php3 file"]
- = "Parameter fï¿½r die Funktion. Einzelheiten siehe Anleitung (FAQ)";
+ = "Parameter für die Funktion. Einzelheiten siehe Anleitung (FAQ)";
 
 $_m["Help text"]
  = "Hilfe-Text";
 
 $_m["Help text for the alias"]
- = "Erlï¿½uterungen zu diesem Alias";
+ = "Erläuterungen zu diesem Alias";
 
 $_m["Now"]
  = "Jetzt";
@@ -79,7 +79,7 @@ $_m["Expired"]
  = "Abgelaufen";
 
 $_m["Change current permissions"]
- = "Berechtigungen ï¿½ndern";
+ = "Berechtigungen ändern";
 
 $_m["Can't upload Image"]
  = "Kann Bild nicht hochladen";
@@ -100,10 +100,10 @@ $_m["Existing remote imports into the slice "]
  = "Importe von anderen Servern in die Rubrik ";
 
 $_m["Bad item ID"]
- = "Ungï¿½ltige Artikel-ID";
+ = "Ungültige Artikel-ID";
 
 $_m["<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>"]
- = "Sie kï¿½nnen nur Rubriken entfernen, die auf der &quot;<b>Rubrik</b>&quot;-Seite als &quot;<b>gelï¿½scht</b>&quot; markiert sind.<p>";
+ = "Sie können nur Rubriken entfernen, die auf der &quot;<b>Rubrik</b>&quot;-Seite als &quot;<b>gelöscht</b>&quot; markiert sind.<p>";
 
 $_m["Remove"]
  = "Entfernen";
@@ -129,7 +129,7 @@ $_m["Either your username or your password is not valid."]
 // ./diff.diff, row 128, 153
 // include/formutil.php3, row 3109
 $_m["Use these aliases for database fields"]
- = "Benutze diese Aliase fï¿½r Datenbankfelder";
+ = "Benutze diese Aliase für Datenbankfelder";
 
 // ./diff.diff, row 140, 159
 // admin/um_uedit.php3, row 240
@@ -161,7 +161,7 @@ $_m["To create the new Slice, please choose a template.\n"
    ."        The new slice will inherit the template's default fields.  \n"
    ."        You can also choose a non-template slice to base the new slice on, \n"
    ."        if it has the fields you want."]
- = "Bitte eine Vorlage auswï¿½hlen, um eine neue Rubrik einzurichten. Die neue Rubrik enthï¿½lt die Vorgabe-Felder der Vorlage. Sie kï¿½nnen auch eine existierende Rubrik kopieren, wenn sie die gewï¿½nschten Felder enthï¿½lt.";
+ = "Bitte eine Vorlage auswählen, um eine neue Rubrik einzurichten. Die neue Rubrik enthält die Vorgabe-Felder der Vorlage. Sie können auch eine existierende Rubrik kopieren, wenn sie die gewünschten Felder enthält.";
 
 // ./diff.diff, row 1099
 // admin/slicedit.php3, row 167
@@ -181,7 +181,7 @@ $_m["Template"]
 // include/mlx.php, row 408
 // include/sliceadd.php3, row 75, 98
 $_m["Add"]
- = "Hinzufï¿½gen";
+ = "Hinzufügen";
 
 // ./diff.diff, row 1107
 // include/sliceadd.php3, row 79
@@ -212,7 +212,7 @@ $_m["Bad slice ID"]
 // include/formutil.php3, row 289, 377
 // include/itemfunc.php3, row 678
 $_m["No fields defined for this slice"]
- = "Keine Felder fï¿½r diese Rurik definiert";
+ = "Keine Felder für diese Rurik definiert";
 
 // ./filler.php3, row 322
 $_m["Anonymous posting not admitted."]
@@ -320,7 +320,7 @@ $_m["No groups found"]
 // admin/se_newuser.php3, row 83
 // include/um_util.php3, row 358
 $_m["User successfully added to permission system"]
- = "Benutzer/in erfolgreich hinzugefï¿½gt.";
+ = "Benutzer/in erfolgreich hinzugefügt.";
 
 // admin/um_uedit.php3, row 151
 // admin/um_passwd.php3, row 65
@@ -386,7 +386,7 @@ $_m["User"]
 // include/profile.php3, row 69
 // include/menu_aa.php3, row 41
 $_m["Delete"]
- = "Lï¿½schen";
+ = "Löschen";
 
 // admin/um_uedit.php3, row 289, 293
 // admin/um_passwd.php3, row 104
@@ -490,15 +490,15 @@ $_m["You have not permissions to change feeding setting"]
 
 // admin/se_inter_import2.php3, row 50, 67
 $_m["Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."]
- = "Kann keine Verbindung mit dem Server herstellen. Bitte nehmen Sie mit dem Administrator Kontakt auf, wenn die Stï¿½rung anadauert.";
+ = "Kann keine Verbindung mit dem Server herstellen. Bitte nehmen Sie mit dem Administrator Kontakt auf, wenn die Störung anadauert.";
 
 // admin/se_inter_import2.php3, row 57
 $_m["No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."]
- = "Keine Rubriken verfï¿½gbar. Sie haben keine Berechtigung, Daten von diesem Server zu importieren. Setzen Sie sich mit dem Verwalter der anderen Rubrik in Verbindung.";
+ = "Keine Rubriken verfügbar. Sie haben keine Berechtigung, Daten von diesem Server zu importieren. Setzen Sie sich mit dem Verwalter der anderen Rubrik in Verbindung.";
 
 // admin/se_inter_import2.php3, row 58
 $_m["Invalid password for the node name:"]
- = "Ungï¿½ltiges Passwort fï¿½r den Server: ";
+ = "Ungültiges Passwort für den Server: ";
 
 // admin/se_inter_import2.php3, row 58
 $_m["Contact the administrator of the local node."]
@@ -519,7 +519,7 @@ $_m["Choose slice"]
 
 // admin/se_inter_import2.php3, row 98
 $_m["List of available slices from the node "]
- = "Liste verfï¿½gbarer Rubriken von ";
+ = "Liste verfügbarer Rubriken von ";
 
 // admin/se_inter_import2.php3, row 99
 $_m["Slice to import"]
@@ -546,7 +546,7 @@ $_m["You have not permissions to change fields settings"]
 
 // admin/se_inputform.php3, row 72
 $_m["Field delete OK"]
- = "OK, Feld lï¿½schen!";
+ = "OK, Feld löschen!";
 
 // admin/se_inputform.php3, row 116, 446
 $_m["Before HTML code"]
@@ -554,7 +554,7 @@ $_m["Before HTML code"]
 
 // admin/se_inputform.php3, row 117, 434
 $_m["Help for this field"]
- = "Hilfe fï¿½r dieses Feld";
+ = "Hilfe für dieses Feld";
 
 // admin/se_inputform.php3, row 118, 440
 $_m["More help"]
@@ -600,7 +600,7 @@ $_m["You selected slice and not constant group. It is unpossible to change slice
 
 // admin/se_inputform.php3, row 326
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
- = "<p>WARNUNG: ï¿½ndern Sie diese Einstellungen nicht, wenn Sie nicht wissen was Sie tun!</p>";
+ = "<p>WARNUNG: Ändern Sie diese Einstellungen nicht, wenn Sie nicht wissen was Sie tun!</p>";
 
 // admin/se_inputform.php3, row 336
 $_m["Field properties"]
@@ -626,7 +626,7 @@ $_m["Edit|Use as new|New"]
 
 // admin/se_inputform.php3, row 358
 $_m["Choose a Constant Group or a Slice."]
- = "Vorgaben fï¿½r Auswahl-Knï¿½pfe";
+ = "Vorgaben für Auswahl-Knöpfe";
 
 // admin/se_inputform.php3, row 371, 388, 401, 417, 477
 $_m["Parameters"]
@@ -643,7 +643,7 @@ $_m["How to generate the default value"]
 
 // admin/se_inputform.php3, row 396
 $_m["Validate"]
- = "ï¿½berprï¿½fen";
+ = "Überprüfen";
 
 // admin/se_inputform.php3, row 405
 $_m["Stored as"]
@@ -662,7 +662,7 @@ $_m["Number"]
 // admin/sliceimp.php3, row 484
 // include/formutil.php3, row 202, 2698
 $_m["Insert"]
- = "Einfï¿½gen";
+ = "Einfügen";
 
 // admin/se_inputform.php3, row 415
 $_m["Defines how value is stored in database."]
@@ -678,7 +678,7 @@ $_m["'HTML' as default"]
 
 // admin/se_inputform.php3, row 436
 $_m["Shown help for this field"]
- = "Fï¿½r dieses Feld gezeigte Hilfe";
+ = "Für dieses Feld gezeigte Hilfe";
 
 // admin/se_inputform.php3, row 442
 $_m["Text shown after user click on '?' in input form"]
@@ -829,7 +829,7 @@ $_m["OK"]
 
 // admin/se_admin.php3, row 44
 $_m["You have no permission to set configuration parameters of this slice"]
- = "Sie haben keine Berechtigung um die Einstellungen dieser Rubrik zu ï¿½ndern";
+ = "Sie haben keine Berechtigung um die Einstellungen dieser Rubrik zu ändern";
 
 // admin/se_admin.php3, row 56, 145
 // admin/se_compact.php3, row 57, 200
@@ -871,7 +871,7 @@ $_m["Show discussion"]
 // admin/se_fulltext.php3, row 77
 // admin/se_view.php3, row 134, 259
 $_m["Can't change slice settings"]
- = "Kann Rubrik-Einstellungen nicht verï¿½ndern";
+ = "Kann Rubrik-Einstellungen nicht verändern";
 
 // admin/se_admin.php3, row 89
 $_m["Admin fields update successful"]
@@ -1431,7 +1431,7 @@ $_m["Administrator"]
 // admin/se_users.php3, row 105
 // include/um_util.php3, row 100, 162
 $_m["Revoke"]
- = "Zurï¿½cksetzen";
+ = "Zurücksetzen";
 
 // admin/se_users.php3, row 107, 173
 $_m["Profile"]
@@ -1664,7 +1664,7 @@ $_m["Error: You have no rights to edit item."]
 // admin/itemedit.php3, row 284
 // include/menu.php3, row 73
 $_m["Add Item"]
- = "Artikel hinzufï¿½gen";
+ = "Artikel hinzufügen";
 
 // admin/itemedit.php3, row 284
 $_m["Edit Item"]
@@ -1763,11 +1763,11 @@ $_m["Use \"d-...\" or \"conds[]\" conditions"]
 
 // admin/feed_to.php3, row 54
 $_m["Export Item to Selected Slice"]
- = "Exportiere Artikel in ausgewï¿½hlte Rubrik";
+ = "Exportiere Artikel in ausgewählte Rubrik";
 
 // admin/feed_to.php3, row 59
 $_m["Export selected items to selected slice"]
- = "Exportiere ausgewï¿½hlte Artikel in ausgewï¿½hlte Rubrik";
+ = "Exportiere ausgewählte Artikel in ausgewählte Rubrik";
 
 // admin/feed_to.php3, row 62
 // admin/slicedit.php3, row 148
@@ -2010,7 +2010,7 @@ $_m["Selector"]
 // include/constants.php3, row 359
 // include/constedit.php3, row 82
 $_m["Priority"]
- = "Prioritï¿½t";
+ = "Priorität";
 
 // admin/se_history.php3, row 73
 $_m["Value Type"]
@@ -2092,7 +2092,7 @@ $_m["Approve"]
 // include/item.php3, row 1583
 // include/msgpage.php3, row 84
 $_m["Back"]
- = "Zurï¿½ck";
+ = "Zurück";
 
 // admin/se_search.php3, row 38
 $_m["You have not permissions to change search settings"]
@@ -2178,7 +2178,7 @@ $_m["Remote node"]
 // admin/um_gedit.php3, row 102
 // include/um_gedit.php3, row 49
 $_m["Group successfully added to permission system"]
- = "Gruppe erfolgreich hinzugefï¿½gt.";
+ = "Gruppe erfolgreich hinzugefügt.";
 
 // admin/um_gedit.php3, row 111
 $_m["User management - Groups"]
@@ -2439,7 +2439,7 @@ $_m["Free 1"]
 // admin/discedit2.php3, row 137
 // include/formutil.php3, row 198, 2727
 $_m["Reset form"]
- = "Zurï¿½cksetzen";
+ = "Zurücksetzen";
 
 // admin/se_compact.php3, row 42
 $_m["You have not permissions to change compact view formatting"]
@@ -2465,7 +2465,7 @@ $_m["Category top HTML"]
 
 // admin/se_compact.php3, row 66, 227
 $_m["Category Headline"]
- = "Kategorie ï¿½berschrift";
+ = "Kategorie Überschrift";
 
 // admin/se_compact.php3, row 67, 230
 $_m["Category bottom HTML"]
@@ -2473,7 +2473,7 @@ $_m["Category bottom HTML"]
 
 // admin/se_compact.php3, row 99
 $_m["Design of compact design successfully changed"]
- = "Design der Inhaltsï¿½bersicht erfolgreich geï¿½ndert";
+ = "Design der Inhaltsübersicht erfolgreich geändert";
 
 // admin/se_compact.php3, row 142, 181
 // admin/se_newuser.php3, row 93
@@ -2482,21 +2482,21 @@ $_m["Admin - design Index view"]
 
 // admin/se_compact.php3, row 181
 $_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
- = "Design der Index-(ï¿½bersichts-)Seite bearbeiten.";
+ = "Design der Index-(Übersichts-)Seite bearbeiten.";
 
 // admin/se_compact.php3, row 195
 $_m["HTML code for index view"]
- = "HTML-Code fï¿½r Index-Ansicht";
+ = "HTML-Code für Index-Ansicht";
 
 // admin/se_compact.php3, row 206
 // include/constants.php3, row 507, 641, 737, 788, 820
 $_m["Use different HTML code for even rows"]
- = "Anderen HTML-Code fï¿½r gerade Zeilen verwenden";
+ = "Anderen HTML-Code für gerade Zeilen verwenden";
 
 // admin/se_compact.php3, row 208
 $_m["You can define different code for odd and ever rows\n"
    ."                         <br>first red, second black, for example"]
- = "Sie kï¿½nnen verschiedenen HTML-Code fï¿½r ungerade und gerade Zeilen verwenden, z.B. fï¿½r wechselnde Hintergundfarben";
+ = "Sie können verschiedenen HTML-Code für ungerade und gerade Zeilen verwenden, z.B. für wechselnde Hintergundfarben";
 
 // admin/se_compact.php3, row 213
 // include/constants.php3, row 522, 625, 746, 797, 829
@@ -2540,13 +2540,13 @@ $_m["message to show in place of slice.php3, if no item matches the query"]
 // admin/setup.php3, row 247
 // include/um_util.php3, row 318
 $_m["Retyped password is not the same as the first one"]
- = "Die Passworte stimmen nicht ï¿½berein";
+ = "Die Passworte stimmen nicht überein";
 
 // admin/se_newuser.php3, row 79
 // admin/setup.php3, row 273
 // include/um_util.php3, row 352
 $_m["It is impossible to add user to permission system"]
- = "Benutzer/in kann nicht hinzugefï¿½gt werden";
+ = "Benutzer/in kann nicht hinzugefügt werden";
 
 // admin/se_newuser.php3, row 101
 $_m["New user in permission system"]
@@ -2563,7 +2563,7 @@ $_m["You don't have permissions to delete slice."]
 
 // admin/slicedel.php3, row 66, 84
 $_m["Admin - Delete Slice"]
- = "Verwaltung - Rubrik lï¿½schen";
+ = "Verwaltung - Rubrik löschen";
 
 // admin/slicedel.php3, row 69
 $_m["Do you really want to delete this slice and all its fields and all its items?"]
@@ -2576,7 +2576,7 @@ $_m["Delete selected"]
 
 // admin/slicedel.php3, row 99
 $_m["Select slice to delete"]
- = "Rubrik zum Lï¿½schen auswï¿½hlen";
+ = "Rubrik zum Löschen auswählen";
 
 // admin/slicedel.php3, row 100
 $_m["Slices to show"]
@@ -2596,7 +2596,7 @@ $_m["Slices to delete"]
 
 // admin/slicedel.php3, row 118
 $_m["No slice marked for deletion"]
- = "Keine Rubrik zum Lï¿½schen markiert.";
+ = "Keine Rubrik zum Löschen markiert.";
 
 // admin/slicewiz.php3, row 53, 56
 $_m["Add Slice Wizard"]
@@ -2657,7 +2657,7 @@ $_m["Fields"]
 
 // admin/se_fields.php3, row 243
 $_m["Required"]
- = "Benï¿½tigt";
+ = "Benötigt";
 
 // admin/se_fields.php3, row 246
 $_m["Aliases"]
@@ -2681,7 +2681,7 @@ $_m["Bottom HTML code"]
 
 // admin/se_fulltext.php3, row 88
 $_m["Fulltext format update successful"]
- = "Volltext-Format erfolgreich geï¿½ndert.";
+ = "Volltext-Format erfolgreich geändert.";
 
 // admin/se_fulltext.php3, row 112, 128
 $_m["Admin - design Fulltext view"]
@@ -2693,7 +2693,7 @@ $_m["Use these boxes ( with the tags listed below ) to control what appears on f
 
 // admin/se_fulltext.php3, row 142
 $_m["HTML code for fulltext view"]
- = "HTML-Code fï¿½r Volltext-Ansicht";
+ = "HTML-Code für Volltext-Ansicht";
 
 // admin/se_fulltext.php3, row 155
 $_m["The template for dicsussion you can set on \"Design\" -> \"View\" page"]
@@ -2773,7 +2773,7 @@ $_m["Readers, authorized by HTTP auth"]
 // admin/slicedit.php3, row 115
 // include/modutils.php3, row 147
 $_m["Select owner"]
- = "Eigentï¿½mer auswï¿½hlen";
+ = "Eigentümer auswählen";
 
 // admin/slicedit.php3, row 128
 // admin/sliceadd.php3, row 60
@@ -2785,7 +2785,7 @@ $_m["Slice Administration"]
 // admin/slicedit.php3, row 134
 // admin/setup.php3, row 289
 $_m["Add Slice"]
- = "Slice hinzufï¿½gen";
+ = "Slice hinzufügen";
 
 // admin/slicedit.php3, row 134
 $_m["Admin - Slice settings"]
@@ -2808,7 +2808,7 @@ $_m["Priority (order in slice-menu)"]
 $_m["<br>To include slice in your webpage type next line \n"
    ."                         to your shtml code: "]
  = "<br>Um diesen Slice in Ihre Webseiten einzubauen,\n"
-   ."												 fï¿½gen Sie folgendes in Ihre SHTML-Seite ein: ";
+   ."												 fügen Sie folgendes in Ihre SHTML-Seite ein: ";
 
 // admin/slicedit.php3, row 160
 // include/modutils.php3, row 73
@@ -2833,11 +2833,11 @@ $_m["New Owner's E-mail"]
 // include/constants.php3, row 539, 639, 662, 689, 720, 779, 811, 843
 // include/slicedit.php3, row 159
 $_m["Listing length"]
- = "Listenlï¿½nge";
+ = "Listenlänge";
 
 // admin/slicedit.php3, row 168
 $_m["Deleted"]
- = "Gelï¿½scht";
+ = "Gelöscht";
 
 // admin/slicedit.php3, row 170
 // include/slicedit.php3, row 160
@@ -2911,7 +2911,7 @@ $_m["If you need more selections, use 'Update' and on next Edit two empty boxes 
 // admin/se_view.php3, row 219
 // admin/se_views.php3, row 40
 $_m["You do not have permission to change views"]
- = "Sie haben keine Berechtigung, Ansichten zu verï¿½ndern";
+ = "Sie haben keine Berechtigung, Ansichten zu verändern";
 
 // admin/se_view.php3, row 281
 $_m["View successfully changed"]
@@ -2998,7 +2998,7 @@ $_m["e.g. http://www.someplace.com/rss/index.xml"]
 
 // admin/slicedel2.php3, row 63
 $_m["Slice successfully deleted, tables are optimized"]
- = "Rubrik erfolgreich gelï¿½scht.";
+ = "Rubrik erfolgreich gelöscht.";
 
 // admin/sliceadd.php3, row 63
 $_m["Create New Slice / Module"]
@@ -3013,7 +3013,7 @@ $_m["Modules"]
 // include/slicedit.php3, row 90
 // include/sliceadd.php3, row 35
 $_m["You have not permissions to add slice"]
- = "Sie haben keine Berechtigung, Rubriken hinzuzufï¿½gen";
+ = "Sie haben keine Berechtigung, Rubriken hinzuzufügen";
 
 // admin/aafinder.php3, row 49, 51, 186
 // include/menu_aa.php3, row 71
@@ -3105,7 +3105,7 @@ $_m["Directory"]
 
 // admin/fileman.php3, row 176
 $_m["Unselect all"]
- = "Alle abwï¿½hlen";
+ = "Alle abwählen";
 
 // admin/fileman.php3, row 220
 $_m["Create new file"]
@@ -3235,7 +3235,7 @@ $_m["View items"]
 // admin/search_replace.php3, row 758
 // include/manager.class.php3, row 590
 $_m["Selected items"]
- = "Ausgewï¿½hlte Artikel";
+ = "Ausgewählte Artikel";
 
 // admin/search_replace.php3, row 763
 $_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
@@ -3332,7 +3332,7 @@ $_m["This constant group already exists"]
 // admin/se_constant.php3, row 291
 $_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
  = "Keine Kategorie definiert.\n"
-   ."													<BR>Bitte zuerst eine Kategorie hinzufï¿½gen (Seite 'Felder')";
+   ."													<BR>Bitte zuerst eine Kategorie hinzufügen (Seite 'Felder')";
 
 // admin/se_constant.php3, row 311, 318
 $_m["Admin - Constants Setting"]
@@ -3466,7 +3466,7 @@ $_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
 
 // admin/se_views.php3, row 57
 $_m["View successfully deleted"]
- = "Ansicht gelï¿½scht";
+ = "Ansicht gelöscht";
 
 // admin/se_views.php3, row 80
 $_m["Are you sure you want to delete selected view?"]
@@ -3692,7 +3692,7 @@ $_m["Known remote nodes"]
 
 // admin/se_nodes.php3, row 178
 $_m["Add new node"]
- = "Neuen Server hinzufï¿½gen";
+ = "Neuen Server hinzufügen";
 
 // admin/se_nodes.php3, row 178
 $_m["Edit node data"]
@@ -3732,7 +3732,7 @@ $_m["Content Pooling - Configure Filters"]
 
 // admin/se_filters.php3, row 267
 $_m["Filter for imported slice"]
- = "Filter fï¿½r importierte Rubrik";
+ = "Filter für importierte Rubrik";
 
 // admin/se_filters.php3, row 271
 $_m["Categories"]
@@ -3749,7 +3749,7 @@ $_m["No category defined"]
 // admin/se_filters.php3, row 355, 355
 // include/manager.class.php3, row 585
 $_m["Select all"]
- = "Alle auswï¿½hlen";
+ = "Alle auswählen";
 
 // admin/setup.php3, row 66, 69
 $_m["AA Setup"]
@@ -3846,11 +3846,11 @@ $_m["Export disable"]
 
 // admin/se_import.php3, row 138
 $_m["Export enable"]
- = "Export ermï¿½glichen";
+ = "Export ermöglichen";
 
 // admin/se_import.php3, row 172
 $_m["Enable export to any slice"]
- = "Ermï¿½gliche Export zu jeder Rubrik";
+ = "Ermögliche Export zu jeder Rubrik";
 
 // admin/se_import.php3, row 174
 $_m["Currently exported to"]
@@ -4051,7 +4051,7 @@ $_m["All"]
 
 // include/files.class.php3, row 97
 $_m["Can't create directory for image uploads"]
- = "Kann Verzeichnis fï¿½r Datei/Bild-Upload nicht anlegen.";
+ = "Kann Verzeichnis für Datei/Bild-Upload nicht anlegen.";
 
 // include/files.class.php3, row 146
 $_m["Can't read the file %1"]
@@ -4183,7 +4183,7 @@ $_m["Sort secondary"]
 
 // include/constants.php3, row 527, 628, 749, 800, 832
 $_m["Group title format"]
- = "Gruppierung ï¿½berschrift";
+ = "Gruppierung Überschrift";
 
 // include/constants.php3, row 528, 629, 750, 801, 833
 $_m["Group bottom format"]
@@ -4405,7 +4405,7 @@ $_m["Edit item form template"]
 // include/constants.php3, row 884
 // include/discussion.php3, row 206, 253
 $_m["Show selected"]
- = "Zeige ausgewï¿½hlte";
+ = "Zeige ausgewählte";
 
 // include/constants.php3, row 885
 // include/discussion.php3, row 207, 255
@@ -4416,7 +4416,7 @@ $_m["Show all"]
 // include/discussion.php3, row 209, 257
 // include/constedit_util.php3, row 116
 $_m["Add new"]
- = "Hinzufï¿½gen";
+ = "Hinzufügen";
 
 // include/constants.php3, row 906
 $_m["Calendar: Time stamp at 0:00 of processed cell"]
@@ -4753,7 +4753,7 @@ $_m["Enter the value"]
 // include/formutil.php3, row 1619
 // include/menu.php3, row 145
 $_m["Change"]
- = "ï¿½ndern";
+ = "Ändern";
 
 // include/formutil.php3, row 1658
 $_m["Item"]
@@ -4897,7 +4897,7 @@ $_m["February"]
 
 // include/util.php3, row 1878
 $_m["March"]
- = "Mï¿½rz";
+ = "März";
 
 // include/util.php3, row 1878
 $_m["April"]
@@ -5063,11 +5063,11 @@ $_m["If you are sure you have typed the correct password, please e-mail <a href=
 
 // include/um_gedit.php3, row 43
 $_m["It is impossible to add group to permission system"]
- = "Kann Gruppe nicht hinzufï¿½gen.";
+ = "Kann Gruppe nicht hinzufügen.";
 
 // include/um_gedit.php3, row 55
 $_m["Can't change group"]
- = "Kann Gruppe nicht verï¿½ndern.";
+ = "Kann Gruppe nicht verändern.";
 
 // include/mlx.php, row 418
 $_m["view"]
@@ -5105,7 +5105,7 @@ $_m["alias for Item ID"]
 // include/item.php3, row 96
 // include/field.class.php3, row 398
 $_m["alias for Short Item ID"]
- = "Alias fï¿½r kurze Artikel-ID";
+ = "Alias für kurze Artikel-ID";
 
 // include/item.php3, row 102, 103
 // include/field.class.php3, row 404, 405
@@ -5211,7 +5211,7 @@ $_m["Home"]
 
 // include/actions.php3, row 60
 $_m["Move to Active"]
- = "Verï¿½ffentlichen (Aktiv)";
+ = "Veröffentlichen (Aktiv)";
 
 // include/actions.php3, row 61
 $_m["Move to Holding bin"]
@@ -5247,7 +5247,7 @@ $_m["Remove (delete from database)"]
 
 // include/actions.php3, row 325, 544
 $_m["You have not permissions to remove items"]
- = "Sie haben keine Berechtigung, Artikel zu lï¿½schen.";
+ = "Sie haben keine Berechtigung, Artikel zu löschen.";
 
 // include/actions.php3, row 401
 $_m["Modify content"]
@@ -5546,7 +5546,7 @@ $_m["Assign"]
 
 // include/menu.php3, row 147
 $_m["Design"]
- = "Design ï¿½ndern";
+ = "Design ändern";
 
 // include/menu.php3, row 148
 $_m["Index"]
@@ -5948,7 +5948,7 @@ $_m["EDITOR"]
 
 // include/um_util.php3, row 374
 $_m["Can't change user"]
- = "Kann Benutzer nicht verï¿½ndern";
+ = "Kann Benutzer nicht verändern";
 
 // include/tabledit_util.php3, row 72, 453
 $_m["Insert was successfull."]
@@ -6044,7 +6044,7 @@ $_m["Not unique - value already used"]
 
 // include/validate.php3, row 450
 $_m["it must be filled"]
- = "muss ausgefï¿½llt werden";
+ = "muss ausgefüllt werden";
 
 // include/validate.php3, row 540
 $_m["This field is required."]
@@ -6252,7 +6252,7 @@ $_m["You do not have permission to edit items in the slice"]
 
 // include/init_page.php3, row 198
 $_m["No slice found for you"]
- = "Keine Rubrik fï¿½r Sie gefunden";
+ = "Keine Rubrik für Sie gefunden";
 
 // include/tv_misc.php3, row 66, 67
 $_m["Wizard Welcomes"]
@@ -6773,7 +6773,7 @@ $_m["Select Box"]
 
 // include/widget.class.php3, row 665
 $_m["Radio Button"]
- = "Auswahlknï¿½pfe";
+ = "Auswahlknöpfe";
 
 // include/widget.class.php3, row 680, 859
 $_m["Columns"]
@@ -6837,7 +6837,7 @@ $_m["Multiple Selectbox"]
 
 // include/widget.class.php3, row 960
 $_m["Two Boxes"]
- = "Zwei Kï¿½stchen";
+ = "Zwei Kästchen";
 
 // include/widget.class.php3, row 976
 $_m["Title of \"Offer\" selectbox"]

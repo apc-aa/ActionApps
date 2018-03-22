@@ -15,10 +15,10 @@ $_m["No permission"]
  = "Nemate dozvolu";
 
 $_m["Send Emails Wizard"]
- = "ï¿½arobnjak za slanje poï¿½te";
+ = "Èarobnjak za slanje pošte";
 
 $_m["Pending"]
- = "Na ï¿½ekanju";
+ = "Na èekanju";
 
 $_m["Expired"]
  = "Isteklo";
@@ -27,7 +27,7 @@ $_m["in"]
  = "u";
 
 $_m["Send email wizard"]
- = "ï¿½arobnjak za slanje poï¿½te";
+ = "Èarobnjak za slanje pošte";
 
 $_m["Select related items"]
  = "Odaberite vezane stavke";
@@ -42,49 +42,49 @@ $_m["Module"]
  = "Modul";
 
 $_m["Select readers<br><i>%1 reader(s) selected</i>"]
- = "Odaberite ï¿½itaoce";
+ = "Odaberite èitaoce";
 
 $_m["Select readers"]
- = "Odaberite ï¿½itaoce";
+ = "Odaberite èitaoce";
 
 $_m["You can not proceed until you select at least one reader!"]
- = "Ne moï¿½ete nastaviti dok ne izaberete bar jednog ï¿½itatelja / ï¿½itateljicu";
+ = "Ne možete nastaviti dok ne izaberete bar jednog èitatelja / èitateljicu";
 
 $_m["Find readers using the Search conditions in Item Manager."]
- = "Pronaï¿½ite ï¿½itatlje / ice koristeï¿½i kriterije pretraï¿½ivanja u Ureï¿½ivaï¿½u stavki";
+ = "Pronaðite èitatlje / ice koristeæi kriterije pretraživanja u Ureðivaèu stavki";
 
 $_m["Create or edit email template"]
- = "Napravite ili uredite e- mail predloï¿½ak";
+ = "Napravite ili uredite e- mail predložak";
 
 $_m["Use Slice Admin / Email templates to create or edit an email template."]
- = "Koristite administrator stranica / e-mail predloï¿½ci za izradu ili promjenu e-mail predloï¿½ka";
+ = "Koristite administrator stranica / e-mail predlošci za izradu ili promjenu e-mail predloška";
 
 $_m["Choose email template"]
- = "Izaberite e-mail predloï¿½ak";
+ = "Izaberite e-mail predložak";
 
 $_m["You can use all field aliases like in any view."]
- = "Moï¿½ete koristiti sve sinonime za polja kao i u bilo kojem pregledu";
+ = "Možete koristiti sve sinonime za polja kao i u bilo kojem pregledu";
 
 $_m["Send example email to"]
- = "Poï¿½aljite primjere e-maila: ";
+ = "Pošaljite primjere e-maila: ";
 
 $_m["This will send emails to all readers selected in Step 1."]
- = "Ovaj ï¿½arobnjak ï¿½alje e-mailove svim ï¿½itateljima / ï¿½itateljicama izabranim u prvom koraku";
+ = "Ovaj èarobnjak šalje e-mailove svim èitateljima / èitateljicama izabranim u prvom koraku";
 
 $_m["Delete the email template"]
- = "Obriï¿½ite e-mail predloï¿½ak";
+ = "Obrišite e-mail predložak";
 
 $_m["%1 email(s) were sent."]
  = "e-mailovi su poslani";
 
 $_m["Find some more info in %1the doc."]
- = "Pronaï¿½ite viï¿½e informacija u dokumentu";
+ = "Pronaðite više informacija u dokumentu";
 
 $_m["Step"]
  = "Korak";
 
 $_m["Close the wizard"]
- = "Zatvorite ï¿½arobnjaka";
+ = "Zatvorite èarobnjaka";
 
 $_m["Cannot create a temporary file"]
  = "Ne mogu stvoriti privremenu datoteku";
@@ -96,7 +96,7 @@ $_m["Admin - Import data - Preview"]
  = "Admin - uvoz datoteka - pregled";
 
 $_m["Transformation error"]
- = "Greï¿½ka u prilagodbi";
+ = "Greška u prilagodbi";
 
 $_m["Added: "]
  = "Dodano";
@@ -105,7 +105,7 @@ $_m[" items to slice: "]
  = "Stavki na stranicu";
 
 $_m["Show this field as a rich text editor (use only after having installed the necessary components!)"]
- = "Pokaï¿½ite ovo polje kao Rich tekst datoteku";
+ = "Pokažite ovo polje kao Rich tekst datoteku";
 
 $_m["index of item within view"]
  = "Index stavki unutar pogleda";
@@ -123,7 +123,7 @@ $_m["Can't upload Image"]
  = "Ne mogu poslati slikovnu datoteku";
 
 $_m["description"]
- = "Objaï¿½njenje";
+ = "Objašnjenje";
 
 $_m["email type"]
  = "Tip e-mail-a";
@@ -141,10 +141,10 @@ $_m["reply to (email)"]
  = "Odgovorite (e-mail)";
 
 $_m["errors to (email)"]
- = "Greï¿½ke poslati (e-mail)";
+ = "Greške poslati (e-mail)";
 
 $_m["sender (email)"]
- = "Poï¿½iljatelj/ica (e-mail)";
+ = "Pošiljatelj/ica (e-mail)";
 
 $_m["language (charset)"]
  = "Jezik (kodna stranica)";
@@ -162,16 +162,16 @@ $_m["reply to"]
  = "Odgovorite";
 
 $_m["errors to"]
- = "Greï¿½ke poslati";
+ = "Greške poslati";
 
 $_m["sender"]
- = "Poï¿½iljatelj/ica";
+ = "Pošiljatelj/ica";
 
 $_m["anonym"]
  = "Anonimno";
 
 $_m["Select Box with Presets"]
- = "Izaberite kuï¿½icu sa pretpostavkom";
+ = "Izaberite kuæicu sa pretpostavkom";
 
 $_m["Group by selections (some items \n"
    ."                                         may be shown several times)"]
@@ -179,13 +179,13 @@ $_m["Group by selections (some items \n"
 
 $_m["Link to the .shtml page used\n"
    ."                                        to create headline links."]
- = "Veza na koriï¿½tenu .shtml stranicu";
+ = "Veza na korištenu .shtml stranicu";
 
 $_m["Group by selections (some items may be shown several times)"]
  = "Grupirajte po izborima";
 
 $_m["Link to the .shtml page used to create headline links."]
- = "Veza na .shtml stranicu koriï¿½tenu za stvaranje veza na zaglavljima";
+ = "Veza na .shtml stranicu korištenu za stvaranje veza na zaglavljima";
 
 $_m["Insert Function"]
  = "Umetnite funkciju";
@@ -203,22 +203,22 @@ $_m["File = uploaded file"]
  = "Datoteka = poslana datoteka";
 
 $_m["Stores the uploaded file and a link to it, parameters only apply if type is image/something."]
- = "Sprema poslanu datoteku i vezu na nju, osobine datteke se primjenjuju samo ako je datoteka tipa slika/neï¿½to";
+ = "Sprema poslanu datoteku i vezu na nju, osobine datteke se primjenjuju samo ako je datoteka tipa slika/nešto";
 
 $_m["Mime types accepted"]
- = "Prihvaï¿½en Mime tip";
+ = "Prihvaæen Mime tip";
 
 $_m["Only files of matching mime types will be accepted"]
- = "Samo datoteke odgovarajuï¿½eg Mime tipa ï¿½e biti prihvaï¿½ene";
+ = "Samo datoteke odgovarajuæeg Mime tipa æe biti prihvaæene";
 
 $_m["Maximum image width"]
- = "Najveï¿½a dozvoljena ï¿½irina slikovne datoteke";
+ = "Najveæa dozvoljena širina slikovne datoteke";
 
 $_m["Maximum image height"]
- = "Najveï¿½a dozvoljena visina slikovne datoteke";
+ = "Najveæa dozvoljena visina slikovne datoteke";
 
 $_m["The image will be resampled to be within these limits, while retaining aspect ratio."]
- = "Slika ï¿½e biti promijenjena unutar tih granica zadrï¿½avajuï¿½i razmjere";
+ = "Slika æe biti promijenjena unutar tih granica zadržavajuæi razmjere";
 
 $_m["Other fields"]
  = "Ostala polja";
@@ -227,7 +227,7 @@ $_m["List of other fields to receive this image, separated by ##"]
  = "Lista ostalih polja za primiti tu slikovnu datoteku, razdvojena sa ##";
 
 $_m["User ID = always store current user ID"]
- = "Korisniï¿½ki ID = uvijek sprema trenutni korisniï¿½ki ID";
+ = "Korisnièki ID = uvijek sprema trenutni korisnièki ID";
 
 $_m["Item IDs"]
  = "ID stavki";
@@ -236,7 +236,7 @@ $_m["Now = always store current time"]
  = "Sada = uvijek sprema trenutno vrijeme";
 
 $_m["Inserts the current time, no matter what the user sets."]
- = "Umeï¿½e stvarno trenutno vrijeme";
+ = "Umeæe stvarno trenutno vrijeme";
 
 $_m["Password and Change Password"]
  = "Lozinka i promjena lozinke";
@@ -259,10 +259,10 @@ $_m["Number of days"]
  = "Broj dana";
 
 $_m["User ID"]
- = "Korisniï¿½ki ID";
+ = "Korisnièki ID";
 
 $_m["Now, i.e. current date"]
- = "Sada, sadaï¿½nji datum";
+ = "Sada, sadašnji datum";
 
 $_m["Variable"]
  = "Varijabla";
@@ -271,24 +271,24 @@ $_m["A dangerous function. Do not use."]
  = "Potencijalno opasna funkcija. Nemojte ju koristiti";
 
 $_m["Random string"]
- = "Sluï¿½ajni odabir";
+ = "Sluèajni odabir";
 
 $_m["Random alphanumeric [A-Z0-9] string."]
- = "Brojï¿½ano slovï¿½ani niz [A-Z0-9] sluï¿½ajnog odabira";
+ = "Brojèano slovèani niz [A-Z0-9] sluèajnog odabira";
 
 $_m["Field to check"]
  = "Polje za provjeru";
 
 $_m["If you need a unique code, you must send the field ID,\n"
    ."                  the function will then look into this field to ensure uniqueness."]
- = "Ako ï¿½elite jedinstveni kod, morate poslati ID polja";
+ = "Ako želite jedinstveni kod, morate poslati ID polja";
 
 $_m["Slice only"]
  = "Samo stranica";
 
 $_m["Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"]
- = "Da li ï¿½elite provjeriti jedinstvenost samo za ovu ili za sve stranice";
+ = "Da li želite provjeriti jedinstvenost samo za ovu ili za sve stranice";
 
 $_m["Input Validate Type"]
  = "Unesite tip provjere";
@@ -316,13 +316,13 @@ $_m["Unique = proove uniqueness"]
 
 $_m["Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."]
- = "Provjerava samo da li je ve vrijednost veï¿½ koriï¿½tena";
+ = "Provjerava samo da li je ve vrijednost veæ korištena";
 
 $_m["Field ID"]
  = "ID polja";
 
 $_m["Field in which to look for matching values."]
- = "Polje u kojem moï¿½ete potraï¿½iti zadani vrijednost";
+ = "Polje u kojem možete potražiti zadani vrijednost";
 
 $_m["<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
@@ -349,10 +349,10 @@ $_m["Hierarchical constants"]
  = "Konstante prioriteta";
 
 $_m["A view with level boxes allows to choose constants."]
- = "Prozor sa kuï¿½icama nivoa omoguï¿½ava vam da izaberete konstante";
+ = "Prozor sa kuæicama nivoa omoguæava vam da izaberete konstante";
 
 $_m["Text area with 60 columns"]
- = "Podruï¿½je za tekst sa 60 redova";
+ = "Podruèje za tekst sa 60 redova";
 
 $_m["row count"]
  = "Broj stupaca";
@@ -382,7 +382,7 @@ $_m["A selectbox field with a values list.<br><br>It uses the Constants select b
  = "Polje za izbor sa listom vrijednosti";
 
 $_m["field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"]
- = "Polje ï¿½e biti prikazano u kuï¿½ici izbora";
+ = "Polje æe biti prikazano u kuæici izbora";
 
 $_m["category........"]
  = "Kategorija";
@@ -391,19 +391,19 @@ $_m["use name"]
  = "Koristite ime";
 
 $_m["show all"]
- = "Prikaï¿½i sve";
+ = "Prikaži sve";
 
 $_m["used only for slices - if set (=1), then all items are shown (including expired and pending ones)"]
  = "Koristi se samo za stranice - ako je postavljeno (=1), prikazane su sve stavke";
 
 $_m["Text field with values names list. When you choose a name from the list, the appropriate value is printed in the text field"]
- = "Tekstualno polje sa listom imena vrijednosti. Kada izaberete ime iz liste, bit ï¿½e prikazana odgovarajuï¿½a vrijednost u tekstualnom polju ";
+ = "Tekstualno polje sa listom imena vrijednosti. Kada izaberete ime iz liste, bit æe prikazana odgovarajuæa vrijednost u tekstualnom polju ";
 
 $_m["max count of characteres entered in the text field (maxlength parameter)"]
- = "Najveï¿½i dozvoljeni broj znakova koji se unosi u tekstualno polje";
+ = "Najveæi dozvoljeni broj znakova koji se unosi u tekstualno polje";
 
 $_m["width of the text field in characters (size parameter)"]
- = "ï¿½irina tekstualnog polja u znakovaima (parametar veliï¿½ine)";
+ = "Širina tekstualnog polja u znakovaima (parametar velièine)";
 
 $_m["adding"]
  = "Dodaje";
@@ -418,10 +418,10 @@ $_m["add2constant"]
  = "Dodajte konstantu";
 
 $_m["Text Area with Presets"]
- = "Podruï¿½je za tekst sa pretpostavljenim vrijednostima";
+ = "Podruèje za tekst sa pretpostavljenim vrijednostima";
 
 $_m["Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area"]
- = "Tekstualno podruï¿½je sa listom vrijednosti. Kad izaberete ime iz liste, odgovarajuï¿½a vrijednost je prikazana u tekstualnom polju";
+ = "Tekstualno podruèje sa listom vrijednosti. Kad izaberete ime iz liste, odgovarajuæa vrijednost je prikazana u tekstualnom polju";
 
 $_m["rows"]
  = "Redovi";
@@ -436,34 +436,34 @@ $_m["Text area columns"]
  = "Stupci tekstualnog polja";
 
 $_m["Radio button group - the user may choose one value of the list. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Gumb izbora - moï¿½ete izabrati samo jednu vrijednost";
+ = "Gumb izbora - možete izabrati samo jednu vrijednost";
 
 $_m["you can choose an interval from which the year will be offered"]
- = "Moï¿½ete izabrati interval iz kojeg ï¿½e biti odabrana godina";
+ = "Možete izabrati interval iz kojeg æe biti odabrana godina";
 
 $_m["Checkbox"]
- = "Kuï¿½ica za odabir";
+ = "Kuæica za odabir";
 
 $_m["The field value will be represented by a checkbox."]
- = "Vrijednost polja ï¿½e biti prikazana u kuï¿½ici za izbor";
+ = "Vrijednost polja æe biti prikazana u kuæici za izbor";
 
 $_m["Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Kuï¿½ice za viï¿½estruki izbor";
+ = "Kuæice za višestruki izbor";
 
 $_m["Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
- = "Kuï¿½ice za viï¿½estruki izbor iz ponuï¿½enog";
+ = "Kuæice za višestruki izbor iz ponuðenog";
 
 $_m["File upload - a text field with the file find button"]
- = "Slanje datoteka - tekstualno polje sa gumbom za pronaï¿½i datoteku";
+ = "Slanje datoteka - tekstualno polje sa gumbom za pronaði datoteku";
 
 $_m["image/*"]
  = "Slikovna datoteka";
 
 $_m["List of items connected with the active one - by using the buttons Add and Delete you show a window, where you can search in the items list"]
- = "Lista stavki povezanih sa aktivnom stavkom - koristeï¿½i Dodajte i Obriï¿½ite prikazat ï¿½e se prozor gdje moï¿½ete pretraï¿½ivati listu stavki";
+ = "Lista stavki povezanih sa aktivnom stavkom - koristeæi Dodajte i Obrišite prikazat æe se prozor gdje možete pretraživati listu stavki";
 
 $_m["Defines, which buttons to show in item selection:<br>A - 'Add'<br>M - 'Add Mutual<br>B - 'Backward'.<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."]
- = "Odreï¿½uje koje ï¿½e gumbe prikazati u selektoru stavki";
+ = "Odreðuje koje æe gumbe prikazati u selektoru stavki";
 
 $_m["AMB"]
  = "AMB";
@@ -472,7 +472,7 @@ $_m["Two Windows"]
  = "Dva prozora";
 
 $_m["The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."]
- = "Vrijednost polja ï¿½e biti prikazana kao ;input type='hidden'. ";
+ = "Vrijednost polja æe biti prikazana kao ;input type='hidden'. ";
 
 $_m["Password input boxes allowing to send password (for password-protected items)\n"
    ."        and to change password (including the \"Retype password\" box).<br><br>\n"
@@ -482,19 +482,19 @@ $_m["Password input boxes allowing to send password (for password-protected item
  = "Polja za unos lozinki dozvoljavaju unos i promjenu lozinki";
 
 $_m["Field size"]
- = "Veliï¿½ina polja";
+ = "Velièina polja";
 
 $_m["Size of the three fields"]
- = "Veliï¿½ina 3 polja";
+ = "Velièina 3 polja";
 
 $_m["Replaces the default: Retype New Password"]
- = "Zamjenjuje pretpostavljeno: Upiï¿½ite ponovo novu lozinku";
+ = "Zamjenjuje pretpostavljeno: Upišite ponovo novu lozinku";
 
 $_m["Replaces the default: Delete Password"]
- = "Zamjenjuje pretpostavljeno Obriï¿½ite lozinku";
+ = "Zamjenjuje pretpostavljeno Obrišite lozinku";
 
 $_m["Retype the new password exactly the same as you entered into Change Password."]
- = "Upiï¿½ite istu lozinku kao u Promjenite lozinku.";
+ = "Upišite istu lozinku kao u Promjenite lozinku.";
 
 $_m["This option hides the input field"]
  = "Ova opcija sakriva polje za unos";
@@ -506,16 +506,16 @@ $_m["null function"]
  = "Funkcija nul";
 
 $_m["prints nothing"]
- = "Ne ispisuje niï¿½ta";
+ = "Ne ispisuje ništa";
 
 $_m["abstract"]
- = "Skraï¿½eni tekst";
+ = "Skraæeni tekst";
 
 $_m["prints abstract (if exists) or the beginning of the <b>fulltext</b>"]
- = "Printa skraï¿½eni tekst (ako postoji) na poï¿½etku Punog teksta";
+ = "Printa skraæeni tekst (ako postoji) na poèetku Punog teksta";
 
 $_m["length"]
- = "Duï¿½ina";
+ = "Dužina";
 
 $_m["number of characters from the <b>fulltext</b> field"]
  = "Broj znakova iz polja Puni tekst";
@@ -536,10 +536,10 @@ $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter
  = "Uzmite prvi paragraf";
 
 $_m["extended fulltext link"]
- = "Veza na proï¿½ireni puni tekst";
+ = "Veza na prošireni puni tekst";
 
 $_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>."]
- = "Prikazuje tekst ili sadrï¿½aj polja sa vezom na puni tekst. ";
+ = "Prikazuje tekst ili sadržaj polja sa vezom na puni tekst. ";
 
 $_m["link only"]
  = "Samo veza";
@@ -563,13 +563,13 @@ $_m["redirect"]
  = "preusmjeravanje";
 
 $_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
- = "Web adresa druge stranice koja pokazuje sadrï¿½aj stavke.";
+ = "Web adresa druge stranice koja pokazuje sadržaj stavke.";
 
 $_m["text"]
  = "Tekst";
 
 $_m["The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim"]
- = "Tekst popraï¿½en vezom.";
+ = "Tekst popraæen vezom.";
 
 $_m["condition field"]
  = "Polje uvjeta";
@@ -596,13 +596,13 @@ $_m["condition"]
  = "Uvjet";
 
 $_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
- = "Vrlo snaï¿½na funkcija za razne promjene";
+ = "Vrlo snažna funkcija za razne promjene";
 
 $_m["you may use \"!\" to reverse (negate) the condition"]
- = "Moï¿½ete koristiti \"!\" za poniï¿½tavanje uvjeta";
+ = "Možete koristiti \"!\" za poništavanje uvjeta";
 
 $_m["begin"]
- = "poï¿½etak";
+ = "poèetak";
 
 $_m["text to print before <i>field</i>, if condition is true"]
  = "tekst koi se prikazuje prije <i>field</i>, ako je ispunjen uvjet";
@@ -632,25 +632,25 @@ $_m["field to compare with the <b>condition</b> - if not filled, <i>field</i> is
  = "polje za usporedbu sa <b>condition</b> - ako nije ispunjeno, <i>field</i> se koristi";
 
 $_m["skip_the_field"]
- = "Preskoï¿½ite polje";
+ = "Preskoèite polje";
 
 $_m["if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)"]
  = "Ako je postavljeno na 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)";
 
 $_m["This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content"]
- = "Primjer je upotrebljiv na primjer za isticanje polja - pokazuje Da ili Ne ovisno o sadrï¿½aju polja";
+ = "Primjer je upotrebljiv na primjer za isticanje polja - pokazuje Da ili Ne ovisno o sadržaju polja";
 
 $_m["1:Yes::No::1"]
  = "1:Da::Ne::1";
 
 $_m["When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing"]
- = "Kada je e-mail polje ispunjeno, ispisuje neï¿½to kao \"Email: email@apc.org\", kada je prazno, ne ispisuje niï¿½ta";
+ = "Kada je e-mail polje ispunjeno, ispisuje nešto kao \"Email: email@apc.org\", kada je prazno, ne ispisuje ništa";
 
 $_m["!:Email#:&nbsp;"]
  = "!:E-mail#:&nbsp;";
 
 $_m["Print image height attribute, if <i>the field</i> is filled, nothing otherwise."]
- = "Ispisuje visinu tekstualne datoteke, ako je <i>polje </i> popunjeno, inaï¿½e niï¿½ta";
+ = "Ispisuje visinu tekstualne datoteke, ako je <i>polje </i> popunjeno, inaèe ništa";
 
 $_m["!:height="]
  = "!:visina=";
@@ -659,7 +659,7 @@ $_m["date"]
  = "datum";
 
 $_m["prints date in a user defined format"]
- = "Prikazuje datum u korisniï¿½ki definiranom formatu";
+ = "Prikazuje datum u korisnièki definiranom formatu";
 
 $_m["format"]
  = "format";
@@ -677,67 +677,67 @@ $_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
  = "Uredite stavku na admin stranici";
 
 $_m["disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item"]
- = "Ureï¿½ivanje diskusija";
+ = "Ureðivanje diskusija";
 
 $_m["return url"]
  = "Povratna web adresa";
 
 $_m["Return url being called from, usually leave blank and allow default"]
- = "Povratna web adresa je pozvana sa, obiï¿½no ostavlja prazno i dozvoljava pretpostavljeno";
+ = "Povratna web adresa je pozvana sa, obièno ostavlja prazno i dozvoljava pretpostavljeno";
 
 $_m["/mysite.shtml"]
- = "Vaï¿½a stranica";
+ = "Vaša stranica";
 
 $_m["fulltext link"]
  = "Veza na puni tekst";
 
 $_m["Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\""]
- = "Ispisuje Ime web adres unutar veze na puni tekst - dozvoljava koriï¿½tenje vanjskih stavki. Koristi se odmah nakon\"\\<a href=\"";
+ = "Ispisuje Ime web adres unutar veze na puni tekst - dozvoljava korištenje vanjskih stavki. Koristi se odmah nakon\"\\<a href=\"";
 
 $_m["field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)."]
- = "ID polja (kao 'samo veza') gdje je spremljen preklopnik izmeï¿½u vanjskih i unutarnjih funkcija. Obiï¿½no je to polje prikazano sa kuï¿½icom za oznaï¿½avanje. Ako je oznaï¿½eno, <i>polje</i> se prikazuje, ako nije, prikazuje se veza na puni tekst(ovisi i o <b>preusmjeravanju</b>).";
+ = "ID polja (kao 'samo veza') gdje je spremljen preklopnik izmeðu vanjskih i unutarnjih funkcija. Obièno je to polje prikazano sa kuæicom za oznaèavanje. Ako je oznaèeno, <i>polje</i> se prikazuje, ako nije, prikazuje se veza na puni tekst(ovisi i o <b>preusmjeravanju</b>).";
 
 $_m["image height"]
  = "Visina slikovne datoteke";
 
 $_m["An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". "]
- = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briï¿½e html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguï¿½uje bolji naï¿½in za to sa parametrima \":height=\". ";
+ = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briše html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguèuje bolji naèin za to sa parametrima \":height=\". ";
 
 $_m["print HTML multiple"]
- = "Viï¿½estruki prikaz HTML-a";
+ = "Višestruki prikaz HTML-a";
 
 $_m["prints <i>the field</i> content depending on the html flag (escape html special characters or just print)"]
- = "Prikazuje <i>sadrï¿½aj</i>  polja ovisno o oznaci html (izbjegava posebne znakove ili samo prikaz)";
+ = "Prikazuje <i>sadržaj</i>  polja ovisno o oznaci html (izbjegava posebne znakove ili samo prikaz)";
 
 $_m["delimiter"]
  = "razdjelnik";
 
 $_m["if specified, a field with multiple values is displayed with the values delimited by it"]
- = "Ako je oznaï¿½eno, polje sa viï¿½estrukim vrijednostima se prikazuje sa razdvojenim vrijednostima";
+ = "Ako je oznaèeno, polje sa višestrukim vrijednostima se prikazuje sa razdvojenim vrijednostima";
 
 $_m["image src"]
- = "Izvoriï¿½na slikovna datoteka";
+ = "Izvorišna slikovna datoteka";
 
 $_m["prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. "]
- = "prikazuje <i>polje</i> kao izvoriï¿½nu slikovnu datoteku (\\<img src=...\\>) - NEMA SLIKOVNE DATOTEKE za prazno. Isto moï¿½ete napraviti sa f_c funkcijom sa parametrima  :::NO_PICTURE. ";
+ = "prikazuje <i>polje</i> kao izvorišnu slikovnu datoteku (\\<img src=...\\>) - NEMA SLIKOVNE DATOTEKE za prazno. Isto možete napraviti sa f_c funkcijom sa parametrima  :::NO_PICTURE. ";
 
 $_m["image size"]
- = "Veliï¿½ina slikovne datoteke";
+ = "Velièina slikovne datoteke";
 
 $_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
- = "ispisuje <i>polje</i> kao ï¿½irinu slikovne datoteke(visina='xxx' ï¿½irina='yyy')";
+ = "ispisuje <i>polje</i> kao širinu slikovne datoteke(visina='xxx' širina='yyy')";
 
 $_m["expanded string"]
- = "proï¿½ireni kod";
+ = "prošireni kod";
 
 $_m["expands the string in the parameter"]
- = "proï¿½iruje kod u parametar";
+ = "proširuje kod u parametar";
 
 $_m["string to expand"]
- = "kod za proï¿½iriti";
+ = "kod za proširiti";
 
 $_m["if specified then this string is expanded, if not specified then expands the contents of the field"]
- = "ako je oznaï¿½eno, proï¿½iruje se tekst, ako nije, onda se proï¿½iruje sadrï¿½aj polja";
+ = "ako je oznaèeno, proširuje se tekst, ako nije, onda se proširuje sadržaj polja";
 
 $_m["substring with case change"]
  = "subkod sa promjenom malih u velika slova i obrnuto";
@@ -746,10 +746,10 @@ $_m["prints a part of <i>the field</i>"]
  = "ispisuje dio polja";
 
 $_m["start"]
- = "poï¿½etak";
+ = "poèetak";
 
 $_m["position of substring start (0=first, 1=second, -1=last,-2=two from end)"]
- = "mjesto poï¿½etka subkoda (0=prvi, 1=drugi, -1=zadnji,-2=dva od kraja)";
+ = "mjesto poèetka subkoda (0=prvi, 1=drugi, -1=zadnji,-2=dva od kraja)";
 
 $_m["count"]
  = "izbroji";
@@ -764,7 +764,7 @@ $_m["upper - convert to UPPERCASE, lower - convert to lowercase, first - convert
  = "gore - pretvara u velika slova, dolje - pretvara u mala slova, pretpostavljeno je nema promjene";
 
 $_m["Auto Update Checkbox"]
- = "Automatsko obnavljanje - kuï¿½ica za odabir";
+ = "Automatsko obnavljanje - kuæica za odabir";
 
 $_m["linked field"]
  = "vezano polje";
@@ -788,19 +788,19 @@ $_m["field/text"]
  = "polje/tekst";
 
 $_m["if this parameter is a field id, the field's content is used, else it is used verbatim"]
- = "ako je parametar ID polja, koristi se sadrï¿½aj polja, inaï¿½e se koristi verbatim";
+ = "ako je parametar ID polja, koristi se sadržaj polja, inaæe se koristi verbatim";
 
 $_m["else_field/text"]
- = "polje drugaï¿½ije vrijednosti/tekst";
+ = "polje drugaèije vrijednosti/tekst";
 
 $_m["if <i>the field</i> is empty, only this text (or field content) is printed"]
- = "ako je <i>polje</i>prazno, samo ovaj tekst (ili sadrï¿½aj polja) se prikazuje";
+ = "ako je <i>polje</i>prazno, samo ovaj tekst (ili sadržaj polja) se prikazuje";
 
 $_m["linktype"]
  = "tip veze";
 
 $_m["mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter"]
- = "mailto / href (pretpostavljeno je mailto) - moguï¿½e je koristiti f_m funkciju za veze - samo upiï¿½ite 'href' kao parametar";
+ = "mailto / href (pretpostavljeno je mailto) - moguæe je koristiti f_m funkciju za veze - samo upišite 'href' kao parametar";
 
 $_m["href"]
  = "href";
@@ -809,7 +809,7 @@ $_m["'New' sign"]
  = "'Novo' znak";
 
 $_m["prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."]
- = "ispisuje 'Novo' ili 'Staro' ili bilo koji tekst u <b>noviji tekst</b> ili <b>stariji tekst</b> ovisno o <b>vremenu</b>. Vrijeme je izraï¿½eno u minutama od trenutnog vremena";
+ = "ispisuje 'Novo' ili 'Staro' ili bilo koji tekst u <b>noviji tekst</b> ili <b>stariji tekst</b> ovisno o <b>vremenu</b>. Vrijeme je izraženo u minutama od trenutnog vremena";
 
 $_m["time"]
  = "vrijeme";
@@ -839,19 +839,19 @@ $_m["id"]
  = "ID";
 
 $_m["prints unpacked id (use it, if you watn to show 'item id' or 'slice id')"]
- = "prikazuje raspakirani ID (koristite ga, ako ï¿½elite prikazati'ID stavke' ili 'ID stranice')";
+ = "prikazuje raspakirani ID (koristite ga, ako želite prikazati'ID stavke' ili 'ID stranice')";
 
 $_m["text (blurb) from another slice"]
  = "tekst (blurb) sa druge stranice";
 
 $_m["prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."]
- = "ispisuje 'blurb' (dio teksta) sa druge stranice, baziran najednostavnom uvjetu.<br>Ako je <i>polje</i> (ili polje oznaï¿½eno kao <b>traï¿½eni tekst</b>) u trenutnoj stranici se poklapa sa sadrï¿½ajem <b>traï¿½enog polja</b> u <b>blurbSliceId</b>, vraï¿½a sadrï¿½aj <b>fieldToReturn</b> u<b>blurbSliceID</b>.";
+ = "ispisuje 'blurb' (dio teksta) sa druge stranice, baziran najednostavnom uvjetu.<br>Ako je <i>polje</i> (ili polje oznaèeno kao <b>traženi tekst</b>) u trenutnoj stranici se poklapa sa sadržajem <b>traženog polja</b> u <b>blurbSliceId</b>, vraæa sadržaj <b>fieldToReturn</b> u<b>blurbSliceID</b>.";
 
 $_m["stringToMatch"]
- = "Traï¿½eni tekst";
+ = "Traženi tekst";
 
 $_m["By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text."]
- = "Pretpostavljeno je <i>polje</i>. Moï¿½e biti oblikovano ili kao ID polja(zaglavlje..........) ILI kao statiï¿½ki tekst ";
+ = "Pretpostavljeno je <i>polje</i>. Može biti oblikovano ili kao ID polja(zaglavlje..........) ILI kao statièki tekst ";
 
 $_m["blurbSliceId"]
  = "ID blurb stranice";
@@ -860,10 +860,10 @@ $_m["unpacked slice id of the slice where the blurb text is stored"]
  = "raspakirani ID stranice gdje je spremljen blurb tekst";
 
 $_m["fieldToMatch"]
- = "traï¿½eno polje";
+ = "traženo polje";
 
 $_m["field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>"]
- = "ID polja od polja u <b>ID blurb stranice</b> gdje ï¿½ete traï¿½iti <b>odgovarajuï¿½i podatak</b>";
+ = "ID polja od polja u <b>ID blurb stranice</b> gdje æete tražiti <b>odgovarajuæi podatak</b>";
 
 $_m["headline........"]
  = "zaglavlje............";
@@ -872,31 +872,31 @@ $_m["fieldToReturn"]
  = "polje za povratak";
 
 $_m["field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)"]
- = "ID polja u polju <b>blurbSliceId</b> gdje je spremljen blurb tekst (ï¿½to se ispisuje)";
+ = "ID polja u polju <b>blurbSliceId</b> gdje je spremljen blurb tekst (što se ispisuje)";
 
 $_m["RSS tag"]
  = "RSS kod";
 
 $_m["serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags."]
- = "sluï¿½i za internu uporabu predefiniranih RSS sinonima (npr. _#RSS_TITL). Dodaje RSS 0.91 kompatibilan kod";
+ = "služi za internu uporabu predefiniranih RSS sinonima (npr. _#RSS_TITL). Dodaje RSS 0.91 kompatibilan kod";
 
 $_m["default"]
  = "pretpostavljeno";
 
 $_m["prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>."]
- = "ispisuje<i>polje</i> ili pretpostavljenui vrijednost ako je <i>polje</i> prazno. Isto moï¿½ete napraviti sa  f_c funkcijom  sa parametrima :::<b>pretpostavljeno</b>.";
+ = "ispisuje<i>polje</i> ili pretpostavljenui vrijednost ako je <i>polje</i> prazno. Isto možete napraviti sa  f_c funkcijom  sa parametrima :::<b>pretpostavljeno</b>.";
 
 $_m["default value"]
  = "pretpostavljena vrijednost";
 
 $_m["javascript: window.alert('No source url specified')"]
- = "javascript: window.alert('Nije odreï¿½en izvor datoteke')";
+ = "javascript: window.alert('Nije odreðen izvor datoteke')";
 
 $_m["print HTML"]
  = "ispisuje HTML";
 
 $_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
- = "ispisuje <i>sadrï¿½aj</i> polja (ili <i>unalias string</i>) ovisno o html oznaci.)";
+ = "ispisuje <i>sadržaj</i> polja (ili <i>unalias string</i>) ovisno o html oznaci.)";
 
 $_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
  = "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>";
@@ -908,7 +908,7 @@ $_m["Allows to transform the field value to another value.<br>Usage: <b>content_
  = "Dozvoljava pretvorbu vrijednosti polja u drugu vrijednost.";
 
 $_m["content"]
- = "sadrï¿½aj";
+ = "sadržaj";
 
 $_m["string for comparison with <i>the field</i> for following return value"]
  = "tekst za usporedbu sa <i>poljem</i> za ovu povratnu vrijednost";
@@ -917,19 +917,19 @@ $_m["return value"]
  = "povratna vrijednost";
 
 $_m["string to return if previous content matches - You can use field_id too"]
- = "tekst koji se ispisuje ako se prethodni sadrï¿½aj poklapa s upitom - moï¿½ete koristiti i ID polja takoï¿½er";
+ = "tekst koji se ispisuje ako se prethodni sadržaj poklapa s upitom - možete koristiti i ID polja takoðer";
 
 $_m["Environment"]
- = "Okruï¿½je";
+ = "Okružje";
 
 $_m["if no content matches, use this string as return value"]
- = "Ako nema sadrï¿½aja koji odgovara upitu, koristi ovaj redak kao povratnu vrijednost";
+ = "Ako nema sadržaja koji odgovara upitu, koristi ovaj redak kao povratnu vrijednost";
 
 $_m["user function"]
- = "korisniï¿½ka funkcija";
+ = "korisnièka funkcija";
 
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
- = "korisniï¿½ki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
+ = "korisnièki defainirana funkcija (pogledajte kakao kreirati nove sinonime na <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
 
 $_m["function"]
  = "funkcija";
@@ -944,19 +944,19 @@ $_m["a parameter passed to the function"]
  = "parametar poslan funkciji";
 
 $_m["complex parameter"]
- = "Sloï¿½eni parametar";
+ = "Složeni parametar";
 
 $_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
- = "ovaj parametar je isti kao onaj koji se koristi u parametrima od view.php3 - pogledajte ï¿½esto postavljana pitanja";
+ = "ovaj parametar je isti kao onaj koji se koristi u parametrima od view.php3 - pogledajte èesto postavljana pitanja";
 
 $_m["image width"]
- = "ï¿½irina slikovne datoteke";
+ = "Širina slikovne datoteke";
 
 $_m["An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "]
- = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briï¿½e html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguï¿½uje bolji naï¿½in za to sa parametrima \":height=\". ";
+ = "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briše html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omoguèuje bolji naèin za to sa parametrima \":height=\". ";
 
 $_m["Existing remote imports into the slice "]
- = "Postojeï¿½i uvozi u stranice";
+ = "Postojeèi uvozi u stranice";
 
 $_m["Cannot open output file:"]
  = "Ne mogu otvoriti izlaznu datoteku";
@@ -968,7 +968,7 @@ $_m["Cannot write to file"]
  = "Ne mogu pistai u datoteku";
 
 $_m["Settings"]
- = "Podeï¿½avanje";
+ = "Podešavanje";
 
 $_m["You did not permit anonymous editing in slice settings. A form\n"
    ."        allowing only anonymous posting will be shown."]
@@ -984,10 +984,10 @@ $_m["Where are these constants used?"]
  = "Gdje se koriste te konstante";
 
 $_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
- = "Jeste li sigurni da ï¿½elite ZAUVIJEK IZBRISATI ovu grupu? Upiï¿½ite yes ili no";
+ = "Jeste li sigurni da želite ZAUVIJEK IZBRISATI ovu grupu? Upišite yes ili no";
 
 $_m["Admin - User Management"]
- = "Admin - Ureï¿½ivanje korisnika / ica";
+ = "Admin - Ureðivanje korisnika / ica";
 
 $_m["inserted"]
  = "Dodano";
@@ -1002,7 +1002,7 @@ $_m["Ok: Item "]
  = "Stavka";
 
 $_m["If the item id is already in the slice:"]
- = "Ako je ID stavke veï¿½ na stranici";
+ = "Ako je ID stavke veæ na stranici";
 
 $_m["Update the item"]
  = "Obnovite stavku";
@@ -1016,10 +1016,10 @@ $_m["Alias for comment ID<br>\n"
  = "Sinonim za komentar";
 
 $_m["ALIASES used in views to print field content"]
- = "Sinonimi koriï¿½teni u pregledu";
+ = "Sinonimi korišteni u pregledu";
 
 $_m["preset \"Search\" in Itme Manager"]
- = "Originalna postavka\"Pretraï¿½ite";
+ = "Originalna postavka\"Pretražite";
 
 $_m["preset \"Order\" in Itme Manager"]
  = "Originalna postavka\\Redoslijed";
@@ -1028,25 +1028,25 @@ $_m["Remove"]
  = "Makni";
 
 $_m["you should use a-z, A-Z and 0-9 characters"]
- = "Moï¿½ete koristiti a-z, A-Z i 0-9 znakove";
+ = "Možete koristiti a-z, A-Z i 0-9 znakove";
 
 $_m["it must by 5 - 32 characters long"]
- = "Mora biti dugaï¿½ka 5-32 znaka";
+ = "Mora biti dugaèka 5-32 znaka";
 
 $_m["only 0-9 A-Z a-z . _ and - are allowed"]
  = "Dozvoljeni su samo 0-9 A-Z a-z . _ i - ";
 
 $_m["Error in parameters for UNIQUE validation: field ID is not 16 but %1 chars long: "]
- = "Greï¿½ka u parametrima za UNIQUE provjeru: ID polja nije 16 nego %1 znakova";
+ = "Greška u parametrima za UNIQUE provjeru: ID polja nije 16 nego %1 znakova";
 
 $_m["this value is already used, choose another one"]
- = "Vrijednost je iskoriï¿½tena, izaberite neku drugu";
+ = "Vrijednost je iskorištena, izaberite neku drugu";
 
 $_m["Switch to:"]
  = "Prebacite se na";
 
 $_m["No module flagged for deletion."]
- = "Nema modula oznaï¿½enog za brisanje";
+ = "Nema modula oznaèenog za brisanje";
 
 $_m["Params"]
  = "Postavke";
@@ -1058,7 +1058,7 @@ $_m["Params"]
 // include/loginform.inc, row 70
 // include/init_page.php3, row 131
 $_m["Either your username or your password is not valid."]
- = "Krivo korisniï¿½ko ime ili lozinka";
+ = "Krivo korisnièko ime ili lozinka";
 
 // ./diff.diff, row 128, 153
 // include/formutil.php3, row 3109
@@ -1095,13 +1095,13 @@ $_m["To create the new Slice, please choose a template.\n"
    ."        The new slice will inherit the template's default fields.  \n"
    ."        You can also choose a non-template slice to base the new slice on, \n"
    ."        if it has the fields you want."]
- = "Izaberite predloï¿½ak za novu stranicu";
+ = "Izaberite predložak za novu stranicu";
 
 // ./diff.diff, row 1099
 // admin/slicedit.php3, row 167
 // include/sliceadd.php3, row 65
 $_m["Template"]
- = "Predloï¿½ak";
+ = "Predložak";
 
 // ./diff.diff, row 1102
 // admin/um_uedit.php3, row 333
@@ -1120,7 +1120,7 @@ $_m["Add"]
 // ./diff.diff, row 1107
 // include/sliceadd.php3, row 79
 $_m["No templates"]
- = "Nema predloï¿½ka";
+ = "Nema predloška";
 
 // ./filldisc.php3, row 89, 110
 // ./filler.php3, row 301
@@ -1158,7 +1158,7 @@ $_m["You are not allowed to update this item."]
 
 // ./filler.php3, row 390
 $_m["Some error in store item."]
- = "Greï¿½ka.";
+ = "Greška.";
 
 // ./offline.php3, row 116
 $_m["You don't have permission to fill this slice off-line"]
@@ -1166,7 +1166,7 @@ $_m["You don't have permission to fill this slice off-line"]
 
 // ./offline.php3, row 138
 $_m["Duplicated item send - skipped"]
- = "Pokuï¿½aj dvostrukog slanja";
+ = "Pokušaj dvostrukog slanja";
 
 // ./offline.php3, row 141
 $_m["Wrong data (WDDX packet)"]
@@ -1178,11 +1178,11 @@ $_m["Item OK - stored in database"]
 
 // ./offline.php3, row 152
 $_m["Now you can dalete local file. "]
- = "Sada moï¿½ete obrisati lokalnu datoteku";
+ = "Sada možete obrisati lokalnu datoteku";
 
 // ./offline.php3, row 153
 $_m[" Delete "]
- = "Obriï¿½ite";
+ = "Obrišite";
 
 // ./sql_update.php3, row 1543
 $_m["Database checkers"]
@@ -1231,30 +1231,30 @@ $_m["No permission to create new user"]
 // admin/se_users_add.php3, row 119
 // include/um_gsrch.php3, row 31
 $_m["Too many users or groups found."]
- = "Pronaï¿½eno prteviï¿½e korisnika ili grupa";
+ = "Pronaðeno prteviše korisnika ili grupa";
 
 // admin/um_uedit.php3, row 71, 86
 // admin/um_gedit.php3, row 75
 // admin/se_users_add.php3, row 121
 // include/um_gsrch.php3, row 34
 $_m["No user (group) found"]
- = "Nije pronaï¿½en korisnik ili grupa";
+ = "Nije pronaðen korisnik ili grupa";
 
 // admin/um_uedit.php3, row 77, 80, 96
 // admin/um_gedit.php3, row 68
 $_m["Too much groups found."]
- = "Pronaï¿½eno previï¿½e grupa";
+ = "Pronaðeno previše grupa";
 
 // admin/um_uedit.php3, row 77, 80
 // admin/um_gedit.php3, row 68
 $_m["No groups found"]
- = "Nema pronaï¿½enih grupa";
+ = "Nema pronaðenih grupa";
 
 // admin/um_uedit.php3, row 151
 // admin/se_newuser.php3, row 83
 // include/um_util.php3, row 358
 $_m["User successfully added to permission system"]
- = "Korisnik-ica je uspjeï¿½no dodan-  u sistem dozvola";
+ = "Korisnik-ica je uspješno dodan-  u sistem dozvola";
 
 // admin/um_uedit.php3, row 151
 // admin/um_passwd.php3, row 65
@@ -1263,7 +1263,7 @@ $_m["User data modified"]
 
 // admin/um_uedit.php3, row 161
 $_m["User management - Users"]
- = "Ureï¿½ivanje podataka o korisnicima";
+ = "Ureðivanje podataka o korisnicima";
 
 // admin/um_uedit.php3, row 171
 $_m["Are you sure you want to delete selected user from whole permission system?"]
@@ -1295,7 +1295,7 @@ $_m["Users"]
 // include/tabledit.php3, row 574
 // include/searchbar.class.php3, row 553, 616
 $_m["Search"]
- = "Traï¿½i";
+ = "Traži";
 
 // admin/um_uedit.php3, row 237
 // admin/aarsstest.php3, row 154
@@ -1320,7 +1320,7 @@ $_m["User"]
 // include/profile.php3, row 69
 // include/menu_aa.php3, row 41
 $_m["Delete"]
- = "Obriï¿½ite";
+ = "Obrišite";
 
 // admin/um_uedit.php3, row 289, 293
 // admin/um_passwd.php3, row 104
@@ -1329,7 +1329,7 @@ $_m["Delete"]
 // admin/setup.php3, row 101, 237
 // include/um_util.php3, row 310
 $_m["Login name"]
- = "Korisniï¿½ko ime";
+ = "Korisnièko ime";
 
 // admin/um_uedit.php3, row 290
 // admin/um_passwd.php3, row 105
@@ -1358,7 +1358,7 @@ $_m["Password"]
 // admin/slicewiz.php3, row 84
 // include/um_util.php3, row 316
 $_m["Retype password"]
- = "Ponovo upiï¿½ite lozinku";
+ = "Ponovo upišite lozinku";
 
 // admin/um_uedit.php3, row 297
 // admin/um_passwd.php3, row 109
@@ -1390,7 +1390,7 @@ $_m["E-mail"]
 // admin/um_uedit.php3, row 302
 // admin/setup.php3, row 96
 $_m["Superadmin account"]
- = "Raï¿½un superadmina";
+ = "Raèun superadmina";
 
 // admin/um_uedit.php3, row 308
 // admin/um_gedit.php3, row 162
@@ -1406,7 +1406,7 @@ $_m["All Groups"]
 
 // admin/um_uedit.php3, row 312
 $_m["User's Groups"]
- = "Korisniï¿½ke grupe";
+ = "Korisnièke grupe";
 
 // admin/se_inter_import2.php3, row 34
 // admin/se_mapping.php3, row 36
@@ -1432,11 +1432,11 @@ $_m["No slices available. You have not permissions to import any data of that no
 
 // admin/se_inter_import2.php3, row 58
 $_m["Invalid password for the node name:"]
- = "Kriva lozinka za ï¿½vor";
+ = "Kriva lozinka za èvor";
 
 // admin/se_inter_import2.php3, row 58
 $_m["Contact the administrator of the local node."]
- = "Kontaktirajte administratora lokalnog ï¿½vora";
+ = "Kontaktirajte administratora lokalnog èvora";
 
 // admin/se_inter_import2.php3, row 59
 $_m["Remote server returns following error:"]
@@ -1445,7 +1445,7 @@ $_m["Remote server returns following error:"]
 // admin/se_inter_import2.php3, row 77, 85
 // admin/se_inter_import.php3, row 84, 126
 $_m["Inter node import settings"]
- = "Postavke uvoza unutranjeg ï¿½vora";
+ = "Postavke uvoza unutranjeg èvora";
 
 // admin/se_inter_import2.php3, row 89
 $_m["Choose slice"]
@@ -1453,7 +1453,7 @@ $_m["Choose slice"]
 
 // admin/se_inter_import2.php3, row 98
 $_m["List of available slices from the node "]
- = "Lista dostupnih stranica iz ï¿½vora";
+ = "Lista dostupnih stranica iz èvora";
 
 // admin/se_inter_import2.php3, row 99
 $_m["Slice to import"]
@@ -1488,11 +1488,11 @@ $_m["Before HTML code"]
 
 // admin/se_inputform.php3, row 117, 434
 $_m["Help for this field"]
- = "Pomoï¿½ za polje";
+ = "Pomoæ za polje";
 
 // admin/se_inputform.php3, row 118, 440
 $_m["More help"]
- = "Dodatna pomoï¿½";
+ = "Dodatna pomoæ";
 
 // admin/se_inputform.php3, row 119, 379
 // admin/se_admin.php3, row 138
@@ -1521,7 +1521,7 @@ $_m["Function"]
 // admin/se_inputform.php3, row 200
 // admin/se_fields.php3, row 188
 $_m["Fields update successful"]
- = "Polja uspjeï¿½no promijenjena";
+ = "Polja uspješno promijenjena";
 
 // admin/se_inputform.php3, row 290, 323
 // admin/se_fields.php3, row 210, 226
@@ -1534,7 +1534,7 @@ $_m["You selected slice and not constant group. It is unpossible to change slice
 
 // admin/se_inputform.php3, row 326
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
- = "UPOZORENJE: Ne mijenjajte ove postavke ako niste sigurni ï¿½to radite";
+ = "UPOZORENJE: Ne mijenjajte ove postavke ako niste sigurni što radite";
 
 // admin/se_inputform.php3, row 336
 $_m["Field properties"]
@@ -1546,7 +1546,7 @@ $_m["Input type"]
 
 // admin/se_inputform.php3, row 352
 $_m["Input field type in Add / Edit item."]
- = "Tip polja za unos u dodajte obriï¿½ite stavci";
+ = "Tip polja za unos u dodajte obrišite stavci";
 
 // admin/se_inputform.php3, row 355
 // admin/se_constant_import.php3, row 58, 113, 122
@@ -1569,7 +1569,7 @@ $_m["Parameters"]
 // admin/se_inputform.php3, row 373, 390, 403, 419, 474
 // admin/se_csv_import2.php3, row 375
 $_m["Help: Parameter Wizard"]
- = "Pomoï¿½: ï¿½arobnjak za postavke";
+ = "Pomoæ: èarobnjak za postavke";
 
 // admin/se_inputform.php3, row 386
 $_m["How to generate the default value"]
@@ -1600,11 +1600,11 @@ $_m["Insert"]
 
 // admin/se_inputform.php3, row 415
 $_m["Defines how value is stored in database."]
- = "Odreï¿½uje kako su vrijednosti spremljene u bazu";
+ = "Odreðuje kako su vrijednosti spremljene u bazu";
 
 // admin/se_inputform.php3, row 428
 $_m["Show 'HTML' / 'plain text' option"]
- = "Priakaz HTML ili obiï¿½an tekst";
+ = "Priakaz HTML ili obièan tekst";
 
 // admin/se_inputform.php3, row 430
 $_m["'HTML' as default"]
@@ -1612,7 +1612,7 @@ $_m["'HTML' as default"]
 
 // admin/se_inputform.php3, row 436
 $_m["Shown help for this field"]
- = "Prikaz pomoï¿½i za ovo polje";
+ = "Prikaz pomoæi za ovo polje";
 
 // admin/se_inputform.php3, row 442
 $_m["Text shown after user click on '?' in input form"]
@@ -1628,7 +1628,7 @@ $_m["Feeding mode"]
 
 // admin/se_inputform.php3, row 456
 $_m["Should the content of this field be copied to another slice if it is fed?"]
- = "Da li da sadrï¿½aj ovog polja bude kopiran u drugu stranicu?";
+ = "Da li da sadržaj ovog polja bude kopiran u drugu stranicu?";
 
 // admin/se_inputform.php3, row 459
 $_m["ALIASES used in views to print field content (%1)"]
@@ -1646,7 +1646,7 @@ $_m["_# + 8 UPPERCASE letters or _"]
 // include/um_gedit.php3, row 32
 // include/tv_email.php3, row 107, 166
 $_m["Description"]
- = "Objaï¿½njenje";
+ = "Objašnjenje";
 
 // admin/sliceexp.php3, row 44
 // admin/sliceimp.php3, row 41
@@ -1659,7 +1659,7 @@ $_m["Export slice structure"]
 
 // admin/sliceexp.php3, row 99, 104
 $_m["Date export error"]
- = "Greï¿½ka u datumu izvoza";
+ = "Greška u datumu izvoza";
 
 // admin/sliceexp.php3, row 113
 $_m["The identificator should be 16 characters long, not "]
@@ -1667,11 +1667,11 @@ $_m["The identificator should be 16 characters long, not "]
 
 // admin/sliceexp.php3, row 129
 $_m["You must select one or more slices to backup"]
- = "Morate izabrati jednu ili viï¿½e stranica za sigurnosnu kopiju";
+ = "Morate izabrati jednu ili više stranica za sigurnosnu kopiju";
 
 // admin/sliceexp.php3, row 167
 $_m["Choose, if you want export slices structure, data or both."]
- = "Izaberite, ako ï¿½eliete izvesti strukturu stranica ili podatke";
+ = "Izaberite, ako želiete izvesti strukturu stranica ili podatke";
 
 // admin/sliceexp.php3, row 168
 $_m["Export structure"]
@@ -1728,11 +1728,11 @@ $_m["Select slices which you WANT to export:"]
 
 // admin/sliceexp.php3, row 211
 $_m["When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator."]
- = "Kada izvozite u drugu AA bit ï¿½e izvezena samo trenutna stranica";
+ = "Kada izvozite u drugu AA bit æe izvezena samo trenutna stranica";
 
 // admin/sliceexp.php3, row 212
 $_m["Choose a new slice identificator exactly 16 characters long: "]
- = "Izaberite novu oznaku stranice dugaï¿½ku toï¿½no 16 znakova";
+ = "Izaberite novu oznaku stranice dugaèku toèno 16 znakova";
 
 // admin/sliceexp.php3, row 218
 // admin/sliceexp_text.php3, row 106, 204, 211, 229, 239
@@ -1745,7 +1745,7 @@ $_m["Export to another ActionApps"]
 
 // admin/constants_sel.php3, row 51
 $_m["Editor window - item manager"]
- = "Ureï¿½ivanje stavki";
+ = "Ureðivanje stavki";
 
 // admin/constants_sel.php3, row 51
 $_m["select constants window"]
@@ -1793,31 +1793,31 @@ $_m["Remove strings"]
 // admin/se_admin.php3, row 60, 156
 // include/constants.php3, row 540, 560, 640, 663, 690, 721, 752, 780, 812, 844
 $_m["HTML code for \"No item found\" message"]
- = "HTML kod za \"Stavka nije pronaï¿½ena\" poruku";
+ = "HTML kod za \"Stavka nije pronaðena\" poruku";
 
 // admin/se_admin.php3, row 61
 // admin/se_fulltext.php3, row 59, 154
 $_m["Show discussion"]
- = "Pokaï¿½ite raspravu";
+ = "Pokažite raspravu";
 
 // admin/se_admin.php3, row 74
 // admin/se_compact.php3, row 92
 // admin/se_fulltext.php3, row 77
 // admin/se_view.php3, row 134, 259
 $_m["Can't change slice settings"]
- = "Nije moguï¿½e promjeniti postavke stranice";
+ = "Nije moguæe promjeniti postavke stranice";
 
 // admin/se_admin.php3, row 89
 $_m["Admin fields update successful"]
- = "Administracijska polja uspjeï¿½no obnovljena";
+ = "Administracijska polja uspješno obnovljena";
 
 // admin/se_admin.php3, row 115, 132
 $_m["Admin - design Item Manager view"]
- = "Ureï¿½ivanje stavki";
+ = "Ureðivanje stavki";
 
 // admin/se_admin.php3, row 143
 $_m["Listing of items in Admin interface"]
- = "Izlist stavki u admin suï¿½elju";
+ = "Izlist stavki u admin suèelju";
 
 // admin/se_admin.php3, row 146
 // admin/se_compact.php3, row 201, 225
@@ -1842,7 +1842,7 @@ $_m["HTML code which appears at the bottom of slice area"]
 // admin/se_compact.php3, row 234
 // admin/se_fulltext.php3, row 153
 $_m["Removes empty brackets etc. Use ## as delimiter."]
- = "Uklanja prazne zagrade. Koristite ## kao odjeljivaï¿½";
+ = "Uklanja prazne zagrade. Koristite ## kao odjeljivaè";
 
 // admin/se_admin.php3, row 157
 $_m["Code to be printed when no item is filled (or user have no permission to any item in the slice)"]
@@ -1858,7 +1858,7 @@ $_m["You can set special view - template for the Inputform on \"Design\" -> \"Vi
 
 // admin/sliceexp_text.php3, row 108
 $_m["Wrong slice ID length: "]
- = "Pogreï¿½na duï¿½ina ID-a stranice";
+ = "Pogrešna dužina ID-a stranice";
 
 // admin/sliceexp_text.php3, row 200
 $_m["Can't create temporary file."]
@@ -1866,11 +1866,11 @@ $_m["Can't create temporary file."]
 
 // admin/sliceexp_text.php3, row 231
 $_m["Wrong slice ID length:"]
- = "Pogreï¿½na duï¿½ina ID-a stranice";
+ = "Pogrešna dužina ID-a stranice";
 
 // admin/sliceexp_text.php3, row 308
 $_m["Save this text. You may use it to import the slices into any ActionApps:"]
- = "Spremite ovaj tekst. Moï¿½te ga iskoristiti za uvoz stranica u bilo koju ActionApps";
+ = "Spremite ovaj tekst. Možte ga iskoristiti za uvoz stranica u bilo koju ActionApps";
 
 // admin/se_mapping.php3, row 93
 // admin/se_filters.php3, row 75
@@ -1890,7 +1890,7 @@ $_m["-- Value --"]
 // admin/se_mapping.php3, row 117, 117, 233
 // admin/se_mapping2.php3, row 70
 $_m["-- Joined fields --"]
- = "Zdruï¿½ena polja";
+ = "Združena polja";
 
 // admin/se_mapping.php3, row 118, 118, 244
 // admin/se_mapping2.php3, row 73
@@ -1899,11 +1899,11 @@ $_m["-- RSS field or expr --"]
 
 // admin/se_mapping.php3, row 139, 192
 $_m["Admin - Content Pooling - Fields' Mapping"]
- = "Administriranje sadrï¿½aja - oznaï¿½avanje polja";
+ = "Administriranje sadržaja - oznaèavanje polja";
 
 // admin/se_mapping.php3, row 206
 $_m["Content Pooling - Fields' mapping"]
- = "Sadrï¿½aj - mapiranje polja";
+ = "Sadržaj - mapiranje polja";
 
 // admin/se_mapping.php3, row 209
 $_m["Mapping from slice"]
@@ -1939,7 +1939,7 @@ $_m["Value"]
 // admin/se_javascript.php3, row 63, 70
 // include/menu.php3, row 166
 $_m["Field Triggers"]
- = "Okidaï¿½i polja";
+ = "Okidaèi polja";
 
 // admin/se_javascript.php3, row 76
 $_m["JavaScript for fields"]
@@ -1959,15 +1959,15 @@ $_m["Field IDs"]
 
 // admin/se_javascript.php3, row 102
 $_m["Triggers"]
- = "Okidaï¿½i";
+ = "Okidaèi";
 
 // admin/se_javascript.php3, row 103
 $_m["Write trigger functions like"]
- = "Upiï¿½ite okidaï¿½ke funkcije kao";
+ = "Upišite okidaèke funkcije kao";
 
 // admin/se_javascript.php3, row 103
 $_m["see FAQ</a> for more details and examples"]
- = "pogledajte FAQ za viï¿½e detalja i primjera";
+ = "pogledajte FAQ za više detalja i primjera";
 
 // admin/se_javascript.php3, row 105
 $_m["Field Type"]
@@ -1975,12 +1975,12 @@ $_m["Field Type"]
 
 // admin/se_javascript.php3, row 105
 $_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
- = "Dostupni okidaï¿½i -- pogledajte java scripte";
+ = "Dostupni okidaèi -- pogledajte java scripte";
 
 // admin/se_profile.php3, row 42
 // admin/se_users.php3, row 38
 $_m["You have not permissions to manage users"]
- = "Nemate dozvolu za ureï¿½ivanje korisniï¿½kih podataka";
+ = "Nemate dozvolu za ureðivanje korisnièkih podataka";
 
 // admin/se_profile.php3, row 57
 // include/profile.class.php3, row 303
@@ -1989,7 +1989,7 @@ $_m["Rule deleted"]
 
 // admin/se_profile.php3, row 62
 $_m["Error: Can't add rule"]
- = "Greï¿½ka: Ne mogu dodati pravilo";
+ = "Greška: Ne mogu dodati pravilo";
 
 // admin/se_profile.php3, row 82
 $_m["Item number"]
@@ -2298,7 +2298,7 @@ $_m["Superadmin Role"]
 
 // admin/se_profile.php3, row 230
 $_m["number of item displayed in Item Manager"]
- = "Broj stavki prikazanih u Ureï¿½ivaï¿½u stavki";
+ = "Broj stavki prikazanih u Ureðivaèu stavki";
 
 // admin/se_profile.php3, row 231
 $_m["id of view used for item input"]
@@ -2322,11 +2322,11 @@ $_m["hide the field in inputform"]
 
 // admin/se_profile.php3, row 236
 $_m["hide the field in inputform and fill it by the value"]
- = "Sakrijte poljeu Obrascu za upis i ispunite ga vrijednoï¿½ï¿½u";
+ = "Sakrijte poljeu Obrascu za upis i ispunite ga vrijednošæu";
 
 // admin/se_profile.php3, row 237
 $_m["fill the field in inputform by the value"]
- = "Popunite polje u Obrascu za upis vrijednoï¿½ï¿½u";
+ = "Popunite polje u Obrascu za upis vrijednošæu";
 
 // admin/se_profile.php3, row 238
 $_m["predefine value of the field in inputform"]
@@ -2381,7 +2381,7 @@ $_m["Change current permisions"]
 
 // admin/se_users.php3, row 172
 $_m["Default user profile"]
- = "Pretpostavljeni korisniï¿½ki profil";
+ = "Pretpostavljeni korisnièki profil";
 
 // admin/tabledit.php3, row 63
 // admin/aarsstest.php3, row 38
@@ -2400,11 +2400,11 @@ $_m["First set Mailman Lists Field in Slice Settings."]
 
 // admin/mailman_create_list.php3, row 97
 $_m["Error: This list name is already used."]
- = "Greï¿½ka: postojeï¿½e ime liste";
+ = "Greška: postojeæe ime liste";
 
 // admin/mailman_create_list.php3, row 129
 $_m["The list was successfully created."]
- = "Lista je uspjeï¿½no kreirana";
+ = "Lista je uspješno kreirana";
 
 // admin/mailman_create_list.php3, row 150
 $_m["List Settings"]
@@ -2413,7 +2413,7 @@ $_m["List Settings"]
 // admin/mailman_create_list.php3, row 152
 $_m["The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."]
- = "Lista ï¿½e biti dodana u mailman";
+ = "Lista æe biti dodana u mailman";
 
 // admin/mailman_create_list.php3, row 153
 $_m["All the fields are required."]
@@ -2540,7 +2540,7 @@ $_m["yes"]
 // admin/se_rssfeeds.php3, row 205
 // admin/anonym_wizard.php3, row 103
 $_m["Send"]
- = "Poï¿½aljite";
+ = "Pošaljite";
 
 // admin/write_mail.php3, row 154
 // admin/search_replace.php3, row 768
@@ -2550,7 +2550,7 @@ $_m["Close"]
 
 // admin/se_inter_export.php3, row 70, 102, 110
 $_m["Inter node export settings"]
- = "Unesite postavku ï¿½vora za izvoz";
+ = "Unesite postavku èvora za izvoz";
 
 // admin/se_inter_export.php3, row 84
 $_m["No selected export"]
@@ -2562,7 +2562,7 @@ $_m["Are you sure you want to delete the export?"]
 
 // admin/se_inter_export.php3, row 112
 $_m["Existing exports of the slice "]
- = "Postojeï¿½i izvozi stranice";
+ = "Postojeæi izvozi stranice";
 
 // admin/se_inter_export.php3, row 133
 $_m["Insert new item"]
@@ -2570,7 +2570,7 @@ $_m["Insert new item"]
 
 // admin/se_inter_export.php3, row 135
 $_m["Remote Nodes"]
- = "Serverski ï¿½vorovi";
+ = "Serverski èvorovi";
 
 // admin/se_inter_export.php3, row 146
 $_m["User name"]
@@ -2584,7 +2584,7 @@ $_m["There are too many related items. The number of related items is limited."]
 // admin/itemedit.php3, row 232
 // admin/slicefieldsedit.php3, row 128
 $_m["Error: no fields."]
- = "Greï¿½ka: nema polja";
+ = "Greška: nema polja";
 
 // admin/itemedit.php3, row 240
 // admin/slicefieldsedit.php3, row 136
@@ -2739,7 +2739,7 @@ $_m["Export"]
 
 // admin/index.php3, row 94
 $_m["You do not have permission to edit items in the slice:"]
- = "Nemate dozvolu ureï¿½ivanja";
+ = "Nemate dozvolu ureðivanja";
 
 // admin/index.php3, row 162
 // admin/se_history.php3, row 213
@@ -2753,20 +2753,20 @@ $_m["ActionApps - Item Manager"]
 // admin/sliceimp_xml.php3, row 131
 $_m["\n"
    ."ERROR: File doesn't contain SLICEEXPORT"]
- = "GREï¿½KA: Datoteka ne sadrï¿½i SLICEEXPORT";
+ = "GREŠKA: Datoteka ne sadrži SLICEEXPORT";
 
 // admin/sliceimp_xml.php3, row 146, 172, 210
 $_m["ERROR: Text is not OK. Check whether you copied it well from the Export."]
- = "GREï¿½KA: Tekst nije u redu. Provjerite da li ste ga ispravno kopirali iz izvoza";
+ = "GREŠKA: Tekst nije u redu. Provjerite da li ste ga ispravno kopirali iz izvoza";
 
 // admin/sliceimp_xml.php3, row 222
 $_m["ERROR: Unsupported version for import"]
- = "GEï¿½KA: verzija za uvoz nije podrï¿½ana";
+ = "GEŠKA: verzija za uvoz nije podržana";
 
 // admin/sliceimp_xml.php3, row 281
 // admin/sliceimp.php3, row 93, 140, 483
 $_m["Overwrite"]
- = "Prebriï¿½ite";
+ = "Prebrišite";
 
 // admin/sliceimp_xml.php3, row 284
 $_m["<br>Overwriting view %1"]
@@ -2775,7 +2775,7 @@ $_m["<br>Overwriting view %1"]
 // admin/sliceimp_xml.php3, row 293
 // admin/se_view.php3, row 264
 $_m["Can't insert into view."]
- = "Ne moï¿½ete umetnuti u pogled";
+ = "Ne možete umetnuti u pogled";
 
 // admin/aarsstest.php3, row 66
 // admin/rsstest.php3, row 67
@@ -2873,7 +2873,7 @@ $_m["AA - Summarize"]
 // admin/se_import2.php3, row 134, 136
 // admin/se_filters2.php3, row 163
 $_m["Content Pooling update successful"]
- = "Sadrï¿½aj na ï¿½ekanju uspjeï¿½no obnovljen";
+ = "Sadržaj na èekanju uspješno obnovljen";
 
 // admin/aa_synchronize_remote.php3, row 31
 // admin/aa_synchronize.php3, row 32
@@ -2894,11 +2894,11 @@ $_m["No such command"]
 
 // admin/se_inter_import3.php3, row 55
 $_m["The import was already created"]
- = "Uvoz je veï¿½ kreiran";
+ = "Uvoz je veè kreiran";
 
 // admin/se_inter_import3.php3, row 116
 $_m["The import was successfully created"]
- = "Uvoz je uspjeï¿½no kreiran";
+ = "Uvoz je uspješno kreiran";
 
 // admin/slicefieldsedit.php3, row 149
 $_m["Slice Setting"]
@@ -2944,7 +2944,7 @@ $_m["Selector"]
 // include/constants.php3, row 359
 // include/constedit.php3, row 82
 $_m["Priority"]
- = "Vaï¿½nost";
+ = "Važnost";
 
 // admin/se_history.php3, row 73
 $_m["Value Type"]
@@ -2972,7 +2972,7 @@ $_m["Item ID"]
 
 // admin/discedit.php3, row 61
 $_m["You don't have permissions to edit all items."]
- = "Nemate dozvolu za ureï¿½ivanje svih stavki";
+ = "Nemate dozvolu za ureðivanje svih stavki";
 
 // admin/discedit.php3, row 99
 $_m["Admin - Discussion comments management"]
@@ -2984,7 +2984,7 @@ $_m["Are you sure you want to delete selected comment?"]
 
 // admin/discedit.php3, row 115
 $_m["Discussion comments management"]
- = "Ureï¿½ivanje komentara na diskusije";
+ = "Ureðivanje komentara na diskusije";
 
 // admin/discedit.php3, row 125
 $_m["Item: "]
@@ -3030,30 +3030,30 @@ $_m["Back"]
 
 // admin/se_search.php3, row 38
 $_m["You have not permissions to change search settings"]
- = "Nemate dozvolu za promjenu postavki pretraï¿½ivanja";
+ = "Nemate dozvolu za promjenu postavki pretraživanja";
 
 // admin/se_search.php3, row 117
 $_m["Search fields update successful"]
- = "Polaja za pretraï¿½ivanje uspjeï¿½no obnovljena";
+ = "Polaja za pretraživanje uspješno obnovljena";
 
 // admin/se_search.php3, row 130, 136
 $_m["Admin - design Search Page"]
- = "Admin - kreiranje stranice za pretraï¿½ivanje";
+ = "Admin - kreiranje stranice za pretraživanje";
 
 // admin/se_search.php3, row 142
 $_m["Search form criteria"]
- = "Kriterij pretraï¿½ivanja";
+ = "Kriterij pretraživanja";
 
 // admin/se_search.php3, row 147, 165
 // admin/se_fields.php3, row 244
 // admin/anonym_wizard.php3, row 210
 // admin/se_views.php3, row 77
 $_m["Show"]
- = "Prikaï¿½i";
+ = "Prikaži";
 
 // admin/se_search.php3, row 159
 $_m["Search in fields"]
- = "Pretraï¿½ite u poljima";
+ = "Pretražite u poljima";
 
 // admin/se_search.php3, row 166
 $_m["Default settings"]
@@ -3066,7 +3066,7 @@ $_m["Default settings"]
 // include/formutil.php3, row 200, 204, 2720
 // include/widget.class.php3, row 285
 $_m["Cancel"]
- = "Poniï¿½ti";
+ = "Poništi";
 
 // admin/se_inter_import.php3, row 73
 $_m["Missing!!!"]
@@ -3103,7 +3103,7 @@ $_m["feeds prefixed by (=) are \"exact copy\" feeds"]
 
 // admin/se_inter_import.php3, row 136
 $_m["All remote nodes"]
- = "Svi serverski ï¿½vorovi";
+ = "Svi serverski èvorovi";
 
 // admin/se_inter_import.php3, row 137
 $_m["Remote node"]
@@ -3112,11 +3112,11 @@ $_m["Remote node"]
 // admin/um_gedit.php3, row 102
 // include/um_gedit.php3, row 49
 $_m["Group successfully added to permission system"]
- = "Grupa je uspjeï¿½no dodana u sistem dozvola";
+ = "Grupa je uspješno dodana u sistem dozvola";
 
 // admin/um_gedit.php3, row 111
 $_m["User management - Groups"]
- = "Ureï¿½ivanje podataka o korisnicima / icama - Grupe";
+ = "Ureðivanje podataka o korisnicima / icama - Grupe";
 
 // admin/um_gedit.php3, row 121
 $_m["Are you sure you want to delete selected group from whole permission system?"]
@@ -3228,7 +3228,7 @@ $_m["Change user data"]
 
 // admin/sliceimp.php3, row 67
 $_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
- = "Pogreï¿½na duï¿½ina ID-a stranice(%2, treba biti 32)";
+ = "Pogrešna dužina ID-a stranice(%2, treba biti 32)";
 
 // admin/sliceimp.php3, row 173, 178, 240, 246, 485
 $_m["Insert with new ids"]
@@ -3240,7 +3240,7 @@ $_m["Can't upload Import file"]
 
 // admin/sliceimp.php3, row 360, 372
 $_m["Import exported data (slice structure and content)"]
- = "Uvezite izvezene podatke (strukturu i sadrï¿½aj stranica";
+ = "Uvezite izvezene podatke (strukturu i sadržaj stranica";
 
 // admin/sliceimp.php3, row 374
 $_m["Import exported data"]
@@ -3260,7 +3260,7 @@ $_m["Overwritten were:"]
 
 // admin/sliceimp.php3, row 395
 $_m["Count of imported stories: %d."]
- = "Broj uvezenih priï¿½a: %d. ";
+ = "Broj uvezenih prièa: %d. ";
 
 // admin/sliceimp.php3, row 412
 $_m["Failed were:"]
@@ -3268,19 +3268,19 @@ $_m["Failed were:"]
 
 // admin/sliceimp.php3, row 426
 $_m["Here you can import exported data to toolkit. You can use two types of import:"]
- = "Ovdje moï¿½ete uvesti izvezene podatke u set alata.";
+ = "Ovdje možete uvesti izvezene podatke u set alata.";
 
 // admin/sliceimp.php3, row 431
 $_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
- = "Veï¿½ postoji stranica sa tim ID-em";
+ = "Veæ postoji stranica sa tim ID-em";
 
 // admin/sliceimp.php3, row 446
 $_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
- = "Pogledi sa nekim od ID-a veï¿½ postoje. Promjenite ID na desnoj strani strelice";
+ = "Pogledi sa nekim od ID-a veæ postoje. Promjenite ID na desnoj strani strelice";
 
 // admin/sliceimp.php3, row 461
 $_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
- = "Pogledi sa nekim od ID-a veï¿½ postoje. Promjenite ID na desnoj strani strelice";
+ = "Pogledi sa nekim od ID-a veæ postoje. Promjenite ID na desnoj strani strelice";
 
 // admin/sliceimp.php3, row 475
 $_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
@@ -3300,7 +3300,7 @@ $_m["2) If you have exported data in browser's window, insert the exported text 
 
 // admin/sliceimp.php3, row 515
 $_m["Here specify, what do you want to import:"]
- = "Precizirajte ï¿½to ï¿½elite uvesti";
+ = "Precizirajte što želite uvesti";
 
 // admin/sliceimp.php3, row 516
 $_m["Import slice definition"]
@@ -3332,7 +3332,7 @@ $_m["Local slice"]
 
 // admin/discedit2.php3, row 40
 $_m["You do not have permission to edit items in this slice"]
- = "Nemate dozvolu za ureï¿½ivanje stavki na stranici";
+ = "Nemate dozvolu za ureðivanje stavki na stranici";
 
 // admin/discedit2.php3, row 56, 124
 $_m["Text of discussion comment"]
@@ -3386,7 +3386,7 @@ $_m["Odd Rows"]
 
 // admin/se_compact.php3, row 60, 235
 $_m["'No item found' message"]
- = "Stavka nije pronaï¿½ena";
+ = "Stavka nije pronaðena";
 
 // admin/se_compact.php3, row 62, 207
 // include/constants.php3, row 508, 616, 738, 789, 821
@@ -3407,7 +3407,7 @@ $_m["Category bottom HTML"]
 
 // admin/se_compact.php3, row 99
 $_m["Design of compact design successfully changed"]
- = "Dizajn kompaktnog dizajna uspjeï¿½no promijenjen";
+ = "Dizajn kompaktnog dizajna uspješno promijenjen";
 
 // admin/se_compact.php3, row 142, 181
 // admin/se_newuser.php3, row 93
@@ -3416,7 +3416,7 @@ $_m["Admin - design Index view"]
 
 // admin/se_compact.php3, row 181
 $_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
- = "Koristite ove kuï¿½ice za kontrolu prikaza na zbirnoj stranici";
+ = "Koristite ove kuæice za kontrolu prikaza na zbirnoj stranici";
 
 // admin/se_compact.php3, row 195
 $_m["HTML code for index view"]
@@ -3425,12 +3425,12 @@ $_m["HTML code for index view"]
 // admin/se_compact.php3, row 206
 // include/constants.php3, row 507, 641, 737, 788, 820
 $_m["Use different HTML code for even rows"]
- = "Koristite razliï¿½it HTML kod za parne redove";
+ = "Koristite razlièit HTML kod za parne redove";
 
 // admin/se_compact.php3, row 208
 $_m["You can define different code for odd and ever rows\n"
    ."                         <br>first red, second black, for example"]
- = "Moï¿½ete odrediti razliï¿½itu boju koda za parne i neparne redove";
+ = "Možete odrediti razlièitu boju koda za parne i neparne redove";
 
 // admin/se_compact.php3, row 213
 // include/constants.php3, row 522, 625, 746, 797, 829
@@ -3455,20 +3455,20 @@ $_m["letters"]
 // admin/se_compact.php3, row 219
 // admin/se_view.php3, row 155
 $_m["Ascending by Priority"]
- = "Uzlazno po vaï¿½nosti";
+ = "Uzlazno po važnosti";
 
 // admin/se_compact.php3, row 219
 // admin/se_view.php3, row 155
 $_m["Descending by Priority"]
- = "Silazno po vaï¿½nosti";
+ = "Silazno po važnosti";
 
 // admin/se_compact.php3, row 221
 $_m["'by Priority' is usable just for fields using constants (like category)"]
- = "Po vaï¿½nosti";
+ = "Po važnosti";
 
 // admin/se_compact.php3, row 236
 $_m["message to show in place of slice.php3, if no item matches the query"]
- = "Poruka koja se prikazuje ako nema traï¿½ene stavke";
+ = "Poruka koja se prikazuje ako nema tražene stavke";
 
 // admin/se_newuser.php3, row 61
 // admin/setup.php3, row 247
@@ -3480,7 +3480,7 @@ $_m["Retyped password is not the same as the first one"]
 // admin/setup.php3, row 273
 // include/um_util.php3, row 352
 $_m["It is impossible to add user to permission system"]
- = "Nije moguï¿½e dodati korisnika-icu u sistem dozvola";
+ = "Nije moguæe dodati korisnika-icu u sistem dozvola";
 
 // admin/se_newuser.php3, row 101
 $_m["New user in permission system"]
@@ -3497,7 +3497,7 @@ $_m["You don't have permissions to delete slice."]
 
 // admin/slicedel.php3, row 66, 84
 $_m["Admin - Delete Slice"]
- = "Obriï¿½ite stranicu";
+ = "Obrišite stranicu";
 
 // admin/slicedel.php3, row 69
 $_m["Do you really want to delete this slice and all its fields and all its items?"]
@@ -3506,7 +3506,7 @@ $_m["Do you really want to delete this slice and all its fields and all its item
 // admin/slicedel.php3, row 93
 // admin/fileman.php3, row 177
 $_m["Delete selected"]
- = "Obriï¿½ite odabrano";
+ = "Obrišite odabrano";
 
 // admin/slicedel.php3, row 99
 $_m["Select slice to delete"]
@@ -3530,11 +3530,11 @@ $_m["Slices to delete"]
 
 // admin/slicedel.php3, row 118
 $_m["No slice marked for deletion"]
- = "Ni jedna stranica nije oznaï¿½ena za brisanje";
+ = "Ni jedna stranica nije oznaèena za brisanje";
 
 // admin/slicewiz.php3, row 53, 56
 $_m["Add Slice Wizard"]
- = "Dodajte ï¿½arobnjaka stranica";
+ = "Dodajte èarobnjaka stranica";
 
 // admin/slicewiz.php3, row 66
 $_m["Copy Views"]
@@ -3546,11 +3546,11 @@ $_m["Categories/Constants"]
 
 // admin/slicewiz.php3, row 68
 $_m["Share with Template"]
- = "Dajte na koriï¿½tenje sa predloï¿½cima";
+ = "Dajte na korištenje sa predlošcima";
 
 // admin/slicewiz.php3, row 68
 $_m["Copy from Template"]
- = "Kopirajte iz predloï¿½ka";
+ = "Kopirajte iz predloška";
 
 // admin/slicewiz.php3, row 77
 $_m["[Optional] Create New User"]
@@ -3567,11 +3567,11 @@ $_m["Slice Administrator"]
 
 // admin/slicewiz.php3, row 92
 $_m["Do Not Email Welcome"]
- = "Ne ï¿½alje e-mail dobrodoï¿½lice";
+ = "Ne šalje e-mail dobrodošlice";
 
 // admin/slicewiz.php3, row 94
 $_m["Email Welcome"]
- = "ï¿½alje e-mail dobrodoï¿½lice";
+ = "Šalje e-mail dobrodošlice";
 
 // admin/slicewiz.php3, row 104
 $_m["Go: Add Slice"]
@@ -3611,11 +3611,11 @@ $_m["Fulltext HTML code"]
 
 // admin/se_fulltext.php3, row 57, 149
 $_m["Bottom HTML code"]
- = "HTML kod podnoï¿½ja";
+ = "HTML kod podnožja";
 
 // admin/se_fulltext.php3, row 88
 $_m["Fulltext format update successful"]
- = "Oblikovanje punog teksta uspjeï¿½no izvrï¿½eno";
+ = "Oblikovanje punog teksta uspješno izvršeno";
 
 // admin/se_fulltext.php3, row 112, 128
 $_m["Admin - design Fulltext view"]
@@ -3623,7 +3623,7 @@ $_m["Admin - design Fulltext view"]
 
 // admin/se_fulltext.php3, row 128
 $_m["Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"]
- = "Koristite kuï¿½ice za za kontrolu prikaza punog teksta za svaku stavku";
+ = "Koristite kuæice za za kontrolu prikaza punog teksta za svaku stavku";
 
 // admin/se_fulltext.php3, row 142
 $_m["HTML code for fulltext view"]
@@ -3640,15 +3640,15 @@ $_m["Use HTML tags"]
 // admin/se_notify.php3, row 83
 // include/slicedit.php3, row 85
 $_m["You have not permissions to edit this slice"]
- = "Nemate dozvolu za ureï¿½ivanje stranice";
+ = "Nemate dozvolu za ureðivanje stranice";
 
 // admin/se_notify.php3, row 187, 191, 204
 $_m["Email Notifications of Events"]
- = "E-mail obavijesti ili dogaï¿½aji";
+ = "E-mail obavijesti ili dogaðaji";
 
 // admin/se_notify.php3, row 217
 $_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
- = "Nova stavka na ï¿½ekanju";
+ = "Nova stavka na èekanju";
 
 // admin/se_notify.php3, row 218, 223, 228, 233
 $_m["Email addresses, one per line"]
@@ -3664,7 +3664,7 @@ $_m["Body of the Email message"]
 
 // admin/se_notify.php3, row 222
 $_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
- = "Stavka na ï¿½ekanju je proijenjena";
+ = "Stavka na èekanju je proijenjena";
 
 // admin/se_notify.php3, row 227
 $_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
@@ -3681,7 +3681,7 @@ $_m["Not allowed"]
 // admin/slicedit.php3, row 43
 // include/menu.php3, row 190, 244
 $_m["Hold bin"]
- = "Zadrï¿½ano";
+ = "Zadržano";
 
 // admin/slicedit.php3, row 47
 // include/formutil.php3, row 3014
@@ -3702,7 +3702,7 @@ $_m["Authorized by a password field"]
 
 // admin/slicedit.php3, row 51
 $_m["Readers, authorized by HTTP auth"]
- = "ï¿½itaoci - ï¿½itateljice autorizirane preko HTTP autorizacije";
+ = "Èitaoci - èitateljice autorizirane preko HTTP autorizacije";
 
 // admin/slicedit.php3, row 115
 // include/modutils.php3, row 147
@@ -3741,7 +3741,7 @@ $_m["Priority (order in slice-menu)"]
 // admin/se_views.php3, row 193
 $_m["<br>To include slice in your webpage type next line \n"
    ."                         to your shtml code: "]
- = "Za ukljuï¿½ivanje slicea u vaï¿½ web upiï¿½ovu liniju u vaï¿½ shtml kod";
+ = "Za ukljuèivanje slicea u vaš web upišovu liniju u vaš shtml kod";
 
 // admin/slicedit.php3, row 160
 // include/modutils.php3, row 73
@@ -3766,7 +3766,7 @@ $_m["New Owner's E-mail"]
 // include/constants.php3, row 539, 639, 662, 689, 720, 779, 811, 843
 // include/slicedit.php3, row 159
 $_m["Listing length"]
- = "Duï¿½ina izlista";
+ = "Dužina izlista";
 
 // admin/slicedit.php3, row 168
 $_m["Deleted"]
@@ -3780,7 +3780,7 @@ $_m["Allow anonymous posting of items"]
 // admin/slicedit.php3, row 171
 // include/slicedit.php3, row 161
 $_m["Allow anonymous editing of items"]
- = "Dozvolite anonimno ureï¿½ivanje stavki";
+ = "Dozvolite anonimno ureðivanje stavki";
 
 // admin/slicedit.php3, row 172
 // include/slicedit.php3, row 162
@@ -3802,12 +3802,12 @@ $_m["MLX: Language Control Slice"]
 // admin/slicedit.php3, row 185
 // include/slicedit.php3, row 167
 $_m["File Manager Access"]
- = "Pristup upravljaï¿½u datoteka";
+ = "Pristup upravljaèu datoteka";
 
 // admin/slicedit.php3, row 186
 // include/slicedit.php3, row 168
 $_m["File Manager Directory"]
- = "Mapa upravljaï¿½a datoteka";
+ = "Mapa upravljaèa datoteka";
 
 // admin/slicedit.php3, row 195
 $_m["Auth Group Field"]
@@ -3819,7 +3819,7 @@ $_m["Mailman Lists Field"]
 
 // admin/slicedit.php3, row 199
 $_m["Password for Reading"]
- = "Lozinka za ï¿½itanje";
+ = "Lozinka za èitanje";
 
 // admin/se_view.php3, row 66
 $_m["Group by selections"]
@@ -3827,7 +3827,7 @@ $_m["Group by selections"]
 
 // admin/se_view.php3, row 69
 $_m["Yes. Write sort[] to the conds[] field for each Selection."]
- = "Da. Upï¿½ite sort[] u conds[] polje za svaki izbor";
+ = "Da. Upšite sort[] u conds[] polje za svaki izbor";
 
 // admin/se_view.php3, row 72
 $_m["No. Use this sort[]:"]
@@ -3839,7 +3839,7 @@ $_m["Alerts Selection"]
 
 // admin/se_view.php3, row 92
 $_m["If you need more selections, use 'Update' and on next Edit two empty boxes appear."]
- = "Ako trebate viï¿½e izbora, koristite 'Update' i pojavit ï¿½e se dvije prazne kuï¿½ice u sljedeï¿½em ureï¿½ivanju";
+ = "Ako trebate više izbora, koristite 'Update' i pojavit æe se dvije prazne kuæice u sljedeæem ureðivanju";
 
 // admin/se_view.php3, row 219
 // admin/se_views.php3, row 40
@@ -3848,12 +3848,12 @@ $_m["You do not have permission to change views"]
 
 // admin/se_view.php3, row 281
 $_m["View successfully changed"]
- = "Pogled je uspjeï¿½no promijenjen";
+ = "Pogled je uspješno promijenjen";
 
 // admin/se_view.php3, row 350, 376
 // admin/se_views.php3, row 91, 118
 $_m["Admin - design View"]
- = "Admin - pogled za ureï¿½ivanje";
+ = "Admin - pogled za ureðivanje";
 
 // admin/se_view.php3, row 388
 // admin/se_views.php3, row 124
@@ -3879,7 +3879,7 @@ $_m["Optimalizations"]
 
 // admin/se_mapping2.php3, row 112
 $_m["Fields' mapping update succesful"]
- = "Mapiranje polja je uspjeï¿½no obnovljeno";
+ = "Mapiranje polja je uspješno obnovljeno";
 
 // admin/se_rssfeeds.php3, row 113, 165, 172
 $_m["Remote RSS Feed administration"]
@@ -3931,7 +3931,7 @@ $_m["e.g. http://www.someplace.com/rss/index.xml"]
 
 // admin/slicedel2.php3, row 63
 $_m["Slice successfully deleted, tables are optimized"]
- = "Stranica je uspjeï¿½no obrisana, tablice su optimizirane";
+ = "Stranica je uspješno obrisana, tablice su optimizirane";
 
 // admin/sliceadd.php3, row 63
 $_m["Create New Slice / Module"]
@@ -3951,15 +3951,15 @@ $_m["You have not permissions to add slice"]
 // admin/aafinder.php3, row 49, 51, 186
 // include/menu_aa.php3, row 71
 $_m["AA finder"]
- = "AA traï¿½ilica";
+ = "AA tražilica";
 
 // admin/aafinder.php3, row 128
 $_m["Jump"]
- = "Skoï¿½i";
+ = "Skoèi";
 
 // admin/aafinder.php3, row 189
 $_m["Find all VIEWS containing in any field the string:"]
- = "Pronaï¿½ite sve poglede u bilo kojem polju";
+ = "Pronaðite sve poglede u bilo kojem polju";
 
 // admin/aafinder.php3, row 191, 197, 203, 209
 $_m["Go!"]
@@ -3967,7 +3967,7 @@ $_m["Go!"]
 
 // admin/aafinder.php3, row 195
 $_m["Find all SLICES containing in any field the string:"]
- = "Pronaï¿½ite sve stranice u bilo kojem polju";
+ = "Pronaðite sve stranice u bilo kojem polju";
 
 // admin/aafinder.php3, row 201
 $_m["Find all FIELDS containing in ites definition the string:"]
@@ -3995,7 +3995,7 @@ $_m["No constants specified"]
 // admin/se_constant_import.php3, row 86
 // admin/se_constant.php3, row 280
 $_m["Constants update successful"]
- = "Konstante uspjeï¿½no promjenjene";
+ = "Konstante uspješno promjenjene";
 
 // admin/se_constant_import.php3, row 95, 102
 $_m["Admin - Constants Import"]
@@ -4015,7 +4015,7 @@ $_m["No permissions for file manager."]
 
 // admin/fileman.php3, row 62
 $_m["Unable to run File Manager"]
- = "Nije moguï¿½e pokrenuti file manager";
+ = "Nije moguæe pokrenuti file manager";
 
 // admin/fileman.php3, row 63
 $_m["doesn't exist"]
@@ -4023,7 +4023,7 @@ $_m["doesn't exist"]
 
 // admin/fileman.php3, row 71
 $_m["Unable to mkdir"]
- = "Nije moguï¿½e naparviti mapu";
+ = "Nije moguæe naparviti mapu";
 
 // admin/fileman.php3, row 99, 105
 // include/filedit.php3, row 69, 75
@@ -4046,11 +4046,11 @@ $_m["Create new file"]
 
 // admin/fileman.php3, row 223
 $_m["Upload file"]
- = "POï¿½aljite datoteku";
+ = "POšaljite datoteku";
 
 // admin/fileman.php3, row 232
 $_m["Copy template dir"]
- = "Iskopirajte mapu s predloï¿½cima";
+ = "Iskopirajte mapu s predlošcima";
 
 // admin/fileman.php3, row 235
 $_m["Create new directory"]
@@ -4067,7 +4067,7 @@ $_m["Returns single value (not multivalue) which is created as result of AA expr
 // admin/search_replace.php3, row 263, 336, 420, 571
 // include/formutil.php3, row 1153, 1170
 $_m["Plain text"]
- = "Obiï¿½an tekst";
+ = "Obièan tekst";
 
 // admin/search_replace.php3, row 264, 337, 421
 $_m["As for other values of this field"]
@@ -4214,7 +4214,7 @@ $_m["File preview"]
 
 // admin/se_csv_import.php3, row 195
 $_m["CSV format settings"]
- = "Postavke CSV datoteï¿½nog formata";
+ = "Postavke CSV datoteènog formata";
 
 // admin/se_csv_import.php3, row 214, 218
 // include/filedit.php3, row 75
@@ -4239,7 +4239,7 @@ $_m["Preview"]
 // admin/se_csv_import.php3, row 252
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "Slijedeï¿½i";
+ = "Slijedeæi";
 
 // admin/usershow.php3, row 93
 $_m["Show selected users"]
@@ -4260,7 +4260,7 @@ $_m[" items changed to new value "]
 // admin/se_constant.php3, row 196
 // include/constedit_util.php3, row 608
 $_m["This constant group already exists"]
- = "Ova konstantna grupa veï¿½ postoji";
+ = "Ova konstantna grupa veæ postoji";
 
 // admin/se_constant.php3, row 291
 $_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
@@ -4272,7 +4272,7 @@ $_m["Admin - Constants Setting"]
 
 // admin/se_constant.php3, row 325
 $_m["Delete whole group"]
- = "Obriï¿½ite cijelu grupu";
+ = "Obrišite cijelu grupu";
 
 // admin/se_constant.php3, row 356
 $_m["Import Constants..."]
@@ -4280,7 +4280,7 @@ $_m["Import Constants..."]
 
 // admin/se_constant.php3, row 372
 $_m["Constants used in slice"]
- = "Konstante koriï¿½tene u stranici";
+ = "Konstante korištene u stranici";
 
 // admin/se_constant.php3, row 387
 $_m["Constant group owner - slice"]
@@ -4300,7 +4300,7 @@ $_m["Propagate changes into current items"]
 
 // admin/se_constant.php3, row 411
 $_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
- = "Uredite po vaï¿½nosti";
+ = "Uredite po važnosti";
 
 // admin/se_constant.php3, row 413
 // include/constedit.php3, row 73
@@ -4361,15 +4361,15 @@ $_m["Admin - Anonymous Form Wizard"]
 
 // admin/anonym_wizard.php3, row 191
 $_m["Show Form"]
- = "Prikaï¿½i formu";
+ = "Prikaži formu";
 
 // admin/anonym_wizard.php3, row 198
 $_m["Help"]
- = "Pomoï¿½";
+ = "Pomoæ";
 
 // admin/anonym_wizard.php3, row 198
 $_m["Help - Documentation"]
- = "Pomoï¿½ - dokumentacija";
+ = "Pomoæ - dokumentacija";
 
 // admin/anonym_wizard.php3, row 199
 $_m["URLs shown after the form was sent"]
@@ -4381,11 +4381,11 @@ $_m["OK page"]
 
 // admin/anonym_wizard.php3, row 201
 $_m["Error page"]
- = "Stranica greï¿½ke";
+ = "Stranica greške";
 
 // admin/anonym_wizard.php3, row 202
 $_m["Use a PHP script to show the result on the OK and Error pages:"]
- = "Koristite PHP skriptu za prikaz rezultata na OK stranici i stranici greï¿½ke";
+ = "Koristite PHP skriptu za prikaz rezultata na OK stranici i stranici greške";
 
 // admin/anonym_wizard.php3, row 211
 $_m["Field Id in Form"]
@@ -4394,11 +4394,11 @@ $_m["Field Id in Form"]
 // admin/anonym_wizard.php3, row 235
 $_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
    ."         are offered on this page."]
- = "Samo polja iznaï¿½ena sa su ponuï¿½ena na ovoj stranici";
+ = "Samo polja iznaèena sa su ponuðena na ovoj stranici";
 
 // admin/se_views.php3, row 57
 $_m["View successfully deleted"]
- = "Pogled je uspjeï¿½no obrisan";
+ = "Pogled je uspješno obrisan";
 
 // admin/se_views.php3, row 80
 $_m["Are you sure you want to delete selected view?"]
@@ -4427,7 +4427,7 @@ $_m["This ID is reserved"]
 
 // admin/se_fieldid.php3, row 221
 $_m["This ID is already used"]
- = "Ovaj ID je veï¿½ zauzet";
+ = "Ovaj ID je veæ zauzet";
 
 // admin/se_fieldid.php3, row 240, 247, 256
 $_m["Admin - change Field IDs"]
@@ -4442,7 +4442,7 @@ $_m["This page allows to change field IDs. It is a bit dangerous operation and m
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
    ."    added automatically.<br>"]
- = "Ovdje moï¿½ete promjeniti ID polja. Potencijalno opasna operacija, koristite na vlastitu odgovornost";
+ = "Ovdje možete promjeniti ID polja. Potencijalno opasna operacija, koristite na vlastitu odgovornost";
 
 // admin/se_fieldid.php3, row 259
 $_m["Change from"]
@@ -4462,7 +4462,7 @@ $_m["You have not permissions to setting "]
 
 // admin/se_csv_import2.php3, row 155
 $_m["Invalid additional parameters for import"]
- = "Pogreï¿½ne dodatne postavke za uvoz";
+ = "Pogrešne dodatne postavke za uvoz";
 
 // admin/se_csv_import2.php3, row 219
 $_m["Item:"]
@@ -4474,7 +4474,7 @@ $_m["Cannot store item to DB"]
 
 // admin/se_csv_import2.php3, row 230
 $_m["Transformation error:"]
- = "Greï¿½ka u prilagodbi";
+ = "Greška u prilagodbi";
 
 // admin/se_csv_import2.php3, row 232
 $_m["Ok: Item %1 stored"]
@@ -4488,7 +4488,7 @@ $_m["Ok : file deleted "]
 // admin/se_csv_import2.php3, row 250
 // include/files.class.php3, row 284
 $_m["Error: Cannot delete file"]
- = "GREï¿½KA: ne mogu obrisati datoteku";
+ = "GREŠKA: ne mogu obrisati datoteku";
 
 // admin/se_csv_import2.php3, row 254
 $_m["Added to slice"]
@@ -4524,7 +4524,7 @@ $_m["Action parameters"]
 
 // admin/se_csv_import2.php3, row 358
 $_m["Parameter wizard"]
- = "ï¿½arobnjak za postavke";
+ = "Èarobnjak za postavke";
 
 // admin/se_csv_import2.php3, row 378
 $_m["Import options"]
@@ -4604,11 +4604,11 @@ $_m["Admin - Import CSV (2/2) - Mapping and Actions"]
 
 // admin/se_nodes.php3, row 39
 $_m["You have not permissions to manage nodes"]
- = "Nemate dozvolu za promjene ï¿½vorova";
+ = "Nemate dozvolu za promjene èvorova";
 
 // admin/se_nodes.php3, row 93, 145, 156
 $_m["Remote node administration"]
- = "Daljinsko administriranje ï¿½vorova";
+ = "Daljinsko administriranje èvorova";
 
 // admin/se_nodes.php3, row 115
 $_m["Are you sure you want to delete the node?"]
@@ -4620,23 +4620,23 @@ $_m["Node empty"]
 
 // admin/se_nodes.php3, row 158
 $_m["Known remote nodes"]
- = "Poznati daljinski ï¿½vorovi";
+ = "Poznati daljinski èvorovi";
 
 // admin/se_nodes.php3, row 178
 $_m["Add new node"]
- = "Dodajte ï¿½vor";
+ = "Dodajte èvor";
 
 // admin/se_nodes.php3, row 178
 $_m["Edit node data"]
- = "Uredite podatke o ï¿½voru";
+ = "Uredite podatke o èvoru";
 
 // admin/se_nodes.php3, row 181
 $_m["Node name"]
- = "Ime ï¿½vora";
+ = "Ime èvora";
 
 // admin/se_nodes.php3, row 182
 $_m["Your node name"]
- = "Ime vaï¿½eg ï¿½vora";
+ = "Ime vašeg èvora";
 
 // admin/se_nodes.php3, row 183
 $_m["URL of the getxml.php3"]
@@ -4644,7 +4644,7 @@ $_m["URL of the getxml.php3"]
 
 // admin/se_nodes.php3, row 184
 $_m["Your getxml is"]
- = "Vaï¿½ getxml je";
+ = "Vaš getxml je";
 
 // admin/se_filters.php3, row 95
 $_m["-- The same --"]
@@ -4652,7 +4652,7 @@ $_m["-- The same --"]
 
 // admin/se_filters.php3, row 152, 251
 $_m["Admin - Content Pooling - Filters"]
- = "Admin - filteri za sadrï¿½aj na ï¿½ekanju";
+ = "Admin - filteri za sadržaj na èekanju";
 
 // admin/se_filters.php3, row 225
 $_m["No From category selected!"]
@@ -4660,7 +4660,7 @@ $_m["No From category selected!"]
 
 // admin/se_filters.php3, row 264
 $_m["Content Pooling - Configure Filters"]
- = "Konfiguracija filtera za sadrï¿½aj na ï¿½ekanju";
+ = "Konfiguracija filtera za sadržaj na èekanju";
 
 // admin/se_filters.php3, row 267
 $_m["Filter for imported slice"]
@@ -4689,12 +4689,12 @@ $_m["AA Setup"]
 
 // admin/setup.php3, row 75
 $_m["This script can't be used on a configured system."]
- = "Ova skripta ne moï¿½e biti koriï¿½tena u veï¿½ konfiguriranom sistemu";
+ = "Ova skripta ne može biti korištena u veæ konfiguriranom sistemu";
 
 // admin/setup.php3, row 103, 240
 // include/formutil.php3, row 1944
 $_m["Retype Password"]
- = "Ponovo upiï¿½ite lozinku";
+ = "Ponovo upišite lozinku";
 
 // admin/setup.php3, row 105, 243
 $_m["Last name"]
@@ -4702,11 +4702,11 @@ $_m["Last name"]
 
 // admin/setup.php3, row 122
 $_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>"]
- = "Dobro doï¿½li! Koristite ovu skriptu za kreiranje superdamin raï¿½una";
+ = "Dobro došli! Koristite ovu skriptu za kreiranje superdamin raèuna";
 
 // admin/setup.php3, row 123
 $_m["If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>"]
- = "Ako ste greï¿½kom obrisali svoj superadmin raï¿½un, kliknite na Recover";
+ = "Ako ste greškom obrisali svoj superadmin raèun, kliknite na Recover";
 
 // admin/setup.php3, row 127, 191
 $_m[" Init "]
@@ -4725,7 +4725,7 @@ $_m["Database is not configured correctly or the database is empty.<br>\n"
 
 // admin/setup.php3, row 200
 $_m["Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"]
- = "Ne mogu dodati poï¿½etni objekt za dozvole. Provjerite postavke dozvola";
+ = "Ne mogu dodati poèetni objekt za dozvole. Provjerite postavke dozvola";
 
 // admin/setup.php3, row 215
 $_m["Can't delete invalid permission."]
@@ -4737,11 +4737,11 @@ $_m["Invalid permission deleted (no such user/group): "]
 
 // admin/setup.php3, row 286
 $_m["Congratulations! The account was created."]
- = "ï¿½estitamo! Raï¿½un je kreiran.";
+ = "Èestitamo! Raèun je kreiran.";
 
 // admin/setup.php3, row 288
 $_m["Use this account to login and add your first slice:"]
- = "Koristite ovaj raï¿½un za login i dodajte prvu stranicu";
+ = "Koristite ovaj raèun za login i dodajte prvu stranicu";
 
 // admin/setup.php3, row 292
 $_m["Can't assign super access permission."]
@@ -4749,7 +4749,7 @@ $_m["Can't assign super access permission."]
 
 // admin/se_users_add.php3, row 65
 $_m["Search user or group"]
- = "Traï¿½ite korisnika ili grupu";
+ = "Tražite korisnika ili grupu";
 
 // admin/se_users_add.php3, row 82
 // include/um_util.php3, row 118
@@ -4758,27 +4758,27 @@ $_m["Assign new permissions"]
 
 // admin/se_users_add.php3, row 119
 $_m["Try to be more specific."]
- = "Pokuï¿½ajte suziti opseg pretraï¿½ivanja";
+ = "Pokušajte suziti opseg pretraživanja";
 
 // admin/se_users_add.php3, row 140
 $_m["List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query"]
- = "Lista je ograniï¿½ena na %1 korisnika";
+ = "Lista je ogranièena na %1 korisnika";
 
 // admin/se_import.php3, row 122
 $_m["Admin - configure Content Pooling"]
- = "Administracija -  konfiguracija sadrï¿½aja na ï¿½ekanju";
+ = "Administracija -  konfiguracija sadržaja na èekanju";
 
 // admin/se_import.php3, row 133
 $_m["Enable export to slice:"]
- = "Omoguï¿½ite izvoz u stranicu";
+ = "Omoguæite izvoz u stranicu";
 
 // admin/se_import.php3, row 136
 $_m["Export disable"]
- = "Izvoz onemoguï¿½en";
+ = "Izvoz onemoguæen";
 
 // admin/se_import.php3, row 138
 $_m["Export enable"]
- = "Izvoz omoguï¿½en";
+ = "Izvoz omoguæen";
 
 // admin/se_import.php3, row 172
 $_m["Enable export to any slice"]
@@ -5091,11 +5091,11 @@ $_m["Feed & update & lock"]
 
 // include/constants.php3, row 484
 $_m["Month List"]
- = "Mjeseï¿½na lista";
+ = "Mjeseèna lista";
 
 // include/constants.php3, row 484
 $_m["Month Table"]
- = "Mjeseï¿½na tablica";
+ = "Mjeseèna tablica";
 
 // include/constants.php3, row 504
 $_m["Item listing"]
@@ -5107,11 +5107,11 @@ $_m["Row Delimiter"]
 
 // include/constants.php3, row 518, 621, 649, 676, 700, 742, 766, 793, 825
 $_m["Sort primary"]
- = "Sloï¿½ite po glavnom kljuï¿½u";
+ = "Složite po glavnom kljuèu";
 
 // include/constants.php3, row 520, 623, 651, 678, 702, 744, 768, 795, 827
 $_m["Sort secondary"]
- = "Sloï¿½ite po drugom kljuï¿½u";
+ = "Složite po drugom kljuèu";
 
 // include/constants.php3, row 527, 628, 749, 800, 832
 $_m["Group title format"]
@@ -5139,11 +5139,11 @@ $_m["HTML code for index view of the comment"]
 
 // include/constants.php3, row 568
 $_m["HTML code for \"Show selected\" button"]
- = "HTML kod za \"Prikaï¿½i odabrano\" gumb";
+ = "HTML kod za \"Prikaži odabrano\" gumb";
 
 // include/constants.php3, row 569
 $_m["HTML code for \"Show all\" button"]
- = "HTML kod za \"Prikaï¿½i sve\" gumb";
+ = "HTML kod za \"Prikaži sve\" gumb";
 
 // include/constants.php3, row 570
 $_m["HTML code for \"Add\" button"]
@@ -5151,11 +5151,11 @@ $_m["HTML code for \"Add\" button"]
 
 // include/constants.php3, row 571
 $_m["Show images"]
- = "Prikaï¿½i slike";
+ = "Prikaži slike";
 
 // include/constants.php3, row 572
 $_m["Order by"]
- = "Sloï¿½i po ";
+ = "Složi po ";
 
 // include/constants.php3, row 573
 $_m["View image 1"]
@@ -5207,11 +5207,11 @@ $_m["Reply-To:"]
 
 // include/constants.php3, row 591
 $_m["Errors-To:"]
- = "Greï¿½ke";
+ = "Greške";
 
 // include/constants.php3, row 592
 $_m["Sender:"]
- = "Poï¿½iljatelj";
+ = "Pošiljatelj";
 
 // include/constants.php3, row 593
 $_m["Mail Subject:"]
@@ -5231,7 +5231,7 @@ $_m["RSS exchange"]
 
 // include/constants.php3, row 666
 $_m["Static page"]
- = "Obiï¿½na stranica";
+ = "Obièna stranica";
 
 // include/constants.php3, row 667
 $_m["HTML code"]
@@ -5251,39 +5251,39 @@ $_m["Calendar Type"]
 
 // include/constants.php3, row 696
 $_m["Additional attribs to the TD event tag"]
- = "Dodatne oznake za TD dogaï¿½aj";
+ = "Dodatne oznake za TD dogaðaj";
 
 // include/constants.php3, row 697
 $_m["Event format"]
- = "Oblik dogaï¿½aja";
+ = "Oblik dogaðaja";
 
 // include/constants.php3, row 704
 $_m["Start date field"]
- = "Polje poï¿½etnog datuma";
+ = "Polje poèetnog datuma";
 
 // include/constants.php3, row 705
 $_m["End date field"]
- = "Polje datuma zavrï¿½etka";
+ = "Polje datuma završetka";
 
 // include/constants.php3, row 706
 $_m["Day cell top format"]
- = "Oblik ï¿½elije dana - vrh";
+ = "Oblik èelije dana - vrh";
 
 // include/constants.php3, row 707
 $_m["Day cell bottom format"]
- = "Oblik ï¿½elije dana - dno";
+ = "Oblik èelije dana - dno";
 
 // include/constants.php3, row 708
 $_m["Use other header for empty cells"]
- = "Koristite drugo zaglavlje za praznu ï¿½eliju";
+ = "Koristite drugo zaglavlje za praznu èeliju";
 
 // include/constants.php3, row 709
 $_m["Empty day cell top format"]
- = "Oblik prazne ï¿½elije dana - vrh";
+ = "Oblik prazne èelije dana - vrh";
 
 // include/constants.php3, row 710
 $_m["Empty day cell bottom format"]
- = "Oblik prazne ï¿½elije dana - dno";
+ = "Oblik prazne èelije dana - dno";
 
 // include/constants.php3, row 728
 $_m["Alerts Selection Set"]
@@ -5296,11 +5296,11 @@ $_m["Fulltext URL"]
 // include/constants.php3, row 734
 $_m["Link to the .shtml page used\n"
    ."                                 to create headline links."]
- = "Veza na koriï¿½tenu SHTML stranicu";
+ = "Veza na korištenu SHTML stranicu";
 
 // include/constants.php3, row 751
 $_m["Max number of items"]
- = "Najveï¿½i moguï¿½i broj stavki";
+ = "Najveæi moguæi broj stavki";
 
 // include/constants.php3, row 761
 $_m["URL listing"]
@@ -5337,12 +5337,12 @@ $_m["Edit item form template"]
 // include/constants.php3, row 884
 // include/discussion.php3, row 206, 253
 $_m["Show selected"]
- = "Pokaï¿½i odabrano";
+ = "Pokaži odabrano";
 
 // include/constants.php3, row 885
 // include/discussion.php3, row 207, 255
 $_m["Show all"]
- = "Pokaï¿½i sve";
+ = "Pokaži sve";
 
 // include/constants.php3, row 886
 // include/discussion.php3, row 209, 257
@@ -5429,23 +5429,23 @@ $_m["StoreItem for slice %1 - failed parameter check for id = '%2'"]
 
 // include/tabledit.php3, row 263
 $_m["No record matches your search condition."]
- = "Nijedan zapis ne odgovara Vaï¿½em kriteriju pretraï¿½ivanja";
+ = "Nijedan zapis ne odgovara Vašem kriteriju pretraživanja";
 
 // include/tabledit.php3, row 396
 $_m["order ascending"]
- = "Sloï¿½ite uzlazno";
+ = "Složite uzlazno";
 
 // include/tabledit.php3, row 397
 $_m["order descending"]
- = "Sloï¿½ite silazno";
+ = "Složite silazno";
 
 // include/tabledit.php3, row 478
 $_m["Nothing to be shown."]
- = "Nema niï¿½ega za prikaz";
+ = "Nema niæega za prikaz";
 
 // include/tabledit.php3, row 580
 $_m["search"]
- = "Pretraï¿½ite";
+ = "Pretražite";
 
 // include/tabledit.php3, row 699, 797
 $_m["edit"]
@@ -5457,7 +5457,7 @@ $_m["add"]
 
 // include/tabledit.php3, row 809, 817
 $_m["delete"]
- = "Obriï¿½ite";
+ = "Obrišite";
 
 // include/tabledit.php3, row 817, 830
 $_m["insert"]
@@ -5465,7 +5465,7 @@ $_m["insert"]
 
 // include/tabledit.php3, row 824
 $_m["delete checked"]
- = "Obriï¿½ite oznaï¿½eno";
+ = "Obrišite oznaèeno";
 
 // include/tabledit.php3, row 830
 $_m["update"]
@@ -5477,15 +5477,15 @@ $_m["update all"]
 
 // include/tabledit.php3, row 842
 $_m["browse"]
- = "Pretraï¿½ite";
+ = "Pretražite";
 
 // include/tabledit.php3, row 906
 $_m["Are you sure you want to permanently DELETE all the checked records?"]
- = "Jeste li sigurni da ï¿½elite ZAUVIJEK obrisati oznaï¿½ene zapise";
+ = "Jeste li sigurni da želite ZAUVIJEK obrisati oznaèene zapise";
 
 // include/constedit.php3, row 55
 $_m["Constants - Hiearchical editor"]
- = "Konstante - ureï¿½ivanje po vaï¿½nosti";
+ = "Konstante - ureðivanje po važnosti";
 
 // include/constedit.php3, row 58
 $_m["Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name."]
@@ -5497,7 +5497,7 @@ $_m["Copy value from name"]
 
 // include/constedit.php3, row 92
 $_m["Check to confirm deleting"]
- = "Oznaï¿½ite za potvrdu brisanja";
+ = "Oznaèite za potvrdu brisanja";
 
 // include/constedit.php3, row 95
 $_m["Save all changes to database"]
@@ -5509,7 +5509,7 @@ $_m["View settings"]
 
 // include/constedit.php3, row 96
 $_m["Hierarchical"]
- = "Po vaï¿½nosti";
+ = "Po važnosti";
 
 // include/constedit.php3, row 97
 $_m["Hide value"]
@@ -5552,12 +5552,12 @@ $_m["And"]
 // include/searchbar.class.php3, row 567
 // include/searchlib.php3, row 39, 92, 101
 $_m["contains"]
- = "Sadrï¿½i";
+ = "Sadrži";
 
 // include/searchbar.class.php3, row 568
 // include/searchlib.php3, row 40, 92, 101
 $_m["begins with"]
- = "poï¿½inje sa";
+ = "poèinje sa";
 
 // include/searchbar.class.php3, row 569
 // include/searchlib.php3, row 92, 101
@@ -5616,7 +5616,7 @@ $_m["Select one..."]
 // include/modutils.php3, row 75
 // include/slicedit.php3, row 163
 $_m["Used Language File"]
- = "Koriï¿½tena jeziï¿½na datoteka";
+ = "Korištena jezièna datoteka";
 
 // include/modutils.php3, row 179
 $_m["No such module."]
@@ -5636,7 +5636,7 @@ $_m["Good"]
 
 // include/formutil.php3, row 68
 $_m["Bad"]
- = "Loï¿½e";
+ = "Loše";
 
 // include/formutil.php3, row 193
 $_m["Update & View"]
@@ -5660,11 +5660,11 @@ $_m["There are too many items."]
 
 // include/formutil.php3, row 892
 $_m["set"]
- = "Podeï¿½eno";
+ = "Podešeno";
 
 // include/formutil.php3, row 892
 $_m["unset"]
- = "Nije podeï¿½eno";
+ = "Nije podešeno";
 
 // include/formutil.php3, row 1004
 $_m["Unable to find tagprefix table %1"]
@@ -5706,7 +5706,7 @@ $_m["Selected"]
 
 // include/formutil.php3, row 1892
 $_m["Offer"]
- = "Ponuï¿½eno";
+ = "Ponuðeno";
 
 // include/formutil.php3, row 1943
 $_m["Change Password"]
@@ -5714,16 +5714,16 @@ $_m["Change Password"]
 
 // include/formutil.php3, row 1945
 $_m["Delete Password"]
- = "Obriï¿½ite lozinku";
+ = "Obrišite lozinku";
 
 // include/formutil.php3, row 1953
 // include/searchlib.php3, row 44, 92, 95, 98, 101
 $_m["not set"]
- = "Nije podeï¿½eno";
+ = "Nije podešeno";
 
 // include/formutil.php3, row 2734
 $_m["Submit"]
- = "Poï¿½aljite";
+ = "Pošaljite";
 
 // include/formutil.php3, row 2973
 $_m["Not used, yet"]
@@ -5784,7 +5784,7 @@ $_m["Date \\ Item ID"]
 // include/util.php3, row 981, 1038
 // include/slice.class.php3, row 247
 $_m["Error: Missing Reading Password"]
- = "GREï¿½KA: Nema lozinke za ï¿½itanje";
+ = "GREŠKA: Nema lozinke za èitanje";
 
 // include/util.php3, row 1375
 // include/msgpage.php3, row 63
@@ -5793,11 +5793,11 @@ $_m["Toolkit news message"]
 
 // include/util.php3, row 1608
 $_m["Internal error. File upload: Dir does not exist?!"]
- = "GREï¿½KA: Ne postoji odrediï¿½na mapa";
+ = "GREŠKA: Ne postoji odredišna mapa";
 
 // include/util.php3, row 1612
 $_m["File with this name already exists."]
- = "Veï¿½ postoji datoteka s tim imenom";
+ = "Veæ postoji datoteka s tim imenom";
 
 // include/util.php3, row 1619
 $_m["Can't move image  %s to %s"]
@@ -5809,11 +5809,11 @@ $_m["alerts alert"]
 
 // include/util.php3, row 1868
 $_m["alerts welcome"]
- = "Upozorenje: Dobro doï¿½li";
+ = "Upozorenje: Dobro došli";
 
 // include/util.php3, row 1869
 $_m["slice wizard welcome"]
- = "Dobro doï¿½li na ï¿½arobnjak stranica";
+ = "Dobro došli na èarobnjak stranica";
 
 // include/util.php3, row 1870
 $_m["other"]
@@ -5821,15 +5821,15 @@ $_m["other"]
 
 // include/util.php3, row 1878
 $_m["January"]
- = "Sijeï¿½anj";
+ = "Sijeèanj";
 
 // include/util.php3, row 1878
 $_m["February"]
- = "Veljaï¿½a";
+ = "Veljaèa";
 
 // include/util.php3, row 1878
 $_m["March"]
- = "Oï¿½ujak";
+ = "Ožujak";
 
 // include/util.php3, row 1878
 $_m["April"]
@@ -5897,11 +5897,11 @@ $_m["Alias for publish date"]
 
 // include/discussion.php3, row 222
 $_m["Alias for IP address of author's computer"]
- = "Alias za IP adresu raï¿½unala autora/ice";
+ = "Alias za IP adresu raèunala autora/ice";
 
 // include/discussion.php3, row 223
 $_m["Alias for checkbox used for choosing discussion comment"]
- = "Sinonim za kuï¿½icu koriï¿½tenu za izbor komentara diskusije ";
+ = "Sinonim za kuæicu korištenu za izbor komentara diskusije ";
 
 // include/discussion.php3, row 224
 $_m["Alias for images"]
@@ -5946,11 +5946,11 @@ $_m["Alias for link to discussion<br>\n"
 // include/discussion.php3, row 231
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
- = "Sinonim za gumbe Pokaï¿½i sve, pokaï¿½i odabrano, dodaj novo";
+ = "Sinonim za gumbe Pokaži sve, pokaži odabrano, dodaj novo";
 
 // include/discussion.php3, row 413
 $_m["3rd parameter filled in DiscussionMailList field"]
- = "Treï¿½i parametar popunjen u polju Mail lista diskusija";
+ = "Treæi parametar popunjen u polju Mail lista diskusija";
 
 // include/discussion.php3, row 415
 $_m["%1th parameter filled in DiscussionMailList field"]
@@ -5958,19 +5958,19 @@ $_m["%1th parameter filled in DiscussionMailList field"]
 
 // include/loginform.inc, row 39
 $_m["Welcome!"]
- = "Dobro doï¿½li!";
+ = "Dobro došli!";
 
 // include/loginform.inc, row 41
 $_m["Welcome! Please identify yourself with a username and a password:"]
- = "Dobro doï¿½li! Molimo Vas, upiï¿½ite korisniï¿½ko ime i lozinku:";
+ = "Dobro došli! Molimo Vas, upišite korisnièko ime i lozinku:";
 
 // include/loginform.inc, row 50
 $_m["Username:"]
- = "Korisniï¿½ko ime";
+ = "Korisnièko ime";
 
 // include/loginform.inc, row 53
 $_m["Type your username or mail"]
- = "Upiï¿½ite svoje korisniï¿½ko ime ili e-mail";
+ = "Upišite svoje korisnièko ime ili e-mail";
 
 // include/loginform.inc, row 56
 $_m["Password:"]
@@ -5982,7 +5982,7 @@ $_m["Login now"]
 
 // include/loginform.inc, row 73
 $_m["Please try again!"]
- = "Molimo Vsa, pokuï¿½ajte ponovo!";
+ = "Molimo Vsa, pokušajte ponovo!";
 
 // include/loginform.inc, row 76
 $_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
@@ -6012,7 +6012,7 @@ $_m["No ID for MLX"]
 // include/itemview.php3, row 108
 // include/field.class.php3, row 394
 $_m["number of found items"]
- = "broj pronaï¿½enih stavki";
+ = "broj pronaðenih stavki";
 
 // include/item.php3, row 93
 // include/field.class.php3, row 395
@@ -6037,12 +6037,12 @@ $_m["alias for Short Item ID"]
 // include/item.php3, row 102, 103
 // include/field.class.php3, row 404, 405
 $_m["alias used on admin page index.php3 for itemedit url"]
- = "Sinonim koriï¿½ten na admin stranici index.php3 za web adresu";
+ = "Sinonim korišten na admin stranici index.php3 za web adresu";
 
 // include/item.php3, row 104
 // include/field.class.php3, row 406
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "Sinonim koriï¿½ten na admin stranici index.php3 za web adresu diskusija";
+ = "Sinonim korišten na admin stranici index.php3 za web adresu diskusija";
 
 // include/item.php3, row 105
 // include/field.class.php3, row 407
@@ -6090,7 +6090,7 @@ $_m["Constant value"]
 
 // include/item.php3, row 142
 $_m["Constant priority"]
- = "Vaï¿½nost konstanti";
+ = "Važnost konstanti";
 
 // include/item.php3, row 143
 $_m["Constant group id"]
@@ -6126,15 +6126,15 @@ $_m["Alias for %1"]
 
 // include/item.php3, row 1415
 $_m["on"]
- = "Ukljuï¿½eno";
+ = "Ukljuèeno";
 
 // include/item.php3, row 1415
 $_m["off"]
- = "Iskljuï¿½eno";
+ = "Iskljuèeno";
 
 // include/item.php3, row 1584
 $_m["Home"]
- = "Povratak na poï¿½etnu stranicu";
+ = "Povratak na poèetnu stranicu";
 
 // include/actions.php3, row 60
 $_m["Move to Active"]
@@ -6142,11 +6142,11 @@ $_m["Move to Active"]
 
 // include/actions.php3, row 61
 $_m["Move to Holding bin"]
- = "Preselite na ï¿½ekanje";
+ = "Preselite na èekanje";
 
 // include/actions.php3, row 62
 $_m["Move to Trash"]
- = "Preselite u smeï¿½e";
+ = "Preselite u smeæe";
 
 // include/actions.php3, row 157, 250
 $_m["No slice selected"]
@@ -6206,7 +6206,7 @@ $_m["complete filter text"]
 
 // include/tv_email.php3, row 40, 48
 $_m["howoften"]
- = "Kako ï¿½esto";
+ = "Kako èesto";
 
 // include/tv_email.php3, row 41
 $_m["Anonym Form URL (set in Alerts Admin - Settings)"]
@@ -6226,19 +6226,19 @@ $_m["Collection Form URL (set in Alerts Admin - Settings)"]
 
 // include/tv_email.php3, row 50
 $_m["email confirmed"]
- = "e-mail potvrï¿½en";
+ = "e-mail potvrðen";
 
 // include/tv_email.php3, row 55
 $_m["Aliases for Slice Wizard Welcome"]
- = "Sinonim za Dobrodoï¿½li na ï¿½arobnjak stranica";
+ = "Sinonim za Dobrodošli na èarobnjak stranica";
 
 // include/tv_email.php3, row 58
 $_m["New user name"]
- = "Novo korisniï¿½ko ime";
+ = "Novo korisnièko ime";
 
 // include/tv_email.php3, row 59
 $_m["New user login name"]
- = "Nov korisniï¿½ki login";
+ = "Nov korisnièki login";
 
 // include/tv_email.php3, row 60
 $_m["New user role (editor / admin)"]
@@ -6254,7 +6254,7 @@ $_m["My email"]
 
 // include/tv_email.php3, row 97
 $_m["Email template"]
- = "E-mail predloï¿½ak";
+ = "E-mail predložak";
 
 // include/tv_email.php3, row 110
 $_m["Email type"]
@@ -6263,7 +6263,7 @@ $_m["Email type"]
 // include/tv_email.php3, row 158
 // include/menu.php3, row 169
 $_m["Email templates"]
- = "e-mail predloï¿½ci";
+ = "e-mail predlošci";
 
 // include/tv_email.php3, row 178
 $_m["Reply to"]
@@ -6295,7 +6295,7 @@ $_m["Site"]
 
 // include/menu_util.php3, row 71
 $_m["Reader Management Slice"]
- = "Stranica za ureï¿½ivanje postavki za ï¿½itanje";
+ = "Stranica za ureðivanje postavki za èitanje";
 
 // include/menu_util.php3, row 106, 182
 $_m["New slice"]
@@ -6303,7 +6303,7 @@ $_m["New slice"]
 
 // include/menu_util.php3, row 173
 $_m["Reader management"]
- = "Podaci o alatu za ï¿½itanje";
+ = "Podaci o alatu za èitanje";
 
 // include/menu_util.php3, row 188
 $_m["logout"]
@@ -6316,7 +6316,7 @@ $_m["Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progr
 // include/date.php3, row 161
 // include/validate.php3, row 450, 505
 $_m["Error in"]
- = "Greï¿½ka u";
+ = "Greška u";
 
 // include/filedit.php3, row 89
 $_m["Back to file list"]
@@ -6351,11 +6351,11 @@ $_m["Save changes"]
 
 // include/filedit.php3, row 136
 $_m["Reset content"]
- = "Obnovite sadrï¿½aj";
+ = "Obnovite sadržaj";
 
 // include/filedit.php3, row 142
 $_m["File content"]
- = "Sadrï¿½aj datoteke";
+ = "Sadržaj datoteke";
 
 // include/filedit.php3, row 151
 // include/fileman.php3, row 109
@@ -6368,7 +6368,7 @@ $_m["This is a file of type"]
 
 // include/filedit.php3, row 154
 $_m["I can't view it. If you want to view or edit it, change it's extension."]
- = "Ne mogu vidjeti datoteku. Ako ju ï¿½elite pregledati ili urediti, promjenite njen nastavak";
+ = "Ne mogu vidjeti datoteku. Ako ju želite pregledati ili urediti, promjenite njen nastavak";
 
 // include/metabase.class.php3, row 883
 $_m["Manage %1"]
@@ -6384,15 +6384,15 @@ $_m["All categories"]
 
 // include/slicedit.php3, row 48
 $_m["User not found"]
- = "Korisnik/ica nije pronaï¿½en";
+ = "Korisnik/ica nije pronaðen";
 
 // include/slicedit.php3, row 65
 $_m["Slice not found."]
- = "Stranica nije pronaï¿½ena";
+ = "Stranica nije pronaðena";
 
 // include/slicedit.php3, row 79
 $_m["Error mailing"]
- = "Greï¿½ka u slanju e-maila";
+ = "Greška u slanju e-maila";
 
 // include/slicedit.php3, row 157
 $_m["Upload URL"]
@@ -6404,19 +6404,19 @@ $_m["Language Control Slice"]
 
 // include/slicedit.php3, row 172
 $_m["This File Manager Directory is already used by another slice."]
- = "Mapu za ureï¿½ivanje datoteka veï¿½ koristi druga stranica";
+ = "Mapu za ureðivanje datoteka veæ koristi druga stranica";
 
 // include/slicedit.php3, row 306
 $_m["Error when copying constants."]
- = "Greï¿½ka u kopiranju konstanti";
+ = "Greška u kopiranju konstanti";
 
 // include/slicedit.php3, row 315
 $_m["Error when copying views."]
- = "Greï¿½ka u kopiranju pogleda";
+ = "Greška u kopiranju pogleda";
 
 // include/slicedit.php3, row 322
 $_m["Internal error when changing user role."]
- = "Interna greï¿½ka u promjeni uloge korisnika/ice";
+ = "Interna greška u promjeni uloge korisnika/ice";
 
 // include/menu.php3, row 64
 $_m["View site"]
@@ -6424,7 +6424,7 @@ $_m["View site"]
 
 // include/menu.php3, row 79, 80, 151
 $_m["Item Manager"]
- = "Ureï¿½ivanje stavki";
+ = "Ureðivanje stavki";
 
 // include/menu.php3, row 87
 $_m["Slice Admin"]
@@ -6469,7 +6469,7 @@ $_m["Permissions"]
 
 // include/menu.php3, row 144
 $_m["Assign"]
- = "Doznaï¿½ite";
+ = "Doznaèite";
 
 // include/menu.php3, row 147
 $_m["Design"]
@@ -6493,7 +6493,7 @@ $_m["Sets of Items"]
 
 // include/menu.php3, row 154
 $_m["Content Pooling"]
- = "Sadrï¿½aj";
+ = "Sadržaj";
 
 // include/menu.php3, row 155
 $_m["Nodes"]
@@ -6501,7 +6501,7 @@ $_m["Nodes"]
 
 // include/menu.php3, row 156
 $_m["Inner Node Feeding"]
- = "Punjenje sadrï¿½aja";
+ = "Punjenje sadržaja";
 
 // include/menu.php3, row 157
 $_m["Inter Node Import"]
@@ -6534,7 +6534,7 @@ $_m["Change field IDs"]
 
 // include/menu.php3, row 168
 $_m["Anonymous Form Wizard"]
- = "ï¿½arobnjak za anonimna polja";
+ = "Èarobnjak za anonimna polja";
 
 // include/menu.php3, row 178
 $_m["Mailman: create list"]
@@ -6546,7 +6546,7 @@ $_m["Folders"]
 
 // include/menu.php3, row 188
 $_m["... pending"]
- = "Na ï¿½ekanju";
+ = "Na èekanju";
 
 // include/menu.php3, row 189
 $_m["... expired"]
@@ -6554,7 +6554,7 @@ $_m["... expired"]
 
 // include/menu.php3, row 191, 245
 $_m["Trash bin"]
- = "Smeï¿½e";
+ = "Smeæe";
 
 // include/menu.php3, row 194
 $_m["Bookmarks"]
@@ -6566,7 +6566,7 @@ $_m["Setting"]
 
 // include/menu.php3, row 204, 251
 $_m["Empty trash"]
- = "Ispraznite smeï¿½e";
+ = "Ispraznite smeæe";
 
 // include/menu.php3, row 204, 251
 $_m["Are You sure to empty trash?"]
@@ -6582,7 +6582,7 @@ $_m["Set Debug ON"]
 
 // include/menu.php3, row 221
 $_m["List of Alerts modules using this slice as Reader Management."]
- = "Lista modula upozorenja koristeï¿½i ove stranice kao organizator";
+ = "Lista modula upozorenja koristeæi ove stranice kao organizator";
 
 // include/menu.php3, row 223
 $_m["Bulk Emails"]
@@ -6594,7 +6594,7 @@ $_m["Send bulk email to selected users or to users in Stored searches"]
 
 // include/menu.php3, row 226
 $_m["Send emails"]
- = "Poï¿½aljite e-mailove";
+ = "Pošaljite e-mailove";
 
 // include/menu.php3, row 235
 $_m["Alerts Sent"]
@@ -6602,7 +6602,7 @@ $_m["Alerts Sent"]
 
 // include/menu.php3, row 235
 $_m["List of Alerts modules sending items from this slice."]
- = "Lista modula upozorenja ï¿½aljuï¿½i stavke sa ove stranice";
+ = "Lista modula upozorenja šaljuæi stavke sa ove stranice";
 
 // include/menu.php3, row 248
 $_m["Add AA"]
@@ -6630,7 +6630,7 @@ $_m["Create new"]
 
 // include/menu_aa.php3, row 40
 $_m["Create new Wizard"]
- = "Napravite novog ï¿½arobnjaka";
+ = "Napravite novog èarobnjaka";
 
 // include/menu_aa.php3, row 42
 $_m["Edit Jump"]
@@ -6642,15 +6642,15 @@ $_m["Slice structure"]
 
 // include/menu_aa.php3, row 58
 $_m["Wizard"]
- = "ï¿½arobnjak";
+ = "Èarobnjak";
 
 // include/menu_aa.php3, row 59
 $_m["Welcomes"]
- = "Dobro doï¿½li!";
+ = "Dobro došli!";
 
 // include/menu_aa.php3, row 60
 $_m["Templates"]
- = "Predloï¿½ci";
+ = "Predlošci";
 
 // include/menu_aa.php3, row 62
 $_m["Feeds"]
@@ -6671,7 +6671,7 @@ $_m["Run feeding"]
 // include/menu_aa.php3, row 68
 // include/tv_misc.php3, row 129, 130
 $_m["Cron"]
- = "Pokretanje u odreï¿½eno vrijeme";
+ = "Pokretanje u odreðeno vrijeme";
 
 // include/menu_aa.php3, row 69
 $_m["View Log"]
@@ -6731,7 +6731,7 @@ $_m["No slices"]
 
 // include/fileman.php3, row 33
 $_m["Size"]
- = "Veliï¿½ina";
+ = "Velièina";
 
 // include/fileman.php3, row 35
 $_m["Last modified"]
@@ -6747,7 +6747,7 @@ $_m["Wrong file name."]
 
 // include/fileman.php3, row 305
 $_m["File already exists"]
- = "Datoteka veï¿½ postoji";
+ = "Datoteka veæ postoji";
 
 // include/fileman.php3, row 309, 468
 $_m["Unable to create file"]
@@ -6763,7 +6763,7 @@ $_m["Unable to create directory"]
 
 // include/fileman.php3, row 337
 $_m["First delete all files from directory"]
- = "Prvo obriï¿½ite sve datoteke iz mape";
+ = "Prvo obrišite sve datoteke iz mape";
 
 // include/fileman.php3, row 339
 $_m["Unable to delete directory"]
@@ -6775,7 +6775,7 @@ $_m["Unable to delete file"]
 
 // include/fileman.php3, row 363
 $_m["Error: "]
- = "Greï¿½ka";
+ = "Greška";
 
 // include/fileman.php3, row 375
 $_m["Unable to open file for writing"]
@@ -6783,11 +6783,11 @@ $_m["Unable to open file for writing"]
 
 // include/fileman.php3, row 383
 $_m["Error writing to file"]
- = "Greï¿½ka u pisanju u datoteku";
+ = "Greška u pisanju u datoteku";
 
 // include/fileman.php3, row 394
 $_m["File with this name already exists"]
- = "Veï¿½ postoji datoteka s tim imenom";
+ = "Veæ postoji datoteka s tim imenom";
 
 // include/fileman.php3, row 397
 $_m["Unable to rename"]
@@ -6799,11 +6799,11 @@ $_m["Wrong directory name"]
 
 // include/fileman.php3, row 460
 $_m["Files with the same names as some in the template already exist. Please change the file names first."]
- = "Datoteke imaju isto ime kao neke postojeï¿½e u prdloï¿½cima. Molimo Vas da prvo promijenite imena datoteka.";
+ = "Datoteke imaju isto ime kao neke postojeæe u prdlošcima. Molimo Vas da prvo promijenite imena datoteka.";
 
 // include/fileman.php3, row 515
 $_m["Are you sure you want to delete the selected files and folders?"]
- = "Da li sigurno ï¿½elite obrisati odabrane datoteke i mape";
+ = "Da li sigurno želite obrisati odabrane datoteke i mape";
 
 // include/manager.class.php3, row 83
 $_m["Searchbar"]
@@ -6827,7 +6827,7 @@ $_m["Module ID"]
 
 // include/manager.class.php3, row 147
 $_m["No item found"]
- = "Nije pronaï¿½eno";
+ = "Nije pronaðeno";
 
 // include/manager.class.php3, row 198
 $_m["Publish date"]
@@ -6879,19 +6879,19 @@ $_m["Can't change user"]
 
 // include/tabledit_util.php3, row 72, 453
 $_m["Insert was successfull."]
- = "Umetanje uspjeï¿½no";
+ = "Umetanje uspješno";
 
 // include/tabledit_util.php3, row 80, 107, 364
 $_m["Update was successfull."]
- = "Obnavljanje uspjeï¿½no";
+ = "Obnavljanje uspješno";
 
 // include/tabledit_util.php3, row 122, 128
 $_m["Delete was successfull."]
- = "Brisanje uspjeï¿½no";
+ = "Brisanje uspješno";
 
 // include/tabledit_util.php3, row 537
 $_m["Value of %1 should be between %2 and %3."]
- = "Vrijednost od %1 trebala bi biti izmeï¿½u %2 i %3.";
+ = "Vrijednost od %1 trebala bi biti izmeðu %2 i %3.";
 
 // include/tabledit_util.php3, row 576
 $_m["Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit"]
@@ -6899,11 +6899,11 @@ $_m["Table do not have set primary key on single column. You can specify primary
 
 // include/tabledit_util.php3, row 677
 $_m["Wrong value: a number between %1 and %2 is expected."]
- = "Neispravna vrijednost: Oï¿½ekivan je broj izmeï¿½u %1 i %2 .";
+ = "Neispravna vrijednost: Oèekivan je broj izmeðu %1 i %2 .";
 
 // include/tabledit_util.php3, row 687
 $_m["Are you sure you want to permanently DELETE this record?"]
- = "Jeste li sigurni da ï¿½elite ZAUVIJEK obrisati oznaï¿½ene zapis";
+ = "Jeste li sigurni da želite ZAUVIJEK obrisati oznaèene zapis";
 
 // include/constedit_util.php3, row 117, 122
 $_m["Select"]
@@ -6979,7 +6979,7 @@ $_m["This field is required."]
 
 // include/validate.php3, row 541
 $_m["This field is required (marked by *)."]
- = "Obavezno polje (oznaï¿½eno sa *).";
+ = "Obavezno polje (oznaèeno sa *).";
 
 // include/validate.php3, row 550
 $_m["Not a valid integer number."]
@@ -7171,19 +7171,19 @@ $_m["ResampleImage unable to %1"]
 
 // include/imagefunc.php3, row 180
 $_m["Type not supported for resize"]
- = "Tip datoteke nije podrï¿½an za promjenu veliï¿½ine";
+ = "Tip datoteke nije podržan za promjenu velièine";
 
 // include/init_page.php3, row 173
 $_m["You do not have permission to edit items in the slice"]
- = "Nemate dozvolu za ureï¿½ivanje stavki na ovoj stranici";
+ = "Nemate dozvolu za ureðivanje stavki na ovoj stranici";
 
 // include/init_page.php3, row 198
 $_m["No slice found for you"]
- = "Nema stranice pronaï¿½ene za Vas";
+ = "Nema stranice pronaðene za Vas";
 
 // include/tv_misc.php3, row 66, 67
 $_m["Wizard Welcomes"]
- = "ï¿½arobnjak za Stranice - Dobro doï¿½li/e";
+ = "Èarobnjak za Stranice - Dobro došli/e";
 
 // include/tv_misc.php3, row 73
 $_m["mail body"]
@@ -7195,11 +7195,11 @@ $_m["From: mail header"]
 
 // include/tv_misc.php3, row 99, 100
 $_m["Wizard Templates"]
- = "Predloï¿½ci ï¿½arobnjaka";
+ = "Predlošci èarobnjaka";
 
 // include/tv_misc.php3, row 125
 $_m["For help see FAQ: "]
- = "Za pomoï¿½ pogledajte ï¿½esto postavljana pitanja";
+ = "Za pomoæ pogledajte Èesto postavljana pitanja";
 
 // include/tv_misc.php3, row 152
 $_m["COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."]
@@ -7243,19 +7243,19 @@ $_m["confirm mail"]
 
 // include/tableviews.php3, row 73, 80
 $_m["number of days, 0 = off"]
- = "broj dana, 0 = iskljuï¿½eno";
+ = "broj dana, 0 = iskljuèeno";
 
 // include/tableviews.php3, row 79
 $_m["delete not confirmed"]
- = "Nije potvrï¿½eno brisanje";
+ = "Nije potvrðeno brisanje";
 
 // include/tableviews.php3, row 86
 $_m["last confirm mail"]
- = "Zadnji potvrï¿½eni e-mail";
+ = "Zadnji potvrðeni e-mail";
 
 // include/tableviews.php3, row 93
 $_m["last delete not confirmed"]
- = "zadnje brisanje nije potvrï¿½eno";
+ = "zadnje brisanje nije potvrðeno";
 
 // include/tableviews.php3, row 109
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
@@ -7556,7 +7556,7 @@ $_m["SAVE CHANGE"]
 
 // include/widget.class.php3, row 349
 $_m["Text Area"]
- = "Podruï¿½je za tekst";
+ = "Podruèje za tekst";
 
 // include/widget.class.php3, row 363, 421, 456, 559, 935, 975
 $_m["Row count"]
@@ -7564,7 +7564,7 @@ $_m["Row count"]
 
 // include/widget.class.php3, row 409
 $_m["Textarea with Presets"]
- = "Podruï¿½je za tekst sa predefiniranim stilovima";
+ = "Podruèje za tekst sa predefiniranim stilovima";
 
 // include/widget.class.php3, row 420, 594, 639, 679, 858, 934, 974, 1092, 1167
 $_m["Constants or slice"]
@@ -7580,11 +7580,11 @@ $_m["Column count"]
 
 // include/widget.class.php3, row 445
 $_m["Rich Edit Text Area"]
- = "RTF ureï¿½ivanje teksta";
+ = "RTF ureðivanje teksta";
 
 // include/widget.class.php3, row 458
 $_m["type: class (default) / iframe"]
- = "upiï¿½ite: class (default) / iframe";
+ = "upišite: class (default) / iframe";
 
 // include/widget.class.php3, row 508
 $_m["Text Field"]
@@ -7596,7 +7596,7 @@ $_m["Max characters"]
 
 // include/widget.class.php3, row 522, 595
 $_m["max count of characters entered (maxlength parameter)"]
- = "Najveï¿½i dozvoljeni broj uneï¿½enih znakova";
+ = "Najveæi dozvoljeni broj unešenih znakova";
 
 // include/widget.class.php3, row 523, 1208
 $_m["Width"]
@@ -7604,7 +7604,7 @@ $_m["Width"]
 
 // include/widget.class.php3, row 523, 596
 $_m["width of the field in characters (size parameter)"]
- = "ï¿½irina polja u znakovima";
+ = "Širina polja u znakovima";
 
 // include/widget.class.php3, row 544
 $_m["Multiple Text Field"]
@@ -7624,11 +7624,11 @@ $_m["Text Field with Presets"]
 
 // include/widget.class.php3, row 595
 $_m["max characters"]
- = "Najveï¿½i dozvoljeni broj znakova";
+ = "Najveæi dozvoljeni broj znakova";
 
 // include/widget.class.php3, row 596
 $_m["width"]
- = "ï¿½irina";
+ = "Širina";
 
 // include/widget.class.php3, row 597, 640, 682, 861, 936, 978, 1102
 $_m["slice field"]
@@ -7660,7 +7660,7 @@ $_m["Second Field"]
 
 // include/widget.class.php3, row 600
 $_m["field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"]
- = "ID polja drugog tekstualnog polja, gdje ï¿½e biti prikazana vrijednost polja za izbor ";
+ = "ID polja drugog tekstualnog polja, gdje æe biti prikazana vrijednost polja za izbor ";
 
 // include/widget.class.php3, row 601
 $_m["Add to Constant"]
@@ -7668,7 +7668,7 @@ $_m["Add to Constant"]
 
 // include/widget.class.php3, row 601
 $_m["if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"]
- = "Ako je postavljeno na 1, korisniï¿½ki upis vrijednosti je spremljenu konstante(Samo ako vrijednost veï¿½ nije upisana)";
+ = "Ako je postavljeno na 1, korisnièki upis vrijednosti je spremljenu konstante(Samo ako vrijednost veæ nije upisana)";
 
 // include/widget.class.php3, row 602, 642, 683, 862, 937, 979, 1098
 $_m["Show items from bins"]
@@ -7696,7 +7696,7 @@ $_m["(for slices only) Sort the items in specified order. Use sort[] array"]
 
 // include/widget.class.php3, row 625
 $_m["Select Box"]
- = "Izaberite kuï¿½icu";
+ = "Izaberite kuæicu";
 
 // include/widget.class.php3, row 665
 $_m["Radio Button"]
@@ -7716,23 +7716,23 @@ $_m["Move right"]
 
 // include/widget.class.php3, row 681, 860
 $_m["Should the function move right or down to the next value?"]
- = "Da li da se funkcija pomakne desno ili dolje na slijedeï¿½u vrijednost";
+ = "Da li da se funkcija pomakne desno ili dolje na slijedeæu vrijednost";
 
 // include/widget.class.php3, row 720
 $_m["Starting Year"]
- = "Poï¿½etna godina";
+ = "Poèetna godina";
 
 // include/widget.class.php3, row 720
 $_m["The (relative) start of the year interval"]
- = "Poï¿½etak godiï¿½njeg intervala";
+ = "Poèetak godišnjeg intervala";
 
 // include/widget.class.php3, row 721
 $_m["Ending Year"]
- = "Zavrï¿½na godina";
+ = "Završna godina";
 
 // include/widget.class.php3, row 721
 $_m["The (relative) end of the year interval"]
- = "Kraj godiï¿½njeg intervala";
+ = "Kraj godišnjeg intervala";
 
 // include/widget.class.php3, row 722
 $_m["Relative"]
@@ -7744,39 +7744,39 @@ $_m["If this is 1, the starting and ending year will be taken as relative - the 
 
 // include/widget.class.php3, row 723
 $_m["Show time"]
- = "Pokaï¿½i vrijeme";
+ = "Pokaži vrijeme";
 
 // include/widget.class.php3, row 723
 $_m["show the time box? (1 means Yes, undefined means No)"]
- = "Pokaï¿½i kuï¿½icu sa vremenom (1 je Da, nedefinirano Ne)";
+ = "Pokaži kuæicu sa vremenom (1 je Da, nedefinirano Ne)";
 
 // include/widget.class.php3, row 811
 $_m["Check Box"]
- = "Kuï¿½ica za izbor";
+ = "Kuæica za izbor";
 
 // include/widget.class.php3, row 844
 $_m["Multiple Checkboxes"]
- = "Viï¿½estruke kuï¿½ice izbora";
+ = "Višestruke kuæice izbora";
 
 // include/widget.class.php3, row 920
 $_m["Multiple Selectbox"]
- = "Viï¿½estruke kuï¿½ice izbora";
+ = "Višestruke kuæice izbora";
 
 // include/widget.class.php3, row 960
 $_m["Two Boxes"]
- = "Dvije kuï¿½ice";
+ = "Dvije kuæice";
 
 // include/widget.class.php3, row 976
 $_m["Title of \"Offer\" selectbox"]
- = "Naslov od \"Ponuï¿½eno\" kuï¿½ica za izbor";
+ = "Naslov od \"Ponuðeno\" kuæica za izbor";
 
 // include/widget.class.php3, row 976
 $_m["Our offer"]
- = "Naï¿½a ponuda";
+ = "Naša ponuda";
 
 // include/widget.class.php3, row 977
 $_m["Title of \"Selected\" selectbox"]
- = "Naslov od  \"Odabrano\" kuï¿½ica za izbor";
+ = "Naslov od  \"Odabrano\" kuæica za izbor";
 
 // include/widget.class.php3, row 1002
 $_m["File Upload"]
@@ -7792,7 +7792,7 @@ $_m["Label"]
 
 // include/widget.class.php3, row 1017
 $_m["To be printed before the file upload field"]
- = "Bite ï¿½e prikazano prije polja za slanje datoteka";
+ = "Bite æe prikazano prije polja za slanje datoteka";
 
 // include/widget.class.php3, row 1017
 $_m["File: "]
@@ -7808,7 +7808,7 @@ $_m["appears beneath the file upload field"]
 
 // include/widget.class.php3, row 1018
 $_m["You can select a file ..."]
- = "Moï¿½ete izabrati datoteku ...";
+ = "Možete izabrati datoteku ...";
 
 // include/widget.class.php3, row 1081
 $_m["Related Item Window"]
@@ -7860,27 +7860,27 @@ $_m["Do not show"]
 
 // include/widget.class.php3, row 1153
 $_m["Hierachical constants"]
- = "Konstante po vaï¿½nosti";
+ = "Konstante po važnosti";
 
 // include/widget.class.php3, row 1168
 $_m["Count of level boxes"]
- = "Broj kuï¿½ica razina";
+ = "Broj kuæica razina";
 
 // include/widget.class.php3, row 1169
 $_m["Box width"]
- = "ï¿½irina prozora";
+ = "Širina prozora";
 
 // include/widget.class.php3, row 1169
 $_m["Width in characters"]
- = "ï¿½irina u znakovima";
+ = "Širina u znakovima";
 
 // include/widget.class.php3, row 1170
 $_m["Size of target"]
- = "Odrediï¿½na veliï¿½ina";
+ = "Odredišna velièina";
 
 // include/widget.class.php3, row 1170
 $_m["Lines in the target select box"]
- = "Broj linija u udrediï¿½nom prozoru";
+ = "Broj linija u udredišnom prozoru";
 
 // include/widget.class.php3, row 1171
 $_m["Horizontal"]
@@ -7888,15 +7888,15 @@ $_m["Horizontal"]
 
 // include/widget.class.php3, row 1171
 $_m["Show levels horizontally"]
- = "Pokaï¿½ite razine vodoravno";
+ = "Pokažite razine vodoravno";
 
 // include/widget.class.php3, row 1172
 $_m["First selectable"]
- = "Prvi moguï¿½i odabir";
+ = "Prvi moguæi odabir";
 
 // include/widget.class.php3, row 1172
 $_m["First level which will have a Select button"]
- = "Prva razina koja ï¿½e imati gumb: Odaberite";
+ = "Prva razina koja æe imati gumb: Odaberite";
 
 // include/widget.class.php3, row 1173
 $_m["Level names"]
@@ -7908,7 +7908,7 @@ $_m["Names of level boxes, separated by tilde (~). Replace the default Level 0, 
 
 // include/widget.class.php3, row 1173
 $_m["Top level~Second level~Keyword"]
- = "Prva razina~Druga razina~Kljuï¿½na rijeï¿½";
+ = "Prva razina~Druga razina~Kljuèna rijeè";
 
 // include/widget.class.php3, row 1194
 $_m["Password and Change password"]
@@ -7928,11 +7928,11 @@ $_m["Replaces the default 'Change Password'"]
 
 // include/widget.class.php3, row 1209
 $_m["Change your password"]
- = "Promijenite Vaï¿½u lozinku";
+ = "Promijenite Vašu lozinku";
 
 // include/widget.class.php3, row 1210
 $_m["Label for Retype New Password"]
- = "Oznaka za Upiï¿½ite ponovo Novu lozinku";
+ = "Oznaka za Upišite ponovo Novu lozinku";
 
 // include/widget.class.php3, row 1210
 $_m["Replaces the default \"Retype New Password\""]
@@ -7940,11 +7940,11 @@ $_m["Replaces the default \"Retype New Password\""]
 
 // include/widget.class.php3, row 1210
 $_m["Retype the new password"]
- = "Upiï¿½ite joï¿½ jednom novu lozinku";
+ = "Upišite još jednom novu lozinku";
 
 // include/widget.class.php3, row 1211
 $_m["Label for Delete Password"]
- = "Oznaka za obriï¿½ite lozinku";
+ = "Oznaka za obrišite lozinku";
 
 // include/widget.class.php3, row 1211
 $_m["Replaces the default \"Delete Password\""]
@@ -7952,27 +7952,27 @@ $_m["Replaces the default \"Delete Password\""]
 
 // include/widget.class.php3, row 1211
 $_m["Delete password (set to empty)"]
- = "Obriï¿½ite lozinku (postavlja praznu lozinku)";
+ = "Obrišite lozinku (postavlja praznu lozinku)";
 
 // include/widget.class.php3, row 1212
 $_m["Help for Change Password"]
- = "Pomoï¿½ za promjenu lozinke";
+ = "Pomoæ za promjenu lozinke";
 
 // include/widget.class.php3, row 1212
 $_m["Help text under the Change Password box (default: no text)"]
- = "Tekst pomoï¿½i unutar Polja za promjenu lozinke (pretpostavljeno: nema teksta)";
+ = "Tekst pomoæi unutar Polja za promjenu lozinke (pretpostavljeno: nema teksta)";
 
 // include/widget.class.php3, row 1212
 $_m["To change password, enter the new password here and below"]
- = "Za promjenu lozinke, upiï¿½ite novu lozinku ovdje i ispod";
+ = "Za promjenu lozinke, upišite novu lozinku ovdje i ispod";
 
 // include/widget.class.php3, row 1213
 $_m["Help for Retype New Password"]
- = "Pomoï¿½ za Upiï¿½ite novu lozinku";
+ = "Pomoæ za Upišite novu lozinku";
 
 // include/widget.class.php3, row 1213
 $_m["Help text under the Retype New Password box (default: no text)"]
- = "Tekst pomoï¿½i unutar Polja za promjenu lozinke (pretpostavljeno: nema teksta)";
+ = "Tekst pomoæi unutar Polja za promjenu lozinke (pretpostavljeno: nema teksta)";
 
 // include/widget.class.php3, row 1213
 $_m["Retype the new password exactly the same as you entered into \"Change Password\"."]

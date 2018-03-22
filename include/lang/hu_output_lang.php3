@@ -314,11 +314,11 @@ $_m["All"]
 
 // include/easy_scroller.php3, row 146, 272
 $_m["Previous"]
- = "Elï¿½zï¿½";
+ = "Elõzõ";
 
 // include/easy_scroller.php3, row 164, 290
 $_m["Next"]
- = "Kï¿½vetkezï¿½";
+ = "Következõ";
 
 // include/itemview.php3, row 332
 $_m["No comment was selected"]

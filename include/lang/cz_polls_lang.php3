@@ -17,7 +17,7 @@ setlocale(LC_NUMERIC, 'en_US');  // use numeric with dot - there is problem, whe
 
 // modules/polls/index.php3, row 41
 $_m["You do not have permission to manage Polls"]
- = "Nemï¿½te prï¿½va upravovat ankety";
+ = "Nemáte práva upravovat ankety";
 
 // modules/polls/index.php3, row 75
 $_m["ID"]
@@ -25,12 +25,12 @@ $_m["ID"]
 
 // modules/polls/index.php3, row 75
 $_m["Poll Question"]
- = "Anketnï¿½ otï¿½zka";
+ = "Anketní otázka";
 
 // modules/polls/index.php3, row 75
 // modules/polls/polledit.php3, row 188, 195
 $_m["Publish Date"]
- = "Datum zveï¿½ejnï¿½nï¿½";
+ = "Datum zveøejnìní";
 
 // modules/polls/index.php3, row 75
 // modules/polls/polledit.php3, row 189, 196
@@ -39,11 +39,11 @@ $_m["Expiry Date"]
 
 // modules/polls/polledit.php3, row 52
 $_m["No permission to add/edit poll."]
- = "Nemï¿½te prï¿½va vklï¿½dat ï¿½i mï¿½nit anketu.";
+ = "Nemáte práva vkládat èi mìnit anketu.";
 
 // modules/polls/polledit.php3, row 95
 $_m["Can't insert new poll"]
- = "Novou anketu se nepodaï¿½ilo vluï¿½it";
+ = "Novou anketu se nepodaøilo vlužit";
 
 // modules/polls/polledit.php3, row 137
 $_m["Edit poll"]
@@ -51,15 +51,15 @@ $_m["Edit poll"]
 
 // modules/polls/polledit.php3, row 137, 151
 $_m["Add poll"]
- = "Novï¿½ anketa";
+ = "Nová anketa";
 
 // modules/polls/polledit.php3, row 143
 $_m["There are too many related items. The number of related items is limited."]
- = "Je vybrï¿½no pï¿½ï¿½liï¿½ mnoho souvisejï¿½cï¿½ch ï¿½lï¿½nkï¿½.";
+ = "Je vybráno pøíliš mnoho souvisejících èlánkù.";
 
 // modules/polls/polledit.php3, row 169
 $_m["Insert question and answers"]
- = "Vloï¿½te anketnï¿½ otï¿½zku a odpovï¿½di";
+ = "Vložte anketní otázku a odpovìdi";
 
 // modules/polls/polledit.php3, row 186, 193
 $_m["Headline"]
@@ -67,29 +67,29 @@ $_m["Headline"]
 
 // modules/polls/polledit.php3, row 186, 193
 $_m["Question"]
- = "Otï¿½zka";
+ = "Otázka";
 
 // modules/polls/polledit.php3, row 187, 194
 $_m["Insert new answers and choose their order"]
- = "Vloï¿½te moï¿½nï¿½ odpovï¿½di a nastavte jejich poï¿½adï¿½";
+ = "Vložte možné odpovìdi a nastavte jejich poøadí";
 
 // modules/polls/polledit.php3, row 199
 $_m["Polls settings"]
- = "Nastavenï¿½ ankety";
+ = "Nastavení ankety";
 
 // modules/polls/polledit.php3, row 201
-$_m["Anketa je uzamï¿½ena (nelze hlasovat)"]
+$_m["Anketa je uzamèena (nelze hlasovat)"]
  = "";
 
 // modules/polls/polledit.php3, row 202
 // modules/polls/modedit.php3, row 213
 $_m["Use logging"]
- = "Zaznamat kaï¿½dï¿½ hlas do logu";
+ = "Zaznamat každý hlas do logu";
 
 // modules/polls/polledit.php3, row 203
 // modules/polls/modedit.php3, row 214
 $_m["Use IP locking"]
- = "Neumoï¿½nit hlasovat dvakrï¿½t ze stejnï¿½ IP adresy";
+ = "Neumožnit hlasovat dvakrát ze stejné IP adresy";
 
 // modules/polls/polledit.php3, row 204
 // modules/polls/modedit.php3, row 74, 215
@@ -98,12 +98,12 @@ $_m["IP Locking timeout"]
 
 // modules/polls/polledit.php3, row 204
 $_m["time in seconds"]
- = "ï¿½as v sekundï¿½ch";
+ = "èas v sekundách";
 
 // modules/polls/polledit.php3, row 205
 // modules/polls/modedit.php3, row 216
 $_m["Use cookies"]
- = "Znemoï¿½nit dvojï¿½ hlasovï¿½nï¿½ pomocï¿½ cookies";
+ = "Znemožnit dvojí hlasování pomocí cookies";
 
 // modules/polls/polledit.php3, row 207
 // modules/polls/modedit.php3, row 76
@@ -116,23 +116,23 @@ $_m["Polls design templates"]
 
 // modules/polls/polledit.php3, row 214
 $_m["Select design type - before vote"]
- = "Vzhled pï¿½ed hlasovï¿½nï¿½m";
+ = "Vzhled pøed hlasováním";
 
 // modules/polls/polledit.php3, row 215
 $_m["Select design type - after vote"]
- = "Vzhled po hlasovï¿½nï¿½";
+ = "Vzhled po hlasování";
 
 // modules/polls/polledit.php3, row 215
 $_m["If the design after vote should look differently, then specify it here."]
- = "nastavte, pokud chcete po hlasovï¿½nï¿½ jinï¿½ vzhled (zobrazit vï¿½sledky...)";
+ = "nastavte, pokud chcete po hlasování jiný vzhled (zobrazit výsledky...)";
 
 // modules/polls/modedit.php3, row 51
 $_m["You have not permissions to add polls"]
- = "Nemï¿½te prï¿½va vloï¿½it novou anketu";
+ = "Nemáte práva vložit novou anketu";
 
 // modules/polls/modedit.php3, row 56
 $_m["You have not permissions to edit this polls"]
- = "Nemï¿½te prï¿½va upravovat tuto anketu";
+ = "Nemáte práva upravovat tuto anketu";
 
 // modules/polls/modedit.php3, row 75, 217
 $_m["Cookies prefix"]
@@ -144,7 +144,7 @@ $_m["Polls Admin"]
 
 // modules/polls/modedit.php3, row 188
 $_m["Add Polls"]
- = "Pï¿½idat anketu";
+ = "Pøidat anketu";
 
 // modules/polls/modedit.php3, row 188
 $_m["Edit Polls"]
@@ -152,7 +152,7 @@ $_m["Edit Polls"]
 
 // modules/polls/modedit.php3, row 195
 $_m["Polls Module general data"]
- = "Modul anket - zï¿½kladnï¿½ nastavenï¿½";
+ = "Modul anket - základní nastavení";
 
 // modules/polls/modedit.php3, row 196
 $_m["Id"]
@@ -160,7 +160,7 @@ $_m["Id"]
 
 // modules/polls/modedit.php3, row 197
 $_m["Name"]
- = "Jmï¿½no";
+ = "Jméno";
 
 // modules/polls/modedit.php3, row 199
 $_m["URL"]
@@ -168,19 +168,19 @@ $_m["URL"]
 
 // modules/polls/modedit.php3, row 200
 $_m["Owner"]
- = "Vlastnï¿½k";
+ = "Vlastník";
 
 // modules/polls/modedit.php3, row 202
 $_m["New Owner"]
- = "Novï¿½ vlastnï¿½k";
+ = "Nový vlastník";
 
 // modules/polls/modedit.php3, row 203
 $_m["New Owner's E-mail"]
- = "E-mail novï¿½ho vlastnï¿½ka";
+ = "E-mail nového vlastníka";
 
 // modules/polls/modedit.php3, row 206
 $_m["Deleted"]
- = "Vymazï¿½n";
+ = "Vymazán";
 
 // modules/polls/modedit.php3, row 208
 $_m["Used Language File"]
@@ -188,6 +188,6 @@ $_m["Used Language File"]
 
 // modules/polls/modedit.php3, row 212
 $_m["Defaults for polls in this module"]
- = "Dafaultnï¿½ hodnoty pro ankety v tomto modulu";
+ = "Dafaultní hodnoty pro ankety v tomto modulu";
 
 
