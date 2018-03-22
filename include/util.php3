@@ -573,6 +573,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
  * gets fields from main table of the module
  * @param $module_id
  * @param $type
+ * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
  */
 function GetModuleInfo($module_id, $type) {
     global $MODULES;
@@ -598,6 +599,7 @@ function GetModuleInfo($module_id, $type) {
 /** GetSliceInfo function
  *  gets slice fields
  * @param $slice_id
+ * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
  */
 function GetSliceInfo($slice_id) {
     return GetModuleInfo($slice_id,'S');

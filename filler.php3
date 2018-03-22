@@ -151,8 +151,7 @@ function SendErrorPage($txt) {
     // $wap variable is set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
-        echo '
-        <?xml version="1.0" encoding="iso-8859-1"?>
+        echo '<?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
           <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["err_url"].'">
@@ -198,8 +197,7 @@ function SendOkPage($txt, $new_ids = array()) {
     // $wap variable if set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
-        echo '
-        <?xml version="1.0" encoding="iso-8859-1"?>
+        echo '<?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
           <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["ok_url"].'">
@@ -252,8 +250,7 @@ function SendOkPage($txt, $new_ids = array()) {
                     if (!empty($slice)) {
                         $charset = $slice->getCharset();
                         if ($charset != 'utf-8') {
-                            $encoder = ConvertCharset::singleton();
-                            $text    = $encoder->Convert($text, $charset,'utf-8');
+                            $text = ConvertCharset::singleton()->Convert($text, $charset,'utf-8');
                         }
                     }
                 }

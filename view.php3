@@ -124,7 +124,7 @@ if ($convertto) {
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
-if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
+if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     AA::$debug && AA::$dbg->log("view from cache");
     $cacheentry->processPage();
 } else {
@@ -137,7 +137,7 @@ if ($cacheentry = $pagecache->getPage($cache_key, $nocache)) {
 
     if (!$nocache AND $cache_sid) {
         $str2find = new CacheStr2find($cache_sid, 'slice_id');
-        $pagecache->storePage($cache_key, $cacheentry, $str2find);
+        AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
     }
 }
 

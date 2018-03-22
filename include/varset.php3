@@ -609,17 +609,17 @@ class AA_ChangeProposal {
 
 class AA_ChangesMonitor {
 
-    private static $instance = null;
-
     /** singleton
-     *  called as" $changes = AA_ChangesMonitor::singleton();
      *  This function makes sure, there is just ONE static instance if the class
+     *  (this is better implementation, than static class variable - will work with subclasses)
+     *   !!DO NOT use AA_Singleton - util may not be included
      */
     public static function singleton() {
-        if (is_null(self::$instance)) {
-            self::$instance = new self();
+        static $instance = null;
+        if (is_null($instance)) {
+            $instance = new static();
         }
-        return self::$instance;
+        return $instance;
     }
 
     /** addProposal function
