@@ -2642,15 +2642,15 @@ function getRadioButtonTag(&$k, &$v, &$name, &$selected) {
  * @param $add
  */
 function FrmSelectEasy($name, $arr, $selected="", $add="") {
-    echo FrmSelectEasyCode($name, $arr, $selected, $add);
+    echo getFrmSelectEasy($name, $arr, $selected, $add);
 }
-/** FrmSelectEasyCode function
+/** getFrmSelectEasy function
  * @param $name
  * @param $arr
  * @param $selected
  * @param $add
  */
-function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
+function getFrmSelectEasy($name, $arr, $selected="", $add="") {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
     if (!is_array($arr) OR (count($arr)==0)) {
@@ -3221,7 +3221,7 @@ function FrmItemListForm(&$items) {
  */
 function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
     $add = "onchange=\"ShowThisTagClass('fswp$name', 'div', 'fswp_'+sb_GetSelectedValue(this), 'fswp_')\"";
-    $ret = FrmSelectEasyCode($name, $arr, $selected, $add);
+    $ret = getFrmSelectEasy($name, $arr, $selected, $add);
     if (isset($html_setting) AND is_array($html_setting)) {
         $ret .= "\n<div id=\"fswp$name\">";
         foreach($html_setting as $value => $html) {

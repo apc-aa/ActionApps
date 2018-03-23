@@ -275,6 +275,7 @@ class AA_Debug {
 
 /** Page level (global) variables you can count with */
 class AA {
+    /** @var AA_Debug $dbg */
     public  static $dbg;
     public  static $debug;
     public  static $perm;

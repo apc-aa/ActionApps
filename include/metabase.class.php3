@@ -486,14 +486,16 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
 
 /** @todo convert to static class variables after move to PHP5 */
 class AA_Metabase {
-    var $tables;
+    /**
+     * @var AA_MbT[]
+     * we can change it to protected, but then we need to regenerate the serialized string
+     */
+    var $tables = array();
 
     /** AA_Metabase function - constructor
      *  Do not use it - use $metabase = AA_Metabase::singleton() instead
      */
-    function __construct() {
-        $this->tables   = array();
-    }
+    function __construct() {}
 
     /** Static function called like $metabase = AA_Metabase::singleton() */
     public static function singleton() {
@@ -542,6 +544,10 @@ class AA_Metabase {
         return is_object($table) ? $table->isColumn($columnname) : false;
     }
 
+    /**
+     * @param $data
+     * @param $identifier
+     */
     function fillKeys(&$data, $identifier) {
 
         $module_id  = $identifier->getModuleId();

@@ -126,7 +126,7 @@ function json2arr($string, $do_not_filter=false) {
 
 /** creates array form JSON array or returns single value array if not valid json
  * @param $string
- * @return array|mixed
+ * @return array
  */
 function json2asoc($string) {
     if ($string{0} != '{') {
@@ -149,7 +149,7 @@ function json2asoc($string) {
     return $values;
 }
 
-/** @return JSON array form string where values are delimited by $delimiter.
+/** @return string - JSON array form string where values are delimited by $delimiter.
  *  Input text mut be in utf8
  */
 class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
@@ -167,7 +167,7 @@ class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** @return JSON object of key-value pairs {jsonasoc:key1:val1:key2:val2:...}
+/** @return string - JSON object of key-value pairs {jsonasoc:key1:val1:key2:val2:...}
  *  usage:
  *    {jsonasoc:name:{headline........}:input_help:{subtitle........}}
  *    {input:82d37e966fcdc9d1cac49a7e49406601:text............:1:fld:{jsonasoc:name:Surname:input_help:just surname, please}}
@@ -230,7 +230,7 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
     }
 
     /** expand function
-     * @param $fn first parameter is filename, second is hints on where to find it
+     * @params string - first parameter is filename, second is hints on where to find it
      */
     function expand() {
         $twos      = func_get_args();   // must be asssigned to the variable
@@ -1045,7 +1045,7 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
 
 /** Expands {shorten:<text>:<length>[:<mode>[:add]]} like:
  *          {shorten:{abstract.......1}:150}
- *  @return up to <length> characters from the <text>. If the <mode> is 1
+ *  @return string - up to <length> characters from the <text>. If the <mode> is 1
  *  then it tries to identify only first paragraph or at least stop at the end
  *  of sentence. In all cases it strips HTML tags
  *  @param $text           - the shortened text
@@ -1284,9 +1284,9 @@ function parseMath($text) {
 /** parseLoop function - like AA_Stringexpand_List / AA_Stringexpand_@
  *  - in loop writes out values from field
  * @param $out
- * @param $item
+ * @param $item AA_Item
  */
-function parseLoop($out, &$item) {
+function parseLoop($out, $item) {
 
     if ( !is_object($item) ) {
         return '';
@@ -1400,7 +1400,7 @@ function parseLoop($out, &$item) {
 }
 
 /**  get constant group_id from content cache or get it from db
- *  @return group id for specified field
+ *  @return string - group id for specified field
  * @param $slice_id
  * @param $field
  */
@@ -1601,7 +1601,7 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
 }
 
 /** {intersect:<ids>:<ids>}
- *  @returns set of intersect of two set of ids (dash separated)
+ *  @returns string - set of intersect of two set of ids (dash separated)
  */
 class AA_Stringexpand_Intersect extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1614,7 +1614,7 @@ class AA_Stringexpand_Intersect extends AA_Stringexpand {
 }
 
 /** {removeids:<ids1>:<ids2>}
- *  @returns ids1 where will be removed all the ids from ids2 (all dash separated)
+ *  @returns string - ids1 where will be removed all the ids from ids2 (all dash separated)
  */
 class AA_Stringexpand_Removeids extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2022,7 +2022,7 @@ class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     /** expand function
-     * @param $text to escape
+     * @param $text string - to escape
      */
     function expand($text='') {
         return myspecialchars($text,false);
@@ -2494,14 +2494,14 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
     function doTrimParams() { return false; }
 
     /** expand function
-     * @param $ids_string  ids (long or short (or mixed) separated by dash '-')
+     * @param $ids_string string - ids (long or short (or mixed) separated by dash '-')
      *                     - now you can also use tree representation like:
      *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
-     * @param $content
-     * @param $delimeter
-     * @param $top
-     * @param $bottom
-     * @param $bin         allowed bins dash separated: ACTIVE-HOLDING-TRASH. Default is ACTIVE (pending and expired is not available, for now)
+     * @param $content    string
+     * @param $delimeter  string
+     * @param $top        string
+     * @param $bottom     string
+     * @param $bin        string - allowed bins dash separated: ACTIVE-HOLDING-TRASH. Default is ACTIVE (pending and expired is not available, for now)
      */
     function expand($ids_string='', $content=null, $delim=null, $top=null, $bottom=null, $bin=null) {
 
@@ -2649,7 +2649,7 @@ class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercache {
     function doTrimParams() { return false; }
 
     /** expand function
-     * @param $ids_string  ids (long or short (or mixed) separated by dash '-')
+     * @param $ids_string  string - ids (long or short (or mixed) separated by dash '-')
      *                     - now you can also use tree representation like:
      *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
      * @param $top
@@ -2757,10 +2757,10 @@ class AA_Treecache {
 
 /** Aggregate information from specified set of items. The function, which could
  *  be used for aggregated values are:
- * @param $function   sum | max | min | avg | concat | count | order | filter
- * @param $ids_string list of item ids, which we take into account
- * @param $expression the value, we are counting with (like _#NUMBER_E)
- * @param $parameter  posible additional parameter for the function (like delimiter for the "concat" function)
+ * @param $function   string - sum | max | min | avg | concat | count | order | filter
+ * @param $ids_string string - list of item ids, which we take into account
+ * @param $expression string - the value, we are counting with (like _#NUMBER_E)
+ * @param $parameter  string - posible additional parameter for the function (like delimiter for the "concat" function)
  *
  * {aggregate:max:{ids:3a0c44958b1c6ad697804cfdbccd8b09}:_#D_APPCNT}
  */
@@ -2922,9 +2922,10 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
  */
 class AA_Stringexpand_Set extends AA_Stringexpand {
     /** expand function
-     * @param $item_set
+     * @param $item_set string
      */
     function expand($set_id='') {
+        /** @var AA_Set $set */
         $set = AA_Object::load($set_id, 'AA_Set');
         if (!is_object($set)) {
             return '';
@@ -3013,7 +3014,7 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
 /** returns long ids of subitems items based on the relations between items
  *  {tree:<item_id>[:<relation_field>]}
  *  {tree:2a4352366262227383484784635362ab:relation.......1}
- *  @return dash separated long ids of items which belongs to the tree under
+ *  @return string - dash separated long ids of items which belongs to the tree under
  *          specifield item based on the relation field
  */
 class AA_Stringexpand_Tree extends AA_Stringexpand {
@@ -3029,7 +3030,7 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
 /** returns long ids of subitems items based on the relations between items
  *  {path:<item_id>[:<relation_field>]}
  *  {path:2a4352366262227383484784635362ab:relation.......1}
- *  @return dash separated long ids of items from root to the item
+ *  @return string - dash separated long ids of items from root to the item
  */
 class AA_Stringexpand_Path extends AA_Stringexpand {
     /** expand function
@@ -3047,12 +3048,12 @@ class AA_Stringexpand_Path extends AA_Stringexpand {
  *  the tree
  *  {sortstring:<shortitem_id>[:<relation_field>]}
  *  {path:2a4352366262227383484784635362ab:relation.......1}
- *  @return dash separated long ids of items from root to the item
+ *  @return string - dash separated long ids of items from root to the item
  */
 class AA_Stringexpand_Sortstring extends AA_Stringexpand {
     /** expand function
-     * @param $item_id          - item id of the tree root (short or long)
-     * @param $relation_field   - tree relation field (default relation........)
+     * @param $item_id         string - item id of the tree root (short or long)
+     * @param $relation_field  string - tree relation field (default relation........)
      */
     function expand($item_id='', $relation_field=null) {
         $zids = new zids(array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field), 'l'));
@@ -3068,7 +3069,7 @@ class AA_Stringexpand_Sortstring extends AA_Stringexpand {
 class AA_Stringexpand_Sortid extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $number - number to be tranformed to string for sorting
-     * @return B1 for $id=1, F25487 for $id=25487, ...
+     * @return string B1 for $id=1, F25487 for $id=25487, ...
      */
     function expand($number='') {
         return chr(65+strlen((string)$number)).$number;
@@ -3131,7 +3132,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
     }
 }
 
-/** @return prints HTML menu
+/** @return string - prints HTML menu
  *  - designed for SEO sitemodule with "Pages" slice with the relation field "Subpage of..."
  *  - the menu items with empty text is not printed (which you can use for not displaying some items)
  *
@@ -3338,7 +3339,7 @@ class AA_Stringexpand_Finduniq extends AA_Stringexpand {
     }
 }
 
-/** @returns name (or other field) of the constant in $gropup_id with $value
+/** @returns string - name (or other field) of the constant in $gropup_id with $value
  *  Example: {constant:AA Core Bins:1:name}
  *           {constant:biom__categories:{@category........:|}:name:|:, }  // for multiple constants
  *           {constant:ekolist-category:{@category.......1:|}:<a href="http#://ekolist.cz/zpravodajstvi/zpravy?kategorie=_#VALUE##_">_#NAME###_</a>:|:, }  // you can use also constant aliases and expressions
@@ -3376,7 +3377,7 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
 
 /** {constants:<group_id>:<format>:<delimiter>}
  *  {constants:ekolist-category}
- *  @return prints all constants delimited by <delimiter>. Only _#NAME###_ and _#VALUE##_ aliases could be used
+ *  @return string - prints all constants delimited by <delimiter>. Only _#NAME###_ and _#VALUE##_ aliases could be used
  */
 class AA_Stringexpand_Constants extends AA_Stringexpand {
     /** Do not trim all parameters (the $selected parameter could contain space) */
@@ -3408,7 +3409,7 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
  *  {options:[1,2,5,7]:7}
  *  {options:[[1,"January"],[2,"Feb"],[3,"March"]]:7}
  *  {options:{sequence:num:1998:2012}:{date:Y}}
- *  @return html <option>s for given constant group with selected option
+ *  @return string - html <option>s for given constant group with selected option
  */
 class AA_Stringexpand_Options extends AA_Stringexpand {
     /** Do not trim all parameters (the $selected parameter could contain space) */
@@ -3855,7 +3856,7 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
     /**
      * @param $slice_id
      * @param $field_id
-     * @return string
+     * @return AA_Field string
      */
     function _getField($slice_id, $field_id) {
         if (empty($slice_id)) {
@@ -4625,7 +4626,8 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
-     * @param $fn first parameter is filename, second is hints on where to find it
+     * @param string $fn   - filename
+     * @param string $type - hints on where to find it
      */
     function expand($fn='', $type='') {
         if (!$fn) {
@@ -4726,11 +4728,11 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
  */
 class AA_Unalias_Callback {
     /**
-     * @var null
+     * @var AA_Item
      */
     var $item;
     /**
-     * @var
+     * @var itemview
      */
     var $itemview;
 
@@ -4994,6 +4996,7 @@ class AA_Unalias_Callback {
  *
  */
 function StrExpand($class_name, $params, $context_arr=array(), $allow_quote_colons=false, $ignore_cache=false) {
+    /** @var AA_Stringexpand $stringexpand */
     $stringexpand = new $class_name($context_arr);
     if ( $stringexpand->doCache() AND !$ignore_cache) {
         $res = AA::Contentcache()->get_result_4_object(array($stringexpand, 'expand'), $params, $class_name, $stringexpand->additionalCacheParam());
@@ -5147,12 +5150,12 @@ class AA_Stringexpander {
         return $text;
     }
 
-     /** called as AA::Stringexpander()->unalias();
+    /** called as AA::Stringexpander()->unalias();
      * @param $text
-     * @param $item
-     * @param $remove
-     * @param $dequote
-     * @param $itemview
+     * @param $item AA_Item
+     * @param $remove string
+     * @param $dequote bool
+     * @param $itemview itemview
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
 
@@ -5376,7 +5379,8 @@ class AA_Req_Lib extends AA_Req {
     /**
      * @var
      */
-    protected $url;
+    protected $url      = '';
+    protected $loadtype = '';
 
     /**
      * AA_Req_Lib constructor.
@@ -5732,18 +5736,15 @@ class AA_Tools {
  */
 class AA_Stringexpand {
 
-    /** item, for which we are stringexpanding
-     *  Not used in many expand functions
+    /**
+     * @var AA_Item - item, for which we are stringexpanding (Not used in many expand functions)
      */
-
     var $item;
 
-    /** view, in which we are stringexpanding
-     *  Not used in many expand functions
+    /**
+     * @var itemview - view, in which we are stringexpanding (Not used in many expand functions)
      */
     var $itemview;
-
-
 
     /** AA_Stringexpand function
      * @param $item
@@ -5760,8 +5761,10 @@ class AA_Stringexpand {
     }
 
     /** expand function
+     * @return string
      */
     function expand() {
+        return '';
     }
 
     /**
@@ -5990,8 +5993,8 @@ class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
 
     /** expand function
-     * @param $type type of statistics - currently only "days" statistics is implemented
-     * @param $ids  item ids (long or short) for which you want to display statistics
+     * @param $type string type of statistics - currently only "days" statistics is implemented
+     * @param $ids  string item ids (long or short) for which you want to display statistics
      *
      * Example: {hitcounter:days:24457-24474}
      * Example: {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}}
@@ -6041,7 +6044,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
     }
 }
 
-/** @return avatar img or colored div with initials
+/** @return string - avatar img or colored div with initials
  *  {avatar:<img_url>:[<person_name>]:[<avatar-size>]}
  *  Ussage:
  *     <div class="dis-avatar">{avatar:{img_url.........}:{_#HEADLINE}}</div>
@@ -6346,7 +6349,7 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** @return url GET parameter - {qs[:<varname>[:delimiter]]}
+/** @return string - url GET parameter - {qs[:<varname>[:delimiter]]}
  *  Ussage:
  *   {qs:surname}    - returns Havel for http://example.org/cz/page?surname=Havel
  *   {qs}            - returns whole querystring (including GET and POST variables)
@@ -6405,7 +6408,7 @@ class AA_Stringexpand_Serverload extends AA_Stringexpand_Nevercache {
 }
 
 
-/** @return returns random string of given length
+/** @return string - random string of given length
  *  (for more advanced version see default_fnc_rnd)
  *  Ussage: {randomstring:5}
  */
@@ -7255,8 +7258,8 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
  *  {rotator:<item-ids>:<html-code>:<interval>:<speed>:<effect>:<li-code>}
  *  {rotator:{ids:a24657bf895242c762607714dd91ed1e}:_#FOTO_S__<div>_#HEADLINE</div>}
  *  {rotator:{ids:a24657bf895242c762607714dd91ed1e}:_#FOTO_S__<div>_#HEADLINE</div>::::_#HEADLINE}
- *  @param speed:  '' | slow | fast
- *  @param effect: '' | fade
+ *  @param string - speed:  '' | slow | fast
+ *  @param string - effect: '' | fade
  */
 class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
     /**
@@ -7470,10 +7473,10 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
  *    {index:category........}      - return first value
  *    {index:headline........:::cz} - return first value in Czech
  *
- * @param field_id - id of the field in item
- * @param index    - integer index in multivalue array - default 0 (the first one)
- * @param item_id
- * @param lang     - if you want exact language for translated field, specify it - cz / es / en / ...
+ * @param string - field_id - id of the field in item
+ * @param string - index    - integer index in multivalue array - default 0 (the first one)
+ * @param string - item_id
+ * @param string - lang     - if you want exact language for translated field, specify it - cz / es / en / ...
  *
  */
 class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {

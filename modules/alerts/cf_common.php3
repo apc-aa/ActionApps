@@ -39,7 +39,7 @@ foreach ($LANGUAGE_CHARSETS as $l => $foo) {
 
 $cf_fields = array (
     "lang" => array (
-        "code"=>FrmSelectEasyCode ("formlang", $langs, get_mgettext_lang()),
+        "code"=>getFrmSelectEasy ("formlang", $langs, get_mgettext_lang()),
         "label"=>_m("Language"),
         // do not show in wizard
         "hidewizard"=>true),
@@ -61,7 +61,7 @@ $cf_fields = array (
         "label"=>_m("Last name"),
         "userinfo"=>true),
     "howoften" => array (
-        "code"=>FrmSelectEasyCode("alerts[howoften]", get_howoften_options()),
+        "code"=>getFrmSelectEasy("alerts[howoften]", get_howoften_options()),
         "required"=>true,
         // do not show in user center
         "hidecenter"=>true,

@@ -75,6 +75,7 @@ class AA_Module {
      *   $slice       = AA_Slice::getModule($module_id)
      *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usualy knot, which module it should be
      *  @param $module_id
+     * @return AA_Module|AA_Slice|AA_Module_Site|AA_Module_Alerts|AA_Module_Links|AA_Module_Polls
      */
     static public function getModule($module_id) {
         if (!is_long_id($module_id)) {
@@ -352,7 +353,7 @@ class AA_Slice extends AA_Module {
     }
 
     /** isField function
-     * @param $fname
+     * @param bool $fname
      */
     function isField($fname) {
         return $this->fields->isField($fname);
@@ -443,11 +444,14 @@ class AA_Slice extends AA_Module {
         return $dynamic_fields ? $this->dynamic_fields : $this->fields;
     }
 
-    /** getField function     */
+    /** getField function
+     *  @return AA_Field
+     */
     function getField($field_id) {
         return $this->fields->getField($field_id);
     }
 
+    /** @return AA_Widget */
     function getWidget($field_id) {
         $field = $this->getField($field_id);
         return $field ? $field->getWidget() : null;

@@ -394,6 +394,7 @@ class AA_Set extends AA_Object {
     /** New main function to get item ids from database based on conditions...
      *  Should replace QueryZids() in future
      *  @param $restrict_zids - zids
+     *  @return zids
      */
     function query($restrict_zids=null, $limit=null) {
         return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);

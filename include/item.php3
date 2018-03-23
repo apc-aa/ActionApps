@@ -294,7 +294,8 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
 
 /** GetItemFromContent function
  * Creates item object just from item_content
- * @param $content  - itemcontent object
+ * @param $content  ItemContent object
+ * @return AA_Item
  */
 function GetItemFromContent($content) {
     if ( !is_object($content) ) {
@@ -1633,7 +1634,9 @@ class AA_Items {
         return is_array($content) ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : false;
     }
 
-    /** @return array(long_id -> AA_Item) */
+    /** @param zids $zids
+     * @return AA_Item[] - array(long_id -> AA_Item)
+     */
     static function & getItems($zids, $crypted_additional_slice_pwd=null) {
         AA_Items::preload($zids, $crypted_additional_slice_pwd);
         $items = AA_Items::singleton();
@@ -1647,7 +1650,8 @@ class AA_Items {
         return $ret;
     }
 
-    /**  */
+    /** @param zids $zids
+     */
     static function preload($zids, $crypted_additional_slice_pwd=null) {
         $items = AA_Items::singleton();
 
