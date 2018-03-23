@@ -61,8 +61,8 @@ $mail = new AA_Mail;
 $mail->setText("toto je mail 10");
 $mail->setSubject('subject');
 //$mail->setBasicHeaders(ecord, "");
-$mail->setTextCharset($LANGUAGE_CHARSETS['en']);
-$mail->setHtmlCharset($LANGUAGE_CHARSETS['en']);
+$mail->setTextCharset('utf-8');
+$mail->setHtmlCharset('utf-8');
 huhl($mail);
 $toexecute->later($mail,array(array('rrrrrrrrrrrx@ecn.cz')));
 */

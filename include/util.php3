@@ -1084,7 +1084,7 @@ function url2bin($data) {
  * @param $lang
  */
 function HtmlPageBegin($js_lib=false, $lang=null) {
-    AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang ?: get_mgettext_lang()];
+    AA::$encoding = AA_Langs::getCharset($lang);
     $headers = AA::getHeaders();
     // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
     $headers['x-xss-protection'] = 'X-XSS-Protection: 0';

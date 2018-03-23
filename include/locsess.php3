@@ -292,7 +292,7 @@ class AA {
 
     static function getHeaders() {
         $ret = array();
-        $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]);
+        $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: AA_Langs::getCharset());
         if (isset(AA::$headers['status'])) {
             $ret['status'] = AA::$headers['status'];
         }

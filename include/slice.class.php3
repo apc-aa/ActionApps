@@ -242,14 +242,14 @@ class AA_Module {
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
     function getLang()     {
-        return GetLang($this->_getModuleTableProperty('lang_file'));
+        return AA_Langs::getLang($this->_getModuleTableProperty('lang_file'));
     }
 
     /** getCharset function
      *  Returns character encoding for the slice ('windows-1250', ...)
      */
     function getCharset()     {
-        return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
+        return AA_Langs::getCharset($this->getLang());   // like 'windows-1250'
     }
 
     function getDefaultLang() {

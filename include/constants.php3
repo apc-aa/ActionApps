@@ -207,71 +207,64 @@ $MODULES['Links'] =  array ('table' => 'links',
                             'menu' => "modules/links/menu.php3",
                             'letter' => 'L');
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* @global array $LANGUAGE_FILES language files for slices (not for some modules, e.g. site)
-*/
-$LANGUAGE_FILES = array( "en_news_lang.php3"      => "en_news_lang.php3",
-                         "es_news_lang.php3"      => "es_news_lang.php3",
-                         "es-utf8_news_lang.php3" => "es-utf8_news_lang.php3",
-                         "cz_news_lang.php3"      => "cz_news_lang.php3",
-                         "cz-utf8_news_lang.php3" => "cz-utf8_news_lang.php3",
-                         "sk_news_lang.php3"      => "sk_news_lang.php3",
-                         "sk-utf8_news_lang.php3" => "sk-utf8_news_lang.php3",
-                         "de_news_lang.php3"      => "de_news_lang.php3",
-                         "ro_news_lang.php3"      => "ro_news_lang.php3",
-                         "ru_news_lang.php3"      => "ru_news_lang.php3",
-                         "vn_news_lang.php3"      => "vn_news_lang.php3",
-                         "ja_news_lang.php3"      => "ja_news_lang.php3",
-                         "hr_news_lang.php3"      => "hr_news_lang.php3",
-                         "fr_news_lang.php3"      => "fr_news_lang.php3",
-                         "hu_news_lang.php3"      => "hu_news_lang.php3",
-                         "bg_news_lang.php3"      => "bg_news_lang.php3",
-                         "en-utf8_news_lang.php3" => "en-utf8_news_lang.php3",
-                        );
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* @global array $LANGUAGE_CHARSETS charsets to be used in HTML HEAD and otherwere
-*/
-$LANGUAGE_CHARSETS = array ("cz-utf8" => "utf-8",
-                            "cz"      => "windows-1250",
-                            "en"      => "iso-8859-1",
-                            "es"      => "iso-8859-1",
-                            "es-utf8" => "utf-8",
-                            "de"      => "iso-8859-1",
-                            "ro"      => "iso-8859-2",
-                            "hu"      => "iso-8859-2",
-                            "ru"      => "windows-1251",
-                            "vn"      => "utf-8",
-                            "sk"      => "windows-1250",
-                            "sk-utf8" => "utf-8",
-                            "ja"      => "EUC-JP",
-                            "hr"      => "windows-1250",
-                            "fr"      => "iso-8859-1",
-                            "bg"      => "windows-1251",
-                            "en-utf8" => "utf-8"
-                            );
+class AA_Langs {
+    protected static $LANGS = array(
+        'cz-utf8' => array('utf-8'       , 'Cestina (Unicode)'),
+        'en-utf8' => array('utf-8'       , 'English (Unicode)'),
+        'es-utf8' => array('utf-8'       , 'Espanol (Unicode)'),
+        'sk-utf8' => array('utf-8'       , 'Slovencina (Unicode)'),
+        'vn'      => array('utf-8'       , 'Vietnamese (Unicode)'),
+        'bg'      => array('windows-1251', 'Bulgarian (windows-1251)'),
+        'cz'      => array('windows-1250', 'Cestina (windows-1250)'),
+        'de'      => array('iso-8859-1'  , 'Deutsch (iso-8859-1)'),
+        'en'      => array('iso-8859-1'  , 'English (iso-8859-1)'),
+        'es'      => array('iso-8859-1'  , 'Espanol (iso-8859-1)'),
+        'fr'      => array('iso-8859-1'  , 'Français (iso-8859-1)'),
+        'hr'      => array('windows-1250', 'Hrvatski (windows-1250)'),
+        'ja'      => array('EUC-JP'      , 'Japanian (EUC-JP)'),
+        'hu'      => array('iso-8859-2'  , 'Magyar (iso-8859-2)'),
+        'ro'      => array('iso-8859-2'  , 'Romanian (iso-8859-2)'),
+        'ru'      => array('windows-1251', 'Russian (windows-1251)'),
+        'sk'      => array('windows-1250', 'Slovencina (windows-1250)')
+    );
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* @global array $LANGUAGE_NAMES
-*/
-$LANGUAGE_NAMES = array ("cz-utf8" => "Cestina (Unicode)",
-                         "cz"      => "Cestina",
-                         "en"      => "English",
-                         "es"      => "Espanol",
-                         "es-utf8" => "Espanol (Unicode)",
-                         "de"      => "Deutsch",
-                         "hu"      => "Magyar",
-                         "ro"      => "Romanian",
-                         "ru"      => "Russian",
-                         "vn"      => "Vietnamese",
-                         "sk"      => "Slovencina",
-                         "sk-utf8" => "Slovencina (Unicode)",
-                         "ja"      => "Japanian",
-                         "hr"      => "Hrvatski",
-                         "fr"      => "Franï¿½ais",
-                         "bg"      => "Bulgarian",
-                         "en-utf8" => "English (Unicode)"
-                         );
+    public static function getFiles($type='news') {
+        $arr = array();
+        foreach (self::$LANGS as $k => $l) {
+            $arr[$k.'_'.$type.'_lang.php3'] = $l[1];
+        }
+        return $arr;
+    }
+
+    public static function getCharsets() {
+        $arr = array();
+        foreach (self::$LANGS as $k => $l) {
+            $arr[$l[0]] = $l[0];
+        }
+        return $arr;
+    }
+    public static function getNames() {
+        return array_map( function($l) { return $l[1]; }, self::$LANGS);
+    }
+
+    /** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $lang_file or from default
+     */
+    public static function getLang($lang_file) {
+        $lang_code = substr($lang_file, 0, strpos($lang_file,'_'));
+        return isset(self::$LANGS[$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
+    }
+
+    /** returns charset - like 'windows-1250' from given lang code or current lang
+     *  ussage: AA_Langs::getCharset();
+     */
+    public static function getCharset($lang_code=null) {
+        if (!$lang_code OR !is_array($ret = self::$LANGS[$lang_code])) {
+            $ret = self::$LANGS[get_mgettext_lang()];
+        }
+        return $ret[0];
+    }
+}
 
 /** any string - used as parameter to included JS files in order browser can
  *  use newer version of JS libs. Feel free to increase it
@@ -302,20 +295,6 @@ define("EDIT_ITEM_COUNT", 20);
  */
 define("QUERY_DATE_STEP", 1000);
 
-
-define("DEFAULT_ODD_HTML",
-     '<font face="Arial" color="#808080" size="-2">_#PUB_DATE - </font>'
-    .'<font color="red"><strong><a href="_#HDLN_URL">_#HEADLINE</a></strong></font>'
-    .'<font color="#808080" size="-1"><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font>'
-    .'<font color="black" size="-1">_#ABSTRACT<br></font><br>');
-define("DEFAULT_EVEN_HTML", "");
-define("DEFAULT_TOP_HTML", "<br>");
-define("DEFAULT_BOTTOM_HTML", "<br>");
-define("DEFAULT_CATEGORY_HTML", "<p>_#CATEGORY</p>");
-define("DEFAULT_EVEN_ODD_DIFFER", false);
-define("DEFAULT_CATEGORY_SORT", true);
-define("DEFAULT_COMPACT_REMOVE", "()");
-
 define("ANONYMOUS_EDIT_NOT_ALLOWED", 0);
 define("ANONYMOUS_EDIT_ALL", 1);
 define("ANONYMOUS_EDIT_ONLY_ANONYMOUS", 2);
@@ -328,25 +307,6 @@ define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
 define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
 
 define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
-
-$SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
-   "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
-   "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
-   "category_top", "category_format", "category_bottom", "slice_url",
-   "lang_file", "fulltext_remove", "compact_remove", "notify_sh_offer",
-   "notify_sh_accept", "notify_sh_remove", "notify_holding_item_s",
-   "notify_holding_item_b", "notify_holding_item_edit_s",
-   "notify_holding_item_edit_b", "notify_active_item_edit_s",
-   "notify_active_item_edit_b", "notify_active_item_s", "notify_active_item_b",
-   "noitem_msg",
-   "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove",
-   "fileman_dir","fileman_access","javascript","aditional",
-   "mailman_field_lists", "auth_field_group", "reading_password");
-
-$SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template",
-   "even_odd_differ", "category_sort", "d_listlen",
-   "email_sub_enable", "exclude_from_dir","permit_anonymous_post",
-   "permit_anonymous_edit", "permit_offline_fill",);
 
 $FIELD_FIELDS_TEXT = array(  "id", "type", "slice_id", "name",
   "input_help", "input_morehlp", "input_default",

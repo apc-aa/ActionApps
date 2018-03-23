@@ -373,7 +373,7 @@ class Files {
      * @return string the escaped safe filename
      */
     function escape($filename) {
-        return ConvertCharset::singleton()->escape($filename, $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()], true);
+        return ConvertCharset::singleton()->escape($filename, AA_Langs::getCharset(), true);
     }
 
     /** delFile function

@@ -195,7 +195,7 @@ FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 25
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false, '', '', false, 'email');
 FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false, '', '', false, 'email');
 FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false, '', '', false, 'email');
-FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),  $_POST['lang'] ? $_POST['lang'] : $slice->getLang(), true);
+FrmInputSelect('lang',        _m('Language (charset)'),  AA_Langs::getNames(),  $_POST['lang'] ? $_POST['lang'] : $slice->getLang(), true);
 FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
 FrmInputFile(  'attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
 FrmInputFile(  'attachment2',   _m('Attachement 2'), $attachment2, false, "*/*");

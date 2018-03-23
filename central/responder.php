@@ -187,7 +187,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
         AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
-        AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][$lang];
+        AA::$encoding = AA_Langs::getCharset($lang);
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
@@ -369,45 +369,7 @@ class AA_Responder_Alertitem extends AA_Responder {
     }
 }
 
-//print_r($auth);
-//print_r($sess);
-//page_open(array("sess" => "AA_CP_Session", "auth" => "AA_Responder_Auth"));
-
-//echo "ok";
-
-// if ($_POST['username']) {
-//     pageOpen();
-// } else {
-//     pageOpen('nobody');
-// }
-
 pageOpen('nobody');
-
-//$sess = new AA_CP_Session;
-//$sess->start();
-
-//print_r($_SESSION);
-//exit;
-
-//if (!is_object($auth)) {
-//    $auth = new AA_Responder_Auth;
-//}
-//$auth->start();
-
-
-
-// if ($nobody) {
-//     $_POST['username'] = $_POST['free'];
-//     $_POST['password'] = $_POST['freepwd'];
-//     $auth->auth["uid"] = $auth->auth_validatelogin();
-//
-// // anonymous login
-// // removed by Honza - nobody is allowed as well (for AA_Responder_Tags for example) - we have to check the permissions inside the AA_Responder_...s
-// //    if ( !$auth->auth["uid"] ) {
-// //        AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
-// //        exit;
-// //    }
-// }
 
 // in order {xuser:id} alias wors in widgets, for example
 $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];

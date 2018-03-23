@@ -101,7 +101,7 @@ if ($encap) {
 
 QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
-AA::$encoding = $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()];
+AA::$encoding = AA_Langs::getCharset();
 
 // TODO: GetHidden is not so correct in current AA code
 // Now we can have multiple itemedits open, so one set of r_hidden isn't correct

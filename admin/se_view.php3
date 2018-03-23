@@ -364,18 +364,16 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<title>". _m("Admin - design View") ."</title>
-      <script Language=\"JavaScript\"><!--
-      function InitPage() {
-        EnableClick('document.f.even_odd_differ','document.f.even_row_format')
-        EnableClick('document.f.category_sort','document.f.category_format')
-      }
-      function EnableClick(cond,what) {
-        eval(what).disabled=!(eval(cond).checked);
-        // property .disabled supported only in MSIE 4.0+
-      }
-      // -->
-      </script>
-    </head>";
+  <script>
+    function InitPage() {
+      EnableClick('even_odd_differ','even_row_format')
+      EnableClick('category_sort','category_format')
+    }
+    function EnableClick(cond,what) {
+      document.f[what].disabled = !(document.f[cond].checked);
+    }
+  </script>
+</head>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
 

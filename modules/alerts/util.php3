@@ -90,14 +90,6 @@ function alerts_con_url($Url,$Params){
   return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
 }
 
-function GetEmailLangs() {
-    global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
-    foreach ( $LANGUAGE_CHARSETS as $l => $charset ) {
-        $ret[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
-    }
-    return $ret;
-}
-
 /** confirm_email function
  *   Confirms email on Reader management slices because the parameter $aw
  *   is sent only in Welcome messages.

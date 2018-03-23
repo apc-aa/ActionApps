@@ -33,13 +33,9 @@ require_once "../../include/formutil.php3";
 
 add_post2shtml_vars();
 
-foreach ($LANGUAGE_CHARSETS as $l => $foo) {
-    $langs[$l] = $l;
-}
-
 $cf_fields = array (
     "lang" => array (
-        "code"=>getFrmSelectEasy ("formlang", $langs, get_mgettext_lang()),
+        "code"=>getFrmSelectEasy ("formlang", AA_Langs::getCharsets(), get_mgettext_lang()),
         "label"=>_m("Language"),
         // do not show in wizard
         "hidewizard"=>true),

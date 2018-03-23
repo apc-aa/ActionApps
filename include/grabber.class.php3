@@ -697,7 +697,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         }
 
         /** $g_slice_encoding is passed to aa_rss_parse() - it defines output character encoding */
-        $GLOBALS['g_slice_encoding'] = getSliceEncoding($this->slice_id);
+        $GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
         if (!( $this->aa_rss = aa_rss_parse( $xml_data ))) {
             AA_Log::write("CSN","Feeding mode ($feed_debug_name): Unable to parse XML data");

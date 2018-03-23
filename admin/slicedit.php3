@@ -82,10 +82,7 @@ $flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALL
 // lookup owners
 $slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
 
-
-foreach ($LANGUAGE_NAMES as $l => $langname) {
-    $biglangs[$l."_news_lang.php3"] = $langname;
-}
+$biglangs = AA_Langs::getFiles();
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>

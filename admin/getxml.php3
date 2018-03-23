@@ -467,8 +467,9 @@ if (!$slice_id) {
     }
     echo $XML_BEGIN;
     foreach ($slice_ids as $sl_id) {
-        $GLOBALS['g_slice_encoding'] = getSliceEncoding($sl_id);
-        $slice_fields                = AA_Slice::getModule($sl_id)->fields('record');
+        $sl = AA_Slice::getModule($sl_id);
+        $GLOBALS['g_slice_encoding'] = $sl->getCharset();
+        $slice_fields                = $sl->fields('record');
         $xml_categories_refs         = $xml_fields_refs = "";      // clear fields and categories for this channel
         GetXMLFields(     $sl_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields
         GetXMLCategories( $sl_id, $xml_categories_refs, $xml_categories ); //get categories
@@ -485,9 +486,9 @@ if (!$slice_id) {
 if (!CheckFeedingPermissions($slice_id, $node_name, $user)) {
     Error("Invalid permissions - slice_id: $slice_id, node_name: $node_name, user:$user");
 }
-$GLOBALS['g_slice_encoding'] = getSliceEncoding($slice_id);
-
 $slice = AA_Slice::getModule($slice_id);
+
+$GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
 if ($exact AND !$ids) {
 

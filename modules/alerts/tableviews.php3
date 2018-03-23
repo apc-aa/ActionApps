@@ -132,10 +132,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
     */
 
     if ($viewID == "modedit") {
-        global $LANGUAGE_NAMES;
-        foreach ($LANGUAGE_NAMES as $l => $langname) {
-            $alertslangs[$l."_alerts_lang.php3"] = $langname;
-        }
+        $alertslangs = AA_Langs::getFiles('alerts');
         return array (
         "table" => "module",
         "join" => array (

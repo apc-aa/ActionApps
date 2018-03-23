@@ -382,7 +382,6 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
  */
 function compareSliceTableFields($st,$sm,$pr) {
     global $slicetablefields;
-//    global $scoreUnshown,$AA_CP_Session;
     $score = 0;
     $opened = 0;
     $ft = $slicetablefields[pack_id($st->getId())];
@@ -426,7 +425,7 @@ function compareSliceTableFields($st,$sm,$pr) {
       } //while
       if ($opened) {
         print("<li>Will fix to allow editing</li>");
-//        $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
+//        $u1 = "se_inputform.php3?fid=$fn&update=1&onlyupdate=1&return_url=summarize.php3";
 //        print("<li><a href=\"" . $u1
 //        . "&change_id=" . $st->getId()
 //        . $fixert ."\">Fix this slice</a>");

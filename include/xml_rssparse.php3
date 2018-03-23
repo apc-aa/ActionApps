@@ -324,7 +324,7 @@ function aa_rss_parse($xml_data) {
     // Destination slice encoding should be set in aa_rss_parse caller function.
     // If not set, we probably want to parse data for current slice (node list, ... )
     if ( !$GLOBALS['g_slice_encoding'] ) {
-        $GLOBALS['g_slice_encoding'] = getSliceEncoding($GLOBALS['slice_id']);
+        $GLOBALS['g_slice_encoding'] = AA_Slice::getModule($GLOBALS['slice_id'])->getCharset();
     }
 
     // encoding detected automaticaly - utf-8 on the output of the parsed

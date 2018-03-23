@@ -46,27 +46,6 @@ define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id('AA_Other_Categor') );
 $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
                          "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN);
 
-/** getSliceEncoding function
- *   Each slice can use different character encoding. The encoding is based on
- *  selected language for the slice
- * @param $slice_id
- * @return string encoding
- */
-function getSliceEncoding($slice_id) {
-    $db = getDB();
-    $p_slice_id = q_pack_id($slice_id);
-    $db->query("SELECT lang_file FROM module WHERE id='$p_slice_id'");
-    $db->next_record();
-    if (strpos($db->f("lang_file"), 'utf8') !== false) {
-        $ret = 'utf-8';
-    } else {
-        $ret = $GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)];
-    }
-    freeDB($db);
-    return ($ret ? $ret : 'utf-8');
-}
-
-
 /** GetExternalCategories function
  *  Get categories from table ef_categories
  *  ef_categories is used only for APC type of feedin (APC RSS) and the change

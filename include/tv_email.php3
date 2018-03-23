@@ -57,6 +57,7 @@ function ShowRefreshWizardJavaScript() {
  *
  */
 function ShowEmailAliases() {
+    $ali   = array();
     $ali[] = array (
         "group" => _m("Aliases for Alerts Alert"),
         "aliases" => array (
@@ -119,7 +120,7 @@ function GetEmailTableView($viewID) {
     global $attrs_edit, $attrs_browse;
 
     if ($viewID == "email_edit") {
-        $mylangs = GetEmailLangs();
+        $mylangs = AA_Langs::getNames();
         return  array (
         "table" => "email",
         "type" => "edit",
@@ -224,6 +225,7 @@ function GetEmailWhere() {
     if (IsSuperadmin()) {
         return "(1=1)";
     }
+    $restrict_slices = array();
     $myslices = GetUserSlices();
     if (is_array($myslices)) {
         foreach ($myslices as $my_slice_id => $perms) {

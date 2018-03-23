@@ -528,7 +528,7 @@ function send2mailList($d_item_id, $new_id) {
 
                 $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
                 $db->next_record();
-                $mail->setCharset($GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)]);
+                $mail->setCharset(AA_Langs::getCharset(substr($db->f("lang_file"),0,2)));
                 $mail->send(array($maillist));
             } //view found
         } // vid present

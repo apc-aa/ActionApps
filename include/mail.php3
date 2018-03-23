@@ -97,7 +97,6 @@ class AA_Mail extends htmlMimeMail {
      * @param $item
      */
     function setFromTemplate($mail_id, $item=null) {
-        global  $LANGUAGE_CHARSETS;
 
         $this->template_id = $mail_id;
         if (is_object($item)) {
@@ -112,7 +111,7 @@ class AA_Mail extends htmlMimeMail {
         foreach ( $record as $key => $value) {
             $record[$key] = AA::Stringexpander()->unalias($value, "", $item);
         }
-        $record["lang"] = $LANGUAGE_CHARSETS[$record["lang"]];
+        $record["lang"] = AA_Langs::getCharset($record["lang"]);
         return $this->setFromArray($record);
     }
 

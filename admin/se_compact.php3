@@ -34,6 +34,14 @@ require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
+define("DEFAULT_CATEGORY_HTML", "<p>_#CATEGORY</p>");
+define("DEFAULT_EVEN_HTML", "");
+define("DEFAULT_EVEN_ODD_DIFFER", false);
+define("DEFAULT_ODD_HTML", '<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>');
+define("DEFAULT_TOP_HTML", '');
+define("DEFAULT_COMPACT_REMOVE", '');
+
+
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
@@ -136,36 +144,30 @@ if ( $slice_id!="" ) {  // set variables from database - allways
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <title><?php echo _m("Admin - design Index view");?></title>
-<script Language="JavaScript"><!--
-function Defaults()
-{
-  document.f.odd_row_format.value = '<?php echo DEFAULT_ODD_HTML ?>'
-  document.f.even_row_format.value = '<?php echo DEFAULT_EVEN_HTML ?> '
-  document.f.group_by.selectIndex = -1;
-  document.f.gb_direction.selectIndex = 0;
-  document.f.gb_header.selectIndex = 0;
-  document.f.category_top.value = '<?php echo DEFAULT_CATEGORY_TOP ?>'
-  document.f.category_format.value = '<?php echo DEFAULT_CATEGORY_HTML ?>'
-  document.f.category_bottom.value = '<?php echo DEFAULT_CATEGORY_BOTTOM ?>'
-  document.f.compact_top.value = '<?php echo DEFAULT_TOP_HTML ?>'
-  document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
-  document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
-  document.f.noitem_msg.value = ''
-  InitPage()
-}
+<script>
+    function Defaults() {
+      document.f.odd_row_format.value = '<?php echo DEFAULT_ODD_HTML ?>'
+      document.f.even_row_format.value = '<?php echo DEFAULT_EVEN_HTML ?> '
+      document.f.group_by.selectIndex = -1;
+      document.f.gb_direction.selectIndex = 0;
+      document.f.gb_header.selectIndex = 0;
+      document.f.category_top.value = ''
+      document.f.category_format.value = '<?php echo DEFAULT_CATEGORY_HTML ?>'
+      document.f.category_bottom.value = ''
+      document.f.compact_top.value = '<?php echo DEFAULT_TOP_HTML ?>'
+      document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
+      document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
+      document.f.noitem_msg.value = ''
+      InitPage()
+    }
 
-function InitPage() {
-  EnableClick('document.f.even_odd_differ','document.f.even_row_format')
-  //EnableClick('document.f.category_sort','document.f.category_format')
-}
+    function InitPage() {
+      EnableClick('even_odd_differ','even_row_format');
+    }
 
-function EnableClick(cond,what) {
-  eval(what).disabled=!(eval(cond).checked);
-  // property .disabled supported only in MSIE 4.0+
-}
-
-
-// -->
+    function EnableClick(cond,what) {
+      document.f[what].disabled = !(document.f[cond].checked);
+    }
 </script>
 </head>
 
@@ -200,7 +202,7 @@ function EnableClick(cond,what) {
   FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
                _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
                .'<br>'.AA_View::getViewJumpLinks($odd_row_format), DOCUMENTATION_URL, 1);
-  FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
+  FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "OnClick=\"EnableClick('even_odd_differ','even_row_format')\"");
   FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
                _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example")
                .'<br>'.AA_View::getViewJumpLinks($even_row_format), DOCUMENTATION_URL, 1);

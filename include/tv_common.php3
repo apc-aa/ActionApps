@@ -42,11 +42,7 @@ $format = array (
         "after" => "</b>"));
 
 
-global $LANGUAGE_NAMES;
-foreach ($LANGUAGE_NAMES as $l => $langname) {
-    $biglangs[$l."_news_lang.php3"] = $langname;
-    $langs[$l] = $langname;
-}
+$langs = AA_Langs::getNames();
 
 // ----------------------------------------------------------------------------------
 /** CreateWhereFromList function

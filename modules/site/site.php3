@@ -80,7 +80,7 @@ function StripslashesDeep($value) {
 function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
-        header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()]));
+        header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: AA_Langs::getCharset()));
         echo AA::Stringexpander()->unalias($page);
     }
     //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
@@ -221,7 +221,7 @@ require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
 
 if ($lang_file) {
-    mgettext_bind(GetLang($lang_file), 'output');
+    mgettext_bind(AA_Langs::getLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }

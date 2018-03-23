@@ -1,6 +1,9 @@
 18-03-23 - AA admin interface switched to HTML5 (just header...)
 (honzam) - fixed problem with Slice owner field on Slice Admin page (now displayed correctly)
-         - code cleanup - more documentation of functions, ...
+         - code cleanup
+           - more documentation of functions, ...
+           - better language handling
+           - safer javascipt ussage - removed some eval()'
 18-03-18 - new {html2text:<some HTML code>} function which removes html tags
 (honzam) - pagecache global instance moved to AA::
          - code cleanup
@@ -29,22 +32,22 @@
 18-02-28 - fix of {pager} problem - even better
 18-02-27 - removed old and unused test.php scripts with possible security risks
 18-02-24 - new possibility to get data form current item
-(honzam)     {xid:<some aa expression} like {xid:this is my _#NAME____} 
-               - it is shortcut for {item:{xid}:this is my _#NAME____} 
-         - new shortcut for right number format in 
-           {math:<expression>[:<decimals>[:<dec_point_char>:<thousands_char>]]} 
-           - now you can specify EN or FR instead of <dec_point_char>:<thousands_char> 
-             which sets correct english SI or european SI formats - just like 
+(honzam)     {xid:<some aa expression} like {xid:this is my _#NAME____}
+               - it is shortcut for {item:{xid}:this is my _#NAME____}
+         - new shortcut for right number format in
+           {math:<expression>[:<decimals>[:<dec_point_char>:<thousands_char>]]}
+           - now you can specify EN or FR instead of <dec_point_char>:<thousands_char>
+             which sets correct english SI or european SI formats - just like
              {math:478778:1:.:&#8239;} or {math:478778:1:,:&#8239;}
          - new possibility to add Google Analytics code automaticaly - just fill
-           the "Google analytics tracking id" in site setting and use 
+           the "Google analytics tracking id" in site setting and use
            {generate:HEAD} and {generate:FOOT} in yor sitemodule code
-         - new "Show Datastructure Documentation" possibility 
+         - new "Show Datastructure Documentation" possibility
            on AA -> Slice Export page which prints table with fields setting
          - new possibility to specify Code to show in "Info text - output" input type
          - new possibility to specify maxlength of Text Input
          - fix default values for fields filled by aa[] type of form
-         - switched form tooltipjs to tippy library for {tooltip:...} - it has 
+         - switched form tooltipjs to tippy library for {tooltip:...} - it has
            better setting and do not require jQuery
          - fixed problem with parsing {xflag}, {xlang}, {xpage} and pager
          - better contentcache for internal caching
@@ -1242,7 +1245,7 @@
            All works as standard item relations in AA.
            Used "select2" library, which use jQuery. Just include
            /apc-aa/javascript/aajslib-jquery.php in your pages - all is loaded
-           dynamicaly after the firs ussage
+           dynamicaly after the first ussage
            Not working insite AA admin interface, yet (there we use normal
            relation field)
          - {tagcloud:<item_ids>[:<count>[:<alias>[:<count_field>]]]} - Creates

@@ -38,11 +38,9 @@ require_once "./include/config.php3";
 /** APC-AA constant definitions */
 require_once AA_INC_PATH."constants.php3";
 require_once AA_INC_PATH."mgettext.php3";
-$lang_file = substr ($lang_file, 0, 2);
-if (!$LANGUAGE_NAMES [$lang_file]) {
-    $lang_file = "en";
-}
-mgettext_bind($lang_file, 'news');
+
+mgettext_bind(AA_Langs::getLang($lang_file), 'news');
+
 /** Main include file for using session management function on a page */
 require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
