@@ -77,6 +77,7 @@ class AA_Router {
         $this->web_languages = array();
     }
 
+    /** @return AA_Router */
     public static function singleton($type, $slices=null, $home='', $web_languages=null) {
         if (!isset(self::$_instance)) {
             self::$_instance = new $type($slices, $home);

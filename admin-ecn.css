@@ -18,7 +18,7 @@ table.mgr_table th {
     font-weight: bold;
 }
 
-.tabtxt, TD, .tabtxteven, .tabtitlight {
+.tabtxt, td, .tabtxteven, .tabtitlight {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 10pt;
  }
@@ -39,19 +39,19 @@ table.mgr_table th {
   background-color : #ADD8E6;
  }
 
-TEXTAREA {
+textarea {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   width: 100%;
  }
 
-INPUT, SELECT {
+input, select {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
  }
 
 
-H1, .tablename {
+h1, .tablename {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
   margin-left: 20px;
@@ -143,8 +143,11 @@ H1, .tablename {
   color: #4A4A4A;
 }
 
-TD.leftmenu {
-  font-weight : bold;
+td.leftmenu {
+  font-weight: bold;
+  border: rgba(0, 0, 0, 0.5) solid 0px;
+  border-width: 1px 0;
+  padding: 3px 1px;
 }
 
 .leftmenuy, .leftmenua, .leftmenun  {
@@ -263,7 +266,7 @@ TD.leftmenu {
        background: #EBDABE;
 }
 
-TD.sel_title {
+td.sel_title {
   background: #F5F0E7;
 }
 

@@ -1090,23 +1090,22 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
     $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
     AA::sendHeaders($headers);
     echo
-'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
-  <html>
-    <head>
-      <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
-      <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'" type="text/css">
-      <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css" type="text/css">
-      ';
+'<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
+    <link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'">
+    <link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css">
+    <meta charset="'.AA::$encoding.'">
+';
 
-    echo "<!--$lang-->";
-    echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=".AA::$encoding."\">\n";
     if ($js_lib) {
         FrmJavascriptFile( 'javascript/js_lib.js' );
         FrmJavascriptFile( 'javascript/jquery.min.js' );
         FrmJavascriptFile( 'javascript/aajslib-jquery.php' );
     }
 }
+
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {

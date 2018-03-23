@@ -288,12 +288,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         <td colspan="2" id="aa_top">
           <table border="0" cellpadding="0" cellspacing="0" width="100%" class="noprint">
             <tr>
-              <td width="1%"><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" width="122" height="1"></td>
-              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height="1"></td>
-              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height="1"></td>
-            </tr>
-            <tr>
-              <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
+              <td width="122" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
               <td height="43" align="center" valign="middle" class="slicehead">'.
                   $title_out .
               '</td>
@@ -401,9 +396,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
             echo "<tr><td>$item</td></tr>\n";
         } elseif ((substr($itemshow,0,6) == "header") AND ($item !== '')) {
             echo '<tr><td>&nbsp;</td></tr>
-                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>
-                  <tr><td class="leftmenu">'.$item.'</td></tr>
-                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>'."\n";
+                  <tr><td class="leftmenu">'.$item.'</td></tr>'."\n";
         } elseif (substr($itemshow,0,4) == "line") {
             echo '<tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>'."\n";
         } elseif ( $item["function"] ) {
@@ -453,8 +446,8 @@ function showSubmenu($aamenu, $active) {
     $aamenuitems = $aamenu["items"];
     showSubMenuRows( $aamenuitems, $active );
 
-    echo '<tr><td class="leftmenu">&nbsp;</td></tr>
-          <tr><td class="leftmenu" height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
+    echo '<tr><td>&nbsp;</td></tr>
+          <tr><td height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
           <tr><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
 }
