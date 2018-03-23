@@ -23,34 +23,16 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
 */
-/** cmp function
- * @param $a
- * @param $b
- */
-function cmp($a, $b) {
-  return strcmp($a["name"], $b["name"]);
-}
 
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You have not permissions to add slice"));
     exit;
 }
 
-$SQL = "SELECT name, id, template, lang_file FROM slice WHERE deleted<>1";
-$db->query($SQL);
-while ( $db->next_record() ) {
-    if ( $db->f('template') ) {
-        $templates[unpack_id( $db->f('id') )]['value'] = unpack_id( $db->f('id') ) ."{". $db->f('lang_file');
-        $templates[unpack_id( $db->f('id') )]['name']  = $db->f('name');
-    }
-    else {
-        $temp_slices[unpack_id( $db->f('id') )]['value'] = unpack_id( $db->f('id') ) ."{". $db->f('lang_file');
-        $temp_slices[unpack_id( $db->f('id') )]['name']  = $db->f('name');
-    }
-}
-
-require_once AA_INC_PATH."formutil.php3";
-
+$templates   = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', array(array('deleted',1,'<>'),array('template',1)), array('name'));
+$temp_slices = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', array(array('deleted',1,'<>'),array('template',1,'<>')), array('name'));
+// 'Action Aplication Core' slice - do not use as template
+unset($temp_slices['41415f436f72655f4669656c64732e2e']);
 
 FrmTabCaption(_m("Slice"));
 
@@ -61,18 +43,14 @@ echo '<tr><td class="tabtxt" colspan="2"><input type="hidden" name="no_slice_id"
 
 
 if ( isset( $templates ) AND is_array( $templates )) {
-    usort($templates, "cmp");
     echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>". _m("Template") ."</b>";
-    echo "</td><td width=\"60%\"><select name=\"template_id\">";
-    foreach ($templates as $v) {
-        echo "<option value=\"". myspecialchars($v['value'])."\"";
-        echo "> ". myspecialchars($v['name']) ." </option>";
-    }
-    echo '</select></td><td width=\"20%\">';
+    echo "</td><td width=\"60%\">";
+    FrmSelectEasy('template_id',$templates);
+    echo '</td><td width=\"20%\">';
     if ($wizard) {
         echo '<input type="radio" name="template_slice_radio" value="template" checked>';
     } else {
-        echo '<input type="SUBMIT" name="template_slice_sel[template]" value="'._m("Add").'" checked>';
+        echo '<input type="SUBMIT" name="template_from_template" value="'._m("Add").'">';
     }
     echo '</td></tr>';
 } else {
@@ -80,25 +58,16 @@ if ( isset( $templates ) AND is_array( $templates )) {
 }
 
 if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
-    usort($temp_slices, "cmp");
-    $out =  "<tr><td class=\"tabtxt\"><b>". _m("Slice") ."</b>";
-    $out .= "</td>\n <td><select name=\"template_id2\">";
-    foreach ($temp_slices as $v) {
-        if ( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' ) {
-            continue;    // 'Action Aplication Core' slice - do not use as template
-        }
-        $slice_sb .= "<option value=\"". myspecialchars($v['value'])."\"";
-        $slice_sb .= "> ". myspecialchars($v['name']) ." </option>";
+    echo "<tr><td class=\"tabtxt\"><b>". _m("Slice") ."</b>";
+    echo "</td>\n <td>";
+    FrmSelectEasy('template_id2',$temp_slices);
+    echo '</td><td>';
+    if ($wizard) {
+        echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
+    } else {
+        echo '<input type="SUBMIT" name="template_from_slice" value="'._m("Add").'">';
     }
-    if ( $slice_sb ) {
-        echo $out . $slice_sb . '</select></td><td>';
-        if ($wizard) {
-            echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
-        } else {
-            echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'._m("Add").'">';
-        }
-        echo '</td></tr>';
-    }
+    echo '</td></tr>';
 } else {
     echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No slices") ."</td></tr>";
 }

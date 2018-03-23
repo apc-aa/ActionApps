@@ -31,6 +31,7 @@ require_once AA_INC_PATH."mail.php3";
 require_once AA_INC_PATH."mlx.php";
 require_once AA_INC_PATH."um_util.php3";
 
+
 /** add_user_and_welcome function
  *  Assigns user privileges and sends a welcome email, if the email address is filled.
  *     Returns error description or empty string.
@@ -188,7 +189,7 @@ if ( $add || $update ) {
             $varset->addkey("id", "unpacked", $slice_id);
             $varset->add("name", "quoted", $name);
             $varset->add("owner", "unpacked", $owner);
-            //echo $owner; exit;  // probmem was in VARCHAR od owner field in database. It must be BINARY
+            //echo $owner; exit;  // probmem was in VARCHAR of owner field in database. It must be BINARY
             $varset->add("slice_url", "quoted", $slice_url);
             $varset->add("priority", "number", $priority);
             if ( $superadmin ) {

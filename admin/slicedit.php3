@@ -25,12 +25,6 @@
 */
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
-// set template id (changes language file => must be here):
-require_once "../include/slicedit2.php3";
-
-$template_slice_sel = $_REQUEST['template_slice_sel'];
-list($set_template_id, $change_lang_file) = get_template_and_lang($template_slice_sel["slice"] ? $_REQUEST['template_id2'] : $_REQUEST['template_id']);
-
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."date.php3";
@@ -71,11 +65,13 @@ foreach ($MODULES as $type => $module) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();
 
+$set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
+
 require_once AA_INC_PATH."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 
-$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(slice.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), array('module.id',$foo_source, 'l')));
+$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), array('module.id',$foo_source, 'l')));
 if (!$sarr) {
     $sarr = array();
 }
@@ -83,16 +79,9 @@ if (!$sarr) {
 $flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
 $flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
 
-//if ( $slice_id == "" ) {
-//    // load default values for new slice
-//    $name         = "";
-//    $owner        = "";
-//    $template     = "";
-//    $slice_url    = "";
-//}
-
 // lookup owners
 $slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
+
 
 foreach ($LANGUAGE_NAMES as $l => $langname) {
     $biglangs[$l."_news_lang.php3"] = $langname;
@@ -147,7 +136,7 @@ FrmInputSelect("lang_file", _m("Language"), $biglangs, $sarr['lang_file'], false
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);
 if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
-    $slicefields = GetFields4Select($slice_id, false, 'input_pri');
+    $slicefields = AA_Fields::getFields4Select($slice_id, false, 'input_pri');
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
 }

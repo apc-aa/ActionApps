@@ -24,9 +24,6 @@
  *
 */
 // set template id (changes language file => must be here):
-require_once "../include/slicedit2.php3";
-
-list($set_template_id, $change_lang_file) = get_template_and_lang($template_slice_radio == "slice" ? $template_id2 : $template_id);
 
 // messages for init_page:
 $no_slice_id          = true;
@@ -41,6 +38,8 @@ if ($cancel) {
 }
 
 $wizard = 1;
+
+$set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
 if ($add) {
     require_once AA_INC_PATH."slicedit.php3";
