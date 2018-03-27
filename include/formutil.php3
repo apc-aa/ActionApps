@@ -857,7 +857,7 @@ class AA_Inputfield {
                 //            }
                 //            $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
                 //            break;
-                case 'txt': $this->textarea(get_if($this->param[0],4), 60);
+                case 'txt': $this->textarea(true, get_if($this->param[0],4));
                             break;
                 case 'edt': $this->richEditTextarea(
                                        get_if($this->param[0],10),       // rows
@@ -1344,7 +1344,7 @@ class AA_Inputfield {
     *                  to include /misc/htmlarea/aafunc.js script to the page
     * @param $showhtmlarea
     */
-    function textarea( $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false, $maxlength=0) {
+    function textarea($showtriggers=false, $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false, $maxlength=0) {
 
         list($name,$val,$add) = $this->prepareVars('multi');
         // make the textarea bigger, if already filled with long text
@@ -1368,6 +1368,7 @@ class AA_Inputfield {
         }
 
         $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
+        $triggers  = $showtriggers ? getTriggers("textarea",$name) : '';
 
         if ($this->translations) {
             $first = true;
@@ -1392,7 +1393,7 @@ class AA_Inputfield {
                 $parts["part$id2"] = array($lang, $classes);
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
-                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+                $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
                     $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
@@ -1407,7 +1408,7 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" ".getTriggers("textarea",$name).">$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
             if (!$showhtmlarea AND $showrich_href ) {
                 $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
             }
@@ -1427,7 +1428,7 @@ class AA_Inputfield {
     */
 
     function richEditTextarea($rows=10, $cols=80, $type="class", $single="") {
-        $this->textarea($rows, $cols, false, false, true);
+        $this->textarea(true, $rows, $cols, false, false, true);   // the first true (triggers) could be chjanged to false for all non item editiong richtextareas
     }
 
 
@@ -2261,7 +2262,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
     if ($showrich_href) {
         $input->html_rb_show = true;
     }
-    $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
+    $input->textarea(false, $rows, $cols, $single, $showrich_href, false, $maxlength);
     $input->print_result();
 }
 

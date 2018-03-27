@@ -89,10 +89,7 @@ $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`");
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <title><?php echo _m("Remote node administration");?></title>
-<script language="javascript"><!--
-
-function InitPage() {}
-
+<script>
 function SelectValue(sel) {
   svindex = eval(sel).selectedIndex;
   if (svindex != -1) { return eval(sel).options[svindex].value; }
@@ -129,14 +126,11 @@ function checkData() {
 function Cancel() {
   document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
 }
-
-// -->
 </script>
 
 </head>
 
 <?php
-  $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin","nodes");
 

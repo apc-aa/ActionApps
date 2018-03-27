@@ -80,7 +80,7 @@ if ($update) {
         $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
         $db->query($SQL);
 
-        $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
         go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
     }
@@ -96,10 +96,6 @@ if ($db->next_record()) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <title><?php echo _m("Edit discussion");?></title>
-<script Language="JavaScript"><!--
-function InitPage() {}
-// -->
-</script>
 
 
 </head>

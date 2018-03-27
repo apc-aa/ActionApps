@@ -139,14 +139,9 @@ require_once AA_INC_PATH."formutil.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <title><?php echo _m("Admin - Import .CSV file"); ?></title>
-<script Language="JavaScript"><!--
-function InitPage() {}
-//-->
-</script>
 </head>
 <body>
 <?php
-  $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin","CSVimport");
 

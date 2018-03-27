@@ -75,10 +75,8 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo '<title>'. _m("Inter node import settings") ."</title>\n<head>\n";
-FrmJavascript('function InitPage() {}');
 echo "\n</head>\n<body>\n";
 
-$useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","n_import");
 

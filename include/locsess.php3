@@ -110,6 +110,9 @@ spl_autoload_register(function ($class_name) {
         case 'modulesettings':
             require_once __DIR__. '/slice.class.php3';
             return;
+        case 'adminpageutil':
+            require_once __DIR__. '/adminpage.class.php3';
+            return;
         case 'response':
         case 'clientauth':
         case 'http':

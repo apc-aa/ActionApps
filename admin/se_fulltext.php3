@@ -101,15 +101,14 @@ if ( $update ) {
 
         $varset->add("flag", "number", $discus_flag);
         $varset->add("vid",  "number", $discus_sel);
+        $varset->addkey("id", "unpacked", $slice_id);
 
-        $SQL = "UPDATE slice SET ". $varset->makeUPDATE()." WHERE id='".q_pack_id($slice_id)."'";
-
-        if ( !$db->query($SQL)) {
+        if ( !$varset->doUpdate('slice') ) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }
 
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     } while (false);
     if ( count($err) <= 1 ) {
@@ -118,77 +117,49 @@ if ( $update ) {
 }
 
 if ( $slice_id != "" ) {  // set variables from database
-    $SQL= " SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid
-            FROM slice WHERE id='". q_pack_id($slice_id)."'";
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $fulltext_format_top    =  $db->f('fulltext_format_top');
-        $fulltext_format        =  $db->f('fulltext_format');
-        $fulltext_format_bottom =  $db->f('fulltext_format_bottom');
-        $fulltext_remove        =  $db->f('fulltext_remove');
-        $discus_htmlf           = ($db->f('flag') & DISCUS_HTML_FORMAT)  == DISCUS_HTML_FORMAT;
-        $discus_disabled        = ($db->f('flag') & DISCUS_ADD_DISABLED) == DISCUS_ADD_DISABLED;
-        $discus_vid             =  $db->f('vid');
+    $rec = DB_AA::select1('SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', '', array(array('id', $slice_id, 'l')));
+    if ($rec) {
+        $fulltext_format_top    =  $rec['fulltext_format_top'];
+        $fulltext_format        =  $rec['fulltext_format'];
+        $fulltext_format_bottom =  $rec['fulltext_format_bottom'];
+        $fulltext_remove        =  $rec['fulltext_remove'];
+        $discus_htmlf           = ($rec['flag'] & DISCUS_HTML_FORMAT)  == DISCUS_HTML_FORMAT;
+        $discus_disabled        = ($rec['flag'] & DISCUS_ADD_DISABLED) == DISCUS_ADD_DISABLED;
+        $discus_vid             =  $rec['vid'];
     }
 }
+
+$script2run = '
+    var tas = document.querySelectorAll("textarea");
+    for(var i = 0; i < tas.length; i++) {
+      CodeMirror.fromTextArea(tas[i], { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" });
+    }
+    function Defaults() {
+        document.f.fulltext_format_top.value    = \'\';
+        document.f.fulltext_format.value        = "<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>";
+        document.f.fulltext_format_bottom.value = \'\';
+        document.f.fulltext_remove.value        = \'\';
+    }
+    ';
+
+$apage = new AA_Adminpageutil('sliceadmin','fulltext');
+$apage->setTitle(_m("Admin - design Fulltext view"));
+$apage->setSubtitle(_m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"));
+$apage->addRequire('codemirror@5');
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->printHead();
+
+?>
+<!--style>
+  .CodeMirror { height:auto; min-height: 100px; font-size: 12px; }
+  .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
+</style-->
+<?php
+
 
 // lookup discussion views
 $discus_vids    = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_slice_id' AND type='discus'",    'id', 'name');
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-
-
-
-
-//$aa_property = AA_Metabase::singleton()->getColumnProperty('slice', 'fulltext_format');
-//$widget      = $aa_property->defaultWidget();
-//$ret         = $widget->getEditHtml($aa_property, )
-//
-//
-//                $widget      = $field->getWidget($widget_type, $widget_properties);
-//                $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_properties['name'], $widget_properties['input_help']);
-//                $ret         = $widget->$type($aa_property, $item, $function);
-//                $widget->registerRequires();
-//
-
-
-
-
-
-?>
-<title><?php echo _m("Admin - design Fulltext view");?></title>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.css" integrity="sha256-XyDJ6+MvRGhJHdk5i+vjmlocQ4lO6W2q5fahVAcYql0=" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.js"  integrity="sha256-/OCc+1HKfnjOGUtgcpPUGj14IzwliaF2X83ws+OlXaU=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/htmlmixed/htmlmixed.js" integrity="sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/xml/xml.js" integrity="sha256-sB8UtHQubuS61s0F+Ui6xNwJHrTXcd3zjCgfb4bOnK4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/css/css.js" integrity="sha256-lKwXc/xVYQ26OoLFzIMNK0o1tTTYBNMqHbBO7bdoIio=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/javascript/javascript.js" integrity="sha256-6vpQF2FCKaaXS1eBjQHL/Zzf5mUcA8cLLTQ8nVGgZYo=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchbrackets.js" integrity="sha256-coEcESK5JwnNa8975uTdCcJb553y6HKAwlWs/LCWeuQ=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchtags.js" integrity="sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/fold/xml-fold.js" integrity="sha256-l/TrijjAvQgiGYppltKp2PLTBGe7s7tPiid0WoaLeMY=" crossorigin="anonymous"></script>
-<style>
-  .CodeMirror { height:auto; min-height: 100px; font-size: 12px; }
-  .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
-</style>
-<script>
-function Defaults() {
-    document.f.fulltext_format_top.value    = '';
-    document.f.fulltext_format.value        = "<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>";
-    document.f.fulltext_format_bottom.value = '';
-    document.f.fulltext_remove.value        = '';
-}
-</script>
-</head>
-
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "fulltext");
-
-echo "<h1><b>" . _m("Admin - design Fulltext view") . "</b></h1>&nbsp;&nbsp;" . _m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
-PrintArray($err);
-echo $Msg;
 
 $form_buttons = array ("update",
                        "update" => array ('type' => 'hidden', 'value'=>'1'),
@@ -224,9 +195,6 @@ PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons
 FrmTabEnd();
 ?>
 </form>
-<script> CodeMirror.fromTextArea(document.getElementById('fulltext_format_bottom'), { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" }); </script>
 
 <?php
-HtmlPageEnd();
-page_close()
-?>
+$apage->printFoot();

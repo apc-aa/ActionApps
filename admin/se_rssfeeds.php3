@@ -112,9 +112,7 @@ $rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", array(array('slice_i
 
 ?>
  <title><?php echo _m("Remote RSS Feed administration");?></title>
-<script Language="JavaScript"><!--
-
-function InitPage() {}
+<script>
 
 function SelectValue(sel) {
     svindex = eval(sel).selectedIndex;
@@ -152,14 +150,11 @@ function checkData() {
     }
     document.f.submit();
 }
-
-// -->
 </script>
 
 </head>
 <body>
 <?php
-  $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin","rssfeeds");
 

@@ -236,7 +236,7 @@ class AA_Csv_Importer {
         AA_Log::write("CSV_IMPORT",$logMsg);
 
         // invalidate cache;
-        $GLOBALS['pagecache']->invalidateFor("slice_id=".$this->slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=".$this->slice_id);  // invalidate old cached values
 
         fclose($handle);
 
@@ -467,10 +467,8 @@ if ($upload) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <title><?php echo _m("Admin - Import .CSV file"); ?></title>
-<script Language="JavaScript"><!--
-function InitPage() {}
-
-/* Calls the parameters wizard. Parameters are as follows:
+<script>
+  /* Calls the parameters wizard. Parameters are as follows:
     list = name of the array containing all the needed data for the wizard
     combo_list = a combobox of which the selected item will be shown in the wizard
     text_param = the text field where the parameters are placed
@@ -483,13 +481,10 @@ function InitPage() {}
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }
-
-//-->
 </script>
 </head>
 <body>
 <?php
-$useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","CSVimport");
 PrintArray($err);

@@ -137,16 +137,13 @@ foreach ($to_fields as  $k => $v) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <title><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></title>
-<script Language="JavaScript"><!--
-
-function InitPage() {}
+<script>
 
 function SelectValue(sel) {
     svindex = eval(sel).selectedIndex;
     if (svindex != -1) { return eval(sel).options[svindex].value; }
     return null;
 }
-
 
 function ChangeFromSlice() {
     var url = "<?php echo StateUrl(self_base() . "se_mapping.php3")?>"
@@ -164,27 +161,25 @@ function Cancel() {
 }
 
 function Submit() {
-/*  var e = document.f.elements;
-  fcnt = <?php echo count($from_fields)?>
-
-  // test for duplicity
-  for ( i=1; i < fcnt; i++)
-    for ( j=i+1; j<fcnt+1; j++)
-      if (e[i].selectedIndex !=0 && SelectValue(e[i]) == SelectValue(e[j])) {
-        alert("<?php echo _m("Cannot map to same field") ?>");
-        return;
-      }
-  */
+  // var e = document.f.elements;
+  // fcnt = <?php echo count($from_fields)?>
+  //
+  // // test for duplicity
+  // for ( i=1; i < fcnt; i++) {
+  //   for ( j=i+1; j<fcnt+1; j++) {
+  //     if (e[i].selectedIndex !=0 && SelectValue(e[i]) == SelectValue(e[j])) {
+  //       alert("<?php //echo _m("Cannot map to same field") ?>//");
+  //       return;
+  //     }
+  //   }
+  // }
   document.f.submit();
 }
-// -->
 </script>
 
 </head>
 <body>
 <?php
-
-$useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","mapping");
 

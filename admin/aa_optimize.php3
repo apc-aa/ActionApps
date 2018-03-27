@@ -79,14 +79,9 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <title><?php echo _m("Admin - Optimize a Repair ActionApps"); ?></title>
-<script Language="JavaScript"><!--
-function InitPage() {}
-//-->
-</script>
 </head>
 <body>
 <?php
-$useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "aaadmin", "optimize");
 

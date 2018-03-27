@@ -72,8 +72,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <title><?php echo _m("Inter node export settings");?></title>
 <script Language="JavaScript"><!--
 
-function InitPage() {}
-
 function SelectValue(sel) {
   svindex = eval(sel).selectedIndex;
   if (svindex != -1) { return eval(sel).options[svindex].value; }
@@ -97,7 +95,6 @@ function Delete() {
 </head>
 <body>
 <?php
-  $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin", "n_export");
 

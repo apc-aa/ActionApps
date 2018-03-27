@@ -89,7 +89,7 @@ if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deletesh
     }
     updateDiscussionCount($item_id);        // update a count of the comments belong to the item
 
-    $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
+    AA::Pagecache()->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
     // refresh the content and the tree because of delete node
     $zids     = QueryDiscussionZIDs($item_id);
@@ -105,7 +105,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php echo _m("Admin - Discussion comments management");?></title>
 
 <script type="text/javascript"><!--
-  function InitPage() {}
   function DeleteComment(id) {
     if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
        return
@@ -128,9 +127,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </head>
 <body>
+  <center>
 <?php
-echo "<center>
-    <h1><b>" . _m("Discussion comments management") . "</b></h1>";
+echo "<h1><b>" . _m("Discussion comments management") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
