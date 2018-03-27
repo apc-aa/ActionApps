@@ -1,3 +1,7 @@
+18-03-27 - Slice Admin - Fulltext is rewritten to use newer AA_Adminpage approach, which
+(honzam)   simplifies and unifies the AA admin interface.
+         - Slice Admin - Fulltext uses Codemirror editor, now (seems better for AA than ACE)
+         - finished move of global instance of pagecache to AA::Pagecache() approach
 18-03-23 - AA admin interface switched to HTML5 (just header...)
 (honzam) - fixed problem with Slice owner field on Slice Admin page (now displayed correctly)
          - code cleanup
@@ -5,7 +9,7 @@
            - better language handling
            - safer javascipt ussage - removed some eval()'
 18-03-18 - new {html2text:<some HTML code>} function which removes html tags
-(honzam) - pagecache global instance moved to AA::
+(honzam) - pagecache global instance moved to AA::Pagecache()
          - code cleanup
             - better use of singleton (chained method call)
             - unified return types of some functions

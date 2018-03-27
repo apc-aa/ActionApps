@@ -52,7 +52,7 @@ if ( $del ) {
         $err["DB"] = MsgErr("Can't delete view");
         exit;
     }
-    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+    AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     $Msg = MsgOk(_m("View successfully deleted"));
 }

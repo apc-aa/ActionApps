@@ -359,7 +359,7 @@ if ( $add || $update ) {
         }
 //        $slice->setSliceField('_upload_url.....', $upload_url);
 
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice
     } while(false);
 
     if ( count($err) <= 1 ) {

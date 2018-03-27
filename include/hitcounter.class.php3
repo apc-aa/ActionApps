@@ -367,7 +367,7 @@ class AA_ComputedfieldsItem_Updater {
             $item = new ItemContent($item_id);
             $item->updateComputedFields();
         }
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$sid");
+        AA::Pagecache()->invalidateFor("slice_id=$sid");
     }
 }
 

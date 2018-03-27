@@ -902,7 +902,7 @@ class AA_Transformator {
         }
         if (is_array($slices2invalidate)) {
             foreach($slices2invalidate as $sli_id) {
-                $GLOBALS['pagecache']->invalidateFor("slice_id=$sli_id");
+                AA::Pagecache()->invalidateFor("slice_id=$sli_id");
             }
 
             // we disabled events, so at the end we should update auth data

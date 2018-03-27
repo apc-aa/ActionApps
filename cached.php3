@@ -50,5 +50,4 @@ header('Content-Type: application/x-javascript');
 if(!$keystr) {
     $keystr = $_REQUEST['keystr'];
 }
-echo $GLOBALS['pagecache']->getById($keystr);
-
+echo AA::Pagecache()->getById($keystr);

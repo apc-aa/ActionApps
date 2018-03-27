@@ -251,7 +251,7 @@ if ($update) {
                 }
             }
         }
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         if (count($err) <= 1) {
             $from_form = false;

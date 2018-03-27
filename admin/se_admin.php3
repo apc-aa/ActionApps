@@ -73,7 +73,7 @@ if ($update) {
             break;    // not necessary - we have set the halt_on_error
         }
 
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         // set the
         AA_Profile::addProfileProperty('*', $slice_id, 'input_view', '', '', $inputform_sel, '');

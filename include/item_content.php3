@@ -1033,7 +1033,7 @@ class ItemContent extends AA_Content {
         }
         if ($invalidatecache) {
             // invalidate old cached values
-            $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
+            AA::Pagecache()->invalidateFor("slice_id=$slice_id");
         }
 
 
@@ -1196,7 +1196,7 @@ class ItemContent extends AA_Content {
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
 
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");
     }
 
     /** unalias the text using content of this itemcontent and aliases of the slice */

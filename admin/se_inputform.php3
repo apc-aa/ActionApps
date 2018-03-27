@@ -71,7 +71,7 @@ if ($del) {
         $err["DB"] = MsgErr("Can't change field");
         exit;
     }
-    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+    AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     $Msg = MsgOk(_m("Field delete OK"));
     go_url($back_admin_url);  // back to field page
@@ -228,7 +228,7 @@ if ($update) {
             $err["DB"] = MsgErr("Can't change field");
             break;
         }
-        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         if ( count($err) <= 1 ) {
             $Msg = MsgOk(_m("Fields update successful"));
