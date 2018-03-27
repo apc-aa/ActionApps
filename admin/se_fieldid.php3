@@ -229,9 +229,9 @@ if ($update && $new_id_text && $p_slice_id) {
 }
 
 // lookup source fields
-$s_fields = GetFields4Select($slice_id, 'all', 'id');
+$s_fields = AA_Fields::getFields4Select($slice_id, 'all', 'id');
 // lookup destination fields
-$d_fields = GetFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
+$d_fields = AA_Fields::getFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
