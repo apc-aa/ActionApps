@@ -84,7 +84,6 @@ class AA_Adminpageutil {
 
     public function getPageBegin()
     {
-        AA::$encoding = AA_Langs::getCharset();
         $out = '<!DOCTYPE html>
 <html>
 <head>
@@ -107,6 +106,9 @@ class AA_Adminpageutil {
 
     public function printHead()
     {
+        AA::$encoding = AA_Langs::getCharset();
+        $this->sendHeaders();
+
         $html_start = $this->getPageBegin();
         $out = '';
 

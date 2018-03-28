@@ -1,3 +1,5 @@
+18-03-28 - {go} now filter out all err=1 and logout=1 internal AA parameters from resulting url
+(honzam) - fixed problem with encoding in previously changed Slice Admin - Fulltext
 18-03-27 - Slice Admin - Fulltext is rewritten to use newer AA_Adminpage approach, which
 (honzam)   simplifies and unifies the AA admin interface.
          - Slice Admin - Fulltext uses Codemirror editor, now (seems better for AA than ACE)
