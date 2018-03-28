@@ -68,7 +68,9 @@ class AA_Router {
     protected $home;
     protected $web_languages;
 
-    // Store the single instance of Database
+    /** @var AA_Router $_instance
+     * Store the single instance of Database
+     */
     private static $_instance;
 
     function __construct($slices=null, $home='') {
@@ -475,8 +477,8 @@ class AA_Router_Seo extends AA_Router {
      *           3) IDs path of current item - like 2587(2877(3004)) as used
      *              in {item...} syntax (good for breadcrumbs)
      *              (if param = "path")
-     *  @param $param specifies, which information you want to get (see above)
-     *  @param $url   if filled, returns the information about the specified
+     *  @param string $param specifies, which information you want to get (see above)
+     *  @param string $url   if filled, returns the information about the specified
      *                url instead of the current item
      */
     function xid($param=null, $url=null) {
@@ -557,7 +559,7 @@ class AA_Router_Seo extends AA_Router {
 }
 
 /** {go:<query-string>}
- *  @return url based on current state (apc) and query-string paramater
+ *  @return string url based on current state (apc) and query-string paramater
  *  Ussage: {go:xseo1=faq&xseo2=questions}
  *  (we used {go2url} custom function in previous versions of AA. This function
  *  is however core function)
@@ -572,12 +574,21 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
         }
         $router = AA_Router::singleton($router_class);
         $url = $router->go2url($query_string);
+        // remove all internal system AA links
+        if (strpos($query_string,'err=')===false) {
+            $url = str_replace(array('&err=1','?err=1&','?err=1'), array('','?',''), $url);
+
+        }
+        if (strpos($query_string,'logout=')===false) {
+            $url = str_replace(array('&logout=1','?logout=1&','?logout=1'), array('','?',''), $url);
+
+        }
         return ($html_encode=='1') ? myspecialchars($url) : $url;
     }
 }
 
 /** {xid[:<level>]} - complement to {xseo1},.. variables of AA_Router_Seo
- *  @return id of the current item on specifield level
+ *  @return string id of the current item on specifield level
  *  {xid}      - returns id of current item (the id of {xseo} item)
  *  {xid:1}    - returns id of item on first level (the id of {xseo1} item)
  *               for /cz/project/about-us returns id of "project" item
@@ -587,9 +598,9 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
  *  {xid:list} - returns ids list from start to current item in the tree - like:
  *               2587-2877-3004
  *  {xid:this is my _#NAME____} - {item:{xid}:this is my _#NAME____}
- *  @param $param specifies, which information you want to get (see above)
- *  @param $url   if filled, returns the information about the specified
- *                url instead of the current item
+ *  @param string $param specifies, which information you want to get (see above)
+ *  @param string $url   if filled, returns the information about the specified
+ *                       url instead of the current item
  **/
 class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -614,7 +625,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
  *  {xseo:1}   - returns {xseo1} - first directory level in url
  *               for /cz/project/about-us returns "project"
  *  {xseo:3}   - returns {xseo1} - third directory level in url
- *  @param $level specifies, which information you want to get (see above)
+ *  @param string $level specifies, which information you want to get (see above)
  **/
 class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
