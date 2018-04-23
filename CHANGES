@@ -1,3 +1,8 @@
+18-04-23 - (several) Admin page moved to modern AA_Adminpageutil
+(honzam) - aajslib-jquery rewritten to use only Javascript - not php config settings. It is now better cacheable
+           and we provide also minified version aajslib-jquery.min.js
+         - the textareas with ACE code editor moved to CodeMirror editor in Slice Admin
+         - textarea and Richtexteditor area use standard widgets - not old formutil's code
 18-03-28 - {go} now filter out all err=1 and logout=1 internal AA parameters from resulting url
 (honzam) - fixed problem with encoding in previously changed Slice Admin - Fulltext
 18-03-27 - Slice Admin - Fulltext is rewritten to use newer AA_Adminpage approach, which
