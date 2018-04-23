@@ -1,16 +1,12 @@
-<?php
 /** AA Javascripts library usable on the public pages, just like:
- *  <script type="text/javascript" src="http://actionapps.org/apc-aa/javascript/aajslib.php3"></script>
+ *  <script src="https://actionapps.org/apc-aa/javascript/jquery.min.js"></script>
+ *  <script src="https://actionapps.org/apc-aa/javascript/aajslib-jquery.php3"></script>
  *  (replace "http://actionapps.org/apc-aa" with your server and aa path
- *
- *  It includes the scripts, which are based on great prototype.js library
- *  (see http://prototype.conio.net/)
  *
  *  @package UserOutput
  *  @version $Id$
  *  @author Honza Malik <honza.malik@ecn.cz>
  *  @copyright Econnect, Honza Malik, December 2006
- *
  */
 /*
 Copyright (C) 2002 Association for Progressive Communications
@@ -31,30 +27,17 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// include config in order we can define AA_Config variables for javascript
-require_once "../include/config.php3";
-
-// headers copied from include/extsess.php3 file
-$allowcache_expire = 24*3600; // 1 day
-$exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
-$mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-header('Expires: '       . $exp_gmt);
-header('Last-Modified: ' . $mod_gmt);
-header('Cache-Control: public');
-header('Cache-Control: max-age=' . $allowcache_expire);
-header('Content-Type: application/x-javascript');
-
-
-?>
-
-// usage: $(div_id_2).update(AA_Config.loader);
-var AA_Config = {
-  AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
-  loader:         '<img src="<?php echo AA_INSTAL_PATH; ?>images/loader.gif" border="0" width="16" height="16">',
-  icon_new:       '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_new.gif" border="0" width="17" height="17">',
-  icon_close:     '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_close.gif" border="0" width="17" height="17">'
+function AA_GetConf(prop) {
+    // Check to see if the rotators-set  has been initialized
+    if ( typeof AA_GetConf.aa_install_path == 'undefined' ) {
+        var src = $('script[src*="javascript/aajslib-jquery"]').attr('src');
+        AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib-jquery\..*$/, '');
+    }
+    switch (prop) {
+        case 'path':       return AA_GetConf.aa_install_path;
+        case 'loader':     return '<img src="'+ AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+     }
 }
-
 
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
@@ -63,7 +46,7 @@ function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
         $(jqid(thumb_id)).addClass('active');
        // $(jqid(thumb_id)).parentNode.scrollTop = $(jqid(thumb_id)).offsetTop - $(jqid(thumb_id)).parentNode.offsetTop - 50;
     }
-    $(jqid(photo_div)).load(AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
+    $(jqid(photo_div)).load(AA_GetConf('path') + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
 }
 
 // now AA specific functions
@@ -100,7 +83,7 @@ function AA_Ajax(div_id, url, param, onload) {
 
 function AA_AjaxCss(selector, url, param, onload) {
     $(selector).hide('fast');
-    $(selector).html(AA_Config.loader);
+    $(selector).html(AA_GetConf('loader'));
     $(selector).show('fast');
     $(selector).load(url, param, onload);
 }
@@ -152,11 +135,11 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
  *     echo '<div id="fieldselection"></div>';
  **/
 function DisplayAaResponse(div_id, method, params) {
-    AA_AjaxCss(jqid(div_id), AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, {parameters: params});
+    AA_AjaxCss(jqid(div_id), AA_GetConf('path') + 'central/responder.php?command='+ method, params);
 }
 
 function AA_Response(method, resp_params, ok_func, err_func) {
-    $.post(AA_Config.AA_INSTAL_PATH + 'central/responder.php?command='+ method, resp_params, function(data) {
+    $.post(AA_GetConf('path') + 'central/responder.php?command='+ method, resp_params, function(data) {
         if ( data.substring(0,5) == 'Error' ) {
             if (typeof err_func != "undefined") {
                 err_func(data);
@@ -192,7 +175,7 @@ function AA_SendForm(id, refresh, ok_func) {
     }
 
     var url = $(form_id).attr('action');
-    $(form_id).append(AA_Config.loader);
+    $(form_id).append(AA_GetConf('loader'));
 
     var code   = $(form_id + ' *').serialize();
 
@@ -209,12 +192,12 @@ function AA_SendForm(id, refresh, ok_func) {
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
     if (filler_url.charAt(0)!='/') {
-        filler_url = AA_Config.AA_INSTAL_PATH + filler_url;   // AA link
+        filler_url = AA_GetConf('path') + filler_url;   // AA link
     }
 
     var valdiv = jqid(form_id);
     var code   = $(valdiv + ' *').serialize();
-    $(valdiv).append(AA_Config.loader);
+    $(valdiv).append(AA_GetConf('loader'));
 
     $.post(filler_url, code, function(data) {
         $(valdiv).attr("data-aa-edited", "0");
@@ -235,7 +218,7 @@ function displayInput(valdivid, item_id, fid) {
     $(valdiv).attr("data-aa-oldval", $(valdiv).html());
 
     var width = $(valdivid).width();
-    $(valdiv).html(AA_Config.loader);
+    $(valdiv).html(AA_GetConf('loader'));
 
     AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(data) {
             var valdiv = jqid(valdivid);
@@ -310,13 +293,13 @@ function AA_SendWidgetAjax(base_id) {
 
     var code   = $(valdiv + ' *').serialize();
     AA_StateChange(base_id, 'updating');
-    //$(valdiv).append(AA_Config.loader);
+    //$(valdiv).append(AA_GetConf('loader'));
 
     var alias_name = $(valdiv).attr('data-aa-alias');
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
-    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
+    $.post(AA_GetConf('path') + 'filler.php3', code, function(data) {
         AA_ReloadAjaxResponse(base_id, data);
     });
 }
@@ -364,7 +347,7 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
 
     code += '&inline=1';  // do not send us whole page as result
 
-    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
+    $.post(AA_GetConf('path') + 'filler.php3', code, function(data) {
         AA_StateChange(base_id, 'normal');
         if (typeof fnc == 'function') {
             fnc();
@@ -423,7 +406,7 @@ function AA__liveSearch(id, viewparam, deflt) {
     if (!val.length && deflt.length) {
         val=deflt;
     }
-    fnc = function(t,v,q) { AA_AjaxCss(t, AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
+    fnc = function(t,v,q) { AA_AjaxCss(t, AA_GetConf('path') + 'view.php3?vid=' + viewparam.replace('AA_LS_QUERY', q));}
     if (AA__liveSearch.timer) {
        if (AA__liveSearch.searchval != val) {
            clearTimeout(AA__liveSearch.timer);
@@ -472,7 +455,7 @@ function AA__systemDiv(id, attrs, text) {
         if (!$('#aa-bottom-toolbar').length) {
             AA_Toolbar(''); // we need toolbar defined, we need it to test styles
             if (AA_GetStyle('aa-bottom-toolbar', 'position')!='fixed') {
-                AA_LoadCss(AA_Config.AA_INSTAL_PATH + 'css/aa-system.css');
+                AA_LoadCss(AA_GetConf('path') + 'css/aa-system.css');
             }
         }
         box.show();
@@ -511,7 +494,7 @@ function AA_StateChange(id, state) {
     $('select[id ^="'+id+'"]').css(outstyle);
     $('input[id ^="'+id+'"]').css(outstyle);
     $('textarea[id ^="'+id+'"]').css(outstyle);
-    $('img.'+id+'ico').attr('src', AA_Config.AA_INSTAL_PATH+icoimg);
+    $('img.'+id+'ico').attr('src', AA_GetConf('path')+icoimg);
 }
 
 function AA_LoadJs(condition, callback, url) {
@@ -568,7 +551,7 @@ function AA_SaveEditors() {
         }
     }
 
-    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', params, function(data) {
+    $.post(AA_GetConf('path') + 'filler.php3', params, function(data) {
         AA_Toolbar('');
         AA_Message((Object.keys(data).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(data).length +' zmen'));
     }, 'json');

@@ -42,9 +42,10 @@ function MoveCategoryTo(catid, totxt, toval)
     tmp += delim + a[downcat[j]];
     delim = " > ";
   }
-  if( catid != downcat[level])
-    tmp += delim + a[catid];  // highlighted option
-  SetContent(totxt,tmp);
+  if( catid != downcat[level]) {
+      tmp += delim + a[catid];  // highlighted option
+  }
+  document.getElementById(totxt).innerHTML = tmp;
   eval(toval).value = catid;
 }
 
@@ -200,7 +201,7 @@ function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
             tmp += (j==0 ? '': path_delimiter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimiter - global javascript variable
         }
 //        tmp += eval(from).options[i].text
-        SetContent(pathid,tmp);
+        document.getElementById(pathid).innerHTML = tmp;
     }
     if( cat_id_fld ) {       // update category path (probably hidden) field
         eval(cat_id_fld).value = catid;
@@ -286,9 +287,9 @@ function ChangeStateCateg(listbox) {
 
 // js for linkedit.php3
 function DeleteField(index) {
-  SetContent('selcat'+index,'')
-  field = "document.f.selcatSelect"+index
-  eval(field).value = "";
+    document.getElementById('selcat'+index).innerHTML = '';
+    field = "document.f.selcatSelect"+index
+    eval(field).value = "";
 }
 
 function CheckURL() {

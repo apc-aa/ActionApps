@@ -1,17 +1,3 @@
-
-// function replaces html code of a an HTML element (identified by id)
-// by another code
-function SetContent(id,txt,d) {
-    if(!d) d=document;
-    var el=d.getElementById(id);
-    if (el) el.innerHTML = txt;
-}
-
-function GetContent(id, d) {
-    if(!d) d=document;
-    d.getElementById(id).innerHTML;
-}
-
 var popupwindows = [];
 var popup_date = new Date();         // we need just to create unique id for the
 var popupwindows_id = popup_date.getTime();   // popups (think of popup in popup)
