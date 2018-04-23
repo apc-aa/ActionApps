@@ -37,7 +37,7 @@ class AA_Auth extends Auth {
 
     function __construct() {
         $this->classname = __CLASS__;
-        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 200;   // 200 minutes
+        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1200;   // 20 hours
         $this->nobody    = false;
     }
 
