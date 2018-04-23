@@ -72,17 +72,10 @@ foreach ($aa_rss['channels'] as $id => $foo) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo '<title>'. _m("Inter node import settings") ."</title>\n<head>\n";
-echo "\n</head>\n<body>\n";
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin","n_import");
-
-echo "<h1><b>" . _m("Inter node import settings"). "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','n_import');
+$apage->setTitle(_m("Inter node import settings"));
+$apage->printHead($err, $Msg);
 
 $form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m("Choose slice")),
                       "cancel"           => array('url'=>'se_inter_import.php3'),
@@ -102,6 +95,4 @@ $form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m(
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

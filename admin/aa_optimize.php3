@@ -76,18 +76,9 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     </div>";
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Admin - Optimize a Repair ActionApps"); ?></title>
-</head>
-<body>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "aaadmin", "optimize");
-
-echo "<H1><B>" . _m("Admin - Optimize a Repair ActionApps") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('aaadmin','optimize');
+$apage->setTitle(_m("Admin - Optimize a Repair ActionApps"));
+$apage->printHead($err, $Msg);
 
 //$form_buttons = array ("submit");
 $form_buttons   = array ();
@@ -104,6 +95,4 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close()
-?>
+$apage->printFoot();

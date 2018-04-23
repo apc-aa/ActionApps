@@ -462,11 +462,16 @@ if ($upload) {
     $importer->upload();
 }
 
+$apage = new AA_Adminpageutil('sliceadmin','CSVimport');
+$apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
+$apage->printHead($err, $Msg);
 
-// -- Output form
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+if ($preview) {
+    $importer->preview();
+}
+
+$importer->printForm(!($preview OR $load OR $save));
 ?>
-<title><?php echo _m("Admin - Import .CSV file"); ?></title>
 <script>
   /* Calls the parameters wizard. Parameters are as follows:
     list = name of the array containing all the needed data for the wizard
@@ -482,22 +487,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     param_wizard.focus();
   }
 </script>
-</head>
-<body>
+
 <?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin","CSVimport");
-PrintArray($err);
-echo stripslashes($Msg);
-echo "<h1><b>" . _m("Admin - Import CSV (2/2) - Mapping and Actions") . "</b></h1>";
-
-if ($preview) {
-    $importer->preview();
-}
-
-$importer->printForm(!($preview OR $load OR $save));
-
-HtmlPageEnd();
-page_close();
-?>
-
+$apage->printFoot();

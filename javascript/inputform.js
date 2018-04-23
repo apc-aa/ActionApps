@@ -1,4 +1,5 @@
 // array of listboxes where all selection should be selected
+// array of listboxes where all selection should be selected
 var listboxes = [];
 var myform    = document.inputform;
 var relatedwindow;  // window for related stories
@@ -109,11 +110,6 @@ function EditItemInPopup(inputformurl, selectbox) {
 }
 
 function SelectRelations(var_id, tag, prefix, taggedid, headline) {
-/* new version ...
-    var var_container = 'relation'+var_id;
-    var content       = GetContent('dynamic'+var_id, window.opener.document);
-    SetContent(var_container,content+'<tr><td><img src="up.gif" width="16" height="16"><img src="down.gif" width="16" height="16"></td><td>'+prefix + headline+'<input type="hidden" name="'+var_id+'[]" value="'+taggedid+'"></td><td>2</td></tr>',window.opener.document);
-    */
     sb_SetValue( window.opener.document.inputform.elements[var_id], 'new', prefix + headline, taggedid);
 }
 

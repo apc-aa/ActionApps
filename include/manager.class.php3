@@ -737,11 +737,11 @@ class AA_Manageraction extends AA_Storable {
     }
 
     /** main executive function
-    * @param $manager    - back link to the manager
+    * @param AA_Manager $manager    - back link to the manager
     * @param $state      - state array
     * @param $param
     * @param $item_arr
-    * @param $akce_param
+    * @param string $akce_param
     */
     function perform($manager, &$state, $item_arr, $akce_param) {
     }

@@ -177,63 +177,55 @@ if ( $template['Links'] ) {           // set new name and owner for NEW module
     $owner = "";
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <TITLE><?php echo _m('ActionApps - Links Admin')?></TITLE>
-</HEAD>
-<?php
-  require_once AA_BASE_PATH."modules/links/menu.php3";
-  showMenu($aamenus, "modadmin", "main");
+$apage = new AA_Adminpageutil('modadmin','main');
+$apage->setModuleMenu( 'modules/links');
+$apage->setTitle( $template['Links'] ? _m("Add Links module") : _m("Edit Links module"));
+$apage->printHead($err, $Msg);
 
-  echo "<H1><B>" . ( $template['Links'] ? _m("Add Links module") : _m("Edit Links module")) . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
+echo '<form method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
 
-  echo '<form method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
-
-  FrmTabCaption( _m('Module Links data') );
-  $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";
-  FrmStaticText(_m('ID'), $module_id);
-  FrmInputText("name", _m('Title'), $name, 99, 25, true);
-  FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,
-               _m("Use following SSI command to include links to the page: "). $include_cmd);
-  FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
-  FrmInputSelect("owner", _m('Owner'), $slice_owners, $owner, false);
-  if ( !$owner ) {
+FrmTabCaption( _m('Module Links data') );
+$include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";
+FrmStaticText(_m('ID'), $module_id);
+FrmInputText("name", _m('Title'), $name, 99, 25, true);
+FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,
+    _m("Use following SSI command to include links to the page: "). $include_cmd);
+FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
+FrmInputSelect("owner", _m('Owner'), $slice_owners, $owner, false);
+if ( !$owner ) {
     FrmInputText("new_owner", _m('New Owner'), $new_owner, 99, 25, false);
     FrmInputText("new_owner_email", _m('New Owner\'s E-mail'), $new_owner_email, 99, 25, false);
-  }
-  if ( $superadmin ) {
+}
+if ( $superadmin ) {
     FrmInputChBox("deleted", _m('Deleted'), $deleted);
-  }
-  FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file, false);
+}
+FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file, false);
 
 // module specific...
-  if ($template['Links']) {
-      FrmInputText("start_id", _m("Start category id"), $start_id);
-  } else {
-      // we can't change start_id (module_id is derived from it)
-      FrmStaticText(_m('Start category id'), $start_id);
-  }
-  if ( $superadmin ) {
-      FrmInputText("tree_start", _m("Tree start id"), $tree_start);
-      FrmInputText("select_start", _m("Select start id"), $select_start);
-  } else {
-      FrmStaticText( _m("Tree start id"),   $tree_start);
-      FrmStaticText( _m("Select start id"), $select_start);
-  }
+if ($template['Links']) {
+    FrmInputText("start_id", _m("Start category id"), $start_id);
+} else {
+    // we can't change start_id (module_id is derived from it)
+    FrmStaticText(_m('Start category id'), $start_id);
+}
+if ( $superadmin ) {
+    FrmInputText("tree_start", _m("Tree start id"), $tree_start);
+    FrmInputText("select_start", _m("Select start id"), $select_start);
+} else {
+    FrmStaticText( _m("Tree start id"),   $tree_start);
+    FrmStaticText( _m("Select start id"), $select_start);
+}
 
-  if ( $template['Links'] ) {
+if ( $template['Links'] ) {
     FrmTabEnd( array( 'insert',
-                      'template[Links]' => array( 'type'=>"hidden",
-                                                  'value'=> $template['Links'])),
-               $sess, $slice_id);
-  } else {
+        'template[Links]' => array( 'type'=>"hidden",
+            'value'=> $template['Links'])),
+        $sess, $slice_id);
+} else {
     FrmTabEnd( array( 'update', 'reset', 'cancel' ), $sess, $slice_id );
-  }
+}
 
-  echo '</FORM>
-      </BODY>
-    </HTML>';
-  page_close()
-?>
+echo '</form>';
+
+$apage->printFoot();
+

@@ -51,18 +51,9 @@ if ($slice_id && $update) {
     $javascript = DB_AA::select1('SELECT javascript FROM `slice`', 'javascript', array(array('id', $slice_id, 'l')));
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Field Triggers");?></title>
-
-</head>
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin","javascript");
-
-  echo "<h1><b>" . _m("Field Triggers") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','javascript');
+$apage->setTitle(_m("Field Triggers"));
+$apage->printHead($err, $Msg);
 ?>
 <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
@@ -97,6 +88,5 @@ echo '
 </table></td></tr>
 </table></td>
 </tr></table>';
-HtmlPageEnd();
-page_close();
-?>
+
+$apage->printFoot();

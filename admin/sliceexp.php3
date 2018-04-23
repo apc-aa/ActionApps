@@ -62,91 +62,14 @@ if ($_POST['b_export_type']=='doc') {
 if (isset($b_export_to_file)) {
     $exporter->exportToFile($slice_id, $export_slices, $SliceID);
     exit;
-} else {
-    // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-    // Include also js_lib.js javascript library
-    HtmlPageBegin(true);
 }
 
-?>
-<title><?php echo _m("Export slice structure")?></title>
+$apage = new AA_Adminpageutil('aaadmin','sliceexp');
+$apage->setTitle(_m("Export slice structure"));
+$apage->setSubtitle(_m(""));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+$apage->printHead($err, $Msg);
 
-<script type="text/javascript">
-
-  function b_export_date_onchange(vstup)  {
-    error = 0; tecka = 0; den = 0; rok = 0; mesic = 0;
-    for (index = 0; index < vstup.value.length; index++) {
-        ch = vstup.value.charAt(index);
-        if (ch != "0" && ch != "1" && ch != "2" && ch != "3" && ch != "4" && ch != "5" && ch != "6" && ch != "7" && ch != "8" && ch != "9" && ch != ".")
-                { error = 1; }
-        if ((ch == "0" || ch == "1" || ch == "2" || ch == "3" || ch == "4" || ch == "5" || ch == "6" || ch == "7" || ch == "8" || ch == "9") && (error == 0))
-        {
-            if (tecka == 0) {den=den + ch}
-            if (tecka == 1) {mesic=mesic + ch}
-            if (tecka == 2) {rok=rok + ch}
-        }
-        if (ch == "." && error == 0)
-        {
-            if (tecka == 1) {tecka=2}
-            if (tecka == 0) {tecka=1}
-        }
-    }
-
-    if ((den<1 || den >31) && (error == 0)) { error = 1; }
-    if ((mesic<1 || mesic>12) && (error == 0)) { error = 1;}
-    if (rok<1990 && tecka == 2 && error == 0 && rok != "") { error = 1;}
-    if ((tecka == 2 && rok == "") || (tecka > 2)) { error = 2;}
-    if (error == 1)
-    {
-        alert(<?php echo '"'._m("Date export error").'"' ?>);
-        vstup.focus();
-    }
-    if (error == 2)
-    {
-        alert(<?php echo '"'._m("Date export error").'"' ?>);
-        vstup.focus();
-    }
-    document.forms["f"].b_export_spec_date.checked = true;
-  }
-
-    function validate () {
-        form = document.forms["f"];
-        if (form.SliceID.value.length != 16) {
-            alert (<?php echo '"'._m("The identificator should be 16 characters long, not ").'"' ?>
-                + form.SliceID.value.length);
-            form.SliceID.focus();
-        }
-        else {
-            form.submit();
-        }
-    }
-    function validate2() {
-        sl_count = 0;
-        x = document.f['export_slices[]'];
-        form = document.forms["f"];
-        for (i=0; i<x.length; i++) {
-          sl_count += (x.options[i].selected ? 1 : 0);
-        }
-        if (sl_count == 0) {
-          alert (<?php  echo '"'._m("You must select one or more slices to backup").'"' ?>);
-          return false;
-        }
-        else {
-            return true;
-        }
-    }
-</script>
-
-</head>
-<body>
-<?php
-    require_once menu_include();   //show navigation column depending on $show
-    showMenu($aamenus, "aaadmin","sliceexp");
-?>
-
-<h1><b><?php echo _m("Export slice structure") ?></b></h1>
-
-<?php
 
 FrmTabCaption(_m("Export slice structure"));
 
@@ -224,7 +147,70 @@ if ($_POST['b_export_type']) {
 ?>
 
 </table>
+<script>
+    function b_export_date_onchange(vstup)  {
+        error = 0; tecka = 0; den = 0; rok = 0; mesic = 0;
+        for (index = 0; index < vstup.value.length; index++) {
+            ch = vstup.value.charAt(index);
+            if (ch != "0" && ch != "1" && ch != "2" && ch != "3" && ch != "4" && ch != "5" && ch != "6" && ch != "7" && ch != "8" && ch != "9" && ch != ".")
+            { error = 1; }
+            if ((ch == "0" || ch == "1" || ch == "2" || ch == "3" || ch == "4" || ch == "5" || ch == "6" || ch == "7" || ch == "8" || ch == "9") && (error == 0))
+            {
+                if (tecka == 0) {den=den + ch}
+                if (tecka == 1) {mesic=mesic + ch}
+                if (tecka == 2) {rok=rok + ch}
+            }
+            if (ch == "." && error == 0)
+            {
+                if (tecka == 1) {tecka=2}
+                if (tecka == 0) {tecka=1}
+            }
+        }
+
+        if ((den<1 || den >31) && (error == 0)) { error = 1; }
+        if ((mesic<1 || mesic>12) && (error == 0)) { error = 1;}
+        if (rok<1990 && tecka == 2 && error == 0 && rok != "") { error = 1;}
+        if ((tecka == 2 && rok == "") || (tecka > 2)) { error = 2;}
+        if (error == 1)
+        {
+            alert(<?php echo '"'._m("Date export error").'"' ?>);
+            vstup.focus();
+        }
+        if (error == 2)
+        {
+            alert(<?php echo '"'._m("Date export error").'"' ?>);
+            vstup.focus();
+        }
+        document.forms["f"].b_export_spec_date.checked = true;
+    }
+
+    function validate () {
+        form = document.forms["f"];
+        if (form.SliceID.value.length != 16) {
+            alert (<?php echo '"'._m("The identificator should be 16 characters long, not ").'"' ?>
+                + form.SliceID.value.length);
+            form.SliceID.focus();
+        }
+        else {
+            form.submit();
+        }
+    }
+    function validate2() {
+        sl_count = 0;
+        x = document.f['export_slices[]'];
+        form = document.forms["f"];
+        for (i=0; i<x.length; i++) {
+            sl_count += (x.options[i].selected ? 1 : 0);
+        }
+        if (sl_count == 0) {
+            alert (<?php  echo '"'._m("You must select one or more slices to backup").'"' ?>);
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+</script>
+
 <?php
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

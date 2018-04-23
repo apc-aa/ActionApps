@@ -367,7 +367,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
  * @param $type
  * @param $slice_id
  * @param $slice_type
- * @param $itemContent
+ * @param ItemContent $itemContent
  * @param $foo
  * @param $foo2
  */
@@ -392,8 +392,8 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
  * @param $type
  * @param $slice_id
  * @param $slice_type
- * @param $itemContent
- * @param $oldItemContent
+ * @param ItemContent $itemContent
+ * @param ItemContent $oldItemContent
  * @param $foo2
  */
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
@@ -418,8 +418,8 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $o
  * @param $type
  * @param $slice_id
  * @param $slice_type
- * @param $itemContent
- * @param $oldItemContent
+ * @param ItemContent $itemContent
+ * @param ItemContent $oldItemContent
  * @param $foo2
  */
 function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
@@ -432,7 +432,7 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
  * @param $slice_id
  * @param $slice_type
  * @param object $itemContent is sent by reference - you can change the data
- * @param $oldItemContent
+ * @param ItemContent $oldItemContent
  * @param $foo2
  */
 function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {

@@ -33,8 +33,6 @@ require_once AA_INC_PATH."pagecache.php3";
 // add mlx functions
 require_once AA_INC_PATH."mlx.php";
 
-
-
 $PERMS_STATE = array( "0" => _m("Not allowed"),
                       "1" => _m("Active"),
                       "2" => _m("Hold bin") );
@@ -84,17 +82,9 @@ $slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)
 
 $biglangs = AA_Langs::getFiles();
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Slice Administration");?></title>
-</head>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin","main");
-
-echo "<h1><b>" . ( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")) . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','main');
+$apage->setTitle( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings"));
+$apage->printHead($err, $Msg);
 
 if ($slice_id == "") {
     $form_buttons = array("insert", "cancel"=>array("url"=>"sliceadd.php3"));
@@ -159,8 +149,6 @@ if ($superadmin) {
     FrmInputText("fileman_dir", _m("File Manager Directory"), $sarr['fileman_dir'], 99, 25, false, "", "http://apc-aa.sourceforge.net/faq/#1106");
 }
 
-
-
 if ($slice_id=="") {
     echo "<input type=\"hidden\" name=\"add\" value=\"1\">";        // action
     echo "<input type=\"hidden\" name=\"no_slice_id\" value=\"1\">";  // detects new slice
@@ -174,14 +162,9 @@ if ($slice_id=="") {
     echo "<input type=\"hidden\" name=\"user_role\" value='$user_role'>";
     // end of fields storing values from wizard
 }
-
-
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
 ?>
 </form>
 <?php
-freeDB($db);
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

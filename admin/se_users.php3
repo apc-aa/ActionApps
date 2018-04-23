@@ -109,19 +109,10 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
 $show_adduser = $adduser || $GrpSrch || $UsrSrch;    // show add user form?
 
-HtmlPageBegin();   // Prints HTML start page tags
-                   // (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - Permissions");?></title>
-</head>
-<?php
 
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", $show_adduser ? "addusers" : "users");
-
-echo "<h1><b>"._m("Admin - Permissions")."</b></h1>";
-//  PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin',$show_adduser ? "addusers" : "users");
+$apage->setTitle(_m("Admin - Permissions"));
+$apage->printHead($err, $Msg);
 
 $continue=true;
 
@@ -166,5 +157,5 @@ if ( $continue ) {
     echo "</table>
     </form></td></tr></table>";
   }
-HtmlPageEnd();
-page_close();?>
+
+$apage->printFoot();

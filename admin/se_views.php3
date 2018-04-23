@@ -86,10 +86,8 @@ function GetViewJSArray( $sid, $id, $name, $i ) {
     return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe($name)."\";";
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<title>". _m("Admin - design View") ."</title>";
-FrmJavascriptFile('javascript/js_lib.js');
-$js = '
+$headcode = <<<'EOT'
+<script>
      function SelectViewSlice() {
        var i,j;
        var xsid=document.fvtype.view_slice.options[document.fvtype.view_slice.selectedIndex].value;
@@ -101,22 +99,20 @@ $js = '
        j=0;
        for ( i=0; i<vs.length ; i++) {
          if ( vs[i] == xsid ) {
-           document.fvtype.view_view.options[j++] = new Option(vv[i]+\' - \'+vn[i], vv[i])
+           document.fvtype.view_view.options[j++] = new Option(vv[i]+' - '+vn[i], vv[i])
          }
        }
      }
-     ';
+</script>
+EOT;
 
-FrmJavascript($js);
-echo "</head>\n";
-
-$useOnLoad = ($new_compact ? true : false);
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin","views");
-
-echo "<h1><b>" . _m("Admin - design View") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','views');
+$apage->setTitle(_m("Admin - design View"));
+$apage->setSubtitle(_m(""));
+$apage->addRequire('codemirror@5');
+//$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->printHead($err, $Msg);
 
 echo '<form name="fvtype" method="post" action="'. StateUrl("./se_view.php3"). '">';
 
@@ -191,6 +187,5 @@ FrmJavascriptCached("
 $viewuri = preg_replace("~/admin/.*~", "/view.php3", $_SERVER['PHP_SELF']); //include help
 echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri .
          '?vid=<i>ID</i>&quot;--&gt;</pre>';
-HtmlPageEnd();
-page_close();
 
+$apage->printFoot();

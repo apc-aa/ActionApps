@@ -93,19 +93,12 @@ if ($db->next_record()) {
     RestoreVariables($db->Record);
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Items managment - Discussion comments managment - Edit comment"));
+$apage->printHead($err, $Msg);
 ?>
-<title><?php echo _m("Edit discussion");?></title>
 
-
-</head>
-<body>
-<?php
-echo "<h1><b>" . _m("Items managment - Discussion comments managment - Edit comment") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
-?>
-  <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF'] . "?d_id=".$d_id); ?>">
+<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF'] . "?d_id=".$d_id); ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>
@@ -134,7 +127,6 @@ echo $Msg;
 ?>
 </td></tr></table>
 </form>
-</body>
-</html>
-<?php page_close()
-?>
+<?php
+$apage->printFoot();
+

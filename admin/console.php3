@@ -40,16 +40,9 @@ if (!IsSuperadmin()) {
 echo _m('comment out following "exit;" line in admin/console.php3');
 exit;
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo "<title>"._m("ActionApps onsole")."</title></head>";
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "aaadmin", "console");
-echo "<h1><b>" ._m("ActionApps Cosole"). "</b></h1>";
-
-echo $Msg;
-
-is_object( $db ) || ($db = getDB());
+$apage = new AA_Adminpageutil('aaadmin','console');
+$apage->setTitle(_m("ActionApps Cosole"));
+$apage->printHead($err, $Msg);
 
 if ($code) {
     $code = get_magic_quotes_gpc() ? stripslashes($code) : $code;
@@ -88,7 +81,4 @@ if ($code) {
 
 </form>
 <?php
-HtmlPageEnd();
-page_close()
-?>
-
+$apage->printFoot();

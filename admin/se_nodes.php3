@@ -86,65 +86,15 @@ if ($mode == "edit") {
 
 $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`");
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Remote node administration");?></title>
-<script>
-function SelectValue(sel) {
-  svindex = eval(sel).selectedIndex;
-  if (svindex != -1) { return eval(sel).options[svindex].value; }
-  return null;
-}
+$apage = new AA_Adminpageutil('sliceadmin','nodes');
+$apage->setTitle(_m("Remote node administration"));
+$apage->printHead($err, $Msg);
 
-function ActionGo(mode) {
-  if (mode== 'add') {
-    document.frm.mode.value = mode;
-    document.frm.submit();
-  } else {
-
-  sel = SelectValue('document.frm.nodes')
-  if (sel == null)
-    alert('<?php echo _m("No selected node"); ?>')
-  else {
-    if (mode == 'delete')
-      if (!confirm('<?php echo _m("Are you sure you want to delete the node?"); ?>'))
-        return
-    document.frm.sel_node_name.value = sel
-    document.frm.mode.value = mode;
-    document.frm.submit();
-  }
- }
-}
-
-function checkData() {
-  if (document.frm.node_name.value=="") {
-     alert('<?php echo _m("Node empty"); ?>')
-     return false
-  }
-}
-
-function Cancel() {
-  document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
-}
-</script>
-
-</head>
-
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin","nodes");
-
-  echo "<h1><b>" . _m("Remote node administration") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
-
-  $form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
+$form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
 
 ?>
-
 <form method="post" name="frm" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" onsubmit="return checkData()">
 <?php
-
     FrmTabCaption(_m("Remote node administration"));
 ?>
       <tr><td colspan="2"><?php echo _m("Known remote nodes") ?></td></tr>
@@ -180,10 +130,45 @@ function Cancel() {
     <input type="hidden" name="sel_node_name">
 <?php
     FrmTabEnd($form_buttons);
-
-    echo "
-    </form>";
-
-HtmlPageEnd();
-page_close()
 ?>
+</form>
+<script>
+    function SelectValue(sel) {
+        svindex = eval(sel).selectedIndex;
+        if (svindex != -1) { return eval(sel).options[svindex].value; }
+        return null;
+    }
+
+    function ActionGo(mode) {
+        if (mode== 'add') {
+            document.frm.mode.value = mode;
+            document.frm.submit();
+        } else {
+
+            sel = SelectValue('document.frm.nodes')
+            if (sel == null)
+                alert('<?php echo _m("No selected node"); ?>')
+            else {
+                if (mode == 'delete')
+                    if (!confirm('<?php echo _m("Are you sure you want to delete the node?"); ?>'))
+                        return
+                document.frm.sel_node_name.value = sel
+                document.frm.mode.value = mode;
+                document.frm.submit();
+            }
+        }
+    }
+
+    function checkData() {
+        if (document.frm.node_name.value=="") {
+            alert('<?php echo _m("Node empty"); ?>')
+            return false
+        }
+    }
+
+    function Cancel() {
+        document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
+    }
+</script>
+<?php
+$apage->printFoot();

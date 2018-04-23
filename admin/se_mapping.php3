@@ -134,58 +134,9 @@ foreach ($to_fields as  $k => $v) {
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></title>
-<script>
-
-function SelectValue(sel) {
-    svindex = eval(sel).selectedIndex;
-    if (svindex != -1) { return eval(sel).options[svindex].value; }
-    return null;
-}
-
-function ChangeFromSlice() {
-    var url = "<?php echo StateUrl(self_base() . "se_mapping.php3")?>"
-    var from_sl = SelectValue('document.f.from_slice_id')
-    if (from_sl == 0) {
-        return;
-    }
-    url += "&slice_id=<?php echo $slice_id ?>"
-    url += "&from_slice_id=" + from_sl
-    document.location=url
-}
-
-function Cancel() {
-    document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
-}
-
-function Submit() {
-  // var e = document.f.elements;
-  // fcnt = <?php echo count($from_fields)?>
-  //
-  // // test for duplicity
-  // for ( i=1; i < fcnt; i++) {
-  //   for ( j=i+1; j<fcnt+1; j++) {
-  //     if (e[i].selectedIndex !=0 && SelectValue(e[i]) == SelectValue(e[j])) {
-  //       alert("<?php //echo _m("Cannot map to same field") ?>//");
-  //       return;
-  //     }
-  //   }
-  // }
-  document.f.submit();
-}
-</script>
-
-</head>
-<body>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin","mapping");
-
-echo "<h1><b>" . _m("Admin - Content Pooling - Fields' Mapping") . "</b></h1>";
-PrintArray($err);
-echo stripslashes($Msg);
+$apage = new AA_Adminpageutil('sliceadmin','mapping');
+$apage->setTitle(_m("Admin - Content Pooling - Fields' Mapping"));
+$apage->printHead($err, $Msg);
 
 $form_buttons = array("ext_slice"=>array("type"=>"hidden",
                                          "value"=>$remote_slices[$from_slice_id]),
@@ -248,7 +199,44 @@ foreach ($to_fields as $f_id => $f_name) {
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </form>
+<script>
+
+    function SelectValue(sel) {
+        svindex = eval(sel).selectedIndex;
+        if (svindex != -1) { return eval(sel).options[svindex].value; }
+        return null;
+    }
+
+    function ChangeFromSlice() {
+        var url = "<?php echo StateUrl(self_base() . "se_mapping.php3")?>"
+        var from_sl = SelectValue('document.f.from_slice_id')
+        if (from_sl == 0) {
+            return;
+        }
+        url += "&slice_id=<?php echo $slice_id ?>"
+        url += "&from_slice_id=" + from_sl
+        document.location=url
+    }
+
+    function Cancel() {
+        document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
+    }
+
+    function Submit() {
+        // var e = document.f.elements;
+        // fcnt = <?php echo count($from_fields)?>
+        //
+        // // test for duplicity
+        // for ( i=1; i < fcnt; i++) {
+        //   for ( j=i+1; j<fcnt+1; j++) {
+        //     if (e[i].selectedIndex !=0 && SelectValue(e[i]) == SelectValue(e[j])) {
+        //       alert("<?php //echo _m("Cannot map to same field") ?>//");
+        //       return;
+        //     }
+        //   }
+        // }
+        document.f.submit();
+    }
+</script>
 <?php
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

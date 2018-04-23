@@ -129,25 +129,29 @@ if ( $slice_id != "" ) {  // set variables from database
     }
 }
 
-$script2run = '
-    var tas = document.querySelectorAll("textarea");
-    for(var i = 0; i < tas.length; i++) {
-      CodeMirror.fromTextArea(tas[i], { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" });
-    }
-    function Defaults() {
-        document.f.fulltext_format_top.value    = \'\';
-        document.f.fulltext_format.value        = "<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>";
-        document.f.fulltext_format_bottom.value = \'\';
-        document.f.fulltext_remove.value        = \'\';
-    }
-    ';
+
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("fulltext_format_top"), opts);
+   window.cm_code = CodeMirror.fromTextArea(document.getElementById("fulltext_format"), opts);
+   window.cm_bot  = CodeMirror.fromTextArea(document.getElementById("fulltext_format_bottom"), opts);
+   ';
+$headcode = '<script>
+  function Defaults() {
+    window.cm_top.setValue("");
+    window.cm_code.setValue("<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>");
+    window.cm_bot.setValue("");
+    document.f.fulltext_remove.value        = \'\';
+  }
+</script>';
 
 $apage = new AA_Adminpageutil('sliceadmin','fulltext');
 $apage->setTitle(_m("Admin - design Fulltext view"));
 $apage->setSubtitle(_m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"));
 $apage->addRequire('codemirror@5');
 $apage->addRequire($script2run, 'AA_Req_Load');
-$apage->printHead();
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->printHead($err, $Msg);
 
 ?>
 <!--style>

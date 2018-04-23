@@ -29,7 +29,7 @@ function hcResolveValues (arr) {
         if (arr[i].length > colChild)
             hcResolveValues (arr[i][colChild]);
     }
-}
+} 
 
 // call at the start of this page
 function hcInit(hcid) {

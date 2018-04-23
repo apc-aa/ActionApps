@@ -77,51 +77,15 @@ if ($ext_feeds AND is_array($ext_feeds)) {
 }
 
 $nodes = GetTable2Array('SELECT name FROM nodes ORDER BY name', 'name', 'name');
-
 $err["Init"] = "";          // error array (Init - just for initializing variable
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Inter node import settings");?></title>
-<script>
-function SelectValue(sel) {
-  svindex = eval(sel).selectedIndex;
-  if (svindex != -1) { return eval(sel).options[svindex].value; }
-  return null;
-}
 
-function Delete() {
-  sel = SelectValue('document.f.feed_id')
-  if (sel == null) {
-    alert('<?php echo _m("No selected import"); ?>')
-    return
-  }
-  if (!confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>'))
-    return
 
-  var url = "<?php echo StateUrl(self_base() . "se_inter_import.php3"); ?>"
-  url += "&feed_id=" + sel
-  document.location = url
-}
+$apage = new AA_Adminpageutil('sliceadmin','n_import');
+$apage->setTitle(_m("Inter node import settings"));
+$apage->printHead($err, $Msg);
 
-function Submit() {
-  if (SelectValue(document.f.rem_nodes) == null) {
-     alert('<?php echo _m("No selected node"); ?>')
-     return false
-  }
-}
-</script>
-
-</head>
-<body>
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin","n_import");
-
-  echo "<h1><b>" . _m("Inter node import settings") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
-  $form_buttons = array("submit"=>array("value" => _m("Create new feed from node")),
-                        "cancel"=>array("url"=>"se_fields.php3"));
+$form_buttons = array("submit"=>array("value" => _m("Create new feed from node")),
+                      "cancel"=>array("url"=>"se_fields.php3"));
 ?>
 <form method="post" name="f" action="<?php echo StateUrl(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
 <?php
@@ -132,7 +96,34 @@ function Submit() {
   FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </form>
+<script>
+    function SelectValue(sel) {
+        svindex = eval(sel).selectedIndex;
+        if (svindex != -1) { return eval(sel).options[svindex].value; }
+        return null;
+    }
+
+    function Delete() {
+        sel = SelectValue('document.f.feed_id')
+        if (sel == null) {
+            alert('<?php echo _m("No selected import"); ?>')
+            return
+        }
+        if (!confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>'))
+            return
+
+        var url = "<?php echo StateUrl(self_base() . "se_inter_import.php3"); ?>"
+        url += "&feed_id=" + sel
+        document.location = url
+    }
+
+    function Submit() {
+        if (SelectValue(document.f.rem_nodes) == null) {
+            alert('<?php echo _m("No selected node"); ?>')
+            return false
+        }
+    }
+</script>
+
 <?php
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

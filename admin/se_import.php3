@@ -79,14 +79,10 @@ $SQL        = "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
 $export_to_all = GetTable2Array($SQL, 'aa_first', 'export_to_all');
 
 
-// Print HTML start page tags (html begin, encoding, style sheet, but no title)
-// Include also js_lib.js javascript library
-HtmlPageBegin(true);
-?>
- <title><?php echo _m("Slice Administration");?></title>
 
-<script Language="JavaScript"><!--
 
+$script2run = 'InitPage();';
+$headcode = '<script>
 function ExportAllClick() {
   document.f.export_y.disabled=document.f.export_to_all.checked;
   document.f.export_n.disabled=document.f.export_to_all.checked;
@@ -97,9 +93,9 @@ function InitPage() {
 }
 
 function UpdateImportExport(slice_id) {
-  var url = "<?php echo StateUrl(self_base() . "se_import2.php3")?>"
+  var url = "'. StateUrl(self_base() . "se_import2.php3") .'"
   url += "&slice_id=" + slice_id
-  url += "&to_all=" + (document.f.export_to_all.checked ? '1' : '0')
+  url += "&to_all=" + (document.f.export_to_all.checked ? \'1\' : \'0\')
   for (var i = 0; i < document.f.import_y.options.length; i++) {
     if (document.f.import_y.options[i].value != "0")    // imported slices
       url += "&I%5B" + i + "%5D=" + escape(document.f.import_y.options[i].value)
@@ -110,17 +106,15 @@ function UpdateImportExport(slice_id) {
   }
   document.location=url
 }
-// -->
-</script>
-</head>
-<?php
-  $useOnLoad = true;
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin", "import");
+</script>';
 
-  echo "<h1><b>" . _m("Admin - configure Content Pooling") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','import');
+$apage->setTitle(_m("Admin - configure Content Pooling"));
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+$apage->printHead($err, $Msg);
+
 
 $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
                                       "add" =>"onClick=\"UpdateImportExport('".$slice_id."')\""),
@@ -231,6 +225,4 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 echo "
 </form>";
 
- HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

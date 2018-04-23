@@ -88,19 +88,10 @@ if ( $update ) {
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - design Index view");?></title>
-</head>
+$apage = new AA_Adminpageutil('sliceadmin','newuser');
+$apage->setTitle(_m("New user in permission system"));
+$apage->printHead($err, $Msg);
 
-<?php
-  $useOnLoad = false;
-  require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin","newuser");
-
-  echo "<h1><b>" . _m("New user in permission system") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
 ?>
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
@@ -129,6 +120,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 </td></tr></table>
 </form>
-<?php HtmlPageEnd();
-page_close()?>
+<?php
+$apage->printFoot();
 

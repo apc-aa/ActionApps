@@ -223,38 +223,13 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, a
         WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL);
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile( 'javascript/aajslib.php' );
-?>
- <title><?php echo _m("Admin - configure Fields");?></title>
- <script type="text/javascript"><!--
-   function DeleteField(id) {
-       if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
-           return;
-       }
-       var url="<?php echo StateUrl(con_url("./se_inputform.php3", "del=1")); ?>"
-       document.location=url + "&fid=" + escape(id);
-   }
-
-   document.observe("dom:loaded", function() {
-       DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'<?php echo get_if($from_slice, unpack_id('AA_Core_Fields..')); ?>'})
-   });
-// -->
-</script>
-
-</head>
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin", $slice_fields ? 'slice_fields' : 'fields');
-
-  echo "<h1><b>" . _m("Admin - configure Fields") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
-
-
+$apage = new AA_Adminpageutil('sliceadmin',$slice_fields ? 'slice_fields' : 'fields');
+$apage->setTitle(_m("Admin - configure Fields"));
+$apage->addRequire('aa-jslib');
+$apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
+$apage->printHead($err, $Msg);
 
 ?>
-
 <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 $form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
@@ -288,8 +263,18 @@ $form_buttons['slice_fields'] = array('value' => ($slice_fields ? 1 : 0));
 ShowNewField($from_slice, $slice_id);
 FrmTabEnd( $form_buttons);
 
-echo '</form>';
-
-HtmlPageEnd();
-page_close();
 ?>
+</form>
+<script>
+    function DeleteField(id) {
+        if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
+            return;
+        }
+        var url="<?php echo StateUrl(con_url("./se_inputform.php3", "del=1")); ?>"
+        document.location=url + "&fid=" + escape(id);
+    }
+</script>
+
+<?php
+$apage->printFoot();
+

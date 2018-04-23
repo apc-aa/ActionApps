@@ -67,40 +67,32 @@ $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`", '', array('name'));
 
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Inter node export settings");?></title>
-<script Language="JavaScript"><!--
 
-function SelectValue(sel) {
-  svindex = eval(sel).selectedIndex;
-  if (svindex != -1) { return eval(sel).options[svindex].value; }
-  return null;
-}
+$headcode = '<script>
+    function SelectValue(sel) {
+        svindex = eval(sel).selectedIndex;
+        if (svindex != -1) { return eval(sel).options[svindex].value; }
+        return null;
+    }
 
-function Delete() {
-  sel = SelectValue('document.f.perms')
-  if (sel == null) {
-    alert('<?php echo _m("No selected export"); ?>')
-    return
-  }
-  if (!confirm('<?php echo _m("Are you sure you want to delete the export?"); ?>'))
-    return
-  document.f.mode.value='delete';
-  document.f.submit();
-}
+    function Delete() {
+        sel = SelectValue(\'document.f.perms\')
+        if (sel == null) {
+            alert(\''. _m("No selected export") .'\')
+            return 
+        }
+        if (!confirm(\''. _m("Are you sure you want to delete the export?") .'\')) {
+            return
+        }
+        document.f.mode.value=\'delete\';
+        document.f.submit();
+    }
+</script>';
 
-// -->
-</script>
-</head>
-<body>
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "n_export");
-
-  echo "<h1><b>" . _m("Inter node export settings") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','n_export');
+$apage->setTitle(_m("Inter node export settings"));
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->printHead($err, $Msg);
 ?>
 
 <form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" >
@@ -152,6 +144,4 @@ FrmTabCaption(_m("Inter node export settings"));
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

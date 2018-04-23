@@ -34,14 +34,6 @@ require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
-define("DEFAULT_CATEGORY_HTML", "<p>_#CATEGORY</p>");
-define("DEFAULT_EVEN_HTML", "");
-define("DEFAULT_EVEN_ODD_DIFFER", false);
-define("DEFAULT_ODD_HTML", '<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>');
-define("DEFAULT_TOP_HTML", '');
-define("DEFAULT_COMPACT_REMOVE", '');
-
-
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
@@ -141,51 +133,48 @@ if ( $slice_id!="" ) {  // set variables from database - allways
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - design Index view");?></title>
+$headcode = <<<'EOT'
 <script>
     function Defaults() {
-      document.f.odd_row_format.value = '<?php echo DEFAULT_ODD_HTML ?>'
-      document.f.even_row_format.value = '<?php echo DEFAULT_EVEN_HTML ?> '
+      document.f.odd_row_format.value = '<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>';
+      document.f.even_row_format.value = '';
       document.f.group_by.selectIndex = -1;
       document.f.gb_direction.selectIndex = 0;
       document.f.gb_header.selectIndex = 0;
-      document.f.category_top.value = ''
-      document.f.category_format.value = '<?php echo DEFAULT_CATEGORY_HTML ?>'
-      document.f.category_bottom.value = ''
-      document.f.compact_top.value = '<?php echo DEFAULT_TOP_HTML ?>'
-      document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
-      document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
-      document.f.noitem_msg.value = ''
+      document.f.category_top.value = '';
+      document.f.category_format.value = '<p>_#CATEGORY</p>';
+      document.f.category_bottom.value = '';
+      document.f.compact_top.value = '';
+      document.f.compact_remove.value = '';
+      document.f.even_odd_differ.checked = false;
+      document.f.noitem_msg.value = '';
       InitPage()
     }
 
     function InitPage() {
-      EnableClick('even_odd_differ','even_row_format');
+      EnableClick('even_odd_differ','even_row_format');    
     }
 
     function EnableClick(cond,what) {
       document.f[what].disabled = !(document.f[cond].checked);
     }
 </script>
-</head>
+EOT;
 
-<?php
-  $useOnLoad = true;
-  require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "compact");
+$apage = new AA_Adminpageutil('sliceadmin','compact');
+$apage->setTitle(_m("Admin - design Index view"));
+$apage->setSubtitle(_m("Use these boxes ( and the tags listed below ) to control what appears on summary page"));
+$apage->addRequire('codemirror@5');
+$apage->addRequire('InitPage();', 'AA_Req_Load');
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->printHead($err, $Msg);
 
-  echo "<h1><b>" . _m("Admin - design Index view") . "</b></h1>&nbsp;" . _m("Use these boxes ( and the tags listed below ) to control what appears on summary page");
-  PrintArray($err);
-  echo $Msg;
-
-  $form_buttons = array ("update",
-                         "update"  => array ('type' => 'hidden', 'value'=>'1'),
-                         "cancel"  => array("url"=>"se_fields.php3"),
-                         "default" => array('type' => 'button',
-                                            'value' => _m("Default"),
-                                            'add' => 'onclick="Defaults()"'));
+$form_buttons = array ("update",
+                       "update"  => array ('type' => 'hidden', 'value'=>'1'),
+                       "cancel"  => array("url"=>"se_fields.php3"),
+                       "default" => array('type' => 'button',
+                                          'value' => _m("Default"),
+                                          'add' => 'onclick="Defaults()"'));
 
 ?>
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
@@ -241,6 +230,5 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   FrmTabEnd();
 ?>
 </form>
-<?php HtmlPageEnd();
-page_close()?>
-
+<?php
+$apage->printFoot();

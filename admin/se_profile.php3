@@ -23,7 +23,6 @@
  *
 */
 
-
 // expected $uid - user id we have to edit profile for
 
 require_once "../include/init_page.php3";
@@ -96,37 +95,9 @@ $PROPERTY_TYPES = array( 'listlen'           => _m("Item number"),
 
 $SORTORDER_TYPES = array( '+'=>_m("Ascending"), '-' => _m("Descending") );
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - user Profiles");?></title>
-<script language="JavaScript"><!--
-  function addrule(n) {
-    var si;
-    document.sf.property.value = eval('document.fr.prop'+n+'.value');
-    if ( eval('document.fr.param'+n) != null )
-      document.sf.param.value = eval('document.fr.param'+n+'.value');
-    if ( eval('document.fr.html'+n) != null )
-      document.sf.html.value = ((eval('document.fr.html'+n).checked) ? '1' : '0');
-    if ( eval('document.fr.fnc'+n) != null ) {
-      si = eval('document.fr.fnc'+n+'.options.selectedIndex');
-      document.sf.fnction.value = eval('document.fr.fnc'+n+'.options['+si+'].value');
-    }
-    if ( eval('document.fr.fld'+n) != null ) {
-      si = eval('document.fr.fld'+n+'.options.selectedIndex');
-      document.sf.field_id.value = eval('document.fr.fld'+n+'.options['+si+'].value');
-    }
-    document.sf.submit();
-  }
-//-->
-</script>
-</head>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin","");
-
-echo "<h1><b>" . _m("Admin - user Profiles") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','users');
+$apage->setTitle(_m("Admin - user Profiles"));
+$apage->printHead($err, $Msg);
 
 echo "
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
@@ -275,9 +246,29 @@ if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
         </td>
        </tr>';
 }
-
-echo  '
-  </table>';
-HtmlPageEnd();
-page_close();
 ?>
+
+</table>
+
+<script>
+    function addrule(n) {
+        var si;
+        document.sf.property.value = eval('document.fr.prop'+n+'.value');
+        if ( eval('document.fr.param'+n) != null )
+            document.sf.param.value = eval('document.fr.param'+n+'.value');
+        if ( eval('document.fr.html'+n) != null )
+            document.sf.html.value = ((eval('document.fr.html'+n).checked) ? '1' : '0');
+        if ( eval('document.fr.fnc'+n) != null ) {
+            si = eval('document.fr.fnc'+n+'.options.selectedIndex');
+            document.sf.fnction.value = eval('document.fr.fnc'+n+'.options['+si+'].value');
+        }
+        if ( eval('document.fr.fld'+n) != null ) {
+            si = eval('document.fr.fld'+n+'.options.selectedIndex');
+            document.sf.field_id.value = eval('document.fr.fld'+n+'.options['+si+'].value');
+        }
+        document.sf.submit();
+    }
+</script>
+
+<?php
+$apage->printFoot();

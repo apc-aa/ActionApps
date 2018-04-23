@@ -233,18 +233,11 @@ $s_fields = AA_Fields::getFields4Select($slice_id, 'all', 'id');
 // lookup destination fields
 $d_fields = AA_Fields::getFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - change Field IDs");?></title>
 
-</head>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "field_ids");
+$apage = new AA_Adminpageutil('sliceadmin','field_ids');
+$apage->setTitle(_m("Admin - change Field IDs"));
+$apage->printHead($err, $Msg);
 
-echo "<h1><b>" . _m("Admin - change Field IDs") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
 if ($update) {
     echo "$nchanges "._m("field IDs were changed").".<br>";
 }
@@ -315,6 +308,5 @@ FrmTabSeparator(_m("Fields"),
 FrmTabEnd();
 echo "
 </form>";
-HtmlPageEnd();
-page_close();
-?>
+
+$apage->printFoot();

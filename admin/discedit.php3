@@ -39,7 +39,7 @@ require_once AA_INC_PATH."msgpage.php3";
 /** getHeadline function
  * get a headline of the item
  * @param $content4id
- * @return headline
+ * @return string headline
  */
 function getHeadline($content4id) {
     if (!$content4id) {
@@ -100,11 +100,9 @@ if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deletesh
 $aliases = GetDiscussionAliases();
 GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Admin - Discussion comments management");?></title>
 
-<script type="text/javascript"><!--
+
+$script2run = '
   function DeleteComment(id) {
     if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
        return
@@ -123,15 +121,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     var url="<?php echo StateUrl(con_url("./discedit.php3", "mode=deleteshown")); ?>"
     document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
   }
-  // -->
-</script>
-</head>
-<body>
-  <center>
-<?php
-echo "<h1><b>" . _m("Discussion comments management") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+    ';
+
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Admin - Discussion comments management"));
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->printHead($err, $Msg);
 
 $content  = GetItemContent($item_id);
 $headline = getHeadline($content[$item_id]);
@@ -206,8 +201,5 @@ if (!$outcome) {
      <input type="button" value="<?php echo _m("Delete All Unhidden") ?>" onclick="DeleteAllHiddenComments();"></td></tr>
   </table>
   </form>
-  </center>
 <?php
-echo "</body></html>";
-page_close();
-?>
+$apage->printFoot();

@@ -28,13 +28,17 @@
 */
 
 
-
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
+
+define('DEFAULT_ADMIN_TOP','<tr>\n  <th></th>\n  <th>www</th>\n  <th>name</th>\n</tr>');
+define('DEFAULT_ADMIN_HTML','<tr>\n  <td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td>\n  <td><a href=\"_#SEO_URL_\">&nbsp;&raquo;&nbsp;</a></td>\n  <td><a href=\"_#EDITITEM\">_#HEADLINE</a><br><small>_#SEO_URL_</small></td>\n</tr>');
+define('DEFAULT_ADMIN_BOTTOM','');
+define('DEFAULT_ADMIN_MSG','');
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -105,28 +109,29 @@ if ( $slice_id!="" ) {  // set variables from database
 // lookup inputform views
 $inputform_vids = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_slice_id' AND type='inputform'", 'id', 'name');
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Admin - design Item Manager view");?></title>
-<script Language="JavaScript"><!--
-function Defaults() {
-  document.f.admin_format_top.value = '<?php echo DEFAULT_ADMIN_TOP ?>'
-  document.f.admin_format.value = '<?php echo DEFAULT_ADMIN_HTML ?>'
-  document.f.admin_format_bottom.value = '<?php echo DEFAULT_ADMIN_BOTTOM ?>'
-  document.f.admin_remove.value = '<?php echo DEFAULT_ADMIN_REMOVE ?>'
-  document.f.admin_noitem_msg.value = ''
-}
-// -->
-</script>
-</head>
 
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "config");
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("admin_format_top"), opts);
+   window.cm_code = CodeMirror.fromTextArea(document.getElementById("admin_format"), opts);
+   window.cm_bot  = CodeMirror.fromTextArea(document.getElementById("admin_format_bottom"), opts);
+   window.cm_msg  = CodeMirror.fromTextArea(document.getElementById("admin_noitem_msg"), opts);
+   ';
+$headcode = '<script>
+  function Defaults() {
+    window.cm_top.setValue(  "'. DEFAULT_ADMIN_TOP .'");
+    window.cm_code.setValue( "'. DEFAULT_ADMIN_HTML.'");
+    window.cm_bot.setValue(  "'. DEFAULT_ADMIN_BOTTOM.'");
+    window.cm_msg.setValue(  "'. DEFAULT_ADMIN_MSG.'");
+  }
+</script>';
 
-echo "<h1><b>" . _m("Admin - design Item Manager view") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','config');
+$apage->setTitle(_m("Admin - design Item Manager view"));
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->addRequire('codemirror@5');
+$apage->printHead($err, $Msg);
 
 $form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
                       "update", "cancel"=>array("url"=>"se_fields.php3"),
@@ -159,7 +164,4 @@ FrmTabEnd();
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close()
-?>
-
+$apage->printFoot();

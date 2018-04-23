@@ -498,7 +498,8 @@ class AA_Inputfield {
                            // value is selected (manily for multivalues)
     var $const_arr;        // array of constants used for selections (selectbox, radio, ...)
     var $msg;                         // stores return code from functions
-    var $classname = "AA_Inputfield";  // class name (just for PHPLib sessions)
+    var $classname = "AA_Inputfield"; // class name (just for PHPLib sessions)
+    protected $use_triggers = false;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
 
     /** AA_Inputfield function
      * Constructor - initializes AA_Inputfield
@@ -804,6 +805,9 @@ class AA_Inputfield {
         AA::Stringexpander()->unaliasArray($this->param);
         $this->result_mode = 'template';
         $this->echoo($this->input_before);
+
+        $this->use_triggers = true;  // we are in item editing mode - add triggers
+
         if ($this->mode == 'freeze') {
             switch ($this->input_type) {
                 case 'chb': $this->value_modified = $this->value[0]['value'] ? _m("set") : _m("unset");
@@ -857,14 +861,14 @@ class AA_Inputfield {
                 //            }
                 //            $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
                 //            break;
-                case 'txt': $this->textarea(true, get_if($this->param[0],4));
+                case 'txt': $this->textarea(get_if($this->param[0], 4));
                             break;
-                case 'edt': $this->richEditTextarea(
-                                       get_if($this->param[0],10),       // rows
-                                       get_if($this->param[1],70),       // cols
-                                       get_if($this->param[2],'class')); // type
-                            $GLOBALS['list_fnc_edt'][] = $this->varname();
-                            break;
+                //case 'edt': $this->richEditTextarea(
+                //                       get_if($this->param[0],10),       // rows
+                //                       get_if($this->param[1],70),       // cols
+                // //                      get_if($this->param[2],'class')); // type
+                //            $GLOBALS['list_fnc_edt'][] = $this->varname();
+                //            break;
                 case 'sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
@@ -950,6 +954,7 @@ class AA_Inputfield {
                 case 'cod':
                 case 'rio':
                 case 'inf':
+                case 'edt':
                 default:    $this->inputWidget($item, $slice_id);
 
             }
@@ -1130,7 +1135,8 @@ class AA_Inputfield {
      */
     function getRadioButtonTag(&$k, &$v, $add='', $labeladd='') {
         $name  = $this->varname();
-        $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add $triggers";
         $ret  .= $this->if_selected($k, " checked");
         $ret  .= '>'.myspecialchars($v).'</label>';
         return $ret;
@@ -1145,7 +1151,8 @@ class AA_Inputfield {
     function getOneChBoxTag(&$k, &$v, $add='', $id='', $labeladd='') {
         $id_attr = empty($id) ? '' : " id='$id'";
         $name    = $this->varname();
-        $ret = "\n<label $labeladd><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add".getTriggers("input",$name);
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $ret = "\n<label $labeladd><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add $triggers";
         $ret .= $this->if_selected($k, " checked");
         $ret .= '>'.myspecialchars($v).'</label>';
         return $ret;
@@ -1182,9 +1189,10 @@ class AA_Inputfield {
             $this->field_name(false, $colspan);
         }
         $this->echoo("<td>");
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+
         $this->echovar("<input type=\"checkbox\" name=\"$name\" $add ".
-                              ($val ? " checked" : '').
-                              getTriggers("input",$name).">");
+                              ($val ? " checked" : ''). " $triggers>");
         $this->helps();
         $this->echoo("</td>");
         if ( $changeorder ) {
@@ -1252,6 +1260,7 @@ class AA_Inputfield {
         }
 
         $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -1282,7 +1291,7 @@ class AA_Inputfield {
                 $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
                 $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required AND $first) ? " required": '').
                                 $GLOBALS['mlxFormControlExtra'].
-                                " value=\"$value\"".getTriggers("input",$name).">$link";
+                                " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
             }
@@ -1295,7 +1304,7 @@ class AA_Inputfield {
 
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": '').
                             $GLOBALS['mlxFormControlExtra'].
-                            "  value=\"$value\"".getTriggers("input",$name).">$link";
+                            "  value=\"$value\" $triggers>$link";
         }
 
         $this->echovar($widg);
@@ -1334,17 +1343,19 @@ class AA_Inputfield {
     }
 
     /** textarea function
-    * Prints html tag <textarea .. to 2-column table
-    * for use within <form> and <table> tag
-    *
-    * @param $rows
-    * @param $cols
-    * @param $single
-    * @param $showrich_href - have we show "Show Editor" link? (if we want to, we have
-    *                  to include /misc/htmlarea/aafunc.js script to the page
-    * @param $showhtmlarea
-    */
-    function textarea($showtriggers=false, $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false, $maxlength=0) {
+     * Prints html tag <textarea .. to 2-column table
+     * for use within <form> and <table> tag
+     *
+     * @param int $rows
+     * @param int $cols
+     * @param bool $single
+     * @param bool $showrich_href - have we show "Show Editor" link? (if we want to, we have
+     *                  to include /misc/htmlarea/aafunc.js script to the page
+     * @param bool $showhtmlarea
+     * @param int $maxlength
+     */
+    function textarea($rows = 4, $cols = 60, $single = false, $showrich_href = true, $showhtmlarea = false, $maxlength = 0)
+    {
 
         list($name,$val,$add) = $this->prepareVars('multi');
         // make the textarea bigger, if already filled with long text
@@ -1368,7 +1379,7 @@ class AA_Inputfield {
         }
 
         $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
-        $triggers  = $showtriggers ? getTriggers("textarea",$name) : '';
+        $triggers  = $this->use_triggers ? getTriggers("textarea",$name) : '';
 
         if ($this->translations) {
             $first = true;
@@ -1416,21 +1427,6 @@ class AA_Inputfield {
         $this->echovar($widg);
         $this->helps('plus');
     }
-
-    /** richEditTextarea function
-    * On browsers which do support it, loads a special rich text editor with many
-    * advanced features based on triedit.dll
-    * On the other browsers, loads a normal text area
-    * @param $rows
-    * @param $cols
-    * @param $type
-    * @param $single
-    */
-
-    function richEditTextarea($rows=10, $cols=80, $type="class", $single="") {
-        $this->textarea(true, $rows, $cols, false, false, true);   // the first true (triggers) could be chjanged to false for all non item editiong richtextareas
-    }
-
 
     /** inputRadio function
     * Prints a radio group, html tags <input type="radio" .. to 2-column table
@@ -1604,9 +1600,10 @@ class AA_Inputfield {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
+        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
 
         $this->field_name('plus');
-        $ret       ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
+        $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
         // $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
@@ -1647,13 +1644,14 @@ class AA_Inputfield {
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(array('0','1'), array('DR','MDR'),(string)$actions);
         $movebuttons          = (strpos($actions,'M') !== false);
+        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
 
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
 
         $this->field_name('plus');
-        $ret       ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
+        $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', false, true);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
@@ -1826,8 +1824,8 @@ class AA_Inputfield {
            When you delete a value from a hierarchicalConstant mainbox
            it does not respond to the onChange triger
         */
-        $this_triggers = getTriggers("select",$name);
-        $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
+        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
+        $aa_onchange_exist = strstr($triggers,'aa_onChange(');
         $delete_button_trigger = "";
         if( $aa_onchange_exist ){
             list($aux1,$fieldid,$aux2) = split("'",$aa_onchange_exist,3);
@@ -1839,7 +1837,7 @@ class AA_Inputfield {
             <table border=\"0\" cellpadding=\"2\" width=\"100%\"><tr>
             <td align=\"center\"><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
             <td>");
-        $out = "\n<select name=\"$name\" multiple size=\"$rows\"".getTriggers("select",$name).">";
+        $out = "\n<select name=\"$name\" multiple size=\"$rows\" $triggers>";
             if (is_array($val)) {
                 $constants_names = GetConstants($group_id);
                 foreach ( $val as $v) {
@@ -1868,15 +1866,20 @@ class AA_Inputfield {
     function inputSelect($usevalue=false) {
         list($name,$val,$add) = $this->prepareVars();
         $this->fill_const_arr();
+        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
 
         $this->field_name('plus');
-        $out = "<select name=\"$name\"".getTriggers("select",$name).">";
+        $out = "<select name=\"$name\" $triggers>";
         $out .= $this->get_options( $this->const_arr, $usevalue, false, 'all', !$this->required );
         $out .= "</select>";
         $this->echovar( $out );
         $this->helps('plus');
     }
 
+    /**
+     * @param AA_Item $item
+     * @param string $slice_id
+     */
     function inputWidget($item, $slice_id) {
         $this->field_name('plus');
         if (is_null($item)) {
@@ -1901,16 +1904,18 @@ class AA_Inputfield {
         }
         $val  = myspecialchars($val);
         $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', true) : '';
+        $triggers   = $this->use_triggers ? getTriggers("input",$name) : '';
 
         $this->field_name('plus');
-        $this->echovar( "<input type=text name=\"$name\" style=\"width:95%\"". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\"".getTriggers("input",$name).">&nbsp;$link" );
+        $this->echovar( "<input type=text name=\"$name\" style=\"width:95%\"". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\" $triggers>&nbsp;$link" );
         $this->helps('plus');
 
         $this->name       = $text;
         $this->input_help = $hlp;
         $this->field_name('secrow');
         $file_field_name = $name.'x';
-        $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
+        $triggers  = $this->use_triggers ? getTriggers("input",$file_field_name) : '';
+        $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\" $file_field_name>", 'file');
         $this->helps('plus');
     }
 
@@ -1933,11 +1938,12 @@ class AA_Inputfield {
         if ($secondfield) {
             $varsecfield = varname4form($secondfield);
         }
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
 
         $this->field_name('plus');
         $this->html_radio();
 
-        $this->echovar("<input type=text name=\"$name\" size=\"$size\" maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">");
+        $this->echovar("<input type=text name=\"$name\" size=\"$size\" maxlength=\"$maxsize\" value=\"$val\" $triggers>");
         $out = "<select name=\"foo_$name\"";
         if ($secondfield) {
             $out .= " onchange=\"$name.value=this.options[this.selectedIndex].text;";
@@ -1960,10 +1966,11 @@ class AA_Inputfield {
         list($name,$val,$add) = $this->prepareVars();
         $this->fill_const_arr();
         $val=safe($val);
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
 
         $this->field_name('plus');
         $this->html_radio();
-        $this->echovar( "<textarea name=\"$name\" rows=\"$rows\" cols=\"$cols\" wrap=\"virtual\"".getTriggers("textarea",$name).">$val</textarea>" );
+        $this->echovar( "<textarea name=\"$name\" rows=\"$rows\" cols=\"$cols\" wrap=\"virtual\" $triggers>$val</textarea>" );
         $out  = "<select name=\"foo_$name\" onchange=\"add_to_line($name, this.value)\">";
         $out .= $this->get_options( $this->const_arr );
         $out .= '</select>';
@@ -2000,8 +2007,9 @@ class AA_Inputfield {
           <tr align=left>
             <td align=\"center\" valign='TOP' rowspan=\"2\">");
 
+        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
         $offername = str_replace("[]", "", $name). '_1';
-        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" ".getTriggers("select",$name).">\n";
+        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers>\n";
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
@@ -2012,7 +2020,7 @@ class AA_Inputfield {
             <td align=\"center\" valign=\"top\" rowspan=\"2\">");
 
         // varname - name without []
-        $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\"  ".getTriggers("select",$name).">";
+        $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\" $triggers>";
 
         // we need values in second box sorted just like in values
         $selected_values = array();
@@ -2065,10 +2073,11 @@ class AA_Inputfield {
         $retype_pwd_label = get_if($retype_pwd_label, _m("Retype Password"));
         $delete_pwd_label = get_if($delete_pwd_label, _m("Delete Password"));
         $fieldsize        = get_if($fieldsize,        60);
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
 
         $this->field_name('plus');
         if ( $this->mode == 'anonym' ) {
-            $this->echovar("<input type=\"password\" name=\"$name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$name).">" );
+            $this->echovar("<input type=\"password\" name=\"$name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>" );
             $this->helps('plus');
         } else {
             $this->echovar( $val ? "*****" : _m("not set") );
@@ -2078,20 +2087,23 @@ class AA_Inputfield {
         if (!$this->required) {
             $this->field_name('secrow',1,$delete_pwd_label);
             $ch_name = $name."d";
-            $this->echovar("<input type=\"checkbox\" name=\"$ch_name\"". getTriggers("input",$ch_name).">", 'delete');
+            $triggers  = $this->use_triggers ? getTriggers("input",$ch_name) : '';
+            $this->echovar("<input type=\"checkbox\" name=\"$ch_name\" $triggers>", 'delete');
             $this->helps('plus');
         }
 
         // change pwd
         $this->field_name('secrow',1,$change_pwd_label);
         $ch_name = $name."a";
-        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$ch_name).">", 'change' );
+        $triggers  = $this->use_triggers ? getTriggers("input",$ch_name) : '';
+        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>", 'change' );
         $this->helps('plus',$change_pwd_help );
 
         // retype pwd
         $this->field_name('secrow',1,$retype_pwd_label);
         $ch_name = $name."b";
-        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$ch_name).">", 'retype' );
+        $triggers  = $this->use_triggers ? getTriggers("input",$ch_name) : '';
+        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>", 'retype' );
         $this->helps('plus',$retype_pwd_help );
     }
 
@@ -2103,7 +2115,8 @@ class AA_Inputfield {
     function inputLocalURLPick($url) {
         list($name,$val) = $this->prepareVars();
         $this->field_name('plus');
-        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\"".getTriggers("input",$name).">";
+        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\" $triggers>";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
         $this->echoo("\n <td>");
@@ -2262,7 +2275,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
     if ($showrich_href) {
         $input->html_rb_show = true;
     }
-    $input->textarea(false, $rows, $cols, $single, $showrich_href, false, $maxlength);
+    $input->textarea($rows, $cols, $single, $showrich_href, false, $maxlength);
     $input->print_result();
 }
 
@@ -2285,7 +2298,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
 function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class", $needed=false, $hlp="", $morehlp="", $single="", $html=false) {
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->richEditTextarea($rows, $cols, $type, $single);
+    $input->textarea($rows, $cols, false, false, true);
     $input->print_result();
 }
 
@@ -2616,23 +2629,6 @@ function FrmChBoxEasyCode($name, $checked=true, $add="", $value='', $id='') {
     ($id      ? " id=\"$id\"" : '').
     ($value   ? " value=\"$value\"" : '').
     ($checked ? " checked>" : ">");
-}
-
-/** getRadioButtonTag function
- *  Used in FrmInputRadio
- * @param $k
- * @param $v
- * @param $name
- * @param $selected
- */
-function getRadioButtonTag(&$k, &$v, &$name, &$selected) {
-    $ret = "<input type=\"radio\" name=\"$name\"
-                 value=\"". myspecialchars($k) ."\"".getTriggers("input",$name);
-    if ((string)$selected == (string)$k) {
-     $ret .= " checked";
-    }
-    $ret .= ">".myspecialchars($v);
-    return $ret;
 }
 
 /** FrmSelectEasy function

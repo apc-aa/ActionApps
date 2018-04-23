@@ -297,27 +297,26 @@ if ( !$update ) {      // load defaults
     $translation  = $fld["multiple"] & 2;
 }
 
-HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   window.cm_a1  = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
+   window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("alias2_func"), opts);
+   window.cm_a3  = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);
+   ';
 
-?>
-<title><?php echo _m("Admin - configure Fields");?></title>
-
-<!-- code for ACE editor -->
-<script src="https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js" integrity="sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=" crossorigin="anonymous"></script>
-<!-- code for ACE editor end -->
-
-<script language="JavaScript"><!--
+$headcode = '
+<script>
   function CallConstantEdit(as_new) {
-    var url = "<?php echo EditConstantURL(); ?>"
+    var url = "'. EditConstantURL() .'"
     var conid = document.f.input_show_func_c.options[document.f.input_show_func_c.selectedIndex].value
-    if ( conid.substring(0,7) == '#sLiCe-' ) {
-      alert('<?php echo _m("You selected slice and not constant group. It is unpossible to change slice. Go up in the list.") ?>');
+    if ( conid.substring(0,7) == \'#sLiCe-\' ) {
+      alert(\''. _m("You selected slice and not constant group. It is unpossible to change slice. Go up in the list.") .'\');
       return;
     }
     if ( conid != "" ) {
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
-      url += "&return_url=se_inputform.php3&fid=<?php echo $fid ?>";
+      url += "&return_url=se_inputform.php3&fid='. $fid .'";
       document.location=url;
     }
   }
@@ -328,21 +327,22 @@ HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, styl
   */
   function CallParamWizard(list, combo_list, text_param ) {
     combo_list_el = document.f.elements[combo_list];
-    page = GetUrl("<?php echo get_admin_url('param_wizard.php3'); ?>", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.options[combo_list_el.selectedIndex].value]);
+    page = GetUrl("'. get_admin_url('param_wizard.php3') .'", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.options[combo_list_el.selectedIndex].value]);
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }
-//-->
-</script>
-</head>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin");
+</script>';
 
-echo "<h1><b>" . _m("Admin - configure Fields") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
-echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
+$apage = new AA_Adminpageutil('sliceadmin','fields');
+$apage->setTitle(_m("Admin - configure Fields"));
+$apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
+$apage->addRequire('codemirror@5');
+$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+
+HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->printHead($err, $Msg);
 
 $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
                       "fid"      => array("type"=>"hidden", "value"=>$fid),
@@ -505,39 +505,4 @@ FrmTabEnd($form_buttons);
 
 echo "\n </form>";
 
-?>
-<!-- code for ACE editor -->
-<script>
-    $(function() {
-//      $('textarea[data-editor]').each(function() {
-      $("#alias1_func, #alias2_func, #alias3_func").each(function() {
-        var textarea = $(this);
-        var mode = "html";      // textarea.data('editor');
-        var editDiv = $('<div>', {
-          position: 'absolute',
-          width: '100%',   //textarea.width(),
-          height: textarea.height(),
-          'class': textarea.attr('class')
-        }).insertBefore(textarea);
-        textarea.css('display', 'none');
-        var editor = ace.edit(editDiv[0]);
-        editor.renderer.setShowGutter(false);
-        // editor.renderer.setShowGutter(textarea.data('gutter'));
-        editor.getSession().setValue(textarea.val());
-        editor.getSession().setMode("ace/mode/" + mode);
-        //editor.setTheme("ace/theme/idle_fingers");
-        editor.setTheme("ace/theme/chrome");
-
-        // copy back to textarea on form submit...
-        textarea.closest('form').submit(function() {
-          textarea.val(editor.getSession().getValue());
-        })
-      });
-    });
-</script>
-<!-- code for ACE editor end -->
-<?php
-
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

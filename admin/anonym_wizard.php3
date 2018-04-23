@@ -172,23 +172,12 @@ if (!$show_result) {
     $show_result = "http://SHOW_RESULT.php3";
 }
 
-
 // -----------------------------------------------------------------------------
 // This is the page in which you choose the form type and fields
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo "<title>"._m("Admin - Anonymous Form Wizard")."</title>
-</head>";
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "anonym_wizard");
-
-echo "<h1>"._m("Admin - Anonymous Form Wizard")."</b></h1>";
-
-PrintArray($err);
-PrintArray($warning);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','anonym_wizard');
+$apage->setTitle(_m("Admin - Anonymous Form Wizard"));
+$apage->printHead(array_merge($err,$warning), $Msg);
 
 $form_buttons=array("show_form" => array("value"=>_m("Show Form"),
                                          "type" =>"submit"),
@@ -247,6 +236,5 @@ if ($show_form) {
 }
 
 echo "</table></form>";
-HtmlPageEnd();
-page_close();
 
+$apage->printFoot();

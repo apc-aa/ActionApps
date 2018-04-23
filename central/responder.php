@@ -243,19 +243,20 @@ class AA_Responder_Get_Fields extends AA_Responder {
     function isPerm() { return IfSlPerm(PS_FIELDS); }
 
     function run() {
-        $encoder = new ConvertCharset;
+        $ret = '';
+        if ($slice = AA_Slice::getModule($this->slice_id)) {
+            $encoder = new ConvertCharset;
 
-        // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
-        // and we do not want to list it as option for normal fields
-        $SQL            = "SELECT * FROM field  WHERE slice_id='".q_pack_id($this->slice_id)."' AND (in_item_tbl = '')". ($this->slice_fields ? " AND (id NOT LIKE '\_%')" : ''). ' ORDER BY name';
-        $current_types  = GetTable2Array($SQL);
-        $ret            = "\n <select name=\"ftype\">";
-        foreach ( $current_types as $k => $v) {
-            $ret .=  "\n  <option value=\"". $this->slice_id .'-'. myspecialchars($k).'"> '. myspecialchars($v['name']) ." </option>";
+            // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
+            // and we do not want to list it as option for normal fields
+            $current_types = DB_AA::select(array('id' => 'name'), 'SELECT `id`, `name` FROM `field`', array(array('slice_id', $this->slice_id, 'l'), array('id', '\_%', 'NOT LIKE'), array('in_item_tbl', '')), array('name'));
+            $ret = "\n <select name=\"ftype\">";
+            foreach ($current_types as $k => $v) {
+                $ret .= "\n  <option value=\"" . $this->slice_id . '-' . myspecialchars($k) . '"> ' . myspecialchars($v) . " </option>";
+            }
+            $ret .= "\n </select>";
+            $ret = $encoder->Convert($ret, $slice->getCharset(), 'utf-8');
         }
-        $ret           .= "\n </select>";
-        $slice          = AA_Slice::getModule($this->slice_id);
-        $ret            = $encoder->Convert($ret, $slice->getCharset(), 'utf-8');
         return new AA_Response($ret);
     }
 }

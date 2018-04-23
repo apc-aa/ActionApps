@@ -52,8 +52,6 @@ if ($mode == "map") {
     go_url(StateUrl(self_base() . "se_mapping.php3?from_slice_id=".$feed["remote_slice_id"]));
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
 if ($mode == "edit" || $mode == "test") {
     $db->query("SELECT * FROM rssfeeds WHERE name='$sel_rssfeed_name' AND slice_id = '$qp_slice_id'");
     if ($db->next_record()) {
@@ -110,57 +108,10 @@ $rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", array(array('slice_i
 //    $rssfeeds[] = $db->f('name');
 //}
 
-?>
- <title><?php echo _m("Remote RSS Feed administration");?></title>
-<script>
+$apage = new AA_Adminpageutil('sliceadmin','rssfeeds');
+$apage->setTitle(_m("Remote RSS Feed administration"));
+$apage->printHead($err, $Msg);
 
-function SelectValue(sel) {
-    svindex = eval(sel).selectedIndex;
-    if (svindex != -1) {
-        return eval(sel).options[svindex].value;
-    }
-    return null;
-}
-
-function SubmitForm(mode) {
-    if (mode== 'add') {
-        document.f.mode.value = mode;
-        document.f.submit();
-    } else {
-        sel = SelectValue('document.f.rssfeeds');
-        if (sel == null) {
-            alert('<?php echo _m("No selected rssfeed"); ?>');
-        } else {
-            if (mode == 'delete') {
-                if (!confirm('<?php echo _m("Are you sure you want to delete the rssfeed?"); ?>')) {
-                    return;
-                }
-            }
-            document.f.sel_rssfeed_name.value = sel;
-            document.f.mode.value = mode;
-            document.f.submit();
-        }
-    }
-}
-
-function checkData() {
-    if (document.f.rssfeed_name.value=="") {
-        alert('<?php echo _m("Error: RSS node empty"); ?>');
-        return false;
-    }
-    document.f.submit();
-}
-</script>
-
-</head>
-<body>
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin","rssfeeds");
-
-  echo "<h1><b>" . _m("Remote RSS Feed administration") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
 ?>
 <form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
@@ -202,10 +153,48 @@ function checkData() {
 
 ?>
 </form>
+<script>
+
+function SelectValue(sel) {
+    svindex = eval(sel).selectedIndex;
+    if (svindex != -1) {
+        return eval(sel).options[svindex].value;
+    }
+    return null;
+}
+
+function SubmitForm(mode) {
+    if (mode== 'add') {
+        document.f.mode.value = mode;
+        document.f.submit();
+    } else {
+        sel = SelectValue('document.f.rssfeeds');
+        if (sel == null) {
+            alert('<?php echo _m("No selected rssfeed"); ?>');
+        } else {
+            if (mode == 'delete') {
+                if (!confirm('<?php echo _m("Are you sure you want to delete the rssfeed?"); ?>')) {
+                    return;
+                }
+            }
+            document.f.sel_rssfeed_name.value = sel;
+            document.f.mode.value = mode;
+            document.f.submit();
+        }
+    }
+}
+
+function checkData() {
+    if (document.f.rssfeed_name.value=="") {
+        alert('<?php echo _m("Error: RSS node empty"); ?>');
+        return false;
+    }
+    document.f.submit();
+}
+</script>
 <?php
 if ($mode == "test") {
     onefeed($testfeed["feed_id"],$testfeed, 5, 'write');
 }
-HtmlPageEnd();
-page_close()
-?>
+
+$apage->printFoot();

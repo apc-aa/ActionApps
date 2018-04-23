@@ -85,23 +85,14 @@ if ( $update ) {
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Admin - Item Sets");?></title>
-</head>
 
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "sets");
-
-echo "<h1><b>" . _m("Admin - Item Sets") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','sets');
+$apage->setTitle(_m("Admin - Item Sets"));
+$apage->printHead($err, $Msg);
 
 $form_buttons = array ("update",
                        "cancel" =>array("url"=>"se_fields.php3"),
                       );
-
 ?>
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
@@ -136,6 +127,4 @@ FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close()
-?>
+$apage->printFoot();

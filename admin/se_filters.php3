@@ -29,8 +29,6 @@
 */
 
 
-//
-
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."csn_util.php3";
@@ -44,7 +42,6 @@ if (!IfSlPerm(PS_FEEDING)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
     exit;
 }
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -148,116 +145,17 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
         }
     }
 }
-?>
- <title><?php echo _m("Admin - Content Pooling - Filters");?></title>
-<script Language="JavaScript"><!--
 
-function ChBoxState(chbox) {
-  return eval(chbox).checked
-}
+$apage = new AA_Adminpageutil('sliceadmin','filters');
+$apage->setTitle(_m("Admin - Content Pooling - Filters"));
+$apage->addRequire('InitPage();', 'AA_Req_Load');
+$apage->printHead($err, $Msg);
 
-function SelectValue(sel) {
-  svindex = eval(sel).selectedIndex;
-  if (svindex != -1) { return eval(sel).options[svindex].value; }
-  return null;
-}
-
-function HiddenValue(sel) {
-  return eval(sel).value
-}
-
-function ChangeImport()
-{
-  var url = "<?php echo StateUrl(self_base() . "se_filters.php3")?>"
-  url += "&slice_id=<?php echo $slice_id ?>"
-  url += "&import_id=" + SelectValue('document.f.import_id')
-  document.location=url
-}
-
-function AllCategClick() {
-  for ( i=1; i<=<?php echo $imp_count?>; i++ ) {
-    DisableClick('document.f.all_categories','document.f.chbox_'+i)
-    if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> )
-      DisableClick('document.f.all_categories','document.f.categ_'+i)
-    DisableClick('document.f.all_categories','document.f.approved_'+i)
-  }
-}
-
-function InitPage() {
-  AllCategClick()
-}
-
-function DisableClick(cond,what) {
-     eval(what).disabled=eval(cond).checked;
-     // property .disabled supported only in MSIE 4.0+
-}
-
-function UpdateFilters(slice_id, import_id) {
-  var url = "<?php echo StateUrl(self_base() . "se_filters2.php3")?>"
-  var done = 0
-  url += "&slice_id=" + slice_id
-  url += "&import_id=" + import_id
-  url += "&feed_id=<?php echo $feed_id ?>"
-  if ((typeof document.f.all_categories == 'undefined') ||   // no import cats
-     (ChBoxState('document.f.all_categories'))) {
-    done = 1
-    if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
-      url += "&all=1&C=" + escape(SelectValue('document.f.categ_0'))
-      url += "-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
-    } else {
-      url += "&all=1&C=0-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
-    }
-  } else {
-    for (var i = 1; i <= <?php echo $imp_count?>; i++) {
-      if (ChBoxState('document.f.chbox_'+i)) {
-        done = 1
-        if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
-           url += "&T%5B%5D=" + escape(SelectValue('document.f.categ_'+i))
-        } else {
-           url += "&T%5B%5D=0"
-        }
-        url += "&F%5B%5D=" +  escape(HiddenValue('document.f.hid_'+i))
-        url += "-" + (ChBoxState('document.f.approved_'+i) ? 1 : 0)
-      }
-    }
-  }
-  if (done == 0) {
-    alert ( "<?php echo _m("No From category selected!") ?>" )
-  } else {
-    document.location=url
-  }
-}
-
-    function SelectChboxes(chb_name) {
-      var len = document.f.elements.length;
-      var state = 2;
-      var str_len = chb_name.length;
-      for ( var i=0; i<len; i++ )
-        if ( document.f.elements[i].name.substring(0,str_len) == chb_name) { //items checkboxes
-          if (state == 2) {
-            state = ! document.f.elements[i].checked;
-          }
-          document.f.elements[i].checked = state;
-        }
-    }
-// -->
-</script>
-</head>
-<?php
-  $useOnLoad = true;
-  require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "filters");
-
-  echo "<h1><b>" . _m("Admin - Content Pooling - Filters") . "</b></h1>";
-  PrintArray($err);
-  echo $Msg;
-
-  $form_buttons=array("btn_upd"=>array("type"  =>"button",
-                                 "value"       =>_m("Update"),
-                                 "accesskey"   =>"S",
-                                 "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
-                "cancel"       =>array("url"   =>"se_fields.php3"))
-
+$form_buttons=array("btn_upd"=>array("type"  =>"button",
+                               "value"       =>_m("Update"),
+                               "accesskey"   =>"S",
+                               "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
+                    "cancel" =>array("url"   =>"se_fields.php3"))
 ?>
 <form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
@@ -357,7 +255,95 @@ else {
 FrmTabEnd($form_buttons,$sess, $slice_id);
 ?>
 </form>
+<script>
+    function ChBoxState(chbox) {
+        return eval(chbox).checked
+    }
+
+    function SelectValue(sel) {
+        svindex = eval(sel).selectedIndex;
+        if (svindex != -1) { return eval(sel).options[svindex].value; }
+        return null;
+    }
+
+    function HiddenValue(sel) {
+        return eval(sel).value
+    }
+
+    function ChangeImport()
+    {
+        var url = "<?php echo StateUrl(self_base() . "se_filters.php3")?>"
+        url += "&slice_id=<?php echo $slice_id ?>"
+        url += "&import_id=" + SelectValue('document.f.import_id')
+        document.location=url
+    }
+
+    function AllCategClick() {
+        for ( i=1; i<=<?php echo $imp_count?>; i++ ) {
+            DisableClick('document.f.all_categories','document.f.chbox_'+i)
+            if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> )
+                DisableClick('document.f.all_categories','document.f.categ_'+i)
+            DisableClick('document.f.all_categories','document.f.approved_'+i)
+        }
+    }
+
+    function InitPage() {
+        AllCategClick()
+    }
+
+    function DisableClick(cond,what) {
+        eval(what).disabled=eval(cond).checked;
+        // property .disabled supported only in MSIE 4.0+
+    }
+
+    function UpdateFilters(slice_id, import_id) {
+        var url = "<?php echo StateUrl(self_base() . "se_filters2.php3")?>"
+        var done = 0
+        url += "&slice_id=" + slice_id
+        url += "&import_id=" + import_id
+        url += "&feed_id=<?php echo $feed_id ?>"
+        if ((typeof document.f.all_categories == 'undefined') ||   // no import cats
+            (ChBoxState('document.f.all_categories'))) {
+            done = 1
+            if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                url += "&all=1&C=" + escape(SelectValue('document.f.categ_0'))
+                url += "-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
+            } else {
+                url += "&all=1&C=0-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
+            }
+        } else {
+            for (var i = 1; i <= <?php echo $imp_count?>; i++) {
+                if (ChBoxState('document.f.chbox_'+i)) {
+                    done = 1
+                    if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                        url += "&T%5B%5D=" + escape(SelectValue('document.f.categ_'+i))
+                    } else {
+                        url += "&T%5B%5D=0"
+                    }
+                    url += "&F%5B%5D=" +  escape(HiddenValue('document.f.hid_'+i))
+                    url += "-" + (ChBoxState('document.f.approved_'+i) ? 1 : 0)
+                }
+            }
+        }
+        if (done == 0) {
+            alert ( "<?php echo _m("No From category selected!") ?>" )
+        } else {
+            document.location=url
+        }
+    }
+
+    function SelectChboxes(chb_name) {
+        var len = document.f.elements.length;
+        var state = 2;
+        var str_len = chb_name.length;
+        for ( var i=0; i<len; i++ )
+            if ( document.f.elements[i].name.substring(0,str_len) == chb_name) { //items checkboxes
+                if (state == 2) {
+                    state = ! document.f.elements[i].checked;
+                }
+                document.f.elements[i].checked = state;
+            }
+    }
+</script>
 <?php
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

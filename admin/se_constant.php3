@@ -267,18 +267,9 @@ if ($group_id OR $as_new) {
     $s_constants = GetTable2Array($SQL, "NoCoLuMn");
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - Constants Setting");?></title>
-</head>
-<?php
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "");
-
-echo "<h1><b>" . _m("Admin - Constants Setting") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','fields');
+$apage->setTitle(_m("Admin - Constants Setting"));
+$apage->printHead($err, $Msg);
 
 $form_buttons = array("update",
                       "cancel"   => array("url"=> $back_url),
@@ -399,8 +390,7 @@ FrmTabEnd($form_buttons);
 
 echo '
 </form>
-<script language=javascript>
-<!--
+<script>
     function deleteWholeGroup() {
         if (confirm("'._m("Are you sure you want to PERMANENTLY DELETE this group?"). '")) {
             document.f.elements[\'deleteGroup\'].value = 1;
@@ -446,9 +436,6 @@ echo '
       counter += 10;
     }
   }
-
-//-->
 </script>';
-HtmlPageEnd();
-page_close()
-?>
+
+$apage->printFoot();

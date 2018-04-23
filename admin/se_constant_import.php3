@@ -90,18 +90,9 @@ if ($update) {
 }
 
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - Constants Import");?></title>
-</head>
-<?php
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "");
-
-echo "<h1><b>" . _m("Admin - Constants Import") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','fields');
+$apage->setTitle(_m("Admin - Constants Import"));
+$apage->printHead($err, $Msg);
 
 $form_buttons = array("update",
                       "cancel"    => array("url"=> $back_url),
@@ -124,5 +115,4 @@ FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close()?>
+$apage->printFoot();

@@ -66,7 +66,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
      *  @param $param       'selected' if we have to delete only items specified
      *                      in $item_arr - otherwise delete all items in Trash
      *  @param $item_arr    Items to delete (if 'selected' is $param)
-     *  @param $akce_param  Not used
+     *  @param string $akce_param  Not used
      *  @return false or error message
      */
     function perform($manager, &$state, $item_arr, $akce_param) {
@@ -165,7 +165,7 @@ function GetHistoryAliases() {  // function - we need trnslate _m() on use (not 
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *
  * @see GetItemContent(), itemview class, item class
- * @param array $zids array if ids to get from database
+ * @param zids $zids if ids to get from database
  * @return array - Abstract Data Structure containing the links data
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */

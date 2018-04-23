@@ -31,18 +31,19 @@
  *  Used for slower move towards more radical AA_Adminpage approach below...
  */
 class AA_Adminpageutil {
-    protected $menu     = '';
-    protected $submenu  = '';
-    protected $title    = '';
-    protected $subtitle = '';
-    protected $require  = array();
+    protected $modulemenu = 'include';
+    protected $menu       = '';
+    protected $submenu    = '';
+    protected $title      = '';
+    protected $subtitle   = '';
+    protected $require    = array();
 
     /**
      * AA_Adminpageutil constructor.
      * @param string $menu
      * @param string $submwenu
      */
-    public function __construct($menu, $submenu)
+    public function __construct($menu='', $submenu='')
     {
         $this->menu    = $menu;
         $this->submenu = $submenu;
@@ -54,6 +55,14 @@ class AA_Adminpageutil {
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * @param string $modulemenu
+     */
+    public function setModuleMenu($modulemenu)
+    {
+        $this->modulemenu = $modulemenu;
     }
 
     /**
@@ -104,7 +113,7 @@ class AA_Adminpageutil {
         return '{generate:FOOT}</body></html>';
     }
 
-    public function printHead()
+    public function printHead($err, $Msg)
     {
         AA::$encoding = AA_Langs::getCharset();
         $this->sendHeaders();
@@ -129,8 +138,10 @@ class AA_Adminpageutil {
 
         // this is old code used everywhere, so it is copied here. It should be rewritten - without globals...
 
-        require_once AA_INC_PATH."menu.php3";
-        showMenu($GLOBALS['aamenus'], $this->menu, $this->submenu);
+        if ($this->menu != '') {
+            require_once AA_BASE_PATH. $this->modulemenu. '/menu.php3';
+            showMenu($GLOBALS['aamenus'], $this->menu, $this->submenu);
+        }
 
         echo "<h1>" . $this->title . "</h1>";
         if ($this->subtitle) {

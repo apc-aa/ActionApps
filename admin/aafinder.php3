@@ -130,15 +130,17 @@ function PrintItemInfo($item_id) {
 
     $long_id = $zid->longids(0);
     if ($long_id) {
-        echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
-        print_r(DB_AA::select(array(), 'SELECT * FROM `item`', array(array('id',$long_id, 'l'))));
-        // GetTable2Array('SELECT * FROM item WHERE id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
-        echo "</pre>";
+        if ($res = DB_AA::select(array(), 'SELECT * FROM `item`', array(array('id',$long_id, 'l')))) {
+            echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
+            print_r($res);
+            echo "</pre>";
+        }
 
-        echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
-        //print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
-        print_r(DB_AA::select(array(), 'SELECT * FROM `content`', array(array('item_id',$long_id, 'l'))));
-        echo "</pre>";
+        if ($res = DB_AA::select(array(), 'SELECT * FROM `content`', array(array('item_id',$long_id, 'l')))) {
+            echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
+            print_r($res);
+            echo "</pre>";
+        }
 
         if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
             echo '<h3>'. _m('Slice') .'</h3><pre>';
@@ -177,13 +179,10 @@ if (!IsSuperadmin()) {
     exit;
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo "<title>"._m("AA finder")."</title></head>";
-showMenu($aamenus, "aaadmin", "aafinder");
-echo "<h1><b>" ._m("AA finder"). "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('aaadmin','aafinder');
+$apage->setTitle(_m("AA finder"));
+$apage->printHead($err, $Msg);
 
 is_object( $db ) || ($db = getDB());
 
@@ -554,6 +553,4 @@ echo '</form></td></tr>';
 
 FrmTabEnd();
 
-HtmlPageEnd();
-page_close ();
-
+$apage->printFoot();

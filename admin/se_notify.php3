@@ -178,33 +178,25 @@ while ($db->next_record()) {
 //   IV) write the form  (HTML output)
 ////////////////////////////////////////////////////////////////////
 
-// Print HTML start page tags (html begin, encoding, style sheet, but no title)
-HtmlPageBegin();
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("notify_holding_item_b"), opts);
+   window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("notify_holding_item_edit_b"), opts);
+   window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("notify_active_item_b"), opts);
+   window.cm_a4 = CodeMirror.fromTextArea(document.getElementById("notify_active_item_edit_b"), opts);
+   ';
 
-// code for ACE editor
-FrmJavascriptFile( 'javascript/jquery.min.js' );
+$apage = new AA_Adminpageutil('sliceadmin','notify');
+$apage->setTitle(_m("Email Notifications of Events"));
+$apage->addRequire('codemirror@5');
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->printHead($err, $Msg);
+
+
+$form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
+                      "update",
+                      "cancel" => array("url"=>"se_fields.php3"));
 ?>
-<script src="https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js" integrity="sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=" crossorigin="anonymous"></script>
-<?php
-// code for ACE editor end
-
-
-
-echo '<title> '. _m("Email Notifications of Events"). '</title></head>';
-    require_once AA_INC_PATH."menu.php3";
-    showMenu ($aamenus, "sliceadmin","notify");
-
-    echo "<h1><b>" . _m("Email Notifications of Events") . "</b></h1>";
-    PrintArray($err);
-    echo $Msg;
-
-
-  $form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
-                        "update",
-                        "cancel" => array("url"=>"se_fields.php3"));
-
-?>
-
 <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
@@ -235,40 +227,5 @@ echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Approved Bin</h4>  People
   FrmTabEnd($form_buttons);
 
 echo "</form>";
-?>
-<!-- code for ACE editor -->
-<script>
-    $(function() {
-//      $('textarea[data-editor]').each(function() {
-      $("#notify_holding_item_b, #notify_holding_item_edit_b, #notify_active_item_b, #notify_active_item_edit_b").each(function() {
-        var textarea = $(this);
-        var mode = "html";      // textarea.data('editor');
-        var editDiv = $('<div>', {
-          position: 'absolute',
-          width: '100%',   //textarea.width(),
-          height: textarea.height(),
-          'class': textarea.attr('class')
-        }).insertBefore(textarea);
-        textarea.css('display', 'none');
-        var editor = ace.edit(editDiv[0]);
-        editor.renderer.setShowGutter(false);
-        // editor.renderer.setShowGutter(textarea.data('gutter'));
-        editor.getSession().setValue(textarea.val());
-        editor.getSession().setMode("ace/mode/" + mode);
-        //editor.setTheme("ace/theme/idle_fingers");
-        editor.setTheme("ace/theme/chrome");
 
-        // copy back to textarea on form submit...
-        textarea.closest('form').submit(function() {
-          textarea.val(editor.getSession().getValue());
-        })
-      });
-    });
-</script>
-<!-- code for ACE editor end -->
-<?php
-
-HtmlPageEnd();
-page_close();
-?>
-
+$apage->printFoot();

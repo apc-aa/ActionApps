@@ -136,51 +136,44 @@ if ($upload) {
 }
 
 require_once AA_INC_PATH."formutil.php3";
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Admin - Import .CSV file"); ?></title>
-</head>
-<body>
-<?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin","CSVimport");
 
-  echo "<h1><b>" . _m("Admin - Import CSV (1/2) - Source data") . "</b></h1>";
-  echo stripslashes($Msg);
-  unset($err);
 
-  if ($preview) { // file preview
-      if (!($handle = fopen($dest_file, "r"))) {
-          $err = _m("Cannot open a file for preview");
-      } else {
-          FrmTabCaption(_m("File preview"));
+$apage = new AA_Adminpageutil('sliceadmin','CSVimport');
+$apage->setTitle(_m("Admin - Import CSV (1/2) - Source data"));
+$apage->printHead($err, $Msg);
 
-          $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
-          $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
-          if (!$caption) {
-              for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
-                  $caption[] = "Field ".($i+1);
-              }
-              FrmTabRow($caption);
-              FrmTabRow($csvRec);
-              $numRows--;
-          } else {
-              FrmTabRow($csvRec);
-          }
-          while ($numRows-- > 0) {
-              $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
-              if (!$csvRec) {
-                  break;
-              }
-              FrmTabRow($csvRec);
-          }
-          FrmTabEnd();
-          fclose($handle);
-      }
-      if ($err) {
-          huhl($err);
-      }
-  }
+if ($preview) { // file preview
+    if (!($handle = fopen($dest_file, "r"))) {
+        $err = _m("Cannot open a file for preview");
+    } else {
+        FrmTabCaption(_m("File preview"));
+
+        $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
+        $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
+        if (!$caption) {
+            for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
+                $caption[] = "Field ".($i+1);
+            }
+            FrmTabRow($caption);
+            FrmTabRow($csvRec);
+            $numRows--;
+        } else {
+            FrmTabRow($csvRec);
+        }
+        while ($numRows-- > 0) {
+            $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
+            if (!$csvRec) {
+                break;
+            }
+            FrmTabRow($csvRec);
+        }
+        FrmTabEnd();
+        fclose($handle);
+    }
+    if ($err) {
+        huhl($err);
+    }
+}
 ?>
 <form enctype="multipart/form-data" method="post" name="f" action="<?php echo StateUrl(self_base() . "se_csv_import.php3"); ?>">
 
@@ -247,8 +240,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     </td></tr>
   </table>
 </form>
- <?php
-HtmlPageEnd();
-page_close()
-?>
 
+<?php
+$apage->printFoot();

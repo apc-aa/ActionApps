@@ -71,18 +71,9 @@ if ($_GET['export']) {
     exit;
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Admin - Export Items");?></title>
-</head>
-
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "export");
-
-echo "<h1><b>" . _m("Admin - Export Items") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','export');
+$apage->setTitle(_m("Admin - Export Items"));
+$apage->printHead($err, $Msg);
 
 $form_buttons = array ('export' => array('type'=>'submit', 'value'=> _m('Export')));
 
@@ -152,7 +143,4 @@ $r_state['manager_id'] = $manager_id;
 
 //$manager->displayPage($zids, 'sliceadmin', 'exportsetings');
 
-
-HtmlPageEnd();
-page_close()
-?>
+$apage->printFoot();
