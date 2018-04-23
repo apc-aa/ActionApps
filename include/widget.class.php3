@@ -784,11 +784,26 @@ class AA_Widget_Txt extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
      private function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
+
+         $showhtmlarea = strpos(get_class($this), 'AA_Widget_Edt') !== false;
+         //if ( $showhtmlarea ) {
+             // $this->html_radio($showhtmlarea ? false : 'convertors');
+
+             // fix for IE - where the textarea icons are too big so there is
+             // no space for the text
+             // if ($showhtmlarea) {
+             //    $rows += 8;
+             //}
+         //}
+
+         $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
+
+
          $input_id     = AA_Form_Array::formName2Id($input_name);
          $input_value  = myspecialchars($val);
          $maxlength    = $max_characters ? " maxlength=\"$max_characters\"" : '';
 
-         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
+         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
          if ($lang = AA_Content::getLangId($i)) {
              $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
          }
@@ -818,7 +833,7 @@ class AA_Widget_Tpr extends AA_Widget {
 }
 
 /** Rich Edit Text Area widget */
-class AA_Widget_Edt extends AA_Widget {
+class AA_Widget_Edt extends AA_Widget_Txt {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
