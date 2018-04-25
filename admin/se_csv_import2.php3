@@ -5,7 +5,7 @@
  *
  * Parameters:
  * Input:
- *   $slice_id        - for edit slice
+ *   $module_id       - for edit slice
  *   $fileName        - file in upload directory
  *   $addParamsSerial - serialized additional parameters (file type specific)
  *
@@ -96,7 +96,7 @@ class AA_Csv_Importer {
  */
     function loadFromRequest() {
         global $auth;
-        $this->slice_id            = $_REQUEST['slice_id'];
+        $this->slice_id            = AA::$module_id;
         $this->fileName            = $_REQUEST['fileName'];
         $this->actions             = $_REQUEST['actions'];
         $this->mapping             = $_REQUEST['mapping'];
@@ -266,7 +266,7 @@ class AA_Csv_Importer {
         $fieldNames    = createFieldNames($this->fileName,$this->addParams);
         $slice_fields  = $slice->fields('record');
 
-        $slf['id..............'] = "Item id";
+        $slf['unpacked_id.....'] = "Item id";
         foreach ( $slice_fields as $k => $v ) {
             $slf[$k] = $v['name'];
         }
