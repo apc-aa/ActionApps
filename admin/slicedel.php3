@@ -96,11 +96,11 @@ $form_buttons=array("submit" => array('name' => _m('Delete selected') ),
 if ( !isset($slices2show) ) {
     $slices2show = 'todelete';
 }
-FrmTabCaption(_m("Select slice to delete"), '','', $form_buttons);
+FrmTabCaption(_m("Select slice to delete"), '', '', $form_buttons);
 FrmInputRadio('slices2show', _m('Slices to show'), array('todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices" ),
               $slices2show, false, _m('This option allows you to display all the slices and delete them, so be careful!'), '', 0, true,
               "onClick='document.location = \"". get_admin_url('slicedel.php3') ."&slices2show=\" + this.value'");
-FrmTabSeparator(_m('Slices to delete') );
+FrmTabSeparator(_m('Slices to delete'));
 
 // -- get views for current slice --
 if ($slices2show == 'all') {
@@ -118,7 +118,7 @@ if ( !$slice_to_delete ) {
   echo "<tr class=tabtxt><td>". _m("No slice marked for deletion") ."</td></tr>";
 }
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 echo '</form>';
 

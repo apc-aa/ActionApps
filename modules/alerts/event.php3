@@ -47,7 +47,8 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
 
     // One Reader Management Slice may belong to several Alerts Collections
     // Don't send mail if already confirmed - for example imported addresses
-    if (! $itemContent->getValue("switch..........")) {
+    if (! $itemContent->getValue(FIELDID_MAIL_CONFIRMED)) {   // switch..........
+
         while ($mydb->next_record()) {
             $aliases["_#COLLFORM"] = GetAliasDef( "f_t:". alerts_con_url($mydb->f("slice_url"),"aw=".$itemContent->getValue(FIELDID_ACCESS_CODE)), "id..............");
             $aliases["_#HOWOFTEN"] = GetAliasDef( "f_h",  getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));

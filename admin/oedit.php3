@@ -126,7 +126,7 @@ $form_buttons = array ("update",
 ?>
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
-FrmTabCaption(_m("Object Edit"), '','',$form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Object Edit"), '', '', $form_buttons, $slice_id);
 FrmHidden('ret_url', $ret_url);
 FrmHidden('oid',     $oid);
 FrmHidden('otype',   $otype);
@@ -135,7 +135,7 @@ echo '<tr><td colspan="2">';
 echo $form->getObjectEditHtml();
 echo '</td></tr>';
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php

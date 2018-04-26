@@ -235,7 +235,7 @@ function showHTMLAreaLink(name) {
     }
 }
 
-function openHTMLAreaFullscreen(name, session) {    // open HTMLArea in popupwindow
+function openHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
     if (CKEDITOR.env.isCompatible) {
         var elem = document.body.querySelectorAll('input[name="'+name+"html"+'"]');
         for (i=0; i<elem.length; i++) {

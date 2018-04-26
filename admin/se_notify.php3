@@ -200,7 +200,7 @@ $form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
 <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
-    FrmTabCaption(_m("Email Notifications of Events"),'','',$form_buttons, $sess, $slice_id);
+    FrmTabCaption(_m("Email Notifications of Events"), '', '', $form_buttons, $slice_id);
 
 $help = _m('E-mail is sent only if body is not empty.<br>You can use this for selestive e-mails. For example: {ifset:{category........}:e-mail text}');
 

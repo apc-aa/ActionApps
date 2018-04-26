@@ -101,7 +101,7 @@ $form_buttons = array("update",
 ?>
 <form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
-FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Constants"), '', '', $form_buttons, $slice_id);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);
 $delimiters = array(''   => '-none- (Name is the same as Value)',
                     ';'  => 'semicolon ;',

@@ -49,7 +49,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
     $r_sr_state['items'] = $items;
     // init variable settings goes here
 } else {
-    $items     = $r_sr_state['items'];  // session variable holds selected items fmom item manager
+    $items     = $r_sr_state['items'];  // session variable holds selected items from item manager
     if ( $fill ) {    // we really want to fill fields
         $zids          = new zids;
         $updated_items = 0;
@@ -116,13 +116,13 @@ foreach ($fields as $fld_id => $fld) {
 $params = array('field_copy_arr' => $field_copy_arr,
                 'field_select'   => $field_select);
 
-FrmTabCaption( (is_array($items) ? _m("Items") : ( _m("Stored searches for ").$slice->name()) ));
+FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $slice->name())));
 
 $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');
 FrmItemGroupSelect( $items, $searchbar, 'items', $messages, $additional);
 
-FrmTabSeparator( _m('Fill field') );
+FrmTabSeparator(_m('Fill field'));
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,
                _m('Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
 
@@ -131,8 +131,7 @@ FrmInputChBox('silent', _m('Silent'), true, false, "", 1, false, _m('Just update
 FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_', SEARCH_REPLACE_PREFIX, $params), true, "", "", false );
 
 FrmTabEnd(array( 'fill' =>array('type'=>'submit', 'value'=>_m('Fill')),
-                 'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')),
-          $sess, $slice_id);
+                 'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));
 
 // list selected items to special form - used by manager.js to show items (recipients)
 echo "\n  </form>";

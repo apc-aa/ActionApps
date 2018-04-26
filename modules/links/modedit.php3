@@ -184,7 +184,7 @@ $apage->printHead($err, $Msg);
 
 echo '<form method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
 
-FrmTabCaption( _m('Module Links data') );
+FrmTabCaption(_m('Module Links data'));
 $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";
 FrmStaticText(_m('ID'), $module_id);
 FrmInputText("name", _m('Title'), $name, 99, 25, true);
@@ -222,7 +222,7 @@ if ( $template['Links'] ) {
             'value'=> $template['Links'])),
         $sess, $slice_id);
 } else {
-    FrmTabEnd( array( 'update', 'reset', 'cancel' ), $sess, $slice_id );
+    FrmTabEnd( array( 'update', 'reset', 'cancel' ) );
 }
 
 echo '</form>';

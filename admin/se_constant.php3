@@ -288,7 +288,7 @@ if ($hierarch) {
     // it exits here
 }
 
-FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Constants"), '', '', $form_buttons, $slice_id);
 
 // this must be just once on the page
 $form_buttons["deleteGroup"] = array("value" => "0");

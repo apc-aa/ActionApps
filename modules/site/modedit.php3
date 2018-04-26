@@ -218,7 +218,7 @@ FrmJavascript('
 ?>
 <form name="inputform" method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" onSubmit="return ModeditSubmit()">
 <?php
-    FrmTabCaption(_m("Site"),'','',$form_buttons, $sess, $module_id);
+    FrmTabCaption(_m("Site"), '', '', $form_buttons, $module_id);
 
     ModW_HiddenRSpotId();
     FrmStaticText(_m("Id"), $module_id, false);
@@ -252,7 +252,7 @@ FrmJavascript('
         FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id),false,'','',false);
     }
 
-    FrmTabEnd($form_buttons, $sess, $module_id);
+    FrmTabEnd($form_buttons);
 
 echo "\n </form>";
 HtmlPageEnd();

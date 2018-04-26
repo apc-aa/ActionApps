@@ -41,7 +41,7 @@ echo '
 <body id="body_white_color" "'.$on_load.'">
   <form name="f" method=post>';
 
-    FrmTabCaption( _m('Select Category') );
+    FrmTabCaption(_m('Select Category'));
 echo '
       <tr>
        <td colspan="2"><div id="patharea">&nbsp;</div></td>

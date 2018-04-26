@@ -74,8 +74,8 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Constructor can be called with an array, or a zid
      * @param $initial
      * @param $inittype
-     * @param $extended_att  additional attribute for each zid. It is in the form
-     *                       array('attr'=>array(<array of attr for zids in the same based array, as $initial>))
+     * @param array $extended_att  additional attribute for each zid. It is in the form
+     *                             array('attr'=>array(<array of attr for zids in the same based array, as $initial>))
      */
     function __construct($initial = null, $inittype = "z", $extended_att = array()){  // constructor
         // $inittype is for where type is known
@@ -174,7 +174,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** add function
      *  Adds new id or array of ids or zids object.
      *   The type must be already set (from init).
-     * @param $ids
+     * @param zids|array|string $ids
      */
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
@@ -565,7 +565,7 @@ function get_hash() {
 
 /** pack_id function
  * @param $unpacked_id
- * @return packed md5 id, not quoted !!!
+ * @return string packed md5 id, not quoted !!!
  * Note that pack_id is used in many places where it is NOT 128 bit ids.
  */
 function pack_id($unpacked_id) {
@@ -580,7 +580,7 @@ function xpack_id($id) {
 
 /** unpack_id
  * @param $packed_id
- * @return unpacked md5 id
+ * @return string unpacked md5 id
  */
 function unpack_id($packed_id=''){
     return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';
@@ -608,13 +608,6 @@ function q_pack_id($unpacked_id){
  */
 function qquote($str) {
     return "'".quote($str)."'";
-}
-
-/** qqquote function
- * @param $str
- */
-function qqquote($str) {
-    return '"'.quote($str).'"';
 }
 
 

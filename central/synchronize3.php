@@ -127,12 +127,12 @@ $form_buttons = array("synchronize"  => array( "type"      => "submit",
 <form name=f method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
-FrmTabCaption(_m('Slice Comparison - %1 x %2', array($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName())), '','', $form_buttons);
+FrmTabCaption(_m('Slice Comparison - %1 x %2', array($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName())), '', '', $form_buttons);
 if ( isset($differences) ) {
     // and print diffs out
     foreach ($differences as $sid => $diffs) {
         $sync_sid = $_POST['sync_slices'][$sid];
-        FrmTabSeparator(AA_Slice::getModuleName($sid) . " ($sid) x ". AA_Slice::getModuleName($sync_sid) . " ($sync_sid)");
+        FrmTabSeparator(AA_Slice::getModuleName($sid) . " ($sid) x " . AA_Slice::getModuleName($sync_sid) . " ($sync_sid)");
 
         echo '<tr><td  colspan="2">
         <script>

@@ -170,7 +170,7 @@ echo '
 PrintArray($err);
 echo $Msg;
 
-FrmTabCaption( (is_array($items) ? _m("Recipients") : ( _m("Stored searches for ").$slice->name()) ));
+FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ") . $slice->name())));
 
 $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');
@@ -181,7 +181,7 @@ $user_templates = GetUserEmails("user template");  // false or array['id']=>'nam
 
 FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
 
-FrmTabSeparator( _m('Write the email') );
+FrmTabSeparator(_m('Write the email'));
 
 FrmInputText(  'subject',     _m('Subject'),           $_POST['subject'],     254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area

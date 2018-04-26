@@ -162,7 +162,7 @@ if ($poll_id) {
 ?>
 <form name="inputform" method="post" onSubmit="BeforeSubmit();" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
-FrmTabCaption(_m("Insert question and answers"), '','', $form_buttons, $sess, $module_id);
+FrmTabCaption(_m("Insert question and answers"), '', '', $form_buttons, $module_id);
 
 $where = $poll_id ? "id='$poll_id'" : "module_id = '$p_module_id' AND status_code = 0";
 $SQL  = "SELECT design_id, aftervote_design_id, params, set_cookies, ip_lock_timeout, locked, ip_locking, logging, expiry_date, publish_date, headline FROM polls WHERE $where";
@@ -213,7 +213,7 @@ $designs = GetTable2Array($SQL, 'id', 'name');
 FrmInputSelect("design_id",           _m("Select design type - before vote"), $designs, $design_id, true);
 FrmInputSelect("aftervote_design_id", _m("Select design type - after vote"), $designs, $aftervote_design_id, false, _m('If the design after vote should look differently, then specify it here.'));
 
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 ?>
 </form>

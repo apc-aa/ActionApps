@@ -139,7 +139,7 @@ FrmTabCaption(_m("Inter node export settings"));
 <?php
     FrmTabEnd(array("mode"=>array("type"=>"hidden", "value"=>"insert"),
                     "submit",
-                    "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+                    "cancel"=>array("url"=>"se_fields.php3")));
 
 ?>
 </form>

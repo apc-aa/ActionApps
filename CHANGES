@@ -1,3 +1,8 @@
+18-04-26 - CKEditor updated to 4.9.2 - there was some security problems in CKEditor
+(honzam) - removed unnecessary session parameters to functions
+         - better function documentation in the code
+18-04-25 - fixed bug in CSV import preview - slice->fields was null
+18-04-24 - new Google Map Locator help page - allows you to find latitude/ longitude of the place
 18-04-23 - (several) Admin page moved to modern AA_Adminpageutil
 (honzam) - aajslib-jquery rewritten to use only Javascript - not php config settings. It is now better cacheable
            and we provide also minified version aajslib-jquery.min.js

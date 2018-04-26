@@ -534,13 +534,20 @@ class AA_Widget extends AA_Components {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
+    /**
+     * @param array $winfo
+     * @param AA_Property $aa_property
+     * @param bool $widget_only
+     * @return string
+     */
     function _finalizeHtml($winfo, $aa_property, $widget_only=false) {
         $base_name   = $winfo['base_name'];
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $winfo['required'];
         $help        = $aa_property->getHelp();
+        $class       = $aa_property->getTranslations() ? 'aa-widget aa-langdiv' : 'aa-widget';
 
-        $ret  = "<div class=\"aa-widget\"".($required ? ' data-aa-required':'')." id=\"widget-$base_id\" data-aa-basename=\"$base_name\">\n";
+        $ret  = "<div class=\"$class\"".($required ? ' data-aa-required':'')." id=\"widget-$base_id\" data-aa-basename=\"$base_name\">\n";
         $ret .= $widget_only ? '' : "  <label for=\"". AA_Form_Array::formName2Id($winfo['last_input_name']) ."\">".$aa_property->getName()."</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";
         $ret .=      $winfo['html']. (($help AND !$widget_only) ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
@@ -805,7 +812,7 @@ class AA_Widget_Txt extends AA_Widget {
 
          $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
          if ($lang = AA_Content::getLangId($i)) {
-             $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
+             $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
          }
          return $ret;
      }

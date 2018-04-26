@@ -86,7 +86,7 @@ $form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m(
 ?>
 <form method="post" name="f" action="<?php echo StateUrl(self_base() . "se_inter_import3.php3")?>">
 <?php
-  FrmTabCaption(_m("List of available slices from the node "). "<b>$rem_nodes</b>", '','', $form_buttons, $sess, $slice_id);
+  FrmTabCaption(_m("List of available slices from the node ") . "<b>$rem_nodes</b>", '', '', $form_buttons, $slice_id);
   FrmInputMultiSelect('f_slices[]', _m('Slice to import'), $chan, '', 5, false, true);
   FrmInputChBox('exact_copy', _m("Exact copy"), $exact_copy, false, '', 1, false,
                _m('The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master.'));

@@ -585,7 +585,7 @@ if ( !$scrl ) {
 
 if ( !$srch AND !$encap AND !$easy_query ) {
     $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
-    pCatSelector($sess->name, $sess->id, MyUrl($encap, $scr_url), $cur_cats,$scr->filters['category_id']['value'], $slice_id, $encap);
+    pCatSelector(MyUrl($encap, $scr_url), $cur_cats, $scr->filters['category_id']['value'], $slice_id, $encap);
 }
 
 

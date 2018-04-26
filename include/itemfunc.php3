@@ -48,6 +48,9 @@ if ( !is_object($event) ) {
 
 
 abstract class AA_Generator extends AA_Serializable {
+    /**
+     * @return AA_Value
+     */
     abstract function generate();
 }
 

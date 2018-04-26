@@ -233,7 +233,7 @@ $apage->printHead($err, $Msg);
 <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 $form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
-FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Fields"), '', '', $form_buttons, $slice_id);
 ?>
 <tr>
  <td class="tabtxt" align="center"><b><?php echo _m("Field") ?></b></td>

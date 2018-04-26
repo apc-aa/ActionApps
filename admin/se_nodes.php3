@@ -116,7 +116,7 @@ $form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
     <tr><td colspan="2">&nbsp;</td></tr>
 <?php
 
-    FrmTabSeparator(($new_mode=="insert" ? _m("Add new node") : _m("Edit node data")));
+    FrmTabSeparator(($new_mode == "insert" ? _m("Add new node") : _m("Edit node data")));
 
 ?>
     <tr><td><?php echo _m("Node name") ?></td>

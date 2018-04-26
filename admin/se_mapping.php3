@@ -148,7 +148,7 @@ $form_buttons = array("ext_slice"=>array("type"=>"hidden",
 ?>
 <form enctype="multipart/form-data" method="post" name="f" action="<?php echo StateUrl(self_base() . "se_mapping2.php3")?>">
 <?php
-FrmTabCaption(_m("Content Pooling - Fields' mapping"),'','',$form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Content Pooling - Fields' mapping"), '', '', $form_buttons, $slice_id);
 ?>
         <tr>
           <td align="left" class="tabtxt" align="center"><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
@@ -196,7 +196,7 @@ foreach ($to_fields as $f_id => $f_name) {
     echo "<td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></td>";
     echo "</tr>\n";
 }
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <script>

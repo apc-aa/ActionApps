@@ -319,7 +319,7 @@ enctype="multipart/form-data">
 
 <h1><b><?php echo _m("Import exported data (slice structure and content)").$pom?></b></h1>
 <?php
-  FrmTabCaption( _m("Import exported data"));
+  FrmTabCaption(_m("Import exported data"));
 
 echo "<tr><td class=\"tabtxt\">";
 
@@ -458,7 +458,7 @@ echo myspecialchars($slice_def_bck) ?></textarea>
     <input type="checkbox" name="force_this_slice"><?php echo _m("Import into this slice - whatever file says") ?><br><br>
 <?php
     FrmTabEnd(array("Submit"=>array("value"=>_m("Send the slice structure and data"), "accesskey"=>"S", "type"=>"submit"),
-              "Cancel"=>array("value"=>_m("Cancel"), "type"=>"submit")), $sess, $slice_id);
+              "Cancel"=>array("value"=>_m("Cancel"), "type"=>"submit")));
  } ?>
 <?php
 }

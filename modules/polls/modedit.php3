@@ -192,7 +192,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <form method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
-    FrmTabCaption(_m("Polls Module general data"),'','',$form_buttons, $sess, $module_id);
+    FrmTabCaption(_m("Polls Module general data"), '', '', $form_buttons, $module_id);
     FrmStaticText(_m("Id"), $module_id);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/polls/poll.php3?pid=$module_id\"--&gt;";

@@ -83,7 +83,7 @@ function createFieldNames($fileName,&$addParams) {
  * @param $fieldNames
  * @param $trans_actions
  * @param $slice_fields
- * @param $itemContent
+ * @param ItemContent $itemContent
  */
 function convertCSV2Items(&$csvRec,&$fieldNames,&$trans_actions,&$slice_fields,&$itemContent) {
     $itemContent1 = new ItemContent;

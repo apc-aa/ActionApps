@@ -353,8 +353,7 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
 
 echo "
 <form enctype=\"multipart/form-data\" method=\"post\" action=\"". StateUrl($_SERVER['PHP_SELF']) ."\" name=\"f\">";
-FrmTabCaption(_m("Field properties"). ': '. myspecialchars($fld['name']. ' ('.$fld['id']. ')'),
-              '','',$form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), '', '', $form_buttons, $slice_id);
 
 $input_show_classes = AA_Components::getClassNames('AA_Widget_');
 foreach ($input_show_classes as $class) {

@@ -137,7 +137,7 @@ $apage->printHead($err, $Msg);
       <input type="button" VALUE="<?php echo _m("Map") ?>" onClick = "SubmitForm('map')">
      </td></tr>
 <?php
-  FrmTabSeparator($new_mode=="insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
+  FrmTabSeparator($new_mode == "insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
 ?>
     <tr><td><?php echo _m("RSS Feed name") ?></td>
         <td><input type="text" name="rssfeed_name" size="40" value="<?php echo safe($rssfeed_name)?>" ><br><?php echo _m("New rssfeed name")?></tr>
@@ -149,7 +149,7 @@ $apage->printHead($err, $Msg);
 </tr>
 <?php
 
-  FrmTabEnd(array("send"=>array('type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'), "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+  FrmTabEnd(array("send"=>array('type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'), "cancel"=>array("url"=>"se_fields.php3")));
 
 ?>
 </form>

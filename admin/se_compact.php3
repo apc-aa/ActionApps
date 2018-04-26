@@ -180,7 +180,7 @@ $form_buttons = array ("update",
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
-  FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
+  FrmTabCaption(_m("HTML code for index view"), '', '', $form_buttons, $slice_id);
 
   // lookup slice fields
   $lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true);
@@ -225,7 +225,7 @@ $form_buttons = array ("update",
                .'<br>'.AA_View::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
 
   $slice = AA_Slice::getModule($slice_id);
-  PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $sess, $slice_id);
+  PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $slice_id);
 
   FrmTabEnd();
 ?>

@@ -159,7 +159,7 @@ $form_buttons=array("btn_upd"=>array("type"  =>"button",
 ?>
 <form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
-  FrmTabCaption(_m("Content Pooling - Configure Filters"),'','',$form_buttons, $sess, $slice_id);
+  FrmTabCaption(_m("Content Pooling - Configure Filters"), '', '', $form_buttons, $slice_id);
 ?>
 <tr>
   <td colspan class="tabtxt" align="center"><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
@@ -252,7 +252,7 @@ else {
 ?>
 <tr><td colspan="3"><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
 <?php
-FrmTabEnd($form_buttons,$sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <script>

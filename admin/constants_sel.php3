@@ -89,7 +89,7 @@ echo "$Msg <br>";
 // ------- Caption -----------
 
 echo '<form name="inputform" method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
-FrmTabCaption(_m("Select constants"), '','', '', $sess, $slice_id);
+FrmTabCaption(_m("Select constants"), '', '', '', $slice_id);
 
 echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1), $preset_value) : '') .'</td></tr>';
 
@@ -99,7 +99,7 @@ $form_buttons = array("var_id" => array("type" =>"hidden", "value"=>$var_id),
                                         "add"  => 'onclick=\'updateChanges(this.form)\''),
                       "close");
 
-FrmTabEnd($form_buttons,$sess, $slice_id);
+FrmTabEnd($form_buttons);
 echo "</form>
 </body></html>";
 page_close();

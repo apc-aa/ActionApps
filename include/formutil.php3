@@ -165,7 +165,7 @@ class inputform {
     /** printForm function
      *  Displays the form
      * @param $content4id
-     * @param $slice
+     * @param AA_Slice $slice
      * @param $edit
      * @param $slice_fields - true, if we want to edit "slice setting fields"
      *                         which are stored in content table
@@ -260,7 +260,7 @@ class inputform {
 
         echo $this->getFormStart();
 
-        FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"', $buttons);
+        FrmTabCaption('', 'id="inputtab"', 'id="inputtabrows"', $buttons);
         $tabs  = array();
         if ( $form_parts ) {
             for ( $idx=0; $idx <= $form_parts; $idx++ ) {
@@ -313,9 +313,9 @@ class inputform {
 
     /** getForm function
      *   Shows the Add / Edit item form fields
-     * @param $content4id
-     * @param $slice
-     * @param $edit
+     * @param ItemContent $content4id
+     * @param AA_Slice $slice
+     * @param bool $edit
      * @param $show is used by the Anonymous Form Wizard, it is an array
      *                (packed field id => 1) of fields to show
      * @param $slice_fields
@@ -752,8 +752,8 @@ class AA_Inputfield {
      * aliases are automatically replaced by current item content/constants/...
      * @param $txt
      * @param $part
-     * @param $param is not used, yet
-     * @param $aliasname used for alias name different from 'inputvar'
+     * @param string $param
+     * @param string $aliasname used for alias name different from 'inputvar'
      */
     function echovar($txt, $part='', $param='', $aliasname='') {
         if ( $this->result_mode == 'expand' ) {   // write directly to the output
@@ -797,7 +797,7 @@ class AA_Inputfield {
      *  Returns field as it should be displayed on screen (or at least template
      *  for the field with filled $contentcache object
      * @param $result_mode
-     * @param $item
+     * @param AA_Item $item
      */
     function get( $item, $slice_id ) {
         // @todo check, how to do it better - this do not work if
@@ -1082,12 +1082,11 @@ class AA_Inputfield {
      * @param $show_rp_butt
      */
     function html_radio($convert=false, $show_rp_butt=true) {
-        global $sess;
         if ( $this->html_rb_show ) {
             $htmlvar     = $this->varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
-            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$this->varname."', '".$sess->id."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$this->varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             if ( $convert AND ($convertor = $this->get_convertors())) {
                 $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG ."\">\n   <tr><td>");
@@ -2700,15 +2699,14 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
 
 /** FrmTabCaption function
  * Prints start of form table with caption and possibly additional tags (classes) to tables
- * @param $caption
- * @param $outer_add
- * @param $inner_add
- * @param $buttons
- * @param $sess
- * @param $slice_id
- * @param $valign
+ * @param string $caption
+ * @param string $outer_add
+ * @param string $inner_add
+ * @param string $buttons
+ * @param string $slice_id
+ * @param string $valign
  */
-function FrmTabCaption( $caption='', $outer_add='', $inner_add='', $buttons='', $sess='', $slice_id='', $valign='middle') {
+function FrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons = '', $slice_id = '', $valign = 'middle') {
     echo '
     <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\" $outer_add>";
     if ($buttons) {
@@ -2732,13 +2730,12 @@ function FrmTabCaption( $caption='', $outer_add='', $inner_add='', $buttons='', 
 /** FrmTabSeparator function
  * Prints middle row with subtitle into form table
  * @param $subtitle
- * @param $buttons
- * @param $sess
- * @param $slice_id
- * @param $valign
- * @param $no_hidden - prints all $buttons except the hidden fields
+ * @param string $buttons
+ * @param string $slice_id
+ * @param string $valign
+ * @param bool $no_hidden - prints all $buttons except the hidden fields
  */
-function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $valign='middle', $no_hidden=false) {
+function FrmTabSeparator($subtitle, $buttons = '', $slice_id = '', $valign = 'middle', $no_hidden = false) {
     echo '</table>';
     if ($buttons) {
         echo '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
@@ -2767,13 +2764,13 @@ function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $vali
  * @param $buttons
  */
 function FrmTabSeparatorNoHidden( $subtitle , $buttons='' ) {
-    FrmTabSeparator( $subtitle , $buttons, '', '', 'middle', true);
+    FrmTabSeparator($subtitle, $buttons, '', 'middle', true);
 }
 
 
 /** FrmTabEnd function
  * Prints form table end with buttons (@see FrmInputButtons)
- * @param $buttons
+ * @param bool $buttons
  */
 function FrmTabEnd( $buttons=false ) {
     echo '    </table>
@@ -2788,10 +2785,9 @@ function FrmTabEnd( $buttons=false ) {
 
 
 /** FrmInputButtons function
- * Prints buttons based on $buttons array. It also adds slice_id and session id
+ * Prints buttons based on $buttons array. It also adds slice_id
  * Maybe better is to use (@see FrmTabEnd())
  * @param $buttons
- * @param $sess
  * @param $slice_id
  * @param $valign
  * @param $tr
@@ -3118,14 +3114,14 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
 
 /** FrmItemGroupSelect function
  *   Allows select items group (used for bulk e-mails as well as for Find&Replace)
- *  @param $items
- *  @param $searchbar
- *  @param list_type - items preview type ('items' | 'users') @see usershow.php3
- *  @param messages['view_items']     = _m("View Recipients")
- *  @param messages['selected_items'] = _m('Selected users')
- *  @param additional[] = array( 'text' => 'Test', 'varname'=>'testuser');
+ *  @param array $items - array of item ids with 'x' prefix
+ *  @param AA_Searchbar $searchbar
+ *  @param string list_type - items preview type ('items' | 'users') @see usershow.php3
+ *  @param array messages['view_items']     = _m("View Recipients")
+ *               messages['selected_items'] = _m('Selected users')
+ *  @param array additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
-function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $additional) {
+function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additional) {
     if ( isset($items) AND is_array($items) ) {
         $out .= getRadioBookmarkRow( $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
     } elseif ( isset($searchbar) AND is_object($searchbar) ) {
@@ -3164,8 +3160,8 @@ function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $addit
 /** getZidsFromGroupSelect function
  *  Returns zids according to user selection of FrmItemGroupSelect
  * @param $group
- * @param $items
- * @param $serchbar
+ * @param array $items
+ * @param AA_Searchbar $searchbar
  */
 function getZidsFromGroupSelect($group, &$items, &$searchbar) {
     global $slice_id;
@@ -3232,16 +3228,13 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
 /** PrintAliasHelp function
  *  Prints alias names as help for fulltext and compact format page
  * @param $aliases
- * @param $fields
- * @param $endtable
- * @param $buttons
- * @param $sess
- * @param $slice_id
+ * @param bool $fields
+ * @param bool $endtable
+ * @param string $buttons
+ * @param string $slice_id
  */
- function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $sess='', $slice_id='') {
-     global $sess;
-
-     FrmTabSeparator(_m("Use these aliases for database fields") , $buttons, $sess, $slice_id);
+ function PrintAliasHelp($aliases, $fields = false, $endtable = true, $buttons = '', $slice_id = '') {
+     FrmTabSeparator(_m("Use these aliases for database fields"), $buttons, $slice_id);
 
      if (is_array($aliases)) {
          foreach ($aliases as $ali => $v ) {

@@ -59,7 +59,6 @@ abstract class AA_Serializable {
      *
      * @param $string     like dte:1:10:1 in field.input_show_func
      * @param $class_mask like 'AA_Widget' or empty if it is the same class
-     * @return AA_Generator
      */
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);

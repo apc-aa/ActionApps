@@ -278,19 +278,23 @@ class AA_Debug {
 
 /** Page level (global) variables you can count with */
 class AA {
-    /** @var AA_Debug $dbg */
+    /** @var AA_Debug $dbg  */
     public  static $dbg;
     public  static $debug;
+    /** @var  AA_Perm $perm */
     public  static $perm;
     public  static $site_id;
-    public  static $slice_id;   // optional - filled by view.php3 when site_id is not available (so it is used as allpage main module to find {_:alias} aliases)
-    public  static $encoding;   // inner module's/slice's encoding (utf-8, ...)
-    public  static $lang;       // two letters small caps - cz / es / en / ...
-    public  static $langnum;    // array of prefered language numbers - > 10000000
-    public  static $headers;    // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
-    public  static $module_id;  // for admin pages - replace of older $slice_id
+    public  static $slice_id;            // optional - filled by view.php3 when site_id is not available (so it is used as allpage main module to find {_:alias} aliases)
+    public  static $encoding;            // inner module's/slice's encoding (utf-8, ...)
+    public  static $lang;                // two letters small caps - cz / es / en / ...
+    public  static $langnum;             // array of prefered language numbers - > 10000000
+    public  static $headers = array();   // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
+    public  static $module_id;           // for admin pages - replace of older $slice_id
+    /** @var  AA_Stringexpander $stringexpander */
     private static $stringexpander = null;
+    /** @var  AA_Contentcache $contentcache */
     private static $contentcache   = null;
+    /** @var  PageCache $pagecache */
     private static $pagecache      = null;
 
     static function getHeaders() {

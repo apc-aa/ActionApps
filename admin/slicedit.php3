@@ -96,7 +96,7 @@ if ($slice_id == "") {
 <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
 
-FrmTabCaption(_m("Slice"), '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Slice"), '', '', $form_buttons, $slice_id);
 
 FrmStaticText(_m("Id"), $slice_id);
 FrmInputText("name", _m("Title"), $sarr['name'], 99, 25, true);
@@ -162,7 +162,7 @@ if ($slice_id=="") {
     echo "<input type=\"hidden\" name=\"user_role\" value='$user_role'>";
     // end of fields storing values from wizard
 }
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 
 ?>
 </form>

@@ -127,7 +127,7 @@ $form_buttons = array("copy"      => array( "type"      => "submit",
 <form name=f method=post action="<?php echo StateUrl(self_base() ."copyslice2.php") ?>">
 <?php
 
-FrmTabCaption('', '','', $form_buttons);
+FrmTabCaption('', '', '', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Modules to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
 FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, @reset($_POST['sync_slices']), 10);

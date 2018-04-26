@@ -176,7 +176,7 @@ $form_buttons = array ("update",
 
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
-FrmTabCaption(_m("HTML code for fulltext view"), '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("HTML code for fulltext view"), '', '', $form_buttons, $slice_id);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
              _m("HTML code which appears at the top of slice area")
              .'<br>'.AA_View::getViewJumpLinks($fulltext_format_top), DOCUMENTATION_URL, 1);
@@ -194,7 +194,7 @@ FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
 FrmInputChBox("discus_disabled", _m("New comments disabled"), $discus_disabled);
 
 $slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $sess, $slice_id);
+PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $slice_id);
 
 FrmTabEnd();
 ?>

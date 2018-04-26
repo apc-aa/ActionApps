@@ -87,11 +87,11 @@ $form_buttons   = array ();
 ?>
 <form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <?php
-FrmTabCaption(_m('Optimalizations'), '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m('Optimalizations'), '', '', $form_buttons, $slice_id);
 foreach ( $optimize_names as $i => $name ) {
     FrmStaticText($name, $optimize_descriptions[$i], false, '', '', false);
 }
-FrmTabEnd($form_buttons, $sess, $slice_id);
+FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php

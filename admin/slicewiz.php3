@@ -103,7 +103,7 @@ FrmTabCaption(_m("[Optional] Create New User"));
   FrmTabEnd(array("no_slice"=>array("value"=>_m("Go: Add Slice"),
                                     "type"=>"submit",
                                     "accesskey"=>"S"),
-                  "cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id);
+                  "cancel"=>array("url"=>"um_uedit.php3")));
 ?>
 </form>
 </center>

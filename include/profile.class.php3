@@ -147,7 +147,7 @@ class AA_Profile {
      *  @param $selector - for properties with only one value (like listlen) it
      *                    is always 0 (you can ommit it)
      * @param $no_load
-     *  @return property value (directly - not in array as get() does)
+     *  @return array property value (directly - not in array as get() does)
      */
     function get($property, $selector=0, $no_load=false ) {
         if ( !$no_load ) {
@@ -167,7 +167,7 @@ class AA_Profile {
      *  @param $selector - for properties with only one value (like listlen) it
      *                    is always 0 (you can ommit it)
      * @param $no_load
-     *  @return property value (directly - not in array as get() does)
+     *  @return array property value (directly - not in array as get() does)
      */
     function getProperty( $property, $selector=0, $no_load=false ) {
         $prop = $this->get($property, $selector, $no_load);

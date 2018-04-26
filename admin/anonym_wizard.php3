@@ -187,7 +187,7 @@ echo '
 <form method="post" action="'.StateUrl($_SERVER['PHP_SELF']).'#form_content">';
 
 $helplink = ' <a href="'.AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage("help100_simple.gif", _m("Help")).'<b>'._m("Help - Documentation").'</b></a>';
-FrmTabCaption(_m("URLs shown after the form was sent"). $helplink,'','',$form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("URLs shown after the form was sent") . $helplink, '', '', $form_buttons, $slice_id);
 FrmInputText('ok_url',  _m("OK page"),    $ok_url,  254, 60);
 FrmInputText('err_url', _m("Error page"), $err_url, 254, 60);
 FrmInputChBox('use_show_result', _m("Use a PHP script to show the result on the OK and Error pages:"), $use_show_result, true);

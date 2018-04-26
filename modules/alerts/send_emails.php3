@@ -51,7 +51,7 @@ function ShowCollectionAddOns() {
     }
 
     echo "<br><br>\n    <form name=\"example[form]\" method=\"post\">";
-    FrmTabCaption( _m('Send now an example alert email to')) ;
+    FrmTabCaption(_m('Send now an example alert email to')) ;
 
     if ($example["go"]) {
         $mail_count = send_emails($example["howoften"], array($collectionid),  array($example["email"]), false, "");
@@ -62,7 +62,7 @@ function ShowCollectionAddOns() {
     // send to supplied email
     FrmInputText("example[email]", _m('Email'), $example['email']);
     FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
-    FrmTabSeparator("", array('example[go]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
+    FrmTabSeparator("", array('example[go]' => array('type' => 'submit', 'value' => _m("Go!"))));
 
     // send to selected user
     $reader_mails = $collection->getReadersSelectArray();
@@ -77,7 +77,7 @@ function ShowCollectionAddOns() {
 
     echo '<br>
     <form name="fire_form" method="post" action="'.StateUrl($_SERVER["PHP_SELF"]).'">';
-    FrmTabCaption( _m('Send alerts'));
+    FrmTabCaption(_m('Send alerts'));
 
     if ($fire["fire"]) {
         $mail_count = send_emails($fire["howoften"], array ($collectionid), "all", true, "");
@@ -88,7 +88,7 @@ function ShowCollectionAddOns() {
     FrmTabEnd(array('fire[fire]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
     echo '<br>';
 
-    FrmTabCaption( _m("Last time the alerts were sent on:"));
+    FrmTabCaption(_m("Last time the alerts were sent on:"));
     $last = GetTable2Array("SELECT howoften, last FROM alerts_collection_howoften WHERE collectionid='".$collectionid."'", 'howoften', 'last');
 
     foreach (get_howoften_options() as $ho => $msg) {

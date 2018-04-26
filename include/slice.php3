@@ -59,18 +59,15 @@ function GetCategories($db,$p_slice_id){
 }
 
 /** pCatSelector function
- * @param $sess_name
- * @param $sess_id
  * @param $url
  * @param $cats
  * @param $selected
- * @param $sli_id
- * @param $encaps
+ * @param int $sli_id
+ * @param bool $encaps
  */
-function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps=true){
+function pCatSelector($url, $cats, $selected, $sli_id = 0, $encaps = true){
     if (sizeof($cats)>0) {
         echo "<form action=\"$url\" method=\"get\">";
-        echo "<input type=\"hidden\" name=\"$sess_name\" value=\"$sess_id\">";
         if ( !$encaps ) {   // not encapsulated - need to send slice_id
             echo "<input type=\"hidden\" name=\"slice_id\" value=\"$sli_id\">";
             echo "<input type=\"hidden\" name=\"encap\" value=\"".($encaps ? "true":"false")."\">";

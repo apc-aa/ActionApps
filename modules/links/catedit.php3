@@ -87,16 +87,16 @@ PrintArray($r_err);
 PrintArray($r_msg);
 
 echo '<form name=f method=post action="catedit2.php3">';
-    FrmTabCaption( _m('Category').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-kategorie"),
-                                              array("before"=>"(", "text"=>"?", "after"=>")")) );
+    FrmTabCaption(_m('Category') . FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),
+            array("before" => "(", "text" => "?", "after" => ")")));
     FrmStaticText(                _m('Id'),             $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"nazev-kategorie") );
     FrmTextarea(  'description',  _m('Category description'),    $description, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"popis-kategorie"));
     FrmInputChBox('nolinks',      _m('No links'), $nolinks, false, '', 1, false, _m('Disalow storing of the links to this category?'));
     FrmTextarea(  'note',         _m('Editor\'s note'),    $note, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"poznamka-kategorie"));
     FrmHidden(    'additional',   $additional);
-    FrmTabSeparator( _m('Subcategories').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"podkategorie"),
-                                                     array("before"=>"(", "text"=>"?", "after"=>")")) );
+    FrmTabSeparator(_m('Subcategories') . FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "podkategorie"),
+            array("before" => "(", "text" => "?", "after" => ")")));
 echo '
       <tr>
         <td width=255 align=center valign="top"><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category for crossreference') .'</i></div></td>
@@ -134,7 +134,7 @@ if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
                      'subcatIds'    => array('type'=>"hidden"),   // to this variable store assigned subcategory ids (by javascript)
                      'subcatNames'  => array('type'=>"hidden"),   // to this variable store assigned subcategory names (by javascript)
                      'subcatStates' => array('type'=>"hidden")),   // to this variable store assigned subcategory states (by javascript)
-             );                    // add session_id
+             );
 echo '
     </form>
   </body>

@@ -402,7 +402,7 @@ echo '
 <form name="f" method=post action="'. StateUrl("linkedit2.php3") .'">';
 $caption = _m('Link').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
                                       array("before"=>"(", "text"=>"?", "after"=>")"));
-FrmTabCaption($caption, '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption($caption, '', '', $form_buttons, $slice_id);
 
 $bin_names = get_bin_names();
 if ( $id ) {
@@ -467,8 +467,8 @@ if ( !Links_IsPublic() ) {
 }
 
 
-    FrmTabSeparator( _m('Show in category').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"odkaz-dokategorii"),
-                                                        array("before"=>"(", "text"=>"?", "after"=>")")) );
+    FrmTabSeparator(_m('Show in category') . FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "odkaz-dokategorii"),
+            array("before" => "(", "text" => "?", "after" => ")")));
 echo '
       <tr>
        <td colspan="2">
@@ -513,8 +513,8 @@ echo      '</td>
 // show the organization information only to real editors or to public, if
 // the link is of special type
 if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
-       FrmTabSeparator( _m('Organization') .FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"kontakt"),
-                                                        array("before"=>"(", "text"=>"?", "after"=>")")) );
+       FrmTabSeparator(_m('Organization') . FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt"),
+               array("before" => "(", "text" => "?", "after" => ")")));
        FrmInputText( 'org_city', _m('City'), $org_city,  250, 50, false);
        printChange( 'org_city', $org_city_change, $org_city );
        FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50, false);
@@ -530,8 +530,8 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
 }
 
 
-       FrmTabSeparator( _m('Regions and languages').
-           FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"region-jazyk"), array("before"=>"(", "text"=>"?", "after"=>")")) );
+       FrmTabSeparator(_m('Regions and languages') .
+           FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk"), array("before" => "(", "text" => "?", "after" => ")")));
    echo '
       <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>

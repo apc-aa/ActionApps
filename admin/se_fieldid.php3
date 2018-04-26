@@ -278,9 +278,8 @@ for ($i = 1; $i < 200; ++$i) {
     echo "<option value='$i'>$i</option>";
 }
 echo "</select><br><br>";
-FrmTabSeparator(_m("Fields"),
-                array("update"=>array("type"=>"hidden","value"=>"1"),
-                      "update","cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+FrmTabSeparator(_m("Fields"), array("update" => array("type" => "hidden", "value" => "1"),
+    "update", "cancel" => array("url" => "se_fields.php3")), $slice_id);
 /*
     <input type=hidden name=\"update\" value=1>
     <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;

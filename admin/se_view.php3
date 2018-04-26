@@ -414,7 +414,7 @@ $form_buttons = array( 'update',
 
 // Print View Form ----------
 echo "<form name=\"f\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">";
-FrmTabCaption( _m("Defined Views"), '', '', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Defined Views"), '', '', $form_buttons, $slice_id);
 
 $view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
 FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
@@ -468,16 +468,16 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 $slice = AA_Slice::getModule($slice_id);
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-    case 'disc2mail':   PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
-    case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);
+    case 'disc2mail':   PrintAliasHelp(GetDiscussion2MailAliases(), false, false, $form_buttons, $slice_id);
+    case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $slice_id);
                         break;
-    case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']),$slice->fields('record'), false, $form_buttons, $sess, $slice_id);
+    case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']), $slice->fields('record'), false, $form_buttons, $slice_id);
                         break;
-    case 'justids':     PrintAliasHelp($slice->aliases(false, 'justids'), false, false, $form_buttons, $sess, $slice_id);
+    case 'justids':     PrintAliasHelp($slice->aliases(false, 'justids'), false, false, $form_buttons, $slice_id);
                         break;
     case 'links':
     case 'categories':
-    case 'const':       PrintAliasHelp(GetAliases4Type( $VIEW_TYPES_INFO[$view_type]['aliases'] ), false, false, $form_buttons, $sess, $slice_id);
+    case 'const':       PrintAliasHelp(GetAliases4Type($VIEW_TYPES_INFO[$view_type]['aliases']), false, false, $form_buttons, $slice_id);
                         break;
     case 'none':        break;
 }

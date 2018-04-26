@@ -56,7 +56,7 @@ $form_buttons = array ("submit");
 ?>
 <form name=f method=post action="<?php echo StateUrl(self_base() ."copyslice2.php") ?>">
 <?php
-FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption('', '', '', $form_buttons, $slice_id);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
 FrmTabEnd($form_buttons);
 ?>

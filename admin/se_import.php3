@@ -213,7 +213,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 </tr>
 <?php
 
-  FrmTabEnd($form_buttons, $sess, $slice_id);
+  FrmTabEnd($form_buttons);
   /*
 <tr><td colspan=3>&nbsp;</td></tr>
 </table></tr></td>
