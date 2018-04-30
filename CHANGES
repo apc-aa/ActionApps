@@ -1,3 +1,5 @@
+18-04-30 - textarea and text inputs moved to AA_Widget_* approach for itemedit
+(honzam) - jQuery updated to last stable v3.3.1
 18-04-26 - CKEditor updated to 4.9.2 - there was some security problems in CKEditor
 (honzam) - removed unnecessary session parameters to functions
          - better function documentation in the code

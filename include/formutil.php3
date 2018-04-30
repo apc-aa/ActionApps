@@ -848,9 +848,9 @@ class AA_Inputfield {
                 case 'nul': break;
                 case 'chb': $this->inputChBox();       break;
                 case 'hid': $this->hidden();           break;
-                case 'fld': $this->inputText(get_if($this->param[0],255), // maxlength
-                                                    get_if($this->param[1],0)); // fieldsize
-                                   break;
+                //case 'fld': $this->inputText(get_if($this->param[0],255), // maxlength
+                //                                    get_if($this->param[1],0)); // fieldsize
+                //                   break;
                 //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
                 //            $this->varname_modify('[]');         // use slightly modified varname
@@ -861,8 +861,8 @@ class AA_Inputfield {
                 //            }
                 //            $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
                 //            break;
-                case 'txt': $this->textarea(get_if($this->param[0], 4));
-                            break;
+                //case 'txt': $this->textarea(get_if($this->param[0], 4));
+                //            break;
                 //case 'edt': $this->richEditTextarea(
                 //                       get_if($this->param[0],10),       // rows
                 //                       get_if($this->param[1],70),       // cols
@@ -955,6 +955,8 @@ class AA_Inputfield {
                 case 'rio':
                 case 'inf':
                 case 'edt':
+                case 'txt':
+                case 'fld':
                 default:    $this->inputWidget($item, $slice_id);
 
             }

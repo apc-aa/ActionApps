@@ -282,7 +282,7 @@ class AA_Widget extends AA_Components {
       * It never refills the array (and we relly on this fact in the code)
       * This function is rewritten fill_const_arr().
       */
-    private function _fillConstArr($content) {
+    protected function _fillConstArr($content) {
         if ( !is_array($this->_const_arr) ) {  // already filled
             // not filled, yet - so fill it
             $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
@@ -435,76 +435,18 @@ class AA_Widget extends AA_Components {
      * @return array
      * @throws Exception
      */
-    function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
-        $base_id     = AA_Form_Array::formName2Id($base_name);
-        $required    = $aa_property->isRequired() ? 'required' : '';
-        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
-        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
-        $widget      = '';
-        $autofocus = ($type=='ajax') ? 'autofocus' : '';
-
-        // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
-        if (($this->getProperty('const') OR $this->getProperty('const_arr')) AND (get_class($this) != 'AA_Widget_Pre')) {  // todo - make preselect with real preselecting (maybe using AJAX)
-            // This widget uses constants - show selectbox!
-            $input_name   = $base_name ."[]";
-            $input_id     = AA_Form_Array::formName2Id($input_name);
-            $use_name     = $this->getProperty('use_name', false);
-            $multiple     = $this->multiple() ? ' multiple' : '';
-
-            //$widget    = AA_Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-            $widget    = AA_Widget::_saveIcon($base_id, $type == 'live')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
-            $selected  = $content->getAaValue($aa_property->getId());
-            // empty select option for not required fields and also for live selectbox,
-            // because people thinks, that the first value is filled in the database (which is not)
-            $add_empty = (!$required ? 1 : 2);
-            $options   = $this->getOptions($selected, $content, $use_name, false, $add_empty);
-            $widget   .= $this->getSelectOptions( $options );
-            $widget   .= "</select>";
-        } else {
-            $delim          = '';
-            $value          = $content->getAaValue($aa_property->getId());
-
-            $attrs = array('type'=>'text');
-            $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
-
-            $attrs['size']      = get_if($this->getProperty('width'),          $attrs['size'], 60);
-            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
-
-            // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
-            if (($attrs['type']=='number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
-                $attrs['max'] = pow(10,$nchars)-1;
-                $attrs['min'] = $attrs['min'] ?: '0';
-            }
-
-            $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
-
-            if ($value->isEmpty()) {
-                $value->addValue('');   // display empty field at least
-            }
-            $value->fixTranslations($aa_property->getTranslations());  // modify for tranclations if needed
-            foreach ($value as $i => $val) {
-                $input_name   = $base_name ."[$i]";
-                $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required);
-                $delim        = "\n<br />";
-                $required     = ''; // only one is required
-                $autofocus    = '';
-            }
-        }
-
-        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
-    }
+    function _getRawHtml($aa_property, $content, $type='normal') {}
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-     private function _getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required) {
+     protected function _getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required) {
          $input_id    = AA_Form_Array::formName2Id($input_name);
          $input_value = myspecialchars($val);
          $link        = ((substr($input_value,0,7)==='http://') OR (substr($input_value,0,8)==='https://')) ? '&nbsp;'.a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
          $ret         =  "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link".AA_Widget::_saveIcon($base_id, $type=='live'); //, 'right', $link ? 16 : 0);
          if ($lang = AA_Content::getLangId($i)) {
-             $ret = "<span class=\"aa-langtrans $lang\"><small>$lang</small>$ret</span>";
+             $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
          }
          return $ret;
      }
@@ -790,7 +732,7 @@ class AA_Widget_Txt extends AA_Widget {
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-     private function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
+     protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
 
          $showhtmlarea = strpos(get_class($this), 'AA_Widget_Edt') !== false;
          //if ( $showhtmlarea ) {
@@ -819,7 +761,7 @@ class AA_Widget_Txt extends AA_Widget {
 }
 
 /** Textarea with Presets widget */
-class AA_Widget_Tpr extends AA_Widget {
+class AA_Widget_Tpr extends AA_Widget_Txt {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -878,6 +820,52 @@ class AA_Widget_Fld extends AA_Widget {
      */
     static function getClassProperties()  {
         return AA_Widget::propertiesShop(array('max_characters', 'width'));
+    }
+
+
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id     = AA_Form_Array::formName2Id($base_name);
+        $required    = $aa_property->isRequired() ? 'required' : '';
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
+        $widget      = '';
+        $autofocus = ($type=='ajax') ? 'autofocus' : '';
+
+        $delim          = '';
+        $value          = $content->getAaValue($aa_property->getId());
+
+        $attrs = array('type'=>'text');
+        $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
+
+        $attrs['size']      = get_if($this->getProperty('width'), $attrs['size']);
+        if (!$attrs['size']) {
+            $attrs['style'] = 'width:95%';
+        }
+
+        $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
+
+        // type number do not support size parameter, so ve have to set max and min (make no sence to do it for numbers > 11 characters - use default)
+        if (($attrs['type']=='number') AND !isset($attrs['max']) AND ($nchars = $attrs['maxlength'] ?: $attrs['size'] ?: 0) AND ($nchars<11)) {
+            $attrs['max'] = pow(10,$nchars)-1;
+            $attrs['min'] = $attrs['min'] ?: '0';
+        }
+
+        $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
+
+        if ($value->isEmpty()) {
+            $value->addValue('');   // display empty field at least
+        }
+        $value->fixTranslations($aa_property->getTranslations());  // modify for tranclations if needed
+        foreach ($value as $i => $val) {
+            $input_name   = $base_name ."[$i]";
+            $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required);
+            $delim        = "\n<br />";
+            $required     = ''; // only one is required
+            $autofocus    = '';
+        }
+
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 }
 
@@ -1001,7 +989,7 @@ class AA_Widget_Mfl extends AA_Widget {
 }
 
 /** Text Field with Presets widget */
-class AA_Widget_Pre extends AA_Widget {
+class AA_Widget_Pre extends AA_Widget_Fld {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1040,6 +1028,36 @@ class AA_Widget_Sel extends AA_Widget {
     static function getClassProperties()  {
         return AA_Widget::propertiesShop(array('const','slice_field','use_name','bin_filter','filter_conds','sort_by','additional_slice_pwd','const_arr', 'filter_conds_rw'));
     }
+
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id     = AA_Form_Array::formName2Id($base_name);
+        $required    = $aa_property->isRequired() ? 'required' : '';
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
+        $widget      = '';
+        $autofocus = ($type=='ajax') ? 'autofocus' : '';
+
+        // This widget uses constants - show selectbox!
+        $input_name   = $base_name ."[]";
+        $input_id     = AA_Form_Array::formName2Id($input_name);
+        $use_name     = $this->getProperty('use_name', false);
+        $multiple     = $this->multiple() ? ' multiple' : '';
+
+        //$widget    = AA_Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+        $widget    = AA_Widget::_saveIcon($base_id, $type == 'live')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus>";
+        $selected  = $content->getAaValue($aa_property->getId());
+        // empty select option for not required fields and also for live selectbox,
+        // because people thinks, that the first value is filled in the database (which is not)
+        $add_empty = (!$required ? 1 : 2);
+        $options   = $this->getOptions($selected, $content, $use_name, false, $add_empty);
+        $widget   .= $this->getSelectOptions( $options );
+        $widget   .= "</select>";
+
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+
 }
 
 /** Radio Button widget */
@@ -1396,7 +1414,7 @@ class AA_Widget_Mch extends AA_Widget {
 }
 
 /** Multiple Selectbox widget */
-class AA_Widget_Mse extends AA_Widget {
+class AA_Widget_Mse extends AA_Widget_Mch {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1706,7 +1724,7 @@ class AA_Widget_Tag extends AA_Widget {
 }
 
 /** Related Item Window widget */
-class AA_Widget_Iso extends AA_Widget {
+class AA_Widget_Iso extends AA_Widget_Mch {
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
