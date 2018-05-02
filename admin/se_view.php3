@@ -363,18 +363,18 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
 }
 
 
-//$headcode = <<<'EOT'
-//<script>
-//    function InitPage() {
-//      EnableClick('even_odd_differ','even_row_format')
-//      EnableClick('category_sort','category_format')
-//    }
-//    function EnableClick(cond,what) {
-//      document.f[what].disabled = !(document.f[cond].checked);
-//    }
-//</script>
-//EOT;
-//
+$headcode = <<<'EOT'
+<script>
+    function InitPage() {
+      EnableClick('even_odd_differ','even_row_format')
+      EnableClick('category_sort','category_format')
+    }
+    function EnableClick(cond,what) {
+      document.f[what].disabled = !(document.f[cond].checked);
+    }
+</script>
+EOT;
+
 //$apage = new AA_Adminpageutil('sliceadmin','');
 //$apage->setTitle(_m("Admin - design View"));
 //if ($VIEW_TYPES[$type]["even_odd_differ"]) {
@@ -386,8 +386,7 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<title>". _m("Admin - design View") ."</title>
-  <script>
-  </script>
+  $headcode
 </head>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);

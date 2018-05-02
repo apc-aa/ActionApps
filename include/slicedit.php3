@@ -366,5 +366,3 @@ if ( $add || $update ) {
         go_return_or_url(StateUrl(self_base() . "slicedit.php3"),0,0);
     }
 }
-
-

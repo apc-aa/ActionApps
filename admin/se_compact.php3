@@ -152,7 +152,7 @@ $headcode = <<<'EOT'
     }
 
     function InitPage() {
-      EnableClick('even_odd_differ','even_row_format');    
+      EnableClick('even_odd_differ','even_row_format');
     }
 
     function EnableClick(cond,what) {

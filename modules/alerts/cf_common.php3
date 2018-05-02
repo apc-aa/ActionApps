@@ -74,4 +74,3 @@ $cf_fields = array (
         "checkbox"=>"chpwd",
         "label"=>_m("Retype new password"))
 );
-

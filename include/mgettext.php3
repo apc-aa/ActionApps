@@ -133,5 +133,3 @@ function _m($id, $params = 0) {
 function _mdelayed($id, $params = 0) {
     return _m($id, $params);
 }
-
-
