@@ -1,3 +1,9 @@
+18-05-02 - initial implementation of "Permission alias" site-module setting
+(honzam)   You can define the alias, which will be checked for all the displayed
+           {xid} (=pages). If the value will be word "Valid", then the page will
+           be shown. Otherwise the loginform will be shown. Of course, you do
+           not need to use this feature and do it older way - directly
+           in the tree of sitemodule.
 18-04-30 - textarea and text inputs moved to AA_Widget_* approach for itemedit
 (honzam) - jQuery updated to last stable v3.3.1
 18-04-26 - CKEditor updated to 4.9.2 - there was some security problems in CKEditor

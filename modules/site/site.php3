@@ -226,49 +226,61 @@ if ($lang_file) {
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }
 
-if (is_array($_POST['aa']) AND IsAjaxCall()) {
-    $grabber = new AA_Grabber_Form();
-    $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
-    // $saver - > check Perms @todo
-    $saver->run();
 
-    // we need to evaluate $page_content in order to reevaluate DependentParts
-    $apc_state['xajax'] = 2;  // to not be 1
-    $page_content = $module->getSite( $apc_state );
+$is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpander()->unalias("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
 
-    header("Content-type: application/json");
-
-    $parts = AA::Stringexpander()->getDependentParts($saver->changedModules());
-    if (AA::$encoding != 'utf-8') {
-        foreach ($parts as $k => $v) {
-            $parts[$k] = ConvertCharset::singleton()->Convert($v, AA::$encoding, 'utf-8');
-        }
+if (IsAjaxCall()) {
+    if ($is_valid != 'Valid') {
+        // @todo - implement it - show login, save data for aa[] and aaedit, ...
+        header("Content-type: application/json");
+        echo json_encode('@todo - not implemented, yet');
+        exit;
     }
-    echo json_encode($parts);
-    exit;
-}
-if (isset($_GET['aaedit']) AND IsAjaxCall()) {
+    if (is_array($_POST['aa'])) {
+        $grabber = new AA_Grabber_Form();
+        $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
+        // $saver - > check Perms @todo
+        $saver->run();
 
-    // we need to evaluate $page_content in order to reevaluate DependentParts
-    $apc_state['xajax'] = 2;  // to not be 1
-    $page_content = $module->getSite( $apc_state );
+        // we need to evaluate $page_content in order to reevaluate DependentParts
+        $apc_state['xajax'] = 2;  // to not be 1
+        $page_content = $module->getSite( $apc_state );
 
-    header("Content-type: application/json");
+        header("Content-type: application/json");
 
-    $parts = AA::Stringexpander()->getDependentParts(array('aaedit'));
-    //echo $parts;
-    //echo AA::Stringexpander();
-    if (AA::$encoding != 'utf-8') {
-        foreach ($parts as $k => $v) {
-            $parts[$k] = ConvertCharset::singleton()->Convert($v, AA::$encoding, 'utf-8');
+        $parts = AA::Stringexpander()->getDependentParts($saver->changedModules());
+        if (AA::$encoding != 'utf-8') {
+            $convertor = ConvertCharset::singleton();
+            foreach ($parts as $k => $v) {
+                $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
+            }
         }
+        echo json_encode($parts);
+        exit;
     }
-    echo json_encode($parts);
-    exit;
+    if (isset($_GET['aaedit'])) {
+
+        // we need to evaluate $page_content in order to reevaluate DependentParts
+        $apc_state['xajax'] = 2;  // to not be 1
+        $page_content = $module->getSite( $apc_state );
+
+        header("Content-type: application/json");
+
+        $parts = AA::Stringexpander()->getDependentParts(array('aaedit'));
+        //echo $parts;
+        //echo AA::Stringexpander();
+        if (AA::$encoding != 'utf-8') {
+            $convertor = ConvertCharset::singleton();
+            foreach ($parts as $k => $v) {
+                $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
+            }
+        }
+        echo json_encode($parts);
+        exit;
+    }
 }
 
-
-$page_content = $module->getSite( $apc_state );
+$page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->unalias($module->getProperty('loginpage_code'));
 
 // AJAX check
 if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAjaxCall()) {
@@ -350,5 +362,3 @@ function ModW_arr2str($varnames, $arr) {
 // do not remove this exit - we do not want to allow users
 // to include this script (honzam)
 exit;
-
-
