@@ -79,7 +79,7 @@ class AA_Jstriggers {
         $js_trig          = AA_Jstriggers::loadTriggers($GLOBALS['slice_id']);
         $control_triggers = AA_Jstriggers::$CONTROL_TRIGGERS[$control];
 
-        if (!$control_triggers OR !$js_trig) {
+        if (!$control_triggers OR (!$js_trig AND !$add)) {
             return '';
         }
 
