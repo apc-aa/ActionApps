@@ -35,7 +35,6 @@
 */
 
 require_once AA_INC_PATH."constedit_util.php3";
-require_once AA_INC_PATH."javascript.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."validate.php3";
@@ -230,7 +229,7 @@ class inputform {
                 <title>'. $page_title .'</title>
                 {generate:HEAD}
               </head>
-              <body '.getTriggers('body').'>
+              <body '. AA_Jstriggers::get('body', '', "") .'>
                 <h1><b>' . $page_title .'</b></h1>';
 
             // you can add some html code by user profiles, above the form
@@ -405,11 +404,11 @@ class inputform {
         global $slice_id;
         $retval = '';
 
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.js?v='.AA_JS_VERSION,'',false));
-        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.js?v='.AA_JS_VERSION,'',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION,'',false));
 
-        // $retval .= getFrmJavascriptFile( 'javascript/inputform.js?v=1' );
-        // $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
+        // $retval .= getFrmJavascriptFile( 'javascript/inputform.min.js?v=1' );
+        // $retval .= getFrmJavascriptFile( 'javascript/js_lib.min.js' );
         // $retval .= getFrmJavascriptFile( 'javascript/aajslib.php' );
 
         $jscode .= $this->js_proove_fields;
@@ -418,13 +417,13 @@ class inputform {
         if ($javascript = AA_Slice::getModuleProperty($slice_id,'javascript')) {
             $jscode .= $javascript;
             AA::Stringexpander()->addRequire('aa-jslib@1');
-            AA::Stringexpander()->addRequire(get_aa_url('javascript/fillform.js','',false));
+            AA::Stringexpander()->addRequire(get_aa_url('javascript/fillform.min.js','',false));
         }
 
         $retval .= getFrmJavascript( $jscode );
         $retval .= getHtmlareaJavascript($slice_id);
 
-        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.js','',false));  // no longer needed - managed by {require:...} in hco
+        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js','',false));  // no longer needed - managed by {require:...} in hco
 
         return $retval;
     }
@@ -439,7 +438,7 @@ class inputform {
             $html_form_type = 'enctype="multipart/form-data"';
         }
         return "<form name=\"inputform\" $html_form_type method=\"post\" action=\"" . $this->form_action .'"'.
-                    getTriggers("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
+            AA_Jstriggers::get("form", "v" . unpack_id("inputform"), array("onSubmit" => "return BeforeSubmit()")) .'>';
     }
 } // inputform class
 
@@ -848,9 +847,8 @@ class AA_Inputfield {
                 case 'nul': break;
                 case 'chb': $this->inputChBox();       break;
                 case 'hid': $this->hidden();           break;
-                //case 'fld': $this->inputText(get_if($this->param[0],255), // maxlength
-                //                                    get_if($this->param[1],0)); // fieldsize
-                //                   break;
+                case 'fld': $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
+                                   break;
                 //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
                 //            $this->varname_modify('[]');         // use slightly modified varname
@@ -860,8 +858,6 @@ class AA_Inputfield {
                 //                $this->const_arr[$content['value']] = $content['value'];
                 //            }
                 //            $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
-                //            break;
-                //case 'txt': $this->textarea(get_if($this->param[0], 4));
                 //            break;
                 //case 'edt': $this->richEditTextarea(
                 //                       get_if($this->param[0],10),       // rows
@@ -948,6 +944,12 @@ class AA_Inputfield {
                             $this->inputLocalURLPick($url);
                             break;
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
+                //case 'txt': if (AA_Jstriggers::isTriggers()) {
+                //                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                //            } else {
+                //                $this->inputWidget($item, $slice_id);          // standard
+                //            }
+                //    break;
                 case 'tag':
                 case 'mfl':
                 case 'rim':
@@ -955,8 +957,8 @@ class AA_Inputfield {
                 case 'rio':
                 case 'inf':
                 case 'edt':
-                case 'txt':
-                case 'fld':
+                //case 'txt':
+                //case 'fld':
                 default:    $this->inputWidget($item, $slice_id);
 
             }
@@ -1080,47 +1082,43 @@ class AA_Inputfield {
 
     /** html_radio function
      * Prints html/plan_text radiobutton
-     * @param $convert
-     * @param $show_rp_butt
+     * @param bool $convert
+     * @param string $varname
      */
-    function html_radio($convert=false, $show_rp_butt=true) {
+    function html_radio($convert = false, $varname = '') {
+        if (!$varname) {
+            $varname = $this->varname;
+        }
+
         if ( $this->html_rb_show ) {
-            $htmlvar     = $this->varname."html";
+            $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
-            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$this->varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
-            if ( $convert AND ($convertor = $this->get_convertors())) {
-                $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG ."\">\n   <tr><td>");
-                if ($show_rp_butt) {
-                    $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan'.$this->varname.'">');
-                    $this->echovar($radio_html,  'html_rb');
-                    $this->echoo(_m("HTML"));
-                    $this->echovar($radio_plain, 'plain_rb');
-                    $this->echoo(_m("Plain text"));
-                    $this->echoo('</span>');
-                    $this->echoo("&nbsp;&nbsp;");
-                    $this->echoo('<!-- used for hiding "edit in htmlarea" link, dont remove !!! --><span id="arealinkspan'.$this->varname.'" style="display: none">');
-                    $this->echovar($htmlareaedit, 'htmlarea_edit_link');
-                    $this->echoo('</span>');
-                }
+            $convertor   = $convert ? $this->get_convertors() : false;
+            if ( $convertor ) {
+                $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="' . COLOR_TABBG . "\">\n   <tr><td>");
+            }
+
+            // show plaintext / html radio
+            $this->echoo('<span id="htmlplainspan'.$varname.'">'); // used for hiding "edit in htmlarea" link, dont remove
+            $this->echovar($radio_html,  'html_rb');
+            $this->echoo(_m("HTML"));
+            $this->echovar($radio_plain, 'plain_rb');
+            $this->echoo(_m("Plain text"));
+            $this->echoo('</span>');
+            $this->echoo("&nbsp;&nbsp;");
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
+            $this->echovar($htmlareaedit, 'htmlarea_edit_link');
+            $this->echoo('</span>');
+
+            if ( $convertor ) {
                 $this->echoo("</td>");
                 $this->echoo("<td align=\"right\">");
                 $this->echovar($convertor,   'conv');
                 $this->echoo("</td></tr>\n  </table>");
             } else {
-                if ($show_rp_butt) {
-                    $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan'.$this->varname.'">');
-                    $this->echovar($radio_html,  'html_rb');
-                    $this->echoo(_m("HTML"));
-                    $this->echovar($radio_plain, 'plain_rb');
-                    $this->echoo(_m("Plain text"));
-                    $this->echoo('</span>');
-                    $this->echoo("&nbsp;&nbsp;");
-                    $this->echoo('<!-- used for hiding "edit in htmlarea" link, dont remove !!! --><span id="arealinkspan'.$this->varname.'" style="display: none">');
-                    $this->echovar($htmlareaedit, 'htmlarea_edit_link');
-                    $this->echoo('</span>');
-                }
                 $this->echoo("<br>\n");
             }
         }
@@ -1136,7 +1134,7 @@ class AA_Inputfield {
      */
     function getRadioButtonTag(&$k, &$v, $add='', $labeladd='') {
         $name  = $this->varname();
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
         $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add $triggers";
         $ret  .= $this->if_selected($k, " checked");
         $ret  .= '>'.myspecialchars($v).'</label>';
@@ -1152,7 +1150,7 @@ class AA_Inputfield {
     function getOneChBoxTag(&$k, &$v, $add='', $id='', $labeladd='') {
         $id_attr = empty($id) ? '' : " id='$id'";
         $name    = $this->varname();
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
         $ret = "\n<label $labeladd><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add $triggers";
         $ret .= $this->if_selected($k, " checked");
         $ret .= '>'.myspecialchars($v).'</label>';
@@ -1190,7 +1188,7 @@ class AA_Inputfield {
             $this->field_name(false, $colspan);
         }
         $this->echoo("<td>");
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->echovar("<input type=\"checkbox\" name=\"$name\" $add ".
                               ($val ? " checked" : ''). " $triggers>");
@@ -1261,7 +1259,7 @@ class AA_Inputfield {
         }
 
         $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -1371,7 +1369,6 @@ class AA_Inputfield {
             $this->field_tr(false);
         }
         $this->echoo( ($colspan==1) ? '<td>' : "<td colspan=\"$colspan\">");
-        $this->html_radio($showhtmlarea ? false : 'convertors');
 
         // fix for IE - where the textarea icons are too big so there is
         // no space for the text
@@ -1380,7 +1377,7 @@ class AA_Inputfield {
         }
 
         $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
-        $triggers  = $this->use_triggers ? getTriggers("textarea",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("textarea", $name, "") : '';
 
         if ($this->translations) {
             $first = true;
@@ -1404,11 +1401,14 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = array($lang, $classes);
 
+                $this->html_radio($showhtmlarea ? false : 'convertors', $id2);
+
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
-                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
+                    AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
+//                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
                 }
                 $first = false;
             }
@@ -1420,9 +1420,12 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
+            $this->html_radio($showhtmlarea ? false : 'convertors');
+
             $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
             if (!$showhtmlarea AND $showrich_href ) {
-                $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
+                AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
+//                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
             }
         }
         $this->echovar($widg);
@@ -1601,7 +1604,7 @@ class AA_Inputfield {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
-        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
         $this->field_name('plus');
         $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
@@ -1645,7 +1648,7 @@ class AA_Inputfield {
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(array('0','1'), array('DR','MDR'),(string)$actions);
         $movebuttons          = (strpos($actions,'M') !== false);
-        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
@@ -1825,7 +1828,7 @@ class AA_Inputfield {
            When you delete a value from a hierarchicalConstant mainbox
            it does not respond to the onChange triger
         */
-        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
         $aa_onchange_exist = strstr($triggers,'aa_onChange(');
         $delete_button_trigger = "";
         if( $aa_onchange_exist ){
@@ -1867,7 +1870,7 @@ class AA_Inputfield {
     function inputSelect($usevalue=false) {
         list($name,$val,$add) = $this->prepareVars();
         $this->fill_const_arr();
-        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
         $this->field_name('plus');
         $out = "<select name=\"$name\" $triggers>";
@@ -1905,7 +1908,7 @@ class AA_Inputfield {
         }
         $val  = myspecialchars($val);
         $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', true) : '';
-        $triggers   = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers   = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
         $this->echovar( "<input type=text name=\"$name\" style=\"width:95%\"". $GLOBALS['mlxFormControlExtra']." maxlength=255 value=\"$val\" $triggers>&nbsp;$link" );
@@ -1915,7 +1918,7 @@ class AA_Inputfield {
         $this->input_help = $hlp;
         $this->field_name('secrow');
         $file_field_name = $name.'x';
-        $triggers  = $this->use_triggers ? getTriggers("input",$file_field_name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $file_field_name, "") : '';
         $this->echovar( "<input type=file name=\"$file_field_name\" accept=\"$accepts\" $file_field_name>", 'file');
         $this->helps('plus');
     }
@@ -1939,7 +1942,7 @@ class AA_Inputfield {
         if ($secondfield) {
             $varsecfield = varname4form($secondfield);
         }
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -1967,7 +1970,7 @@ class AA_Inputfield {
         list($name,$val,$add) = $this->prepareVars();
         $this->fill_const_arr();
         $val=safe($val);
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
         $this->html_radio();
@@ -2008,7 +2011,7 @@ class AA_Inputfield {
           <tr align=left>
             <td align=\"center\" valign='TOP' rowspan=\"2\">");
 
-        $triggers  = $this->use_triggers ? getTriggers("select",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
         $offername = str_replace("[]", "", $name). '_1';
         $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers>\n";
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
@@ -2074,7 +2077,7 @@ class AA_Inputfield {
         $retype_pwd_label = get_if($retype_pwd_label, _m("Retype Password"));
         $delete_pwd_label = get_if($delete_pwd_label, _m("Delete Password"));
         $fieldsize        = get_if($fieldsize,        60);
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
         if ( $this->mode == 'anonym' ) {
@@ -2088,7 +2091,7 @@ class AA_Inputfield {
         if (!$this->required) {
             $this->field_name('secrow',1,$delete_pwd_label);
             $ch_name = $name."d";
-            $triggers  = $this->use_triggers ? getTriggers("input",$ch_name) : '';
+            $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name, "") : '';
             $this->echovar("<input type=\"checkbox\" name=\"$ch_name\" $triggers>", 'delete');
             $this->helps('plus');
         }
@@ -2096,14 +2099,14 @@ class AA_Inputfield {
         // change pwd
         $this->field_name('secrow',1,$change_pwd_label);
         $ch_name = $name."a";
-        $triggers  = $this->use_triggers ? getTriggers("input",$ch_name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name, "") : '';
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>", 'change' );
         $this->helps('plus',$change_pwd_help );
 
         // retype pwd
         $this->field_name('secrow',1,$retype_pwd_label);
         $ch_name = $name."b";
-        $triggers  = $this->use_triggers ? getTriggers("input",$ch_name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name, "") : '';
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>", 'retype' );
         $this->helps('plus',$retype_pwd_help );
     }
@@ -2116,7 +2119,7 @@ class AA_Inputfield {
     function inputLocalURLPick($url) {
         list($name,$val) = $this->prepareVars();
         $this->field_name('plus');
-        $triggers  = $this->use_triggers ? getTriggers("input",$name) : '';
+        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
         $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\" $triggers>";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
@@ -2977,14 +2980,14 @@ function GetHtmlTable( $content, $mode='td' ) {
  * @param $src
  */
 function getFrmJavascriptFile( $src, $add='') {
-    return "\n <script type=\"text/javascript\" $add src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
+    return "\n <script $add src=\"". myspecialchars(get_aa_url($src, '', false)) . "\"></script>";
 }
 
 /** getFrmJavascript function
  * @param $code
  */
 function getFrmJavascript( $jscode ) {
-    return "\n<script type=\"text/javascript\">\n  $jscode \n</script>\n";
+    return "\n<script>\n  $jscode \n</script>\n";
 }
 
 /** getFrmJavascriptCached function
@@ -3042,7 +3045,7 @@ function FrmCSS( $stylecode ) {
  */
 function IncludeManagerJavascript() {
     FrmJavascriptFile( 'javascript/aajslib.php' );
-    FrmJavascriptFile( 'javascript/manager.js' );
+    FrmJavascriptFile( 'javascript/manager.min.js' );
 }
 
 /** getRadioBookmarkRow function
@@ -3195,7 +3198,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
 }
 
 /** FrmItemListForm function
- *  Lists selected items to special form - used by manager.js to show items
+ *  Lists selected items to special form - used by manager.min.js to show items
  * @param $items
  */
 function FrmItemListForm(&$items) {
@@ -3215,7 +3218,7 @@ function FrmItemListForm(&$items) {
  * @param $html_setting
  */
 function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
-    $add = "onchange=\"ShowThisTagClass('fswp$name', 'div', 'fswp_'+sb_GetSelectedValue(this), 'fswp_')\"";
+    $add = "onchange=\"ShowThisTagClass('fswp$name', 'div', 'fswp_'+this.value, 'fswp_')\"";
     $ret = getFrmSelectEasy($name, $arr, $selected, $add);
     if (isset($html_setting) AND is_array($html_setting)) {
         $ret .= "\n<div id=\"fswp$name\">";
