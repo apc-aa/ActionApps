@@ -482,8 +482,8 @@ tr.leftmenuy a:hover {
 }
 
 #sitetree div {
-    border-right: 1px solid #EBDABE;
-    background: url(modules/site/images/i_bg.gif) repeat-y;
+    border-right: 1px solid #EBDABE; /* i_bg.gif */
+    background: url(data:image/gif;base64,R0lGODlhFwAEAKECAM7g02tra////////yH5BAEAAAAALAAAAAAXAAQAAAIMhH+By60N2YsUTFoAADs=) repeat-y;
 }
 
 #sitetree .spot  {
@@ -501,8 +501,8 @@ tr.leftmenuy a:hover {
     padding: 0 5px 5px 21px;
 }
 
-#sitetree div.lastchoice {
-    background-image: url(modules/site/images/s_bg.gif);
+#sitetree div.lastchoice { /* s_bg.gif */
+    background-image: url(data:image/gif;base64,R0lGODlhFwAEAPABAM7g0wAAACH5BAUAAAEALAAAAAAXAAQAAAILRI6pG8a/HJyN0gIAOw==);
     border-bottom: 1px solid #EBDABE;
 }
 
@@ -568,12 +568,12 @@ select.updating, input.updating, textarea.updating {
     outline: 1px solid #FF0000;
 }
 
-div.ajax_value {
-    background: url("images/edit.png") no-repeat scroll right bottom transparent;
+div.ajax_value {       /* edit.png */
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAMAAACKYC6uAAAATlBMVEUAAADW1M3IxbyEhILj3sPLyMG0s6vEvaeIh4Xh4eHb29PZ0a2bmpbz8/Pk4+DOzcjAv7/Tzr7Ewbm9urCqqKTBuqPBuaG3sqCTkYqKiogs0voaAAAAAXRSTlMAQObYZgAAAEBJREFUCNdVx0kSgCAQBEF0VAZFZV/+/1E4QARddUoB+ULg7dMafNT/BJNEM/phuYMprlaZ02oRrJtW190n8w43fzoBwKirrscAAAAASUVORK5CYII=) no-repeat scroll right bottom transparent;
     padding-right: 20px;
 }
-div.ajax_value:hover {
-    background-image: url("images/edit-a.png");
+div.ajax_value:hover { /* edit-a.png */
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAMAAACKYC6uAAAAZlBMVEUAAADtzjOSg1KUhlYBAQExJgCUhFGTg1FqVx0AAACpnXhycGImJBrFxaesoH61mDy0ljTtzjMtKyMhHxbo6enLy8rSzsKsppOMi4ijmXWeknDHsm+Wil9pYk9HR0GWgTaykixDOhxpZKX9AAAACnRSTlMAuZmV5dObm446ao9KlAAAAEhJREFUCNdjQAEyiiwofGYxOVYUPqOQOAcSn4lRmJ8Pic/OyIPCZxPkEeBCVi8ojMIXledRQOYzyEpLSUKZnNy8QCgkIQLlAwDJswLr2bELKAAAAABJRU5ErkJggg==);
 }
 
 div.ajax_value[data-aa-edited="1"],
@@ -589,8 +589,8 @@ input.save-button, input.cancel-button {
     font-size: 9px;
     text-transform: lowercase;
 }
-input.save-button {
-     background : url("images/save.png") no-repeat #DBDAD9 0 -2px;
+input.save-button {   /* save.png */
+     background : url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAAAzdGmcq6RijYMK9IDiAAAABHRSTlMAx8fHpsjwxQAAADNJREFUCNdjQADR+isMDFLOkiBCyoFBygFEhEYBiVWrHBikQ+McGCQZ2DAI0f9fHRCGAACp6wrUxFiLHgAAAABJRU5ErkJggg==) no-repeat #DBDAD9 0 -2px;
 }
 input.cancel-button {
      background-color: #DBDAD9;
