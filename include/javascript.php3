@@ -25,12 +25,9 @@
  * @link      http://www.apc.org/ APC
  *
 */
-// used by the itemedit.php3 page, which calls getTrig()
-
-require_once AA_INC_PATH."util.php3";
 
 class AA_Jstriggers {
-    private static $js_triggers = array (
+    private static $CONTROL_TRIGGERS = array (
         "input"    => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
         "select"   => array ("onBlur", "onFocus", "onChange"),
         "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
@@ -51,22 +48,24 @@ class AA_Jstriggers {
         if (!is_null(AA_Jstriggers::$js_trig)) {
             return AA_Jstriggers::$js_trig;
         }
-        $js_trig = array();
-        foreach (AA_Jstriggers::$js_triggers as $control => $ctrigs) {
-            foreach ($ctrigs as $ctrig) {
-                $js_trig[$ctrig] = 1;
+        AA_Jstriggers::$js_trig = array();
+
+        if ($javascript = (string)AA_Slice::getModuleProperty($slice_id,'javascript')) {
+            $all_trig = array();
+            foreach (AA_Jstriggers::$CONTROL_TRIGGERS as $ctrigs) {
+                $all_trig = array_merge($all_trig, $ctrigs);
+            }
+            $all_trig = array_unique($all_trig);
+
+            $ws = "[ \t\n\r]*";
+            foreach ($all_trig as $trg) {
+                // match e.g. aa_onSubmit( fieldid ) {
+                if (preg_match("/aa_$trg$ws\($ws"."fieldid$ws\)$ws\{/", $javascript)) {
+                    AA_Jstriggers::$js_trig[$trg] = true;
+                }
             }
         }
-
-        $javascript = (string)AA_Slice::getModuleProperty($slice_id,'javascript');
-
-        $ws = "[ \t\n\r]*";
-        foreach ($js_trig as $trg => $foo) {
-            // match e.g. aa_onSubmit( fieldid ) {
-            $js_trig[$trg] = preg_match("/aa_$trg$ws\($ws"."fieldid$ws\)$ws\{/", $javascript) ? 1 : 0;
-        }
-        AA_Jstriggers::$js_trig = $js_trig;
-        return $js_trig;
+        return AA_Jstriggers::$js_trig;
     }
 
     // $unpacked_fieldid -- the function ignores the first character (usually 'v')
@@ -77,11 +76,10 @@ class AA_Jstriggers {
      */
     static function get($control, $unpacked_fieldid='', $add="") {
 
+        $js_trig          = AA_Jstriggers::loadTriggers($GLOBALS['slice_id']);
+        $control_triggers = AA_Jstriggers::$CONTROL_TRIGGERS[$control];
 
-        $js_trig     = AA_Jstriggers::loadTriggers($GLOBALS['slice_id']);
-        $js_triggers = AA_Jstriggers::$js_triggers;
-
-        if (count($js_triggers)<1) {
+        if (!$control_triggers OR !$js_trig) {
             return '';
         }
 
@@ -100,7 +98,7 @@ class AA_Jstriggers {
             $fieldid = $unpacked_fieldid;
         }
 
-        foreach ($js_triggers[$control] as $ctrig) {
+        foreach ($control_triggers as $ctrig) {
             $funcs = "";
             // Omar Martinez fix - 2005/04/28
             // onSubmit is special case - for all other events we can concaternate
@@ -129,14 +127,13 @@ class AA_Jstriggers {
     }
 
     static function printSummary() {
-        foreach (AA_Jstriggers::$js_triggers as $control => $trigs) {
+        foreach (AA_Jstriggers::$CONTROL_TRIGGERS as $control => $trigs) {
             echo '<tr><td class="tabtxt">'.$control.'</td><td class="tabtxt">'.join($trigs,", ").'</td></tr>';
         }
     }
 
-}
-
-function getTriggers($control, $unpacked_fieldid='', $add="") {
-    return AA_Jstriggers::get($control, $unpacked_fieldid, $add);
+    static public function isTriggers() {
+        return count(AA_Jstriggers::loadTriggers($GLOBALS['slice_id']))>0;
+    }
 }
 

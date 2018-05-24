@@ -55,7 +55,7 @@ spl_autoload_register(function ($class_name) {
         'AA_ComputedfieldsItem_Updater'  => 'include/hitcounter.class.php3',
         'AA_Fields'                      => 'include/field.class.php3',
         'AA_Form_Array'                  => 'include/widget.class.php3',
-        'AA_Formatter'                   => 'include/widget.class.php3',
+        'AA_Formatters' => 'include/widget.class.php3',
         'AA_iEditable'                   => 'include/statestore.php3',
         'AA_Items'                       => 'include/item.php3',
         'AA_Mailman'                     => 'include/mailman.php3',
@@ -70,6 +70,7 @@ spl_autoload_register(function ($class_name) {
         'AA_Serializable  '              => 'include/statestore.php3',
         'AA_Storable'                    => 'include/statestore.php3',
         'AA_Widget_Formrow'              => 'include/form.class.php3',
+        'AA_Jstriggers'                  => 'include/javascript.php3',
         'ConvertCharset'                 => 'include/convert_charset.class.php3',
         'Files'                          => 'include/files.class.php3',
         'zids'                           => 'include/zids.php3'

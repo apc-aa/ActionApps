@@ -24,9 +24,6 @@
  * @link      http://www.apc.org/ APC
  *
 */
-// javascript.php3 defines getTriggers, which is used by Add / Edit item page
-require_once AA_INC_PATH."javascript.php3";
-
 
 /** monthnames function
  *  @return array month names
@@ -208,7 +205,7 @@ class datectrl {
      * @return string
      */
     function getdayselect() {
-        return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">".$this->getDayOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_day\"". AA_Jstriggers::get("select", $this->name, "") .">".$this->getDayOptions()."</select>";
     }
 
 
@@ -227,7 +224,7 @@ class datectrl {
      * @return string
      */
     function getmonthselect() {
-        return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">".$this->getMonthOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_month\"". AA_Jstriggers::get("select", $this->name, "") .">".$this->getMonthOptions()."</select>";
     }
 
     function isEmpty() {
@@ -271,7 +268,7 @@ class datectrl {
      * @return string
      */
     function getyearselect() {
-        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_year\"". AA_Jstriggers::get("select", $this->name, "") .">".$this->getYearOptions()."</select>";
     }
 
     function isTimeDisplayed() {
@@ -304,7 +301,7 @@ class datectrl {
         if (!$this->isTimeDisplayed()) {
             return "";
         }
-        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"".getTriggers("input",$this->name).">";
+        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"". AA_Jstriggers::get("input", $this->name, "") .">";
     }
 
     /** getselect function
