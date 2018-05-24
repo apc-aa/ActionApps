@@ -240,7 +240,7 @@ function GetModuleLetter($type) {
  * @param $perms_roles_modules
  */
 function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
-    <script type="text/javascript"><!--
+    <script>
       var mod       = [];
       var mod_names = [];
     <?php
@@ -262,7 +262,6 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
       SetRole(5);
       SetRole(6);
       SetRole(7);
-      // -->
     </script>
     <?php
 }

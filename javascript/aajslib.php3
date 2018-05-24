@@ -1,6 +1,6 @@
 <?php
 /** AA Javascripts library usable on the public pages, just like:
- *  <script type="text/javascript" src="http://actionapps.org/apc-aa/javascript/aajslib.php"></script>
+ *  <script src="http://actionapps.org/apc-aa/javascript/aajslib.php"></script>
  *  (replace "http://actionapps.org/apc-aa" with your server and aa path
  *
  *  It includes the scripts, which are based on great prototype.js library

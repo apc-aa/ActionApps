@@ -496,8 +496,7 @@ function fileman_copy_template($srcdir, $dstdir) {
 // J A V A S C R I P T
 
 $fileman_js = "
-    <script language=\"javascript\">
-    <!--
+    <script>
         function SelectVis (form, prefix, state) {
             var elem = document.forms[form].elements;
             for ( var i=0; i < elem.length; i++ )
@@ -528,6 +527,5 @@ $fileman_js = "
                 break;
             }
         }
-    // -->
     </script>";
 

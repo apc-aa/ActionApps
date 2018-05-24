@@ -83,7 +83,7 @@ if ( $i==1 ) {   // can't feed to any slice
 ?>
    <tr><td colspan="4" class="tabtit" align="center"><br /><input type="button" name="sendfeeded" value="<?php echo _m("Export") ?>" onclick="SendFeed();"><br />&nbsp;</td></tr>
    </table>
-   <script Language="JavaScript" type="text/javascript"><!--
+   <script>
     function SendFeed() {
         var len = document.incf.elements.length;
         var retval='';
@@ -105,9 +105,7 @@ if ( $i==1 ) {   // can't feed to any slice
         // fill return field and submit itemform
         ReturnParam(retval);
     }
-    // -->
    </script>
-
   </form>
 </body>
 </html>

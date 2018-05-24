@@ -275,7 +275,7 @@ class cattree {
 
     /**
     * Prints javascript which defines necessary javascript variables for category
-    * tree. There must be already includede js_lib_links.js file on the page
+    * tree. There must be already includede js_lib_links.min.js file on the page
     * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
     *
     * @param string $fromId special string which in conjunction with $toId defines
@@ -367,7 +367,7 @@ class cattree {
 
     /**
     * Prints javascript which changes tree to given category
-    * There must be already includede js_lib_links.js file on the page
+    * There must be already includede js_lib_links.min.js file on the page
     * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
     *
     * @param int $cat_path path of category to switch to (this->treeStart must

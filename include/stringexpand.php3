@@ -163,7 +163,7 @@ class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
      * @param $delimiter...
      */
     function expand($text='', $delimiter='') {
-        return json_encode(explode(($delimiter ?: '-'), $text));
+        return AA_Stringexpand_Item::itemJoin(explode(($delimiter ?: '-'), $text), 'json');  // also filters out empty values
     }
 }
 
@@ -2360,7 +2360,7 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 //      * @param $text
 //      */
 //     function expand($id='', $field_id='') {
-//         echo "<script language=\"JavaScript\" src=\"/aaa/javascript/increse.php?item_id=$id&field_id=$field_id\" type=\"text/javascript\"></script>";
+//         echo "<script src=\"/aaa/javascript/increse.php?item_id=$id&field_id=$field_id\"></script>";
 //     }
 // }
 /** Ussage:
@@ -5698,7 +5698,7 @@ class AA_Requires {
           'tippy@2'                    => new AA_Req_Lib('https://unpkg.com/tippy.js@2.2.3/dist/tippy.all.min.js', 'sha384-7iCQEHkOskB8DnHBeVzB1nkyndqNZ1Tk7C4tc4hQkeSJpLDJ1CJWxmCPtnM6WoQ8'),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
           'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
-          'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.js','',false)),
+          'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js','',false)),
           'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js','',false),'',array('jquery@3')),
           'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php','',false),'',array('jquery@3')),
           'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php','',false)),

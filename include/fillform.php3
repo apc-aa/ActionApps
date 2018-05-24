@@ -39,7 +39,7 @@ function fillFormFromVars($fillConds) {
     add_post2shtml_vars();
 
     // core JavaScript functions
-    $res  = getFrmJavascriptFile('javascript/fillform.js');
+    $res  = getFrmJavascriptFile('javascript/fillform.min.js');
     $res .= (isset($fillConds) ? fillConds() : fillForm());
     return $res;
 }

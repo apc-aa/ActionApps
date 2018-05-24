@@ -365,8 +365,8 @@ HtmlPageBegin();
 echo '<title>'. _m('ActionApps') ." - $pagename</title>";
 
 $tree = new cattree($select_start, false, ' > ');
-FrmJavascriptFile('javascript/js_lib.js');
-FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
+FrmJavascriptFile('javascript/js_lib.min.js');
+FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 if ( !$r_state['link_id'] ) {  // add new link

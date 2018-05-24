@@ -220,7 +220,7 @@ class AA_Langs {
         'de'      => array('iso-8859-1'  , 'Deutsch (iso-8859-1)'),
         'en'      => array('iso-8859-1'  , 'English (iso-8859-1)'),
         'es'      => array('iso-8859-1'  , 'Espanol (iso-8859-1)'),
-        'fr'      => array('iso-8859-1'  , 'Français (iso-8859-1)'),
+        'fr'      => array('iso-8859-1'  , 'Franï¿½ais (iso-8859-1)'),
         'hr'      => array('windows-1250', 'Hrvatski (windows-1250)'),
         'ja'      => array('EUC-JP'      , 'Japanian (EUC-JP)'),
         'hu'      => array('iso-8859-2'  , 'Magyar (iso-8859-2)'),
@@ -948,12 +948,6 @@ define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
 define("SC_ACTIVE", 1);
 define("SC_HOLDING_BIN", 2);
 define("SC_NO_BIN", 4);
-
-/** HTMLArea constants */
-// not supported with new version of HtmlArea
-// you need just to change following line in plugins/SpellChecker/spell-check-ui.html
-//     <form style="display: none;" action="spell-check-logic.cgi"
-// define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
 
 /** getFilemanAccesses function
  * @return array

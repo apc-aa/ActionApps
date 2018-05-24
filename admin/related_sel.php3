@@ -175,8 +175,8 @@ if ($r_state['related']['manager'] ) {        // do not set state for the first 
 $manager->performActions();
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
-FrmJavascriptFile('javascript/js_lib.js?v='.AA_JS_VERSION);
-FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);  // for SelectRelations() function
+FrmJavascriptFile('javascript/js_lib.min.js?v='.AA_JS_VERSION);
+FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);  // for SelectRelations() function
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();

@@ -45,7 +45,7 @@ if (!$group_id) {
 ?>
 
 <?php
-    FrmJavascriptFile('javascript/constedit.js');
+    FrmJavascriptFile('javascript/constedit.min.js');
     $hcid = 0;  // identifier of HC (used, wher multiple HCE are on one page
 
     showHierConstInitJavaScript($hcid, $group_id, $levelCount);

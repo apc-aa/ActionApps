@@ -43,13 +43,11 @@ $slice       = AA_Slice::getModule($module_id);
 $fields      = $slice->fields('record');
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-// Include also js_lib.js javascript library
+// Include also js_lib.min.js javascript library
 HtmlPageBegin(true);
 ?>
 <title><?php echo _m("Editor window - item manager"); echo " - "._m("select constants window");  ?></title>
-<script type="text/javascript">
-<!--
-
+<script>
     // update changes in parent window
     function updateChanges(myform) {
       window.opener.document.filterform.elements["<?php echo $var_id ?>"].value = "";
@@ -66,7 +64,6 @@ HtmlPageBegin(true);
       }
       window.close();
     }
-//-->
 </script>
 </head> <?php
 

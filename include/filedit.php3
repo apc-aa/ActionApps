@@ -32,9 +32,7 @@
 // parameters: $fe_path, $fe_filename, $fe_script, $fe_wwwpath
 
 $filedit_js = "
-    <script language='javascript'>
-    <!--
-
+    <script>
     var formname = 'fileman';
     var richname = 'rich';
 
@@ -61,8 +59,6 @@ $filedit_js = "
             break;
         }
     }
-
-    //-->
     </script>";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -125,12 +121,10 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
             $value = str_replace ("'", "\\'", $value);
             $value = str_replace ("\n", "\\n", $value);
             $value = str_replace ("\r", "\\r", $value);
-            echo "<script language='javascript'>
-            <!--
+            echo "<script>
                 var edt = 0;
                 var filetext = '$value';
                 document.forms['fileman']['arg[savefile]'].value = filetext;
-            //-->
             </script>";
             echo fileAction ("savefile", _m("Save changes"))
                 .fileAction ("reset", _m("Reset content"));

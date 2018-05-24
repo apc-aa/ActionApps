@@ -43,13 +43,6 @@ function sb_RemoveItem(selectbox) {
     }
 }
 
-function sb_GetSelectedValue(selectbox) {
-    if ( selectbox.selectedIndex == null ) {
-        return null;
-    }
-    return selectbox.options[selectbox.selectedIndex].value;
-}
-
 function sb_SetValue(selectbox, index, text, value) {
     if (selectbox != null && selectbox.options != null) {
         if (index=='new') {
@@ -93,10 +86,10 @@ function sb_AddValue(selectbox, text) {
 }
 
 function sb_EditValue(selectbox, text) {
-    val     = sb_GetSelectedValue(selectbox);
-    if ( val == null ) {
+    if ( selectbox.selectedIndex == -1 ) {
         return;
     }
+    val = selectbox.value;
     // wIdThTor is special AA constant, which behaves as empty string, but the
     // width of selectbox is not zero for it
     new_val = prompt(text, (val=='wIdThTor') ? '' : val);
@@ -106,7 +99,7 @@ function sb_EditValue(selectbox, text) {
 }
 
 function EditItemInPopup(inputformurl, selectbox) {
-    OpenWindowTop(inputformurl+'&id='+sb_GetSelectedValue(selectbox));
+    OpenWindowTop(inputformurl+'&id='+selectbox.value);
 }
 
 function SelectRelations(var_id, tag, prefix, taggedid, headline) {
@@ -235,7 +228,7 @@ function showHTMLAreaLink(name) {
     }
 }
 
-function openHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
+function OLDopenHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
     if (CKEDITOR.env.isCompatible) {
         var elem = document.body.querySelectorAll('input[name="'+name+"html"+'"]');
         for (i=0; i<elem.length; i++) {
@@ -252,3 +245,20 @@ function openHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
         CKEDITOR.replace(name);
     }
 }
+
+function openHTMLAreaFullscreen(name) {    //
+    if (CKEDITOR.env.isCompatible) {
+        if (el = document.body.querySelector('input[name="'+name+'html'+'"][value="h"]')) {
+            el.checked = true;
+        }
+        if ( el = document.getElementById("htmlplainspan"+name) ) {
+            el.style.display = "none";
+        }
+        if ( el = document.getElementById("arealinkspan"+name) ) {
+            el.style.display = "none";
+        }
+        CKEDITOR.replace(name);
+    }
+}
+
+

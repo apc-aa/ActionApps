@@ -134,7 +134,7 @@ ModW_StoreTree($tree, $module_id);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo '<title>'. _m("Editor window - site code manager") .'</title>';
-FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib.min.js');
 echo '</head>';
 
 // module specific navigation bar

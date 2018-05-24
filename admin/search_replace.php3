@@ -78,7 +78,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo '
   <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
   <title>'.  _m("Modify items") .'</title>';
-FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);
+FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);
 IncludeManagerJavascript();
 echo '
 </head>
@@ -133,7 +133,7 @@ FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_'
 FrmTabEnd(array( 'fill' =>array('type'=>'submit', 'value'=>_m('Fill')),
                  'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));
 
-// list selected items to special form - used by manager.js to show items (recipients)
+// list selected items to special form - used by manager.min.js to show items (recipients)
 echo "\n  </form>";
 FrmItemListForm($items);
 echo "\n  </body>\n</html>";

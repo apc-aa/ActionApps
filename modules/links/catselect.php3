@@ -25,8 +25,8 @@ HtmlPageBegin();
 echo '<title>'. _m('ActionApps - Select Category'). '</title>';
 
 $tree = new cattree($tree_start, true, ' > ');
-FrmJavascriptFile('javascript/js_lib.js');
-FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
+FrmJavascriptFile('javascript/js_lib.min.js');
+FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 if ( !$cid ) {  // default category defined

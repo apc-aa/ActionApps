@@ -29,7 +29,6 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."notify.php3";
 require_once AA_INC_PATH."imagefunc.php3";
-require_once AA_INC_PATH."javascript.php3";
 require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."item_content.php3";
 require_once AA_INC_PATH."event.class.php3";

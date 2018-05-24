@@ -67,7 +67,7 @@ if (isset($b_export_to_file)) {
 $apage = new AA_Adminpageutil('aaadmin','sliceexp');
 $apage->setTitle(_m("Export slice structure"));
 $apage->setSubtitle(_m(""));
-//$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
 $apage->printHead($err, $Msg);
 
 

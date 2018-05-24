@@ -598,8 +598,7 @@ class tabledit {
     {
         PrintJavaScript_Validate();
         echo "
-        <script language=\"javascript\">
-        <!--
+        <script>
             function $fnname(formname, keys) {
                 myform = document.forms[formname];
                 for (ikey = 0; ikey < keys.length; ikey ++) {
@@ -624,7 +623,6 @@ class tabledit {
                 }
                 return true;
             }
-        // -->
         </script>";
     }
 

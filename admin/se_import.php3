@@ -112,7 +112,7 @@ $apage = new AA_Adminpageutil('sliceadmin','import');
 $apage->setTitle(_m("Admin - configure Content Pooling"));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
 $apage->printHead($err, $Msg);
 
 

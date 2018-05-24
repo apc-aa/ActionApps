@@ -9,10 +9,9 @@ require_once AA_INC_PATH."itemfunc.php3";
 $KeyVal = 90;  // generated key validity in minutes
 $script_path = AA_INSTAL_PATH."misc/forgotten_pwd.php3";
 ?>
-<HTML>
-<HEAD>
-<SCRIPT LANGUAGE="JavaScript">
-<!-- // Begin
+<html>
+<head>
+<script>
 function validatePwd() {
     var invalid = " "; // Invalid character is a space
     // var minLength = 6; // Minimum length
@@ -38,10 +37,9 @@ function validatePwd() {
         }
     }
 }
-//  End -->
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <?php
 
 $protocol = ( isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ) ? 'https://' : 'http://';

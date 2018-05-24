@@ -88,8 +88,8 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
-    // inputform.js for SelectRelations
-    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION).  getFrmJavascript($js));
+    // inputform.min.js for SelectRelations
+    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION).  getFrmJavascript($js));
 }
 
 // Allow edit current slice without slice_pwd

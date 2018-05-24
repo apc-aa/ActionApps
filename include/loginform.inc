@@ -70,14 +70,12 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 
 </center>
 </form>
-<script type="text/javascript">
-<!--
+<script>
   if (document.forms[0][0].value != '') {
       document.forms[0][2].focus();
   } else {
       document.forms[0][0].focus();
   }
-// -->
 </script>
 </body>
 </html>

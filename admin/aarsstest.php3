@@ -156,7 +156,7 @@ function GetAARSS_tv() {
 $aarss_tv = GetAARSS_tv();
 
 TV_PageBegin($aarss_tv);
-FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib.min.js');
 ProcessFormData('GetAARSS_tv', $val, $cmd);
 
 PrintArray($Err);

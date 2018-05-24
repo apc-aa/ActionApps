@@ -71,8 +71,8 @@ $tree = new cattree($tree_to_begin, true, ' > ');
 $linkcounter = new linkcounter;
 $links_count = $linkcounter->get_link_count($cpath, true);  // count and update
 
-FrmJavascriptFile('javascript/js_lib.js');
-FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
+FrmJavascriptFile('javascript/js_lib.min.js');
+FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
 $tree->printTreeData($tree_to_begin);
 
 echo '

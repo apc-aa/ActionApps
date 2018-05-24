@@ -137,11 +137,11 @@ if (is_array($desc['params'])) {
 
     <form name="f" method="post" onSubmit="self.close()">
 
-        <script Language="JavaScript"><!--
+        <script>
             function changeFunction (combo) {
                 page = "<?php echo StateUrl(self_base() . "param_wizard.php3") ?>"
                     + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'" ?>"
-                    + "&item=" + combo.options [combo.selectedIndex].value;
+                    + "&item=" + combo.value;
                 document.location = page;
             }
             function writeParams () {
@@ -180,7 +180,6 @@ for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
                     }
                     fillParams(pars);
                 }
-                // -->
         </script>
 
         <table align=center width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>">

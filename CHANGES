@@ -2841,7 +2841,7 @@
            If you add apc-aa/javascript/aajslib.php3 and
                       apc-aa/javascript/prototype/css/prototip.css
            to your page (as javascript), then you can use the tooltips, just like
-              <script type="text/javascript">
+              <script>
                  new Tip('id_of_HTML_element', 'tooltip html code', {delay: 0});
               </script>
          - view edit page uses big textareas (just like in the form for fulltext)

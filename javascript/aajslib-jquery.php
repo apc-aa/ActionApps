@@ -131,7 +131,7 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
 /** calls AA responder with permissions of current user and displays returned
  *  html code into div_id
  *  Usage:
- *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
+ *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
  *     echo '<div id="fieldselection"></div>';
  **/
 function DisplayAaResponse(div_id, method, params) {

@@ -7,38 +7,32 @@
 <LINK rel="StyleSheet" href="/apc-aa/admin.css" type="text/css">
   <title></title>
 <script>
-<!--
 var count=1;
 
-function changeURLlocation()
-{
-splitURL = document.forms[0].url.value.split("/")
-if (splitURL[2] == parent._navigator.location.host)
-{
-parent._navigator.location=this.url.value
-}
+function changeURLlocation() {
+    splitURL = document.forms[0].url.value.split("/")
+    if (splitURL[2] == parent._navigator.location.host) {
+        parent._navigator.location = this.url.value
+    }
 }
 
-function feedFields()
-{
-top.opener.document.inputform.elements['<?php echo $_GET["var_id"]; ?>'].value = document.forms[1].localURL.value;
+function feedFields() {
+    top.opener.document.inputform.elements['<?php echo $_GET["var_id"]; ?>'].value = document.forms[1].localURL.value;
 }
 
-function startURLcheck(){
-changeURLcontent();
-if (count>0){
- Id = window.setTimeout("startURLcheck()",100); 
-} 
-}	
+function startURLcheck() {
+    changeURLcontent();
+    if (count > 0) {
+        Id = window.setTimeout("startURLcheck()", 100);
+    }
+}
 
-function changeURLcontent(){
-if (document.forms[1].localURL.value != parent.frames[1].location)
-{
-document.forms[1].localURL.value=parent.frames[1].location;
-document.forms[0].url.value=parent.frames[1].location;
+function changeURLcontent() {
+    if (document.forms[1].localURL.value != parent.frames[1].location) {
+      document.forms[1].localURL.value=parent.frames[1].location;
+      document.forms[0].url.value=parent.frames[1].location;
+  }
 }
-}
-// -->
 </script>
 </head>
 <body onLoad="startURLcheck()">

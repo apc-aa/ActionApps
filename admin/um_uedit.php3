@@ -156,12 +156,12 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 }
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-// Include also js_lib.js javascript library
+// Include also js_lib.min.js javascript library
 HtmlPageBegin(true);
 
 ?>
  <title><?php echo _m("User management - Users");?></title>
-<script Language="JavaScript"><!--
+<script>
   function UpdateUser(action) {
     document.fx.posted_groups.value = CommaDelimeted( 'document.fx.sel_groups_sel' )
     document.fx.submit_action.value = action
@@ -197,7 +197,6 @@ HtmlPageBegin(true);
       document.fx.elements['new_module_role['+no+']'].options[i] = new Option(roles_names[i], roles[i])
     }
   }
-// -->
 </script>
 </head>
 

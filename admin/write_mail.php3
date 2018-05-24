@@ -157,7 +157,7 @@ echo '
   <title>'.  _m("Write email to users") .'</title>';
 
 IncludeManagerJavascript();
-FrmJavascriptFile('javascript/inputform.js?v='.AA_JS_VERSION);
+FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);
 echo getHtmlareaJavascript($slice_id);
 // FrmJavascript(' window.onload   = xinha_init; window.onunload = HTMLArea.flushEvents;');
 
@@ -205,7 +205,7 @@ FrmInputFile(  'attachment3',   _m('Attachement 3'), $attachment3, false, "*/*")
 FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),
                  'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));
 
-// list selected items to special form - used by manager.js to show items (recipients)
+// list selected items to special form - used by manager.min.js to show items (recipients)
 echo "\n  </form>";
 FrmItemListForm($items);
 

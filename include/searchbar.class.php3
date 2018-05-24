@@ -699,7 +699,7 @@ class AA_Searchbar extends AA_Storable {
         }
 
         echo '</table>
-              <script type="text/javascript"> <!--
+              <script>
              ';
         echo AA_Operators::getJsDefinition();
         echo '
@@ -723,7 +723,7 @@ class AA_Searchbar extends AA_Storable {
                 echo "   ChangeOperators('".$this->form_name."','$i','".$row->getOperator()."');\n";
             }
         }
-        echo '// -->
+        echo '
             </script>';
     }
 }

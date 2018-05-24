@@ -109,12 +109,7 @@ class AA_Http {
      */
     function _goJs($url, $parameters='') {
         $url = get_url( $url, $parameters);
-        echo '
-        <script language="JavaScript" type="text/javascript"> <!--
-            document.location = "'.$url.'";
-          //-->
-        </script>
-        ';
+        echo '<script>document.location = "'.$url.'";</script>';
         exit;
     }
 

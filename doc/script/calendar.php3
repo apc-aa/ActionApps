@@ -13,7 +13,7 @@
     <!--#include virtual="/apc-aa/view.php3?vid=317"-->
     </body></html>
 
-    (c) Jakub Adámek, May 2002
+    (c) Jakub Adï¿½mek, May 2002
 */
 
 /* First you need to add variables from URL --- this is not automatical when including PHP from .shtml
@@ -112,19 +112,11 @@ echo "</form>";
 echo "<h1>".($day ? $day : "").$L_MONTH[$month]." ".$year."</h1>";
 ?>
 
-<SCRIPT LANGUAGE=javascript>
-<!--
-    function getSelected (selectBox) {
-        return selectBox.options [selectBox.selectedIndex].value;
-    }
-
+<script>
     // prepare the view parameters
-    function saveMonthYear()
-    {
-        mytext = 'month-'+getSelected(document.f['month'])
-            +',year-'+getSelected(document.f['year']);
+    function saveMonthYear() {
+        mytext = 'month-'+ document.f['month'].value +',year-'+ document.f['year'].value;
         document.f['set[]'].value = mytext;
         document.f.submit();
     }
-//-->
-</SCRIPT>
+</script>

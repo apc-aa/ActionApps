@@ -1080,7 +1080,7 @@ function url2bin($data) {
 /** HtmlPageBegin function
  * Prints HTML start page tags (html begin, encoding, style sheet, but no title).
  * Chooses the right encoding by get_mgettext_lang().
- * @param bool   $js_lib      if true, includes js_lib.js javascript
+ * @param bool   $js_lib      if true, includes js_lib.min.js javascript
  * @param $lang
  */
 function HtmlPageBegin($js_lib=false, $lang=null) {
@@ -1100,9 +1100,9 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 ';
 
     if ($js_lib) {
-        FrmJavascriptFile( 'javascript/js_lib.js' );
+        FrmJavascriptFile( 'javascript/js_lib.min.js' );
         FrmJavascriptFile( 'javascript/jquery.min.js' );
-        FrmJavascriptFile( 'javascript/aajslib-jquery.php' );
+        FrmJavascriptFile( 'javascript/aajslib-jquery.min.js' );
     }
 }
 

@@ -64,15 +64,15 @@ function PrintSlice($id, $name, $type) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <title><?php echo _m("Admin - Delete Slice");?></title>
- <script Language="JavaScript"><!--
+ <script>
    function DeleteSlice(id,url2go) {
-     if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>"))
-       return
+     if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>")) {
+         return;
+     }
      var url=url2go+"<?php echo StateUrl("?"); ?>"
      document.location=url+'&del='+id;
    }
-// -->
-</script>
+ </script>
 </head>
 <?php
 

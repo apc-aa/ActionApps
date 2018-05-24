@@ -482,7 +482,7 @@ $importer->printForm(!($preview OR $load OR $save));
     page = "<?php echo StateUrl(self_base()."param_wizard.php3")?>"
         + "&list=" + list + "&combo_list=" + combo_list + "&text_param=" + text_param;
     combo_list_el = document.f.elements[combo_list];
-    page += "&item=" + combo_list_el.options [combo_list_el.selectedIndex].value;
+    page += "&item=" + combo_list_el.value;
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }

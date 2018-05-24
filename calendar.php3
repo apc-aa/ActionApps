@@ -112,19 +112,11 @@ echo "</form>";
 echo "<h1>".($day ? $day : "").$L_MONTH[$month]." ".$year."</h1>";
 ?>
 
-<SCRIPT LANGUAGE=javascript>
-<!--
-    function getSelected (selectBox) {
-	    return selectBox.options [selectBox.selectedIndex].value;
-    }
-
+<script>
     // prepare the view parameters
-    function saveMonthYear()
-    {   
-        mytext = 'month-'+getSelected(document.f['month'])
-            +',year-'+getSelected(document.f['year']);
-        document.f['set[74]'].value = mytext;
+    function saveMonthYear() {
+        mytext = 'month-'+ document.f['month'].value +',year-'+ document.f['year'].value;
+        document.f['set[]'].value = mytext;
         document.f.submit();
     }
-//-->
-</SCRIPT>
+</script>

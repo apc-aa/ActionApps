@@ -303,7 +303,7 @@ class itemview {
       list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
 
     $out .= "
-      <script type=\"text/javascript\"><!--
+      <script>
         function showSelectedComments() {
           var url = \"". get_url($script_loc, "sel_ids=1") ."\";
           var done = 0;
@@ -323,7 +323,7 @@ class itemview {
         }
         function showAllComments() {document.location = \"". get_url($script_loc, "all_ids=1#disc") ."\"; }
         function showAddComments() {document.location = \"". get_url($script_loc, "add_disc=1#disc") ."\";}
-       // --></script>";
+      </script>";
    return $out;
   }
 
@@ -407,13 +407,8 @@ class itemview {
           }
       }
       if ( $js ) {
-          $out .= "\n <script type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', '', false) . "\"></script>";
-          $out .= '
-          <script type="text/javascript"> <!--
-          '.$js.'
-          //-->
-          </script>
-          ';
+          $out .= "\n <script src=\"". get_aa_url('javascript/fillform.min.js', '', false) . "\"></script>";
+          $out .= "\n <script>$js</script>";
       }
       return $out;
   }

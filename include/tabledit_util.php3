@@ -639,8 +639,8 @@ function PrintJavaScript_Validate() {
     $_javascript_validate_printed = 1;
 
     echo '
-    <script type="text/javascript">
-    <!--'
+    <script>
+    '
         . get_javascript_field_validation()."
 
         function validate_number (txtfield, minval, maxval, required) {
@@ -671,7 +671,6 @@ function PrintJavaScript_Validate() {
             f[ctrlName].value=1;
             f.submit();
         }
-    // -->
     </script>";
 }
 /** GetEditedKey function

@@ -135,7 +135,7 @@ function GetRSS_tv() {
 $rss_tv = GetRSS_tv();
 
 TV_PageBegin($rss_tv);
-FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib.min.js');
 ProcessFormData('GetRSS_tv', $val, $cmd);
 
 PrintArray($Err);

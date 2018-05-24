@@ -6,8 +6,8 @@
 function MarkedActionGo() {
     var ms = document.itemsform.markedaction_select;
     var add_items;
-    if( ms.options[ms.selectedIndex].value &&  (ms.options[ms.selectedIndex].value != 'nothing') ) {
-        document.itemsform.akce.value = ms.options[ms.selectedIndex].value
+    if( ms.value && (ms.value != 'nothing') ) {
+        document.itemsform.akce.value = ms.value
         // markedactionur is global variable defined in manager.class.php3
         if( markedactionurl[ms.selectedIndex] != null ) {
             var iftarget = document.itemsform.target;

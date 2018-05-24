@@ -309,7 +309,7 @@ $headcode = '
 <script>
   function CallConstantEdit(as_new) {
     var url = "'. EditConstantURL() .'"
-    var conid = document.f.input_show_func_c.options[document.f.input_show_func_c.selectedIndex].value
+    var conid = document.f.input_show_func_c.value
     if ( conid.substring(0,7) == \'#sLiCe-\' ) {
       alert(\''. _m("You selected slice and not constant group. It is unpossible to change slice. Go up in the list.") .'\');
       return;
@@ -337,7 +337,7 @@ $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('codemirror@5');
-$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
 
 HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 $apage->addRequire($script2run, 'AA_Req_Load');

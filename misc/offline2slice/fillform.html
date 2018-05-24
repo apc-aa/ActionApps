@@ -12,9 +12,7 @@
  .inpwide {	background-color : #FFF6EE;	color : Black;	width : 100%;	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; font-size : xx-small; }
 -->
 </style>
-<SCRIPT LANGUAGE="JavaScript">
-
-<!--
+<script>
 /*
  * Javascript for OffLine2Slice filling - begin *******************************
  */
@@ -229,9 +227,8 @@ function preservedReset() {
   document.forms["base"].elements["number.........1"].value   = cislo;
   document.forms["base"].elements["page...........1"].value = stranka;
 }
-//-->
-</SCRIPT>
-</HEAD>
+</script>
+</head>
 
 <BODY>
 <CENTER>
@@ -352,12 +349,12 @@ function preservedReset() {
 <!--
    The data are stored to offline_data field and the form is automaticaly send
    to server (automaticaly called submit())
-//-->	 
+-->
 <FORM NAME="hidden_form" ACTION="http://aa.ecn.cz/aaa/offline.php3" METHOD="post">
 <INPUT NAME="offline_data" TYPE="hidden">
 <INPUT NAME="slice_id" TYPE="hidden" value="45636f6d6f6e69746f72427942455a4c">
 
-<!-- The url of local page, which allows to delete the datafile. //-->
+<!-- The url of local page, which allows to delete the datafile. -->
 <INPUT NAME="del_url" TYPE="hidden" VALUE="C:/java/delete_file.html">
 </FORM>
 

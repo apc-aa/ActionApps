@@ -53,8 +53,7 @@
     <td class=te_td><a href='tabledit.php3?set_tview=ac&cmd[ac][orderby][mail_sender]=1'><b>Sender:</b></a><br>
     </td>
   </tr>
-  <script language=javascript>
-    <!--
+  <script>
         function validate_number (txtfield, minval, maxval, required) {
             if (!validate (txtfield, 'number', required))
                 return false;
@@ -100,26 +99,21 @@
                 txtfield.focus();
                 return false;
             }
-            else return true;
+            return true;
         }
 
         function confirmDelete (url) {
-            if (confirm ('Are you sure you want to permanently DELETE this record?'))
+            if (confirm ('Are you sure you want to permanently DELETE this record?')) {
                 document.URL = url;
-        }
-    // -->
-    </script>
-  <script language=javascript>
-        <!--
-            function prooveFields_ac (formname) {
-                myform = document.forms[formname];
-if (!validate(myform['val[description]'],"", 1))
-                    return false;
-
-                return true;
             }
-        // -->
-        </script>
+        }
+  </script>
+  <script>
+        function prooveFields_ac (formname) {
+            myform = document.forms[formname];
+            return validate(myform['val[description]'],"", 1);
+        }
+  </script>
   <form name='tv_ac_16' method=post action='tabledit.php3?set_tview=ac'>
     <tr>
       <td class=te_td><img src="../images/ok.gif" width="16" height="16" alt="update"></td>
@@ -232,8 +226,7 @@ if (!validate(myform['val[description]'],"", 1))
 <p>The Edit view is used to edit a record. Each field is shown on a separate row.
   Usually only one record is shown although you may show more if you wish.</p>
 <table border=0 cellpadding=3 cellspacing=0 bgcolor='#A8C8B0' class=te_edit_table >
-  <script language=javascript>
-    <!--
+  <script>
         function validate_number (txtfield, minval, maxval, required) {
             if (!validate (txtfield, 'number', required))
                 return false;
@@ -279,26 +272,21 @@ if (!validate(myform['val[description]'],"", 1))
                 txtfield.focus();
                 return false;
             }
-            else return true;
+            return true;
         }
 
         function confirmDelete (url) {
-            if (confirm ('Are you sure you want to permanently DELETE this record?'))
+            if (confirm ('Are you sure you want to permanently DELETE this record?')) {
                 document.URL = url;
-        }
-    // -->
-    </script>
-  <script language=javascript>
-        <!--
-            function prooveFields_ac_edit (formname) {
-                myform = document.forms[formname];
-if (!validate(myform['val[description]'],"", 1))
-                    return false;
-
-                return true;
             }
-        // -->
-        </script>
+        }
+  </script>
+  <script>
+        function prooveFields_ac_edit (formname) {
+            myform = document.forms[formname];
+            return validate(myform['val[description]'],"", 1);
+        }
+  </script>
   <form name='tv_ac_edit_16' method=post onSubmit='' action='tabledit.php3'>
     <tr>
       <td class=te_edit_td><span class=te_edit_column_header>description</span><br>

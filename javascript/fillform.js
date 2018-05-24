@@ -23,14 +23,6 @@ http://www.apc.org/
 
     Created by Jakub Adamek, January 2002 */
 
-myAlertCount = 0;
-
-function myAlert(x) {
-    if (myAlertCount++ < 150) {
-        alert(x);
-    }
-}
-
 function dec2hex(dec) {
     if (dec <= 0) return "0";
     hex = "";
@@ -117,10 +109,6 @@ function prooveFilledIf(formName, fields) {
     }
 }
 
-function getSelected(selectBox) {
-    return selectBox.options [selectBox.selectedIndex].value;
-}
-
 // the crazy Netscape returns 104 as year 2004 (hoping nobody will use it in the 21th century perhaps)
 function getYearNetscapeSafe(myDate) {
     year = myDate.getYear();
@@ -179,9 +167,9 @@ function setToday(formName,dateField, startYear) {
 
 function getAADate(formName,dateField,emptyValue) {
     var f = document.forms[formName];
-    month = getSelected(f[dateField+"_month"]);
-    day = getSelected(f[dateField+"_day"]);
-    year = getSelected(f[dateField+"_year"]);
+    month = f[dateField+"_month"].value;
+    day   = f[dateField+"_day"].value;
+    year  = f[dateField+"_year"].value;
     if (month != emptyValue && day != emptyValue && year != emptyValue)
         return new Date (year,month-1,day).getTime();
     else
@@ -227,27 +215,13 @@ function setControlOrAADate(formName, controlName, newValue, datePrefix, html, t
 /*  E N D  O F  A A   D A T E   F U N C T I O N S  */
 
 
-/* moves the page to top avoiding display in frames
-    returns true if the page is on top, false otherwise */
-
-function setMeTop()
-{
-    if (top.document.location.href != document.location.href) {
-        top.document.location.href = document.location.href;
-        return false;
-    }
-    else return true;
-}
-
 /* gets a control by name in IE and Netscape */
-
 function getControlByName(formName, controlName) {
     return (document.forms[formName] == null) ? null : document.forms[formName][controlName];
 }
 
 /* sets a control value to the given one - works fine with text fields, hidden fields,
     select boxes (multiple not tried, but should be OK) and check boxes (multiple OK) */
-
 function setControl(formName, controlName, newValue) {
     var myControl = getControlByName(formName, controlName);
     if (myControl != null) {
@@ -278,7 +252,6 @@ function setControl(formName, controlName, newValue) {
    Purpose: sets multiple control types in a common way (multiple select box)
    ToDo: implement multiple check-boxes
 */
-
 function setControlArray(formName, controlName, newArray) {
     var myControl = getControlByName(formName, controlName);
     if (myControl != null) {
@@ -322,7 +295,6 @@ function setControlArray(formName, controlName, newArray) {
    Purpose:  get value set in various form controls
    Works with: see getControlValue + AA three-select-boxes-date
 */
-
 function getControlOrAADate(formName, controlName, datePrefix, emptyValue) {
     var myControl = getControlByName(formName, controlName);
     if (myControl != null)
@@ -343,16 +315,12 @@ function getControlOrAADate(formName, controlName, datePrefix, emptyValue) {
 function getControlValue(formName, controlName) {
     var myControl = getControlByName(formName, controlName);
     if (myControl != null) {
-        if (myControl.type.substr(0,6) == "select")
-            return getSelected(myControl);
-        else if (myControl.type == "checkbox")
-            return myControl.checked ? 1 : 0;
-        else return myControl.value;
+        return (myControl.type == "checkbox") ? (myControl.checked ? 1 : 0) : myControl.value;
     }
-    else return null;
+    return null;
 }
 
-/* ITEMEDIT.PHP3 field JavaScript functions */
+/* ITEMEDIT.PHP3 field JavaScript functions - AA API */
 
 function getField(fieldID) {
     return getControlOrAADate('inputform','v'+unpackID(fieldID), 'tdctr_', '');
@@ -364,11 +332,11 @@ function setField(fieldID, newValue) {
 }
 
 function hideField(fieldID) {
-    $$('.cont-v'+unpackID(fieldID)).invoke('hide');
+    [].forEach.call(document.querySelectorAll('.cont-v'+unpackID(fieldID)), function(e) { e.style.display='none'; });
 }
 
 function showField(fieldID) {
-    $$('.cont-v'+unpackID(fieldID)).invoke('show');
+    [].forEach.call(document.querySelectorAll('.cont-v'+unpackID(fieldID)), function(e) { e.style.display=''; });
 }
 
 /* Miscellaneous */

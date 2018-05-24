@@ -90,7 +90,7 @@ $headcode = <<<'EOT'
 <script>
      function SelectViewSlice() {
        var i,j;
-       var xsid=document.fvtype.view_slice.options[document.fvtype.view_slice.selectedIndex].value;
+       var xsid=document.fvtype.view_slice.value;
          // clear selectbox
        for ( i=(document.fvtype.view_view.options.length-1); i>=0; i--){
          document.fvtype.view_view.options[i] = null
@@ -110,7 +110,7 @@ $apage = new AA_Adminpageutil('sliceadmin','views');
 $apage->setTitle(_m("Admin - design View"));
 $apage->setSubtitle(_m(""));
 $apage->addRequire('codemirror@5');
-//$apage->addRequire(get_aa_url('/javascript/js_lib.js?v='.AA_JS_VERSION ));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
