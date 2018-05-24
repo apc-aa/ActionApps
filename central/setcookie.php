@@ -24,11 +24,10 @@ http://www.apc.org/
  * This is the blank pixel script, which can be used for authentication
  * to another domain if you are already logged in one - just include folowing
  * HTML code to sitemodule of example-one.org:
- *   <img src="//www.example-two.org/apc-aa/central/setcookie.php?s={cookie:AA_Sess}">
+ *   <img src="//www.example-two.org/apc-aa/central/setcookie.php?s={cookie:AA_Session}">
  * This will set the auth cookie in example-two.org.
  */
-setcookie("AA_Sess", $_GET['s'], 0, '/');
+setcookie("AA_Session", $_GET['s'], 0, '/');
 header('Content-Type: image/gif');
 //pixel blank
 echo "\x47\x49\x46\x38\x37\x61\x1\x0\x1\x0\x80\x0\x0\xfc\x6a\x6c\x0\x0\x0\x2c\x0\x0\x0\x0\x1\x0\x1\x0\x0\x2\x2\x44\x1\x0\x3b";
-
