@@ -262,8 +262,8 @@ class AA_Field {
                                 $input_help ?: $this->getProperty('input_help'),
                                 $this->getProperty('input_morehlp'),
                                 null,               // $example;
-                                $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
-                                AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
+                                $this->getProperty('html_show')    ? AA_Formatters::STANDARD_FORMATTERS : 0,
+                                $this->getProperty('html_default') ? AA_Formatters::RAW : AA_Formatters::TEXT2HTML,
                                 null,               // perms
                                 $this->getDefault(),
                                 $translations

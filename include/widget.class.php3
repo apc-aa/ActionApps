@@ -499,7 +499,8 @@ class AA_Widget extends AA_Components {
         return $ret;
     }
 
-    /** @return widget HTML for using as AJAX component
+
+    /** @return string - widget HTML for using as AJAX component
      *  @param  $aa_property - the variable
      *  @param  $content        - contain the value of propertyu to display
      */
@@ -507,7 +508,11 @@ class AA_Widget extends AA_Components {
         return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content, 'ajax'), $aa_property);
     }
 
-    /* Creates all common ajax editing buttons to be used by different inputs */
+    /** Creates all common ajax editing buttons to be used by different inputs
+     *  @param $winfo array
+     *  @param $aa_property AA_Property
+     *  @return string
+     */
     function _finalizeAjaxHtml($winfo, $aa_property) {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
@@ -523,9 +528,9 @@ class AA_Widget extends AA_Components {
         return $widget_html;
     }
 
-    /** @return widget HTML for using as Live component (in place editing)
-     *  @param  $aa_property - the variable
-     *  @param  $content        - contain the value of propertyu to display
+    /** @return string - widget HTML for using as Live component (in place editing)
+     *  @param  $aa_property AA_Property - the variable
+     *  @param  $content     - contain the value of propertyu to display
      */
     function getLiveHtml($aa_property, $content, $function=null) {
         // add JS OK Function
@@ -699,6 +704,11 @@ class AA_Widget_Txt extends AA_Widget {
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
+     *  @param $aa_property AA_Property
+     *  @param $content AA_Item
+     *  @param string $type
+     *  @return array
+     *  @throws Exception
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content, $this->item_index);
@@ -710,16 +720,25 @@ class AA_Widget_Txt extends AA_Widget {
 
         $delim          = '';
         $value          = $content->getAaValue($aa_property->getId());
-        $rows           = $this->getProperty('rows', min(substr_count($value[0],"\n")+4, 30));
+        $def_rows       = $this->getProperty('rows',4);
 
         $max_characters = (int)$this->getProperty('max_characters', 0);
         $required       = $aa_property->isRequired() ? 'required' : '';
+
+        $widget        .= AA_Formatters::getFormattersRadio($base_name, $aa_property, $value);
 
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty textarea at least
         }
         $value->fixTranslations($aa_property->getTranslations());
         foreach ($value as $i => $val) {
+            if (($my_rows = substr_count($val,"\n")) > $def_rows) {
+                $rows = min($my_rows+2, 30 );
+            } else {
+                $rows = $def_rows;
+            }
+            // $rows         = max( $def_rows, min($my_rows>$def_rowssubstr_count($val,"\n")+4, 30));
+
             $input_name   = $base_name ."[$i]";
             $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required);
             $delim        = "\n<br />";
@@ -732,7 +751,7 @@ class AA_Widget_Txt extends AA_Widget {
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-     protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
+    protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
 
          $showhtmlarea = strpos(get_class($this), 'AA_Widget_Edt') !== false;
          //if ( $showhtmlarea ) {
@@ -757,7 +776,7 @@ class AA_Widget_Txt extends AA_Widget {
              $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
          }
          return $ret;
-     }
+    }
 }
 
 /** Textarea with Presets widget */
@@ -1587,7 +1606,7 @@ class AA_Widget_Fil extends AA_Widget {
                 <input type="submit" name="'.$base_id.'upload" id="'.$base_id.'upload" value="'._m('Upload').'" style="display:none;">
                 </form>
                 <iframe id="iframe'.$base_id.'" name="iframe'.$base_id.'" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
-                <script language="JavaScript" type="text/javascript">
+                <script>
                   document.getElementById("ret_code_enc'.$base_id.'").value = document.getElementById("ajaxv_'.$base_id.'").getAttribute(\'data-aa-alias\');
                 </script>
             ';
@@ -1595,9 +1614,9 @@ class AA_Widget_Fil extends AA_Widget {
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
-    /** @return widget HTML for using as Live component (in place editing)
-     *  @param  $aa_property - the variable
-     *  @param  $content        - contain the value of propertyu to display
+    /** @return string widget HTML for using as Live component (in place editing)
+     *  @param  $aa_property AA_Property - the variable
+     *  @param  $content  AA_Item        - contain the value of propertyu to display
      */
     function getLiveHtml($aa_property, $content, $function=null) {
         //return $this->getAjaxHtml($aa_property, $content);
@@ -1688,7 +1707,7 @@ class AA_Widget_Tag extends AA_Widget {
         $prefill = json_encode($json_val);     //'[{id:"CA", text:"Califoria"}, {id:"CERVENA", text:"Red"}]';
 
         $widget        =    "<input type=hidden id=\"$input_id\" name=\"$input_name\" style=\"width:300px;\">
-        <script type=\"text/javascript\">
+        <script>
           AA_LoadCss('".AA_INSTAL_PATH."javascript/select2/select2.css');
           AA_LoadJs( window.Select2 !== undefined, function() {aa_maketags('$input_id', $prefill, '$def_slice_id', '$def_field_id','".AA_INSTAL_PATH."');}, '".AA_INSTAL_PATH."javascript/select2/select2.min.js');
         </script>
@@ -2382,8 +2401,8 @@ class AA_Property extends AA_Storable {
             'input_help'                  => new AA_Property( 'input_help'                 , _m('input_help'                 ), 'string',   false),
             'input_morehlp'               => new AA_Property( 'input_morehlp'              , _m('input_morehlp'              ), 'string',   false),
             'example'                     => new AA_Property( 'example'                    , _m('example'                    ), 'string',   false),
-            'show_content_type_switch'    => new AA_Property( 'show_content_type_switch'   , _m('show_content_type_switch'   ), 'bool',     false),
-            'content_type_switch_default' => new AA_Property( 'content_type_switch_default', _m('content_type_switch_default'), 'string',   false),
+            'show_content_type_switch'    => new AA_Property( 'show_content_type_switch'   , _m('show_content_type_switch'   ), 'int',      false), // bitfield
+            'content_type_switch_default' => new AA_Property( 'content_type_switch_default', _m('content_type_switch_default'), 'int',      false), // int or maybe bitfield in future
             'perm'                        => new AA_Property( 'perm'                       , _m('perm'                       ), 'string',   false),
             'const_arr'                   => new AA_Property( 'const_arr'                  , _m('const_arr'                  ), 'string',   true),
             'default'                     => new AA_Property( 'default'                    , _m('default'                    ), 'AA_Value', true)
@@ -2392,13 +2411,15 @@ class AA_Property extends AA_Storable {
 
 
     /** getters */
-    function getId()           { return $this->id;           }
-    function getName()         { return $this->name;         }
-    function getType()         { return $this->type;         }
-    function getHelp()         { return $this->input_help;   }
-    function getExample()      { return $this->example;   }
-    function getConstants()    { return $this->const_arr;    }
-    function getTranslations() { return $this->translations; }
+    function getId()                  { return $this->id;           }
+    function getName()                { return $this->name;         }
+    function getType()                { return $this->type;         }
+    function getHelp()                { return $this->input_help;   }
+    function getExample()             { return $this->example;      }
+    function getConstants()           { return $this->const_arr;    }
+    function getTranslations()        { return $this->translations; }
+    function getContentTypeSwitches() { return $this->show_content_type_switch;    }
+    function getContentTypeDefault()  { return $this->content_type_switch_default; }
 
     public function getValidator() {
         if (!is_object($this->_validator)) {
@@ -2435,7 +2456,10 @@ class AA_Property extends AA_Storable {
         return $new_value;
     }
 
-    /** Converts AA_Value to real property value (scallar, Array, ...) */
+    /** Converts AA_Value to real property value (scallar, Array, ...)
+     *  @param $aa_value AA_Value
+     *  @return array
+     */
     function toValue($aa_value) {
         $validator = $this->getValidator();
         if ($this->isMulti()) {
@@ -2452,6 +2476,7 @@ class AA_Property extends AA_Storable {
 
     /** returns default widget for given property - it tries to identify,
      *  if it is multiple, uses constants, is bool, ...
+     *  @param $form AA_Form
      */
     function addPropertyFormrows($form) {
         if ($this->isObject()) {
@@ -2626,33 +2651,71 @@ class AA_Property extends AA_Storable {
 /** Base class for formatters (like HTML/Plain text/wiki/Texy/...)
 *   Currently we use just HTML and Plain text
 */
-class AA_Formatter {
+class AA_Formatters {
 
-    /// Static ///
+    const RAW       = 1;   // former HTML - see constants.php3 - FLAG_HTML
 
-    /** getStandardFormattersBitfield function
-     * @param $html_show
-     *  @return bit field representig, which formatters we want to show. 65535
+    const TEXT2HTML = 0;   // default
+
+    /** bit-field representig, which formatters we want to show. 65535
      *   means "all standard formatters", which means all 16 standard formatters.
      *   We use just two, at this moment - HTML (=1) and PLAIN (=2)
      *   (we will continue on bit basis, so next formatter would be xxx (=4))
      */
-    static function getStandardFormattersBitfield() {
-        // @todo move to const in php5
-        return 65535;
+    const STANDARD_FORMATTERS = 1;   // default  0 | 1 -  TEXT2HTML | RAW | ... (will be increased up to 65535 after adding 128 - TEXY, ....)
+
+
+    protected static function getFromatters() {
+        static $formatters = null;
+        if (is_null($formatters)) {
+            $formatters = array(
+                0 => array('TEXT2HTML', _m("Plain text")),
+                1 => array('RAW', _m("HTML"))
+            );
+        }
+        return $formatters;
     }
 
-    /** no formaters */
-    static function getNoneFormattersBitfield() {
-        return 0;
-    }
-
-    /** getFlag function
-     *  @param $formatter_type
-     *  @return (bit) id of the formatter_type (HTML or PLAIN, at this moment)
+    /** html_radio function
+     * Prints html/plan_text radiobutton
+     * @param string $varname - name of widget variable
+     * @param AA_Property $aa_property
+     * @param AA_Value $value
      */
-    static function getFlag($formatter_type) {
-        return ($formatter_type == 'HTML') ? 1 : 2;
+    static function getFormattersRadio($basevarname, $aa_property, $value) {
+        $flag_frmtr  = $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);
+        if (!($contenttypes = $aa_property->getContentTypeSwitches())) {
+            return $flag_frmtr ? '<input type=hidden name="'.$basevarname.'[flag]" value="'.$flag_frmtr.'">' : '';
+        }
+        $formatters = self::getFromatters();
+
+        $ret  = '<div class=aa-formatters>';
+        foreach ($formatters as $bit => $formdef) {
+            if (($bit==0) OR ($contenttypes & $bit)) {
+                $ret .= ' <label><input type=radio name="'.$basevarname.'[flag]" value="'.$bit.'"'. (($flag_frmtr == $bit) ? ' checked' : ''). '>'.$formdef[1].'</label>';
+            }
+        }
+        $ret .= '</div>';
+
+        //$htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+
+        //// conversions menu
+        // if ($convertor = ($convert ? $this->get_convertors() : false) ) {
+        //     $this->echovar($convertor,   'conv');
+        // }
+
+        return $ret;
     }
 }
+
+class AA_Formatter {
+
+}
+
+class AA_Formatter_Raw extends AA_Formatter {
+    const BIT_VALUE = 1;
+
+}
+
+
 
