@@ -944,6 +944,8 @@ class AA_Inputfield {
                             $this->inputLocalURLPick($url);
                             break;
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
+                case 'txt': $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                            break;
                 //case 'txt': if (AA_Jstriggers::isTriggers()) {
                 //                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
                 //            } else {

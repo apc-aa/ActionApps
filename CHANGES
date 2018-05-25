@@ -3,6 +3,8 @@
          - AA JS Triggers moved to its class
          - HTML / Plain text Formatters are generalized to its own class
          - PNG files are optimized for size
+         - fixed central/setcookie.php for crossdomain auth
+         - icons in admin-ecn.css inserted directly inside .css file - no external images needed
 18-05-02 - initial implementation of "Permission alias" site-module setting
 (honzam)   You can define the alias, which will be checked for all the displayed
            {xid} (=pages). If the value will be word "Valid", then the page will
