@@ -1,3 +1,6 @@
+18-05-28 - Multiple checkbox switched to newer form code
+(honzam) - Textarea with translations uses the new form code as well, which fixes the problem with Plain text / HTML
+           and CKeditor
 18-05-24 - Textarea and Text Field moved back to use older codepath (new one needs to rewrite JS triggers (SetValue()...)
 (honzam) - AA javascript libraries are compressed, the JS code inside optimized a bit.
          - AA JS Triggers moved to its class

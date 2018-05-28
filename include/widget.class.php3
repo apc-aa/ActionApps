@@ -740,7 +740,7 @@ class AA_Widget_Txt extends AA_Widget {
             // $rows         = max( $def_rows, min($my_rows>$def_rowssubstr_count($val,"\n")+4, 30));
 
             $input_name   = $base_name ."[$i]";
-            $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required);
+            $widget      .= $delim. $this->_getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches());
             $delim        = "\n<br />";
             $required     = ''; // only one is required
         }
@@ -751,7 +751,7 @@ class AA_Widget_Txt extends AA_Widget {
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-    protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
+    protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required, $no_htmleditor) {
 
         $showhtmlarea = strpos(get_class($this), 'AA_Widget_Edt') !== false;
         //if ( $showhtmlarea ) {
@@ -773,7 +773,7 @@ class AA_Widget_Txt extends AA_Widget {
 
         if ( $showhtmlarea ) {
             $areaclass    = ' class=ckeditor';
-        } else {
+        } elseif (!$no_htmleditor) {
             $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             //$convertor   = $convert ? $this->get_convertors() : false;
