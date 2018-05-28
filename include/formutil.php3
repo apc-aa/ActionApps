@@ -879,13 +879,13 @@ class AA_Inputfield {
 //                            }
 //                            $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
 //                            break;
-                case 'mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
-                            if ( !is_null($item) ) {
-                                $conds_str = $item->unalias($conds_str);
-                            }
-                            $this->varname_modify('[]');         // use slightly modified varname
-                            $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
-                            break;
+                //case 'mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
+                //            if ( !is_null($item) ) {
+                //                $conds_str = $item->unalias($conds_str);
+                //            }
+                //            $this->varname_modify('[]');         // use slightly modified varname
+                //            $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
+                //            break;
                 case 'mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
@@ -944,8 +944,14 @@ class AA_Inputfield {
                             $this->inputLocalURLPick($url);
                             break;
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
-                case 'txt': $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
-                            break;
+                case 'txt': if (!$this->translations) {
+                                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                            } else {
+                                $this->inputWidget($item, $slice_id);          // standard
+                            }
+                    break;
+                //case 'txt': $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                //            break;
                 //case 'txt': if (AA_Jstriggers::isTriggers()) {
                 //                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
                 //            } else {
@@ -959,6 +965,7 @@ class AA_Inputfield {
                 case 'rio':
                 case 'inf':
                 case 'edt':
+                case 'mch':
                 //case 'txt':
                 //case 'fld':
                 default:    $this->inputWidget($item, $slice_id);
@@ -1085,20 +1092,15 @@ class AA_Inputfield {
     /** html_radio function
      * Prints html/plan_text radiobutton
      * @param bool $convert
-     * @param string $varname
      */
-    function html_radio($convert = false, $varname = '') {
-        if (!$varname) {
-            $varname = $this->varname;
-        }
-
+    function html_radio($area = false) {
         if ( $this->html_rb_show ) {
             $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
             $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
-            $convertor   = $convert ? $this->get_convertors() : false;
+            $convertor   = $area ? $this->get_convertors() : false;
             if ( $convertor ) {
                 $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="' . COLOR_TABBG . "\">\n   <tr><td>");
             }
@@ -1110,10 +1112,12 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</span>');
-            $this->echoo("&nbsp;&nbsp;");
-            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
-            $this->echovar($htmlareaedit, 'htmlarea_edit_link');
-            $this->echoo('</span>');
+            if ($area) {
+                $this->echoo("&nbsp;&nbsp;");
+                $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
+                $this->echovar($htmlareaedit, 'htmlarea_edit_link');
+                $this->echoo('</span>');
+            }
 
             if ( $convertor ) {
                 $this->echoo("</td>");
@@ -1371,6 +1375,12 @@ class AA_Inputfield {
             $this->field_tr(false);
         }
         $this->echoo( ($colspan==1) ? '<td>' : "<td colspan=\"$colspan\">");
+        $this->html_radio(!$showhtmlarea);
+
+        if (!$showhtmlarea AND $showrich_href ) {
+            AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
+//                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
+        }
 
         // fix for IE - where the textarea icons are too big so there is
         // no space for the text
@@ -1403,8 +1413,6 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = array($lang, $classes);
 
-                $this->html_radio($showhtmlarea ? false : 'convertors', $id2);
-
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
@@ -1422,13 +1430,7 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $this->html_radio($showhtmlarea ? false : 'convertors');
-
             $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
-            if (!$showhtmlarea AND $showrich_href ) {
-                AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
-//                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
-            }
         }
         $this->echovar($widg);
         $this->helps('plus');

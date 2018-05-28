@@ -753,8 +753,8 @@ class AA_Widget_Txt extends AA_Widget {
      */
     protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required) {
 
-         $showhtmlarea = strpos(get_class($this), 'AA_Widget_Edt') !== false;
-         //if ( $showhtmlarea ) {
+        $showhtmlarea = strpos(get_class($this), 'AA_Widget_Edt') !== false;
+        //if ( $showhtmlarea ) {
              // $this->html_radio($showhtmlarea ? false : 'convertors');
 
              // fix for IE - where the textarea icons are too big so there is
@@ -762,20 +762,31 @@ class AA_Widget_Txt extends AA_Widget {
              // if ($showhtmlarea) {
              //    $rows += 8;
              //}
-         //}
+        //}
 
-         $areaclass = $showhtmlarea ? ' class=ckeditor' : '';
+        $input_id     = AA_Form_Array::formName2Id($input_name);
+        $input_value  = myspecialchars($val);
+        $maxlength    = $max_characters ? " maxlength=\"$max_characters\"" : '';
 
+        $areaclass = '';
+        $htmlareaedit = '';
 
-         $input_id     = AA_Form_Array::formName2Id($input_name);
-         $input_value  = myspecialchars($val);
-         $maxlength    = $max_characters ? " maxlength=\"$max_characters\"" : '';
+        if ( $showhtmlarea ) {
+            $areaclass    = ' class=ckeditor';
+        } else {
+            $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+            // conversions menu
+            //$convertor   = $convert ? $this->get_convertors() : false;
+            //if ( $convertor ) {
+            //    $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="' . COLOR_TABBG . "\">\n   <tr><td>");
+            //}
+        }
 
-         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
-         if ($lang = AA_Content::getLangId($i)) {
-             $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
-         }
-         return $ret;
+        $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
+        if ($lang = AA_Content::getLangId($i)) {
+            $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
+        }
+        return $ret;
     }
 }
 
@@ -2708,14 +2719,14 @@ class AA_Formatters {
     }
 }
 
-class AA_Formatter {
-
-}
-
-class AA_Formatter_Raw extends AA_Formatter {
-    const BIT_VALUE = 1;
-
-}
+//class AA_Formatter {
+//
+//}
+//
+//class AA_Formatter_Raw extends AA_Formatter {
+//    const BIT_VALUE = 1;
+//
+//}
 
 
 
