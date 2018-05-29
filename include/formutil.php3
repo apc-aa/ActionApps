@@ -1094,6 +1094,8 @@ class AA_Inputfield {
      * @param bool $convert
      */
     function html_radio($area = false) {
+        $varname = $this->varname;
+
         if ( $this->html_rb_show ) {
             $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
