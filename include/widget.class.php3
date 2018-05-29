@@ -725,7 +725,7 @@ class AA_Widget_Txt extends AA_Widget {
         $max_characters = (int)$this->getProperty('max_characters', 0);
         $required       = $aa_property->isRequired() ? 'required' : '';
 
-        $widget        .= AA_Formatters::getFormattersRadio($base_name, $aa_property, $value);
+        $widget        .= ($type =='normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
 
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty textarea at least
@@ -2694,9 +2694,8 @@ class AA_Formatters {
      * @param AA_Value $value
      */
     static function getFormattersRadio($basevarname, $aa_property, $value) {
-        $flag_frmtr  = $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);
         if (!($contenttypes = $aa_property->getContentTypeSwitches())) {
-            return $flag_frmtr ? '<input type=hidden name="'.$basevarname.'[flag]" value="'.$flag_frmtr.'">' : '';
+            return self::getHiddenFormatters($basevarname, $aa_property, $value);
         }
         $formatters = self::getFromatters();
 
@@ -2717,6 +2716,18 @@ class AA_Formatters {
 
         return $ret;
     }
+
+    /**
+     * Prints hidden formatter flag, if necessary
+     * @param string $varname - name of widget variable
+     * @param AA_Property $aa_property
+     * @param AA_Value $value
+     */
+    static function getHiddenFormatters($basevarname, $aa_property, $value) {
+        $flag_frmtr  = $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);
+        return $flag_frmtr ? '<input type=hidden name="'.$basevarname.'[flag]" value="'.$flag_frmtr.'">' : '';
+    }
+
 }
 
 //class AA_Formatter {

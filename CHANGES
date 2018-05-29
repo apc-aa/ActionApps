@@ -1,3 +1,5 @@
+18-05-29 - do not show html / plain text switch for ajax and live widgets
+(honzam) - quickfix of plaintext/HTML + Editor link broken with last commit
 18-05-28 - Multiple checkbox switched to newer form code
 (honzam) - Textarea with translations uses the new form code as well, which fixes the problem with Plain text / HTML
            and CKeditor
