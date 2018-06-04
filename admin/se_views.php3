@@ -74,9 +74,7 @@ function PrintViewRow($id, $name, $type) {
             <td class=\"tabtxt\">$name</td>
             <td class=\"tabtxt\"><a href=\"$edit_url\">". _m("Edit") . "</a></td>
             <td class=\"tabtxt\"><a href=\"$view_url\" title=\"". _m('show this view') ."\">". _m("Show") . "</a></td>
-            <td class=\"tabtxt\"><a href=\"javascript:GoIfConfirmed('".
-                          StateUrl(con_url("./se_views.php3", "del=1&vid=". urlencode($id))) ."','".
-                          _m("Are you sure you want to delete selected view?") ."')\">". _m("Delete") ."</a></td>
+            <td class=\"tabtxt\"><a href=\"javascript:;\" onclick=\"if (confirm('"._m("Are you sure you want to delete selected view?")."')) {document.location='".StateUrl(con_url("./se_views.php3", "del=1&vid=". urlencode($id)))."';}\">". _m("Delete") ."</a></td>
            </tr>";
 }
 
