@@ -274,8 +274,8 @@ if ($slice_fields) {
 
 echo "</select> <select name='new_id_number'>
 <option value='.'>.";
-for ($i = 1; $i < 200; ++$i) {
-    echo "<option value='$i'>$i</option>";
+for ($i = 1; $i <= 9999; ++$i) {
+    echo "<option>$i</option>";
 }
 echo "</select><br><br>";
 FrmTabSeparator(_m("Fields"), array("update" => array("type" => "hidden", "value" => "1"),
