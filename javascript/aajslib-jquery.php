@@ -39,6 +39,12 @@ function AA_GetConf(prop) {
      }
 }
 
+// for backward compatibility - so you can use AA_Config.loader
+var AA_Config = {
+  get AA_INSTAL_PATH() {return AA_GetConf('path');},
+  get loader()         {return AA_GetConf('loader');}
+}
+
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
     $('div.switcher .active').removeClass('active');
