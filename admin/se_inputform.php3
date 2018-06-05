@@ -300,9 +300,9 @@ if ( !$update ) {      // load defaults
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
-   window.cm_a1  = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
+   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
    window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("alias2_func"), opts);
-   window.cm_a3  = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);
+   window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);
    ';
 
 $headcode = '
@@ -337,9 +337,9 @@ $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('codemirror@5');
-$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION ));
 
-HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+//HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);

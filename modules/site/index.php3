@@ -132,14 +132,27 @@ if ($sitefix) {
 }
 ModW_StoreTree($tree, $module_id);
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo '<title>'. _m("Editor window - site code manager") .'</title>';
-FrmJavascriptFile('javascript/js_lib.min.js');
-echo '</head>';
+$apage = new AA_Adminpageutil('codemanager');
+$apage->setModuleMenu( 'modules/site');
+$apage->setTitle( _m("Editor window - site code manager") );
+$apage->addRequire('codemirror@5');
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION ));
 
-// module specific navigation bar
-require_once AA_BASE_PATH."modules/site/menu.php3";
-showMenu($aamenus, "codemanager");
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
+   ';
+
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->printHead($err, $Msg);
+
+?>
+    <style>
+      .CodeMirror { min-height: 500px; }
+    </style>
+<?php
+
+
 
 function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {
     if (!$link) {
@@ -176,9 +189,6 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
       </table>
       <br>';
 
-// show tree
-if ($debugsite) huhl("XYZZY:SiteIndex tree=",$tree);
-
 // callback functions
 $functions = array ('spot'          => 'ModW_PrintSpotName_Start',
                     'before_choice' => 'ModW_PrintChoice_Start',
@@ -191,9 +201,5 @@ echo '</td><td valign="top">';
 ModW_ShowSpot($tree, $module_id, $r_spot_id);
 
 echo '</td></tr></table>';
-if ($debug) print("<p>Action=$akce; r_spot_id=$r_spot_id</p>");
-echo ' </body>
-</html>';
 
-page_close();
-exit;
+$apage->printFoot();
