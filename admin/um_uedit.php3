@@ -163,7 +163,7 @@ HtmlPageBegin(true);
  <title><?php echo _m("User management - Users");?></title>
 <script>
   function UpdateUser(action) {
-    document.fx.posted_groups.value = CommaDelimeted( 'document.fx.sel_groups_sel' )
+    document.fx.posted_groups.value = CommaDelimeted( 'sel_groups_sel' )
     document.fx.submit_action.value = action
     document.fx.submit()
   }

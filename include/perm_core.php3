@@ -562,7 +562,7 @@ class AA_Perm {
     }
 
     /** getMembership function
-     * @param $uid
+     * @param string $uid
      * @param $flags - use to obey group in groups?
      * @return return array of group_ids, where id (group or user) is a member
      */
@@ -755,6 +755,11 @@ class AA_Permsystem {
     function findUsernames($pattern)                            {}
     function findUserByLogin($user_login)                       {}
     function findGroups($pattern)                               {}
+
+    /** getGroup function
+     *  @param $user_id
+     *  @return array(uid, name, description) or false if not found
+     */
     function getGroup($group_id)                                {}
     function getIDsInfo($uid)                                   {}
     function getGroupMembers($group_id)                         {}
@@ -883,6 +888,26 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             $groups[$set_id] = array('name' => "$prefix: $name");
         }
         return $groups;
+    }
+
+    /** getGroup function
+     *  @param $group_id
+     *  @return array(uid, name, description) or false if not found
+     */
+    function getGroup($group_id) {
+        $ret = array('uid' => $group_id);
+        if ( $this->_isGroupReader($group_id) ) {
+            $ret['description'] = _m('Reader Slice');
+        } elseif ( $this->_isGroupReaderSet($group_id) ) {
+            $ret['description'] = _m('Reader Set');
+        } else {
+            return false;
+        }
+        if ($info =  $this->getIDsInfo($group_id)) {
+            $ret['name'] = $info['name'];
+            return $ret;
+        }
+        return false;
     }
 
     /** getIDsInfo function

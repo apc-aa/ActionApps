@@ -111,7 +111,7 @@ HtmlPageBegin(true);
  <title><?php echo _m("User management - Groups");?></title>
 <script>
 function UpdateGroup(action) {
-  document.f.posted_users.value  = CommaDelimeted( 'document.f.sel_users_sel' )
+  document.f.posted_users.value  = CommaDelimeted( 'sel_users_sel' )
   document.f.submit_action.value = action
   document.f.submit()
 }
@@ -220,7 +220,7 @@ if ( $grp_edit OR ($submit_action == "update_submit") ) {
 } else {
     FrmTabCaption(_m("New group"));
 }
-?></b>
+?>
 </td>
 </tr>
 <tr><td>
@@ -250,37 +250,48 @@ $form_buttons["submit_action"]  = array("value"=>"0");
 if ( $grp_edit OR ($submit_action == "update_submit") ) {
     FrmStaticText( _m("Group Id"), $group_data['uid']);
 }
-FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
-FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
+
+if ($selected_group AND AA::$perm->isUserEditable($selected_group)) {
+    FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
+    FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
+} else {
+    if ($group_name) { FrmStaticText( _m("Name"), $group_name); }
+    if ($group_name) { FrmStaticText( _m("Description"), $group_description); }
+}
+
 FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
 echo '</table></td></tr>';
 
-if ( !$add_submit AND !$grp_new) {
-    FrmTabSeparator(_m("Users"));
+if ( !$add_submit AND !$grp_new ) {
 
-    echo "
-  <tr><td>
-  <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"".COLOR_TABBG."\">";
+    if ($selected_group AND AA::$perm->isUserEditable($selected_group)) {
 
-  // User - group membership -----------------------------------------
+        FrmTabSeparator(_m("Users"));
 
-    echo '<tr><td width="190" align="center">'. _m("All Users") .'</td>
-                  <td width="60">&nbsp;</td>
-                  <td width="190" align="center">'. _m("Group's Users") .'</td></tr>
-        <tr><td><input type="text" name="usr1_flt" value="'. safe($usr1_flt) .'">
-                <input type="submit" name="usr1_submit" value="'. _m("Search") .'"></td>
-                  <td>&nbsp;</td>
-                  <td>&nbsp;</td></tr>
-        <tr><td align="center" valign="TOP">';
-              SelectGU_ID("all_users_sel", $all_users, $all_users_sel, "long", $sel_users);
-    echo '    </td>
-            <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(\'document.f.all_users_sel\',\'document.f.sel_users_sel\')" align="center"><br><br>
-                <input type="button" VALUE="  <<  " onClick = "MoveSelected(\'document.f.sel_users_sel\',\'document.f.all_users_sel\')" align="center"></td>
-                  <td align="CENTER" valign="TOP">';
-              SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "long");
-    echo '    </td>
-        </tr></table></td></tr>
-        ';
+        echo "
+        <tr><td>
+        <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"" . COLOR_TABBG . "\">";
+
+        // User - group membership -----------------------------------------
+
+        echo '<tr><td width="190" align="center">' . _m("All Users") . '</td>
+                      <td width="60">&nbsp;</td>
+                      <td width="190" align="center">' . _m("Group's Users") . '</td></tr>
+            <tr><td><input type="text" name="usr1_flt" value="' . safe($usr1_flt) . '">
+                    <input type="submit" name="usr1_submit" value="' . _m("Search") . '"></td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td></tr>
+            <tr><td align="center" valign="TOP">';
+        SelectGU_ID("all_users_sel", $all_users, $all_users_sel, "long", $sel_users);
+        echo '    </td>
+                <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(\'document.f.all_users_sel\',\'document.f.sel_users_sel\')" align="center"><br><br>
+                    <input type="button" VALUE="  <<  " onClick = "MoveSelected(\'document.f.sel_users_sel\',\'document.f.all_users_sel\')" align="center"></td>
+                      <td align="CENTER" valign="TOP">';
+        SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "long");
+        echo '    </td>
+            </tr></table></td></tr>
+            ';
+    }
 
     // User - permissions -----------------------------------------
 

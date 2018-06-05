@@ -68,16 +68,13 @@ function MoveSelectedDown(listbox)
 
 // Encodes all values from listbox to comma delimeted string
 // prepared for sending as url parameter
-function CommaDelimeted(listbox) {
-  var foo=''
-  var delimeter=''
-  for (var i = 0; i < eval(listbox).options.length; i++) {
-    if( eval(listbox).options[i].value != 'wIdThTor' ){  // blank rows are just for <select> size setting
-      foo += delimeter + escape(eval(listbox).options[i].value)
-      delimeter=','
-    }
+function CommaDelimeted(elid) {
+  if (el = document.getElementById(elid)) {
+      return [].slice.call(el.querySelectorAll('option')).map(function (v) {
+          return v.value;
+      }).join(",");
   }
-  return foo
+  return '';
 }
 
 function GoIfConfirmed(url, text) {

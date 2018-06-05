@@ -40,9 +40,9 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
         $substract = array();
     }
     if ( $type == "short" ) {              // 1-row listbox
-        echo "<select name=\"$name\">";
+        echo "<select name=\"$name\" id=\"$name\">";
     } else {                               // 8-row listbox
-        echo "<select name=\"$name\" size=8>";
+        echo "<select name=\"$name\" id=\"$name\" size=8>";
     }
     if ( isset($arr) AND is_array($arr)) {
         foreach ($arr as $k => $v) {
