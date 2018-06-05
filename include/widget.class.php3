@@ -1402,10 +1402,9 @@ class AA_Widget_Mch extends AA_Widget {
         $selection = array();
         foreach ($options as $o) {
             if ($o['selected']) {
-                $selection[] = '<span data-aa-mchval="'.myspecialchars($o['k']).'" onclick="AA_MchUnsel(this, \''.$base_name_add.'\')">'. $o['v'] .'</span>';
+                $selection[] = '<span data-aa-mchval="'.myspecialchars($o['k']).'" onclick="var el=document.querySelector(\'#widget-'.$base_id.' input[type=checkbox][value=&quot;'.$o['k'].'&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;">'. $o['v'] .'</span>';
             }
         }
-
 
         // default value - in order something is send when no chbox is checked
         $input_name   = $base_name_add ."[def]";
