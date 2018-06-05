@@ -53,10 +53,10 @@ CKEDITOR.editorConfig = function( config ) {
 
     config.embed_provider = '//iframe.ly/api/oembed?url={url}&callback={callback}&api_key=31993d559460afddc115dc';
 
-    config.filebrowserBrowseUrl      = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&type=files';
-    config.filebrowserImageBrowseUrl = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&type=images';
-    config.filebrowserFlashBrowseUrl = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&type=flash';
-    config.filebrowserUploadUrl      = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=files';
-    config.filebrowserImageUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=images';
-    config.filebrowserFlashUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&type=flash';
+    config.filebrowserBrowseUrl      = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&format=json&type=files';
+    config.filebrowserImageBrowseUrl = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&format=json&type=images';
+    config.filebrowserFlashBrowseUrl = _aa_url + 'misc/filebrowser/browse.php?opener=ckeditor&format=json&type=flash';
+    config.filebrowserUploadUrl      = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&format=json&type=files';
+    config.filebrowserImageUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&format=json&type=images';
+    config.filebrowserFlashUploadUrl = _aa_url + 'misc/filebrowser/upload.php?opener=ckeditor&format=json&type=flash';
 };

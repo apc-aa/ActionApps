@@ -1,3 +1,13 @@
+18-06-05 - The value-tags displayed above Multiple checkbox widget now could be switched on and off by mouse click, as
+(honzam)   expected
+         - legacy functions of site module are moved to separate file legacy_util.php
+         - AA_Config
+         - returned AA_Config object to aajslib-jquery.php, since it could be used in some external apps. The newer
+           aajslib-jquery.min.js do not provide it, however. Use AA_GetConf('path') and AA_GetConf('loader'), instead
+         - fixed group permission settings - the It wasn't possible to assign slice to Reader Set
+         - fix - image upload in CKEditor works again
+18-06-04 - change field ID now allows field numbers up to 9999
+(honzam) - fixed bug - the view wasn't possible to delete in View Admin
 18-05-29 - do not show html / plain text switch for ajax and live widgets
 (honzam) - quickfix of plaintext/HTML + Editor link broken with last commit
 18-05-28 - Multiple checkbox switched to newer form code
