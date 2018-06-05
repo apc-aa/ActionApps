@@ -203,6 +203,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
 } elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
+    require_once __DIR__.'/include/legacy_util.php';
     require_once AA_BASE_PATH."modules/site/sites/site_".$module->getProperty('state_file');
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
@@ -312,51 +313,6 @@ if (AA::$debug&2) {
     echo '<br>  (spareDBs): '. count($spareDBs);
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
     AA::$debug&4 && AA::$dbg->duration_stat();
-}
-
-// ----------------- process status end ---------------------------------------
-
-function ModW_StoreIDs($spot_id, $depth) {
-    $GLOBALS['show_ids'][] = $spot_id;
-}
-
-// id = an item id, unpacked or short
-// short_ids = boolean indicating type of $ids (default is false => unpacked)
-function ModW_id2item($id,$use_short_ids="false") {
-    return AA_Items::getItem(new zids($id, $use_short_ids ? 's' : 'l'));
-}
-
-/** Convert a state string into an array, based on the variable names and
- *  regular expression supplied, if str is not present or doesn't match
- *  the regular expression then use $strdef
- *  e.g. ModW_str2arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
- */
-function ModW_str2arr($varnames, $str, $strdef, $reg) {
-    if (!$str) { $str = $strdef; }
-    $varout = array();
-    $reg    = '`'.str_replace('`','\`',$reg).'`';
-    if (!(preg_match($reg, $str, $vars))) {
-        if (!(preg_match($reg, $strdef, $vars))) {
-            print("Error initial string $strdef doesn't match regexp $reg\n<br>");
-        }
-    }
-    for ($i=0, $ino=min(strlen($varnames),count($vars)-1); $i<$ino; ++$i) {
-        $varout[substr($varnames,$i,1)] = $vars[$i+1];
-    }
-    AA::$debug && AA::$dbg->info('State=',$varout);
-    return $varout;
-}
-
-/** Convert an array into a state string, in the order from $varnames
- *  This is fairly simplistic, just concatennating state, a more
- *  sophisticated sprint version might be needed
- */
-function ModW_arr2str($varnames, $arr) {
-    $strout = "";
-    for ($i=0, $ino=strlen($varnames); $i<$ino; ++$i) {
-        $strout .= $arr[substr($varnames,$i,1)];
-    }
-    return $strout;
 }
 
 // do not remove this exit - we do not want to allow users

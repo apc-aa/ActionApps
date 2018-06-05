@@ -713,14 +713,13 @@ class AA_Module_Site extends AA_Module {
     }
 
     function getSite($apc_state) {
-        global $show_ids; // @todo - convert to object variable
-
         $tree        = unserialize($this->getProperty('structure'));   // new sitetree();
         $show_ids    = array();
         $out         = '';
 
         // it fills $show_ids array
-        $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
+        $tree->walkTree($apc_state, 1, function ($spot_id, $depth) use (&$show_ids) { $show_ids[] = $spot_id; }, 'cond');
+
         if (count($show_ids)<1) {
             exit;
         }
