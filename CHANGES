@@ -1,7 +1,21 @@
+18-06-12 - sitemodule now is able to omit language, so the pages /en/about is the same as /about
+(honzam)     - you have to specify the "Languages on website" setting in Sitemodule admin
+             - the first language is the default one)
+         - AA is able to handle RESTfull interface
+             - you can use {server:REQUEST_METHOD} to get GET, POST, PUT, DELETE,...
+             - the sitemodule cache counts with REQUEST_METHOD
+             - there are new headers for status codes {header:200}, ...
+                  - 200: HTTP/1.1 200 OK
+                  - 201: HTTP/1.1 201 Created
+                  - 304: HTTP/1.1 304 Not Modified
+                  - 400: HTTP/1.1 400 Bad Request
+                  - 401: HTTP/1.1 401 Unauthorized
+                  - 404: HTTP/1.0 404 Not Found
+                  - 409: HTTP/1.1 409 Conflict
 18-06-05 - The value-tags displayed above Multiple checkbox widget now could be switched on and off by mouse click, as
 (honzam)   expected
+         - site spot edit in AA uses Code Editor
          - legacy functions of site module are moved to separate file legacy_util.php
-         - AA_Config
          - returned AA_Config object to aajslib-jquery.php, since it could be used in some external apps. The newer
            aajslib-jquery.min.js do not provide it, however. Use AA_GetConf('path') and AA_GetConf('loader'), instead
          - fixed group permission settings - the It wasn't possible to assign slice to Reader Set

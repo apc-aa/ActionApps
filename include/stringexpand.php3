@@ -6789,13 +6789,19 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
      */
     function expand($header=null, $filename=null) {
         switch ($header) {
-        case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';               break;
-        case 'xml':       AA::$headers['type']        = 'text/xml';                             break;
-        case 'svg':       AA::$headers['type']        = 'image/svg+xml';                        break;
-        case 'json':      AA::$headers['type']        = 'application/json';                     break;
-        case 'csv':       AA::$headers['type']        = 'text/csv';                             break;
-        case 'filename':  AA::$headers['disposition'] = 'attachment; filename="'.$filename.'"'; break;  // $filename should be escaped - JirkaR
-        case 'utf-8':     AA::$headers['encoding']    = 'utf-8';                                break;
+            case '200':       AA::$headers['status']      = 'HTTP/1.1 200 OK';                      break;
+            case '201':       AA::$headers['status']      = 'HTTP/1.1 201 Created';                 break;
+            case '304':       AA::$headers['status']      = 'HTTP/1.1 304 Not Modified';            break;
+            case '400':       AA::$headers['status']      = 'HTTP/1.1 400 Bad Request';             break;
+            case '401':       AA::$headers['status']      = 'HTTP/1.1 401 Unauthorized';            break;
+            case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';               break;
+            case '409':       AA::$headers['status']      = 'HTTP/1.1 409 Conflict';                break;
+            case 'xml':       AA::$headers['type']        = 'text/xml';                             break;
+            case 'svg':       AA::$headers['type']        = 'image/svg+xml';                        break;
+            case 'json':      AA::$headers['type']        = 'application/json';                     break;
+            case 'csv':       AA::$headers['type']        = 'text/csv';                             break;
+            case 'filename':  AA::$headers['disposition'] = 'attachment; filename="'.$filename.'"'; break;  // $filename should be escaped - JirkaR
+            case 'utf-8':     AA::$headers['encoding']    = 'utf-8';                                break;
         }
         return '';
     }

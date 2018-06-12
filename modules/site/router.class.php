@@ -331,28 +331,35 @@ class AA_Router_Seo extends AA_Router {
         $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
 
         $matches    = array();
+        $ret        = array();
         if (!(preg_match("/($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
-            return array();
-            // newer behavior (not helped on library4all, so commented out)
-            // return array('xlang'=>'','xpage'=>'','xflag'=>'','xcat'=>'','xseo1'=>'','xseo2'=>'','xseo3'=>'','xseo4'=>'','xseo5'=>'','xseo6'=>'','xseo7'=>'','xseo8'=>'','xseo9'=>'');
-        }
+            if (count($langs) AND trim($arr[0])) {
+                // if we define web_languages in Site Module setting (so for newer sites), then we can use pages without
+                // the first directory - so instead of /en/users we can use just /users (xlang will be filled form first web_language)
+                array_unshift($arr,$langs[0]);
+                $ret = array('xlang'=>$langs[0],'xpage'=>'','xflag'=>'','xcat'=>'','xnolang'=>1);
+            } else {
+                return array();
+                // newer behavior (not helped on library4all, so commented out)
+                // return array('xlang'=>'','xpage'=>'','xflag'=>'','xcat'=>'','xseo1'=>'','xseo2'=>'','xseo3'=>'','xseo4'=>'','xseo5'=>'','xseo6'=>'','xseo7'=>'','xseo8'=>'','xseo9'=>'');
+            }
+        } else {
+            $ret = array('xlang' => $matches[1], 'xpage' => $matches[2], 'xflag' => $matches[3], 'xcat' => $matches[4], 'xnolang'=>'');
 
-        $ret        = array('xajax' => IsAjaxCall() ? 1 : '');
-        foreach (array('xlang','xpage','xflag','xcat') as $key => $varname) {
-            $ret[$varname] = $matches[$key+1];
-        }
-
-        // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
-        // if (count($arr) < 2) {
-        if ( count($arr) < 2) {
-            if ( (substr(trim($apc),-1)=='/') OR ($arr[0]==$ret['xlang']) OR !count($langs)) {
-                                                                              // the last OR with $lang is used for backward compatibility - the slash rule will be applied
-                                                                              // only to newer sites, where you set web_languages.
-                                                                              // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
-                                                                              // (and should be rewritten to /cz2/ or better /cz2/page )
-                $arr = explode('/', trim( parse_url($home, PHP_URL_PATH),'/'));
+            // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
+            // if (count($arr) < 2) {
+            if (count($arr) < 2) {
+                if ((substr(trim($apc), -1) == '/') OR ($arr[0] == $ret['xlang']) OR !count($langs)) {
+                    // the last OR with $lang is used for backward compatibility - the slash rule will be applied
+                    // only to newer sites, where you set web_languages (so for newer sites we are more strict - there must be the ending slash, if we want to use cz/).
+                    // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
+                    // (and should be rewritten to /cz2/ or better /cz2/page )
+                    $arr = explode('/', trim(parse_url($home, PHP_URL_PATH), '/'));
+                }
             }
         }
+
+        $ret['xajax'] = IsAjaxCall() ? 1 : '';
 
         for ($i=1, $ino=count($arr); $i<$ino; ++$i) {
             $ret['xseo'.$i] = $arr[$i];
