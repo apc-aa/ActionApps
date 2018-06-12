@@ -12,6 +12,8 @@
                   - 401: HTTP/1.1 401 Unauthorized
                   - 404: HTTP/1.0 404 Not Found
                   - 409: HTTP/1.1 409 Conflict
+         - improved CKEditor settings and include scripts
+         - write_mail.php - the form for writing mail to reders is updated to use AA_Adminpageutil and CKEditor
 18-06-05 - The value-tags displayed above Multiple checkbox widget now could be switched on and off by mouse click, as
 (honzam)   expected
          - site spot edit in AA uses Code Editor

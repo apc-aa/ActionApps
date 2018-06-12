@@ -93,13 +93,12 @@ function getHtmlareaJavascript($slice_id) {
     // showHTMLAreaLink(name) - displays "edit in htmarea" link
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
 
-    $retval = getFrmJavascript('
-                _aa_url        = "'.get_aa_url("", '', false).'";
-                aa_slice_id        = "'.$slice_id.'";'
+    $retval = '';
+                // getFrmJavascript('_aa_url        = "'.get_aa_url("", '', false).'";');
+                // aa_slice_id        = "'.$slice_id.'";'
                 // _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
                 // aa_session         = "'.$sess->id.'";
                 // aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
-                );
 
     // HtmlArea scripts should be loaded allways - we use Dialog() function
     // from it ...
@@ -1114,12 +1113,10 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</span>');
-            if ($area) {
-                $this->echoo("&nbsp;&nbsp;");
-                $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
-                $this->echovar($htmlareaedit, 'htmlarea_edit_link');
-                $this->echoo('</span>');
-            }
+            $this->echoo("&nbsp;&nbsp;");
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, dont remove
+            $this->echovar($htmlareaedit, 'htmlarea_edit_link');
+            $this->echoo('</span>');
 
             if ( $convertor ) {
                 $this->echoo("</td>");

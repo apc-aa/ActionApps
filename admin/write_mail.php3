@@ -150,25 +150,27 @@ if ( !$send ) {               // for the first time - directly from item manager
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Bulk Email Wizard"));
+$apage->setSubtitle(_m("Write email to users"));
+$apage->setForm();
+
+$apage->addRequire('ckeditor@4');
+// IncludeManagerJavascript() - start
+// $apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));  // already loaded with ckeditor
+$apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
+// IncludeManagerJavascript() - end
+$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
+
+// removed - maybe we will have to put it back
+//  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
+// echo getHtmlareaJavascript($slice_id);
+
+$apage->printHead($err, $Msg);
 
 echo '
-  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
-  <title>'.  _m("Write email to users") .'</title>';
-
-IncludeManagerJavascript();
-FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);
-echo getHtmlareaJavascript($slice_id);
-// FrmJavascript(' window.onload   = xinha_init; window.onunload = HTMLArea.flushEvents;');
-
-echo '
-</head>
-<body>
-  <h1>'. _m("Bulk Email Wizard") .'</h1>
   <form name="mailform" method="post" enctype="multipart/form-data">';
 
-PrintArray($err);
-echo $Msg;
 
 FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ") . $slice->name())));
 
@@ -212,6 +214,5 @@ FrmItemListForm($items);
 //$form = AA_Mail::getNewForm($slice_id);
 //echo $form->getObjectEditHtml();
 
-echo "\n  </body>\n</html>";
-page_close();
+$apage->printFoot();
 

@@ -57,6 +57,17 @@ $dir = __DIR__. '/prototype/';
  *
 /*--------------------------------------------------------------------------*/
 
+function AA_GetConf(prop) {
+  if ( typeof AA_GetConf.aa_install_path == 'undefined' ) {
+    var src = $('script[src*="javascript/aajslib-jquery"]').attr('src');
+    AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib-jquery\..*$/, '');
+  }
+  switch (prop) {
+    case 'path':       return AA_GetConf.aa_install_path;
+    case 'loader':     return '<img src="'+ AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+  }
+}
+
 // usage: $(div_id_2).update(AA_Config.loader);
 var AA_Config = {
   AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',

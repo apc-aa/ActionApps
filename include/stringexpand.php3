@@ -4125,8 +4125,9 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $ret     = AA::Stringexpander()->unalias("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
 
                     AA::Stringexpander()->addRequire('ckeditor');
-                    $script2run = '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
-                                  'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
+
+                                   // '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
+                    $script2run = 'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
                                   '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
                                   '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
                                   '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
@@ -5698,6 +5699,7 @@ class AA_Requires {
           'tippy@2'                    => new AA_Req_Lib('https://unpkg.com/tippy.js@2.2.3/dist/tippy.all.min.js', 'sha384-7iCQEHkOskB8DnHBeVzB1nkyndqNZ1Tk7C4tc4hQkeSJpLDJ1CJWxmCPtnM6WoQ8'),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
           'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
+//          '_ckeditor_setenv@4'         => new AA_Req_Run('_aa_url = "'.AA_INSTAL_PATH.'";'),
           'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js','',false)),
           'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js','',false),'',array('jquery@3')),
           'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php','',false),'',array('jquery@3')),
