@@ -337,9 +337,8 @@ $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('codemirror@5');
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
 
-//HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
@@ -351,8 +350,6 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
                       "cancel"   => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
                      );
 
-echo "
-<form enctype=\"multipart/form-data\" method=\"post\" action=\"". StateUrl($_SERVER['PHP_SELF']) ."\" name=\"f\">";
 FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), '', '', $form_buttons, $slice_id);
 
 $input_show_classes = AA_Components::getClassNames('AA_Widget_');
@@ -501,7 +498,5 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
 }
 
 FrmTabEnd($form_buttons);
-
-echo "\n </form>";
 
 $apage->printFoot();

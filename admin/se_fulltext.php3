@@ -172,10 +172,6 @@ $form_buttons = array ("update",
                                           'value' => _m("Default"),
                                           'add'   => 'onclick="Defaults()"'));
 
-?>
-
-<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
 FrmTabCaption(_m("HTML code for fulltext view"), '', '', $form_buttons, $slice_id);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
              _m("HTML code which appears at the top of slice area")
@@ -197,8 +193,5 @@ $slice = AA_Slice::getModule($slice_id);
 PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $slice_id);
 
 FrmTabEnd();
-?>
-</form>
 
-<?php
 $apage->printFoot();

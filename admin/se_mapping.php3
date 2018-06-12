@@ -136,6 +136,7 @@ foreach ($to_fields as  $k => $v) {
 
 $apage = new AA_Adminpageutil('sliceadmin','mapping');
 $apage->setTitle(_m("Admin - Content Pooling - Fields' Mapping"));
+$apage->setForm(array('action'=>'se_mapping2.php3', 'enctype'=>'multipart/form-data'));
 $apage->printHead($err, $Msg);
 
 $form_buttons = array("ext_slice"=>array("type"=>"hidden",
@@ -145,9 +146,7 @@ $form_buttons = array("ext_slice"=>array("type"=>"hidden",
                                        "accesskey"=>"S",
                                        "add"=>'onclick="Submit()"'),
                       "cancel"=>array("url"=>"se_fields.php3"));
-?>
-<form enctype="multipart/form-data" method="post" name="f" action="<?php echo StateUrl(self_base() . "se_mapping2.php3")?>">
-<?php
+
 FrmTabCaption(_m("Content Pooling - Fields' mapping"), '', '', $form_buttons, $slice_id);
 ?>
         <tr>
@@ -198,7 +197,6 @@ foreach ($to_fields as $f_id => $f_name) {
 }
 FrmTabEnd($form_buttons);
 ?>
-</form>
 <script>
 
     function SelectValue(sel) {

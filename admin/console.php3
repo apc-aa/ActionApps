@@ -51,8 +51,6 @@ if ($code) {
 
 // ------------------------------------------------------------------------------------------
 ?>
-<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-
     <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center" >
         <tr><td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8">
@@ -76,9 +74,7 @@ if ($code) {
 </table>
 
 </td>
-        </tr>
-        </table>
-
-</form>
+</tr>
+</table>
 <?php
 $apage->printFoot();

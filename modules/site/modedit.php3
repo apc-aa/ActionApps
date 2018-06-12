@@ -216,7 +216,7 @@ FrmJavascript('
     PrintArray($err);
     echo $Msg;
 ?>
-<form name="inputform" method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" onSubmit="return ModeditSubmit()">
+<form name="inputform" method=post action="<?php echo StateUrl() ?>" onSubmit="return ModeditSubmit()">
 <?php
     FrmTabCaption(_m("Site"), '', '', $form_buttons, $module_id);
 

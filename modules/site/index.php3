@@ -136,7 +136,7 @@ $apage = new AA_Adminpageutil('codemanager');
 $apage->setModuleMenu( 'modules/site');
 $apage->setTitle( _m("Editor window - site code manager") );
 $apage->addRequire('codemirror@5');
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
@@ -144,6 +144,7 @@ $script2run = '
    ';
 
 $apage->addRequire($script2run, 'AA_Req_Load');
+$apage->setForm();
 $apage->printHead($err, $Msg);
 
 ?>

@@ -88,14 +88,12 @@ $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`");
 
 $apage = new AA_Adminpageutil('sliceadmin','nodes');
 $apage->setTitle(_m("Remote node administration"));
+$apage->setForm(array('onsubmit' => "return checkData()"));
 $apage->printHead($err, $Msg);
 
 $form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
 
-?>
-<form method="post" name="frm" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" onsubmit="return checkData()">
-<?php
-    FrmTabCaption(_m("Remote node administration"));
+FrmTabCaption(_m("Remote node administration"));
 ?>
       <tr><td colspan="2"><?php echo _m("Known remote nodes") ?></td></tr>
       <tr><td align="center" colspan="2">
@@ -131,43 +129,40 @@ $form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
 <?php
     FrmTabEnd($form_buttons);
 ?>
-</form>
 <script>
-    function SelectValue(sel) {
-        svindex = eval(sel).selectedIndex;
-        if (svindex != -1) { return eval(sel).options[svindex].value; }
-        return null;
-    }
 
     function ActionGo(mode) {
+        var frm = document.f;
         if (mode== 'add') {
-            document.frm.mode.value = mode;
-            document.frm.submit();
+            frm.elements["mode"].value = mode;
+            frm.submit();
         } else {
 
-            sel = SelectValue('document.frm.nodes')
-            if (sel == null)
+            sel = frm.elements["nodes"].value;
+            if (!sel)
                 alert('<?php echo _m("No selected node"); ?>')
             else {
-                if (mode == 'delete')
-                    if (!confirm('<?php echo _m("Are you sure you want to delete the node?"); ?>'))
-                        return
-                document.frm.sel_node_name.value = sel
-                document.frm.mode.value = mode;
-                document.frm.submit();
+                if (mode == 'delete') {
+                    if (!confirm('<?php echo _m("Are you sure you want to delete the node?"); ?>')) {
+                        return;
+                    }
+                }
+                frm.elements["sel_node_name"].value = sel
+                frm.elements["mode"].value = mode;
+                frm.submit();
             }
         }
     }
 
     function checkData() {
-        if (document.frm.node_name.value=="") {
+        if (document.f.elements['node_name'].value=="") {
             alert('<?php echo _m("Node empty"); ?>')
-            return false
+            return false;
         }
     }
 
     function Cancel() {
-        document.location = "<?php echo StateUrl(self_base() . "index.php3")?>"
+        document.location = "<?php echo StateUrl("index.php3")?>"
     }
 </script>
 <?php

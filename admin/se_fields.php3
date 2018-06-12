@@ -229,9 +229,6 @@ $apage->addRequire('aa-jslib');
 $apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
-?>
-<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
 $form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
 FrmTabCaption(_m("Fields"), '', '', $form_buttons, $slice_id);
 ?>
@@ -264,7 +261,6 @@ ShowNewField($from_slice, $slice_id);
 FrmTabEnd( $form_buttons);
 
 ?>
-</form>
 <script>
     function DeleteField(id) {
         if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {

@@ -140,6 +140,7 @@ require_once AA_INC_PATH."formutil.php3";
 
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (1/2) - Source data"));
+$apage->setForm(array('enctype'=>'multipart/form-data'));
 $apage->printHead($err, $Msg);
 
 if ($preview) { // file preview
@@ -175,8 +176,6 @@ if ($preview) { // file preview
     }
 }
 ?>
-<form enctype="multipart/form-data" method="post" name="f" action="<?php echo StateUrl(self_base() . "se_csv_import.php3"); ?>">
-
 <table width="600" border="0" cellspacing="0" cellpadding="1"
        bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
     <tr><td class="tabtit"><b>&nbsp;<?php echo _m("CSV format settings") ?></b></td></tr>
@@ -239,7 +238,6 @@ if ($preview) { // file preview
         <input type="submit" name="upload" value="<?php echo _m("Next") ?>" align="center">&nbsp;&nbsp;
     </td></tr>
   </table>
-</form>
 
 <?php
 $apage->printFoot();

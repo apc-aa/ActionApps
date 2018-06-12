@@ -73,6 +73,7 @@ if ($_GET['export']) {
 
 $apage = new AA_Adminpageutil('sliceadmin','export');
 $apage->setTitle(_m("Admin - Export Items"));
+$apage->setForm();
 $apage->printHead($err, $Msg);
 
 $form_buttons = array ('export' => array('type'=>'submit', 'value'=> _m('Export')));
@@ -105,7 +106,7 @@ foreach ($format_classes as $fclass) {
 }
 
 ?>
-<form name="f" method="get" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="get" action="<?php echo StateUrl() ?>">
 <?php
 FrmTabCaption(_m("Export Items"), '', '', $form_buttons, $slice_id);
 

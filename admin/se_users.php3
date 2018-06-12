@@ -112,6 +112,7 @@ $show_adduser = $adduser || $GrpSrch || $UsrSrch;    // show add user form?
 
 $apage = new AA_Adminpageutil('sliceadmin',$show_adduser ? "addusers" : "users");
 $apage->setTitle(_m("Admin - Permissions"));
+$apage->setForm();
 $apage->printHead($err, $Msg);
 
 $continue=true;

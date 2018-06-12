@@ -92,10 +92,6 @@ if ($slice_id == "") {
     $form_buttons = array ("update", "cancel"=>array("url"=>"sliceadd.php3"));
 }
 
-?>
-<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
-
 FrmTabCaption(_m("Slice"), '', '', $form_buttons, $slice_id);
 
 FrmStaticText(_m("Id"), $slice_id);
@@ -164,7 +160,4 @@ if ($slice_id=="") {
 }
 FrmTabEnd($form_buttons);
 
-?>
-</form>
-<?php
 $apage->printFoot();

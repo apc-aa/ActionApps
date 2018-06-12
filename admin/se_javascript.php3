@@ -54,10 +54,8 @@ if ($slice_id && $update) {
 $apage = new AA_Adminpageutil('sliceadmin','javascript');
 $apage->setTitle(_m("Field Triggers"));
 $apage->printHead($err, $Msg);
-?>
-<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
-  FrmTabCaption(_m("JavaScript for fields"));
+
+FrmTabCaption(_m("JavaScript for fields"));
 ?>
 <tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."),""); ?></td></tr>
 <tr><td class="tabtxt"><hr></td></tr>
@@ -65,8 +63,6 @@ $apage->printHead($err, $Msg);
 <?php
 echo $javascript.'</textarea></td></tr>';
 FrmTabSeparator(_m("Available fields and triggers"), array("update", "update" => array("type" => "hidden", "value" => "1"), "cancel" => array("url" => "se_fields.php3")), $slice_id);
-echo '
-</form>';
 
 $fields = AA_Slice::getModule($slice_id)->fields('pri');
 

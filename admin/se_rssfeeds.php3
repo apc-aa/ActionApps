@@ -112,10 +112,6 @@ $apage = new AA_Adminpageutil('sliceadmin','rssfeeds');
 $apage->setTitle(_m("Remote RSS Feed administration"));
 $apage->printHead($err, $Msg);
 
-?>
-<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
-
   FrmTabCaption(_m("Remote RSS Feed administration"));
 ?>
       <tr><td colspan="2"><?php echo _m("Current remote rssfeeds") ?></td></tr>
@@ -152,7 +148,6 @@ $apage->printHead($err, $Msg);
   FrmTabEnd(array("send"=>array('type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'), "cancel"=>array("url"=>"se_fields.php3")));
 
 ?>
-</form>
 <script>
 
 function SelectValue(sel) {

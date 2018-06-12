@@ -189,7 +189,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     PrintArray($err);
     echo $Msg;
 ?>
-<form method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form method=post action="<?php echo StateUrl() ?>">
 <?php
 
     FrmTabCaption(_m("Polls Module general data"), '', '', $form_buttons, $module_id);

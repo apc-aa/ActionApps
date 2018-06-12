@@ -160,7 +160,7 @@ if ($poll_id) {
 }
 
 ?>
-<form name="inputform" method="post" onSubmit="BeforeSubmit();" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form name="inputform" method="post" onSubmit="BeforeSubmit();" action="<?php echo StateUrl() ?>">
 <?php
 FrmTabCaption(_m("Insert question and answers"), '', '', $form_buttons, $module_id);
 

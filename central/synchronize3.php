@@ -124,7 +124,7 @@ $form_buttons = array("synchronize"  => array( "type"      => "submit",
                      );
 
 ?>
-<form name=f method=post action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form name=f method=post action="<?php echo StateUrl() ?>">
 <?php
 
 FrmTabCaption(_m('Slice Comparison - %1 x %2', array($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName())), '', '', $form_buttons);

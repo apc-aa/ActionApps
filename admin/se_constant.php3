@@ -278,7 +278,6 @@ $form_buttons = array("update",
                                           "add"   => 'onclick="deleteWholeGroup();"')
                       );
 ?>
-<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
 <?php
 
@@ -389,7 +388,6 @@ $lastIndex = $i-1;    // lastindex used in javascript (below) to get number of r
 FrmTabEnd($form_buttons);
 
 echo '
-</form>
 <script>
     function deleteWholeGroup() {
         if (confirm("'._m("Are you sure you want to PERMANENTLY DELETE this group?"). '")) {

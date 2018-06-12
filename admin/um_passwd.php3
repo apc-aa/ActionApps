@@ -97,7 +97,7 @@ $form_buttons = array ("update",
                        "cancel" => array("url"=>"index.php3"));
 
 ?>
-<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form name="f" method="post" action="<?php echo StateUrl() ?>">
 <?php
 
 FrmTabCaption(_m("Edit User"));

@@ -182,6 +182,7 @@ if (!IsSuperadmin()) {
 
 $apage = new AA_Adminpageutil('aaadmin','aafinder');
 $apage->setTitle(_m("AA finder"));
+$apage->setForm();   // do not use form around code
 $apage->printHead($err, $Msg);
 
 is_object( $db ) || ($db = getDB());

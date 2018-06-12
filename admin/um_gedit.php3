@@ -161,7 +161,7 @@ FrmTabCaption(_m("Groups"));
 
 ?>
  <tr><td>
-   <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+   <form method="post" action="<?php echo StateUrl() ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%">&nbsp;</td>
@@ -176,7 +176,7 @@ FrmTabCaption(_m("Groups"));
 FrmTabSeparator("");
 ?>
  <tr>
-  <td><form name="f2" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+  <td><form name="f2" method="post" action="<?php echo StateUrl() ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td width="20%"class="tabtxt"><b><?php echo _m("Group") ?></b></td>
@@ -212,7 +212,7 @@ do {
     }
 } while (false);
 
-echo "\n<form name=\"f\" method=\"post\" action=\"".StateUrl($_SERVER['PHP_SELF']) ."\">";
+echo "\n<form name=\"f\" method=\"post\" action=\"".StateUrl() ."\">";
 
 echo "<br />";
 if ( $grp_edit OR ($submit_action == "update_submit") ) {

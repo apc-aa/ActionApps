@@ -102,30 +102,18 @@ if ($form_state == AA_Form::SAVED) {
     go_url($ret_url);
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
+$apage = new AA_Adminpageutil('sliceadmin','forms');
+$apage->setTitle( _m("Admin - Object Edit") );
 // for widgets
-FrmJavascriptFile( 'javascript/aajslib.php' );
+$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->printHead($err, $Msg);
 
-?>
-<title><?php echo _m("Admin - Object Edit");?></title>
-</head>
-
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "forms");
-
-echo "<h1><b>" . _m("Admin - Object Edit") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
 
 $form_buttons = array ("update",
                        "cancel" =>array("url"=>$ret_url),
                       );
 
-?>
-<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
 FrmTabCaption(_m("Object Edit"), '', '', $form_buttons, $slice_id);
 FrmHidden('ret_url', $ret_url);
 FrmHidden('oid',     $oid);
@@ -136,9 +124,5 @@ echo $form->getObjectEditHtml();
 echo '</td></tr>';
 
 FrmTabEnd($form_buttons);
-?>
-</form>
-<?php
-HtmlPageEnd();
-page_close()
-?>
+
+$apage->printFoot();

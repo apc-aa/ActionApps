@@ -82,20 +82,17 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $apage = new AA_Adminpageutil('sliceadmin','n_import');
 $apage->setTitle(_m("Inter node import settings"));
+$apage->setForm(array('action'=>'se_inter_import2.php3','onsubmit'=>"return Submit()"));
 $apage->printHead($err, $Msg);
 
 $form_buttons = array("submit"=>array("value" => _m("Create new feed from node")),
                       "cancel"=>array("url"=>"se_fields.php3"));
-?>
-<form method="post" name="f" action="<?php echo StateUrl(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
-<?php
   FrmTabCaption(_m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName($slice_id) . "</b>");
   FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));
   FrmTabSeparator(_m("All remote nodes"), array("delete" => array('value' => _m("Delete"), 'type' => 'button', 'add' => 'onClick="Delete()"')));
   FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, false, true);
   FrmTabEnd($form_buttons);
 ?>
-</form>
 <script>
     function SelectValue(sel) {
         svindex = eval(sel).selectedIndex;

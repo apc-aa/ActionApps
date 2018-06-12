@@ -242,8 +242,6 @@ if ($update) {
     echo "$nchanges "._m("field IDs were changed").".<br>";
 }
 
-echo "
-<form method=\"post\" action='".StateUrl($_SERVER['PHP_SELF'])."'>";
 FrmTabCaption(_m("Admin - change Field IDs"));
 
 echo"<tr><td class=\"tabtxt\">"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
@@ -305,7 +303,5 @@ FrmTabSeparator(_m("Fields"), array("update" => array("type" => "hidden", "value
         }
     }
 FrmTabEnd();
-echo "
-</form>";
 
 $apage->printFoot();

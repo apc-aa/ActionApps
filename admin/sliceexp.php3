@@ -66,10 +66,9 @@ if (isset($b_export_to_file)) {
 
 $apage = new AA_Adminpageutil('aaadmin','sliceexp');
 $apage->setTitle(_m("Export slice structure"));
-$apage->setSubtitle(_m(""));
-//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->setForm(array('id'=>'formf','onsubmit'=>"return validate2()"));
 $apage->printHead($err, $Msg);
-
 
 FrmTabCaption(_m("Export slice structure"));
 
@@ -77,9 +76,7 @@ if ($_POST['b_export_type']) {
     $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
 } else {
     $all_slices = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', array(array('type', 'S')), array('priority','name'));
-
 ?>
-    <form name="f" method="post" id=formf action="<?php echo StateUrl("sliceexp.php3") ?>" onsubmit="return validate2();">
     <tr><td class="tabtxt" colspan="2">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr><td class="tabtxt">
@@ -140,7 +137,6 @@ if ($_POST['b_export_type']) {
         </td>
         <td><input type="button" name="btn3" value="<?php echo _m("Export to another ActionApps") ?>" onclick="validate()"></td>
     </tr>
-    </form>
     </tr></td>
 <?php
 }

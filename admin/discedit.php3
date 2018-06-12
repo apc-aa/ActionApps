@@ -125,13 +125,13 @@ $script2run = '
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Admin - Discussion comments management"));
+$apage->setForm(array('action'=>'index.php3'));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
 $content  = GetItemContent($item_id);
 $headline = getHeadline($content[$item_id]);
 ?>
-  <form method="post" action=<?php echo sess_return_url(self_base()."index.php3") ?> >
   <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class="tabtit"><b>&nbsp;<?php
      echo _m("Item: ")." $headline</b> (".
@@ -200,6 +200,5 @@ if (!$outcome) {
      <input type="button" value="<?php echo _m("Delete All") ?>" onclick="DeleteAllComments();">&nbsp;
      <input type="button" value="<?php echo _m("Delete All Unhidden") ?>" onclick="DeleteAllHiddenComments();"></td></tr>
   </table>
-  </form>
 <?php
 $apage->printFoot();

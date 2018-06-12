@@ -215,7 +215,7 @@ echo $Msg;
 FrmTabCaption(_m("Users"));
 ?>
  <tr><td>
-   <form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+   <form method="post" action="<?php echo StateUrl() ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%">&nbsp;</td>
@@ -231,7 +231,7 @@ FrmTabCaption(_m("Users"));
 FrmTabSeparator("");
 ?>
  <tr>
-  <td><form name="f2" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+  <td><form name="f2" method="post" action="<?php echo StateUrl() ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%" class="tabtxt"><b><?php echo _m("User") ?></b></td>
@@ -279,7 +279,7 @@ do {
 
 ?>
 <br />
-<form name="fx" method="post" autocomplete="off" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form name="fx" method="post" autocomplete="off" action="<?php echo StateUrl() ?>">
 <?php
 
 // User data ---------------------------------------------------

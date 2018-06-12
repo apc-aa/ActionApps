@@ -29,22 +29,7 @@ require_once AA_INC_PATH."tv_common.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
-/** TV_PageBegin function
- * @param array $config_arr
- * @return prints beginning of page
- */
-function TV_PageBegin(&$config_arr) {
-    if (! $config_arr["cond"] ) {
-        MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
-        exit;
-    }
 
-    HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-    echo '<link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
-    echo "<title>".$config_arr["title"]."</title></head>";
-    showMenu($GLOBALS['aamenus'], $config_arr["mainmenu"], $config_arr["submenu"]);
-    echo "<h1><b>" . $config_arr["caption"] . "</b></h1>";
-}
 /** tv_field_value function
  * @param $feed_id
  * @param $param
@@ -73,7 +58,7 @@ $sess->register("tview");
 $tview = 'aarss_tv';
 
 
-/// this must be function
+/// this must be function - used in ProcessFormData()
 /** GetAARSS_tv function
  * @return array
  */
@@ -155,20 +140,24 @@ function GetAARSS_tv() {
 
 $aarss_tv = GetAARSS_tv();
 
-TV_PageBegin($aarss_tv);
-FrmJavascriptFile('javascript/js_lib.min.js');
+if (!$aarss_tv["cond"]) {
+    MsgPage(StateUrl(self_base() . "index.php3"), _m("You have not permissions to this page"));
+    exit;
+}
+
+$apage = new AA_Adminpageutil('aaadmin','aarsstest');
+$apage->setTitle(_m("ActionApps RSS Content Exchange"));
+$apage->setSubtitle(_m("RSS feeds testing page."));
+$apage->setForm();
+$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->printHead($err, $Msg);
+
+
 ProcessFormData('GetAARSS_tv', $val, $cmd);
 
-PrintArray($Err);
-echo $Msg;
 
-$script = StateUrl("aarsstest.php3");
-
-$tabledit = new tabledit('aarsstest', $script, $cmd, $aarss_tv, AA_INSTAL_PATH."images/", $sess, $func);
+$tabledit = new tabledit('aarsstest', StateUrl("aarsstest.php3"), $cmd, $aarss_tv, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);
 if ($err) echo "<b>$err</b>";
 
-HtmlPageEnd();
-page_close();
-
-
+$apage->printFoot();

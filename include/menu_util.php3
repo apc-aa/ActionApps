@@ -323,7 +323,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         echo '
               </td>
               <td class="navbar" align="right" valign="bottom">
-                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl($_SERVER['PHP_SELF']) .'" style="display:inline">
+                <form name="nbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'" style="display:inline">
                 &nbsp; ';
         echo "\n";
         PrintModuleSelection();

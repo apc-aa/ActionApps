@@ -60,7 +60,7 @@ $form_buttons = array("back" => array("type" => "submit",
                                       "value" => _m("Back")));
 
 ?>
-<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
+<form method="post" action="<?php echo StateUrl() ?>">
 <?php
     FrmTabCaption(_m("Search user or group"));
 ?>

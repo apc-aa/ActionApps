@@ -61,9 +61,7 @@ function PrintSlice($id, $name, $type) {
          ";
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Admin - Delete Slice");?></title>
+$headcode = <<<'EOT'
  <script>
    function DeleteSlice(id,url2go) {
      if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>")) {
@@ -73,21 +71,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
      document.location=url+'&del='+id;
    }
  </script>
-</head>
-<?php
+EOT;
 
-$useOnLoad = ($new_compact ? true : false);
-
-require_once menu_include();   //show navigation column depending on $show
-showMenu($aamenus, "aaadmin","slicedel");
-
-echo "<h1><b>" . _m("Admin - Delete Slice") . "</b></h1>";
-echo $Msg;
-// echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
-
-?>
-<form name="f" method="post" action="<?php echo StateUrl(self_base() . "slicedel2.php3")?>">
-<?php
+$apage = new AA_Adminpageutil('aaadmin','slicedel');
+$apage->setTitle(_m("Admin - Delete Slice"));
+$apage->setForm(array('action'=>'slicedel2.php3'));
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->printHead($err, $Msg);
 
 
 $form_buttons=array("submit" => array('name' => _m('Delete selected') ),
@@ -120,8 +110,4 @@ if ( !$slice_to_delete ) {
 
 FrmTabEnd($form_buttons);
 
-echo '</form>';
-
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

@@ -56,24 +56,15 @@ if (!IfSlPerm(PS_FIELDS)) {
   exit;
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo "<title>"._m("Admin - Create Mailman List")."</title>
-</head>";
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "mailman_create_list");
-
-echo "<h1>"._m("Admin - Create Mailman List")."</b></h1>";
-
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('sliceadmin','mailman_create_list');
+$apage->setTitle(_m("Admin - Create Mailman List"));
+$apage->printHead($err, $Msg);
 
 $slice = AA_Slice::getModule($slice_id);
 if (! $slice->getProperty("mailman_field_lists")) {
     echo _m('First set Mailman Lists Field in Slice Settings.');
-    HtmlPageEnd();
-    page_close();
+
+    $apage->printFoot();
     exit;
 }
 
@@ -146,7 +137,7 @@ function caption($s) {
 }
 
 echo '
-<form name="mailman_create_list" method="post" action="'.StateUrl($_SERVER['PHP_SELF']).'"
+<form name="mailman_create_list" method="post" action="'.StateUrl().'"
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
 <input type="hidden" name="slice_id" value="'.$slice_id.'">
@@ -165,7 +156,6 @@ echo '
 <tr><td align="center" colspan="2">
     <input type="submit" name="create_list" value="'._m("Create").'">&nbsp;&nbsp;
 </td></tr></table>
-</form>';
-HtmlPageEnd();
-page_close();
+';
 
+$apage->printFoot();

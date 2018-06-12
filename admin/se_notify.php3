@@ -196,9 +196,6 @@ $apage->printHead($err, $Msg);
 $form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
                       "update",
                       "cancel" => array("url"=>"se_fields.php3"));
-?>
-<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
 
     FrmTabCaption(_m("Email Notifications of Events"), '', '', $form_buttons, $slice_id);
 
@@ -225,7 +222,5 @@ echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Approved Bin</h4>  People
   FrmTextarea("notify_active_item_edit_b", _m("Body of the Email message"),     $notify_active_item_edit_b, 6, 60, false, $help);
 
   FrmTabEnd($form_buttons);
-
-echo "</form>";
 
 $apage->printFoot();

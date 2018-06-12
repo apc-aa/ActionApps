@@ -303,23 +303,15 @@ if ($slice_def != "") {
     sliceimp_xml_parse($slice_def,false,$force_this_slice);
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Import exported data (slice structure and content)")?></title>
 
-</head>
+$apage = new AA_Adminpageutil('aaadmin','sliceimp');
+$apage->setTitle(_m("Import exported data (slice structure and content)"));
+$apage->setForm(array('enctype'=>'multipart/form-data'));
+$apage->printHead($err, $Msg);
 
-<?php
-  require_once menu_include();   //show navigation column depending on $show
-  showMenu ($aamenus, "aaadmin","sliceimp");
-?>
-<?php echo $pom ?>
-<form name="formular" method="post" action="<?php echo StateUrl("sliceimp.php3") ?>"
-enctype="multipart/form-data">
+echo $pom;
 
-<h1><b><?php echo _m("Import exported data (slice structure and content)").$pom?></b></h1>
-<?php
-  FrmTabCaption(_m("Import exported data"));
+FrmTabCaption(_m("Import exported data"));
 
 echo "<tr><td class=\"tabtxt\">";
 
@@ -364,15 +356,13 @@ if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
     <input type="submit" name="Cancel" value="  OK  ">
 <?php
 } else {
-?>
-
-<?php echo _m("Here you can import exported data to toolkit. You can use two types of import:") ?></p>
+   echo _m("Here you can import exported data to toolkit. You can use two types of import:") ?></p>
 </td></tr>
 <?php
 if ($IDconflict) {?>
     <tr><td class="tabtxt">
 <b><?php echo _m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>") ?></b></p>
-    <p align="center">
+    <p>
 <textarea name="conflicts_list" rows=<?php echo count($conflicts_ID) ?> cols="90">
 <?php
     foreach ($conflicts_ID as $c_id => $name) {
@@ -380,27 +370,30 @@ if ($IDconflict) {?>
     }
 ?>
 </textarea>
+    </p>
+        </td>
+    </tr>
 
 <?php
 }
 if ($view_IDconflict) { ?>
 <tr><td class="tabtxt">
 <b><?php echo sprintf (_m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>")) ?></b></p>
-<p align="center">
+<p>
 <textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
 <?php
     foreach ($view_conflicts_ID as $c_id => $name) {
         echo $name.":\t".$c_id." -> ".$c_id."\n";
     }
 ?>
-</textarea>
+</textarea></p></td></tr>
 <?php
 }
 if ($data_IDconflict) { ?>
 
 <tr><td class="tabtxt">
 <b><?php echo sprintf (_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
-<p align="center">
+<p>
 <textarea name="data_conflicts_list" rows=<?php echo count($data_conflicts_ID) ?> cols="90">
 <?php
     foreach ($data_conflicts_ID as $c_id => $name) {
@@ -413,7 +406,7 @@ if ($data_IDconflict) { ?>
 if ($IDconflict || $data_IDconflict) { ?>
     </p>
 <?php	echo _m("<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>") ?>
-    <p align="center">
+    <p>
 <?php if ($only_slice)	 {?>
     <input type="hidden" name="only_slice" value="1">
 <?php };
@@ -429,14 +422,14 @@ if ($IDconflict || $data_IDconflict) { ?>
 <?php
 }?>
 <?php if (!$IDconflict || !$data_IDconflict) { ?>
-<tr><td class="tabtxt" align="center">
+<tr><td class="tabtxt">
 <br>
         <?php echo _m("1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):") ?><p>
         <input type="file" name="slice_def_file" size="60">
 <!--		<p><input type="submit" name="file_submit" value="<?php echo _m("Send file with slice structure and data"); ?>">  -->
     </td></tr>
     <?php } ?>
-<tr><td class="tabtxt" align="center">
+<tr><td class="tabtxt">
 <br>
 <?php if (!$IDconflict || !$data_IDconflict) { ?>
         <?php echo _m("2) If you have exported data in browser's window, insert the exported text into the textarea below:") ?><p>
@@ -463,13 +456,10 @@ echo myspecialchars($slice_def_bck) ?></textarea>
 <?php
 }
 } //if ($cancel || $coflicts_list)?>
-</form>
-</tr></td>
+</td></tr>
 </table>
 
+
 <?php
-/* Testing ....
-*/
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();
+

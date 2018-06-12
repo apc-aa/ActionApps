@@ -155,11 +155,9 @@ $form_buttons=array("btn_upd"=>array("type"  =>"button",
                                "value"       =>_m("Update"),
                                "accesskey"   =>"S",
                                "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
-                    "cancel" =>array("url"   =>"se_fields.php3"))
-?>
-<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
-  FrmTabCaption(_m("Content Pooling - Configure Filters"), '', '', $form_buttons, $slice_id);
+                    "cancel" =>array("url"   =>"se_fields.php3"));
+
+FrmTabCaption(_m("Content Pooling - Configure Filters"), '', '', $form_buttons, $slice_id);
 ?>
 <tr>
   <td colspan class="tabtxt" align="center"><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
@@ -254,27 +252,13 @@ else {
 <?php
 FrmTabEnd($form_buttons);
 ?>
-</form>
 <script>
-    function ChBoxState(chbox) {
-        return eval(chbox).checked
-    }
-
-    function SelectValue(sel) {
-        svindex = eval(sel).selectedIndex;
-        if (svindex != -1) { return eval(sel).options[svindex].value; }
-        return null;
-    }
-
-    function HiddenValue(sel) {
-        return eval(sel).value
-    }
 
     function ChangeImport()
     {
         var url = "<?php echo StateUrl(self_base() . "se_filters.php3")?>"
         url += "&slice_id=<?php echo $slice_id ?>"
-        url += "&import_id=" + SelectValue('document.f.import_id')
+        url += "&import_id=" + document.f.import_id.value
         document.location=url
     }
 
@@ -302,26 +286,25 @@ FrmTabEnd($form_buttons);
         url += "&slice_id=" + slice_id
         url += "&import_id=" + import_id
         url += "&feed_id=<?php echo $feed_id ?>"
-        if ((typeof document.f.all_categories == 'undefined') ||   // no import cats
-            (ChBoxState('document.f.all_categories'))) {
+        if ((typeof document.f.all_categories == 'undefined') || document.f.all_categories.checked) { // no import cats
             done = 1
             if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
-                url += "&all=1&C=" + escape(SelectValue('document.f.categ_0'))
-                url += "-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
+                url += "&all=1&C=" + escape(document.f.categ_0.value)
+                url += "-" + (document.f.approved_0.checked ? 1 : 0)
             } else {
-                url += "&all=1&C=0-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
+                url += "&all=1&C=0-" + (document.f.approved_0.checked ? 1 : 0)
             }
         } else {
             for (var i = 1; i <= <?php echo $imp_count?>; i++) {
-                if (ChBoxState('document.f.chbox_'+i)) {
+                if (document.f['chbox_'+i].checked) {
                     done = 1
                     if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
-                        url += "&T%5B%5D=" + escape(SelectValue('document.f.categ_'+i))
+                        url += "&T%5B%5D=" + escape(document.f['categ_'+i].value)
                     } else {
                         url += "&T%5B%5D=0"
                     }
-                    url += "&F%5B%5D=" +  escape(HiddenValue('document.f.hid_'+i))
-                    url += "-" + (ChBoxState('document.f.approved_'+i) ? 1 : 0)
+                    url += "&F%5B%5D=" +  escape(document.f['hid_'+i].value)
+                    url += "-" + (document.f['approved_'+i].checked ? 1 : 0)
                 }
             }
         }

@@ -107,12 +107,11 @@ EOT;
 $apage = new AA_Adminpageutil('sliceadmin','views');
 $apage->setTitle(_m("Admin - design View"));
 $apage->setSubtitle(_m(""));
+$apage->setForm(array('action'=>'se_view.php3', 'name'=>'fvtype'));
 $apage->addRequire('codemirror@5');
-//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+//$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
-
-echo '<form name="fvtype" method="post" action="'. StateUrl("./se_view.php3"). '">';
 
 FrmTabCaption(_m("Defined Views"));
 
@@ -167,8 +166,7 @@ echo "   </select>&nbsp;<select name=\"view_view\">
         <td><input type=\"submit\" name=\"new_templ\" value=\"". _m("New") ."\"></td>
      </tr>
     </table>
-</td>
-   </form>
+  </td>
  </tr>
 </table><br>
 ";

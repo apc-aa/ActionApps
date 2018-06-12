@@ -464,6 +464,7 @@ if ($upload) {
 
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
+$apage->setForm();
 $apage->printHead($err, $Msg);
 
 if ($preview) {

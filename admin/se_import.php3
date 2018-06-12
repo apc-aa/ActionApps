@@ -112,7 +112,7 @@ $apage = new AA_Adminpageutil('sliceadmin','import');
 $apage->setTitle(_m("Admin - configure Content Pooling"));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION ));
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
 $apage->printHead($err, $Msg);
 
 
@@ -120,10 +120,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
                                       "add" =>"onClick=\"UpdateImportExport('".$slice_id."')\""),
                        "cancel"=>array("url"=>"se_fields.php3"));
 
-?>
-<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
-  FrmTabCaption(_m("Enable export to slice:"));
+FrmTabCaption(_m("Enable export to slice:"));
 ?>
 <tr>
     <td width="45%" class="tabtxt" align="center"><b><?php echo _m("Export disable") ?></b></td>
@@ -222,7 +219,5 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo $slice_id ?>')" align=center>&nbsp;&nbsp;
 <input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
 </td></tr></table>*/
-echo "
-</form>";
 
 $apage->printFoot();

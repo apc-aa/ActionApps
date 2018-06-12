@@ -29,22 +29,6 @@ require_once AA_INC_PATH."tv_common.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
-/** TV_PageBegin function
- * @param $config_arr (by link)
- * @return prints html page beginning
- */
-function TV_PageBegin(&$config_arr) {
-    if (! $config_arr["cond"] ) {
-        MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to this page"));
-        exit;
-    }
-
-    HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-    echo '<link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
-    echo "<title>".$config_arr["title"]."</title></head>";
-    showMenu($GLOBALS['aamenus'], $config_arr["mainmenu"], $config_arr["submenu"]);
-    echo "<h1><b>" . $config_arr["caption"] . "</b></h1>";
-}
 /** tv_field_value function
  * @param $feed_id
  * @param $param
@@ -134,23 +118,25 @@ function GetRSS_tv() {
 
 $rss_tv = GetRSS_tv();
 
-TV_PageBegin($rss_tv);
-FrmJavascriptFile('javascript/js_lib.min.js');
+if (!$rss_tv["cond"]) {
+    MsgPage(StateUrl(self_base() . "index.php3"), _m("You have not permissions to this page"));
+    exit;
+}
+
+
+$apage = new AA_Adminpageutil('aaadmin','rsstest');
+$apage->setTitle(_m("RSS Feed import test"));
+$apage->setForm();
+$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->printHead($err, $Msg);
+
 ProcessFormData('GetRSS_tv', $val, $cmd);
 
-PrintArray($Err);
-echo $Msg;
-
-$script = StateUrl("rsstest.php3");
-
-$tabledit = new tabledit ('rsstest', $script, $cmd, $rss_tv, AA_INSTAL_PATH."images/", $sess, $func);
+$tabledit = new tabledit ('rsstest', StateUrl("rsstest.php3"), $cmd, $rss_tv, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);
 if ($err) {
     echo "<b>$err</b>";
 }
 
-HtmlPageEnd();
-page_close ();
-
-
-
+$apage->printFoot();

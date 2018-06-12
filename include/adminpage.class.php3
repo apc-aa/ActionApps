@@ -37,6 +37,7 @@ class AA_Adminpageutil {
     protected $title      = '';
     protected $subtitle   = '';
     protected $require    = array();
+    protected $form       = array('name' => 'f', 'id'=>'', 'method'=>'post', 'action' => '', 'enctype'=>'', 'onsubmit'=>'');
 
     /**
      * AA_Adminpageutil constructor.
@@ -55,6 +56,20 @@ class AA_Adminpageutil {
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setForm(array $settings=array())
+    {
+        if ( empty($settings) ) {
+            $this->form = array();
+        } else {
+            foreach ($settings as $k => $v) {
+                $this->form[$k] = $v;
+            }
+        }
     }
 
     /**
@@ -110,7 +125,11 @@ class AA_Adminpageutil {
 
     public function getPageEnd()
     {
-        return '{generate:FOOT}</body></html>';
+        $ret ='';
+        if ($this->form) {
+            $ret = '</form>';
+        }
+        return $ret. '{generate:FOOT}</body></html>';
     }
 
     public function printHead($err, $Msg)
@@ -155,6 +174,17 @@ class AA_Adminpageutil {
         // PrintArray($r_msg);
         // unset($r_err);
         // unset($r_msg);
+        if ($this->form) {
+            $frm = "\n<form";
+            foreach ($this->form as $k => $v) {
+                if ($k == 'action') {
+                    $frm .= " $k=\"".StateUrl($v) ."\"";
+                } elseif (strlen($v)) {
+                    $frm .= " $k=\"$v\"";
+                }
+            }
+            echo $frm.'>';
+        }
     }
 
     public function printFoot() {

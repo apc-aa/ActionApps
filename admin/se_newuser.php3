@@ -93,7 +93,6 @@ $apage->setTitle(_m("New user in permission system"));
 $apage->printHead($err, $Msg);
 
 ?>
-<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("New user")?></b>
 </td>
@@ -119,7 +118,6 @@ $apage->printHead($err, $Msg);
   echo '<input type="submit" name="cancel" value="'. _m("Cancel") .'">&nbsp;&nbsp;';
 ?>
 </td></tr></table>
-</form>
 <?php
 $apage->printFoot();
 

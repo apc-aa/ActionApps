@@ -93,9 +93,6 @@ $apage->printHead($err, $Msg);
 $form_buttons = array ("update",
                        "cancel" =>array("url"=>"se_fields.php3"),
                       );
-?>
-<form name="f" method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>">
-<?php
 FrmTabCaption(_m("Sets"), '', '', $form_buttons, $slice_id);
 FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), false, '', '', false);
 
@@ -124,7 +121,5 @@ FrmHidden("setcount", $k);
 
 
 FrmTabEnd($form_buttons);
-?>
-</form>
-<?php
+
 $apage->printFoot();

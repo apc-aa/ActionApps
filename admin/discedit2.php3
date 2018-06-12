@@ -95,10 +95,10 @@ if ($db->next_record()) {
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Items managment - Discussion comments managment - Edit comment"));
+$apage->setForm(array('action' => "?d_id=$d_id"));
 $apage->printHead($err, $Msg);
 ?>
 
-<form method="post" action="<?php echo StateUrl($_SERVER['PHP_SELF'] . "?d_id=".$d_id); ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>
@@ -126,7 +126,6 @@ $apage->printHead($err, $Msg);
     echo "<input type=\"submit\" name=\"cancel\" value=". _m("Cancel") .">";
 ?>
 </td></tr></table>
-</form>
 <?php
 $apage->printFoot();
 

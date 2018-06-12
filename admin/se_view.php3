@@ -375,35 +375,41 @@ $headcode = <<<'EOT'
 </script>
 EOT;
 
-//$apage = new AA_Adminpageutil('sliceadmin','');
-//$apage->setTitle(_m("Admin - design View"));
-//if ($VIEW_TYPES[$type]["even_odd_differ"]) {
-//    $apage->addRequire('InitPage();', 'AA_Req_Load');
-//}
-//$apage->addRequire($headcode, 'AA_Req_Headcode');
-//$apage->printHead($err, $Msg);
 
-
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<title>". _m("Admin - design View") ."</title>
-  $headcode
-</head>";
-
-$useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-
-require_once (($view_type == 'categories') OR ($view_type == 'links')) ?
-                       AA_BASE_PATH."/modules/links/menu.php3" :
-                       AA_INC_PATH."menu.php3";
-
+$mainmenu = 'sliceadmin';
+$submenu  = 'views';
 switch ( $view_type ) {
-    case 'categories': showMenu($aamenus, "modadmin", $view_id ? "view$view_id" : "newcatview"); break;
-    case 'links':      showMenu($aamenus, "modadmin", $view_id ? "view$view_id" : "newlinkview"); break;
-    default:           showMenu($aamenus, "sliceadmin",""); break;
+    case 'categories':
+        $mainmenu = "modadmin";
+        $submenu =  $view_id ? "view$view_id" : "newcatview";
+        break;
+    case 'links':
+        $mainmenu = "modadmin";
+        $submenu =  $view_id ? "view$view_id" : "newlinkview";
+        break;
 }
 
-echo "<h1><b>" . _m("Admin - design View") . "</b></h1>";
-PrintArray($err);
-echo $Msg;
+$script2run = <<<'EOT'
+   $('textarea').each(function(index, elem){
+      CodeMirror.fromTextArea(elem, { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" });
+   });
+EOT;
+
+$apage = new AA_Adminpageutil($mainmenu, $submenu);
+
+if (($view_type == 'categories') OR ($view_type == 'links')) {
+    $apage->setModuleMenu('modules/links');
+}
+
+$apage->setTitle(_m("Admin - design View"));
+if ($VIEW_TYPES[$type]["even_odd_differ"]) {
+    $apage->addRequire('InitPage();', 'AA_Req_Load');
+}
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->addRequire('jquery');  // for $ used in $script2run
+$apage->addRequire('codemirror@5');
+$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->printHead($err, $Msg);
 
 $form_buttons = array( 'update',
                        'cancel'    => array("url"=>"se_views.php3"),
@@ -412,7 +418,6 @@ $form_buttons = array( 'update',
                       );
 
 // Print View Form ----------
-echo "<form name=\"f\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">";
 FrmTabCaption(_m("Defined Views"), '', '', $form_buttons, $slice_id);
 
 $view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
@@ -481,13 +486,17 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'none':        break;
 }
 
-FrmTabEnd();
-echo "</form><br>";
-
 if ( $view_id ) {
-  $ssiuri = preg_replace("~/admin/.*~", "/view.php3", $_SERVER['PHP_SELF']);
-  echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
-       "?vid=$view_id&quot;--&gt;</pre>";
+    FrmTabSeparator(_m("To include view in your sitemodule webpage use"));
+    echo "<tr><td colspan='2'>
+     <pre>
+       {view:$view_id}
+       {view.php3?vid=$view_id}
+     </pre>
+     <a href=\"https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views\">"._m('See documentation')."</a> 
+     </td></tr>";
 }
-HtmlPageEnd();
-page_close();
+
+FrmTabEnd();
+
+$apage->printFoot();

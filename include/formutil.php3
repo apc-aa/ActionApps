@@ -2879,8 +2879,8 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
                         echo "&nbsp;&nbsp;";
                     }
                     break;
-                case 'submit':
-                    echo '&nbsp;<input type="submit" name="submit" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' ">&nbsp;';
+                case 'submit': // name is not submit because it breaks document.f.submit() function call
+                    echo '&nbsp;<input type="submit" name="submitbtn" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' ">&nbsp;';
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";

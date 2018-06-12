@@ -182,8 +182,6 @@ $apage->setModuleMenu( 'modules/links');
 $apage->setTitle( $template['Links'] ? _m("Add Links module") : _m("Edit Links module"));
 $apage->printHead($err, $Msg);
 
-echo '<form method=post action="'. StateUrl($_SERVER['PHP_SELF']) .'">';
-
 FrmTabCaption(_m('Module Links data'));
 $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";
 FrmStaticText(_m('ID'), $module_id);
@@ -224,8 +222,6 @@ if ( $template['Links'] ) {
 } else {
     FrmTabEnd( array( 'update', 'reset', 'cancel' ) );
 }
-
-echo '</form>';
 
 $apage->printFoot();
 

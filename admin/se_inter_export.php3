@@ -93,10 +93,6 @@ $apage = new AA_Adminpageutil('sliceadmin','n_export');
 $apage->setTitle(_m("Inter node export settings"));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
-?>
-
-<form method="post" name="f" action="<?php echo StateUrl($_SERVER['PHP_SELF']) ?>" >
-<?php
 
 FrmTabCaption(_m("Inter node export settings"));
 ?>
@@ -141,7 +137,4 @@ FrmTabCaption(_m("Inter node export settings"));
                     "submit",
                     "cancel"=>array("url"=>"se_fields.php3")));
 
-?>
-</form>
-<?php
 $apage->printFoot();

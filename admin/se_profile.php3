@@ -97,6 +97,7 @@ $SORTORDER_TYPES = array( '+'=>_m("Ascending"), '-' => _m("Descending") );
 
 $apage = new AA_Adminpageutil('sliceadmin','users');
 $apage->setTitle(_m("Admin - user Profiles"));
+$apage->setForm();
 $apage->printHead($err, $Msg);
 
 echo "

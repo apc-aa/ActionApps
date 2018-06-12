@@ -94,26 +94,22 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     exit;
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("File Manager");?></title>
-</head>
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu ($aamenus, "sliceadmin","fileman");
 
-echo "<h1><b>" . _m("File Manager");
-if ($directory) echo " - "._m("Directory")." ".$directory;
-echo "</b></h1>";
+$apage = new AA_Adminpageutil('sliceadmin','fileman');
+$apage->setTitle(_m("File Manager"));
+if ($directory) {
+    $apage->setSubtitle(_m("Directory")." ".$directory);
+}
+$apage->setForm(array('enctype'=>"multipart/form-data"));
+$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->printHead($err, $Msg);
 
-PrintArray($err);
-echo $Msg;
 
 // J A V A S C R I P T
 
 echo $fileman_js;
 
-echo "<form name=\"fileman\" enctype=\"multipart/form-data\" method=\"post\" action=\"".StateUrl("fileman.php3")."\">
+echo "
 <input type=\"hidden\" name=\"cmd\">
 <input type=\"hidden\" name=\"fmset[directory]\" value=\"$directory\">";
 
@@ -231,9 +227,6 @@ if ($db->num_rows()) {
 echo inputplusaction("createdir",_m("Create new directory"));
 echo "</table></td></tr>";
 
-echo "</table></form><p></p>";
-HtmlPageEnd();
-page_close();
-exit;
-?>
+echo "</table>";
 
+$apage->printFoot();

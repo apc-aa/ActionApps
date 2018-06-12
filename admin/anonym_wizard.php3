@@ -183,9 +183,6 @@ $form_buttons=array("show_form" => array("value"=>_m("Show Form"),
                                          "type" =>"submit"),
                     "cancel"    => array("url"  =>"se_fields.php3"));
 
-echo '
-<form method="post" action="'.StateUrl($_SERVER['PHP_SELF']).'#form_content">';
-
 $helplink = ' <a href="'.AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage("help100_simple.gif", _m("Help")).'<b>'._m("Help - Documentation").'</b></a>';
 FrmTabCaption(_m("URLs shown after the form was sent") . $helplink, '', '', $form_buttons, $slice_id);
 FrmInputText('ok_url',  _m("OK page"),    $ok_url,  254, 60);
@@ -235,6 +232,6 @@ if ($show_form) {
     echo "\n</textarea></td></tr>\n";
 }
 
-echo "</table></form>";
+echo "</table>";
 
 $apage->printFoot();
