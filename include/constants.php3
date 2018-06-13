@@ -269,7 +269,7 @@ class AA_Langs {
 /** any string - used as parameter to included JS files in order browser can
  *  use newer version of JS libs. Feel free to increase it
  */
-define('AA_JS_VERSION', 2);
+define('AA_JS_VERSION', 3);
 
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
 define ("FIELDID_USERNAME",      "headline........");
