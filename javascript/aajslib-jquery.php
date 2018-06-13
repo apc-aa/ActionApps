@@ -27,16 +27,19 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function AA_GetConf(prop) {
-    // Check to see if the rotators-set  has been initialized
-    if ( typeof AA_GetConf.aa_install_path == 'undefined' ) {
-        var src = $('script[src*="javascript/aajslib-jquery"]').attr('src');
-        AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib-jquery\..*$/, '');
+if (typeof window.AA_GetConf === 'undefined') {
+    window.AA_GetConf = function(prop) {
+        if (typeof AA_GetConf.aa_install_path == 'undefined') {
+            var src = document.querySelector('script[src*="javascript/aajslib"]').getAttribute('src');
+            AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib.*$/, '');
+        }
+        switch (prop) {
+            case 'path':
+                return AA_GetConf.aa_install_path;
+            case 'loader':
+                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+        }
     }
-    switch (prop) {
-        case 'path':       return AA_GetConf.aa_install_path;
-        case 'loader':     return '<img src="'+ AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
-     }
 }
 
 // for backward compatibility - so you can use AA_Config.loader

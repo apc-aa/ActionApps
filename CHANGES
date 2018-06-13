@@ -1,4 +1,4 @@
-18-06-13 - fixed CKEditor - some plugins was not updates (scyat spellchecker, ...)
+18-06-13 - fixed CKEditor - some plugins was not updated (scyat spellchecker, ...), path to editor better computed
 18-06-12 - sitemodule now is able to omit language, so the pages /en/about is the same as /about
 (honzam)     - you have to specify the "Languages on website" setting in Sitemodule admin
              - the first language is the default one)

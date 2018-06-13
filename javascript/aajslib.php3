@@ -57,15 +57,19 @@ $dir = __DIR__. '/prototype/';
  *
 /*--------------------------------------------------------------------------*/
 
-function AA_GetConf(prop) {
-  if ( typeof AA_GetConf.aa_install_path == 'undefined' ) {
-    var src = $('script[src*="javascript/aajslib-jquery"]').attr('src');
-    AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib-jquery\..*$/, '');
-  }
-  switch (prop) {
-    case 'path':       return AA_GetConf.aa_install_path;
-    case 'loader':     return '<img src="'+ AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
-  }
+if (typeof window.AA_GetConf === 'undefined') {
+    window.AA_GetConf = function(prop) {
+        if (typeof AA_GetConf.aa_install_path == 'undefined') {
+            var src = document.querySelector('script[src*="javascript/aajslib"]').getAttribute('src');
+            AA_GetConf.aa_install_path = src.replace(/javascript\/aajslib.*$/, '');
+        }
+        switch (prop) {
+            case 'path':
+                return AA_GetConf.aa_install_path;
+            case 'loader':
+                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+        }
+    }
 }
 
 // usage: $(div_id_2).update(AA_Config.loader);

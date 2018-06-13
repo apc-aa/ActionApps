@@ -5,6 +5,22 @@ var myform    = document.inputform;
 var relatedwindow;  // window for related stories
 var urlpickerwindow; // window for local URL picking
 
+
+if (typeof window.AA_GetConf === 'undefined') {
+    window.AA_GetConf = function(prop) {
+        if (typeof AA_GetConf.aa_install_path == 'undefined') {
+            var src = document.querySelector('script[src*="javascript/inputform"]').getAttribute('src');
+            AA_GetConf.aa_install_path = src.replace(/javascript\/inputform.*$/, '');
+        }
+        switch (prop) {
+            case 'path':
+                return AA_GetConf.aa_install_path;
+            case 'loader':
+                return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+        }
+    }
+}
+
 function SelectAllInBox( listbox ) {
     for (var i = 0; i < document.inputform[listbox].length; i++) {
         // select all rows without the wIdThTor one, which is only for <select> size setting
