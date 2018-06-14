@@ -2697,6 +2697,7 @@ class AA_Formatters {
             return self::getHiddenFormatters($basevarname, $aa_property, $value);
         }
         $formatters = self::getFromatters();
+        $flag_frmtr = self::getCurrentFormatter($value, $aa_property);
 
         $ret  = '<div class=aa-formatters>';
         foreach ($formatters as $bit => $formdef) {
@@ -2723,8 +2724,16 @@ class AA_Formatters {
      * @param AA_Value $value
      */
     static function getHiddenFormatters($basevarname, $aa_property, $value) {
-        $flag_frmtr  = $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);
+        $flag_frmtr  = self::getCurrentFormatter($value, $aa_property);
         return $flag_frmtr ? '<input type=hidden name="'.$basevarname.'[flag]" value="'.$flag_frmtr.'">' : '';
+    }
+
+    /** returns current formatter flag to set on widget
+     * @param AA_Value $value
+     * @param AA_Property $aa_property
+     */
+    static function getCurrentFormatter($value, $aa_property) {
+        return $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);
     }
 
 }
