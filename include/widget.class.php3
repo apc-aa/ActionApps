@@ -1276,12 +1276,15 @@ class AA_Widget_Chb extends AA_Widget {
         $widget        = '';
         $delim         = '';
         $value         = $content->getAaValue($aa_property->getId());
+        $required      = $aa_property->isRequired() ? ' required' : '';
+
         for ( $i=0, $ino=$value->count(); $i<$ino; ++$i) {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = myspecialchars($value->getValue($i));
-            $widget      .= "$delim<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+            $widget      .= "$delim<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$required". ($input_value ? " checked" : '')."$widget_add>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             $delim        = '<br />';
+            $required     = '';
         }
         // no input was printed, we need to print one
         if ( !$widget ) {
@@ -1289,7 +1292,7 @@ class AA_Widget_Chb extends AA_Widget {
             // checkbox and multiple checkboxes in AA_SendWidgetLive() function
             $input_name   = $base_name_add ."[]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= "<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add>";
+            $widget      .= "<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$required $widget_add>";
         }
         // default value
         $input_name   = $base_name_add ."[def]";
