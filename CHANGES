@@ -2,6 +2,10 @@
 (honzam) - the AA scripts loaded by {generate:HEAD} uses version, so we know the last version is always loaded
          - fixed Multiple Fext Field widget - rewritten to plain JS, so no additional library is required
          - fixed HTML / Plain text formater switch for translated textareas widget (textarea with Allow translation)
+         - AA are now more strict about Required field, so checkboxes marked as Required must be filled (=checked)
+         - new AA -> Optimize test "List Checkbox fields marked as required" which list all potential problem field
+           if you accidentally set required on checkbox field in the history.
+         - added year in alerts statistics
 18-06-13 - fixed CKEditor - some plugins was not updated (scyat spellchecker, ...), path to editor better computed
 18-06-12 - sitemodule now is able to omit language, so the pages /en/about is the same as /about
 (honzam)     - you have to specify the "Languages on website" setting in Sitemodule admin

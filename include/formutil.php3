@@ -1195,8 +1195,7 @@ class AA_Inputfield {
         $this->echoo("<td>");
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
-        $this->echovar("<input type=\"checkbox\" name=\"$name\" $add ".
-                              ($val ? " checked" : ''). " $triggers>");
+        $this->echovar("<input type=\"checkbox\" name=\"$name\" $add ". ($this->required ? " required": ''). ($val ? " checked" : ''). " $triggers>");
         $this->helps();
         $this->echoo("</td>");
         if ( $changeorder ) {

@@ -1272,7 +1272,6 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     }
 }
 
-
 /** Change module ID to new one
  *  Used sometimes if you clone database or copy slices to another database
  *  for another client and do not want to use the same ids )
@@ -1343,6 +1342,48 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
         return true;
     }
 }
+
+
+/**
+ *
+ */
+class AA_Optimize_Required_Checboxes extends AA_Optimize {
+
+    /** Name function
+     * @return a message
+     */
+    function name() {
+        return _m("List Checkbox fields marked as required");
+    }
+
+    /** Description function
+     * @return a message
+     */
+    function description() {
+        return _m("AA are now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be problem if you acidentaly have it set in history. This test just list all of such fields, in order you can check it.");
+    }
+
+    /** implemented actions within this class */
+    function actions()      { return array('test'); }
+
+    /** Test function
+     * @return bool
+     */
+    function test()
+    {
+        $metabase = AA_Metabase::singleton();
+        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', array(array('required', 1, 'i'), array('input_show_func', 'chb:%', 'LIKE')))) {
+            $this->message(_m('We found required checkbox %1 fields:', array(count($fields))));
+            foreach ($fields as $field) {
+                $this->message(_m('%1 - %2 (%3) Show: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show'])));
+            }
+        } else {
+            $this->message(_m('OK - There is no required checkbox field'));
+        }
+        return true;
+    }
+}
+
 
 
 

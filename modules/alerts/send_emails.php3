@@ -91,8 +91,9 @@ function ShowCollectionAddOns() {
     FrmTabCaption(_m("Last time the alerts were sent on:"));
     $last = GetTable2Array("SELECT howoften, last FROM alerts_collection_howoften WHERE collectionid='".$collectionid."'", 'howoften', 'last');
 
-    foreach (get_howoften_options() as $ho => $msg) {
-        FrmStaticText($msg,  date("j.n. H:i", $last[$ho]));
+    $ho_options = get_howoften_options();
+    foreach ($ho_options as $ho => $msg) {
+        FrmStaticText($msg,  $last[$ho] ? date("j.n.Y H:i", $last[$ho]) : '--');
     }
     FrmTabEnd();
     echo "</form>\n";
