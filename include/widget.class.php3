@@ -979,10 +979,10 @@ class AA_Widget_Mfl extends AA_Widget {
         $widget          = "<div id=\"allrows$base_id\">$widget</div>";
         $img             = GetAAImage('icon_new.gif', _m('new'), 17, 17);
         if ($rows > 1) {
-            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><textarea name=\'$base_name"."[mfl][]\' rows=\'$rows\' ></textarea></div>'); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<textarea name=&quot;$base_name"."[mfl][]&quot; rows=&quot;$rows&quot;></textarea>'; document.getElementById('allrows$base_id').appendChild(el); return false;\">$img</a>";
         } else {
             $attr_string = str_replace('"','&quot;',$attr_string);
-            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input $attr_string name=\'$base_name"."[mfl][]\' value=\'\'></div>'); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name"."[mfl][]&quot; value=&quot;&quot;>'; document.getElementById('allrows$base_id').appendChild(el); return false;\">$img</a>";
         }
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());

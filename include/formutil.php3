@@ -416,13 +416,13 @@ class inputform {
         if ($javascript = AA_Slice::getModuleProperty($slice_id,'javascript')) {
             $jscode .= $javascript;
             AA::Stringexpander()->addRequire('aa-jslib@1');
-            AA::Stringexpander()->addRequire(get_aa_url('javascript/fillform.min.js','',false));
+            AA::Stringexpander()->addRequire(get_aa_url('javascript/fillform.min.js?v='.AA_JS_VERSION,'',false));
         }
 
         $retval .= getFrmJavascript( $jscode );
         $retval .= getHtmlareaJavascript($slice_id);
 
-        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js','',false));  // no longer needed - managed by {require:...} in hco
+        // AA::Stringexpander()->addRequire(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false));  // no longer needed - managed by {require:...} in hco
 
         return $retval;
     }

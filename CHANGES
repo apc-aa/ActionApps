@@ -1,5 +1,6 @@
 18-06-14 - fixed aajslib.php3 vs aajslib.php - both are in SVN and the same.
 (honzam) - the AA scripts loaded by {generate:HEAD} uses version, so we know the last version is always loaded
+         - fixed Multiple Fext Field widget - rewritten to plain JS, so no additional library is required
 18-06-13 - fixed CKEditor - some plugins was not updated (scyat spellchecker, ...), path to editor better computed
 18-06-12 - sitemodule now is able to omit language, so the pages /en/about is the same as /about
 (honzam)     - you have to specify the "Languages on website" setting in Sitemodule admin
