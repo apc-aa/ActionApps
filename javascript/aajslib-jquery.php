@@ -210,7 +210,14 @@ function AA_AjaxSendForm(form_id, url) {
 
     $.post(filler_url, code, function(data) {
         $(valdiv).attr("data-aa-edited", "0");
-        $(valdiv).html(data);
+        var res = data;
+        if (typeof data === 'object') {  // $.post is parsed if JSON is returned
+            for (var i in data) {
+                res = data[i];
+                break;
+            }
+        }
+        $(valdiv).html(res);
     });
 }
 

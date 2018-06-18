@@ -237,11 +237,11 @@ function SendOkPage($txt, $new_ids = array()) {
         if ($_REQUEST["ok_url"]) {
             ReadFileSafe($_REQUEST["ok_url"]);
         } else {
-            $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
             $ret     = array();
             if ($txt['report']) {
                 $ret['report'] = $txt['report'];
             }
+            $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
             foreach($new_ids as $long_id) {
                 $item = AA_Item::getItem(new zids($long_id, 'l'));
                 $text = AA::Stringexpander()->unalias($retcode, '', $item);

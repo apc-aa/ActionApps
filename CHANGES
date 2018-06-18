@@ -1,3 +1,4 @@
+18-06-18 - fixed AA_AjaxSendForm, so the result text is displayed for {form:...}
 18-06-14 - fixed aajslib.php3 vs aajslib.php - both are in SVN and the same.
 (honzam) - the AA scripts loaded by {generate:HEAD} uses version, so we know the last version is always loaded
          - fixed Multiple Fext Field widget - rewritten to plain JS, so no additional library is required
