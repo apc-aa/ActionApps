@@ -1,3 +1,4 @@
+18-06-21 - fixed AA Item Manager left menu when displayed from bookmarks - no empty numbered rows
 18-06-18 - fixed AA_AjaxSendForm, so the result text is displayed for {form:...}
 18-06-14 - fixed aajslib.php3 vs aajslib.php - both are in SVN and the same.
 (honzam) - the AA scripts loaded by {generate:HEAD} uses version, so we know the last version is always loaded
@@ -1972,7 +1973,7 @@
              http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
          - new parameter <param> for polls {polls[:<pid>[:<param>]]}
            which allows you to display the poll on the page with specific
-           parameters - jus like:
+           parameters - just like:
              {polls:5ad0d95a490b383ac7d23650e7aa49ee:design_id=4326b8bf6b64b2a216147d896b3860b2&listlen=50&conds[0][operator]=>&conds[0][value]=1&conds[0][expiry_date]=1}
          - new parameter <url> to {xid:[<info>:[<url>]]} allows to get {xid}
            information from specified url (instead of current page) in SEO Site

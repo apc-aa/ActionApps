@@ -394,9 +394,11 @@ function showSubMenuRows( $aamenuitems, $active ) {
     foreach ($aamenuitems as $itemshow => $item) {
         if (substr($itemshow,0,4) == "text") {
             echo "<tr><td>$item</td></tr>\n";
-        } elseif ((substr($itemshow,0,6) == "header") AND ($item !== '')) {
-            echo '<tr><td>&nbsp;</td></tr>
-                  <tr><td class="leftmenu">'.$item.'</td></tr>'."\n";
+        } elseif (substr($itemshow,0,6) == "header") {
+            if ($item !== '') {
+                echo '<tr><td>&nbsp;</td></tr>
+                    <tr><td class="leftmenu">'.$item.'</td></tr>'."\n";
+            }
         } elseif (substr($itemshow,0,4) == "line") {
             echo '<tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>'."\n";
         } elseif ( $item["function"] ) {
