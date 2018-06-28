@@ -1,8 +1,8 @@
 <?php
 /** This original script has been stolen from old version of Horde.
- *  It was never fully updated for AA, but could be good start for 
+ *  It was never fully updated for AA, but could be good start for
  *  new version of it - see AA code from the end of 2017.
- *  
+ *
  *  The script is here to remind us that we shoudl indeed have
   * something like this for installation and troubleshooting
   * purposes. The installation docs refers to it. Maybe the first
@@ -20,7 +20,7 @@
 </head>
 <body>
   <ul>
-  
+
 <?php
 if (extension_loaded('gd')) {
     print("<li>GD is loaded</li>\n");

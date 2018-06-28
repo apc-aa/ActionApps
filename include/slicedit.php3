@@ -207,7 +207,7 @@ if ( $add || $update ) {
             $varset->addkey("id", "unpacked", $slice_id);
             $varset->add("name", "quoted", $name);
             $varset->add("owner", "unpacked", $owner);
-            //echo $owner; exit;  // probmem was in VARCHAR of owner field in database. It must be BINARY
+            //echo $owner; exit;  // problem was in VARCHAR of owner field in database. It must be BINARY
             $varset->add("slice_url", "quoted", $slice_url);
             $varset->add("priority", "number", $priority);
             if ( $superadmin ) {
