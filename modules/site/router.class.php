@@ -332,7 +332,7 @@ class AA_Router_Seo extends AA_Router {
 
         $matches    = array();
         $ret        = array();
-        if (!(preg_match("/($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
+        if (!(preg_match("/^($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
             if (count($langs) AND trim($arr[0])) {
                 // if we define web_languages in Site Module setting (so for newer sites), then we can use pages without
                 // the first directory - so instead of /en/users we can use just /users (xlang will be filled form first web_language)

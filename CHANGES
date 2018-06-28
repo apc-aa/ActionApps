@@ -1,5 +1,10 @@
-18-06-28 - better help text for directly specified constants in Radio, Multiple Checkboxes,... widgets
+18-06-28 - new {sitespot:8} syntax, which includes html code of the site's spot with specified ID (8 in our case)
+(honzam)   (allowed only in site module spots)
+         - {generate:} now works also on site's Login Page
+         - better help text for directly specified constants in Radio, Multiple Checkboxes,... widgets
          - fixed "v0" constants bug - v0 is no longer presented, when no constants selected in Field setting
+         - admin pages which uses tableedit have bigger textareas
+         - better parsing of SEO router path
 18-06-21 - fixed AA Item Manager left menu when displayed from bookmarks - no empty numbered rows
 (honzam) - fixed parsing of AA_SEO_Router site module url
 18-06-18 - fixed AA_AjaxSendForm, so the result text is displayed for {form:...}
