@@ -160,7 +160,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         if (!is_array($column["view"]["size"])) {
             $column["view"]["size"] = array();
         }
-        $column["view"]["size"]["rows"] = get_if($column["view"]["size"]["rows"], 4);
+        $column["view"]["size"]["rows"] = get_if($column["view"]["size"]["rows"], 10);
         $column["view"]["html"]         = get_if($column["view"]["html"], false);
         $column["view"]["type"]         = get_if($column["view"]["type"], $column["type"]);
         if ($column["view"]["type"] == "hidden") {
@@ -242,7 +242,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
                 $cprop["not_null"] = 1;
             }
 
-            $_cols = $col["len"] ? min (80, $col["len"]) : 40;
+            $_cols = $col["len"] ? min (80, $col["len"]) : 80;
             $cprop["view"]["size"]["cols"] = get_if($cprop["view"]["size"]["cols"], $_cols);
         }
     }
