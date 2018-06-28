@@ -75,7 +75,7 @@ class AA_Saver {
 
         $this->grabber->prepare();    // maybe some initialization in grabber
 
-        // returns grabber prepared item of just parsed source structure, which have to be converted ti item by transformations?
+        // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
         $directfill = $this->grabber->isDirectfill();
 
         while ($source_content4id = $this->grabber->getItem()) {
@@ -159,6 +159,7 @@ class AA_Saver {
             if ( !is_null($this->slice_id) ) {
                 // for AA_Grabber_Form we have the slice_id already filled
                 $content4id->setSliceID($this->slice_id);
+                AA::$slice_id = $this->slice_id;   // pass validator the current slice of added item for slice unique
             }
 
             if (($store_mode == 'overwrite') OR (substr($store_mode,0,6) == 'insert')) {
@@ -1775,28 +1776,22 @@ class AA_Grabber_CTK extends AA_Grabber {
           }
         }
 
-#print_r((array)$polozka->xpath('//Property[@FormalName=\'City\']'));
-
         $ftext = '';
         foreach($polozka->ContentItem->DataContent->body->p as $f) {
-          #$ftext .= '<p>'.(string)$f.'</p>'."\n";
           $ftext .= $f->asXML()."\n";
         };
 
         $item = new ItemContent();
         $item->setItemID(new_id());
-        $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // N�zev
+        $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Název
         $item->setValue('place..........3', iconv('UTF-8', 'windows-1250', mb_strtoupper($domicil, 'UTF-8')));                          // Domicil
-        $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zve�ejn�n� - 20160127T145301+01:00
-#        $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zve�ejn�n� - zruesno lde emailu 7.12.2016
+        $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveřejnění - 20160127T145301+01:00
+//      $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveřejnění - zruseno dle emailu 7.12.2016
         $item->setValue('expiry_date.....', '1577836800');                                                                              // Datum expirace - 1.1.2020 - tedy do konce smlouvy s CTK
-        $item->setValue('full_text......1', iconv('UTF-8', 'windows-1250', $ftext));                                                    // Pln� text
-        $item->setValue('source.........1', '�TK');                                                                                     // Zdroj
+        $item->setAaValue('full_text......1', new AA_Value(iconv('UTF-8', 'windows-1250', $ftext), FLAG_HTML));                         // Plný text
+        $item->setValue('source.........1', iconv('UTF-8', 'windows-1250','ČTK'));                                                                                     // Zdroj
         $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
         $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
-
-#print_r($item);
-#exit;
         return $item;
 /*
 */

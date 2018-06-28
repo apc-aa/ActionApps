@@ -570,6 +570,12 @@ class DB_AA extends DB_Sql {
             } elseif ( ($type == 'LIKE') OR ($type == 'NOT LIKE') ) {
                 $where[]  = "$name $type ". qquote($value);
                 continue;
+            } elseif ( ($type == 's<>') OR ($type == 's!=') ) {
+                $where[]  = "$name <> ". qquote($value);
+                continue;
+            } elseif ( ($type == 'l<>') OR ($type == 'l!=') ) {
+                $where[]  = "$name <> ". xpack_id($value);
+                continue;
             } elseif ( (string)$value == 'ISNULL' ) {
                 $where[]  = "$name IS NULL ";
                 continue;
