@@ -1,4 +1,7 @@
+18-06-28 - better help text for directly specified constants in Radio, Multiple Checkboxes,... widgets
+         - fixed "v0" constants bug - v0 is no longer presented, when no constants selected in Field setting
 18-06-21 - fixed AA Item Manager left menu when displayed from bookmarks - no empty numbered rows
+(honzam) - fixed parsing of AA_SEO_Router site module url
 18-06-18 - fixed AA_AjaxSendForm, so the result text is displayed for {form:...}
 18-06-14 - fixed aajslib.php3 vs aajslib.php - both are in SVN and the same.
 (honzam) - the AA scripts loaded by {generate:HEAD} uses version, so we know the last version is always loaded

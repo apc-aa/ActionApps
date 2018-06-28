@@ -70,7 +70,7 @@ $TPS = array (
  */
 function varname4form($fid, $type='normal') {
     $additions = array( 'normal' => '', 'multi' => '[]', 'file' => 'x' );
-    return 'v'. unpack_id($fid) .$additions[$type];
+    return $fid ? ('v'. unpack_id($fid) .$additions[$type]) : '';
 }
 
 /** GetInputFormTemplate function
