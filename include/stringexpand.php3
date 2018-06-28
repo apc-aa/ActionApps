@@ -2390,7 +2390,9 @@ class AA_Stringexpand_View extends AA_Stringexpand {
     }
 }
 
-/** displays current poll from polls module specified by its pid */
+/** displays current poll from polls module specified by its pid
+ *  {polls:5ad0d95a490b383ac7d23650e7aa49ee:design_id=4326b8bf6b64b2a216147d896b3860b2&listlen=50&conds[0][operator]=>&conds[0][value]=1&conds[0][expiry_date]=1}
+ */
 class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $pid
@@ -2714,6 +2716,7 @@ class AA_Treecache {
         if (!isset($this->cache[$key])) {
             $subtree  = $this->top     ? $this->_get_item($match[1], $this->top) : '';
             $subtree .= $this->content ? $this->get_concat($match[2]) : '';
+         // $subtree .= $this->content ? str_replace('_#aa_parent', $match[1], $this->get_concat($match[2])) : '';
             $subtree .= $this->bottom  ? $this->_get_item($match[1], $this->bottom) : '';
 
             $this->_cache[$key] = $subtree;
@@ -4325,6 +4328,29 @@ class AA_Stringexpand_Site extends AA_Stringexpand {
         return is_array($arr) ? join('-' , array_values(array_unique($arr))) : '';
     }
 }
+
+/** Get html code of the site's spot with specified ID
+ *  {sitespot:8}
+ **/
+class AA_Stringexpand_Sitespot extends AA_Stringexpand {
+
+    /** expand function
+     * @param $property
+     */
+    function expand($spot_id='')
+    {
+        $ret = '';
+        if (AA::$site_id AND ctype_digit((string)$spot_id)) {
+            if ($spot = DB_AA::select1('SELECT flag, content FROM site_spot', '', array(array('site_id', AA::$site_id, 'l'), array('spot_id', $spot_id, 'i')))) {
+                $ret = ($spot['flag'] & MODW_FLAG_JUST_TEXT) ? $spot['content'] : AA::Stringexpander()->unalias($spot['content']);
+            }
+        }
+        return $ret;
+    }
+}
+
+
+
 
 /** Deprecated - use AA_Stringexpand_Modulefield instead
  *

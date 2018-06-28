@@ -48,16 +48,10 @@ function ModW_StoreTree(&$tree, $site_id) {
     DB_AA::sql($SQL);
 }
 
-function ModW_GetTree( &$tree, $site_id ){
-    $db        = getDB();
-    $p_site_id = q_pack_id($site_id);
-
-    $SQL = "SELECT structure FROM site WHERE id='$p_site_id'";
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $tree = unserialize( $db->f('structure') );
+function ModW_GetTree( &$tree, $site_id ) {
+    if ($structure = DB_AA::select1('SELECT structure FROM site','structure',array(array('id', $site_id, 'l')))) {
+        $tree = unserialize( $structure );
     }
-    freeDB($db);
 }
 
 // This function does nothing and is used when walking the tree fixing it
@@ -75,7 +69,7 @@ function ModW_SpotHtml($spot_id, $spot_name, $selected, $disabled) {
         '<a href="'. SiteAdminPage($spot_id, 'akce=h'). '">' .GetModuleImage('site', 'enabled.gif',  '', 16, 12, 'class="eye"') .'</a>';
 
     // print the spot <div>
-    echo "<div$class>${action}<a href=\"". SiteAdminPage($spot_id, "go_sid=$spot_id"). "\" class=\"spot\">$spot_name</a></div>";
+    echo "<div$class title=\"spot ID: $spot_id\">${action}<a href=\"". SiteAdminPage($spot_id, "go_sid=$spot_id"). "\" class=\"spot\">$spot_name</a></div>";
 }
 
 function ModW_PrintSpotName_Start($spot_id, $depth) {
@@ -129,7 +123,6 @@ function ModW_PrintChoice_End($spot_id, $depth, $choices_index, $choices_count) 
 }
 
 function ModW_PrintVariables( $spot_id, $vars ) {
-    FrmTabCaption();
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
     if (isset($vars) AND is_array($vars)) {
         foreach ($vars as $k => $v) {
@@ -140,11 +133,9 @@ function ModW_PrintVariables( $spot_id, $vars ) {
     ModW_HiddenRSpotId();
     echo StateHidden();
     echo "</form></td></tr>";
-    FrmTabEnd();
 }
 
 function ModW_PrintConditions($spot_id, $conds, $vars) {
-    FrmTabCaption();
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
     if ( isset($vars) AND is_array($vars) ) {
         $i=0;
@@ -172,20 +163,18 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
         }
     }
     echo "</td></tr>";
-    FrmTabEnd();
 }
 
 function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
-    $db  = getDB();
-    $SQL = "SELECT * FROM site_spot WHERE site_id = '". q_pack_id($site_id). "' AND spot_id = '$spot_id'";
-    $db->query($SQL);
-    $content = $db->next_record() ? $db->f('content') : "";
-    freeDB($db);
+    $content = DB_AA::select1('SELECT content FROM site_spot','content',array(array('site_id', $site_id, 'l'), array('spot_id',$spot_id,'i')));
+    FrmTabCaption();
+    FrmStaticText(_m('Spot ID') ,"[$spot_id] - ". _m('You can include this spot code in another spot by using {sitespot:%1}',array($spot_id)));
 
     ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
     if (($vars=$tree->isOption($spot_id))) {
         ModW_PrintConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
     }
+    FrmTabEnd();
 
     echo "<form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
     FrmTabCaption();

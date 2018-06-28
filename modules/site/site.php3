@@ -281,7 +281,7 @@ if (IsAjaxCall()) {
     }
 }
 
-$page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->unalias($module->getProperty('loginpage_code'));
+$page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($module->getProperty('loginpage_code')));
 
 // AJAX check
 if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAjaxCall()) {
