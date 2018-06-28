@@ -203,7 +203,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
 } elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
-    require_once __DIR__.'/include/legacy_util.php';
+    require_once __DIR__.'/legacy_util.php';
     require_once AA_BASE_PATH."modules/site/sites/site_".$module->getProperty('state_file');
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
