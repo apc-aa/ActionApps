@@ -543,21 +543,23 @@ class AA_Validate_Unique extends AA_Validate {
             }
             return true;
         }
-        $conds = array();
+        $tables = array('content');
+        $conds  = array();
         if ( $this->scope == 'slice') {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA_Saver or itemedit.php tells us the current slice
             if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($this->field_id) ) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
             }
-            $conds = array(array('content.item_id', 'item.id', 'j'),array('item.slice_id', $slice_id, 'l'));
+            $conds    = array(array('content.item_id', 'item.id', 'j'),array('item.slice_id', $slice_id, 'l'));
+            $tables[] = 'item';  // we need it for join above
         }
         $conds[] = array('field_id', $this->field_id);
         $conds[] = array('text', $var);
         if ($this->item_id) {
             $conds[] = array('item.id', $this->item_id, 'l<>');
         }
-        if (DB_AA::test('content', $conds)) {
+        if (DB_AA::test($tables, $conds)) {
             return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $default);
         }
         return true;
