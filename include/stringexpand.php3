@@ -2511,7 +2511,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
             return '';
         }
 
-        $zids = new zids(array_filter(explode('-',str_replace(array('(',')',' ',"\n"),array('-','-','-','-'),$ids_string)),'trim'));
+        $zids = new zids(array_filter(explode('-',preg_replace('/[^0-9a-f]/', '-', $ids_string)),'trim'));
 
         // load all mentioned items in one step
         AA_Items::preload($zids);
@@ -6898,7 +6898,7 @@ class AA_Password_Manager_Reader {
             $mail->setHeader("From", $from_email);
             $mail->setHeader("Reply-To", $from_email);
             $mail->setHeader("Errors-To", $from_email);
-            //$mail->setCharset(AA_Langs::getCharset(substr($db->f("lang_file"),0,2)));
+            $mail->setCharset(AA_Langs::getCharset());
             $mail->send(array($email));
         }
 

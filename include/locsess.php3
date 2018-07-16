@@ -286,6 +286,7 @@ class AA {
     public  static $perm;
     public  static $site_id;
     public  static $slice_id;            // optional - filled by view.php3 when site_id is not available (so it is used as allpage main module to find {_:alias} aliases)
+                                         //             or for Saver to pass validator the current slice of added item for slice unique
     public  static $encoding;            // inner module's/slice's encoding (utf-8, ...)
     public  static $lang;                // two letters small caps - cz / es / en / ...
     public  static $langnum;             // array of prefered language numbers - > 10000000

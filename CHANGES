@@ -1,4 +1,8 @@
-18-06-29 - fixed validation error for email unique value, when invoked from 
+18-07-16 - the translation expression now can use parameters _#1, _#2, ... - {tr:found _#1 items:5}
+(honzam) - fixed new bug in slice unique validation
+         - better parsing ids passed to {item:}
+         - better email charset
+18-06-29 - fixed validation error for email unique value, when invoked from
 (honzam)   {newitem:...} in sitemodule 
          - fixed bad include of site module legacy_util.php
 18-06-28 - new {sitespot:8} syntax, which includes html code of the site's spot with specified ID (8 in our case)
