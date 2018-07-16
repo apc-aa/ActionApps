@@ -6997,14 +6997,17 @@ class AA_Password_Manager_Reader {
 
 /** manages forgotten password
  *  The idea is, that this alias will manage all tasks needed for change of pwd
- *  you just put the {changepwd:<reader_slice_id>:<some other parameter>}
+ *  you just put the {changepwd:<reader_slice_id>:<from-email>}
  */
 class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
 
     /** expand function
-     * @param $reader_slice_id - reader module id
+     * @param $reader_slice_id - reader module id - required
      */
     function expand($reader_slice_id='', $from_email='') {
+        if (!is_long_id($reader_slice_id)) {
+            return '';
+        }
         $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
 
         if (isset($_POST['aapwd3'])) {    // CHange Password
@@ -7014,9 +7017,9 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
             return AA_Password_Manager_Reader::getChangeForm($key, $user);
         } elseif (isset($_REQUEST['aapwd1'])) {        // CHeck User
             return AA_Password_Manager_Reader::askForMail($_REQUEST['aapwd1'], $reader_slice_id, $from_email);
-        } else {
-            return AA_Password_Manager_Reader::getFirstForm();
         }
+
+        return AA_Password_Manager_Reader::getFirstForm();
     }
 }
 
@@ -7686,34 +7689,45 @@ class AA_Stringexpand_Partdiv extends AA_Stringexpand {
 }
 
 
-/** Translation */
+/** Translation
+ *  ussage: {tr:Send}
+ *          {tr:found _#1 items:5} - you can use parameters _#1, _#2...
+ */
 class AA_Stringexpand_Tr extends AA_Stringexpand {
 
     /** expand function
      * @param $text
      */
-    function expand($text='') {
-        if ($site = AA_Module_Site::getModule(AA::$site_id)) {
-            if ($translate_slice = $site->getProperty('translate_slice')) {
-                $set  = new AA_Set(array($translate_slice), new AA_Condition('headline........', '==', $text));
-                $zids = $set->query();
+    function expand() {
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        $text = array_shift($arg_list);
+        if (!is_null($text) AND strlen($text)) {
+            if ($site = AA_Module_Site::getModule(AA::$site_id)) {
+                if ($translate_slice = $site->getProperty('translate_slice')) {
+                    $set  = new AA_Set(array($translate_slice), new AA_Condition('headline........', '==', $text));
+                    $zids = $set->query();
 
-                if ($zids->count()) {
-                    return AA_Items::getItem($zids[0])->f_2('headline........');
+                    if ($zids->count()) {
+                        return AA_Items::getItem($zids[0])->f_2('headline........');
+                    }
+                    // if not present - translate to default language of the slice
+                    $translations = AA_Slice::getModuleProperty($translate_slice,'translations');
+
+                    $ic = new ItemContent();
+                    $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
+                    $ic->setSliceID($translate_slice);
+                    //$ic->complete4Insert();
+
+                    $ic->storeItem('insert');     // invalidatecache, feed
                 }
-                // if not present - translate to default language of the slice
-                $translations = AA_Slice::getModuleProperty($translate_slice,'translations');
-
-                $ic = new ItemContent();
-                $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
-                $ic->setSliceID($translate_slice);
-                //$ic->complete4Insert();
-
-                $ic->storeItem('insert');     // invalidatecache, feed
             }
+            // replace for {tr:found _#1 items:5}
+            for ($i = count($arg_list); $i>0 ; $i--) { // backward - it solves conflict _#10 vs _#1
+                $text = str_replace("_#$i", $arg_list[$i-1], $text);
+            }
+            return $text;
         }
-
-        return $text;
+        return '';
     }
 }
 
