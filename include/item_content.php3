@@ -750,6 +750,11 @@ class ItemContent extends AA_Content {
      * @param $value
      */
     function setItemID($value) {
+        if (!is_long_id($value)) {
+            $this->setValue('id..............', pack_id(0));
+            $this->setValue('unpacked_id.....', 0);
+            return false;
+        }
         // we want to switch the default to unpacked_id, but id is still necessary (for field copy in complete4Insert...)
         $this->setValue('id..............', pack_id($value));
         $this->setValue('unpacked_id.....', $value);
@@ -831,6 +836,54 @@ class ItemContent extends AA_Content {
         return true;
     }
 
+    /** validates and fills content with default and hidden fields in order it could be stored into database */
+    function validate4Update() {
+        // global $auth;
+
+        $slice = AA_Slice::getModule($this->getSliceID());
+        if (!$slice) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
+            return false;
+        }
+        if (!is_long_id($this->getItemID())) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("Bad Item Id"));  // set error code
+            return false;
+        }
+
+        // start from scretch with new content
+        //$new_content = new ItemContent;
+        //$fields      = $slice->getFields();
+        //$profile     = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+        //
+        //foreach ($fields as $field_id => $field) {
+        //    $property = $field->getAaProperty();
+        //    $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
+        //}
+        //
+        //// normalize - set id and well as unpacked_id
+        //$new_content->setItemID($this->getItemID());
+        //
+        //$status = max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user());
+        //$new_content->setValue('status_code.....', $status);
+        //
+        //if ( $new_content->getPublishDate() <= 0 ) {
+        //    $new_content->setValue('publish_date....', now());
+        //}
+        //if ( $new_content->getExpiryDate() <= 0 ) {
+        //    $new_content->setValue('expiry_date.....', now()+(60*60*24*365*10));
+        //}
+        //$new_content->setSliceID($slice->getId());
+        //$this->content = $new_content->getContent();
+        //if ($status == SC_NO_BIN) {
+        //    ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->auth["uid"])));  // set error code
+        //    return false;
+        //}
+        return true;
+    }
+
+
+
+
     /** storeItem function
      *  Basic function for changing contents of items.
      *   Use always this function, not direct SQL queries.
@@ -884,9 +937,9 @@ class ItemContent extends AA_Content {
     function storeItem( $mode, $flags = array(), $context='direct' ) {
         global $event;
 
-        $slice_id     = $this->getSliceID();
-        $slice        = AA_Slice::getModule($slice_id);
-        $fields       = $slice->fields('record');
+        if (! ($slice_id     = $this->getSliceID()))            {return false;}
+        if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
+        if (! ($fields       = $slice->fields('record')))       {return false;}
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
         if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'))) {

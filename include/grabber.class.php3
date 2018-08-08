@@ -167,8 +167,14 @@ class AA_Saver {
                     $this->message("AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
                     continue;
                 }
+            } else { // @todo do validation for updates
+                if (!$content4id->validate4Update()) {
+                    $this->message("AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
+                    continue;
+                }
+
             }
-            // @todo do validation for updates
+
 
             $this->_updated_slices[$content4id->getOwnerId()] = true;
 

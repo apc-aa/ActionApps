@@ -1,3 +1,9 @@
+18-08-08 - all system JS/CSS libs used in {require:} updated to last versions
+(honzam) - added jquery-ui to available libs by {require:jquery-ui} command
+         - textareas with CodeMirror (syntax highlight code editor) now adapts its size to its content. It is as big
+           as required. Also problem with searching in code editor is fixed.
+         - new helpbox on available {require:} libraries is presented on Site Admin page
+         - more checks for item id validity when storing item in the database
 18-07-16 - the translation expression now can use parameters _#1, _#2, ... - {tr:found _#1 items:5}
 (honzam) - fixed new bug in slice unique validation
          - better parsing ids passed to {item:}
