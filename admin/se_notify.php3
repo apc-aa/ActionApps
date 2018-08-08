@@ -179,7 +179,7 @@ while ($db->next_record()) {
 ////////////////////////////////////////////////////////////////////
 
 $script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("notify_holding_item_b"), opts);
    window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("notify_holding_item_edit_b"), opts);
    window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("notify_active_item_b"), opts);

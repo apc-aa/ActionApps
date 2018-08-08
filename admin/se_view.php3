@@ -391,7 +391,7 @@ switch ( $view_type ) {
 
 $script2run = <<<'EOT'
    $('textarea').each(function(index, elem){
-      CodeMirror.fromTextArea(elem, { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" });
+      CodeMirror.fromTextArea(elem, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });
    });
 EOT;
 

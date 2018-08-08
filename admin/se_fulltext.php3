@@ -131,7 +131,7 @@ if ( $slice_id != "" ) {  // set variables from database
 
 
 $script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_top  = CodeMirror.fromTextArea(document.getElementById("fulltext_format_top"), opts);
    window.cm_code = CodeMirror.fromTextArea(document.getElementById("fulltext_format"), opts);
    window.cm_bot  = CodeMirror.fromTextArea(document.getElementById("fulltext_format_bottom"), opts);

@@ -5706,40 +5706,62 @@ class AA_Requires {
     static function systemDefinitions() {
         return array(
                           //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
-          'codemirror@5'               => new AA_Req(array('css-aa-system@1', '_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
-          '_codemirror_htmlmixed@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/htmlmixed/htmlmixed.js', 'sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA='),
-          '_codemirror_xml@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/xml/xml.js', 'sha256-sB8UtHQubuS61s0F+Ui6xNwJHrTXcd3zjCgfb4bOnK4='),
-          '_codemirror_css@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/css/css.js', 'sha256-lKwXc/xVYQ26OoLFzIMNK0o1tTTYBNMqHbBO7bdoIio='),
-          '_codemirror_javascript@5'   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/mode/javascript/javascript.js', 'sha256-6vpQF2FCKaaXS1eBjQHL/Zzf5mUcA8cLLTQ8nVGgZYo='),
-          '_codemirror_matchbrackets@5'=> new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchbrackets.js', 'sha256-coEcESK5JwnNa8975uTdCcJb553y6HKAwlWs/LCWeuQ='),
-          '_codemirror_matchtags@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/edit/matchtags.js', 'sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8='),
-          '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/addon/fold/xml-fold.js', 'sha256-l/TrijjAvQgiGYppltKp2PLTBGe7s7tPiid0WoaLeMY='),
-          '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.css', 'sha256-XyDJ6+MvRGhJHdk5i+vjmlocQ4lO6W2q5fahVAcYql0='),
-          '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.30.0/lib/codemirror.js', 'sha256-/OCc+1HKfnjOGUtgcpPUGj14IzwliaF2X83ws+OlXaU=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
-          'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/ace/1.2.6/noconflict/ace.js', 'sha256-LaSHPaKT3uKt7a4Hvp4B8ky0Oa9uLDvhHqMFA5CJMfY=',array('jquery@3')),
+            // all versions updated 2018-08-07 HM
+          'codemirror@5'               => new AA_Req(array('_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5','css-aa-system@1')),
+          '_codemirror_htmlmixed@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/htmlmixed/htmlmixed.js', 'sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA='),
+          '_codemirror_xml@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/xml/xml.js', 'sha256-Zz+CQg6Vpg4lnsAJtC7AqpIFO+OFRb0m/Zw7l9hx6nA='),
+          '_codemirror_css@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/css/css.js', 'sha256-A3dmy5MnEwoDZJmeJUoj98Al4uPPcF47typ3TSLhA0g='),
+          '_codemirror_javascript@5'   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/javascript/javascript.js', 'sha256-mEBPfQj3tWr3WUpxoFSsaydJ/OPTvR8H/rW0X/VEcG0='),
+          '_codemirror_matchbrackets@5'=> new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchbrackets.js', 'sha256-1ZBoXf1PnYzxJ7zY5+7ZAJbUh9xXYGUUXHn8r21LHWg='),
+          '_codemirror_matchtags@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchtags.js', 'sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8='),
+          '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/fold/xml-fold.js', 'sha256-0NR53Omilqa/gGNsbd6g0IjppcgdSabwMu8jOTk6vFE='),
+          '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.js', 'sha256-dlU448ajDtrzPvUfqkvdw6yT52NgWy0UmxUgclvPEAc=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
+          'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.0/src-noconflict/ace.js', 'sha256-YpEMJafqo1GM1gdYZ8o7AlzowvKpgjxtm4ALyij/E04=',array('jquery@3')),
+          'tableexport@5'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/js/tableexport.min.js', 'sha256-xqLIIDLeHPe6Mmnksf1sHPC+jxuS4wKCmLrj/4sKDTM=', array('_css-tableexport@5','filesaver@1','js-xlsx@0')),
           'tableexport@4'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
-          'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/js-xlsx/0.9.12/xlsx.core.min.js', 'sha384-Z64xo5gl0CGLf7pO6yQqbSz60LwUKgL7XrNEhh6nl+ZDQMwffbK0G+d4Nep52sIS'),
-          'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/filesaver.js/1.3.3/FileSaver.min.js', 'sha384-VgWGwiEJnh9P379lbU8DxPcfRuFkfLl0uPuL9tolOHtm2tx8Qy8d/KtvovfM0Udh'),
-          'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')),
-          'chartjs@2'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js', 'sha384-nRv0HFGGLzwztTHEFan7U3db1y93fniM9OS3rafR4sAobIWCQdowNsyIdnXV+Vez'),
-          'tippy@2'                    => new AA_Req_Lib('https://unpkg.com/tippy.js@2.2.3/dist/tippy.all.min.js', 'sha384-7iCQEHkOskB8DnHBeVzB1nkyndqNZ1Tk7C4tc4hQkeSJpLDJ1CJWxmCPtnM6WoQ8'),
+          'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.13.3/dist/xlsx.core.min.js', 'sha256-9y2mRIiL7T2ufFN4OF1Q6kgDNk9Q1rtMRl1WUp/VQEk='),
+          'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
+          'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.0.3/lib/js/lightgallery.js', 'sha256-nAvnrtoGkehkBGen9b6T8e7LFOoiYw3gD8sL5rJ3Ydo=', array('_css-lightgallery@1')),
+          'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/src/chart.js', 'sha256-m5HSfCAw9sp7dFgR6RRHNxm3LSj8ficyzKD+aV8XMxc='),
+          'tippy@2'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
           'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
           'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
           'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
           'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
           'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION,'',false)),
+          'jquery-ui@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', array('jquery@3', '_css-jquery-ui@1')),
           'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js', 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8='),
-          'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.4.4/dist/vue.min.js', 'sha256-Ab5a6BPGk8Sg3mpdlsHzH6khPkniIWsvEuz8Fv/s9X8='),
-          'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.4.4/dist/vue.js', 'sha256-ThERFdU1Vgoe2IPCiF6KzfeybDK1orpSbAGwZ4ncZFg='),
+          'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js', 'sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc='),
+          'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js', 'sha256-3kjowa0CUPPK4W+yaGpNP1exjs8gbX2SSsToEMd06K8='),
+          '_css-jquery-ui@1'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
+          '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
           '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
-          '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
+          '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.0.3/dist/css/lightgallery.min.css', 'sha256-oPZ2OUkKul2aJQeDwKoO1p+DpvFR+w17n7YXydvFRWU='),
           'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
+          'css-normalize@8'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.css', 'sha256-7GAtDQ79wTEOjhBKf70uBQG7A5yyb+8rigu07atXWDY='),
           'css-normalize@7'            => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
           'css-fontawesome@4'          => new AA_Req_Css('https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
+          '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.css', 'sha256-o/v/5fOniPHMAww4EAIfRBFV0SeoqksPrY0Yq5x+wSM='),
           'htm-aa-system@1'            => new AA_Req_Htm('AA_Tools::getBottomCode')
         );
     }
+
+    static function getAvailableLibs() {
+        $ret['head'] = array('require',_m('version'));
+        $defs = self::systemDefinitions();
+        foreach ($defs as $name => $def) {
+            if ($name{0} !== '_') {
+                $base = strtok($name, '@');
+                if (!$ret[$base]) {
+                    $ret[$base] = array($base, '');
+                }
+                $ret[$base][1] .= "<div>$name</div>";
+            }
+        }
+        return $ret;
+    }
+
 }
 
 /** @todo - move it to special file */

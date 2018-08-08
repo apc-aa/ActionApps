@@ -136,10 +136,11 @@ $apage = new AA_Adminpageutil('codemanager');
 $apage->setModuleMenu( 'modules/site');
 $apage->setTitle( _m("Editor window - site code manager") );
 $apage->addRequire('codemirror@5');
+$apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
 
 $script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
    ';
 
@@ -147,13 +148,7 @@ $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
-?>
-    <style>
-      .CodeMirror { min-height: 500px; }
-    </style>
-<?php
-
-
+// echo "<style>.CodeMirror { min-height: 500px; } </style>";
 
 function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {
     if (!$link) {
@@ -201,6 +196,10 @@ echo '</td><td valign="top">';
 
 ModW_ShowSpot($tree, $module_id, $r_spot_id);
 
+$apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), '{htmltoggle::::'.GetHtmlTable(AA_Requires::getAvailableLibs(),'th').'}');
+$apage->printHelpbox();
+
 echo '</td></tr></table>';
+
 
 $apage->printFoot();

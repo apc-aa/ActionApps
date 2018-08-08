@@ -87,7 +87,7 @@ PrintArray($r_err);
 PrintArray($r_msg);
 
 echo '<form name=f method=post action="catedit2.php3">';
-    FrmTabCaption(_m('Category') . FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),
+    FrmTabCaption(_m('Category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),
             array("before" => "(", "text" => "?", "after" => ")")));
     FrmStaticText(                _m('Id'),             $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"nazev-kategorie") );
@@ -95,7 +95,7 @@ echo '<form name=f method=post action="catedit2.php3">';
     FrmInputChBox('nolinks',      _m('No links'), $nolinks, false, '', 1, false, _m('Disalow storing of the links to this category?'));
     FrmTextarea(  'note',         _m('Editor\'s note'),    $note, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"poznamka-kategorie"));
     FrmHidden(    'additional',   $additional);
-    FrmTabSeparator(_m('Subcategories') . FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "podkategorie"),
+    FrmTabSeparator(_m('Subcategories') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "podkategorie"),
             array("before" => "(", "text" => "?", "after" => ")")));
 echo '
       <tr>
@@ -133,7 +133,7 @@ if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
                      'cid'          => array('type'=>"hidden", 'value'=> $cid),
                      'subcatIds'    => array('type'=>"hidden"),   // to this variable store assigned subcategory ids (by javascript)
                      'subcatNames'  => array('type'=>"hidden"),   // to this variable store assigned subcategory names (by javascript)
-                     'subcatStates' => array('type'=>"hidden")),   // to this variable store assigned subcategory states (by javascript)
+                     'subcatStates' => array('type'=>"hidden"))   // to this variable store assigned subcategory states (by javascript)
              );
 echo '
     </form>

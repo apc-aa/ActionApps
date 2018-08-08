@@ -38,6 +38,7 @@ class AA_Adminpageutil {
     protected $subtitle   = '';
     protected $require    = array();
     protected $form       = array('name' => 'f', 'id'=>'', 'method'=>'post', 'action' => '', 'enctype'=>'', 'onsubmit'=>'');
+    protected $helpboxes  = array();
 
     /**
      * AA_Adminpageutil constructor.
@@ -89,6 +90,15 @@ class AA_Adminpageutil {
     }
 
     /**
+     * displayed at the end of page or in the right column (later)
+     * @param string $name
+     * @param string $html
+     */
+    public function addHelpbox($name, $html) {
+        $this->helpboxes[] = array('name'=>$name, 'html'=>$html);
+    }
+
+    /**
      * @param string $require
      * @param string $type
      */
@@ -112,8 +122,6 @@ class AA_Adminpageutil {
 <html>
 <head>
   <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
-  <link rel="stylesheet" href="' . (AA_INSTAL_PATH . ADMIN_CSS) . '">
-  <link rel="stylesheet" href="' . AA_INSTAL_PATH . 'css/aa-system.css">
   <meta charset="' . AA::$encoding . '">
   <title>' . $this->title . '</title>
   {generate:HEAD}
@@ -129,6 +137,7 @@ class AA_Adminpageutil {
         if ($this->form) {
             $ret = '</form>';
         }
+
         return $ret. '{generate:FOOT}</body></html>';
     }
 
@@ -145,6 +154,8 @@ class AA_Adminpageutil {
                 AA::Stringexpander()->addRequire($req[0], $req[1]);
             }
         }
+        AA::Stringexpander()->addRequire('css-aa-system');
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS);
 
         // this also fills AA::Stringexpander required libs, so we can continue with postprocess
         // $out        = $form->getObjectEditHtml();
@@ -184,6 +195,20 @@ class AA_Adminpageutil {
                 }
             }
             echo $frm.'>';
+        }
+    }
+
+
+    public function printHelpbox() {
+        $html = '';
+        foreach ($this->helpboxes as $helpbox) {
+            $html .= GetHtmlTable( array(array($helpbox['html'])), 'td', $helpbox['name'] );
+        }
+        if ($html) {
+            $html = '<br>'. $html;
+            $html = AA::Stringexpander()->unalias($html);
+            $html = AA::Stringexpander()->postprocess($html);
+            echo $html;
         }
     }
 

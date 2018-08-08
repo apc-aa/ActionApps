@@ -94,13 +94,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
             <input type=\"submit\" name=\"create[$type]\" value=\""._m("Add")."\"></td></tr>";
     }
     FrmTabEnd();
-?>
 
-<br><br>
+    echo '<br><br>'. getTabStart();
 
-<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<?php
-  FrmInputButtons(array("cancel"=>array("url"=>"um_uedit.php3")), $slice_id, 'middle', true, COLOR_TABTITBG);
+    FrmInputButtons(array("cancel"=>array("url"=>"um_uedit.php3")), $slice_id, 'middle', true, COLOR_TABTITBG);
 ?>
 </td></tr>
 </table>

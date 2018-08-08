@@ -617,7 +617,7 @@ class AA_Searchbar extends AA_Storable {
 
               if ($this->hint != "") {
                   echo "<td>";
-                  echo FrmMoreHelp($this->hint_url,"",$this->hint, true);
+                  echo getFrmMoreHelp($this->hint_url,"",$this->hint, true);
                   echo "</td>";
               }
               echo "</tr>";

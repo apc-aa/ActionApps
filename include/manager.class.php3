@@ -644,7 +644,7 @@ class AA_Manager extends AA_Storable {
                       <option value="nothing">'. _m('Selected items') .':'.
                       $options .'</select>';
                 if ($this->actions_hint_url || $this->actions_hint) {
-                    echo FrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
+                    echo getFrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
                 }
 
                 echo '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="leftmenuy">'. _m('Go') . '</a>';

@@ -111,7 +111,7 @@ $inputform_vids = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_
 
 
 $script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_top  = CodeMirror.fromTextArea(document.getElementById("admin_format_top"), opts);
    window.cm_code = CodeMirror.fromTextArea(document.getElementById("admin_format"), opts);
    window.cm_bot  = CodeMirror.fromTextArea(document.getElementById("admin_format_bottom"), opts);

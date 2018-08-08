@@ -42,8 +42,8 @@ require_once AA_INC_PATH."validate.php3";
 // IsUserNameFree() function deffinition here
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 
-define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
-define( 'AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
+define('AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
+define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
 
 // Deprecated GYR tagged ids - it adds letter before item id in ralated item, which is not practical for joined tables, ...
     // Easy to redefine this functionality by changing the array below
@@ -2140,14 +2140,14 @@ class AA_Inputfield {
 
 // ----------------------- Public Form functions ----------
 
-/** FrmMoreHelp function
+/** getFrmMoreHelp function
  *  prints anchor tag with link to external documentation
  * @param $hlp
  * @param $text
  * @param $hint
  * @param $image
  */
-function FrmMoreHelp($hlp, $text="", $hint="", $image=false) {
+function getFrmMoreHelp($hlp, $text="", $hint="", $image=false) {
     if ($image) {
         $img = GetAAImage('help50.gif', myspecialchars($hint), 16, 12);
     }
@@ -2704,6 +2704,11 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
     echo $retval;
 }
 
+function getTabStart($add='') {
+    return '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG .'" align="center" '.$add.'>';
+}
+
+
 /** FrmTabCaption function
  * Prints start of form table with caption and possibly additional tags (classes) to tables
  * @param string $caption
@@ -2713,26 +2718,30 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
  * @param string $slice_id
  * @param string $valign
  */
-function FrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons = '', $slice_id = '', $valign = 'middle') {
-    echo '
-    <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\" $outer_add>";
+function getFrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons = '', $slice_id = '', $valign = 'middle') {
+    $ret = getTabStart($outer_add);
     if ($buttons) {
-        echo '
+        $ret .= '
         <tr><td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">
           <tr>';
-          FrmInputButtons($buttons, $slice_id, $valign, false, COLOR_TABBG, false, 'top');
-        echo '</tr></table></td></tr>';
+        $ret .= getFrmInputButtons($buttons, $slice_id, $valign, false, COLOR_TABBG, false, 'top');
+        $ret .= '</tr></table></td></tr>';
     }
     if ($caption != "") {
-      echo "
-        <tr><td class=\"tabtit\"><b>&nbsp;$caption</b></td></tr>";
+      $ret .= "\n    <tr><td class=\"tabtit\"><b>&nbsp;$caption</b></td></tr>";
     }
-     echo "
+    $ret .= "
       <tr>
         <td>
           <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\" $inner_add>";
+    return $ret;
 }
+
+function FrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons = '', $slice_id = '', $valign = 'middle') {
+    echo getFrmTabCaption($caption, $outer_add, $inner_add, $buttons, $slice_id, $valign);
+}
+
 
 /** FrmTabSeparator function
  * Prints middle row with subtitle into form table
@@ -2745,8 +2754,8 @@ function FrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons
 function FrmTabSeparator($subtitle, $buttons = '', $slice_id = '', $valign = 'middle', $no_hidden = false) {
     echo '</table>';
     if ($buttons) {
-        echo '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
-          <tr>";
+        echo getTabStart();
+        echo '<tr>';
         FrmInputButtons($buttons, $slice_id, $valign, false, COLOR_TABTITBG, $no_hidden);
         echo "</tr></table>";
     }
@@ -2775,23 +2784,31 @@ function FrmTabSeparatorNoHidden( $subtitle , $buttons='' ) {
 }
 
 
-/** FrmTabEnd function
+
+
+/** getFrmTabEnd function
  * Prints form table end with buttons (@see FrmInputButtons)
  * @param bool $buttons
  */
-function FrmTabEnd( $buttons=false ) {
-    echo '    </table>
+function getFrmTabEnd( $buttons=false ) {
+    $ret = '    </table>
             </td>
           </tr>';
     if ( $buttons ) {
-        FrmInputButtons($buttons, '', 'middle', true, COLOR_TABTITBG, false, 'bottom');
+        $ret .= getFrmInputButtons($buttons, '', 'middle', true, COLOR_TABTITBG, false, 'bottom');
     }
-    echo '
+    $ret .= '
         </table>';
+    return $ret;
+}
+
+function FrmTabEnd( $buttons=false )
+{
+    echo getFrmTabEnd($buttons);
 }
 
 
-/** FrmInputButtons function
+/** getFrmInputButtons function
  * Prints buttons based on $buttons array. It also adds slice_id
  * Maybe better is to use (@see FrmTabEnd())
  * @param $buttons
@@ -2802,12 +2819,13 @@ function FrmTabEnd( $buttons=false ) {
  * @param $no_hidden - prints all $buttons except the hidden fields
  * @param $prefix    - prefix for button ids
  */
-function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='') {
+function getFrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='') {
+    $ret = '';
 
     if ($tr) {
-        echo '<tr class="formbuttons">';
+        $ret .= '<tr class="formbuttons">';
     }
-    echo '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
+    $ret .= '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
     if ( isset($buttons) AND is_array($buttons) ) {
 
         if ($prefix) {
@@ -2822,30 +2840,30 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
             switch($name) {
                 case 'update':
                     if ($properties['type'] == 'hidden') {
-                        echo '&nbsp;<input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">&nbsp;';
+                        $ret .= '&nbsp;<input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">&nbsp;';
                     } else {
-                        echo '&nbsp;<input type="submit" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">&nbsp;';
+                        $ret .= '&nbsp;<input type="submit" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">&nbsp;';
                         $noaccess = 1; // use for update of item, bug was, that both "update" and "insert"
                         // has accesskey S
                     }
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
                     break;
                 case 'insert':
-                    echo '&nbsp;<input type="submit" name="insert" id="'.$prefix .'insert" ';
+                    $ret .= '&nbsp;<input type="submit" name="insert" id="'.$prefix .'insert" ';
                     if (!$noaccess) { // was accesskey used ?
-                        echo 'accesskey="S" ';
+                        $ret .= 'accesskey="S" ';
                     }
-                    echo 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
+                    $ret .= 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
                     if (!$noaccess) {
-                        echo " [^S]";
+                        $ret .= " [^S]";
                     }
-                    echo '  ">&nbsp;';
+                    $ret .= '  ">&nbsp;';
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
                     break;
                 case 'cancel':
@@ -2855,31 +2873,31 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
                     }
                     $url  = StateUrl($url);
                     //          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' ">&nbsp;';
-                    echo '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
+                    $ret .= '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
                     break;
                 case 'close':
-                    echo '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="window.close();">&nbsp;';
+                    $ret .= '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="window.close();">&nbsp;';
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
                     break;
                 case 'reset':
-                    echo '&nbsp;<input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' ">&nbsp;';
+                    $ret .= '&nbsp;<input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' ">&nbsp;';
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
                     break;
                 case 'submit': // name is not submit because it breaks document.f.submit() function call
-                    echo '&nbsp;<input type="submit" name="submitbtn" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' ">&nbsp;';
+                    $ret .= '&nbsp;<input type="submit" name="submitbtn" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' ">&nbsp;';
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
                     break;
                 default:
@@ -2890,27 +2908,36 @@ function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $b
                         break;
                     }
                     $nbsp = ( $type == 'hidden' ) ? '' : '&nbsp;';
-                    echo $nbsp.'<input type="'.  $type .
+                    $ret .= $nbsp.'<input type="'.  $type .
                          '" name="'.  $name .
                          '" id="'.  $prefix . $name .
                          '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>'.$nbsp;
                     if ($properties['help'] != '') {
-                        echo FrmMoreHelp($properties['help']);
-                        echo "&nbsp;&nbsp;";
+                        $ret .= getFrmMoreHelp($properties['help']);
+                        $ret .= "&nbsp;&nbsp;";
                     }
             }
-            echo "\n";
+            $ret .= "\n";
         }
     }
 
-    echo StateHidden();
+    $ret .= StateHidden();
 
-    echo "</td>";
+    $ret .= "</td>";
     if ($tr) {
-        echo "</tr>";
+        $ret .= "</tr>";
     }
+    return $ret;
 }
+
+function FrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='')
+{
+    echo getFrmInputButtons($buttons, $slice_id, $valign, $tr, $bgcolor, $no_hidden, $prefix);
+}
+
+
+
 
 /** getFrmTabRow function
  * @param $row
@@ -2965,17 +2992,18 @@ function FrmTabs( $tabs, $tabsId ) {
  * @param $content
  * @param $mode = td | th
  */
-function GetHtmlTable( $content, $mode='td' ) {
+function GetHtmlTable( $content, $mode='td', $caption='' ) {
     if ( !(isset($content) AND is_array($content)) ) {
         return "";
     }
-    $ret = '<table border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG .'">';
+    $ret = getFrmTabCaption($caption);
     $first = true;
     foreach ($content as $row) {
         $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');
         $first = false;
     }
-    return  $ret . '</table>';
+    $ret .= getFrmTabEnd();
+    return  $ret;
 }
 
 /** getFrmJavascriptFile function

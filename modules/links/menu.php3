@@ -92,7 +92,7 @@ function get_aamenus_links() {
         "bottom_td"=>200,
         "level"=>"submenu",
         "items"=> array(
-            "header1"=>_m('Folders').FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"schranky"),"",_m("Folders with links, sorted by their status (active, changed, new, ...)"), true),
+            "header1"=>_m('Folders').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"schranky"),"",_m("Folders with links, sorted by their status (active, changed, new, ...)"), true),
             "app"=>array ("cond"=> $r_state['bin'] != "app",
                             "href"=>$module_location."index.php3?Tab=app",
                             "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"),
@@ -124,7 +124,7 @@ function get_aamenus_links() {
                             "hide"=>!IsSuperadmin(),
                             "js"=>"ToggleCookie('aa_debug','1')",
                             "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
-            "header2" => _m('Bookmarks').FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)));
+            "header2" => _m('Bookmarks').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)));
     foreach ( (array) $bookmarks as $bookid => $bookname ) {
         $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] =
             array( "href"=>$module_location."index.php3?GoBookmark=$bookid",

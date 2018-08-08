@@ -1961,7 +1961,7 @@ class AA_Widget_Cod extends AA_Widget {
       return '
       var tas = document.querySelectorAll("textarea[data-editor]");
       for(var i = 0; i < tas.length; i++) {
-        CodeMirror.fromTextArea(tas[i], { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" });
+        CodeMirror.fromTextArea(tas[i], { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });
       }
       ';
     }

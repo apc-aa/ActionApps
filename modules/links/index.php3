@@ -453,10 +453,10 @@ FrmInputButtons( array( 'gocat'    => array('type'=>'button',
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
 echo _m('Show subtree links');
-echo FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")). ' </td></tr>';
+echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")). ' </td></tr>';
 
 echo "</table></td></tr>";
-echo "<tr><td>".FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"))."</td></tr>";
+echo "<tr><td>".getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"))."</td></tr>";
 echo "</table>";
 
 $manager->printSearchbarEnd();   // close the searchbar form

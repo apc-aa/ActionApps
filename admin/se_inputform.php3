@@ -299,7 +299,7 @@ if ( !$update ) {      // load defaults
 
 
 $script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, mode: "htmlmixed" };
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
    window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("alias2_func"), opts);
    window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);

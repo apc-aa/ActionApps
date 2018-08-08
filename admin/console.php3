@@ -50,8 +50,8 @@ if ($code) {
 }
 
 // ------------------------------------------------------------------------------------------
+echo getTabStart();
 ?>
-    <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center" >
         <tr><td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8">
           <tr><td align="center" valign="middle" bgcolor=#D2E2E8>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;
@@ -67,7 +67,9 @@ if ($code) {
 </tr>
 </table>
 
-<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center">
+<?php
+    echo getTabStart();
+?>
   <tr>
     <td align="center" valign="middle" bgcolor="#00638C">&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;</td>
   </tr>

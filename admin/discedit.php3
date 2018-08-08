@@ -131,8 +131,10 @@ $apage->printHead($err, $Msg);
 
 $content  = GetItemContent($item_id);
 $headline = getHeadline($content[$item_id]);
+
+echo getTabStart();
+
 ?>
-  <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class="tabtit"><b>&nbsp;<?php
      echo _m("Item: ")." $headline</b> (".
            $content[$item_id]["disc_app........"][0]['value']. "/".
