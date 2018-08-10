@@ -703,6 +703,7 @@ class AA_Module_Site extends AA_Module {
     const SETTING_TABLE = 'site';
 
     protected $_related_slices = null;
+    protected $_related_views  = null;
 
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {
@@ -749,6 +750,14 @@ class AA_Module_Site extends AA_Module {
         return $this->_related_slices;
     }
 
+    /** translate view name to view id within all slices of curent sitemodule */
+    function findViewId($vid) {
+        if (is_null($this->_related_views)) {
+            // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
+            $this->_related_views = DB_AA::select(array('field3'=>'id'), 'SELECT id, field3 FROM view', array(array('slice_id', $this->getRelatedSlices(), 'l'), array('field3', 'FILLED')), 'id');
+        }
+        return $this->_related_views[$vid] ?: false;
+    }
 
     /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
      *  @param $module_id

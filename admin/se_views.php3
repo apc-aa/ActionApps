@@ -61,7 +61,7 @@ if ( $del ) {
  * @param $name
  * @param $type
  */
-function PrintViewRow($id, $name, $type) {
+function PrintViewRow($id, $name, $type, $vidtext) {
     $VIEW_TYPES = getViewTypes();
     $name = safe($name); $id = safe($id);
 
@@ -69,6 +69,7 @@ function PrintViewRow($id, $name, $type) {
     $view_url = AA_INSTAL_URL. "view.php3?vid=$id";
 
     echo "<tr class=\"tabtxt\">
+            <td class=\"tabtxt\"><a href=\"$edit_url\">$vidtext</a></td>
             <td class=\"tabtxt\"><a href=\"$edit_url\">$id</a></td>
             <td class=\"tabtxt\">". $VIEW_TYPES[$type]["name"] ."</td>
             <td class=\"tabtxt\">$name</td>
@@ -97,7 +98,7 @@ $headcode = <<<'EOT'
        j=0;
        for ( i=0; i<vs.length ; i++) {
          if ( vs[i] == xsid ) {
-           document.fvtype.view_view.options[j++] = new Option(vv[i]+' - '+vn[i], vv[i])
+           document.fvtype.view_view.options[j++] = new Option(vn[i], vv[i])
          }
        }
      }
@@ -116,17 +117,16 @@ $apage->printHead($err, $Msg);
 FrmTabCaption(_m("Defined Views"));
 
 // -- get all views --
-$SQL = "SELECT * FROM view ORDER BY id DESC";
-$db->query($SQL);
+
+$views = DB_AA::select(array(), 'SELECT LOWER(HEX(`slice_id`)) as uslice_id, id, name, type, field3 FROM view', array(), array('id-'));
 $i   = 0;
-while ( $db->next_record() ) {
-    $view_sid = unpack_id($db->f('slice_id'));
-    if ( $view_sid == $slice_id ) {   // list views for this slice
-        PrintViewRow($db->f('id'), $db->f('name'), $db->f('type'));
+foreach ( $views as $vw ) {
+    if ( $vw['uslice_id'] == $slice_id ) {   // list views for this slice
+        PrintViewRow($vw['id'], $vw['name'], $vw['type'], $vw['field3']);
     }
-    if ($g_modules[$view_sid]) {     // if user has any permission for the view's slice
-        $view_array .= GetViewJSArray( $view_sid, $db->f('id'), $db->f('name'), $i++ );
-        $sliceWview[$view_sid] = 1;  // mark the slices, where is an view
+    if ($g_modules[$vw['uslice_id']]) {     // if user has any permission for the view's slice
+        $view_array .= GetViewJSArray( $vw['uslice_id'], $vw['id'], ($vw['field3'] ? $vw['field3'].' - ' : '').$vw['id'].' - '.$vw['name'], $i++ );
+        $sliceWview[$vw['uslice_id']] = 1;  // mark the slices, where is an view
     }
 }
 

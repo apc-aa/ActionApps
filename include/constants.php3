@@ -220,7 +220,7 @@ class AA_Langs {
         'de'      => array('iso-8859-1'  , 'Deutsch (iso-8859-1)'),
         'en'      => array('iso-8859-1'  , 'English (iso-8859-1)'),
         'es'      => array('iso-8859-1'  , 'Espanol (iso-8859-1)'),
-        'fr'      => array('iso-8859-1'  , 'Français (iso-8859-1)'),
+        'fr'      => array('iso-8859-1'  , 'Franï¿½ais (iso-8859-1)'),
         'hr'      => array('windows-1250', 'Hrvatski (windows-1250)'),
         'ja'      => array('EUC-JP'      , 'Japanian (EUC-JP)'),
         'hu'      => array('iso-8859-2'  , 'Magyar (iso-8859-2)'),
@@ -441,7 +441,7 @@ function getViewFields() {
     $VIEW_FIELDS["noitem_msg"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
     $VIEW_FIELDS["field1"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
     $VIEW_FIELDS["field2"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
-    $VIEW_FIELDS["field3"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
+    $VIEW_FIELDS["field3"]          = GetViewFieldDef("text",  "quoted", "text",   "vid");
     $VIEW_FIELDS["calendar_type"]   = GetViewFieldDef("text",  "quoted", "text",   "select", array ("mon"=>_m("Month List"),"mon_table"=>_m("Month Table")));
     return $VIEW_FIELDS;
 }
@@ -476,8 +476,13 @@ function getViewGroupFunctions() {
 *   @return array
 */
 function getViewTypes() {
+    $field3def = array ( "label" => _m("vid"),
+                         "help" => _m("now possible to use non numeric vid - like: photo_list and ussage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_].")
+                       );
     return   array(
-        'list' => array( "name" => _m("Item listing"),
+        'list' => array(
+                         "field3" => $field3def,
+                         "name" => _m("Item listing"),
                          "before" => _m("Top HTML") ,
                          "odd" => _m("Odd Rows") ,
                          "even_odd_differ" => _m("Use different HTML code for even rows") ,
@@ -513,13 +518,17 @@ function getViewTypes() {
                          "cond3op" => " " ,
                          "cond3cond" => " " ,
                          "listlen" => _m("Listing length") ,
+                         "scroller" => array (
+                             "label" => _m("Accept site module paging - {xpage}"),
+                             "help" => _m("if checked, no need to pass page-{xpage} param to the view")),
                          "noitem_msg" => _m("HTML code for \"No item found\" message"),
                          "flag" => _m("Add view ID as HTML comment")
-    // TODO                     "scroller" => _m("Display page scroller") ,
     //                     "aditional" => _m("Additional") );
                        ),
 
-        'full' => array( 'name' => _m("Fulltext view"),
+        'full' => array(
+                         "field3" => $field3def,
+                         'name' => _m("Fulltext view"),
                          "before" => _m("Top HTML") ,
                          "odd" => _m("Odd Rows") ,
                          "after" => _m("Bottom HTML") ,
@@ -537,7 +546,9 @@ function getViewTypes() {
                          "flag" => _m("Add view ID as HTML comment")
                         ),
 
-        'discus' => array( 'name' => _m("Discussion"),
+        'discus' => array(
+                           "field3" => $field3def,
+                           'name' => _m("Discussion"),
                            "before" => _m("Top HTML") ,
                            "odd" => _m("HTML code for index view of the comment") ,
                            "after" => _m("Bottom HTML") ,
@@ -561,7 +572,9 @@ function getViewTypes() {
                          ),
 
         // discussion to mail
-        'disc2mail' => array( 'name' => _m("Discussion To Mail"),
+        'disc2mail' => array(
+                              "field3" => $field3def,
+                              'name' => _m("Discussion To Mail"),
                               "aditional" => _m("From: (email header)"),
                               "aditional2" => _m("Reply-To:"),
                               "aditional3" => _m("Errors-To:"),
@@ -586,7 +599,9 @@ function getViewTypes() {
                                   "listlen" => _m("Listing length") );
     */
 
-        'const' => array( 'name' => _m("View of Constants"),
+        'const' => array(
+                          "field3" => $field3def,
+                          'name' => _m("View of Constants"),
                           "before" => _m("Top HTML") ,
                           "odd" => _m("Odd Rows") ,
                           "even" => _m("Even Rows") ,
@@ -618,7 +633,9 @@ function getViewTypes() {
                           "flag" => _m("Add view ID as HTML comment")
                         ),
 
-        'rss' => array( 'name' => _m("RSS exchange"),
+        'rss' => array(
+                        "field3" => $field3def,
+                        'name' => _m("RSS exchange"),
                         "before" => _m("Top HTML") ,
                         "odd" => _m("Odd Rows") ,
                         "after" => _m("Bottom HTML") ,
@@ -639,13 +656,17 @@ function getViewTypes() {
                         "noitem_msg" => _m("HTML code for \"No item found\" message")
                       ),
 
-        'static' => array( 'name' => _m("Static page"),
+        'static' => array(
+                           "field3" => $field3def,
+                           'name' => _m("Static page"),
                            "odd" => _m("HTML code"),
                            "flag" => _m("Add view ID as HTML comment")
                          ),
 
         // for javascript list of items
-        'javascript' => array( 'name' => _m("Javascript item exchange"),
+        'javascript' => array(
+                               "field3" => $field3def,
+                               'name' => _m("Javascript item exchange"),
                                "before" => _m("Top HTML") ,
                                "odd" => _m("Odd Rows") ,
                                "after" => _m("Bottom HTML") ,
@@ -666,7 +687,9 @@ function getViewTypes() {
                                "noitem_msg" => _m("HTML code for \"No item found\" message")
                              ),
 
-        'calendar' => array( 'name' => _m("Calendar"),
+        'calendar' => array(
+                             "field3" => $field3def,
+                             'name' => _m("Calendar"),
                              "calendar_type" => _m("Calendar Type"),
                              "before" => _m("Top HTML") ,
                              "aditional3" => _m("Additional attribs to the TD event tag") ,
@@ -701,7 +724,9 @@ function getViewTypes() {
         // this view uses also "aditonal" and "aditional3" for the "Group by"
         // radio buttons and for the sort[] box, see se_view.php3
 
-        'digest' => array( "name" => _m("Alerts Selection Set"),
+        'digest' => array(
+                           "field3" => $field3def,
+                           "name" => _m("Alerts Selection Set"),
                            "function:digest_filters" => "",
                            "aditional2" => array (
                                "label" => _m("Fulltext URL"),
@@ -734,7 +759,9 @@ function getViewTypes() {
         // The main difference from 'list' view is that the aliases are created
         // just from item table, so the memory usage is much smaller - you can
         // list all urls, even if there is a lot of items in the slice.
-        'urls' => array( "name" => _m("URL listing"),
+        'urls' => array(
+                         "field3" => $field3def,
+                         "name" => _m("URL listing"),
                          "before" => _m("Top HTML") ,
                          "odd" => _m("Row HTML"),
                          "after" => _m("Bottom HTML") ,
@@ -758,7 +785,9 @@ function getViewTypes() {
                        ),
 
         // View used in Links module - displays set of link
-        'links' => array( "name" => _m("Link listing"),
+        'links' => array(
+                          "field3" => $field3def,
+                          "name" => _m("Link listing"),
                           "before" => _m("Top HTML") ,
                           "odd" => _m("Odd Rows") ,
                           "even_odd_differ" => _m("Use different HTML code for even rows") ,
@@ -790,7 +819,9 @@ function getViewTypes() {
                         ),
 
         // View used in Links module - displays set of categories
-        'categories' => array( "name" => _m("Category listing"),
+        'categories' => array(
+                               "field3" => $field3def,
+                               "name" => _m("Category listing"),
                                "before" => _m("Top HTML") ,
                                "odd" => _m("Odd Rows") ,
                                "even_odd_differ" => _m("Use different HTML code for even rows") ,
@@ -821,13 +852,15 @@ function getViewTypes() {
                                "flag" => _m("Add view ID as HTML comment")
                              ),
         // View used for creating input forms
-        'inputform' => array( 'name' => _m("Input Form"),
-//                         "before" => _m("Top HTML") ,
+        'inputform' => array(
+                         "field3" => $field3def,
+                         'name' => _m("Input Form"),
+//                       "before" => _m("Top HTML") ,
                          "odd" => _m("New item form template") ,
                          "even_odd_differ" => _m("Use different template for editing") ,
                          "even" => _m("Edit item form template"),
                          "remove_string" => _m("Remove strings"),
-//                         "after" => _m("Bottom HTML") ,
+//                       "after" => _m("Bottom HTML") ,
                          "flag" => _m("Add view ID as HTML comment")
                         ),
     );

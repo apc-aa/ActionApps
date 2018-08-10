@@ -556,6 +556,7 @@ class DB_AA extends DB_Sql {
      *     NOTNULL  -                   IS NOT NULL                         array('number', 'NOTNULL')
      *     LIKE     -                   LIKE             single             array('id', '\_%', 'LIKE')
      *     NOT LIKE -                   NOT LIKE         single             array('id', '\_%', 'NOT LIKE')
+     *     FILLED   -                   > ''             single             array('field3', 'FILLED')         // not null, not empty, not any whitespace character(s)
      *
      * @param $tablename
      */
@@ -582,6 +583,9 @@ class DB_AA extends DB_Sql {
                 continue;
             } elseif ( (string)$value == 'NOTNULL' ) {
                 $where[]  = "$name IS NOT NULL ";
+                continue;
+            } elseif ( (string)$value == 'FILLED' ) {
+                $where[]  = "$name > '' ";             // this is kind of trick for - not null, not empty, not any whitespace character(s) - thanks: https://stackoverflow.com/questions/1869264#42723975
                 continue;
             } else {
                 $operator = '=';

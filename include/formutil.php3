@@ -1235,7 +1235,7 @@ class AA_Inputfield {
     *                     (and perhaps BUTTON and SUBMIT also, but I do not see
     *                      any usage) - added by Jakub, 28.1.2003
     */
-    function inputText($maxsize=255, $size=25, $type="text", $placeholder='') {
+    function inputText($maxsize=255, $size=25, $type="text", $placeholder='', $pattern='') {
         list($name,$val,$add) = $this->prepareVars('multi');
 
         $attrs = array('type'=>'text');
@@ -1248,6 +1248,9 @@ class AA_Inputfield {
         }
         if ($placeholder) {
             $attrs['placeholder'] = myspecialchars($placeholder);
+        }
+        if (strlen($pattern)) {
+            $attrs['pattern'] = $pattern;
         }
 
         $attrs['size']      = get_if($size, $attrs['size']);
@@ -2205,10 +2208,10 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
  *                     (and perhaps BUTTON and SUBMIT also, but I do not see
  *                      any usage) - added by Jakub, 28.1.2003
  */
-function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text", $placeholder='') {
+function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text", $placeholder='', $pattern='') {
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->inputText($maxsize, $size, $type, $placeholder);
+    $input->inputText($maxsize, $size, $type, $placeholder, $pattern);
     $input->print_result();
 }
 

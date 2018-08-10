@@ -255,13 +255,16 @@ function ParseSettings($set_arr) {
  * @param $query_string
  */
 function ParseViewParameters($query_string="") {
-    global $cmd, $set, $vid, $als;
-    global $x;   // url parameter - used for cmd[]=x-111-url view parameter
+    if ($use_globals = (!$query_string OR !preg_match("/vid=[a-z]/", $query_string))) {
+        // old behavior - we do not want to use global dependecy with {view.php3} but we do not removed it in times when we wrote {view.php3..}{ alias, so we are removing it at least for new "named views"
+        global $cmd, $set, $vid, $als;
+        global $x;   // url parameter - used for cmd[]=x-111-url view parameter
+    }
 
     if ($query_string) {
         // Parse parameters
         // if view in cmd[] or set[] is not specified - fill it from vid
-        if ( preg_match("/vid=([0-9]*)/", $query_string, $parts) ) {
+        if ( preg_match("/vid=([0-9a-z_]*)/", $query_string, $parts) ) {
             $vid = $parts[1];
             $query_string = str_replace( 'cmd[]', "cmd[$vid]", $query_string );
             $query_string = str_replace( 'set[]', "set[$vid]", $query_string );
@@ -271,20 +274,21 @@ function ParseViewParameters($query_string="") {
             unset($cmd[$vid]);
             unset($set[$vid]);
         }
-        //  This code below do not work!! - it is not the same as the code above!!
-        //  (the code above parses only the specific guerystring for this view)
-        //  if (!$cmd[$vid]) {        // (the same for set[])
-        //      $cmd[$vid] = $cmd[0];
-        //  }
-        //  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
-        add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
+        $new_params = add_vars($query_string, 'return');  // adds values from url (it's not automatical in SSIed script)
+        if ($use_globals) {
+            add_vars($query_string);   // import it also globaly
+        }
+    } else {
+        $new_params['cmd'] = $GLOBALS['cmd'];
+        $new_params['set'] = $GLOBALS['set'];
+        $new_params['als'] = $GLOBALS['als'];
     }
 
-    AA::$debug && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string ), "cmd:", $cmd, "set:", $set, "als:", $als);
+    AA::$debug && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string ), "cmd:", $new_params['cmd'], "set:", $new_params['set'], "als:", $new_params['als']);
 
     // Splits on "-" and subsitutes aliases
-    $commands = new AA_View_Commands($cmd[$vid], $GLOBALS['als']);
+    $commands = new AA_View_Commands($new_params['cmd'][$vid], $new_params['als']);
     $v_conds  = new AA_Set;
 
     AA::$debug && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
@@ -338,14 +342,14 @@ function ParseViewParameters($query_string="") {
         }
     }
 
-    $arr = isset($set[$vid]) ? ParseSettings((array)$set[$vid]) : array();
+    $arr = isset($new_params['set'][$vid]) ? ParseSettings((array)$new_params['set'][$vid]) : array();
 
     // Following line is here just for caching purposes - we are creating cache
     // keystring from view parameters and we need to add all set[] and cmd[]
     // in the keystring, because of cases like:
     //     view.php3?vid=1781&set[997]=selected-759644
     // (view 997 is called inside 1781)
-    $arr['forcache'] = array($set, $cmd);
+    $arr['forcache'] = array($new_params);
 
     if ($arr['slices']) {
         $arr['slices'] = array_filter(explode('-', $arr['slices']),'is_long_id');
@@ -353,44 +357,47 @@ function ParseViewParameters($query_string="") {
 
 
     // the parameters for discussion comes (quite not standard way) from globals
-    if ( !$arr["all_ids"] ) {
-        $arr["all_ids"]     = $GLOBALS['all_ids'];
-    }
-    if ( !$arr["ids"] ) {
-        $arr["ids"]         = $GLOBALS['ids'];
-    }
-    if ( !$arr["sel_ids"] ) {
-        $arr["sel_ids"]     = $GLOBALS['sel_ids'];
-    }
-    if ( !$arr["add_disc"] ) {
-        $arr["add_disc"]    = $GLOBALS['add_disc'];
-    }
-    if ( !$arr["sh_itm"] ) {
-        $arr["sh_itm"]      = $GLOBALS['sh_itm'];
-    }
-    if ( !$arr["parent_id"] ) {
-        $arr["parent_id"]   = $GLOBALS['parent_id'];
+    if ($use_globals) {
+        if (!$arr["all_ids"]) {
+            $arr["all_ids"] = $GLOBALS['all_ids'];
+        }
+        if (!$arr["ids"]) {
+            $arr["ids"] = $GLOBALS['ids'];
+        }
+        if (!$arr["sel_ids"]) {
+            $arr["sel_ids"] = $GLOBALS['sel_ids'];
+        }
+        if (!$arr["add_disc"]) {
+            $arr["add_disc"] = $GLOBALS['add_disc'];
+        }
+        if (!$arr["sh_itm"]) {
+            $arr["sh_itm"] = $GLOBALS['sh_itm'];
+        }
+        if (!$arr["parent_id"]) {
+            $arr["parent_id"] = $GLOBALS['parent_id'];
+        }
+
+        // IDs of discussion items for discussion list
+        if (!$arr["disc_ids"]) {
+            $arr["disc_ids"] = $GLOBALS['disc_ids'];
+        }
+
+        // used for discussion list view
+        if (!$arr["disc_type"]) {
+            $arr["disc_type"] = $GLOBALS['disc_type'];
+        }
+
+        // used for Links module - categories and links
+        if (!$arr["cat"]) {
+            $arr["cat"] = $GLOBALS['cat'];
+        }
+        if (!$arr["show_subcat"]) {
+            $arr["show_subcat"] = $GLOBALS['show_subcat'];
+        }
+
+        $arr['als'] = GetAliasesFromUrl($GLOBALS['als']);
     }
 
-    // IDs of discussion items for discussion list
-    if ( !$arr["disc_ids"] ) {
-        $arr["disc_ids"]    = $GLOBALS['disc_ids'];
-    }
-
-    // used for discussion list view
-    if ( !$arr["disc_type"] ) {
-        $arr["disc_type"]   = $GLOBALS['disc_type'];
-    }
-
-    // used for Links module - categories and links
-    if ( !$arr["cat"] ) {
-        $arr["cat"]         = $GLOBALS['cat'];
-    }
-    if ( !$arr["show_subcat"] ) {
-        $arr["show_subcat"] = $GLOBALS['show_subcat'];
-    }
-
-    $arr['als']         = GetAliasesFromUrl($GLOBALS['als']);
     $arr['vid']         = $vid;
     $arr['conds']       = $v_conds->getConds();
     $arr['param_conds'] = $param_conds;
@@ -550,8 +557,22 @@ class AA_Showview {
         $this->_view_param = $view_param;
     }
 
+    protected function findViewId($vid) {
+        if (ctype_digit((string)$vid)) {
+            return (int)$vid;
+        }
+        if (AA::$site_id AND ($site = AA_Module_Site::getModule(AA::$site_id))) {
+            return $site->findViewId($vid);
+        }
+        return false;
+    }
+
     function getViewOutput() {
-        $vid           = $this->_view_param["vid"];
+        if ( !($vid = $this->findViewId($this->_view_param["vid"]))) {
+            return false;
+        }
+
+
         $als           = $this->_view_param["als"];
         $conds         = $this->_view_param["conds"];
         $slices        = $this->_view_param["slices"];
@@ -563,7 +584,6 @@ class AA_Showview {
         // $item_ids   = $this->_view_param["item_ids"];
         $zids          = $this->_view_param["zids"];
         //  $use_short_ids = $this->_view_param["use_short_ids"];
-        $list_page     = $this->_view_param["page"];
         if ( $this->_view_param["random"] ) {
             $random    = (($this->_view_param["random"]==1) ? 'random' : 'random:'.$this->_view_param["random"]);
         }
@@ -576,6 +596,14 @@ class AA_Showview {
         // gets view data
         $view      = AA_Views::getView($vid);
         $view_info = $view->getViewInfo();
+
+        if ( isset($this->_view_param["page"]) ) {
+            $list_page = (int)$this->_view_param["page"];
+        } elseif ($view->f('scroller')==1) {
+            $list_page = (int)$GLOBALS['apc_state']['xpage'];
+        } else {
+            $list_page = 0;
+        }
 
         if (!$view->isValid()) {
             AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);

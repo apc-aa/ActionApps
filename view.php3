@@ -122,7 +122,7 @@ if ($convertto) {
 }
 
 //create keystring from values, which exactly identifies resulting content
-$cache_key = get_hash($view_param, PageCache::globalKeyArray());
+$cache_key = get_hash($view_param, PageCache::globalKeyArray(), $GLOBALS['apc_state']['xpage']);
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     AA::$debug && AA::$dbg->log("view from cache");

@@ -160,7 +160,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     if ( $group ) {
         FrmSelectEasy("gb_header", getViewGroupFunctions(), $vw_data['gb_header']);
     }
-    PrintMoreHelp(DOCUMENTATION_URL);
+    // PrintMoreHelp(DOCUMENTATION_URL);
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
 }
@@ -200,13 +200,12 @@ function ConditionFrm($name, $txt, $val) {
     $opvarname = substr($name,0,5)."op";
     FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
     // direction variable name - construct from $name
-    echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
 
     $condvarname = substr($name,0,5)."cond";
     echo "<input type=\"text\" name=\"$condvarname\" size=\"50\" maxlength=\"254\" value=\"". safe($vw_data[$condvarname]) ."\">";
 
-    PrintMoreHelp(DOCUMENTATION_URL);
-    //  PrintHelp($hlp);
+    // PrintMoreHelp(DOCUMENTATION_URL);
+    // PrintHelp($hlp);
     echo "</td></tr>\n";
 }
 
@@ -297,36 +296,32 @@ if ( $update ) {
 }
 
 if ( !$update ) {  // set variables from database
+    $vw_data = array();
     if ( $view_id ) {
         // edit specified view data
-        $SQL= " SELECT * FROM view WHERE id='$view_id'";
+        $vw_data = DB_AA::select1('SELECT * FROM view','', array(array('id',$view_id,'i')));
     } elseif( $new_templ AND $view_view) {
         // new view from template
-        $SQL= " SELECT * FROM view WHERE id='$view_view'";
+        $vw_data = DB_AA::select1('SELECT * FROM view','', array(array('id',$view_view,'i')));
     } elseif( $view_type == 'inputform') {
         // new view - inputform
         $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
-        $SQL = false;
     } elseif( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
-        $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
+        $vw_data = DB_AA::select1('SELECT * FROM view','', array(array('type',$view_type)), array('id'));
     } else {        // error - someone swith the slice or so
         go_url($back_url);
     }
 
-    if ( $SQL ) {
-        $db->query($SQL);
-        if ($db->next_record()) {
-            $vw_data   = $db->Record;
-            $view_type = $db->f('type');
-            // fix for old view type
-            if ($view_type=='script') {
-                $view_type = 'javascript';
-            }
-        } else {
-            $vw_data = array( "listlen" => 10 );   // default values
+    if ( $vw_data ) {
+        $view_type = $vw_data['type'];
+        // fix for old view type
+        if ($view_type=='script') {
+            $view_type = 'javascript';
         }
+    } else {
+        $vw_data = array( "listlen" => 10 );   // default values
     }
 } else {        // updating - load data into vw_data array
     foreach ($VIEW_FIELDS as $k => $v) {
@@ -421,7 +416,7 @@ $form_buttons = array( 'update',
 FrmTabCaption(_m("Defined Views"), '', '', $form_buttons, $slice_id);
 
 $view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
-FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
+//FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
 
 foreach ($VIEW_TYPES[$view_type] as $k => $v) {
     if (substr ($k,0,strlen("function:")) == "function:") {
@@ -453,13 +448,14 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 
     switch( $input ) {
         case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
+        case "vid":     FrmInputText(  $k, $label. " - <a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", $value,  12, 12, false, $help, '', false, 'text', '', '[a-z][a-z_0-9]+'); break;
         case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help, '', 1); break;
         case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help, '', 1); break;
         case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type]['modification'], $value, false, $help); break;
         case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
         case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help); break;
-        case "chbox":   FrmInputChBox( $k, $label, $value); break;
+        case "chbox":   FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
