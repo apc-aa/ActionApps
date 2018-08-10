@@ -129,6 +129,9 @@ function json2arr($string, $do_not_filter=false) {
  * @return array
  */
 function json2asoc($string) {
+    if ( !strlen($string) ) {
+        return array();
+    }
     if ($string{0} != '{') {
         if ($string{0} == '[') {
             // returns "one" => "one", "two" => "two" for ["one","two"]
@@ -3922,10 +3925,7 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
              }
          }
          // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
-         $widget_prop = json2asoc($widget_properties);
-         if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (substr($widget_prop['const_arr'],0,2) == '{"')) {
-             $widget_prop['const_arr'] = json2asoc($widget_prop['const_arr']);
-         }
+         $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
 
          return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index);
      }
@@ -3957,10 +3957,11 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
      * @param null $required
      * @param null $function
      * @param null $widget_type
+     * @param $widget_properties
      * @return string|void
      */
-    function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null) {
-        return $this->_getWidget('getEditHtml',$item_id, $field_id, $required, $function, $widget_type);
+    function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
+        return $this->_getWidget('getEditHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
     }
 
     /** expand function
@@ -3968,9 +3969,10 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
      * @param $field_id
      * @param $required
      * @param $function
-     * @param $widget_type       - not yet implemented
+     * @param $widget_type
+     * @param $widget_properties
      */
-    protected function _getWidget($type, $item_id, $field_id, $required, $function, $widget_type, $widget_properties=array()) {
+    protected function _getWidget($type, $item_id, $field_id, $required, $function, $widget_type, $widget_properties) {
         $ret = '';
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
@@ -3982,13 +3984,23 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 if ( !($field = $slice->getField($field_id)) ) {
                     return '';
                 }
-                $widget      = $field->getWidget($widget_type, $widget_properties);
-                $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_properties['name'], $widget_properties['input_help']);
+                $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
+                $widget      = $field->getWidget($widget_type, $widget_prop);
+                $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_prop['name'], $widget_prop['input_help']);
                 $ret         = $widget->$type($aa_property, $item, $function);
                 $widget->registerRequires();
             }
         }
         return $ret;
+    }
+
+    static function WidgetPropsString2Arr($widget_properties) {
+        // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
+        $widget_prop = json2asoc($widget_properties);
+        if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (substr($widget_prop['const_arr'],0,2) == '{"')) {
+            $widget_prop['const_arr'] = json2asoc($widget_prop['const_arr']);
+        }
+        return $widget_prop;
     }
 }
 
@@ -4002,8 +4014,8 @@ class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
      * @param null $widget_type
      * @return string|void
      */
-    function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null) {
-        return $this->_getWidget('getEditfullHtml',$item_id, $field_id, $required, $function, $widget_type);
+    function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
+        return $this->_getWidget('getEditfullHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
     }
 }
 
@@ -4014,6 +4026,7 @@ class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
  *   <function>    specify javascript function, which is executed after the widget
  *                  is sumbitted
  *   <widget_type> which widget to show
+ *  {live::number..........:::sel:{"const_arr":{"0":"no","1":"yes"}}}
  */
 class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
 
@@ -4025,8 +4038,8 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
      * @param null $widget_type
      * @return string|void
      */
-    function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null) {
-        return $this->_getWidget('getLiveHtml',$item_id, $field_id, $required, $function, $widget_type);
+    function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
+        return $this->_getWidget('getLiveHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
     }
 }
 
@@ -4037,6 +4050,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
+ *  {ajax::number..........::_#ANSWER__:sel:{"const_arr":{"0":"no","1":"yes"}}}
  **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)

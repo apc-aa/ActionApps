@@ -1,3 +1,13 @@
+18-08-09 - View's vid now could use non numeric identifiers - like: photo_list and then use it instead of numeric vid
+(honzam)   like:
+             {view:photo_list:...} or ..?vid=photo_list...
+           The named vid is searched only in current sitemodule's slices. It allows us to use the same name of view
+           for different sites, so it is the way, how to write "copyable" and installable slices/sites
+         - new "Accept site module paging - {xpage}" listing view option - if checked, no need to pass page-{xpage}
+           param to the view
+         - {live:}, {edit:} and {editfull} now allows redefine widget the same way, as {axaj:}
+           like:
+              {live::number..........:::sel:{"const_arr":{"0":"no","1":"yes"}}}
 18-08-08 - all system JS/CSS libs used in {require:} updated to last versions
 (honzam) - added jquery-ui to available libs by {require:jquery-ui} command
          - textareas with CodeMirror (syntax highlight code editor) now adapts its size to its content. It is as big
