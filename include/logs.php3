@@ -70,8 +70,10 @@ class AA_Log {
         $params   = addslashes($params);
         $selector = addslashes($selector);
 
-        $SQL = "INSERT INTO log (id, time, user, type, selector, params)
-                         VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
+//        $SQL = "INSERT INTO log (id, time, user, type, selector, params)
+//                         VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
+        $SQL = "INSERT INTO log (time, user, type, selector, params)
+                         VALUES ('". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
         $db->query($SQL);
         freeDB($db);
 
