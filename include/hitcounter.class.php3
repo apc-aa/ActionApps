@@ -89,8 +89,8 @@ class AA_Hitcounter {
 
         $varset = new CVarset;
         $varset->add('time', 'number', time());
-        $varset->add('agent', 'text', $_SERVER["HTTP_USER_AGENT"]);
-        $varset->add('info', 'text', $_SERVER["REQUEST_URI"]);
+        $varset->add('agent', 'text', substr($_SERVER["HTTP_USER_AGENT"],0,255));  // @todo - convert to metabase and check the length using metabase real field length
+        $varset->add('info',  'text', substr($_SERVER["REQUEST_URI"],0,255)); // @todo - convert to metabase and check the length using metabase real field length
 
         if ($zids->use_short_ids()) {
             $varset->add('id', 'number', $zids->id(0));
