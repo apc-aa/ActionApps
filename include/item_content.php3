@@ -1066,6 +1066,7 @@ class ItemContent extends AA_Content {
                 $item_varset->set('display_count', (int)$this->getValue('display_count...'));
                 $item_varset->add("last_edit", "quoted",   AA_Generator::factoryByString('now')->generate()->getValue());
                 $item_varset->add("edited_by", "quoted",   AA_Generator::factoryByString('uid')->generate()->getValue());
+                $item_varset->set('externally_fed', (int)$this->getValue('externally_fed..'));
                 $item_varset->doReplace('item');
                 break;
             case 'insert':
@@ -1082,6 +1083,7 @@ class ItemContent extends AA_Content {
                 $item_varset->set('display_count', (int)$this->getValue('display_count...'));
                 $item_varset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
                 $item_varset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
+                $item_varset->set('externally_fed', (int)$this->getValue('externally_fed..'));
                 $item_varset->doInsert('item');
         }
         if ($invalidatecache) {
