@@ -60,30 +60,55 @@ class Cvariable {
     }
     /** getSQLValue function
      *
+     * @param AA_MbC $columns
+     *
      */
-    function getSQLValue() {
-        switch ( $this->type )
-        {
+    function getSQLValue($column=null) {
+        $ret = '';
+        $quote = true;
+
+        switch ( $this->type ) {
             case "integer":
             case "number":
                 // grrr: if $var=0 then $var=""!!!
-                return ($this->value == "") ? "0" : $this->value;
+                $ret = ($this->value == "") ? 0 : $this->value;
+                break;
             case "unpacked":
-                return strlen($this->value) ? '0x' . quote($this->value) : "''";
+                if (is_long_id($this->value)) {
+                    $ret = '0x' . quote($this->value);
+                    $quote = false;
+                } else {
+                    huhe('There should be unpacked long id: '. $this->value ."(in $this->name)");
+                    $ret = "";
+                }
+                break;
             case "quoted":
-                return "'" . $this->value ."'";
+                $ret = $this->value;
+                break;
             case "null":
-                return "NULL";
+                $ret = "NULL";
+                $quote = false;
+                break;
             case "float":
             case "date":
             case "text":
             default:
-                return "'" . quote($this->value) ."'";
+                $ret = quote($this->value);
         }
+
+        if ($column) {
+            switch ($column->getFieldType()) {
+                case 'int':    return (int)$ret;
+                case 'float':  return (float)$ret;
+            }
+        }
+        // text
+        return $quote ? "'$ret'" : $ret;
     }
 }
 
 class Cvarset {
+    /** @var array Cvariable */
     var $vars;          // array of variables
     /**
      * @var DB_AA
@@ -290,20 +315,39 @@ class Cvarset {
      * @param $tablename
      */
     function _makeInsertReplace($command, $tablename) {
-        $foo      = $tablename ? "$command INTO `$tablename`" : '';
-        $predznak = " ( ";
-        foreach ( $this->vars as  $varname => $variable ) {
-            $foo .= $predznak . "`$varname`";
-            $predznak = ", ";
+        if ( !($cols = AA::Metabase()->getColumns($tablename))) {
+            return '';
         }
-        $predznak = " ) VALUES ( ";
-        foreach ( $this->vars as  $varname => $variable ) {
-            $foo .= $predznak . $variable->getSQLValue();
-            $predznak = ", ";
+        $arr  = array();
+
+        foreach ($cols as $colname => $coldef) {
+            if (isset($this->vars[$colname])) {
+                $arr[$colname] = $this->vars[$colname]->getSQLValue($coldef);
+            }
         }
 
-        return $foo . " ) " ;
+        if (!$arr) {
+            return '';
+        }
+        return "$command INTO `$tablename` (`". join('`,`', array_keys($arr)) ."`) VALUES (". join(',', array_values($arr)) .")";
     }
+
+    //function _makeInsertReplace($command, $tablename) {
+    //    $foo      = $tablename ? "$command INTO `$tablename`" : '';
+    //    $predznak = " ( ";
+    //    foreach ( $this->vars as  $varname => $variable ) {
+    //        $foo .= $predznak . "`$varname`";
+    //        $predznak = ", ";
+    //    }
+    //    $predznak = " ) VALUES ( ";
+    //    foreach ( $this->vars as  $varname => $variable ) {
+    //        $foo .= $predznak . $variable->getSQLValue();
+    //        $predznak = ", ";
+    //    }
+    //
+    //    return $foo . " ) " ;
+    //}
+
 
     /** makeINSERT function
      *  Makes SQL INSERT clause from varset

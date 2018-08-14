@@ -40,7 +40,7 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-$manager_settings = AA_Metabase::singleton()->getManagerConf('searchlog');
+$manager_settings = AA::Metabase()->getManagerConf('searchlog');
 
 // 	id, date, query, found_count, search_time, user, additional1
 

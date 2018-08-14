@@ -54,7 +54,7 @@ class AA_Field {
         if (is_array($data)) {
             $this->data = $data;
         } elseif ($data instanceof AA_Item) {
-            $this->data = AA_Metabase::singleton()->getEmptyRowArray('field');  // preset all data values (empty)
+            $this->data = AA::Metabase()->getEmptyRowArray('field');  // preset all data values (empty)
 
             $fid = $data->get_alias_subst('_#FLD_ID__');
             if ( (strlen($fid)!=16) OR (strpos($fid,'text..')!==0) ) {

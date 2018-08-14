@@ -132,7 +132,7 @@ class AA_Poll {
     function isField($string) {
         static $columns = null;
         if (is_null($columns)) {
-            $metabase = AA_Metabase::singleton();
+            $metabase = AA::Metabase();
             $columns  = $metabase->getColumnNames('polls');
         }
         return in_array($string, $columns);
@@ -206,7 +206,7 @@ class AA_Poll {
         $set->addCondition(new AA_Condition('poll_id', '==', $this->id()));
         $set->addSortorder(new AA_Sortorder(array('priority' => 'a')));
 
-        $zids     = AA_Metabase::singleton()->queryZids(array('table'=>'polls_answer'), $set);
+        $zids     = AA::Metabase()->queryZids(array('table'=>'polls_answer'), $set);
         $itemview = new itemview( $format, '', $aliases, $zids, 0, $zids->count(), shtml_url(), "", array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer')));
 
         return $itemview->get_output();

@@ -82,7 +82,14 @@ class AA_MbC {
         return substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"));
     }
 
-    private function _getFieldType() {
+    /** it return max length of the field if we know it */
+    public function getMaxLength() {
+        $part = array();
+        return preg_match("/\(([0-9]*)\)/", $this->c[1], $part) ? (int)$part[1] : 0;
+    }
+
+    /** @return string - database field type - 'float' | 'int' | 'text' */
+    public function getFieldType() {
         // Used in AA database
         // bigint(20)
         // bigint(30)
@@ -207,7 +214,7 @@ class AA_MbC {
     }
 
     function getAsProperty() {
-        $type = $this->_getFieldType();
+        $type = $this->getFieldType();
                                   // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
         return  new AA_Property( $this->c[0], $this->c[0], $type, false,  true,        $type,  !($this->c[2]), $this->c[6]);
     }
@@ -371,6 +378,11 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return isset($this->c[$columnname]);
     }
 
+    /** get array of Column objects */
+    function getColumns() {
+        return $this->c;
+    }
+
     function getKeys() {
         return array_keys($this->k);
     }
@@ -493,11 +505,11 @@ class AA_Metabase {
     var $tables = array();
 
     /** AA_Metabase function - constructor
-     *  Do not use it - use $metabase = AA_Metabase::singleton() instead
+     *  Do not use it - use $metabase = AA::Metabase() instead
      */
     function __construct() {}
 
-    /** Static function called like $metabase = AA_Metabase::singleton() */
+    /** Static function called like $metabase = AA::Metabase() */
     public static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
@@ -542,6 +554,12 @@ class AA_Metabase {
     function isColumn($tablename, $columnname) {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->isColumn($columnname) : false;
+    }
+
+    /** returns asociative array of table columns as object, so we can work wit it (in varset INSERT, ...)
+     */
+    function getColumns($tablename) {
+        return $this->tables[$tablename]->getColumns();
     }
 
     /**
@@ -730,8 +748,22 @@ class AA_Metabase {
     }
 
     function doInsert($tablename, $data, $nohalt=null) {
-        $varset     = new Cvarset();
-        $varset->resetFromRecord($data);
+        $cols = array();
+        if ( !($cols = $this->getColumns($tablename))) {
+            return false;
+        }
+        $varset = new Cvarset();
+
+        foreach ($cols as $colname => $coldef) {
+            if (isset($data[$colname])) {
+                if ($coldef->getFieldType() == 'int') {
+                    $varset->add($colname, 'number', (int)$data[$colname]);
+                } else {
+                    $value = ($maxlen = $coldef->getMaxLength()) ? substr($data[$colname], 0, $maxlen) : $data[$colname];
+                    $varset->add($colname, 'text', $value);
+                }
+            }
+        }
         return $varset->doInsert($tablename, $nohalt);
     }
 
@@ -928,7 +960,7 @@ class AA_Metabase {
         $ret     = array();
 
         $tablename   = $settings['table'];
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
         $keys        = $metabase->getKeys($tablename);
         if (count($keys) != 1) {
             // you can't use this function for that table - this is programmers mistake - correct the code
@@ -985,7 +1017,7 @@ class AA_Metabase {
 
         if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
 
         $fields      = $metabase->getSearchArray($tablename);
         $join_tables = array();   // not used in this function
@@ -1011,7 +1043,7 @@ class AA_Metabase {
         $tablename = $settings['table'];
         $conds     = $set->getConds();
 
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
 
         $fields      = $metabase->getSearchArray($tablename);
         $join_tables = array();   // not used in this function
@@ -1141,7 +1173,7 @@ class AA_MetabaseTableEdit {
 
     /** helps other classes to implement AA_iEditable method addFormrow - adds Object's editable properties to the $form */
     public static function defaultGetClassProperties($tablename) {
-        return AA_Metabase::singleton()->getColumnProperties($tablename);
+        return AA::Metabase()->getColumnProperties($tablename);
     }
 
     /** helps other classes to implement AA_iEditable method factoryFromForm - creates Object from the form data */

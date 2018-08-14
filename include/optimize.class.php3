@@ -1236,7 +1236,7 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     * @return bool
     */
     function test() {
-        $metabase = AA_Metabase::singleton();
+        $metabase = AA::Metabase();
         //$tables   = $metabase->getTableNames();
         $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
         $count    = 0;
@@ -1371,7 +1371,7 @@ class AA_Optimize_Required_Checboxes extends AA_Optimize {
      */
     function test()
     {
-        $metabase = AA_Metabase::singleton();
+        $metabase = AA::Metabase();
         if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', array(array('required', 1, 'i'), array('input_show_func', 'chb:%', 'LIKE')))) {
             $this->message(_m('We found required checkbox %1 fields:', array(count($fields))));
             foreach ($fields as $field) {

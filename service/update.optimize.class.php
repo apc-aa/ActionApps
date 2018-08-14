@@ -233,7 +233,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     * @return a message
     */
     function test() {
-        $template_metabase = AA_Metabase::singleton();
+        $template_metabase = AA::Metabase();
         $this_metabase     = new AA_Metabase;
         $this_metabase->loadFromDb();
         $diffs     = $template_metabase->compare($this_metabase);
@@ -254,7 +254,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-        $template_metabase = AA_Metabase::singleton();
+        $template_metabase = AA::Metabase();
         $this_metabase     = new AA_Metabase;
         $this_metabase->loadFromDb();
         $diffs     = $template_metabase->compare($this_metabase);
@@ -1364,7 +1364,7 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
      */
     function repair() {
 
-        $metabase = AA_Metabase::singleton();
+        $metabase = AA::Metabase();
         $this->query("DROP TABLE IF EXISTS `polls`");
         $this->query($metabase->getCreateSql('polls'));
 
@@ -1822,7 +1822,7 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-        $metabase   = AA_Metabase::singleton();
+        $metabase   = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 
         foreach($tablenames as $tablename) {
@@ -1871,7 +1871,7 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-        $metabase   = AA_Metabase::singleton();
+        $metabase   = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 
         foreach($tablenames as $tablename) {

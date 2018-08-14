@@ -365,7 +365,7 @@ class AA_Module_Definition_Chunk {
 
     function importModuleChunk() {
 
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
 
         $msgs = array('ok'=>array(), 'err'=>array());
         $keys = array();
@@ -426,7 +426,7 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
     function loadForId($module_id, $limited=array()) {
         $this->clear();
         $this->module_id = $module_id;
-        $metabase        = AA_Metabase::singleton();
+        $metabase        = AA::Metabase();
 
         if ($limited['definitions']) {
             $this->data['module']       = $metabase->getModuleRows('module',      $module_id);
@@ -470,7 +470,7 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
     function compareWith($dest_def) {
         /** @todo check the state, when the name contains "->" */
         $dest_module_id = $dest_def->getId();
-        $metabase       = AA_Metabase::singleton();
+        $metabase       = AA::Metabase();
 
         $diff =                    AA_Difference::_compareArray(reset($this->data['module']),  reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), array($metabase->getModuleField('module'))); // just module data
         $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']),   reset($dest_def->data['slice']),  new AA_Identifier($dest_module_id, 'slice', $dest_module_id),  array($metabase->getModuleField('slice'))));  // just slice data
@@ -488,7 +488,7 @@ class AA_Module_Definition_Site extends AA_Module_Definition {
     function loadForId($module_id, $limited=false) {
         $this->clear();
         $this->module_id = $module_id;
-        $metabase        = AA_Metabase::singleton();
+        $metabase        = AA::Metabase();
 
         $this->data['module']    = $metabase->getModuleRows('module', $module_id);
         $this->data['site']      = $metabase->getModuleRows('site', $module_id);
@@ -504,7 +504,7 @@ class AA_Module_Definition_Alerts extends AA_Module_Definition {
     function loadForId($module_id, $limited=false) {
         $this->clear();
         $this->module_id = $module_id;
-        $metabase        = AA_Metabase::singleton();
+        $metabase        = AA::Metabase();
 
         $this->data['module']                     = $metabase->getModuleRows('module', $module_id);
         $this->data['alerts_collection']          = $metabase->getModuleRows('alerts_collection', $module_id);
@@ -715,7 +715,7 @@ class AA_Sync_Action {
         $row         = $idf->getRow();
         //$column      = $idf->getColumn();
 
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
 
         if (!$row) {
             return _m('Wrong command - row is not defined - %1', array($idf->toString()));
@@ -829,7 +829,7 @@ function Central_QueryZids($conds, $sort="", $type="app") {
 
     if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-    $metabase    = AA_Metabase::singleton();
+    $metabase    = AA::Metabase();
 
     $fields      = $metabase->getSearchArray('central_conf');
     $join_tables = array();   // not used in this function

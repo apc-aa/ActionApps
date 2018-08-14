@@ -438,21 +438,12 @@ function debug() {
 /** huhe function
  * Report only if errcheck is set, this is used to test for errors to speed debugging
  * Use to catch cases in the code which shouldn't exist, but are handled anyway.
- * @param $a
- * @param $b
- * @param $c
- * @param $d
- * @param $e
- * @param $f
- * @param $g
- * @param $h
- * @param $i
- * @param $j
+ * @param $var1, ...
  */
-function huhe($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
+function huhe() {
     global $errcheck;
     if ($errcheck) {
-        huhl($a, $b, $c,$d,$e,$f,$g,$h,$i,$j);
+        call_user_func_array('huhl', func_get_args());
     }
 }
 
@@ -711,7 +702,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     // get content from item table
 
     $use_short_ids = ($zids->onetype() == 's');
-    $metabase      = AA_Metabase::singleton();
+    $metabase      = AA::Metabase();
 
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {

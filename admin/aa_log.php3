@@ -39,7 +39,7 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-$manager_settings = AA_Metabase::singleton()->getManagerConf('log');
+$manager_settings = AA::Metabase()->getManagerConf('log');
 $manager_settings['searchbar']['default_sort'] =  array( 0 => array('time' => 'd'));
 
 $manager = new AA_Manager('log', $manager_settings);

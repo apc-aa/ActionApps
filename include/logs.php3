@@ -60,22 +60,11 @@ class AA_Log {
             return false;
         }
 
-        $db = getDB();
-
         if (is_array($params)) {
             $params = ParamImplode($params);
         }
 
-        $event    = addslashes($event);
-        $params   = addslashes($params);
-        $selector = addslashes($selector);
-
-//        $SQL = "INSERT INTO log (id, time, user, type, selector, params)
-//                         VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
-        $SQL = "INSERT INTO log (time, user, type, selector, params)
-                         VALUES ('". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
-        $db->query($SQL);
-        freeDB($db);
+        AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
 
         // with probability 1:1000 set up log cleanup
         if ( mt_rand(0,1000) == 1) {

@@ -69,7 +69,7 @@ $actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'))
 
 //$switches  = new AA_Manageractions;  // we do not need switches here
 
-$manager_settings = AA_Metabase::singleton()->getManagerConf('toexecute', $actions);
+$manager_settings = AA::Metabase()->getManagerConf('toexecute', $actions);
 $manager_settings['itemview']['format']['compact_top'] = '
                                           <table border="0" cellpadding="5" cellspacing="0">
                                             <tbody><tr>

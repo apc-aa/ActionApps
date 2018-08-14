@@ -149,7 +149,7 @@ class AA_Module {
     }
 
     protected function _isModuleTableProperty($prop) {
-        return AA_Metabase::singleton()->isColumn('module', $prop);
+        return AA::Metabase()->isColumn('module', $prop);
     }
 
     protected function _getModuleTableProperty($prop) {
@@ -163,7 +163,7 @@ class AA_Module {
     }
 
     protected function _isSpecificTableProperty($prop) {
-        return static::SETTING_TABLE && AA_Metabase::singleton()->isColumn(static::SETTING_TABLE, $prop);
+        return static::SETTING_TABLE && AA::Metabase()->isColumn(static::SETTING_TABLE, $prop);
     }
 
     protected function _getSpecificTableProperty($prop) {

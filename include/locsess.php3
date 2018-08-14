@@ -298,6 +298,8 @@ class AA {
     private static $contentcache   = null;
     /** @var  PageCache $pagecache */
     private static $pagecache      = null;
+    /** @var  AA_Metabase $metabase */
+    private static $metabase       = null;
 
     static function getHeaders() {
         $ret = array();
@@ -330,6 +332,13 @@ class AA {
      */
     static function Pagecache() {
         return AA::$pagecache ?: (AA::$pagecache = new PageCache(CACHE_TTL));
+    }
+
+    /** @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
+     *  @return  AA_Metabase
+     */
+    static function Metabase() {
+        return AA::$metabase ?: (AA::$metabase = AA_Metabase::singleton());
     }
 
     // typicaly called as AA::sendHeaders(AA::getHeaders());

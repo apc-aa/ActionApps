@@ -420,7 +420,7 @@ if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_
 }
 
 if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET['go_replace']) AND (strlen($_GET['search'])>5) AND (strlen($_GET['replace'])>5) ) ) {
-    $metabase = AA_Metabase::singleton();
+    $metabase = AA::Metabase();
 
     $table2search = array();
     if ($_GET['searchinview']  ==1) $table2search['view']       = array('id'=>'`id`','slice_id'=>'LOWER(HEX(`slice_id`))');

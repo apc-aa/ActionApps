@@ -466,7 +466,7 @@ class AA_Metabase {
     var $tables;
 
     /** AA_Metabase function - constructor
-     *  Do not use it - use $metabase = AA_Metabase::singleton() instead
+     *  Do not use it - use $metabase = AA::Metabase() instead
      */
     function __construct() {
         $this->tables   = array();
@@ -896,7 +896,7 @@ class AA_Metabase {
         $ret     = array();
 
         $tablename   = $settings['table'];
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
         $keys        = $metabase->getKeys($tablename);
         if (count($keys) != 1) {
             // you can't use this function for that table - this is programmers mistake - correct the code
@@ -946,7 +946,7 @@ class AA_Metabase {
 
         if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
 
         $fields      = $metabase->getSearchArray($tablename);
         $join_tables = array();   // not used in this function
@@ -972,7 +972,7 @@ class AA_Metabase {
         $tablename = $settings['table'];
         $conds     = $set->getConds();
 
-        $metabase    = AA_Metabase::singleton();
+        $metabase    = AA::Metabase();
 
         $fields      = $metabase->getSearchArray($tablename);
         $join_tables = array();   // not used in this function

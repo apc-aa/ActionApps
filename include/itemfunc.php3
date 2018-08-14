@@ -658,19 +658,23 @@ class AA_Field_Writer {
             }
         }
 
-        if ($field["in_item_tbl"]) {
+        if ($fid = $field["in_item_tbl"]) {
             // Mitra thinks that this might want to be 'expiry_date.....' ...
             // ... which is not correct because in 'in_item_tbl' database field
             // we store REAL database field names from aadb.item table (honzam)
-            if (($field["in_item_tbl"] == 'expiry_date') AND (date("Hi",$value['value']) == "0000")) {
+            if (($fid == 'expiry_date') AND (date("Hi",$value['value']) == "0000")) {
                 // $value['value'] += 86399;
                 // if time is not specified, take end of day 23:59:59
                 // !!it is not working for daylight saving change days !!!
                 $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
             }
 
-            // field in item table
-            $this->item_varset->add($field["in_item_tbl"], "text", $value['value']);
+            // field in item table  - check, if numeric...
+            if (in_array($fid, array('short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'))) {
+                $this->item_varset->add($fid, "number", (int)$value['value']);
+            } else {
+                $this->item_varset->add($fid, "text", $value['value']);
+            }
             return;
         }
 

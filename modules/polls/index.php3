@@ -66,7 +66,7 @@ $module_id = $slice_id;
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 
-$metabase         = AA_Metabase::singleton();
+$metabase         = AA::Metabase();
 $manager_settings = $metabase->getManagerConf('polls', $actions, $switches);
 $manager_settings['itemview']['aliases'] = GetPollsAliases();
 
