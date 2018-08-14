@@ -1,3 +1,7 @@
+18-08-14 - fixed SQL for MariaBD 10.3 strict sql-mode
+(honzam)   Database inserts (item table, log, ...) now checks database schema in AA_Metabase and converts the
+           inserted data accordingly - data type (int, ..) as well as text length, which is truncated by AA, not MariaBD
+         - fix - better return addres after itemedit
 18-08-13 - fixed SQL for MariaBD 10.3 strict sql-mode
 18-08-09 - View's vid now could use non numeric identifiers - like: photo_list and then use it instead of numeric vid
 (honzam)   like:
