@@ -40,25 +40,26 @@
 }
 
 #aa-message-box {
-     width: 100%;
-     text-align: center;
-     position: fixed;
-     top: 0%;
-     z-index: 100;
-     height: 100%;
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    top: 0%;
+    z-index: 100;
+    height: 100%;
 }
 #aa-message-box div {
-     display: inline-block;
-     min-width: 20%;
-     max-width: 40%;
-     margin: 4% 25%;
-     box-shadow: 0 0 20px #000;
-     border: solid 1px #5A5A5A;
-     padding: 20px;
-     text-align: left;
-     background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAQCAYAAABz9a1kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAM5JREFUeNrs1TEKhDAQBdCfkEukSKW3iaXgLQRrW+8iRFDJfUQ7b5FdRkih6G6xO6zF/jKkeGT+ENE0zQMfpK5rgS9E4ia5HyRJElRVBWPM5WW6U5YltNZ8kGma4L1HnuenGEJYa9F1HdZ15R3NFYYQWZaxIU47csREhHOODUFRZ4eEGccRRVEghIC2bVkRL7dGSrkhhBBQSv1mfeM46CX6vr8sMCskTdNdJ+Z53sbEjZFHBK3osZiEGYaBFSPfIWKWZWHFiP+nd1fIU4ABALc6ay3UQADkAAAAAElFTkSuQmCC) no-repeat scroll right 7px;
-     max-height: 77%;
-     overflow: auto;
+    display: block;
+    min-width: 20%;
+    max-width: 100%;
+    position: fixed;
+    margin: 5% 28%;
+    box-shadow: 0 0 20px #000;
+    border: solid 1px #5A5A5A;
+    padding: 20px;
+    text-align: left;
+    background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAQCAYAAABz9a1kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAM5JREFUeNrs1TEKhDAQBdCfkEukSKW3iaXgLQRrW+8iRFDJfUQ7b5FdRkih6G6xO6zF/jKkeGT+ENE0zQMfpK5rgS9E4ia5HyRJElRVBWPM5WW6U5YltNZ8kGma4L1HnuenGEJYa9F1HdZ15R3NFYYQWZaxIU47csREhHOODUFRZ4eEGccRRVEghIC2bVkRL7dGSrkhhBBQSv1mfeM46CX6vr8sMCskTdNdJ+Z53sbEjZFHBK3osZiEGYaBFSPfIWKWZWHFiP+nd1fIU4ABALc6ay3UQADkAAAAAElFTkSuQmCC) no-repeat scroll right 7px;
+    max-height: 77%;
+    overflow: auto;
 }
 
 #aa-message-box div:hover {
