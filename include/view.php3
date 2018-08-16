@@ -557,6 +557,9 @@ class AA_Showview {
         $this->_view_param = $view_param;
     }
 
+    /** if not numeric, find view id in the site
+     *  do not validate, if the view exists for numeric ids!
+     */
     protected function findViewId($vid) {
         if (ctype_digit((string)$vid)) {
             return (int)$vid;
@@ -567,35 +570,42 @@ class AA_Showview {
         return false;
     }
 
-    function getViewOutput() {
-        if ( !($vid = $this->findViewId($this->_view_param["vid"]))) {
+    function getViewOutput()
+    {
+        $dbgtime = microtime(true);
+
+        if (!($vid = $this->findViewId($this->_view_param["vid"]))) {
             return false;
         }
 
 
-        $als           = $this->_view_param["als"];
-        $conds         = $this->_view_param["conds"];
-        $slices        = $this->_view_param["slices"];
-        $param_conds   = $this->_view_param["param_conds"];
-        $param_sort    = array('sort'        => $this->_view_param["sort"],
-                               'group_by'    => $this->_view_param["group_by"],
-                               'group_limit' => $this->_view_param["group_limit"]);
-        $category_id   = $this->_view_param['cat'];
+        $als = $this->_view_param["als"];
+        $conds = $this->_view_param["conds"];
+        $slices = $this->_view_param["slices"];
+        $param_conds = $this->_view_param["param_conds"];
+        $param_sort = array('sort' => $this->_view_param["sort"],
+            'group_by' => $this->_view_param["group_by"],
+            'group_limit' => $this->_view_param["group_limit"]);
+        $category_id = $this->_view_param['cat'];
         // $item_ids   = $this->_view_param["item_ids"];
-        $zids          = $this->_view_param["zids"];
+        $zids = $this->_view_param["zids"];
         //  $use_short_ids = $this->_view_param["use_short_ids"];
-        if ( $this->_view_param["random"] ) {
-            $random    = (($this->_view_param["random"]==1) ? 'random' : 'random:'.$this->_view_param["random"]);
+        if ($this->_view_param["random"]) {
+            $random = (($this->_view_param["random"] == 1) ? 'random' : 'random:' . $this->_view_param["random"]);
         }
 
         $selected_item = $this->_view_param["selected"];      // used for boolean (1|0) _#SELECTED
 
-        AA::$debug && AA::$dbg->group("view_$vid".'_'.($dbgtime=microtime(true)));
 
         // alias - =1 for selected item
         // gets view data
-        $view      = AA_Views::getView($vid);
+
+        if (!($view = AA_Views::getView($vid))) {
+            return false;
+        }
         $view_info = $view->getViewInfo();
+
+        AA::$debug && AA::$dbg->group("view_$vid" . '_' . ($dbgtime));
 
         if ( isset($this->_view_param["page"]) ) {
             $list_page = (int)$this->_view_param["page"];

@@ -1186,7 +1186,7 @@ function String2Sort( $sort_string ) {
  * @param function $additional_field_cond - aditional condition function parameter
  * @param $add_param
  */
-function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond=false, $add_param=false) {
+function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond='', $add_param=false) {
 
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
@@ -1232,7 +1232,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
  *  @param function $additional_field_cond - aditional condition function parameter
  * @param $add_param
  */
-function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond=false, $add_param=false) {
+function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond='', $add_param=false) {
     if ( isset($sort) AND is_array($sort)) {
         foreach ( $sort as $srt ) {
             if ( isset($srt) AND is_array($srt) ) {
