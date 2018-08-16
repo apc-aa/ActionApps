@@ -5737,7 +5737,7 @@ class AA_Requires {
           'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
           'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.0.3/lib/js/lightgallery.js', 'sha256-nAvnrtoGkehkBGen9b6T8e7LFOoiYw3gD8sL5rJ3Ydo=', array('_css-lightgallery@1')),
           'leaflet@1'                  => new AA_Req_Lib('https://unpkg.com/leaflet@1.3.3/dist/leaflet.js', 'sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==', array('_css-leaflet@1')),
-          'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/src/chart.js', 'sha256-m5HSfCAw9sp7dFgR6RRHNxm3LSj8ficyzKD+aV8XMxc='),
+          'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
           'tippy@2'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
           'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
