@@ -178,6 +178,7 @@ class AA_Debug {
     protected $_duration   = array();
     protected $_tracestack = array();
     protected $_calls      = array();
+    protected $_repeated   = array();
 
     function __construct() {
         $this->_starttime = array('main' => microtime(true));
@@ -211,6 +212,9 @@ class AA_Debug {
 
     function tracestart($func, $text='') {
         $txt = AA::$debug&128 ? $text : substr($text,0,200);
+        if ($func=='Query') {
+            $this->_check_repeted($text);
+        }
         $this->_calls[]      = array(count($this->_tracestack), $func, DB_AA::$_instances_no.' '.$txt, strlen($text),microtime(true));
         $this->_tracestack[] = count($this->_calls)-1;
     }
@@ -231,6 +235,7 @@ class AA_Debug {
     }
 
     function duration_stat() {
+
         $row    = array();
         $sumsum = 0;
         foreach($this->_duration as $func => $times) {
@@ -238,8 +243,35 @@ class AA_Debug {
             $row['a'.sprintf('%f',$sum/1000.0).'-'.$func] .= '<tr><td>'.safe($func).'</td><td>'.count($times).'</td><td>'.sprintf('%f',$sum/count($times)).'</td><td>'.sprintf('%f',$sum).'</td><td>'.sprintf('%f',1000*max($times)).'</td><td>'.sprintf('%f',1000*min($times)).'</td></tr>';
         }
         krsort($row);
-
         echo '<table><tr><th>function</th><th>called</th><th>avg</th><th>sum</th><th>max</th><th>min</th></tr>'.join('',$row).'<tr><th>Sum</th><th></th><th></th><th>'.$sumsum.'</th><th></th><th></th></tr></table>';
+
+
+        // repeated queries;
+        $row    = array();
+        foreach($this->_repeated as $query => $times) {
+            if ($times>1) {
+                $row['a' . sprintf('%09d', $times)] = '<tr><td>' . safe($times) . '</td><td>' . safe($query) . '</td></tr>';
+            }
+        }
+        if ($row) {
+            krsort($row);
+            echo '<br><table><tr><th>used x times</th><th>query</th></tr>' . join('', $row) . '<tr></table>';
+        }
+
+
+        // longest queries;
+        $row    = array();
+        foreach($this->_calls as $call) {
+            if ($call[1]=="Query") {
+                $row['a' . sprintf('%f',($call[5]-$call[4])*1000.0)] = '<tr><td>' . safe(($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td>' . safe($call[6]) . '</td></tr>';
+            }
+        }
+        if ($row) {
+            krsort($row);
+            echo '<br><table><tr><th>time</th><th>query</th><th>out</th></tr>' . join('', $row) . '<tr></table>';
+        }
+
+
         echo '<br><table><tr><th>time</th><th>duration</th><th>function</th><th>in</th><th>out</th></tr>';
         foreach($this->_calls as $call) {
            echo '<tr><td>'.(1000*($call[4]-$_SERVER['REQUEST_TIME_FLOAT'])).'</td><td>'.(1000*($call[5]-$call[4])).'</td><td>'.str_repeat('.&nbsp;',$call[0]).safe($call[1]).'</td><td>'.safe($call[2]).( ($call[3]>200 AND !AA::$debug&128) ? '..+'.($call[3]-200) :'' ).'</td><td>'.safe($call[6]).($call[7]>20? '..+'.($call[7]-20) :'' ).'</td></tr>';
@@ -248,6 +280,9 @@ class AA_Debug {
         AA::Contentcache()->duration_stat();
     }
 
+    function _check_repeted($txt) {
+        $this->_repeated[$txt] += 1;
+    }
 
     function _do($func, $params) {
         $time = microtime(true) - $this->_starttime['main'];

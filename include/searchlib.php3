@@ -1037,14 +1037,17 @@ function ProoveFieldNames($slices, $conds) {
 
     global $CONDS_NOT_FIELD_NAMES;
     foreach ($slices as $slice_id) {
-        $slicefields = DB_AA::select(array('id'=>1), 'SELECT id FROM `field`', array(array('slice_id', $slice_id, 'l')));
+        if (!($slice = AA_Slice::getModule($slice_id))) {
+            AA::$dbg->warn("Slice <b>$slice_id</b> do not exist");
+            continue;
+        }
         foreach ($conds as $cond) {
             if (!(isset($cond) AND is_array($cond))) {
                 continue;
             }
             foreach ($cond as $key => $foo) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
-                if (!$CONDS_NOT_FIELD_NAMES[$key] AND !isset($slicefields[$key]) AND !strpos($key, '@')) {
+                if (!$CONDS_NOT_FIELD_NAMES[$key] AND !strpos($key, '@') AND !$slice->isField($key)) {
                     AA::$dbg->warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").");
                 }
             }
@@ -1734,13 +1737,13 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     if (is_object($restrict_zids)) {
         if ($restrict_zids->use_short_ids()) {
             $ord_field = 'short_id';
-            $ord_ids   = $restrict_zids->shortids();
+            $ord_ids   = implode(",",$restrict_zids->shortids());
         } else {
             $ord_field = 'id';
-            $ord_ids   = $restrict_zids->packedids();
+            $ord_ids   = implode(",",array_map('xpack_id',$restrict_zids->longids()));
         }
         if ($ord_ids) { // not false, null, empty array
-            $select_order .= "$delim field(item.$ord_field,". implode(",",array_map("qquote", $ord_ids)). ')';
+            $select_order .= "$delim field(item.$ord_field,$ord_ids)";
         }
     }
 
