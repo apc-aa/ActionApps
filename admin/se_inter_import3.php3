@@ -65,8 +65,7 @@ foreach ($f_slices as $f_slice) {
     $catVS->add("newest_item",      "quoted",   unixstamp_to_iso8601(time()));
     $catVS->add("feed_mode",        "quoted",   ($exact_copy ? 'exact' : ''));
 
-    $SQL = "INSERT INTO external_feeds" . $catVS->makeINSERT();
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+    if ( !$catVS->doINSERT('external_feeds')) {
         $err["DB"] .= MsgErr("Can't add external import");
     }
 
@@ -84,8 +83,7 @@ foreach ($f_slices as $f_slice) {
         $catVS->add("target_category_id","unpacked", MapDefaultCategory($l_categs,$cat['value'],$cat['catparent']));       // default category
         $catVS->add("approved",          "number",   0);
 
-        $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        if ( !$catVS->doINSERT('ef_categories')) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
@@ -101,8 +99,7 @@ foreach ($f_slices as $f_slice) {
         $catVS->add("flag",           "number",   FEEDMAP_FLAG_EXTMAP);
         $catVS->add("from_field_name","text",     $aa_rss['fields'][$field_id]['name']);
 
-        $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        if ( !$catVS->doINSERT('feedmap')) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
@@ -110,5 +107,4 @@ foreach ($f_slices as $f_slice) {
 }
 
 go_url( StateUrl(self_base() . "se_inter_import.php3"). "&Msg=" . $msg );
-page_close()
-
+page_close();

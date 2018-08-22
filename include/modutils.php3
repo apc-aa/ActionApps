@@ -52,7 +52,7 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
     $varset->set("email", $new_owner_email, "text");
 
     // create new owner
-    if ( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
+    if ( !$varset->doINSERT('slice_owner')) {
         $err["DB"] .= MsgErr("Can't add owner");
         return false;
     }

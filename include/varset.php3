@@ -353,7 +353,7 @@ class Cvarset {
      *  Makes SQL INSERT clause from varset
      * @param $tablename
      */
-    function makeINSERT($tablename = "") {
+    function makeINSERT($tablename) {
         return $this->_makeInsertReplace('INSERT', $tablename);
     }
     /** doInsert function
@@ -607,7 +607,7 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
             $varset->set($col["name"],$val,$type);
         }
 
-        if (!DB_AA::sql("INSERT INTO $table ".$varset->makeINSERT())) {
+        if ( !$varset->doINSERT($table)) {
             return false;
         }
     }

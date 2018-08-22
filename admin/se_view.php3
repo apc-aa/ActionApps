@@ -125,12 +125,15 @@ function store_digest_filters() {
 
         if (substr ($rowid,0,3) != "new") {
             $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
+            if ( !$db->query($SQL)) {
+                $err["DB"] = MsgErr( _m("Can't change slice settings") );
+                break;   // not necessary - we have set the halt_on_error
+            }
         } else {
-            $SQL = "INSERT INTO alerts_filter ".$varset->makeINSERT();
-        }
-        if ( !$db->query($SQL)) {
-            $err["DB"] = MsgErr( _m("Can't change slice settings") );
-            break;   // not necessary - we have set the halt_on_error
+            if ( !$varset->doINSERT('alerts_filter')) {
+                $err["DB"] = MsgErr(_m("Can't change slice settings"));
+                break;   // not necessary - we have set the halt_on_error
+            }
         }
     }
     freeDB($db);

@@ -78,8 +78,7 @@ if ($mode == "edit" || $mode == "test") {
                 $catVS->add("slice_id",  "unpacked", $slice_id);
                 $catVS->add("name",      "quoted",   $rssfeed_name);
                 $catVS->add("server_url","quoted",   $server_url);
-                $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
-                if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+                if ( !$catVS->doINSERT('rssfeeds')) {
                     $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
                 }
             }
@@ -89,7 +88,6 @@ if ($mode == "edit" || $mode == "test") {
             $catVS = new Cvarset();
             $catVS->add("name",      "quoted", $rssfeed_name);
             $catVS->add("server_url","quoted", $server_url);
-            $SQL = "INSERT INTO rssfeeds" .    $catVS->makeINSERT();
             $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()
               ." WHERE name='$old_rssfeed_name' AND slice_id = '$qp_slice_id'");
             break;

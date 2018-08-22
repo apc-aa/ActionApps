@@ -26,7 +26,7 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
-*/
+ */
 /** Cvarset - class for storing variables
  *          - simplifies database manipulation (by Cvarset class below)
  */
@@ -36,7 +36,7 @@ class Cvariable {
     var $type;
     var $value;
     /** Is it a key value? key values are used in UPDATE -> WHERE,
-    *  INSERT -> VALUES.  See also makeINSERTorUPDATE. */
+     *  INSERT -> VALUES.  See also makeINSERTorUPDATE. */
     var $iskey;
 
     /** Cvariable function
@@ -60,33 +60,61 @@ class Cvariable {
     }
     /** getSQLValue function
      *
+     * @param AA_MbC $columns
+     *
      */
-    function getSQLValue() {
-        switch ( $this->type )
-        {
+    function getSQLValue($column=null) {
+        $ret = '';
+        $quote = true;
+
+        switch ( $this->type ) {
             case "integer":
             case "number":
                 // grrr: if $var=0 then $var=""!!!
-                return ($this->value == "") ? "0" : $this->value;
+                $ret = ($this->value == "") ? 0 : $this->value;
+                break;
             case "unpacked":
-                return strlen($this->value) ? '0x' . quote($this->value) : "''";
+                if (is_long_id($this->value)) {
+                    $ret = '0x' . quote($this->value);
+                    $quote = false;
+                } else {
+                    huhe('There should be unpacked long id: '. $this->value ."(in $this->name)");
+                    $ret = "";
+                }
+                break;
             case "quoted":
-                return "'" . $this->value ."'";
+                $ret = $this->value;
+                break;
             case "null":
-                return "NULL";
+                $ret = "NULL";
+                $quote = false;
+                break;
             case "float":
             case "date":
             case "text":
             default:
-                return "'" . quote($this->value) ."'";
+                $ret = quote($this->value);
         }
+
+        if ($column) {
+            switch ($column->getFieldType()) {
+                case 'int':    return (int)$ret;
+                case 'float':  return (float)$ret;
+            }
+        }
+        // text
+        return $quote ? "'$ret'" : $ret;
     }
 }
 
 class Cvarset {
-    var $vars;        // array of variables
+    /** @var array Cvariable */
+    var $vars;          // array of variables
+    /**
+     * @var DB_AA
+     */
     var $last_used_db;  // database handler
-    var $just_print;  // debug option - just prints the query (not implemented for all methods!!!)
+    var $just_print;    // debug option - just prints the query (not implemented for all methods!!!)
 
     /** Cvarset function
      *  constructor - also good for filling the varset
@@ -96,7 +124,7 @@ class Cvarset {
         $TRANS              = array('i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked');
         $this->vars         = array();
         $this->last_used_db = null;
-        $this->just_print = false;
+        $this->just_print   = false;
 
         foreach ( $arr as $def ) {
             $this->add($def[0], isset($def[2]) ? $TRANS[$def[2]] : 'text', $def[1]);
@@ -287,33 +315,52 @@ class Cvarset {
      * @param $tablename
      */
     function _makeInsertReplace($command, $tablename) {
-        $foo      = $tablename ? "$command INTO `$tablename`" : '';
-        $predznak = " ( ";
-        foreach ( $this->vars as  $varname => $variable ) {
-            $foo .= $predznak . "`$varname`";
-            $predznak = ", ";
+        if ( !($cols = AA::Metabase()->getColumns($tablename))) {
+            return '';
         }
-        $predznak = " ) VALUES ( ";
-        foreach ( $this->vars as  $varname => $variable ) {
-            $foo .= $predznak . $variable->getSQLValue();
-            $predznak = ", ";
+        $arr  = array();
+
+        foreach ($cols as $colname => $coldef) {
+            if (isset($this->vars[$colname])) {
+                $arr[$colname] = $this->vars[$colname]->getSQLValue($coldef);
+            }
         }
 
-        return $foo . " ) " ;
+        if (!$arr) {
+            return '';
+        }
+        return "$command INTO `$tablename` (`". join('`,`', array_keys($arr)) ."`) VALUES (". join(',', array_values($arr)) .")";
     }
+
+    //function _makeInsertReplace($command, $tablename) {
+    //    $foo      = $tablename ? "$command INTO `$tablename`" : '';
+    //    $predznak = " ( ";
+    //    foreach ( $this->vars as  $varname => $variable ) {
+    //        $foo .= $predznak . "`$varname`";
+    //        $predznak = ", ";
+    //    }
+    //    $predznak = " ) VALUES ( ";
+    //    foreach ( $this->vars as  $varname => $variable ) {
+    //        $foo .= $predznak . $variable->getSQLValue();
+    //        $predznak = ", ";
+    //    }
+    //
+    //    return $foo . " ) " ;
+    //}
+
 
     /** makeINSERT function
      *  Makes SQL INSERT clause from varset
      * @param $tablename
      */
-    function makeINSERT($tablename = "") {
+    function makeINSERT($tablename) {
         return $this->_makeInsertReplace('INSERT', $tablename);
     }
     /** doInsert function
      * @param $tablename
      * @param $nohalt
      */
-    function doInsert($tablename, $nohalt=null) {
+    function doINSERT($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
     }
 
@@ -336,6 +383,22 @@ class Cvarset {
             $retval .= " WHERE ".$where;
         }
         return $retval;
+    }
+
+
+    /** before doUpdate you can call saveHistory() to store changes */
+    function saveHistory($tablename, $id) {
+        $this->_doQuery($this->makeSELECT($tablename));
+        if ($this->last_used_db->num_rows() != 1) {
+            // Error: there are several rows with the same key variables
+            return "Error using doUpdate: " . $this->last_used_db->num_rows(). " rows match the query";
+        }
+        $data = $this->last_used_db->Record;
+        $packed = AA_Metabase::getPacked($tablename);
+        foreach ($packed as $col) {
+            $data[$col] = unpack_id($data[$col]);
+        }
+        AA_ChangesMonitor::singleton()->addHistory(AA_ChangesMonitor::getDiff($id, $data, $this->getArray()));
     }
 
     /** doUpdate function
@@ -384,7 +447,7 @@ class Cvarset {
     function makeSELECT($tablename) {
         $where = $this->makeWHERE();
         return ($where ? "SELECT * FROM `$tablename` WHERE ".$where :
-                         "SELECT * FROM `$tablename`");
+            "SELECT * FROM `$tablename`");
     }
     /** makeDELETE function
      * @param $tablename
@@ -442,8 +505,8 @@ class Cvarset {
             case 0: return $this->makeINSERT($tablename);
             case 1: return $this->makeUPDATE($tablename);
             default:
-            // Error: there are several rows with the same key variables
-            return "Error using makeINSERTorUPDATE: " . $this->last_used_db->num_rows(). " rows match the query";
+                // Error: there are several rows with the same key variables
+                return "Error using makeINSERTorUPDATE: " . $this->last_used_db->num_rows(). " rows match the query";
         }
     }
 
@@ -477,6 +540,361 @@ class Cvarset {
             return "2=1";
         }
         return "$column IN (". join(',', $arr) .")";
+    }
+}
+
+
+/** is_field_type_numerical function
+ * @param $field_type
+ */
+function is_field_type_numerical($field_type) {
+    return in_array($field_type, array("float","double","decimal","int","timestamp"));
+}
+
+// -----------------------------------------------------------------------------
+/** CopyTableRows function
+ *  Copies rows within a table changing only given columns and omitting given columns.
+ *   @author Jakub Adámek
+ *   @return bool  true if all additions succeed, false otherwise
+ *
+ *   @param string $table    table name
+ *   @param string $where    where condition (filter)
+ *   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
+ *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
+ *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
+ */
+function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
+    if (!$omit_columns) {
+        $omit_columns = array();
+    }
+    if (!$id_columns) {
+        $id_columns = array();
+    }
+
+    $db     = getDB();
+    $varset = new CVarset();
+    $columns = $db->metadata($table);
+    freeDB($db);
+
+    $data = GetTable2Array("SELECT * FROM $table WHERE $where", "NoCoLuMn");
+
+    if (!is_array($data)) {
+        return true;
+    }
+
+    foreach ($data as $datarow) {
+        $varset->Clear();
+
+        // create the varset
+        foreach ($columns as $col) {
+            if (in_array($col["name"], $omit_columns)) {
+                continue;
+            }
+
+            $type = is_field_type_numerical($col["type"]) ? "number" : "text";
+
+            // look into $set_columns
+            if (isset($set_columns[$col["name"]])) {
+                $val = $set_columns[$col["name"]];
+            }
+            elseif (in_array($col["name"], $id_columns)) {
+                $val = q_pack_id(new_id());
+            }
+            else {
+                $val = $datarow[$col["name"]];
+            }
+
+            $varset->set($col["name"],$val,$type);
+        }
+
+        if ( !$varset->doINSERT($table)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/** Tracks one field change
+ *  Ussage:
+ *     new AA_ChangeProposal(<item_id>, <field_id>, <normal_array_of_values>);
+ *     $changes = new AA_ChangeProposal($this->getId(), $field_id, $content4id->getValuesArray($field_id));
+ */
+class AA_ChangeProposal {
+    var $resource_id;
+    var $selector;
+    var $values;    // array of values
+
+    /** AA_ChangeProposal function
+     * @param $resource_id
+     * @param $selector
+     * @param $values
+     */
+    function __construct($resource_id, $selector, $values) {
+        $this->resource_id = $resource_id;
+        $this->selector    = $selector;
+        $this->values      = $values;
+    }
+
+    /** getResourceId function */
+    function getResourceId() {
+        return($this->resource_id);
+    }
+
+    /** getSelector function */
+    function getSelector() {
+        return($this->selector);
+    }
+
+    /** getValues function */
+    function getValues() {
+        return($this->values);
+    }
+}
+
+class AA_ChangesMonitor {
+
+    /** singleton
+     *  This function makes sure, there is just ONE static instance if the class
+     *  (this is better implementation, than static class variable - will work with subclasses)
+     *   !!DO NOT use AA_Singleton - util may not be included
+     */
+    public static function singleton() {
+        static $instance = null;
+        if (is_null($instance)) {
+            $instance = new static();
+        }
+        return $instance;
+    }
+
+    /** addProposal function
+     * @param $change_proposals
+     */
+    function addProposal($change_proposals) {
+        return $this->_add($change_proposals, 'p');
+    }
+
+    /** addHistory function
+     * @param $change_proposals
+     */
+    function addHistory($change_proposals) {
+        return $this->_add($change_proposals, 'h');
+    }
+
+    /** Prepares AA_ChangeProposal array from old values and new values
+     *  Ussage: AA_ChangesMonitor::singleton()->addHistory(AA_ChangesMonitor::getDiff($id, $old, $new));
+     */
+    static function getDiff($id, $old, $new) {
+        $changes = array();
+        if (is_array($old) AND is_array($new)) {
+            foreach ($new as $fid => $a) {
+                if ($old[$fid] != $a) {
+                    $changes[] = new AA_ChangeProposal($id, $fid, array($old[$fid]));
+                }
+            }
+        }
+        return $changes;
+    }
+
+    /** _add function
+     * @param $change_proposals
+     * @param $type
+     */
+    function _add($change_proposals, $type) {
+        global $auth;
+
+        if (!is_array($change_proposals)) {
+            $change_proposals = array($change_proposals);
+        }
+        if (!is_object($change = reset($change_proposals))) {
+            return true;
+        }
+
+        $change_id = new_id();
+        $varset = new CVarset;
+        $varset->addkey("id",       "text",   $change_id);
+        $varset->add("time",        "number", now());
+        $varset->add("user",        "text",   is_object($auth) ? $auth->auth["uid"] : '');
+        $varset->add("type",        "text",   $type);
+        $varset->add("resource_id", 'text',   $change->getResourceId());
+        $varset->doInsert('change');
+
+        foreach ($change_proposals as $change) {
+            $priority = 0;
+            foreach ( $change->getValues() as $value ) {
+                $varset->clear();
+                $varset->add("change_id", "text",   $change_id);
+                $varset->add("selector",  "text",   $change->getSelector());
+                $varset->add("priority",  "number", $priority++);
+                $varset->add("type",      "text",   gettype($value));
+                $varset->add("value",     "text",   $value);
+                $varset->doInsert('change_record');
+            }
+        }
+        return true;
+    }
+
+    // array of unpacked ids
+    static public function deleteChanges($resources_long_ids) {
+        // it is qucker to split it into two deletes because of index type_resource_time
+        $changes_ids =                          DB_AA::select('id', 'SELECT id FROM `change`', array(array('type', 'h'),array('resource_id', $resources_long_ids)));
+        $changes_ids = array_merge($changes_ids,DB_AA::select('id', 'SELECT id FROM `change`', array(array('type', 'p'),array('resource_id', $resources_long_ids))));
+        DB_AA::delete_low_priority('change_record', array(array('change_id', $changes_ids)));
+
+        DB_AA::delete_low_priority('change', array(array('type', 'h'),array('resource_id', $resources_long_ids)));
+        DB_AA::delete_low_priority('change', array(array('type', 'p'),array('resource_id', $resources_long_ids)));
+        return true;
+    }
+
+    /** deleteProposal
+     * @param $change_id
+     */
+    function deleteProposal($change_id) {
+        $varset = new CVarset;
+        $varset->doDeleteWhere('change_record', "change_id = '".quote($change_id). "'");
+        $varset->clear();
+        $varset->addkey("id", "text", $change_id);
+        $varset->doDelete('change');
+    }
+
+    /** list of fields changed during last edit - dash ('-') separated */
+    function lastChanged($resource_id) {
+
+        $chid = DB_AA::select1("SELECT id FROM `change` WHERE `change`.resource_id = \"".quote($resource_id)."\" AND type = 'h' ORDER BY time DESC", 'id');  // false if not found
+        $ret     = '';
+        if ($chid) {
+            $changes_arr = $this->getProposalByID($chid);
+            if (is_array($changes_arr[$resource_id])) {
+                $ret = join('-',array_keys($changes_arr[$resource_id]));
+            }
+        }
+        return $ret;
+    }
+
+    /** list of fields changed during last edit - dash ('-') separated */
+    function lastChangeDate($resource_id, $selector) {
+        $time = DB_AA::select1("SELECT time FROM `change_record` INNER JOIN `change` ON `change`.id = `change_record`.change_id WHERE `change`.resource_id = \"".quote($resource_id)."\" AND `change`.type = 'h' AND `change_record`.selector = \"".quote($selector)."\" ORDER BY `change`.time DESC", 'time');
+        return $time ? $time : 0;
+    }
+
+    /** deleteProposalForSelector function
+     * @param $resource_id
+     * @param $selector
+     */
+    function deleteProposalForSelector($resource_id, $selector) {
+        $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                         WHERE `change`.resource_id = '".quote($resource_id)."' AND `change`.type = 'p' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
+        if ( is_array($changes_ids) ) {
+            foreach( $changes_ids as $change_id ) {
+                $this->deleteProposal($change_id);
+            }
+        }
+    }
+
+    /** getProposals function
+     *  @return all proposals for given resource (like item_id)
+     *  return value is array ordered by time of proposal
+     * @param $resource_ids
+     */
+    function getProposals($resource_ids) {
+        return $this->_get($resource_ids, 'p');
+    }
+    /** getHistory function
+     * @param $resource_ids
+     */
+    function getHistory($resource_ids) {
+        return $this->_get($resource_ids, 'h');
+    }
+
+    /** _get function
+     * @return all proposals for given resource (like item_id)
+     *  return value is array ordered by time of proposal
+     * @param $resource_ids
+     * @param $type
+     */
+    function _get($resource_ids, $type) {
+        $garr = new AA_GeneralizedArray();
+        if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
+            return array();
+        }
+
+        $ids4sql = sqlin("`change`.resource_id", $resource_ids);
+
+        $sql = "SELECT `change`.resource_id, `change_record`.*
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE $ids4sql
+                                AND   `change`.type='$type'
+                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority";
+
+        $changes = GetTable2Array($sql, '', 'aa_fields');
+
+        if ( is_array($changes) ) {
+            foreach($changes as $change) {
+                if ( $change['type'] ) {
+                    $value = $change['value'];
+                    settype($value, $change['type']);
+                    $garr->add($value, array($change['resource_id'], $change['change_id'], $change['selector']));
+                }
+            }
+        }
+        return $garr;
+    }
+
+
+    /** experimental display function - prints the table with all changes  */
+    function display($resource_ids, $type='h') {
+        $garr = new AA_GeneralizedArray();
+        if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
+            return array();
+        }
+
+        $ids4sql = sqlin("`change`.resource_id", $resource_ids);
+
+        if ($arr = DB_AA::select(array(), "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE $ids4sql
+                                AND `change`.type='$type'
+                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority")) {
+            echo "<table><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
+            $chid = '';
+            foreach ($arr as $change) {
+                if ($chid != $change['change_id']) {
+                    echo "<tr><th colspan=6>" . date('Y-m-d H:i:s', $change['time']) . ' -' . perm_username($change['user']) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id])</small></th></tr>";
+                    $chid = $change['change_id'];
+                }
+                echo "<tr><td>&nbsp;</td><td>$change[selector]</td><td>$change[value]</td><td>$change[priority]</td><td>$change[chtype]</td><td>$change[resource_id]</td></tr>";
+            }
+            echo "</table>";
+        }
+
+        //    print_r(array_keys(reset($arr)));
+        //    array_unshift($arr, array_keys(reset($arr)));
+        //    echo GetHtmlTable($arr, 'th');
+    }
+
+
+    /** getProposalByID function
+     * @param $change_id
+     */
+    function getProposalByID($change_id) {
+        $garr = new AA_GeneralizedArray();
+        if ( !$change_id ) {
+            return $garr;
+        }
+        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE `change`.id = '". quote($change_id)."'
+                                ORDER BY `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+
+        if ( is_array($changes) ) {
+            foreach($changes as $change) {
+                if ( $change['type'] ) {
+                    $value = $change['value'];
+                    settype($value, $change['type']);
+                    $garr->add($value, array($change['resource_id'], $change['selector']));
+                }
+            }
+        }
+        return $garr->getArray();
     }
 }
 

@@ -166,7 +166,7 @@ if ( $add || $update ) {
             $varset->set("email", $new_owner_email, "text");
 
             // create new owner
-            if ( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
+            if ( !$varset->doINSERT('slice_owner')) {
                 $err["DB"] .= MsgErr("Can't add slice");
                 break;
             }
@@ -319,8 +319,7 @@ if ( $add || $update ) {
                 $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
                 $varset->setFromArray($field);
                 $varset->set("slice_id", $slice_id, "unpacked" );
-                $SQL = "INSERT INTO field " . $varset->makeINSERT();
-                if ( !$db->query($SQL)) {
+                if ( !$varset->doINSERT('field')) {
                     $err["DB"] .= MsgErr("Can't copy fields");
                     break;
                 }

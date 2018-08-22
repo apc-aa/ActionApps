@@ -87,7 +87,7 @@ if ($insert  || $update ) {
         $varset->add("status_code","number", 1);
         $poll_id = new_id();
         $varset->add("id",    "quoted", $poll_id);
-        $SQL = "INSERT INTO polls ". $varset->makeINSERT();
+        $SQL = $varset->makeINSERT('polls');
     } elseif ($update ) {
         $SQL = "UPDATE polls SET ". $varset->makeUPDATE() ." WHERE (module_id='$p_module_id' AND id='$poll_id')";
     }

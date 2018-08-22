@@ -284,7 +284,8 @@ function import_views(&$slvs, $slice_id_new) {
         } else {
             // insert as new view
             $varset->remove('id');  // id is autoincremented
-            $SQL = "INSERT INTO view ". $varset->makeINSERT();
+
+            $SQL = "INSERT INTO view ". $varset->makeINSERT('view');
         }
         if ($dry_run) {
             print("VIEW import: " .$SQL);

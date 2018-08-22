@@ -72,7 +72,7 @@ do {
             $expVS->clear();
             $expVS->add("from_id", "unpacked", $slice_id);
             $expVS->add("to_id", "unpacked", $val);
-            if ( !$db->query("INSERT INTO feedperms" . $expVS->makeINSERT() )) {
+            if ( !$expVS->doINSERT('feedperms')) {
                 $err["DB"] .= MsgErr("Can't add export to $val");
                 break;    // not necessary - we have set the halt_on_error
             }
@@ -106,7 +106,7 @@ do {
             $catVS->add("all_categories", "number", 1);
             $catVS->add("to_approved", "number", 0);
             $catVS->add("to_category_id", "unpacked", "0");   // zero means import to the same category (if all_actegories==1)
-            if ( !$db->query("INSERT INTO feeds" . $catVS->makeINSERT() )) {
+            if ( !$catVS->doINSERT('feeds')) {
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;  // not necessary - we have set the halt_on_error
             }

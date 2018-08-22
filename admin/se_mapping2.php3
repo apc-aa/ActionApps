@@ -85,8 +85,7 @@ foreach ($fmap as $to_field_id => $val) {
     }
     $catVS->add("flag", "quoted",$flag);
 
-    $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+    if ( !$catVS->doINSERT('feedmap')) {
         $err["DB"] .= MsgErr("Can't add fields mapping");
     }
 }
@@ -99,10 +98,8 @@ if ($map_to && is_array($map_to)) {
         $catVS->add("to_slice_id", "unpacked", $slice_id);
         $catVS->add("from_field_id",   "text", $from_field_id );
         $catVS->add("from_field_name", "text", $map_to[$from_field_id] );
-
         $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);
-        $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        if ( !$catVS->doINSERT('feedmap')) {
             $err["DB"] .= MsgErr("Can't add fields mapping");
         }
     }

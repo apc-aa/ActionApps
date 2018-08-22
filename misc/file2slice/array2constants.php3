@@ -67,7 +67,8 @@ foreach ($constants2import as $cnst) {
     // $varset->set("class", $class[$key], "quoted");
     $varset->set("id", new_id(), "unpacked" );
     $varset->set("group_id", $group_id, "text" );
-    $SQL =  "INSERT INTO constant " . $varset->makeINSERT();
+    $SQL =  $varset->makeINSERT('constant');
+
     if ( !myQuery ($db, $SQL, $fire )) {
         $err["DB"] .= MsgErr("Can't copy constant");
         break;

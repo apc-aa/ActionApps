@@ -449,7 +449,8 @@ function hcUpdate()
                 $varset->set("id",$id,"quoted");
                 $varset->set("group_id",$group_id,"quoted");
                 $varset->set("ancestors",$ancestors,"quoted");
-                $db->query("INSERT INTO constant ".$varset->makeINSERT());
+
+                $varset->doINSERT('constant');
             }
             else {
                 if ($propagate_changes) {
@@ -693,7 +694,7 @@ function refresh_constant_group($group_id, $items) {
         $varset->add ("value","text",$group_id);
         $varset->add ("name","text",$group_id);
         $varset->add ("id", "unpacked", new_id());
-        $db->query ($varset->makeINSERT ("constant"));
+        $varset->doINSERT('constant');
     }
     else {
         $existed = true;
@@ -710,7 +711,7 @@ function refresh_constant_group($group_id, $items) {
             $priority += 100;
             $varset->add ("id", "unpacked", new_id());
             $varset->add ("group_id", "text", $group_id);
-            $db->query ($varset->makeINSERT ("constant"));
+            $varset->doINSERT('constant');
         }
     }
     freeDB($db);

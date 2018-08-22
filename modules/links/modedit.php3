@@ -135,7 +135,7 @@ if ( ($insert AND $superadmin) OR $update ) {
             //      $varset->set("link_tmpl", $link_tmpl, "quoted");
 
             // create new links
-            if ( !$db->query("INSERT INTO links" . $varset->makeINSERT() )) {
+            if ( !$varset->doINSERT('links')) {
                 $err["DB"] .= MsgErr("Can't add links");
                 break;
             }

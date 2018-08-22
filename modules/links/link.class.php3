@@ -937,7 +937,7 @@ class linkobj {
             $varset->add("votes",      "number", 2);
             $varset->add("plus_votes", "number", 1);
 
-            $db->query("INSERT INTO links_links ". $varset->makeINSERT());
+            $varset->doINSERT('links_links');
             // get inserted link id
             if (!($this->lid = $db->last_insert_id())) {
                 huhl("Error - Last inserted ID is lost");

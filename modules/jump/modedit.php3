@@ -66,7 +66,7 @@ if ($update) {
     }
     else {
         $varset->add("slice_id", "unpacked", $jump_id);
-        $db->query("INSERT INTO jump ".$varset->makeINSERT());
+        $varset->doINSERT('jump');
 
         $varset->clear();
         $varset->add("id","unpacked",$jump_id);
@@ -74,7 +74,7 @@ if ($update) {
         $varset->add("type","quoted",'J');
         $varset->add("lang_file","quoted","en_news_lang.php3");
 
-        $db->query("INSERT INTO module ".$varset->makeINSERT());
+        $varset->doINSERT('module');
     }
 }
 

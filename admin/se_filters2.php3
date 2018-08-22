@@ -104,8 +104,7 @@ if ($feed_id) { // cross server feeding
             $catVS->add("feed_id",            "number",   $feed_id);
             $catVS->add("target_category_id", "unpacked", $v['target_category_id']);
             $catVS->add("approved",           "number",   $v['approved']);   // zero = the same category
-            $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
-            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+            if ( !$catVS->doINSERT('ef_categories')) {    // not necessary - we have set the halt_on_error
                 $err["DB"] .= MsgErr("Can't add import from $val");
             }
         }
@@ -131,8 +130,7 @@ if ($feed_id) { // cross server feeding
         $catVS->add("all_categories", "number",   1);
         $catVS->add("to_approved",    "number",   $app);
         $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
-        $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        if ( !$catVS->doINSERT('feeds')) {
             $err["DB"] .= MsgErr("Can't add import from $val");
         }
     } elseif (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
@@ -149,8 +147,7 @@ if ($feed_id) { // cross server feeding
             $catVS->add("to_approved",    "number",   $app);
             $catVS->add("category_id",    "unpacked", $from_cat);
             $catVS->add("to_category_id", "unpacked", $to_cat);
-            $SQL  = "INSERT INTO feeds" . $catVS->makeINSERT();
-            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+            if ( !$catVS->doINSERT('feeds')) {
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;
             }

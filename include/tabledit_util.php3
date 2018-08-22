@@ -430,7 +430,8 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
             freeDB($db);
             return "";
         }
-        $db->query($varset->makeINSERT($table));
+        $varset->doINSERT($table);
+
         CallTrigger($triggers, "AfterInsert", $varset);
 
         if ($table == $key_table) {
