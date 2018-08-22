@@ -1,3 +1,6 @@
+18-08-23 - updated database structure (mostly change form VARCHAR to VARBINARY for raw content)
+(honzam) - fixed bug in slice deletion button
+         - fix - INSERT queries are checked for consistency with database
 18-08-22 - the debug output with ?debug=128 ($debug&128 bit set) now shows duplicated queries and longest queries
 (honzam) - fixed user add SQL for MariaBD 10.3 strict sql-mode
 18-08-16 - new js library leaflet.js added for {reguire:leaflet@1}

@@ -363,7 +363,6 @@ class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
     * @return true
     */
     function repair() {
-        $this->_fixTable('active_sessions',   'sid',                   "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change',            'id',                    "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change',            'resource_id',           "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change_record',     'change_id',             "varbinary(32)  NOT NULL default ''");
