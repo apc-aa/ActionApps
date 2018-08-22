@@ -265,7 +265,7 @@ if ( $add || $update ) {
             $varset->set("lang_file", $lang_file, "quoted");
             $varset->set("type","S","quoted");
 
-            if ( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
+            if ( !$varset->doINSERT('module') ) {
                 $err["DB"] .= MsgErr("Can't add slice");
                 break;
             }
@@ -307,7 +307,7 @@ if ( $add || $update ) {
             $varset->add('mlxctrl', "quoted", $mlxctrl);
 
             // create new slice
-            if ( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {
+            if ( !$varset->doINSERT('slice') ) {
                 $err["DB"] .= MsgErr("Can't add slice");
                 break;
             }

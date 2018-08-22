@@ -59,13 +59,14 @@ function AddUser($user, $flags = 0) {
     if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
-    $varset = new CVarset(array(array('type'     , "User"),
-                                array('uid'      , $user["uid"]),
-                                array('mail'     , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])),
-                                array('name'     , $user["givenname"]." ".$user["sn"]),
-                                array('sn'       , $user["sn"]),
-                                array('givenname', $user["givenname"]),
-                                array('password' , AA_Perm::cryptPwd($user["userpassword"]))));
+    $varset = new CVarset(array(array('type'       , "User"),
+                                array('uid'        , $user["uid"]),
+                                array('mail'       , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])),
+                                array('name'       , $user["givenname"]." ".$user["sn"]),
+                                array('sn'         , $user["sn"]),
+                                array('givenname'  , $user["givenname"]),
+                                array('description', ''),
+                                array('password'   , AA_Perm::cryptPwd($user["userpassword"]))));
     $varset->doInsert('users');
     return $varset->last_insert_id();
 }
