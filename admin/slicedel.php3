@@ -61,17 +61,17 @@ function PrintSlice($id, $name, $type) {
          ";
 }
 
-$headcode = <<<'EOT'
+$headcode = '
  <script>
    function DeleteSlice(id,url2go) {
-     if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>")) {
+     if ( !confirm("'. _m("Do you really want to delete this slice and all its fields and all its items?") .'")) {
          return;
      }
-     var url=url2go+"<?php echo StateUrl("?"); ?>"
-     document.location=url+'&del='+id;
+     var url=url2go+"'. StateUrl("?") .'"
+     document.location=url+"&del="+id;
    }
  </script>
-EOT;
+';
 
 $apage = new AA_Adminpageutil('aaadmin','slicedel');
 $apage->setTitle(_m("Admin - Delete Slice"));

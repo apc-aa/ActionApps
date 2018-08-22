@@ -58,6 +58,6 @@ page_close();                                // to save session variables
 
 // There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
-go_url(con_url(StateUrl("slicedel.php3"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
+go_url(get_admin_url("slicedel.php3?Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 
