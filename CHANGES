@@ -1,3 +1,5 @@
+18-09-20 - fixed bug wher sitemoduel have in User login databases set "first User Management slice"
+(honzam)   - now it works really with the first listed, not random
 18-08-23 - updated database structure (mostly change form VARCHAR to VARBINARY for raw content)
 (honzam) - fixed bug in slice deletion button
          - fix - INSERT queries are checked for consistency with database
@@ -34,7 +36,7 @@
          - better parsing ids passed to {item:}
          - better email charset
 18-06-29 - fixed validation error for email unique value, when invoked from
-(honzam)   {newitem:...} in sitemodule 
+(honzam)   {newitem:...} in sitemodule
          - fixed bad include of site module legacy_util.php
 18-06-28 - new {sitespot:8} syntax, which includes html code of the site's spot with specified ID (8 in our case)
 (honzam)   (allowed only in site module spots)

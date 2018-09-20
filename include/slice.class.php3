@@ -742,10 +742,21 @@ class AA_Module_Site extends AA_Module {
         return null;
     }
 
-    function getRelatedSlices() {
+    function getRelatedSlices($type='') {
         if (is_null($this->_related_slices)) {
             // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
-            $this->_related_slices = array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i'))));
+            $this->_related_slices = DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i')));
+        }
+        if ($type) {
+            // we need to preserve order!
+            $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', array(array('id', $this->_related_slices, 'l'), array('type', $type)));
+            $ret = array();
+            foreach ($this->_related_slices as $sl) {
+                if (in_array($sl,$type_slices)) {
+                    $ret[] = $sl;
+                }
+            }
+            return $ret;
         }
         return $this->_related_slices;
     }

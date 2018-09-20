@@ -578,9 +578,12 @@ class DB_AA extends DB_Sql {
         return $ret;
     }
 
-    /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i'))); */
+    /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i')));
+     *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
+     */
     static function test($table, $where) {
-        return (false !== DB_AA::select1("SELECT ".($where[0][0])." FROM `$table` ", '', $where));
+        $tbl = is_array($table) ? '`'.join('`,`',$table).'`' : "`$table`";
+        return (false !== DB_AA::select1("SELECT ".($where[0][0])." FROM $tbl ", '', $where));
     }
 
     /** makeWhere function

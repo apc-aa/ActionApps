@@ -176,6 +176,8 @@ if ($db->next_record()) {
 $id     = unpack_id($db->f("id"));  // correct ids
 $router = $db->f("flag");           // router is stored as flag
 
+$module = AA_Module_Site::getModule($module_id);
+
 if ($template['W']) {           // set new name for new module
     $name = "";
 }
@@ -190,6 +192,7 @@ if ( $template['W'] ) {
                            "update"  => array ('type' => 'hidden', 'value'=>'1'),
                            );
 }
+
 
 HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -244,7 +247,8 @@ FrmJavascript('
             $slice_selection[$k] = $v['name'];
         }
     }
-    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
+//    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
+    $uses_modules = $module->getRelatedSlices();
 
     FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
 

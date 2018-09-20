@@ -34,7 +34,6 @@ if ($_COOKIE['AA_Session']) {
     $auth4cache = $auth->auth['uname'];
 }
 
-
 // -- CACHE -------------------------------------------------------------------
 // CACHE_TTL defines the time in seconds the page will be stored in cache
 // (Time To Live) - in fact it can be infinity because of automatic cache
@@ -52,7 +51,8 @@ $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = $_REQUEST['nocache'] OR isset($_POST['aa']);
+$site_nocache = ($_REQUEST['nocache'] OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])));
+
 if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
     $cacheentry->processPage();
     if ( AA::$debug ) {
@@ -148,8 +148,7 @@ $hit_lid = null;
 //           If not selected, "AA + all Reader Management slices" option is used.
 $perm_mode  = (string)$module->getProperty('perm_mode');
 if ( ($perm_mode == '1') OR ($perm_mode == '2') ) {
-    $seo_slices = $module->getRelatedSlices();
-    $rm_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', array(array('id', $seo_slices, 'l'), array('type', 'ReaderManagement')));
+    $rm_slices = $module->getRelatedSlices('ReaderManagement');
     if ($perm_mode=='1') {
         $rm_slices = array_slice($rm_slices,0,1);
     }
@@ -172,6 +171,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     if (!is_object($sess)) {  // could be already opened above
         pageOpen('nobody');
     }
+
     $router = $module->getRouter();
 
     // use REDIRECT_URL for homepage redirects:
@@ -226,7 +226,6 @@ if ($lang_file) {
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }
-
 
 $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpander()->unalias("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
 
