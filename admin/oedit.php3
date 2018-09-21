@@ -106,7 +106,7 @@ if ($form_state == AA_Form::SAVED) {
 $apage = new AA_Adminpageutil('sliceadmin','forms');
 $apage->setTitle( _m("Admin - Object Edit") );
 // for widgets
-$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->addRequire('aa-jslib' );
 $apage->printHead($err, $Msg);
 
 
