@@ -1183,7 +1183,7 @@ class AA_Widget_Dte extends AA_Widget {
         $delim         = '';
         $y_range_minus = $this->getProperty('start_year', 1);
         $y_range_plus  = $this->getProperty('end_year',  10);
-        $from_now      = $this->getProperty('relative',   1);
+        $from_now      = $this->getProperty('relative',   0);
         $display_time  = $this->getProperty('show_time',  0);
 
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time, $aa_property->isRequired());
@@ -1200,7 +1200,7 @@ class AA_Widget_Dte extends AA_Widget {
             $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
             $input_name   = $base_name_add. "[y][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions()."</select>";
+            $widget      .= $delim. "\n<select name=\"$input_name\" id=\"$input_id\"$widget_add ".($aa_property->isRequired() ? 'required' : '' ).">".$datectrl->getYearOptions()."</select>";
             if ($datectrl->isTimeDisplayed()) {
                 $input_name   = $base_name_add. "[t][$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
@@ -2522,7 +2522,7 @@ class AA_Property extends AA_Storable {
             $widget = new AA_Widget_Chb();
         }
         elseif ($this->type == 'text') {
-            $widget = new AA_Widget_Txt();
+            $widget = new AA_Widget_Cod();
         }
         else {
             $widget = new AA_Widget_Fld();

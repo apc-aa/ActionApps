@@ -124,7 +124,7 @@ class datectrl {
      * @param $date
      */
     function setdate_int($date) {
-        if (!$date AND !$this->required) {
+        if (!$date) {
             $d = array('year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0);
         } else {
             $d = datectrl::isTimestamp($date) ? getdate($date) : getdate();
@@ -210,11 +210,11 @@ class datectrl {
 
 
     function getMonthOptions() {
-        $L_MONTH = monthNames();
+        $months  = monthNames();
         $at      = getdate(time());
         $sel     = ($this->month != 0 ? $this->month : $at["mon"]);
         for ($i = 1; $i <= 12; $i++) {
-            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">". $L_MONTH[$i] ."</option>";
+            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">". $months[$i] ."</option>";
         }
         return $ret;
     }
@@ -238,13 +238,11 @@ class datectrl {
         $selectedused = false;
         $ret          = '';
 
-        if (!$this->required) {
-            if ($this->isEmpty()) {
-                $selectedused = true;
-                $ret .= '<option value="0" selected class="sel_on">----</option>';
-            } else {
-                $ret .= '<option value="0">----</option>';
-            }
+        if ($this->isEmpty()) {
+            $selectedused = true;
+            $ret .= '<option value="" selected class="sel_on">----</option>';
+        } elseif (!$this->required) {
+            $ret .= '<option value="">----</option>';
         }
 
         for ($i = $from; $i <= $to; $i++) {
@@ -268,7 +266,7 @@ class datectrl {
      * @return string
      */
     function getyearselect() {
-        return "<select name=\"tdctr_" . $this->name . "_year\"". AA_Jstriggers::get("select", $this->name, "") .">".$this->getYearOptions()."</select>";
+        return "<select name=\"tdctr_" . $this->name . "_year\"". AA_Jstriggers::get("select", $this->name, "") . ($this->required ? 'required' : '' ) .">".$this->getYearOptions()."</select>";
     }
 
     function isTimeDisplayed() {

@@ -198,6 +198,7 @@ class AA_Widget_Formrow extends AA_Widget {
  *  AA_Object's methods */
 class AA_Form extends AA_Object {
 
+    /** @var AA_Formrow[] */
     protected $rows = array();
 
     public   $object_type  = '';  // for which object class is current form
