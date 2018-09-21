@@ -237,8 +237,9 @@ if ( $add || $update ) {
             $varset->add("reading_password", "text", $reading_password);
 
             $slice_flag  = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', array(array('id',$slice_id,'l')));
-            $slice_flag &= ~SLICE_ALLOW_EXPIRED_CONTENT; // clear the bits
+            $slice_flag &= ~(SLICE_ALLOW_EXPIRED_CONTENT | SLICE_ALLOW_PENDING_CONTENT); // clear the bits
             $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+            $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
             $varset->add("flag", "number", $slice_flag);
 
             $varset->add('mlxctrl', "unpacked", $mlxctrl); //store 16bytes packed

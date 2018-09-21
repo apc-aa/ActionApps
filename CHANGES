@@ -1,3 +1,7 @@
+18-09-21 - better behavior of required Date Input widget - the year selectbor is not prefilled and is required, now
+(honzam) - fixed Slice Admin - "Show content of pending items" - now it is possible to check this option
+         - fixed inner links in AA admin interface
+         - AA admin interface - Object Edit uses jQuery version of aajslib
 18-09-20 - fixed bug wher sitemoduel have in User login databases set "first User Management slice"
 (honzam)   - now it works really with the first listed, not random
 18-08-23 - updated database structure (mostly change form VARCHAR to VARBINARY for raw content)
