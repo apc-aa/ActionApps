@@ -223,7 +223,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
         } elseif ($go_edit) {   // if go_edit - continue to edit again
             go_url( Inputform_url(false, $added_to_db, $slice_id, '', null, null, false) );
         } else {
-            go_return_or_url(StateUrl(self_base() . "index.php3?slice_id=$slice_id"),true,true);
+            go_return_or_url(StateUrl(self_base() . "index.php3"),true,true);
         }
     }
 }
@@ -239,7 +239,7 @@ unset( $content4id );
 if ($edit) {
     if ( !is_array($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
+        MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
         exit;
     }
 
@@ -247,7 +247,7 @@ if ($edit) {
     $content = GetItemContent($id);
     if ( !$content ) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
+        MsgPage(con_url(StateUrl(self_base() ."index.php3"), ''), $err);
         exit;
     }
 
@@ -259,7 +259,7 @@ if ($edit) {
     $real_user = $auth->auth['uid'];
     if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
         $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
-        MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
+        MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
         exit;
     }
 
@@ -276,7 +276,7 @@ if ($lang_control) {
     if (empty($mlx)) {
         $mlx = new MLX($slice);
     }
-    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(array('slice_id'=>$slice_id,'encap'=>$encap), $content4id->getContent(),$action,$mlxl,$mlxid);
+    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(array('encap'=>$encap), $content4id->getContent(),$action,$mlxl,$mlxid);
 }
 // end mimo changes
 
@@ -294,9 +294,9 @@ $inputform_settings['form4update']         = $edit || $update || ($insert && $ad
 $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
-                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?slice_id=$slice_id&cancel=1&return_url=close_dialog") :
+                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?cancel=1&return_url=close_dialog") :
                                               ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php3?cancel=1&slice_id=$slice_id"))));
+                                              get_admin_url("index.php3?cancel=1"))));
 
 $inputform_settings['hidden']              = array(
                              'anonymous'   => (($free OR $anonymous) ? true : ""),

@@ -76,9 +76,9 @@ class AA_Aliasfunc extends AA_Object {
      */
     static function getClassProperties() {
         return array (          //           id       name       type        multi   persist validator, required, help, morehelp, example
-            'alias' => new AA_Property( 'alias',  _m("Alias"),          'string',  false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
-            'code'  => new AA_Property( 'code',   _m("Code"),           'text',    false, true, '', true,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
-            'desc'  => new AA_Property( 'desc',   _m("Description"),    'text',    false, true, '', false),
+            'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string',  false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
+            'code'   => new AA_Property( 'code',   _m("Code"),           'text',    false, true, '', true,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
+            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',    false, true, '', false),
             'ussage' => new AA_Property( 'ussage', _m("Ussage example"), 'string', true,  true, '', false, '', '', '{_:Message_box:Update successfull:green}')
             );
     }

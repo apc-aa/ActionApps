@@ -73,7 +73,7 @@ function AafinderItemLink($item_id, $slice_id='') {
     } else {
         return '';
     }
-    return a_href( get_admin_url("itemedit.php3?slice_id=$slice_id&id=$item_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")");
+    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")");
 }
 
 function AafinderSliceLink($slice_id) {
@@ -117,7 +117,7 @@ function PrintItemInfo($item_id) {
     if ($item) {
         $long_id = $item->getItemID();
         $sid     = $item->getSliceID();
-        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>";
+        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>";
         echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
         $format = '_#HEADLINE';
         echo "<br>_#HEADLINE: ". $item->unalias($format);
