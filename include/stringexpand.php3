@@ -6861,7 +6861,16 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
             case '401':       AA::$headers['status']      = 'HTTP/1.1 401 Unauthorized';            break;
             case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';               break;
             case '409':       AA::$headers['status']      = 'HTTP/1.1 409 Conflict';                break;
+            case 'plain':     AA::$headers['type']        = 'text/plain';                           break;  // default header text content
+            case 'css':       AA::$headers['type']        = 'text/css';                             break;
+            case 'html':      AA::$headers['type']        = 'text/html';                            break;
+            case 'bin':       AA::$headers['type']        = 'application/octet-stream';             break;  // default header for binary content
+            case 'js':        AA::$headers['type']        = 'application/javascript';               break;
             case 'xml':       AA::$headers['type']        = 'text/xml';                             break;
+            case 'gif':       AA::$headers['type']        = 'image/gif';                            break;
+            case 'jpg':       AA::$headers['type']        = 'image/jpeg';                           break;
+            case 'png':       AA::$headers['type']        = 'image/png';                            break;
+            case 'ico':       AA::$headers['type']        = 'image/x-icon';                         break;
             case 'svg':       AA::$headers['type']        = 'image/svg+xml';                        break;
             case 'json':      AA::$headers['type']        = 'application/json';                     break;
             case 'csv':       AA::$headers['type']        = 'text/csv';                             break;
