@@ -99,7 +99,7 @@ function endslash(&$s) {
  *  use as: echo "el.insertAdjacentHTML('afterbegin',".escape4js($code).");";
  */
 function escape4js($code) {
-    return str_replace( array("'","\r\n","\n","\r",'<script','</script'), array("\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $code );   // remove newlines ...
+    return str_replace( array("\\", "'","\r\n","\n","\r",'<script','</script'), array("\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $code );   // remove newlines ...
 }
 
 /** array_add function

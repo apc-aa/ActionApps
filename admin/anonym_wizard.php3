@@ -79,8 +79,9 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     <input type="hidden" name="err_url" value="'.$err_url.'">
     <input type="hidden" name="ok_url" value="'.$ok_url.'">
     <input type="hidden" name="slice_id" value="'.$slice_id.'">
-    <input type="hidden" name="use_post2shtml" value="1">
     ';
+    //     <input type="hidden" name="use_post2shtml" value="1">   // shtml is not used in sitemodules - not necessary to use special table
+
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
         $additional .= '

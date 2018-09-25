@@ -624,6 +624,7 @@ class AA_Perm {
         if (function_exists('password_hash')) { // php 5.5
             return password_hash($password, PASSWORD_DEFAULT);
         }
+        // remove whole code below for php7 - in php 7.2 the mcrypt is no longer works anyway
         if (function_exists('mcrypt_create_iv')) {
             // password_hash implementation using mcrypt
             return crypt( $password, '$2y$10$'. str_replace('+', '.', base64_encode(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM))) .'$' );
