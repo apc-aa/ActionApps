@@ -1,3 +1,12 @@
+18-09-26 - new {siteitem:<seo-string>[:<text>]} - Translates seo in current site module to item
+(honzam)   and prints fulltext of the item, or specified text for the item
+             {siteitem:about-us}       - prints fulltext
+                but {siteitem:about-us:}  - prints empty string
+             {siteitem:about-us:<h1>_#HEADLINE</h1>}  - headline of about-us item in current site module
+           - searches only current (approved) items of current site
+           - only the first item with the same seo is evaluated
+18-09-25 - new http headers available for {header} - {header:css} for text/css, plain, js, html, bin, gif, png, jpg, ico
+(honzam) - anonym wizard for form no longer use use_post2shtml - shtml are not used in most cases now, so no need for it
 18-09-21 - better behavior of required Date Input widget - the year selectbor is not prefilled and is required, now
 (honzam) - fixed Slice Admin - "Show content of pending items" - now it is possible to check this option
          - fixed inner links in AA admin interface

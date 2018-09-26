@@ -3191,35 +3191,43 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
 }
 
 
+/** Translates seo in current site module to item and prints fulltext of the item, or specified text for the item
+ *  {siteitem:<seo-string>[:<text>]}
+ *  {siteitem:about-us}   - prints fulltext
+ *    but {siteitem:about-us:}  - prints empty string
+ *  {siteitem:about-us:<h1>_#HEADLINE</h1>}  - headline of about-us item in current site module
+ *  - searches only current (approved) items of current site
+ *  - only the first item with the same seo is evaluated
+ */
+class AA_Stringexpand_Siteitem extends AA_Stringexpand
+{
+    /** expand function
+     * @param $seo_string
+     * @param $text
+     */
+    function expand($seo_string = '', $text = 'AA_FullText') {
+        if (!strlen($seo_string)) {
+            return '';
+        }
+        // get just first item id
+        if (!strlen($item_id = substr(StrExpand('AA_Stringexpand_Seo2ids', array('',$seo_string,'1')),0,32))) {
+            return '';
+        }
+        if ($text === 'AA_FullText') {
+            return StrExpand('AA_Stringexpand_Fulltext', array($item_id));
+        }
+        return StrExpand('AA_Stringexpand_Item', array($item_id,$text));
+    }
+}
+
+
+
 /** returns ids of items based on conds d-...
  *  {seo2ids:<slices>:<seo-string>}
  *  {seo2ids:6a435236626262738348478463536272:about-us}
  *  returns long id of item in selected slice (or dash separated slices) with
  *  the specified SEO string in seo............. field. If there are more such
  *  ids (which should not be), they are dash separated
- */
-//class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
-//    /** expand function
-//     * @param $slices
-//     * @param $seo_string
-//     */
-//    function expand($slices, $seo_string, $bins='') {
-//        if ($seo_string=='') {
-//            return '';
-//        }
-//
-//        $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
-//
-//        $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
-//        $zids = $set->query();
-//        return join($zids->longids(), '-');
-//        // added expiry date in order we can get ids also for expired items
-//        // return StrExpand('AA_Stringexpand_Ids', array($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"'));
-//    }
-//}
-
-/**
- * Class AA_Stringexpand_Seo2ids
  */
 class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
     /** expand function
@@ -3233,18 +3241,25 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
 
         // this way we solve the problem mainly in sitemodules, with slices which do not have seo............. field
         static $_seoslices = array();  // stores only slices with 'seo' field
-        if (strpos($slices,'-') !== false) {
-            $sarr = $_seoslices[$slices];
-            if ( !is_array($sarr) ) {
-                $sarr = self::_getSeoSlices(explode('-', $slices));
-                $_seoslices[$slices] = $sarr;
+
+        $dirty_slices = array();
+        if ( !is_array($sarr = $_seoslices[$hash = hash('md5', 'h'.$slices)])) {
+            if (strpos($slices, '-') !== false) {
+                $dirty_slices = explode('-', $slices);
+            } elseif (is_long_id($slices)) {
+                $dirty_slices = array($slices);
+            } elseif (!strlen($slices) AND AA::$site_id) {
+                $dirty_slices = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
             }
-            if (empty($sarr)) {
-                return '';
-            }
-        } else {
-          $sarr = array($slices);
+
+            $sarr = $dirty_slices ? self::_getSeoSlices($dirty_slices) : array();
+            $_seoslices[$hash] = $sarr;
         }
+
+        if (empty($sarr)) {
+            return '';
+        }
+
         $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
 
         $set  = new AA_Set($sarr, new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
@@ -4300,7 +4315,7 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
 }
 
 /** Get module (slice, ...) property (currently only "module fileds"
- *  (beggining with underscore) and 'name' is supported
+ *  (beggining with underscore), 'url', 'name' and 'site_ids' is supported
  *  replacing older {alias:_abstract.......:f_s:slice_info} syntax
  **/
 class AA_Stringexpand_Modulefield extends AA_Stringexpand {
@@ -4308,7 +4323,6 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
      * @param $property
      */
     function expand($slice_id='', $property='') {
-        $slice = AA_Slice::getModule($slice_id);
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
@@ -4320,7 +4334,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
         if (!AA_Fields::isSliceField($property)) {  // it is "slice field" (begins with underscore _)
             $property = ($property=='url') ? 'slice_url' : 'name';
         }
-        return $slice->getProperty($property);
+        return AA_Slice::getModuleProperty($slice_id, $property);
     }
 }
 
