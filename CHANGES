@@ -1,5 +1,5 @@
 18-09-27 - {live} and {ajax} widget for Two Boxes input type now uses 1-column multiple checkbox form
-(honzam)
+(honzam) - fixed css for aa-toolbox
 18-09-26 - new {siteitem:<seo-string>[:<text>]} - Translates seo in current site module to item
 (honzam)   and prints fulltext of the item, or specified text for the item
              {siteitem:about-us}       - prints fulltext
@@ -1035,7 +1035,7 @@
          - f_h, _#this and direct field output like in {headline........} works
            better with translations
          - test emails in selectbox on Alerts - Send Page are sorted
-14-11-04 - now you can refer notonly to first inserted item in ok_url
+14-11-04 - now you can refer not only to first inserted item in ok_url
 (honzam)   of filler.php3, but also to second, ...
              - you can use also _#N1_ID___, _#N2_ID___,.., _#N245_ID___, ...
              - the ids goes from N1, 2, 3..  in order of filling in the database
