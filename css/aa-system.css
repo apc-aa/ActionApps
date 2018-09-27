@@ -141,7 +141,7 @@ body.aa-page {
     display: flex;
     height: 100%;
 }
-body > *:first-child {
+.aa-main {
     max-height: 100%;
     width: 100%;
     overflow: auto;
