@@ -1489,6 +1489,15 @@ class AA_Widget_Wi2 extends AA_Widget_Mch {
         return true;
     }
 
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal')
+    {
+        $this->setProperty('columns', 1);
+        return parent::_getRawHtml($aa_property, $content, $type);
+    }
+
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */

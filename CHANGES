@@ -1,3 +1,5 @@
+18-09-27 - {live} and {ajax} widget for Two Boxes input type now uses 1-column multiple checkbox form
+(honzam)
 18-09-26 - new {siteitem:<seo-string>[:<text>]} - Translates seo in current site module to item
 (honzam)   and prints fulltext of the item, or specified text for the item
              {siteitem:about-us}       - prints fulltext
