@@ -128,18 +128,18 @@ class AA_Debug_Console extends AA_Debug {
     }
 
     function _script($code) {
-        static $used = false;
-        if (!$used) {
-            $used = true;
-            // init
-            $code = '
-       if (!window.console) {
-         var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-         window.console = {};
-         for (var i = 0; i < names.length; ++i)  window.console[names[i]] = function() {}
-       }
-       ' .$code;
-        }
+        //  static $used = false;
+        //  if (!$used) {
+        //      $used = true;
+        //      // init
+        //      $code = '
+        // if (!window.console) {
+        //   var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+        //   window.console = {};
+        //   for (var i = 0; i < names.length; ++i)  window.console[names[i]] = function() {}
+        // }
+        // ' .$code;
+        //  }
         echo  "\n<script>\n  $code\n</script>\n";
     }
 }
