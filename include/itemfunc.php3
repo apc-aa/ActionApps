@@ -823,7 +823,7 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
  *           Most of the code is taken from itemedit.php3, created by Honza.
  *
  * @param $err
- * @param $slice
+ * @param $slice AA_Slice
  * @param string $action should be one of:
  *                       "add" .... a "new item" page (not form-called)
  *                       "edit" ... an "edit item" page (not form-called)

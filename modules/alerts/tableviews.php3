@@ -187,7 +187,10 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                     "type"=>"select",
                     "href_view" => "email_edit",
                     "source"=>GetUserEmails("alerts alert")))),
-            "type" => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
+            "type"  => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
+            "owner" => array ("default" => "",       "view" => array (
+                "type"=>"text",
+                "readonly" => 1)),
             "id" => array (
                 "default" => pack_id(new_id()),
                 "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
@@ -310,7 +313,9 @@ function te_au_confirm($val) {
 }
 
 function AlertsModeditAfterInsert($varset) {
-    global $change_id;
-    $change_id = unpack_id($varset->get ("id"));
-    AddPermObject($change_id, "slice");
+    // called for all tables
+    if ($varset->get("module_id") AND is_long_id($module_id = unpack_id($varset->get("module_id")))) {
+        AddPermObject($module_id, "slice");
+        AA::$module_id = $module_id;
+    }
 }

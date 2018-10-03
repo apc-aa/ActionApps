@@ -176,7 +176,7 @@ class AA_Response {
     }
 
     function getError() {
-        return $this->response;
+        return $this->error;
     }
 
     function isError() {

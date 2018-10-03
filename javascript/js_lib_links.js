@@ -316,4 +316,3 @@ function AcceptChange(field_name,hidden_field_name) {
   var hidden_field  = "document.f."+hidden_field_name;
   eval(field).value =  eval(hidden_field).value;
 }
-

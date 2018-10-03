@@ -94,8 +94,9 @@ if ($add || $update) {
         if (!$module_id) {   // error?
             break;
         }
-        $slice_id    = $module_id;
-        $p_module_id = q_pack_id($module_id);
+        AA::$module_id = $module_id;
+        $slice_id      = $module_id;
+        $p_module_id   = q_pack_id($module_id);
 
         // store used modules into relation table
         $varset->doDeleteWhere('relation', "source_id='$p_module_id' AND flag='".REL_FLAG_MODULE_DEPEND."'");
@@ -176,7 +177,7 @@ if ($db->next_record()) {
 $id     = unpack_id($db->f("id"));  // correct ids
 $router = $db->f("flag");           // router is stored as flag
 
-$module = AA_Module_Site::getModule($module_id);
+$module = AA_Module_Site::getModule($source_id);
 
 if ($template['W']) {           // set new name for new module
     $name = "";

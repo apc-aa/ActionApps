@@ -96,7 +96,8 @@ require_once AA_INC_PATH. "locauth.php3";
 // Save before getting the session stored variables
 // Now it should not be in session so mayby the $pass_sliceid is not necessary and we van use just slice_id
 // At least it do sanity check.
-if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
+//                               AA::$module_id - could be set on new Alterts module - see AlertsModeditAfterInsert()
+if (!is_long_id(AA::$module_id = AA::$module_id ?: $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
     AA::$module_id = '';
 }
 
@@ -199,33 +200,33 @@ if (!$no_slice_id) {
     $r_lang_file      = $db->f('lang_file');
     $r_slice_view_url = $db->f('slice_url');
 
-    $module_type         = $g_modules[AA::$module_id]['type'];
-
-    $module_type_changed = $after_login || ($g_modules[$r_last_module_id]['type'] != $module_type);
-
-    //$module_type_changed = $after_login || ($_GET['from_type'] != $module_type);  // from_type used on slice selectbox in admin interface
-
-/* If we switch to another module type, we try whether the requested file
-   exists in the module direcory and if not, we go to module's index.php3 page.
-
-   Discussion: There is a chance two modules will have the same page name
-   for very different behavior and that this would be a bit confusing when
-   using the Select Slice box.
-*/
-    if ( $module_type_changed && !$jumping ) {
-        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
-        $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
-        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
-        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') ) {
-            $page = "index.php3";
-        }
-        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
-            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");
-            page_close();
-            go_url($page);
-            exit;
-        }
-    }
+//    $module_type         = $g_modules[AA::$module_id]['type'];
+//
+//    $module_type_changed = $after_login || ($g_modules[$r_last_module_id]['type'] != $module_type);
+//
+//    //$module_type_changed = $after_login || ($_GET['from_type'] != $module_type);  // from_type used on slice selectbox in admin interface
+//
+///* If we switch to another module type, we try whether the requested file
+//   exists in the module direcory and if not, we go to module's index.php3 page.
+//
+//   Discussion: There is a chance two modules will have the same page name
+//   for very different behavior and that this would be a bit confusing when
+//   using the Select Slice box.
+//*/
+//    if ( $module_type_changed && !$jumping ) {
+//        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
+//        $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
+//        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
+//        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') ) {
+//            $page = "index.php3";
+//        }
+//        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
+//            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");
+//            page_close();
+//            go_url($page);
+//            exit;
+//        }
+//    }
 }
 
 $mgettext_file    = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;

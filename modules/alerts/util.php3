@@ -39,15 +39,15 @@ function GetCollection($slice_id) {
 }
 
 function set_collectionid() {
-    global $collectionid, $collectionprop, $no_slice_id, $slice_id;
+    global $collectionid, $collectionprop, $no_slice_id;
 
     if (!$no_slice_id) {
-        if (!$slice_id) { echo "Error: no slice ID"; exit; }
-        $collectionprop = GetCollection($slice_id);
+        if (!AA::$module_id) { echo "Error: no slice ID"; exit; }
+        $collectionprop = GetCollection(AA::$module_id);
         if ($collectionprop) {
             $collectionid = $collectionprop['id'];
         } else {
-            echo "Can't find collection with module_id=$slice_id. Bailing out.<br>";
+            echo "Can't find collection with module_id=". AA::$module_id. ". Bailing out.<br>";
             exit;
         }
     }

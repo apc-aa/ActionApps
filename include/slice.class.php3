@@ -45,7 +45,8 @@ class AA_Module {
     const SETTING_TABLE = '';
 
     /** array of already constructed modules */
-    protected static $_modules=array();  // Array unpacked module id -> AA_Module object
+    protected static $_modules     = array();  // Array unpacked module id -> AA_Module object
+    protected static $_module_types= array();  // Array unpacked module id -> type
 
     protected $module_id;
     protected $module_setting;         // Array of module settings
@@ -84,7 +85,7 @@ class AA_Module {
         if (!isset(AA_Module::$_modules[$module_id])) {
             if (($class = get_called_class()) == 'AA_Module') {
                 // this is not usual case - use it just if you do not know what module is it
-                $class = AA_Module::getModuleClass($module_id);
+                $class = AA_Module::getModuleInfo('class', $module_id);
             }
             if (!$class) {
                 return null;
@@ -94,35 +95,54 @@ class AA_Module {
         return AA_Module::$_modules[$module_id];
     }
 
+    /** AA_Module::getModuleInfo function
+     * @param $info string
+     * @param $module_id
+     */
+    static public function getModuleInfo($info, $module_id)
+    {
+        static $MODULEINFO = array(
+            //                   class             url
+            'W'      => array('AA_Module_Site',  'modules/site/index.php3'),
+            'S'      => array('AA_Slice',        'admin/index.php3'),
+            'Alerts' => array('AA_Module_Alerts','modules/alerts/index.php3'),
+            'J'      => array('',                'modules/jump/index.php3'),
+            'P'      => array('AA_Module_Polls', 'modules/polls/index.php3'),
+            'Links'  => array('AA_Module_Links', 'modules/links/index.php3')
+        );
+        static $_module_types = array();
+
+        if (empty($_module_types)) {
+            $_module_types = DB_AA::select(array('unpackid' => 'type'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `type` FROM `module`');
+        }
+
+        $type = $_module_types[$module_id] ?: 'S';
+        switch ($info) {
+            case 'type':
+                return $type;
+            case 'class':
+                return $MODULEINFO[$type][0];
+            case 'url':
+                return $MODULEINFO[$type][1];
+        }
+        return '';
+    }
+
 
     /** AA_Module::getModuleType function
      * @param $module_id
      */
     static public function getModuleType($module_id) {
-        return DB_AA::select1('SELECT type FROM `module`', 'type', array(array('id',$module_id, 'l')));
+        return self::getModuleInfo('type', $module_id);
     }
 
-    /** AA_Module::getModuleClass function
-     * @param $module_id
-     */
-    static public function getModuleClass($module_id) {
-        switch (self::getModuleType($module_id)) {
-            case 'W':       return 'AA_Module_Site';
-            case 'S':       return 'AA_Slice';
-            case 'Alerts':  return 'AA_Module_Alerts';
-            case 'J':       return '';                 // @todo - create AA_Module_Jump
-            case 'P':       return '';                 // @todo - create AA_Module_Polls
-            case 'Links':   return 'AA_Module_Links';
-        }
-        return '';
-    }
 
     /** AA_Module::deleteModules function
      * @param $module_id
      */
     static public function deleteModules($module_ids) {
         foreach ($module_ids as $module_id) {
-            if (!is_long_id($module_id) OR !($class = AA_Module::getModuleClass($module_id))) {
+            if (!is_long_id($module_id) OR !($class = AA_Module::getModuleInfo('class', $module_id))) {
                 return false;     // _m("No such module.")
             }
             if (!$class::_deleteModules(array($module_id))) {
@@ -439,6 +459,7 @@ class AA_Slice extends AA_Module {
     }
 
     /** getFields function
+     *  @return AA_Fields
      */
     function & getFields($dynamic_fields = false) {
         return $dynamic_fields ? $this->dynamic_fields : $this->fields;
@@ -829,7 +850,7 @@ class AA_Module_Polls extends AA_Module {
     // const SETTING_CLASS = 'AA_Modulesettings_Site';
     // const SETTING_TABLE = 'alerts_collection';
 
-    /** AA_Module_Links::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+    /** AA_Module_Polls::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
      *  @param $module_id
      */
     static public function _deleteModules($module_ids) {

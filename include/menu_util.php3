@@ -133,23 +133,17 @@ function GetLabel($profile, $property, $selector, $default_text) {
  *
  */
 function PrintModuleSelection() {
-    global $slice_id, $g_modules;
+    global $g_modules;
     global $auth; // for profiles
 
-    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+    $profile = AA_Profile::getProfile($auth->auth["uid"], AA::$module_id); // current user settings
 
     if ( is_array($g_modules) AND (count($g_modules) > 1) AND ($profile->getProperty('ui_manager', 'top_moduleselection') === false)) {
         // create the modulesOptions content:
-        $permitted = GetUserSlices();
-        if ($permitted != "all") {
-            $slice_ids = "'". implode("','", array_map( 'q_pack_id', array_keys($permitted))) . "'";
-            $slice_ids = "WHERE module.id IN ($slice_ids) ";
-        }
+        $modules_cond = (($permitted = GetUserSlices())=='all') ? array() : array(array('module.id', array_keys($permitted), 'l'));
 
-        $db = getDB();
-        $db->query("SELECT module.id, module.type, slice.type AS slice_type, module.name
-                      FROM module LEFT JOIN slice ON module.id=slice.id $slice_ids
-                      ORDER BY module.priority, module.name");
+        $mymodules =  DB_AA::select(array(), 'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id', $modules_cond, array('module.priority','module.name'));
+
 
         $module_types = array (
             "Alerts" => array (5, _m("Alerts")),
@@ -162,48 +156,48 @@ function PrintModuleSelection() {
             "RM"=> array (1, _m("Reader Management Slice")));
 
        $modules = array();
-       while ($db->next_record()) {
-            if ($db->f("type") == "S") {
-                $order = $db->f("slice_type") == "ReaderManagement" ? 1 : 0;
-            } else {
-                $order = $module_types[$db->f("type")][0];
+       foreach ($mymodules as $mymodule) {
+            if (($order = $module_types[$mymodule['type']][0]) === 0) {
+                $order = $mymodule['slice_type'] == "ReaderManagement" ? 1 : 0;
             }
-            //if (! $module_types[$db->f("type")]) { echo $db->f("type")."!!"; exit; }
-            $modules[$order][$db->f("id")] = $db->f("name");
+            $modules[$order][$mymodule['unpackid']] = $mymodule['name'];
         }
-        freeDB($db);
+
         // count($modules) - count of module types
         $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
 
+        $mydir = AA_Module::getModuleInfo('url', AA::$module_id);
+
         $options      = '';
-        $option_begin = '<option value="';
         ksort ($modules);
         foreach ($modules as $order => $mods) {
             if ( $display_modtypes ) {
                 foreach ($module_types as $module_type) {
                     if ($module_type[0] == $order) {
-                        $options .= $option_begin . '" class="sel_title">*** '.$module_type[1].' ***';   // &#x1f464;&#x1f468; men symbol
+                        $options .= '<optgroup label="'.$module_type[1].'">';   // &#x1f464;&#x1f468; men symbol
                     }
                 }
             }
             //        asort ($mods);
             foreach ($mods as $id => $name) {
-                $options .= $option_begin . myspecialchars(unpack_id($id)).'"';
-                if ($slice_id == unpack_id($id)) {
+                $mod_dir = AA_Module::getModuleInfo('url',$id);
+                $val = (($mydir == $mod_dir) ? '' : AA_INSTAL_PATH.$mod_dir). "?module_id=$id";
+                $options .= '<option value="' . $val .'"';
+                if (AA::$module_id == $id) {
                     $options .= ' selected';
                 }
                 $options .= '>'. str_replace("'","`",safe($name));
             }
         }
 
-        if ( !$slice_id ) {   // new slice
+        if ( !AA::$module_id ) {   // new slice
             $options .= '<option value="new" selected>'. _m("New slice");
         }
 
-        $type = AA_Module::getModuleType($slice_id);
+        $type = AA_Module::getModuleType(AA::$module_id);
 
         $ret  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-        $ret .= '<select name=slice_id onChange="if (this.value != \'\') document.location=\'?from_type='.$type.'&change_id=\'+this.value">';
+        $ret .= '<select name=sel_module onChange="if (this.value != \'\') document.location=this.value">';
         $ret .= $options;
         $ret .= '</select>';
 
@@ -282,7 +276,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
             $logout_out = '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">';
         }
 
-        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id));
+        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3'));
 
         echo '
         <td colspan="2" id="aa_top">
@@ -309,8 +303,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
                                      $aamenuprop['label'],
                                      isset($aamenuprop["cond"]) ? $aamenuprop["cond"] : true,
                                      $aamenuprop["href"],
-                                     $aamenuprop["exact_href"],
-                                     $slice_id);
+                                     $aamenuprop["exact_href"]);
 
                 if ($link) {
                     echo $delim. $link;
@@ -361,18 +354,18 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
  * @param $exact_href
  * @param $slice_id
  */
-function GetMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
+function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='') {
 
     $cssclass = $active ? 'nbactive' : 'nbenable';
 //    if ($active) {
 //        return "<span class=\"nbactive\">$label</span>\n";
 //    }
-    if ($slice_id AND $cond) {
+    if (AA::$module_id AND $cond) {
         $href = $exact_href;
         if (!$href) {
             $href = get_aa_url($aa_href);
         }
-        $href = get_url($href, "slice_id=$slice_id");
+        $href = StateUrl($href);
         return a_href($href, "<span class=\"$cssclass\">$label</span>");
     }
     // maked invisible which is better, I think. Honza 2007-08-02

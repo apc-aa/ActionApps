@@ -89,6 +89,7 @@ if ( $insert || $update ) {
         if ( !$module_id ) {      // error?
             break;
         }
+        AA::$module_id = $module_id;
         $slice_id = $module_id;
 
         // now set all module specific settings
@@ -133,6 +134,8 @@ if ( $insert || $update ) {
             $varset->set("set_cookies",    $set_cookies,    "number");
             $varset->set("cookies_prefix", $cookies_prefix, "quoted");
             $varset->set("status_code",    0,               "number");
+            $varset->set("headline",       '',              "quoted");
+            $varset->set("params",         '',              "quoted");
 
             // create new poll
             $varset->doInsert('polls');

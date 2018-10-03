@@ -50,9 +50,6 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
     if (!is_array($cmd)) {
         return;
     }
-    if ($debug) {
-        echo "cmd: ";print_r ($cmd); echo "<br>val: ";print_r($val); echo"<br>";
-    }
 
     foreach ($cmd as $myviewid => $com) {
         $myview = $getTableViewsFn ($myviewid, "form");

@@ -39,11 +39,17 @@ require_once AA_INC_PATH."util.php3";
 require_once "send_emails.php3";
 require_once "tableviews.php3";
 
-if ($cmd["modedit"]["update"]) {
-    ProcessFormData("GetAlertsTableView", $val, $cmd);
+if ($_POST['cmd']['modedit']['update']) {
+    ProcessFormData("GetAlertsTableView", $_POST['val'], $_POST['cmd']);
+    if ($_POST['cmd']['modedit']['update']['__new__']) {   // new alerts
+        go_url(StateUrl(self_base() . "index.php3"));
+        exit;
+    }
 }
 
+
 require_once __DIR__. "/../../include/init_page.php3";
+
 
 if (!$no_slice_id) {
     require_once menu_include();
@@ -61,7 +67,7 @@ if ($set_tview) {
 $tableview = GetAlertsTableView($tview);
 
 if (!is_array($tableview)) {
-    go_url(StateUrl(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview"));
+    go_url(StateUrl(self_base()."index.php3?Msg=Bad table view ID: $tview"));
     exit;
 }
 if (! $tableview["cond"] )  {
@@ -93,8 +99,15 @@ PrintArray($err);
 echo $Msg;
 $script = StateUrl("tabledit.php3");
 
+// fixed bug when inner table is not updated to new module_id
+if (!$cmd) {
+    $cmd = array($tview => array('edit'=>array(AA::$module_id=>1)));
+}
+
 $tabledit = new tabledit($tview, $script, $cmd, $tableview, AA_INSTAL_PATH."images/", $sess, "GetAlertsTableView");
+
 $err = $tabledit->view();
+
 if ($err) {
     echo "<b>$err</b>";
 }
