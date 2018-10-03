@@ -347,9 +347,9 @@ if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 if ( !$slice_id ) {
     SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
 }
-
-$slice      = AA_Slice::getModule($slice_id);
-$p_slice_id = q_pack_id($slice_id);
+AA::$slice_id = $slice_id;
+$slice        = AA_Slice::getModule($slice_id);
+$p_slice_id   = q_pack_id($slice_id);
 
 if (!is_object($slice) OR !$slice->isValid()) {
     SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
@@ -372,7 +372,6 @@ if ($debugfill) huhl("Debugfill insert=",$insert);
 // by using ItemContent object in near future)
 ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 list($fields, $prifields) = $slice->fields();
-
 
 if (!(isset($prifields) AND is_array($prifields))) {
     SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
