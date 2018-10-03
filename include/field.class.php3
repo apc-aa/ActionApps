@@ -395,6 +395,7 @@ class AA_Fields implements Iterator {
             return;
         }
 
+        $this->fields = array();
         $a = DB_AA::select(array('id'=>array()), 'SELECT * FROM `field`', array(array('slice_id', $this->master_id, 'l'), array('id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE')), array('input_pri'));
         foreach ($a as $fid => $data) {
             $this->fields[$fid] = new AA_Field($data);
