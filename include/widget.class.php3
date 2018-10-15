@@ -1183,7 +1183,7 @@ class AA_Widget_Dte extends AA_Widget {
         $delim         = '';
         $y_range_minus = $this->getProperty('start_year', 1);
         $y_range_plus  = $this->getProperty('end_year',  10);
-        $from_now      = $this->getProperty('relative',   0);
+        $from_now      = $this->getProperty('relative',   1);
         $display_time  = $this->getProperty('show_time',  0);
 
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time, $aa_property->isRequired());
@@ -1597,7 +1597,7 @@ class AA_Widget_Fil extends AA_Widget {
             }
             $delim        = '<br />';
         }
-        
+
         if ($_GET['dd']=='wer') {
             huhl($display_url, $widget, $value, $value->count(), $content, $this);
         }
