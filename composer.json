@@ -1,0 +1,19 @@
+{
+  "name": "apc/actionapps",
+  "description": "ActionApps is a collaborative web publishing tool and an open-source development platform for web applications.",
+  "type": "project",
+  "homepage": "https://actionapps.org",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+        {
+            "name": "Honza Malik",
+            "email": "honza.malik@ecn.cz",
+            "homepage": "https://ecnstudio.cz",
+            "role": "Developer"
+        }
+  ],
+  "require": {
+    "ckeditor/ckeditor": "dev-full/stable",
+    "phpmailer/phpmailer": "6.0.x-dev"
+  }
+}
