@@ -142,7 +142,7 @@ function PrintModuleSelection() {
         // create the modulesOptions content:
         $modules_cond = (($permitted = GetUserSlices())=='all') ? array() : array(array('module.id', array_keys($permitted), 'l'));
 
-        $mymodules =  DB_AA::select(array(), 'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id', $modules_cond, array('module.priority','module.name'));
+        $mymodules =  DB_AA::select(array(), 'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id', $modules_cond, array('module.deleted','module.priority','module.name'));
 
 
         $module_types = array (
@@ -160,7 +160,11 @@ function PrintModuleSelection() {
             if (($order = $module_types[$mymodule['type']][0]) === 0) {
                 $order = $mymodule['slice_type'] == "ReaderManagement" ? 1 : 0;
             }
-            $modules[$order][$mymodule['unpackid']] = $mymodule['name'];
+            $name = str_replace("'","`",safe($mymodule['name']));
+            if ( $mymodule['deleted'] ) {
+                $name = "&times;&times;&times; $name &times;&times;&times;";
+            }
+            $modules[$order][$mymodule['unpackid']] = ($mymodule['deleted'] ? '&times;&times;&times; '.$mymodule['name']. ' &times;&times;&times;' : $mymodule['name']);
         }
 
         // count($modules) - count of module types
@@ -186,7 +190,7 @@ function PrintModuleSelection() {
                 if (AA::$module_id == $id) {
                     $options .= ' selected';
                 }
-                $options .= '>'. str_replace("'","`",safe($name));
+                $options .= '>'. $name;
             }
         }
 
