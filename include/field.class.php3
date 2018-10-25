@@ -25,23 +25,30 @@
  *
 */
 
+use AA\Widget\Widget;
+
 /** for AA_Generator_*   */
 require_once AA_INC_PATH."itemfunc.php3";
 
 class AA_Field {
 
     /** asociative array of field data as defined in field table
-    *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
-    */
+     *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
+     */
     var $data;
 
-    /** class and propertioes for slice deffined fields (replaces input_show_func functionality)  */
+    /** asociative array of aliases
+     * @var AA_Aliases
+     */
+    protected $aliases = null;
+
+    /** class and properties for slice deffined fields (replaces input_show_func functionality)  */
     var $widget_params;
 
-    /** Default widget - as parsed from field data (input_show_func)
-     *  @var AA_Widget
+    /** cache array of all used widgets for this field
+     *  @var Widget[]
      */
-    var $widget;
+    var $widget = array();
 
     /** AA_Field function
      *  @param $data
@@ -49,7 +56,7 @@ class AA_Field {
     function __construct($data, $sli_id=null) {
         $this->data          = array();
         $this->widget_params = array();
-        $this->widget        = null;
+        $this->widget        = array();
 
         if (is_array($data)) {
             $this->data = $data;
@@ -72,13 +79,21 @@ class AA_Field {
             $this->data['multiple']          = (int)$data->get_alias_subst('_#FLD_MULT',0);  // 0-2
             $this->data['input_show_func']   = '';
             $this->widget_params             = json_decode($data->get_alias_subst('_#FLD_PARM',''),true);
-            $this->widget_params['class']    = AA_Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE','fld') ?: 'fld');
+            $this->widget_params['class']    = Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE','fld') ?: 'fld');
             $this->data['search_pri']        = $this->data['input_pri'];
             $this->data['html_default']      = 1;
             $this->data['input_validate']    =      $data->get_alias_subst('_#FLD_VALI','');
             $this->data['input_insert_func'] =      $data->get_alias_subst('_#FLD_INS_','qte');
             $this->data['input_show']        = (int)$data->get_alias_subst('_#FLD_SHOW',1) ? 1 : 0;
             $this->data['text_stored']       = (int)$data->get_alias_subst('_#FLD_STOR',1) ? 1 : 0;
+
+            $this->aliases = new AA_Aliases;
+            $field_aliases = array_filter( $data->getAliasNames(), function ($name) { return (0 === strpos($name,'_#FLD_AN')); } );   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
+            foreach ($field_aliases as $al) {
+                if ($als = IsAlias($data->get_alias_subst($al,''))) {
+                    $this->aliases->addAlias(new AA_Alias($als, $fid, $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al), 'f_t')));
+                }
+            }
         }
     }
 
@@ -134,28 +149,32 @@ class AA_Field {
     /** getWidget function
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
-     *                       usualy not used - right now we use it just for constants_sel.php3
+     *                       usualy not used
      * @param $properties  - array of properties to redefine for $widget_type
      */
     function getWidget($widget_type=null, $properties=array()) {
-        if ( is_null($this->widget) ) {
+        $widget_hash = get_hash($widget_type,$properties);
 
-            // $this->widget = AA_Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
-            $params       = $this->data['input_show_func'] ? AA_Widget::parseClassProperties($this->data['input_show_func']) : $this->widget_params;
-            $widget_class = $widget_type ? AA_Widget::constructClassName($widget_type) : $params['class'];
+        // just for cache. maybe it is not necessary...
+        if ( !isset($this->widget[$widget_hash]) ) {
+
+            // $this->widget = AA\Widget\Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
+            $params       = $this->data['input_show_func'] ? Widget::parseClassProperties($this->data['input_show_func']) : $this->widget_params;
+            $widget_class = $widget_type ? Widget::constructClassName($widget_type) : $params['class'];
             if (!class_exists($widget_class)) {
                 if (!class_exists($widget_class = $params['class'])) {
-                    $widget_class = 'AA_Widget_Nul';
+                    $widget_class = 'AA\Widget\NulWidget';
                 }
             }
-            $this->widget = AA_Object::factory($widget_class, $params);
+            $w = AA_Object::factory($widget_class, $params);
             if ($properties) {
                 // for security reasons we do not want to redefine const (Constants/Slices)
                 unset($properties['const'], $properties['bin_filter'], $properties['filter_conds']);
-                $this->widget->setProperties($properties);
+                $w->setProperties($properties);
             }
+            $this->widget[$widget_hash] = $w;
         }
-        return $this->widget;
+        return $this->widget[$widget_hash];
     }
 
 
@@ -181,18 +200,23 @@ class AA_Field {
      *
      */
     function getAliases() {
-        $ret = array();
-        if ($this->data['alias1']) {
+        // maybe filled here in previous call, or filled in constructor for item definned fields
+        if ($this->aliases) {
+            return $this->aliases->getArray();
+        }
+        $this->aliases = new AA_Aliases;
+        $f = $this->data;
+        if ($f['alias1']) {
             // fld used in PrintAliasHelp to point to alias editing page
-            $ret[$this->data['alias1']] = array("fce" => $this->data['alias1_func'], "param" => $this->data['id'], "hlp" => $this->data['alias1_help'], "fld" => $this->data['id']);
+            $this->aliases->addAlias(new AA_Alias($f['alias1'], $f['id'], $f['alias1_func'], $f['alias1_help']));
         }
         if ($this->data['alias2']) {
-            $ret[$this->data['alias2']] = array("fce" => $this->data['alias2_func'], "param" => $this->data['id'], "hlp" => $this->data['alias2_help'], "fld" => $this->data['id']);
+            $this->aliases->addAlias(new AA_Alias($f['alias2'], $f['id'], $f['alias2_func'], $f['alias2_help']));
         }
         if ($this->data['alias3']) {
-            $ret[$this->data['alias3']] = array("fce" => $this->data['alias3_func'], "param" => $this->data['id'], "hlp" => $this->data['alias3_help'], "fld" => $this->data['id']);
+            $this->aliases->addAlias(new AA_Alias($f['alias3'], $f['id'], $f['alias3_func'], $f['alias3_help']));
         }
-        return $ret;
+        return $this->aliases->getArray();
     }
 
     /** getConstantGroup function
@@ -325,7 +349,7 @@ class AA_Field {
      *  @return array - [relation,<slice_id>] or [constants,<constants_name>]
      */
     function getRelation() {
-        $showfunc = AA_Widget::parseClassProperties($this->data['input_show_func']);
+        $showfunc = Widget::parseClassProperties($this->data['input_show_func']);
         if (!$showfunc['const']) {
             return array();
         }
@@ -335,8 +359,8 @@ class AA_Field {
 
     /** isMultiline - @return bool - if the default widget allows block elements  */
     function isMultiline() {
-        $params = AA_Widget::parseClassProperties($this->data['input_show_func']);
-        return in_array($params['class'], array('AA_Widget_Txt','AA_Widget_Tpr','AA_Widget_Edt'));
+        $params = Widget::parseClassProperties($this->data['input_show_func']);
+        return in_array($params['class'], array('AA\Widget\TxtWidget', 'AA\Widget\TprWidget', 'AA\Widget\EdtWidget'));
     }
 
     function cloneWithId($id) {

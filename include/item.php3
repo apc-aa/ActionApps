@@ -517,6 +517,13 @@ class AA_Item {
         return con_url( $this->getbaseurl($redirect, $no_sess), $url_param );
     }
 
+    /**
+     *  get array of alias names
+     */
+    public function getAliasNames() {
+        return array_keys($this->aliases);
+    }
+
     /** getahref function
      * get link from url and text
      * @param $url

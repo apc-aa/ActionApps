@@ -67,31 +67,29 @@ function GetAliasDef( $fce, $field='', $hlp='') {
 
 
 class AA_Alias {
-    var $alias;
-    var $funct;
-    var $field_id;
-    var $parameters;
-    var $hlp;
+    private $alias;
+    private $funct;
+    private $field_id;
+    private $hlp;
+
     /** AA_Alias function
      * @param $alias
      * @param $field_id
      * @param $funct
-     * @param $parameters = null
-     * @param $hlp = ''
+     * @param string $hlp = ''
      */
-    function __construct($alias, $field_id, $funct, $parameters=null, $hlp='') {
-        $this->alias       = $alias;
-        $this->funct       = $funct;
+    function __construct($alias, $field_id, $funct, $hlp = '') {
+        $this->alias       = '_#'.strtoupper(substr($alias.'________',2,8));  // just make sure the alias is in correct _#SOME_ALS format
         $this->field_id    = $field_id;
-        $this->parameters  = empty($parameters) ? array() : $parameters;
+        $this->funct       = $funct;
         $this->hlp         = $hlp;
     }
     /** getArray function
      * @return array
      */
     function getArray() {
-        $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
-        return array('fce' => $fce, 'param' => $this->field_id, 'hlp' => $this->hlp);
+        // $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
+        return array('fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp);
     }
     /** getAlias function
      * @return $this->alias
@@ -102,7 +100,7 @@ class AA_Alias {
 }
 
 class AA_Aliases {
-    var $aliases;
+    private $aliases;
     /** AA_Aliases function
      *
      */
@@ -110,9 +108,9 @@ class AA_Aliases {
         $this->aliases = array();
     }
     /** addAlias function
-     * @param $alias (by link)
+     * @param $alias AA_Alias
      */
-    function addAlias(&$alias) {
+    function addAlias($alias) {
         $this->aliases[] = $alias;
     }
     /** addTextAlias
@@ -120,7 +118,7 @@ class AA_Aliases {
      * @param $text
      */
     function addTextAlias($alias_name, $text) {
-        $this->addAlias(new AA_Alias($alias_name, "id..............", 'f_t', array($text, 'asis')));
+        $this->addAlias(new AA_Alias($alias_name, "id..............", 'f_t'));
     }
     /** getArray function
      *
