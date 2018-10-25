@@ -41,6 +41,9 @@
  * @link      http://www.apc.org/ APC
  *
  */
+
+use AA\Widget\Widget;
+
 require_once "../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once AA_INC_PATH . "constants_param_wizard.php3";
@@ -105,7 +108,7 @@ function GetWizardRow($name, $param) {
 }
 
 if ($_GET['list']=='INPUT_TYPES') {
-    $desc = AA_Widget::getParamWizardArr($item);
+    $desc = Widget::getParamWizardArr($item);
 } else {
     $desc = $$list;
     $desc = $desc['items'][$item];

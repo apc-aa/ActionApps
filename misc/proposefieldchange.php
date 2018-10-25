@@ -180,7 +180,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
 // new approach using standard AA widgets and form variables
 /*elseif ($_POST['aaaction']=='DOCHANGE') {
 
-    list($item_id, $field_id) = AA_Form_Array::parseId4Form($_POST['input_id']);
+    list($item_id, $field_id) = AA\FormArray::parseId4Form($_POST['input_id']);
     $item   = AA_Item::getItem(new zids($item_id));
     $slice  = AA_Slice::getModule($item->getSliceId());
 

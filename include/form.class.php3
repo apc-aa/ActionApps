@@ -1,4 +1,9 @@
 <?php
+
+use AA\FormArray;
+use AA\Widget\Widget;
+use AA\Widget\HidWidget;
+
 /**
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions
@@ -50,8 +55,8 @@ class AA_Formrow extends AA_Storable {
         $f_arr  = $fields->getNameArray();
               // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
         $p = new AA_Property('rows', _m("Fields to show"),  'AA_Formrow_Field', true, false);
-        $w = new AA_Widget_Formrow(array('const_arr' => $f_arr));
-        //$w = new AA_Widget_Mch(array('columns'=>1,'const_arr' => $f_arr));
+        $w = new FormrowWidget(array('const_arr' => $f_arr));
+        //$w = new AA\Widget\MchWidget(array('columns'=>1,'const_arr' => $f_arr));
         $form->addRow(new AA_Formrow_Full($p, $w));  // use default widget for the field
     }
 }
@@ -85,7 +90,7 @@ class AA_Formrow_Full extends AA_Formrow {
     static function getClassProperties() {
         return array (                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
             'property'       => new AA_Property( 'property',       _m("Property"),          'AA_Property', false, true),
-            'widget'         => new AA_Property( 'widget',         _m("Widget"),            'AA_Widget',   false, true)
+            'widget'         => new AA_Property( 'widget',         _m("Widget"), 'AA\Widget\Widget',   false, true)
             );
     }
 }
@@ -129,7 +134,7 @@ class AA_Formrow_Field extends AA_Formrow {
 
 
 /** Form Row - special widget for form setting */
-class AA_Widget_Formrow extends AA_Widget {
+class FormrowWidget extends Widget {
 
     /** Constructor - use the default for AA_Object */
     // function __construct($params=array()) { parent::__construct($params); }  // not needed - called as default
@@ -163,11 +168,11 @@ class AA_Widget_Formrow extends AA_Widget {
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
         // $property_id  = $aa_property->getId();
-        // $input_name   = AA_Form_Array::getName4Form($property_id, $content)."[formrow][]";
+        // $input_name   = AA\FormArray::getName4Form($property_id, $content)."[formrow][]";
 
-        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name   = FormArray::getName4Form($aa_property->getId(), $content);
         $input_name  = $base_name ."[]";
-        $base_id     = AA_Form_Array::formName2Id($base_name);
+        $base_id     = FormArray::formName2Id($base_name);
         $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $ser_values   = $content->getValuesArray($aa_property->getId());
@@ -269,11 +274,11 @@ class AA_Form extends AA_Object {
         $content = $this->_getContent();
 
         $html    = $this->getRowsHtml($content);
-        $html   .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
-        $html   .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
+        $html   .= with( new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+        $html   .= with( new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
 
         if ($this->object_id) {
-            $html .= with( new AA_Widget_Hid )->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
+            $html .= with( new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
         }
 
         return $html;

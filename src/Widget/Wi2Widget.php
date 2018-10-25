@@ -1,0 +1,48 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 15.10.18
+ * Time: 20:33
+ */
+
+namespace AA\Widget;
+
+/** Two Boxes widget */
+class Wi2Widget extends \AA\Widget\MchWidget
+{
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    function name()
+    {
+        return _m('Two Boxes');   // widget name
+    }
+
+    /** returns if the widget handles multivalue or just single value   */
+    function multiple()
+    {
+        return true;
+    }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type = 'normal')
+    {
+        $this->setProperty('columns', 1);
+        return parent::_getRawHtml($aa_property, $content, $type);
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     */
+    static function getClassProperties()
+    {
+        return \AA\Widget\Widget::propertiesShop(array('const', 'row_count', 'offer_label', 'selected_label', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'add_form', 'additional_slice_pwd', 'const_arr'));
+    }
+}

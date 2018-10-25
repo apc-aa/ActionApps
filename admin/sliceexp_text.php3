@@ -33,6 +33,8 @@
 */
 
 
+use AA\Widget\Widget;
+
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_INC_PATH . "xml_serializer.php3";
 
@@ -373,7 +375,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
 
         $fields = DB_AA::select(array(), 'SELECT * FROM `field`', array(array('slice_id',$slobj->getId(), 'l')), array('input_show-', 'input_pri'));
         foreach ($fields as $new) {
-            $slice_data .= '<tr><th>'.$new['name'].'</th><td>'.$new['id'].'</td><td>'.AA_Widget::factoryByString($new["input_show_func"])->name().'</td><td>'.($new['input_show'] ? '':_m('Hidden')).'</td></tr>';
+            $slice_data .= '<tr><th>'.$new['name'].'</th><td>'.$new['id'].'</td><td>'.Widget::factoryByString($new["input_show_func"])->name().'</td><td>'.($new['input_show'] ? '':_m('Hidden')).'</td></tr>';
 
             $new["slice_id"] = $uid; // Use new id if set
 

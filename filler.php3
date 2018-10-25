@@ -52,6 +52,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\FormArray;
+
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
  * @param mixed $val the variable or array to quote (add slashes)
@@ -107,7 +109,7 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
             $charset = $slice->getCharset();
         }
     } elseif (is_array($_REQUEST['aa'])) {
-        $charset = AA_Form_Array::getCharset($_REQUEST['aa']);
+        $charset = FormArray::getCharset($_REQUEST['aa']);
     }
     if ($charset AND ($charset != 'utf-8')) {
         //print_r($_POST);

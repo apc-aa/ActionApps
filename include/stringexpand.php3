@@ -33,10 +33,12 @@
 
 // Code by Mitra based on code in existing other files
 
+use AA\FormArray;
+
 require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 
 /**
- * Class AA_Aliasfunc
+ * Class AA_Aliasfunc for storing functions like {_:Message_box:Update successfull:green}
  */
 class AA_Aliasfunc extends AA_Object {
 
@@ -1062,6 +1064,18 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     // Never cache this code - it is most probably not repeating on the page
+    /**
+     * @param $text
+     * @param $length
+     * @param $text_add
+     * @return string
+     */
+    public static function shorten_middle($text, $length)
+    {
+        $text = trim(strip_tags($text));
+        $ret = substr($text, 0, $length / 2 - 1) . '...';
+        return $ret . substr($text, strlen($ret) - $length);
+    }
 
     /** Do not trim all parameters (the $add parameter could contain space) */
     function doTrimParams() { return false; }
@@ -1093,9 +1107,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>');
         if ($mode == 3) {
-            $text = trim(strip_tags($text));
-            $ret  = substr($text, 0, $length/2-1).'...';
-            return $ret. substr($text, strlen($ret)-$length). $text_add;
+            return self::shorten_middle($text, $length). $text_add;
         }
 
         if ($mode == 1) {
@@ -3979,6 +3991,8 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
         return $this->_getWidget('getEditHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
     }
 
+
+
     /** expand function
      * @param $item_id
      * @param $field_id
@@ -4004,6 +4018,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_prop['name'], $widget_prop['input_help']);
                 $ret         = $widget->$type($aa_property, $item, $function);
                 $widget->registerRequires();
+                AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we shoul distinguish
             }
         }
         return $ret;
@@ -4102,8 +4117,8 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                 } else {
                     $widget_properties = str_replace(array("'", '"',"\r\n", "\r", "\n"), array("\'", "&quot;", " ", " ", " "), $widget_properties);
                     $iid         = $item->getItemID();
-                    $input_name  = AA_Form_Array::getName4Form($field_id, $item);
-                    $input_id    = AA_Form_Array::formName2Id($input_name);
+                    $input_name  = FormArray::getName4Form($field_id, $item);
+                    $input_id    = FormArray::formName2Id($input_name);
                     $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
                     $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
                     $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
@@ -6600,7 +6615,8 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
      * @return string|void
      */
     function expand($text='', $key='', $output_type=null) {
-        $ret = AA_Stringexpand_Encrypt::_encryptdecrypt(true, $text, $key);
+        //$ret = AA_Stringexpand_Encrypt::_encryptdecrypt(true, $text, $key);
+        $ret = self::_encryptdecrypt(true, $text, $key);     //. ' - '. self::_test($text, $key);
         return ($output_type=='url') ? bin2url($ret) : $ret;
     }
 
@@ -6609,7 +6625,7 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
      * @return string
      */
     static function get_time_token($data) {
-        return base64_encode(AA_Stringexpand_Encrypt::_encryptdecrypt(true, serialize($data), 'aa-sul'.AA_ID.date('j.n.y H')));
+        return base64_encode(self::_encryptdecrypt(true, serialize($data), 'aa-sul'.AA_ID.date('j.n.y H')));
     }
 
     /** Try to decode sent token - not older than $hours
@@ -6618,14 +6634,34 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
     static function decrypt_time_token($token, $hours=24) {
         $token = base64_decode($token);
         for ($i=0; $i<$hours; ++$i) {
-            if (strlen($serialized = AA_Stringexpand_Encrypt::_encryptdecrypt(false, $token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
+            if (strlen($serialized = self::_encryptdecrypt(false, $token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
                 return unserialize($serialized);
             }
         }
         return '';
     }
 
-    /**
+    /** just developer method - tests the new encryption in php 7.2
+     * @param $mode_encrypt
+     * @param $text
+     * @param $key
+     * @return string
+     */
+    function _test($text, $key) {
+        $mc = self::_encryptdecrypt(true, $text, $key);
+        $ret = "<br>mcrypt: $mc - " . bin2url($mc);
+        $ret .= count(openssl_get_cipher_methods())."<br>------------------<br>";
+        foreach (openssl_get_cipher_methods() as $cipher) {
+            $ret .= '$cipher*';
+            $oc = self::_encryptdecrypt2(true, $text, $key,$cipher);
+            $x = "$cipher: $oc - " . bin2url($oc);
+            $ret .= ($mc == $oc) ? "<br><b>$x</b>" : "<br>$x";
+        }
+        return $ret;
+    }
+
+
+        /**
      * @param $mode_encrypt
      * @param $text
      * @param $key
@@ -6644,6 +6680,25 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
             $ret = $mode_encrypt ? mcrypt_generic($td, $text) : mdecrypt_generic($td, $text);
             mcrypt_generic_deinit($td);
             mcrypt_module_close($td);
+        }
+        return $ret;
+    }
+
+
+    /** just developer method - tests the new encryption in php 7.2
+     * @param $mode_encrypt
+     * @param $text
+     * @param $key
+     * @return string
+     */
+    function _encryptdecrypt2($mode_encrypt, $text, $key, $cipher)
+    {
+        //$cipher = "aes-128-gcm";
+        if (in_array($cipher, openssl_get_cipher_methods()))
+        {
+            $ivlen = openssl_cipher_iv_length($cipher);
+            $iv  = openssl_random_pseudo_bytes($ivlen);
+            $ret = $mode_encrypt ? openssl_encrypt($text, $cipher, $key, $options=0, $iv, $tag) : openssl_decrypt($ciphertext, $cipher, $key, $options=0, $iv, $tag);
         }
         return $ret;
     }

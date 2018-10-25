@@ -1,6 +1,7 @@
 18-10-03 - fixed problem with module switching (sometimes wrong module menu was loaded
 (honzam)   (slice menu for site module, ...), mainly with opened more than one browser window)
          - fixed problem with Alerts switching when wrong alerts module was loaded into tabledit
+         - fixed validation of unique field (mail) in filler.php3
          - fixed polls module delete
          - fixed some SQL for MariaBD 10.3 strict sql-mode
          - fixed problem with broken "Settings" link when no "Slice field" is defined in the slice

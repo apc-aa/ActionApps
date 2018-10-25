@@ -1,0 +1,33 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 15.10.18
+ * Time: 20:28
+ */
+
+namespace AA\Widget;
+
+/** Rich Edit Text Area widget */
+class EdtWidget extends \AA\Widget\TxtWidget
+{
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    function name()
+    {
+        return _m('Rich Edit Text Area');   // widget name
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     */
+    static function getClassProperties()
+    {
+        return \AA\Widget\Widget::propertiesShop(array('rows', 'cols', 'area_type'));
+    }
+}

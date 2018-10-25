@@ -34,9 +34,8 @@
 // A design goal is to use lazy-evaluation wherever possible, i.e. to only
 // go to the database when something is needed.
 
-//If this is needed, comment why! It trips out anything calling sliceobj NOT from one level down
-//require_once "../include/config.php3";
-//require_once AA_INC_PATH."locsess.php3";
+use AA\Widget\Widget;
+
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
 
 class AA_Module {
@@ -472,7 +471,7 @@ class AA_Slice extends AA_Module {
         return $this->fields->getField($field_id);
     }
 
-    /** @return AA_Widget */
+    /** @return Widget */
     function getWidget($field_id) {
         $field = $this->getField($field_id);
         return $field ? $field->getWidget() : null;

@@ -1,6 +1,7 @@
 {
   "name": "apc/actionapps",
   "description": "ActionApps is a collaborative web publishing tool and an open-source development platform for web applications.",
+  "keywords": ["CMS"],
   "type": "project",
   "homepage": "https://actionapps.org",
   "license": "GPL-2.0-or-later",
@@ -13,7 +14,13 @@
         }
   ],
   "require": {
+    "php": ">=5.3.0",
     "ckeditor/ckeditor": "dev-full/stable",
     "phpmailer/phpmailer": "6.0.x-dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "AA\\": "src/"
+    }
   }
 }

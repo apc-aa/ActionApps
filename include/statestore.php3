@@ -54,11 +54,11 @@ abstract class AA_Serializable {
      *  Creates object from the string, which is used for storing setting in
      *  the database (older approach). The string looks like:
      *    dte:1:10:1
-     *  which means, that it is instance of AA_Widget_Dte (when $class_mask == 'AA_Widget')
+     *  which means, that it is instance of AA\Widget\DteWidget (when $class_mask == 'AA\Widget\Widget')
      *  and the properties are filled with values 1, 10 and 1 (in this order)
      *
      * @param $string     like dte:1:10:1 in field.input_show_func
-     * @param $class_mask like 'AA_Widget' or empty if it is the same class
+     * @param $class_mask like 'AA\Widget\Widget' or empty if it is the same class
      */
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);
@@ -70,7 +70,7 @@ abstract class AA_Serializable {
      */
     function __construct($params=array()) {
         // ask class, which parameters uses and fill it
-        // call AA_Widget_Txt::getClassProperties()), for example
+        // call AA\Widget\TxtWidget::getClassProperties()), for example
         $this->setProperties($params);
     }
 
@@ -103,7 +103,13 @@ abstract class AA_Serializable {
      *  static class method
      **/
     static function constructClassName($name, $class_mask=null) {
-        return ($class_mask ?: get_called_class().'_'). ucwords(strtolower(str_replace('-','',$name)));   // str_replace probably for validator e-mail, but maybe not neccessary
+        $name = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not neccessary
+        $class_mask = rtrim($class_mask,'_') ?: get_called_class();
+        if (($pos=strrpos($class_mask, '\\')) !== false) {
+            return substr_replace($class_mask, "\\$name", $pos, 1);
+        } else {
+            return $class_mask . '_' . ucwords(strtolower(str_replace('-', '', $name)));   // str_replace probably for validator e-mail, but maybe not neccessary
+        }
     }
 
     /** parseClassProperties function
@@ -124,8 +130,9 @@ abstract class AA_Serializable {
 
         if ( class_exists($class) ) {
             // ask class, which parameters uses
-            // call AA_Widget_Txt::getClassProperties()), for example
+            // call AA\Widget\TxtWidget::getClassProperties()), for example
             $props = $class::getClassProperties();
+
             foreach ($props as $name =>$property) {
                 $value = array_shift($splited);
                 if (isset($value)) {
@@ -995,18 +1002,26 @@ class AA_Components extends AA_Object {
      *  static function
      * @param $mask
      */
-    static function getClassNames($mask) {
+    static function getClassNames($mask)
+    {
         $right_classes = array();
 
-        // php4 returns classes all in lower case :-(
-        $mask          = strtolower($mask);
-        $mask_length   = strlen($mask);
-        foreach (get_declared_classes() as $classname) {
-            if ( substr(strtolower($classname),0,$mask_length) == $mask ) {
-                $right_classes[] = $classname;
+        if (false !== $pos = strrpos($mask, '\\')) {  // new composer approach with autoload - we can't use  get_declared_classes()
+            $classtype = substr($mask,$pos+1);
+            $dirname = AA_BASE_PATH.'src/'.$classtype;
+            $files = AA_Directory_Wrapper::wrapper($dirname)->getFileNames();
+            foreach ($files as $file) {
+                $name = strstr($file,'.',true);
+                if (strlen($shortcut = strtolower(str_replace($classtype,'',$name)))) {
+                    $right_classes[strtolower($shortcut)] = $mask.'\\'.$name;
+                }
             }
+            return $right_classes;
+        } else {
+            return array_filter(get_declared_classes(), function ($classname) use ($mask_length, $mask) {
+                return substr($classname, 0, $mask_length) == $mask;
+            });
         }
-        return $right_classes;
     }
 
     /** getSelectionCode function
