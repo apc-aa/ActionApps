@@ -29,6 +29,8 @@
  *
 */
 
+use AA\Widget\Widget;
+
 
 /**
 * Form utility functions
@@ -600,9 +602,8 @@ class AA_Inputfield {
 
             //$funct = ParamExplode($field["input_show_func"]);
             //$this->input_type    = AA::Stringexpander()->unalias($funct[0]);
-            $funct = array_values(AA_Widget::parseClassProperties($field["input_show_func"]));
-            $this->input_type    = substr(strtolower($funct[0]),10);
-
+            $funct = array_values(Widget::parseClassProperties($field["input_show_func"]));
+            $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
             $this->valid         = $field["input_validate"];
@@ -2665,12 +2666,21 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="") {
     $retval       = "\n<select name=\"$name\" $add>\n";
     $selectedused = false;
     foreach ((array)$arr as $k => $v) {
+        if (0===strpos($k,'AA_OPTGROUP')) {  // begins with AA_OPTGROUP
+            $retval .= '<optgroup label="'.myspecialchars($v).'">';
+            continue;
+        }
         $retval .= "\n  <option value=\"". myspecialchars($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
             $selectedused = true;
         }
-        $retval .= ">". myspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
+        $title = '';
+        if (strlen($val = strip_tags(is_array($v) ? $v['name'] : $v)) > 100) {
+            $title = ' title="'. myspecialchars( $val ) .'"';
+            $val   = AA_Stringexpand_Shorten::shorten_middle($val, 100);
+        }
+        $retval .= "$title>". myspecialchars( $val ) ."</option>\n";
     }
 
     // now add all values, which is not in the array, but field has this value

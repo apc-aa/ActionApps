@@ -25,6 +25,9 @@
  *
 */
 
+use AA\FormArray;
+use AA\Widget\Widget;
+
 /** Saver / Grabber API
  *
  *   Defines AA_Grabber base class, which is used as abstraction for data input
@@ -868,7 +871,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
-*   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
+*   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
 *   is called to grab the value (or multivalues) from the submitted form
 */
 class AA_Grabber_Form extends AA_Grabber {
@@ -908,6 +911,22 @@ class AA_Grabber_Form extends AA_Grabber {
         return 'insert';
     }
 
+    private function rearangeAaFilesArray(array $files) {
+        $ret = array();
+        foreach ($files as $type => $items) {
+            foreach ($items as $item => $fields) {
+                foreach ($fields as $field => $f) {
+                    foreach ((array)$f['fil']['var'] as $k => $value) {
+                            $arr = array($item=>array($field=>array('fil'=>array('var'=>array("_$k"=>array($type => $value))))));
+                            $ret = array_merge_recursive( $ret, $arr);
+
+                    }
+                }
+            }
+        }
+        return $ret;
+    }
+
     /** Method called by the AA_Saver to get next item from the data input */
     function getItem() {
         if (!($tostore = current($this->_items))) {
@@ -941,11 +960,12 @@ class AA_Grabber_Form extends AA_Grabber {
         }
 
         // uploaded files are not $_POST variable.
-        // Alo it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
+        // Also it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
         // so the information about one file is quite far in the structure
         if (isset($_FILES['aa'])) {
-            // collect together the informations about ane file - array(name, type, tmp_name, error, size)
-            $files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
+            // collect together the informations about one file - array(name, type, tmp_name, error, size)
+            //$files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
+            $files = $this->rearangeAaFilesArray($_FILES['aa']);
             // add it to POSTed variables
             $aa    = array_merge_recursive($aa, $files);
         }
@@ -1008,10 +1028,10 @@ class AA_Grabber_Form extends AA_Grabber {
 
             foreach ($item_fields as $dirty_field_id => $val_array) {
                 // create full_text......1 from full_text______1
-                $field_id = AA_Form_Array::getFieldIdFromVar($dirty_field_id);
+                $field_id = FormArray::getFieldIdFromVar($dirty_field_id);
 
                 // get the content of the field (values and flags)
-                $aa_value = AA_Widget::getValue($val_array);
+                $aa_value = Widget::getValue($val_array);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
                 if ($dirty_item_id{0} == 'r') {
@@ -1067,7 +1087,7 @@ class AA_Grabber_Form extends AA_Grabber {
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
-*   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
+*   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
 *   is called to grab the value (or multivalues) from the submitted form
 */
 class AA_Objectgrabber_Form extends AA_Grabber {
@@ -1163,7 +1183,7 @@ class AA_Objectgrabber_Form extends AA_Grabber {
             }
             foreach ($obj_fields as $field_id => $val_array) {
                 // get the content of the field (values and flags)
-                $aa_value = AA_Widget::getValue($val_array);
+                $aa_value = Widget::getValue($val_array);
                 $aa_value->replaceInValues($trans_obj_alias, $trans_obj_ids);
                 $content->setAaValue($field_id, $aa_value);
             }
