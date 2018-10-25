@@ -178,7 +178,9 @@ class AA_Adminpageutil {
             echo "<div>" . $this->subtitle . "</div>";
         }
 
-        PrintArray($err);
+        if ($errtext = GetPrintArray($err)) {
+            echo "<div class=\"err\">$errtext</div>";
+        };
         echo $Msg;
 
         // PrintArray($r_err);

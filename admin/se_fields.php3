@@ -57,7 +57,7 @@ $varset = new Cvarset();
  * @param $alias=""
  * @param $separate=false
  */
-function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $alias="", $separate=false, $analyze=false) {
+function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $alias="", $separate, $text_stored, $analyze) {
     $name = safe($name); $pri=safe($pri);
 
     $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
@@ -83,11 +83,14 @@ function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $ali
 
     if ($analyze AND ($type!='in_item_tbl')) {
         $items       = DB_AA::select1('SELECT count(*) as cnt FROM item','cnt', array(array('item.slice_id',$slice_id, 'l')));
-        $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT item_id) as cntitm  FROM content INNER JOIN item ON content.item_id = item.id','', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id)));
+        $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content INNER JOIN item ON content.item_id = item.id','', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id)));
         $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('(content.flag & 64)',64,'i')));
         $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('(content.flag & 64)',0,'i')));
         $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$id),array('text','')));
-        echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small title=\"Distinct values\">Distinct values:$items_field[cntval]</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">Empty fields:$empty</small></td></tr>";
+        $empty_text    = (($items_field['cnt']==$empty) AND ($items>0)) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
+        $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>,num:$items_field[cntnum]" : "text:$items_field[cntval],<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
+        $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
+        echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small></td></tr>";
     }
 }
 
@@ -122,6 +125,19 @@ function ShowNewField($from_slice, $slice_id) {
     echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
     echo "</tr>\n";
 }
+
+
+if ($_REQUEST['del']) {
+    $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr("Can't change field");
+        exit;
+    }
+    AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+
+    $Msg = MsgOk(_m("Field delete OK"));
+}
+
 
 if ($update) {
     do {
@@ -215,19 +231,64 @@ if ($update) {
 // slice_fields are begins with underscore
 // slice fields are the fields, which we do not use for items in the slice, but
 // rather for setting parameters of the slice
-$slice_fields_where = ($slice_fields) ? "AND id LIKE '\_%'" : "AND id NOT LIKE '\_%'";
+$s_fields = DB_AA::select(array(), 'SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias1_func, alias2, alias2_func, alias3, alias3_func, input_before, multiple, in_item_tbl, html_default, html_show, text_stored FROM field', array(array('slice_id', $slice_id, 'l'), array('id', '\_%', $slice_fields ? 'LIKE' : 'NOT LIKE')), array('input_pri'));
 
-// lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias2, alias3, input_before
-        FROM field
-        WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL);
+// check duplicated aliases
+$all_aliasses = array();
+foreach ($s_fields as $fld) {
+    foreach (array('alias1','alias2','alias3',) as $fldname) {
+        $alias = $fld[$fldname];
+        if (!trim($alias) OR ($alias =='_#UNDEFINE')) {
+            continue;
+        }
+        if (isset($all_aliasses[$alias])) {
+            $err[] = _m('Alias <b>%1</b> is duplicated', array($alias));
+        }
+        $all_aliasses[$alias] = true;
+    }
+}
 
 $apage = new AA_Adminpageutil('sliceadmin',$slice_fields ? 'slice_fields' : 'fields');
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->addRequire('aa-jslib');
 $apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->printHead($err, $Msg);
+
+if ($_REQUEST['analyze'] or $_REQUEST['fix']) {
+// check duplicated aliases
+    $all_aliasses = array();
+    $to_fix = false;
+    foreach ($s_fields as $fld) {
+        foreach (array('alias1','alias2','alias3',) as $fldname) {
+            $alias = $fld[$fldname];
+            $func  = $fld[$fldname.'_func'];
+            if (!trim($alias) OR ($alias =='_#UNDEFINE')) {
+                continue;
+            }
+            if (($func == 'f_h:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
+                if ($_REQUEST['analyze']) {
+                    echo "<br>$alias - f_h: used with field marked as non multiple and html - consider using quicker f_1 function for direct content print";
+                    $to_fix = true;
+                } elseif ($_REQUEST['fix']) {
+                    $changed = DB_AA::sql("UPDATE field SET `${fldname}_func`='f_1:'", array(array('slice_id', $slice_id, 'l'), array('id', $fld['id'])));
+                    echo "<br>$alias changed to f_1 ($changed change)";
+                }
+            }
+            if (($func == 'f_t:') AND ((($fld['html_default']==1) AND ($fld['html_show']==0) AND ($fld['multiple']==0)) OR (strlen($fld['in_item_tbl'])>1) OR ($fld['text_stored']==0))) {
+                if ($_REQUEST['analyze']) {
+                    echo "<br>$alias - f_t: used with field marked as non multiple and html - consider using quicker f_1 function for direct content print";
+                    $to_fix = true;
+                } elseif ($_REQUEST['fix']) {
+                    $changed = DB_AA::sql("UPDATE field SET `${fldname}_func`='f_1:'", array(array('slice_id', $slice_id, 'l'), array('id', $fld['id'])));
+                    echo "<br>$alias changed to f_1 ($changed change)";
+                }
+            }
+        }
+    }
+    if ($to_fix) {
+        echo "<div><input type='submit' value='"._m('change all')."' name='fix'>";
+    }
+}
 
 $form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
 FrmTabCaption(_m("Fields"), '', '', $form_buttons, $slice_id);
@@ -248,9 +309,9 @@ if ( isset($s_fields) and is_array($s_fields)) {
         $type = ( $v['in_item_tbl'] ? "in_item_tbl" : "" );
 
         if ( $update ) { // get values from form
-            ShowField($slice_id, $v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false, $analyze);
+            ShowField($slice_id, $v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false, $v['text_stored'], $_REQUEST['analyze'] OR $_REQUEST['fix']);
         } else {
-            ShowField($slice_id, $v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false, $analyze);
+            ShowField($slice_id, $v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false, $v['text_stored'], $_REQUEST['analyze'] OR $_REQUEST['fix']);
         }
     }
 }
@@ -266,7 +327,7 @@ FrmTabEnd( $form_buttons);
         if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
             return;
         }
-        var url="<?php echo StateUrl(con_url("./se_inputform.php3", "del=1")); ?>"
+        var url="<?php echo StateUrl(get_url('', array("del"=>1,"analyze"=>($_REQUEST['analyze'] OR $_REQUEST['fix'])))); ?>"
         document.location=url + "&fid=" + escape(id);
     }
 </script>
