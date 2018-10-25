@@ -513,32 +513,35 @@ class Files {
  */
 class AA_File_Wrapper {
 
-    /** @var $url string URL to the file */
+	/** @var string URL to the file */
     var $url;
-
-    /** @var $info array parsed URL info */
+	/** @var array parsed URL info */
     var $info;
-
-    /** @var $fp int the file descriptor */
+	/** @var int the file descriptor */
     var $fp;
+    /** @var int used in http */
+    var $redirects;
 
     /** AA_File_Wrapper function
      * Constructor.
      * @param $url string
      * @param $info array
      */
-    function __construct($url, &$info) {
+	function __construct($url, $info) {
         $this->url = $url;
         $this->info = $info;
+        $this->redirects = 5;
     }
-
-    /** contents function
+	/**
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
     function contents() {
         $contents = '';
-        if ($this->open()) {
+		if ($retval = $this->open()) {
+			if (is_object($retval)) { // It may be a redirect
+				return $retval->contents();
+			}
             while (!$this->eof()) {
                 $contents .= $this->read();
             }
@@ -546,8 +549,7 @@ class AA_File_Wrapper {
         }
         return $contents;
     }
-
-    /** open function
+	/**
      * Open the file.
      * @param $mode string only 'r' (read-only) is currently supported
      * @return boolean
@@ -555,18 +557,16 @@ class AA_File_Wrapper {
     function open($mode = 'r') {
         $this->fp = null;
         $this->fp = @fopen($this->url, $mode);
-        return $this->fp;
+		return ($this->fp !== false);
     }
-
-    /** close function
+	/**
      * Close the file.
      */
     function close() {
         fclose($this->fp);
         unset($this->fp);
     }
-
-    /** read function
+	/**
      * Read from the file.
      * @param $len int
      * @return string
@@ -574,8 +574,7 @@ class AA_File_Wrapper {
     function read($len = 8192) {
         return fread($this->fp, $len);
     }
-
-    /** eof function
+	/**
      * Check for end-of-file.
      * @return boolean
      */
@@ -590,10 +589,9 @@ class AA_File_Wrapper {
     //
     // Static
     //
-
-    /** &wrapper function
+	/**
      * Return instance of a class for reading the specified URL.
-     * @param $url string
+	 * @param $source mixed; URL, filename, or resources
      * @return AA_File_Wrapper
      */
     function wrapper($url) {
@@ -628,11 +626,12 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
     var $defaultPort;
     var $defaultHost;
     var $defaultPath;
+
     /** AA_File_HTTP_Wrapper function
      * @param $url
      * @param $info
      */
-    function __construct($url, &$info) {
+	function __construct($url, $info) {
         parent::__construct($url, $info);
         $this->setDefaultPort(80);
         $this->setDefaultHost('localhost');
@@ -676,8 +675,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
         if (isset($this->info['query'])) {
             $path .= '?' . $this->info['query'];
         }
-
-        if (!($this->fp = fsockopen($host, $port, $errno, $errstr))) {
+		if (!($this->fp = fsockopen($host, $port))) {
             return false;
         }
 
@@ -699,8 +697,39 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
             while(fgets($this->fp, 4096) !== "\r\n");
             return true;
         }
+		if(preg_match('!^3\d\d$!', $rc) && $this->redirects >= 1) {
+			for($response = '', $time = time(); !feof($this->fp) && $time >= time() - 15; ) $response .= fgets($this->fp, 128);
+			if (preg_match('!^(?:(?:Location)|(?:URI)|(?:location)): ([^\s]+)[\r\n]!m', $response, $matches)) {
+				$this->close();
+				$location = $matches[1];
+				if (preg_match('!^[a-z]+://!', $location)) {
+					$this->url = $location;
+				} else {
+					$newPath = ($this->info['path'] !== '' && strpos($location, '/') !== 0  ? dirname($this->info['path']) . '/' : (strpos($location, '/') === 0 ? '' : '/')) . $location;
+					$this->info['path'] = $newPath;
+					$this->url = $this->glue_url($this->info);
+				}
+				$returner =& AA_File_Wrapper::wrapper($this->url);
+				$returner->redirects = $this->redirects - 1;
+				return $returner;
+			}
+		}
         $this->close();
         return false;
+    }
+	function glue_url ($parsed)
+    {
+        // Thanks to php dot net at NOSPAM dot juamei dot com
+        // See http://www.php.net/manual/en/function.parse-url.php
+        if (!is_array($parsed)) return false;
+        $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
+        $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
+        $uri .= isset($parsed['host']) ? $parsed['host'] : '';
+        $uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
+        $uri .= isset($parsed['path']) ? $parsed['path'] : '';
+        $uri .= isset($parsed['query']) ? '?' . $parsed['query'] : '';
+        $uri .= isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+        return $uri;
     }
 }
 
@@ -726,10 +755,12 @@ class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
  * FTP protocol class.
  */
 class AA_File_FTP_Wrapper extends AA_File_Wrapper {
-
+	/** @var Control socket */
     var $ctrl;
-    /** open function
-     * @param $mode
+	/**
+	 * Open the file.
+	 * @param $mode string See fopen for mode string options.
+	 * @return boolean True iff success.
      */
     function open($mode = 'r') {
         $user = isset($this->info['user']) ? $this->info['user'] : 'anonymous';
@@ -737,8 +768,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         $host = isset($this->info['host']) ? $this->info['host'] : 'localhost';
         $port = isset($this->info['port']) ? (int)$this->info['port'] : 21;
         $path = isset($this->info['path']) ? $this->info['path'] : '/';
-
-        if (!($this->ctrl = fsockopen($host, $port, $errno, $errstr))) {
+		if (!($this->ctrl = fsockopen($host, $port))) {
             return false;
         }
 
@@ -749,8 +779,8 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         $this->close();
         return false;
     }
-    /** close function
-     *
+	/**
+	 * Close an open file.
      */
     function close() {
         if ($this->fp) {
@@ -764,10 +794,12 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         fclose($this->ctrl);
         $this->ctrl = null;
     }
-    /** _open function
-     * @param $user
-     * @param $pass
-     * @param $path
+	/**
+	 * Internal function to open a connection.
+	 * @param $user string Username
+	 * @param $pass string Password
+	 * @param $path string Path to file
+	 * @return boolean True iff success
      */
     function _open($user, $pass, $path) {
         // Connection establishment
@@ -805,8 +837,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
 
         $host = "$h1.$h2.$h3.$h4";
         $port = ($p1 << 8) + $p2;
-
-        if (!($this->fp = fsockopen($host, $port, $errno, $errstr))) {
+		if (!($this->fp = fsockopen($host, $port))) {
             return false;
         }
 
@@ -819,21 +850,26 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
 
         return true;
     }
-    /** _send function
-     * @param $command
-     * @param $data
+	/**
+	 * Internal function to write to the connection.
+	 * @param $command string FTP command
+	 * @param $data string FTP data
+	 * @return boolean True iff success
      */
     function _send($command, $data = '') {
         return fwrite($this->ctrl, $command . (empty($data) ? '' : ' ' . $data) . "\r\n");
     }
-    /** _receive function
-     *
+	/**
+	 * Internal function to read a line from the connection.
+	 * @return string|false Resulting string, or false indicating error
      */
     function _receive() {
         return $this->_receiveLine($line);
     }
-    /** _receiveLine function
-     * @param $line
+	/**
+	 * Internal function to receive a line from the connection.
+	 * @param $line string Reference to receive read data
+	 * @return string|false
      */
     function _receiveLine(&$line) {
         do {
@@ -903,7 +939,7 @@ class AA_Directory_Wrapper {
      * @param $url string
      * @param $info array
      */
-    function __construct($url, &$info) {
+    function __construct($url, $info) {
         $this->url             = Files::fixPath($url);
         $this->info            = $info;
         $this->dp              = NULL;
@@ -1189,8 +1225,8 @@ class AA_Directory_Wrapper {
 
     /**
      * Return instance of a class for reading the specified URL.
-     * @param $url string
-     * @return directory wrapper (type by $url)
+     * @param string $url
+     * @return AA_Directory_Wrapper directory wrapper (type by $url)
      */
     function &wrapper($url) {
         $info = parse_url($url);
