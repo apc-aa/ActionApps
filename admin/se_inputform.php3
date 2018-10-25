@@ -25,6 +25,8 @@
  *
 */
 
+use AA\Widget\Widget;
+
 require_once "../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once AA_INC_PATH."constants_param_wizard.php3";
@@ -65,17 +67,6 @@ if (!IfSlPerm(PS_FIELDS)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-if ($del) {
-    $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-        $err["DB"] = MsgErr("Can't change field");
-        exit;
-    }
-    AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
-
-    $Msg = MsgOk(_m("Field delete OK"));
-    go_url($back_admin_url);  // back to field page
-}
 
 // If $onlyupdate is set, then just set fields defined Note exceptiosn
 //      $input_default is as to store in the database, i.e. input_default_f:$input_default
@@ -172,7 +163,7 @@ if ($update) {
         // property in the future. Honza, 2006-10-17
         // On the other hand we use it for marting the field as translateable
         // Honza, 2014-03-24
-        $widget_class = AA_Widget::constructClassName($input_show_func_f);
+        $widget_class = Widget::constructClassName($input_show_func_f);
         Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0))));
 
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
@@ -238,6 +229,7 @@ if ($update) {
 }
 
   // lookup constants
+$constants['AA_OPTGROUP 1'] = _m('Constant Group');
 $constants[] = "";   // add blank constant as the first option
 
 // we encode the value so it could be passed to another script easily
@@ -247,9 +239,7 @@ foreach ( GetConstants('lt_groupNames', 'name') as $val => $name ) {
     $constants[varname4form($val)] = $name;
 }
 
-$constants[] = "";
-$constants[] = "*** SLICES: ***";
-$constants[] = "";
+$constants['AA_OPTGROUP 2'] = _m('Slices');
 
 // add slices to constant array (good for related stories, link to authors ...)
 foreach ($g_modules as $k => $v) {
@@ -258,7 +248,7 @@ foreach ($g_modules as $k => $v) {
     }
 }
   // lookup fields
-if ( !($fld = DB_AA::select1("SELECT * FROM field WHERE slice_id='$p_slice_id' AND id='$fid'"))) {
+if ( !($fld = DB_AA::select1('SELECT * FROM field', '', array(array('slice_id', $slice_id, 'l'), array('id',$fid))))) {
     $Msg = MsgErr(_m("No fields defined for this slice"));
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
@@ -282,7 +272,7 @@ if ( !$update ) {      // load defaults
     get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
 
     // which parameters uses this widget?
-    $widget_class   = AA_Widget::constructClassName($input_show_func_f);
+    $widget_class   = Widget::constructClassName($input_show_func_f);
     $isf_parameters = $widget_class::getClassProperties();
 
     if ( isset($isf_parameters['const'])) {
@@ -327,7 +317,7 @@ $headcode = '
   */
   function CallParamWizard(list, combo_list, text_param ) {
     combo_list_el = document.f.elements[combo_list];
-    page = GetUrl("'. get_admin_url('param_wizard.php3') .'", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.options[combo_list_el.selectedIndex].value]);
+    page = GetUrl("'. get_admin_url('param_wizard.php3') .'", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.value]);
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }
@@ -352,10 +342,9 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
 
 FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), '', '', $form_buttons, $slice_id);
 
-$input_show_classes = AA_Components::getClassNames('AA_Widget_');
-foreach ($input_show_classes as $class) {
-    $isc_arr[strtolower(substr($class, 10))] = $class::name();
-}
+$input_show_classes = AA_Components::getClassNames('AA\\Widget');
+$isc_arr = array_map(function($v) {return $v::name();}, $input_show_classes);
+asort($isc_arr);
 
 $tab_separator = "\n<tr><td colspan=2><hr></td></tr>\n";
 
@@ -379,7 +368,7 @@ echo "
                 <span class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
                     . $constants_menu[1] ."</a></b></span><br>
                 <span class=tabtxt>
-                    <B><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></B></span>
+                    <b><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></b></span>
               </td>
              </tr>
             </table>
