@@ -466,7 +466,7 @@ function GetPrintArray($a) {
     $ret = '';
     if (is_array($a)) {
         foreach ( $a as $val) {
-            $ret .=  is_array($val) ? GetPrintArray($val) : $val;
+            $ret .=  is_array($val) ? GetPrintArray($val) : "<div>$val</div>";
         }
     }
     return $ret;

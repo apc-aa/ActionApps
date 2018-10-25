@@ -111,7 +111,7 @@ class AA_Debug_Console extends AA_Debug {
                 $a = print_r($a, true);
             }
             // we used escape4js, but it is sometimes not defined yet
-            $a = str_replace( array("'","\r\n","\n","\r",'<script','</script'), array("\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $a );
+            $a = str_replace( array("\\", "'","\r\n","\n","\r",'<script','</script'), array("\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $a );
             $code .= "console.$func('$a');\n";  //str_replace("'", "\'", str_replace('\\', '\\\\', $a)).
         }
         $this->_script($code);

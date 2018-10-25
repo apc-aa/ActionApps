@@ -1,3 +1,23 @@
+18-10-25 - now you can install AA with composer:
+             composer create-project apc/actionapps -s dev
+         - new PSR-4 compatible autoloader
+         - started moving classes to separate files in new /src directory and namespaces compatible with PSR-4 specification
+         - slice Admin -> Fields improved
+            - checks for duplicated aliases
+            - Analyze now allows to optimize some aliases for speed - change some occurrences of f_h/f_t to f_1
+            - Analyze highlightes empty fields and the fields with only single value
+         - the fields defined by slice now supports aliases
+             If you want to create alias for the field, then define _#FLD_ANxx for alias
+             name and _#FLD_AVxx for alias params (f_t function is used)
+             example: you can use _#MY_LINK_ for the field if you in the slice containing
+             the field definitions for the slice set
+               _#FLD_AN_1 = MY_LINK_ and
+               _#FLD_AV_1 to <a href="_#SOME_URL">_#SOME_LNK</a>
+         - better constants selectbox in Slice Admin -> Fields -> Edit
+         - fixed Central and updated Copy slice to AA_Adminpageutil class
+         - widget File is now prepared for multiple file upload (not yet enabled)
+         - files manipulation library updated to last version
+         - deleted slices moved to the end of slice selection selectbox and marked with xxx
 18-10-03 - fixed problem with module switching (sometimes wrong module menu was loaded
 (honzam)   (slice menu for site module, ...), mainly with opened more than one browser window)
          - fixed problem with Alerts switching when wrong alerts module was loaded into tabledit
