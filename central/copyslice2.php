@@ -90,21 +90,9 @@ if ($_POST['copy']) {
     $sync_items = false;
 }
 
-HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile( 'javascript/aajslib.php' );
-
-?>
-<TITLE><?php echo _m("Central - Copy Slice (2/2) - Slices to Copy"); ?></TITLE>
-</HEAD>
-<BODY>
-<?php
-$useOnLoad = false;
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", "copyslice");
-
-echo "<H1><B>" . _m("Central - Copy Slice (2/2) - Slices to Copy") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('central', 'copyslice');
+$apage->setTitle( _m("Central - Copy Slice (2/2) - Slices to Copy") );
+$apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
 $aas_array = array('thisAA' => _m('* this ActionApps'));
@@ -117,15 +105,14 @@ $template_slices = $aas[$_POST['template_aa']]->requestModules(array('S'));
 $template_sites  = $aas[$_POST['template_aa']]->requestModules(array('W'));
 $template_alerts = $aas[$_POST['template_aa']]->requestModules(array('Alerts'));
 
+
+//huhl($aas[$_POST['template_aa']], $template_slices, $template_sites, $template_alerts);
+
 $form_buttons = array("copy"      => array( "type"      => "submit",
                                             "value"     => _m("Copy"),
                                             "accesskey" => "C"),
                       "template_aa"     => array( "value"     =>  $_POST['template_aa'])
                      );
-
-?>
-<form name=f method=post action="<?php echo StateUrl(self_base() ."copyslice2.php") ?>">
-<?php
 
 FrmTabCaption('', '', '', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
@@ -137,10 +124,5 @@ FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites,
 FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, @reset($_POST['sync_alerts']), 10);
 FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
 FrmTabEnd($form_buttons);
-?>
-</FORM>
-<?php
-HtmlPageEnd();
-page_close();
 
-?>
+$apage->printFoot();

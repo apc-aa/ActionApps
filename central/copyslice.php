@@ -33,19 +33,12 @@ if (!IsSuperadmin()) {
 
 $aas = AA_Actionapps::getArray();
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<TITLE><?php echo _m("Central - Copy Slice (1/2) - Select Source ActionApps"); ?></TITLE>
-</HEAD>
-<BODY>
-<?php
-$useOnLoad = true;
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", "copyslice");
 
-echo "<H1><B>" . _m("Central - Copy Slice (1/2) - Select Source ActionApps") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('central', 'copyslice');
+$apage->setTitle( _m("Central - Copy Slice (1/2) - Select Source ActionApps") );
+$apage->setForm(array('action'=>'copyslice2.php'));
+$apage->printHead($err, $Msg);
+
 
 $aas_array = array();
 foreach ( $aas as $k => $aa ) {
@@ -53,15 +46,8 @@ foreach ( $aas as $k => $aa ) {
 }
 
 $form_buttons = array ("submit");
-?>
-<form name=f method=post action="<?php echo StateUrl(self_base() ."copyslice2.php") ?>">
-<?php
 FrmTabCaption('', '', '', $form_buttons, $slice_id);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
 FrmTabEnd($form_buttons);
-?>
-</FORM>
-<?php
-HtmlPageEnd();
-page_close();
-?>
+
+$apage->printFoot();

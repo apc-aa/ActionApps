@@ -43,6 +43,8 @@ class AA_Actionapps {
     /** local data (central_conf table) in ItemContent structure */
     var $local_data;
 
+    var $last_error = '';
+
     /** cached remote session ID */
     var $_remote_session_id;
 
@@ -191,6 +193,7 @@ class AA_Actionapps {
         if ( !$this->_remote_session_id OR $this->_remote_session_id_time < (now() - 10*60)) {  // 10 minutes
             $response = $this->_authenticate();
             if ($response->isError()) {
+                $this->last_error = $response->getError();
                 return $response;
             }
         }
@@ -200,6 +203,14 @@ class AA_Actionapps {
         // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
     }
 
+    /**
+     * @return string
+     */
+    public function getLastError()
+    {
+        return $this->last_error;
+    }
+
     function _authenticate() {
         $request  = new AA_Request('Get_Sessionid');
         // $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
@@ -207,6 +218,8 @@ class AA_Actionapps {
         if ( !$response->isError() ) {
             $arr = $response->getResponse();
             $this->setSession($arr[0]);
+        } else {
+            $this->last_error = $response->getError();
         }
         return $response;
     }

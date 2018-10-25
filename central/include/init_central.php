@@ -60,4 +60,7 @@ require_once AA_INC_PATH.     "mgettext.php3";
 require_once AA_INC_PATH.     "locauth.php3";
 require_once AA_CENTRAL_PATH. 'actionapps.class.php';
 
-
+if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
+    AA::$module_id = '';
+}
+$slice_id = AA::$module_id;
