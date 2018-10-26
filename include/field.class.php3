@@ -90,8 +90,8 @@ class AA_Field {
             $this->aliases = new AA_Aliases;
             $field_aliases = array_filter( $data->getAliasNames(), function ($name) { return (0 === strpos($name,'_#FLD_AN')); } );   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
             foreach ($field_aliases as $al) {
-                if ($als = IsAlias($data->get_alias_subst($al,''))) {
-                    $this->aliases->addAlias(new AA_Alias($als, $fid, $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al), 'f_t')));
+                if ( IsAlias($als = '_#'.$data->get_alias_subst($al,''))) {
+                    $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), $fid, 'f_t:'.$data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al))));
                 }
             }
         }

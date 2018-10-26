@@ -7776,6 +7776,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
         AA::Stringexpander()->setDependentParts($slices_arr, $hash, $ret);
         AA::Stringexpander()->addRequire('css-aa-system');
+        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteNewitem, ...
         return $ret;
     }
 }
