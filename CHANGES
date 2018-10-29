@@ -1,3 +1,6 @@
+18-10-29 - improved Field Edit page - htmleditor used for textareas, ...
+(honzam) - added new PSR-4 compatible autoloader by composer
+18-10-26 - fixed functionality of aliases in fields defined by slice
 18-10-25 - now you can install AA with composer:
              composer create-project apc/actionapps -s dev
          - new PSR-4 compatible autoloader
