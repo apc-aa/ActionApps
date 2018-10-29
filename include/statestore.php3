@@ -1005,7 +1005,6 @@ class AA_Components extends AA_Object {
     static function getClassNames($mask)
     {
         $right_classes = array();
-
         if (false !== $pos = strrpos($mask, '\\')) {  // new composer approach with autoload - we can't use  get_declared_classes()
             $classtype = substr($mask,$pos+1);
             $dirname = AA_BASE_PATH.'src/'.$classtype;
@@ -1018,6 +1017,7 @@ class AA_Components extends AA_Object {
             }
             return $right_classes;
         } else {
+            $mask_length = strlen($mask);
             return array_filter(get_declared_classes(), function ($classname) use ($mask_length, $mask) {
                 return substr($classname, 0, $mask_length) == $mask;
             });
