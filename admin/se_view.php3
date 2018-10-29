@@ -258,14 +258,22 @@ if ( $update ) {
         }
 
         $varset->add("slice_id", "unpacked", $slice_id);
-        $varset->add("name", "quoted", $name);
+        //$varset->add("name", "quoted", substr($name,0,30));
         $varset->add("type", "quoted", $view_type);
 
         foreach ($VIEW_FIELDS as $k => $v) {
             if ( $VIEW_TYPES[$view_type][$k] ) {
-                $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0) : $$k));
+                $insval = $_POST[$k];
+                if ($v["type"] == "bool") {
+                    $insval  = $insval  ? 1 : 0;
+                }
+                if ($v["max"]) {
+                    $insval  = substr($insval, 0, $v["max"]);
+                }
+                $varset->add($k, 'quoted', quote($insval));
             }
         }
+
         if ( $view_id ) {
             $varset->addkey('id','number', $view_id);
             $varset->saveHistory('view', unpack_id(substr($view_id.'_'.$slice_id, 0, 16)));

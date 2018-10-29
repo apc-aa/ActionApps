@@ -104,7 +104,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
  */
 class AA_Responder_Get_Module_Defs extends AA_Responder {
     var $ids;
-    var $limited;  // array - limits the sended definitions
+    var $limited;  // array - limits the definitions sent
     var $type;     // module type
 
     function __construct($param) {

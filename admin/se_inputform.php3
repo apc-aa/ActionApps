@@ -288,11 +288,13 @@ if ( !$update ) {      // load defaults
 }
 
 
-$script2run = ' 
+$script2run = '
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
    window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("alias2_func"), opts);
    window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);
+   window.cm_ih = CodeMirror.fromTextArea(document.getElementById("input_help"), opts);
+   window.cm_ib = CodeMirror.fromTextArea(document.getElementById("input_before"), opts);
    ';
 
 $headcode = '
@@ -363,12 +365,11 @@ echo "
       echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
               <td class=tabtit>
-                <font class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>"
-                    . $constants_menu[0] ."</a></b></font><br>
-                <span class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
-                    . $constants_menu[1] ."</a></b></span><br>
-                <span class=tabtxt>
-                    <b><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></b></span>
+                <div class=tabtxt>
+                <b>&larr;&nbsp;<a href='javascript:CallConstantEdit(0)'>". $constants_menu[0] ."</a></b><br>
+                <b>&larr;&nbsp;<a href='javascript:CallConstantEdit(1)'>". $constants_menu[1] ."</a></b><br>
+                <b><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></b>
+                </div>
               </td>
              </tr>
             </table>
@@ -396,7 +397,7 @@ echo "
                 <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
                 <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"text\" name=\"input_default\" size=50 value=\"". myspecialchars($input_default) ."\">
+            <input type=\"text\" name=\"input_default\" style=\"width: 95%;\" value=\"". myspecialchars($input_default) ."\">
       </td>
      </tr>";
 echo $tab_separator;
@@ -409,7 +410,7 @@ echo "
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
              <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\" size=\"50\" value=\"". myspecialchars($input_validate_p) ."\">
+         <input type=\"text\" name=\"input_validate_p\"  style=\"width: 95%;\" value=\"". myspecialchars($input_validate_p) ."\">
          </td>
       </td>
      </tr>";
@@ -449,7 +450,7 @@ echo $tab_separator;
 FrmInputChBox("html_show", _m("Show 'HTML' / 'plain text' option"), $html_show);
 FrmInputChBox("html_default", _m("'HTML' as default"), $html_default, false, '', 1, false, _m('HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least.'));
 FrmTextarea(  "input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"));
-FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, 50, false,  _m("Text shown after user click on '?' in input form"));
+FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, '', false,  _m("Text shown after user click on '?' in input form"));
 FrmTextarea(  "input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
 
 echo $tab_separator;

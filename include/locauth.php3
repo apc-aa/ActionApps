@@ -90,7 +90,7 @@ class AA_Auth extends Auth {
 
     protected function _validatelogin($username, $password) {
         $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password)) ? $username : '';
-        AA_Log::write('LOGIN', ParamImplode(array($uid,$_SERVER['REMOTE_ADDR'])), $username);
+        AA_Log::write('LOGIN', ParamImplode(array($uid,$_SERVER['REMOTE_ADDR'], 'http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}")), $username); 
         return $uid;
     }
 
