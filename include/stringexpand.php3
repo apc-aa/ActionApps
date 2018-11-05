@@ -188,19 +188,23 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand() {
-         $arg_list = func_get_args();   // must be asssigned to the variable
-         $i        = 0;
-         $arr      = array();
-         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-             if ( !strlen($field_id = trim($arg_list[$i])) ) {
-                 $i += 2;
-                 continue;
-             }
-             $arr[$field_id] = $arg_list[$i+1];
-             $i += 2;
-         }
-         return json_encode($arr);
-     }
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
+            $arg_list = ConvertEncodingDeep($arg_list, AA::$encoding, 'utf-8');
+        }
+
+        $i        = 0;
+        $arr      = array();
+        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+            if ( !strlen($field_id = trim($arg_list[$i])) ) {
+                $i += 2;
+                continue;
+            }
+            $arr[$field_id] = $arg_list[$i+1];
+            $i += 2;
+        }
+        return json_encode($arr);
+    }
 }
 
 /** @return {colonescape:val1} - escapes colon as internaly used in AA. It is special case function - more internal one
@@ -6489,6 +6493,24 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
     }
 }
 
+
+/** @return string - url GET parameter htlmencoded - {qss[:<varname>[:delimiter]]}
+ *  equivalent to {qss:} {safe:{qs:...}}
+ *  use it all the time you are printing user input (url parameters) to HTML page - it prevents XSS attacks
+ *  Ussage:
+ *   {qss:surname}    - returns &lt;Havel&gt; for http://example.org/cz/page?surname=<Havel>
+ *   {qss}            - returns whole querystring (including GET and POST variables) html encoded
+ *   {qss:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
+ *                   - returns the value of the variable - exactly as posted - html encoded
+ */
+class AA_Stringexpand_Qss extends AA_Stringexpand_Qs {
+
+    function expand($variable_name='', $delimiter=null) {
+        return myspecialchars(call_user_func_array('parent::' . __FUNCTION__, func_get_args()),false);
+    }
+}
+
+
 /** Returns actual server load
  *  Ussage: {serverload}
  */
@@ -7753,8 +7775,8 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $hash = get_hash('manager', $slices, $conds, $sort, $code);
 
         $code_actions  = $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">'.$mode_arr['S'].'</i></article>') : '';
-        $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\''.$mode_arr['Dconfirm']. '\')) { AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">'.$mode_arr['D'].'</i></article>') : '';
-        $footer        = $mode_arr['N'] ? ('<footer><article><i class="ico new" onclick="AA_SiteNewitem(\''. $slices_arr[0] .'\',\'\',\''.$field.'\',\''.$item_id.'\');">'.$mode_arr['N'].'</i></article></footer>') : '';
+        $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\''.$mode_arr['Dconfirm']. '\')) { document.querySelector(\'article[data-aa-part=&quot;'.$hash.'&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">'.$mode_arr['D'].'</i></article>') : '';
+        $footer        = $mode_arr['N'] ? ('<footer><article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;'.$hash.'&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\''. $slices_arr[0] .'\',\'\',\''.$field.'\',\''.$item_id.'\');">'.$mode_arr['N'].'</i></article></footer>') : '';
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
                     <section class="itemgroup">';
