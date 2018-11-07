@@ -425,7 +425,7 @@ class Widget extends AA_Components
         $base_id = FormArray::formName2Id($base_name);
         $help = $aa_property->getHelp();
         $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-ajax-inline' : 'aa-ajax-open';
-        $widget_html = "<div class=\"ajax_widget $class\">";
+        $widget_html = "<div class=\"ajax_widget $class\" id=\"widget-$base_id\">";
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
         $widget_html .= "\n<div class=ajax_buttons>";
         $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"" . _m('SAVE CHANGE') . "\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
