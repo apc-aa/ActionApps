@@ -1,3 +1,10 @@
+18-11-07 - all AA admin pages converted to AA_Adminpageutil aproach
+(honzam) - better implementation of AA admin menu
+         - AA UI improved - removed old links to documentation
+         - fixed multiple chckboxes weidget, when diplayes through {live} or {ajax} - the deselecting by click
+           on the tag now works as expected
+         - better html entities escaping for display in HTML
+         - fix - sitemodule marked as deleted now do not show any output
 18-10-29 - improved Field Edit page - htmleditor used for textareas, ...
 (honzam) - added new PSR-4 compatible autoloader by composer
 18-10-26 - fixed functionality of aliases in fields defined by slice

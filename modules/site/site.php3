@@ -108,7 +108,7 @@ if (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) {
     $host2      = 'www.'.$host;
 }
 $domain_arr = array("http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2");
-AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('slice_url', $domain_arr))));
+AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('deleted','0','i'),array('slice_url', $domain_arr))));
 
 if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
     Die404();
