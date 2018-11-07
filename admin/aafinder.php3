@@ -33,7 +33,7 @@ require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."tabledit.php3";
-require_once menu_include();      //show navigation column depending on $show
+//require_once menu_include();      //show navigation column depending on $show
 require_once AA_INC_PATH."mgettext.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 

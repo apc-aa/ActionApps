@@ -78,44 +78,37 @@ function GetFiltered($type, $filter, $to_much, $none) {
     }
     return $list;
 }
+
 /** PrintModulePermModificator function
  * @param $selected_user
- * @param $form_buttons
- * @param $sess
- * @param $slice_id
+ * @return string
  */
-function PrintModulePermModificator($selected_user, $form_buttons='') {
-    FrmTabSeparatorNoHidden( _m("Permissions"), $form_buttons );
-    ?>
-
-  <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-
-    <?php
-    echo '<tr>
-            <td><b>'. _m("Object") .'</b></td>
-            <td><b>'. _m("Permissions") .'</b></td>
-            <td><b>'. _m("Revoke") .'</b></td></tr>';
-
+function PrintModulePermModificator($selected_user) {
     $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
-
-    $db = getDB();
-    $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
-    $db->query($SQL);
+    $all_modules = DB_AA::select(array('unid'=>array()),'SELECT LOWER(HEX(`id`)) AS unid, name, type FROM module', '', array('type', 'name'));
     $i=0;
-    while ( $db->next_record() ) {
-        $mid = unpack_id($db->f('id'));
+    $current_perm_table = '';
+    foreach ( $all_modules as $mid => $mod ) {
         if ( $perm_slices[$mid] ) {
             $odd = ((gettype($i/2) == "integer") ? true : false);
-            PrintModulePermRow($mid, $db->f('type'), $db->f('name'), $perm_slices[$mid], $odd);
+            $current_perm_table .= GetModulePermRow($mid, $mod['type'], $mod['name'], $perm_slices[$mid], $odd);
             $i++;
         } else {               // no permission to this module
             // this module should be listed in 'Add perm' listbox
-            $mod_2B_add .= "<option value=\"$mid\">". safe($db->f('name')) .'</option>';
-            $mod_types .= GetModuleLetter($db->f('type'));  // string for javascript
+            $mod_2B_add .= "<option value=\"$mid\">". safe($mod['name']) .'</option>';
+            $mod_types .= GetModuleLetter($mod['type']);  // string for javascript
         }                       // to know, what type of module the $mod_2B_add is
     }
-    freeDB($db);
+
+    if ($current_perm_table) {
+        FrmTabSeparator(_m("Permissions"));
+        echo '<tr>
+            <td><b>'. _m("Object") .'</b></td>
+            <td><b>'. _m("Permissions") .'</b></td>
+            <td><b>'. _m("Revoke") .'</b></td></tr>';
+        echo $current_perm_table;
+    }
+
     FrmTabSeparator(_m("Assign new permissions"));
     ?>
    <tr><td>
@@ -135,33 +128,33 @@ function PrintModulePermModificator($selected_user, $form_buttons='') {
     <?php
     return $mod_types;
 }
-/** PrintModulePermRow function
+
+/** GetModulePermRow function
  * @param $mid
  * @param $type
  * @param $name
  * @param $perm
  * @param $odd
  */
-function PrintModulePermRow($mid, $type, $name, $perm, $odd=false) {
+function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
     global $MODULES, $perms_roles_modules, $perms_roles;
-    echo "<tr>
+    $ret = "<tr>
         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
     if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
         foreach ($perms_roles_modules[$type] as $role) {
-            echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
-            echo ( AA_Perm::compare($perm,$perms_roles[$role]['id'])=='E' ) ?
-            ' checked>' : '>';
-            echo _mdelayed($role). ' ';
+            $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
+            $ret .= ( AA_Perm::compare($perm,$perms_roles[$role]['id'])=='E' ) ? ' checked>' : '>';
+            $ret .= _mdelayed($role). '</label> ';
         }
     } else {
-        echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"ADMINISTRATOR\"
-        checked>" . _m('ADMINISTRATOR');
+        $ret .= "<label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"ADMINISTRATOR\" checked>" . _m('ADMINISTRATOR'). '</label>';
     }
-    echo "  </td>
+    $ret .= "  </td>
     <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>
-    <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</td>
+    <label><input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</label></td>
     </tr>";
+    return $ret;
 }
 
 /** PrintModuleAddRow function

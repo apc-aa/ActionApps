@@ -58,8 +58,6 @@ $aa_set = $manager->getSet();
 
 $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'sliceadmin', 'tasks');
 page_close();
 

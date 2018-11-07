@@ -784,7 +784,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
-        FrmStaticText('', self::description(), false, "", "", false);
+        FrmStaticText('', self::description(), "", "", false);
 
         $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
         $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);

@@ -50,8 +50,6 @@ $aa_set  = $manager->getSet();
 //$aa_set->addCondition(new AA_Condition('params',       'LIKE', 'BMaFh'));
 $zids    = AA_Metabase::queryZids(array('table'=>'log'), $aa_set);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'aaadmin', 'log');
 
 page_close();

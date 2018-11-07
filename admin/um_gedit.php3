@@ -104,11 +104,9 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
     }
 }
 
-// Print HTML start page tags (html begin, encoding, style sheet, but no title)
-// Include also js_lib.min.js javascript library
-HtmlPageBegin(true);
-?>
- <title><?php echo _m("User management - Groups");?></title>
+
+
+$headcode = "
 <script>
 function UpdateGroup(action) {
   document.f.posted_users.value  = CommaDelimeted( 'sel_users_sel' )
@@ -117,7 +115,7 @@ function UpdateGroup(action) {
 }
 
 function RealyDelete() {
-  if ( window.confirm('<?php echo _m("Are you sure you want to delete selected group from whole permission system?") ?>')) {
+  if ( window.confirm('". _m("Are you sure you want to delete selected group from whole permission system?") ."')) {
     document.f2.submit_action.value = 'grp_del'
     document.f2.submit()
   }
@@ -145,24 +143,23 @@ function SetRole(no) {
         document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles_names[i], roles[i])
     }
 }
-
 </script>
-</head>
+";
 
-<?php
-require_once menu_include();   //show navigation column depending on $show
-showMenu($aamenus, "aaadmin", $grp_new ? "g_new" : "g_edit");
-
-echo "<h1><b>". ( $grp_new ? _m("New Group") : _m("Edit Group") )."</b></h1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('aaadmin',$grp_new ? "g_new" : "g_edit");
+$apage->setTitle(_m("User management - Groups"));
+//$apage->setSubtitle($grp_new ? _m("New Group") : _m("Edit Group"));
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Groups"));
 
 ?>
  <tr><td>
    <form method="post" action="<?php echo StateUrl() ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr>
             <td width="20%">&nbsp;</td>
             <td width="46%"><input type="text" name="grp" value="<?php echo safe($rgrp)?>"></td>
@@ -177,7 +174,7 @@ FrmTabSeparator("");
 ?>
  <tr>
   <td><form name="f2" method="post" action="<?php echo StateUrl() ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr>
             <td width="20%"class="tabtxt"><b><?php echo _m("Group") ?></b></td>
             <td width="46%"><?php SelectGU_ID("selected_group", $groups, $selected_group);
@@ -206,8 +203,7 @@ do {
             }
         }
     } else {
-        HtmlPageEnd();
-        page_close();
+        $apage->printFoot();
         exit;
     }
 } while (false);
@@ -224,7 +220,7 @@ if ( $grp_edit OR ($submit_action == "update_submit") ) {
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 
 <?php
 
@@ -248,15 +244,15 @@ $form_buttons["posted_users"]   = array("value"=>"0");
 $form_buttons["submit_action"]  = array("value"=>"0");
 
 if ( $grp_edit OR ($submit_action == "update_submit") ) {
-    FrmStaticText( _m("Group Id"), $group_data['uid']);
+    FrmStaticText(_m("Group Id"), $group_data['uid']);
 }
 
-if ($selected_group AND AA::$perm->isUserEditable($selected_group)) {
+if ($grp_new OR ($selected_group AND AA::$perm->isUserEditable($selected_group))) {
     FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
     FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
 } else {
-    if ($group_name) { FrmStaticText( _m("Name"), $group_name); }
-    if ($group_name) { FrmStaticText( _m("Description"), $group_description); }
+    if ($group_name) { FrmStaticText(_m("Name"), $group_name); }
+    if ($group_name) { FrmStaticText(_m("Description"), $group_description); }
 }
 
 FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
@@ -295,7 +291,7 @@ if ( !$add_submit AND !$grp_new ) {
 
     // User - permissions -----------------------------------------
 
-    $mod_types = PrintModulePermModificator($selected_group, $form_buttons);   // shared with um_gedit.php3
+    $mod_types = PrintModulePermModificator($selected_group);   // shared with um_gedit.php3
 }
 
 FrmTabEnd($form_buttons);
@@ -306,6 +302,4 @@ if ( !$add_submit AND !$grp_new) {
     PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
 }
 
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

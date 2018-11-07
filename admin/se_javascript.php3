@@ -57,7 +57,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("JavaScript for fields"));
 ?>
-<tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."),""); ?></td></tr>
+<tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."), ""); ?></td></tr>
 <tr><td class="tabtxt"><hr></td></tr>
 <tr><td class="tabtxt"><textarea name="javascript" cols="100" rows="20">
 <?php

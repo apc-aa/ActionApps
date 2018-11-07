@@ -61,17 +61,13 @@ $filedit_js = "
     }
     </script>";
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<title>"._m("File Manager")."</title>";
-echo "</head>";
 
-require_once AA_INC_PATH."menu.php3";
-showMenu ($aamenus, "sliceadmin","fileman");
+$apage = new AA_Adminpageutil('sliceadmin', 'fileman');
+$apage->setTitle(_m("File Manager"). " - "._m("File")." ".$fe_filename );
+$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-echo "<h1><b>" . _m("File Manager") . " - "._m("File")." ".$fe_filename . "</b></h1>";
-
-PrintArray($err);
-echo $Msg;
 
 echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
 echo "<tr><td colspan=\"2\" class=\"tabtxt\">";
@@ -150,6 +146,5 @@ else
 echo "</form>";
 
 echo "</td></tr></table>";
-HtmlPageEnd();
-page_close();
 
+$apage->printFoot();

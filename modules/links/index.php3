@@ -413,8 +413,7 @@ $bookmarks[1] = _m('All my links');
 $bookmarks[2] = _m('Links to check');
 $bookmarks[3] = _m('Last edited');
 
-require_once AA_BASE_PATH."modules/links/menu.php3";
-showMenu($aamenus, "linkmanager", $r_state['bin'], $navbar!="0", $leftbar!="0");
+showMenu("linkmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();

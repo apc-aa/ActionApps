@@ -33,6 +33,7 @@
  *
 */
 
+require_once AA_INC_PATH."menu_util.php3";  // for showMenu()
 
 /**
  * AA_Manager class - used for 'item' manipulation 'managers' pages
@@ -492,10 +493,10 @@ class AA_Manager extends AA_Storable {
     }
 
     function displayPage($zids, $menu_top, $menu_left, $css_add='') {
-        global $r_state, $aamenus;
+        global $r_state;
         $this->printHtmlPageBegin(true, $css_add);  // html, head, css, title, javascripts
 
-        showMenu($aamenus, $menu_top, $menu_left);
+        showMenu($menu_top, $menu_left);
 
         if ($_GET['id'] AND $this->managed_class) {
             //huhl('sss1',$this->module_id);

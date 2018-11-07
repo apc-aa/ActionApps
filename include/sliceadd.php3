@@ -72,4 +72,12 @@ if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
     echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No slices") ."</td></tr>";
 }
 
+if ($$display_views_constants) {
+    FrmInputRadio("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
+    FrmInputRadio("wiz[constants]", _m("Categories/Constants"), array ('share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")),'copy');
+}
+
+FrmTabEnd();
+
+echo '<br><br>';
 

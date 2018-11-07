@@ -55,55 +55,34 @@ if ($cancel) {
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Slice Administration");?></title>
-</head>
-<?php
-  echo "<h1><b>" . _m("Create New Slice / Module") ."</b></h1>";
-  PrintArray($err);
-  echo $Msg;
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Create New Slice / Module"));
+$apage->setForm(array('action'=>'slicedit.php3'));
+$apage->printHead($err, $Msg);
 
-?>
+require_once AA_INC_PATH."sliceadd.php3";
 
-<center>
-<form method="post" action="<?php echo StateUrl("slicedit.php3") ?>">
-<?php
-    require_once AA_INC_PATH."sliceadd.php3";
-?>
-
-</table>
-</table>
-
-<br><br>
-<?php
-    FrmTabCaption(_m("Modules"));
-    foreach ($MODULES as $type => $module) {
-      if ($module["hide_create_module"]) {
+FrmTabCaption(_m("Modules"));
+foreach ($MODULES as $type => $module) {
+  if ($module["hide_create_module"]) {
+        continue;
+    }
+    if ($module["show_templates"]) {
+        $templ_sb = GetModuleTemplateSelecbox($type, $g_modules);
+        if (!$templ_sb) {
             continue;
         }
-        if ($module["show_templates"]) {
-            $templ_sb = GetModuleTemplateSelecbox($type, $g_modules);
-            if (!$templ_sb) {
-                continue;
-            }
-        }
-        echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
-             ($module["show_templates"] ? $templ_sb : "&nbsp;").
-             "</td><td width=\"60%\">
-            <input type=\"submit\" name=\"create[$type]\" value=\""._m("Add")."\"></td></tr>";
     }
-    FrmTabEnd();
+    echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
+         ($module["show_templates"] ? $templ_sb : "&nbsp;").
+         "</td><td width=\"60%\">
+        <input type=\"submit\" name=\"create[$type]\" value=\""._m("Add")."\"></td></tr>";
+}
+FrmTabEnd();
 
-    echo '<br><br>'. getTabStart();
+echo '<br><br>'. getTabStart();
 
-    FrmInputButtons(array("cancel"=>array("url"=>"um_uedit.php3")), $slice_id, 'middle', true, COLOR_TABTITBG);
-?>
-</td></tr>
-</table>
-</form>
-</center>
-<?php echo "<br><br><br><br>"; ?>
-<?php echo "</body></html>";
-page_close();
-?>
+FrmInputButtons(array("cancel"=>array("url"=>"aafinder.php3")), $slice_id, 'middle', true, COLOR_TABTITBG);
+FrmTabEnd();
+
+$apage->printFoot();

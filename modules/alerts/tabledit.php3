@@ -50,11 +50,6 @@ if ($_POST['cmd']['modedit']['update']) {
 
 require_once __DIR__. "/../../include/init_page.php3";
 
-
-if (!$no_slice_id) {
-    require_once menu_include();
-}
-
 // ----------------------------------------------------------------------------------------
 
 set_collectionid();
@@ -75,18 +70,17 @@ if (! $tableview["cond"] )  {
     exit;
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo '<LINK rel=StyleSheet href="'.AA_INSTAL_PATH.'/tabledit.css" type="text/css"  title="TableEditCSS">';
-echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
+$apage = new AA_Adminpageutil($tableview["mainmenu"], $tableview["submenu"]);
+$apage->setModuleMenu('modules/alerts');
+$apage->setTitle($tableview["caption"]);
+$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
 // called before menu because of Item Manager
 ProcessFormData("GetAlertsTableView", $val, $cmd);
-if (!$no_slice_id) {
-    showMenu($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
-}
+
 echo "<TABLE width='100%'><TR valign=center><TD>";
-echo "<H1>" . $tableview["caption"] . "</H1>";
 if ($tableview["children"]) {
     echo "</TD><TD>";
     foreach ($tableview["children"] as $chviewid => $child) {
@@ -95,8 +89,6 @@ if ($tableview["children"]) {
 }
 echo "</TD></TR></TABLE>";
 
-PrintArray($err);
-echo $Msg;
 $script = StateUrl("tabledit.php3");
 
 // fixed bug when inner table is not updated to new module_id
@@ -127,7 +119,5 @@ if (!$err && $tview == "acf") {
 if ($no_slice_id) {
     echo "</BODY></HTML>";
 } else {
-    HtmlPageEnd();
+    $apage->printFoot();
 }
-page_close();
-

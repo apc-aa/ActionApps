@@ -41,7 +41,6 @@ if ($cancel) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-is_object( $db ) || ($db = getDB());
 
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
@@ -164,9 +163,10 @@ $source_id   = ($template['P'] ? substr($template['P'],1) : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields( $source_id, $db );
+list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields($source_id);
+
 // load module specific data
-list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = GetTable2Array("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls WHERE module_id='$p_source_id' AND status_code=0", 'aa_first');
+list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = array_values(DB_AA::select1("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls",'', array(array('module_id',$source_id,'l'),array('status_code',0))));
 
 if ( $template['P'] ) {           // set new name for new module
     $name = "";
@@ -180,20 +180,10 @@ if ( $template['P'] ) {
 }
 
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <TITLE><?php echo _m("Polls Admin");?></TITLE>
-</HEAD>
-<?php
-    require_once AA_BASE_PATH."modules/polls/include/menu.php3";
-    showMenu($aamenus, "modadmin", "main");
-
-    echo "<H1><B>" . ( $template['P'] ? _m("Add Polls") : _m("Edit Polls")) . "</B></H1>";
-    PrintArray($err);
-    echo $Msg;
-?>
-<form method=post action="<?php echo StateUrl() ?>">
-<?php
+$apage = new AA_Adminpageutil('modadmin', 'main');
+$apage->setModuleMenu('modules/polls');
+$apage->setTitle($template['P'] ? _m("Add Polls") : _m("Edit Polls"));
+$apage->printHead($err, $Msg);
 
     FrmTabCaption(_m("Polls Module general data"), '', '', $form_buttons, $module_id);
     FrmStaticText(_m("Id"), $module_id);
@@ -222,7 +212,4 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 //    FrmInputText("params",        _m("Parameters"),         $params);     // @todo - add paramwizard
     FrmTabEnd($form_buttons);
 
-echo "\n </form>";
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

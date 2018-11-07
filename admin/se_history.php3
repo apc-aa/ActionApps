@@ -285,8 +285,6 @@ $conds = $manager->getConds();
 $sort  = $manager->getSort();
 $zids=QueryHistoryZIDs($slice_id, $conds, $sort);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'sliceadmin', 'history');
 
 page_close();

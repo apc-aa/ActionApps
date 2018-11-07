@@ -161,7 +161,7 @@ $source_id   = ($template['Links'] ? substr($template['Links'],1) : $module_id )
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields( $source_id, $db );
+list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields($source_id);
 
 // load module specific data
 $SQL= " SELECT * FROM links WHERE id='$p_source_id'";
@@ -210,8 +210,8 @@ if ( $superadmin ) {
     FrmInputText("tree_start", _m("Tree start id"), $tree_start);
     FrmInputText("select_start", _m("Select start id"), $select_start);
 } else {
-    FrmStaticText( _m("Tree start id"),   $tree_start);
-    FrmStaticText( _m("Select start id"), $select_start);
+    FrmStaticText(_m("Tree start id"), $tree_start);
+    FrmStaticText(_m("Select start id"), $select_start);
 }
 
 if ( $template['Links'] ) {

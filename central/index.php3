@@ -120,7 +120,6 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_APPROVED,
                     );
 $zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
-require_once AA_INC_PATH."menu.php3";
 $manager->displayPage($zids, 'central', $manager->getBin());
 
 page_close();

@@ -27,7 +27,6 @@ http://www.apc.org/
 */
 
 require_once __DIR__. "/../../include/init_page.php3";
-require_once menu_include();
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."formutil.php3";
@@ -43,13 +42,13 @@ if ($collectionprop) {
     echo "Can't find collection with module_id=$slice_id. Bailing out.<br>";
 }
 
-HtmlPageBegin();
-echo "<title>"._m("Slice Synchro")."</title>";
-echo "</head>";
-echo "<body>";
-showMenu ($aamenus, "admin", "synchro");
+$apage = new AA_Adminpageutil('admin', 'synchro');
+$apage->setModuleMenu('modules/alerts');
+$apage->setTitle(_m("Synchronization with Reader Management Slice"));
+$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-echo '<h1>'._m("Synchronization with Reader Management Slice").'</h1>';
 
 // Execute requested actions from FORM
 
@@ -137,5 +136,4 @@ if ($slice_set) {
 
 echo "\n</td></tr></table></form>";
 
-HtmlPageEnd();
-page_close();
+$apage->printFoot();

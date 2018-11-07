@@ -38,12 +38,10 @@ require_once AA_INC_PATH."mgettext.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
-$aamenus = "aamenus";
-$menu_function = 'get_aamenus_alerts';
 
 set_collectionid();
 
-function get_aamenus_alerts() {
+function get_aamenus() {
     global $auth, $slice_id;
 
     $aamenus["admin"] = array (

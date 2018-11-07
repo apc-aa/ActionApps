@@ -127,14 +127,14 @@ if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
 FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 
 if ($slice_id) {
-    FrmStaticText(_m("Additional setting"), AA_Slice::getModuleObjectForm($slice_id),false,'','',false);
+    FrmStaticText(_m("Additional setting"), AA_Slice::getModuleObjectForm($slice_id), '', '', false);
 }
 
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
 FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
 //mimo's MLX
 if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('SELECT name FROM `slice`', 'name', array(array('mlxctrl', $slice_id, 'l'))))) {
-    FrmStaticText(_m("MLX Control Slice for"),$mlx_ctrl_for,0,0,"http://mimo.gn.apc.org/mlx/");
+    FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "http://mimo.gn.apc.org/mlx/");
 } else {
     $mlx_slices = DB_AA::select(array('unpackid'=>'name'), "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
     FrmInputSelect('mlxctrl', _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($sarr['mlxctrl']), false, "", "http://mimo.gn.apc.org/mlx/");

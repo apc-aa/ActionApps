@@ -33,7 +33,6 @@
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."tabledit.php3";
-require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
 
@@ -54,17 +53,13 @@ $tview = 'centraledit';
 
 $tableview = GetCentalEditTableView();
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo '<link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
-echo "<title>". _m('ActionApps Central - Edit') ."</title></head>";
-showMenu($aamenus, 'central', 'addaa', true, false);
-echo "<h1><b>". _m('ActionApps Central - Edit') ."</b></h1>";
-
 ProcessFormData('GetCentalEditTableView', $val, $cmd);
 
-PrintArray($Err);
-echo $Msg;
+$apage = new AA_Adminpageutil('central', 'addaa');
+$apage->setTitle(_m("ActionApps Central - Edit"));
+$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
 $script = StateUrl("tabledit.php3");
 
@@ -74,6 +69,4 @@ if ($err) {
     echo "<b>$err</b>";
 }
 
-HtmlPageEnd();
-page_close();
-
+$apage->printFoot();

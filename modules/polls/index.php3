@@ -117,7 +117,5 @@ $r_state['bin_cnt']['folder3'] = AA_Metabase::queryCount(array('table'=>'polls')
 
 $zids  = AA_Metabase::queryZids(array('table'=>'polls'), $bin_sets[$manager->getBin()]);
 
-require_once AA_BASE_PATH."modules/polls/include/menu.php3";
-
 $manager->displayPage($zids, 'pollsmanager', $manager->getBin());
 page_close();

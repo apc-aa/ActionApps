@@ -47,68 +47,42 @@ if ($add) {
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
- <title><?php echo _m("Add Slice Wizard");?></title>
-</head>
-<?php
-  echo "<h1><b>" . _m("Add Slice Wizard") ."</b></h1>";
-  PrintArray($err);
-  echo $Msg;
-?>
 
-<center>
-<form method="post" action="<?php echo StateUrl("slicedit.php3") ?>">
-<?php
-    require_once AA_INC_PATH."sliceadd.php3";
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Add Slice Wizard"));
+$apage->setForm(array('action'=>'slicedit.php3'));
+$apage->printHead($err, $Msg);
 
-    FrmInputRadio("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
-    FrmInputRadio("wiz[constants]", _m("Categories/Constants"),
-        array ('share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")),'copy');
-?>
-
-</table>
-</table>
-
-<br><br>
-<?php
+$display_views_constants = true;
+require_once AA_INC_PATH."sliceadd.php3";
 
 FrmTabCaption(_m("[Optional] Create New User"));
 
 // User data ---------------------------------------------------
-    FrmInputRadio("user_role", _m("Level of Access"),
-        array ("EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")), "EDITOR");
-    FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
-    FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
-    FrmInputPwd("user_password2", _m("Retype password"), "", 50, 50, true);
-    FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
-    FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
-    FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50, false);
-    echo '<input type="hidden" name="add_submit" value="1">
-    <input type="hidden" name="um_uedit_no_go_url" value="1">';
+FrmInputRadio("user_role", _m("Level of Access"),
+    array ("EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")), "EDITOR");
+FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
+FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
+FrmInputPwd("user_password2", _m("Retype password"), "", 50, 50, true);
+FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
+FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
+FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50, false);
+echo '<input type="hidden" name="add_submit" value="1">
+<input type="hidden" name="um_uedit_no_go_url" value="1">';
 
-    $email_welcomes = GetUserEmails("slice wizard welcome");
-    $email_welcomes[NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
+$email_welcomes = GetUserEmails("slice wizard welcome");
+$email_welcomes[NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
 
-    FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
+FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
 
-    FrmTabEnd();
-?>
+FrmTabEnd();
 
+echo '<br><br>';
 
-<br><br>
-<?php
-
-  FrmTabCaption("");
-  FrmTabEnd(array("no_slice"=>array("value"=>_m("Go: Add Slice"),
+FrmTabCaption("");
+FrmTabEnd(array("no_slice"=>array("value"=>_m("Go: Add Slice"),
                                     "type"=>"submit",
                                     "accesskey"=>"S"),
                   "cancel"=>array("url"=>"um_uedit.php3")));
-?>
-</form>
-</center>
-<?php echo "<br><br><br><br>"; ?>
-</body>
-</html>
-<?php page_close()?>
 
+$apage->printFoot();

@@ -163,7 +163,6 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     if ( $group ) {
         FrmSelectEasy("gb_header", getViewGroupFunctions(), $vw_data['gb_header']);
     }
-    // PrintMoreHelp(DOCUMENTATION_URL);
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
 }
@@ -207,7 +206,6 @@ function ConditionFrm($name, $txt, $val) {
     $condvarname = substr($name,0,5)."cond";
     echo "<input type=\"text\" name=\"$condvarname\" size=\"50\" maxlength=\"254\" value=\"". safe($vw_data[$condvarname]) ."\">";
 
-    // PrintMoreHelp(DOCUMENTATION_URL);
     // PrintHelp($hlp);
     echo "</td></tr>\n";
 }

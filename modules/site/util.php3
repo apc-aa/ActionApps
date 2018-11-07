@@ -168,7 +168,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
 function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     $content = DB_AA::select1('SELECT content FROM site_spot','content',array(array('site_id', $site_id, 'l'), array('spot_id',$spot_id,'i')));
     FrmTabCaption();
-    FrmStaticText(_m('Spot ID') ,"[$spot_id] - ". _m('You can include this spot code in another spot by using {sitespot:%1}',array($spot_id)));
+    FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', array($spot_id)));
 
     ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
     if (($vars=$tree->isOption($spot_id))) {

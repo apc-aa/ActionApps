@@ -57,7 +57,6 @@ $aa_set->setModules($module_id);
 
 $zids  = AA_Object::querySet('AA_Aliasfunc', $aa_set);
 
-require_once AA_BASE_PATH."modules/site/menu.php3";
 $manager->displayPage($zids, 'modadmin', 'aliases');
 page_close();
 

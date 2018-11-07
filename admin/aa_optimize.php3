@@ -86,7 +86,7 @@ $form_buttons   = array ();
 
 FrmTabCaption(_m('Optimalizations'), '', '', $form_buttons, $slice_id);
 foreach ( $optimize_names as $i => $name ) {
-    FrmStaticText($name, $optimize_descriptions[$i], false, '', '', false);
+    FrmStaticText($name, $optimize_descriptions[$i], '', '', false);
 }
 FrmTabEnd($form_buttons);
 

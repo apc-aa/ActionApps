@@ -30,26 +30,15 @@ if (!IsSuperadmin()) {
   exit;
 }
 
+$apage = new AA_Adminpageutil('central', 'synchronize');
+$apage->setTitle(_m("Central - Synchronize ActionApps (2/3) - Slices to Compare"));
+$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
+
+
 // ActionApps to synchronize
 $aas = AA_Actionapps::getArray();
-
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile( 'javascript/aajslib.php' );
-
-?>
-<TITLE><?php echo _m("Central - Synchronize ActionApps (2/3) - Slices to Compare"); ?></TITLE>
-</HEAD>
-<BODY>
-<?php
-$useOnLoad = true;
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", "synchronize");
-
-echo "<H1><B>" . _m("Central - Synchronize ActionApps (2/3) - Slices to Compare") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
-
-// ActionApps to synchronize
 $aas_array = array();
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
@@ -75,15 +64,13 @@ $form_buttons = array("compare"      => array( "type"      => "submit",
 FrmTabCaption('', '', '', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Slice Mapping'));
-FrmStaticText( $aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
+FrmStaticText($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
 foreach($tmplate_slices as $sid => $name) {
     FrmInputSelect('sync_slices['.$sid.']', $name, $cmp_slices, $_POST['sync_slices'], true);
 }
 FrmTabEnd($form_buttons);
 ?>
-</FORM>
+</form>
 <?php
-HtmlPageEnd();
-page_close();
 
-?>
+$apage->printFoot();

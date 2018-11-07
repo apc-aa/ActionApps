@@ -1,6 +1,6 @@
 <?php
 /** This script shows the top menu (navigation bar) and second level menu (left bar)
- *   by the function showMenu ($aamenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
+ *   by the function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
  *
  *
  * PHP versions 4 and 5
@@ -216,26 +216,30 @@ function PrintModuleSelection() {
 //                                SHOW MENU
 
 /** showMenu function
- * @param $smmenus -- array with menu information, see menu.php3 for an example
  * @param $activeMain -- selected item in main (top) menu
- * @param $activeSubmenu -- selected item in sub (left) menu
- * @param $showMain -- show the main menu (top navigation bar) ?
- * @param $showSub -- show the submenu (left navigation bar) ?
+ * @param string $activeSubmenu -- selected item in sub (left) menu
+ * @param bool $showMain -- show the main menu (top navigation bar) ?
+ * @param bool $showSub -- show the submenu (left navigation bar) ?
  */
-function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
+function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
     global $slice_id, $useOnLoad, $auth;
-    global $menu_function;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
     // load the main AA menu (see menu.php3)
-    if ($smmenus == "aamenus") {
+
+
+    if ($menu_require = AA_Module::getModuleInfo('menu', AA::$module_id)) {
+
+        if (!function_exists('get_aamenus')) {
+            require_once AA_BASE_PATH . $menu_require;
+        }
         // @todo
         // Menu functions are defined in include/menu.php3 or modules/*/menu.php3
         // We need to call last defined menu function (when switching to another
         // module). This solution is not so nice, but it removes get_aamenus()
         // redeclaration error. We probably change menus to object in the future
-        $smmenus = $menu_function();
+        $smmenus = get_aamenus();
     }
 
     // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules

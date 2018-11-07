@@ -46,10 +46,8 @@ require_once AA_INC_PATH."mgettext.php3";
 //mgettext_bind(substr(LANG_FILE,0,2), 'news');
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
-$GLOBALS['aamenus']       = "aamenus";
-$GLOBALS['menu_function'] = 'get_aamenus_polls';
 
-function get_aamenus_polls() {
+function get_aamenus() {
     global $r_slice_view_url, $r_state, $auth, $polledit, $slice_id;
 
     $module_location = "modules/polls/";

@@ -77,8 +77,6 @@ $aa_set->setModules($module_id);
 
 $zids  = AA_Object::querySet('AA_Form', $aa_set);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'sliceadmin', 'forms');
 page_close();
 

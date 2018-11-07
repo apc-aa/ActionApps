@@ -91,21 +91,10 @@ if ($_POST['synchronize']) {
     echo a_href(get_admin_url('se_taskmanager.php3'), _m('Task Manager'));
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile( 'javascript/aajslib.php' );
-
-?>
-<TITLE><?php echo _m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"); ?></TITLE>
-</HEAD>
-<BODY>
-<?php
-$useOnLoad = true;
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", "synchronize");
-
-echo "<H1><B>" . _m("Central - Synchronize ActionApps (3/3) - Synchronize Slices") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('central', 'synchronize');
+$apage->setTitle(_m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"));
+$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
 $aas_array = array();
@@ -122,10 +111,6 @@ $form_buttons = array("synchronize"  => array( "type"      => "submit",
                       "template_aa"    => array( "value"     =>  $_POST['template_aa']),
                       "comparation_aa" => array( "value"     =>  $_POST['comparation_aa'])
                      );
-
-?>
-<form name=f method=post action="<?php echo StateUrl() ?>">
-<?php
 
 FrmTabCaption(_m('Slice Comparison - %1 x %2', array($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName())), '', '', $form_buttons);
 if ( isset($differences) ) {
@@ -182,10 +167,5 @@ foreach ($_POST['sync_slices'] as $k => $v) {
 //FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
 // prepared for multiple update
 FrmTabEnd($form_buttons);
-?>
-</FORM>
-<?php
-HtmlPageEnd();
-page_close();
 
-?>
+$apage->printFoot();

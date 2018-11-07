@@ -33,7 +33,7 @@
 
 require_once __DIR__. "/../include/init_page.php3";
 require_once AA_INC_PATH."tabledit.php3";
-require_once menu_include();   //show navigation column depending on $show
+//require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
 
@@ -64,17 +64,17 @@ if (! $tableview["cond"] ) {
     exit;
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo '<link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
-echo "<title>".$tableview["title"]."</title></head>";
-showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
-echo "<h1><b>" . $tableview["caption"] . "</b></h1>";
+$apage = new AA_Adminpageutil($tableview["mainmenu"],  $tableview["submenu"]);
+$apage->setTitle($tableview["title"]);
+if ($tableview["modulemenu"]) {
+    $apage->setModuleMenu($tableview["modulemenu"]);
+}
+$apage->setForm();
+$apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
+//$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
+$apage->printHead($err, $Msg);
 
 ProcessFormData($func, $val, $cmd);
-
-PrintArray($Err);
-echo $Msg;
 
 $script = StateUrl("tabledit.php3");
 
@@ -88,6 +88,4 @@ if (!$err && $tview == "email_edit") {
     ShowEmailAliases();
 }
 
-HtmlPageEnd();
-page_close ();
-
+$apage->printFoot();

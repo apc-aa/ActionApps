@@ -101,13 +101,13 @@ class AA_Module {
     static public function getModuleInfo($info, $module_id)
     {
         static $MODULEINFO = array(
-            //                   class             url
-            'W'      => array('AA_Module_Site',  'modules/site/index.php3'),
-            'S'      => array('AA_Slice',        'admin/index.php3'),
-            'Alerts' => array('AA_Module_Alerts','modules/alerts/index.php3'),
-            'J'      => array('',                'modules/jump/index.php3'),
-            'P'      => array('AA_Module_Polls', 'modules/polls/index.php3'),
-            'Links'  => array('AA_Module_Links', 'modules/links/index.php3')
+            //                   class             url                         menu
+            'W'      => array('AA_Module_Site',  'modules/site/index.php3',   'modules/site/menu.php3'),
+            'S'      => array('AA_Slice',        'admin/index.php3',          'include/menu.php3'),
+            'Alerts' => array('AA_Module_Alerts','modules/alerts/index.php3', 'modules/alerts/menu.php3'),
+            'J'      => array('',                'modules/jump/index.php3',   'include/menu.php3'),
+            'P'      => array('AA_Module_Polls', 'modules/polls/index.php3',  'modules/polls/menu.php3'),
+            'Links'  => array('AA_Module_Links', 'modules/links/index.php3',  'modules/links/menu.php3')
         );
         static $_module_types = array();
 
@@ -123,6 +123,8 @@ class AA_Module {
                 return $MODULEINFO[$type][0];
             case 'url':
                 return $MODULEINFO[$type][1];
+            case 'menu':
+                return $MODULEINFO[$type][2];
         }
         return '';
     }

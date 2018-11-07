@@ -31,22 +31,12 @@ if (!IsSuperadmin()) {
   exit;
 }
 
-$aas = AA_Actionapps::getArray();
+$apage = new AA_Adminpageutil('central', 'synchronize');
+$apage->setTitle(_m("Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison"));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<TITLE><?php echo _m("Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison"); ?></TITLE>
-</HEAD>
-<BODY>
-<?php
-$useOnLoad = true;
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", "synchronize");
-
-echo "<H1><B>" . _m("Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
-
+$aas       = AA_Actionapps::getArray();
 $aas_array = array();
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
@@ -61,8 +51,7 @@ FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['tem
 FrmInputSelect('comparation_aa', _m('AA to compare'),    $aas_array, $_POST['comparation_aa'], true, _m('ActionApps installation to check for differences (just checking right now - noting is changed by this step)'));
 FrmTabEnd($form_buttons);
 ?>
-</FORM>
+</form>
 <?php
-HtmlPageEnd();
-page_close();
-?>
+
+$apage->printFoot();

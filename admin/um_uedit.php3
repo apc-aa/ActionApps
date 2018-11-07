@@ -155,12 +155,8 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
     }
 }
 
-// Print HTML start page tags (html begin, encoding, style sheet, but no title)
-// Include also js_lib.min.js javascript library
-HtmlPageBegin(true);
 
-?>
- <title><?php echo _m("User management - Users");?></title>
+$headcode = "
 <script>
   function UpdateUser(action) {
     document.fx.posted_groups.value = CommaDelimeted( 'sel_groups_sel' )
@@ -169,7 +165,7 @@ HtmlPageBegin(true);
   }
 
   function RealyDelete() {
-    if ( window.confirm('<?php echo _m("Are you sure you want to delete selected user from whole permission system?") ?>')) {
+    if ( window.confirm('". _m("Are you sure you want to delete selected user from whole permission system?") ."')) {
       document.f2.submit_action.value = 'usr_del'
       document.f2.submit()
     }
@@ -197,21 +193,16 @@ HtmlPageBegin(true);
       document.fx.elements['new_module_role['+no+']'].options[i] = new Option(roles_names[i], roles[i])
     }
   }
-</script>
-</head>
+</script>";
 
-<?php
 
-require_once menu_include();   //show navigation column depending on $show
-showMenu($aamenus, "aaadmin", $usr_new ? "u_new" : "u_edit");
+$apage = new AA_Adminpageutil('aaadmin',$usr_new ? "u_new" : "u_edit");
+$apage->setTitle(_m("User management").' - '. ($usr_new ? _m("New User") : _m("Edit User")));
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-echo "<h1><b>". ( $usr_new ? _m("New User") : _m("Edit User") )."</b></h1>";
-PrintArray($err);
-echo $Msg;
-
-?>
-<!-- Select user form -->
-<?php
 FrmTabCaption(_m("Users"));
 ?>
  <tr><td>
@@ -247,8 +238,7 @@ FrmTabSeparator("");
 FrmTabEnd();
 
 if ( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
-    HtmlPageEnd();
-    page_close();
+    $apage->printFoot();
     exit;
 }
 
@@ -286,8 +276,8 @@ do {
 
 if ( $usr_edit OR ($submit_action == "update_submit") ) {
     FrmTabCaption(_m("Edit User"));
-    FrmStaticText( _m("Login name"), $user_data['login']);
-    FrmStaticText( _m("User Id"),    $user_data['id']);
+    FrmStaticText(_m("Login name"), $user_data['login']);
+    FrmStaticText(_m("User Id"), $user_data['id']);
 } else {
     FrmTabCaption(_m("New user"));
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
@@ -360,6 +350,4 @@ if ( !$add_submit AND !$usr_new) {
     PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
 }
 
-HtmlPageEnd();
-page_close();
-?>
+$apage->printFoot();

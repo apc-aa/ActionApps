@@ -128,7 +128,7 @@ FrmInputSelect('field_id',       _m('Field'),             $field_select,       $
 
 FrmInputChBox('silent', _m('Silent'), true, false, "", 1, false, _m('Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ...'));
 
-FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_', SEARCH_REPLACE_PREFIX, $params), true, "", "", false );
+FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_', SEARCH_REPLACE_PREFIX, $params), "", "", false);
 
 FrmTabEnd(array( 'fill' =>array('type'=>'submit', 'value'=>_m('Fill')),
                  'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));

@@ -80,29 +80,17 @@ if ( $update ) {
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Change user data");?></title>
-</head>
+$apage = new AA_Adminpageutil('userinfo');
+$apage->setTitle(_m("Change user data"));
+$apage->printHead($err, $Msg);
 
-<?php
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "userinfo");
-
-echo "<h1><b>" . _m("Change user data") . "</b></h1>&nbsp;&nbsp;";
-PrintArray($err);
-echo $Msg;
 
 $form_buttons = array ("update",
                        "cancel" => array("url"=>"index.php3"));
 
-?>
-<form name="f" method="post" action="<?php echo StateUrl() ?>">
-<?php
-
 FrmTabCaption(_m("Edit User"));
-FrmStaticText( _m("Login name"), $user_data['login']);
-FrmStaticText( _m("User Id"),    $user_data['id']);
+FrmStaticText(_m("Login name"), $user_data['login']);
+FrmStaticText(_m("User Id"), $user_data['id']);
 FrmInputPwd("user_password_old", _m("Current password"), $user_password_old, 50, 50, true);
 FrmInputPwd("user_password1", _m("Password"),       $user_password1, 50, 50, true);
 FrmInputPwd("user_password2", _m("Retype password"),$user_password2, 50, 50, true);
@@ -114,9 +102,5 @@ FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
 //  FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false); // can't be changed by user itself
 
 FrmTabEnd($form_buttons);
-?>
-</form>
-<?php
-HtmlPageEnd();
-page_close()
-?>
+
+$apage->printFoot();

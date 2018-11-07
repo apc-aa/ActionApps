@@ -89,7 +89,7 @@ PrintArray($r_msg);
 echo '<form name=f method=post action="catedit2.php3">';
     FrmTabCaption(_m('Category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),
             array("before" => "(", "text" => "?", "after" => ")")));
-    FrmStaticText(                _m('Id'),             $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
+    FrmStaticText(_m('Id'), $id . '&nbsp; &nbsp; &nbsp;(' . _m('Links in subtree') . ': ' . $links_count . ')', "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"nazev-kategorie") );
     FrmTextarea(  'description',  _m('Category description'),    $description, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"popis-kategorie"));
     FrmInputChBox('nolinks',      _m('No links'), $nolinks, false, '', 1, false, _m('Disalow storing of the links to this category?'));

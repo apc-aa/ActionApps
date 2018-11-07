@@ -141,30 +141,16 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
 /** GetModuleFields function
  *   fills variables from module and owners table
  * @param $source_id
- * @param $db
+ * @return array
  */
-function GetModuleFields( $source_id, $db ) {
+function GetModuleFields($source_id) {
     // lookup owners
-    $slice_owners = array(_m("Select owner"));
-    $SQL = "SELECT id, name FROM slice_owner ORDER BY name";
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $slice_owners[unpack_id($db->f('id'))] = $db->f('name');
+    $slice_owners = array(_m("Select owner")) + DB_AA::select(array('uid'=>'name'),"SELECT LOWER(HEX(`id`)) AS uid, name FROM slice_owner",'',array('name'));
+    $arr = array_values(DB_AA::select1("SELECT name, slice_url, priority, lang_file, LOWER(HEX(`owner`)) AS owner, deleted FROM module",'', array(array('id',$source_id,'l'))));
+    if ($arr) {
+        $arr[] = $slice_owners;
     }
-
-    $p_source_id = q_pack_id( $source_id );
-    $SQL= "SELECT * FROM module WHERE id='$p_source_id'";
-    $db->query($SQL);
-    if ($db->next_record()) {
-        return array( $db->f('name'),
-            $db->f('slice_url'),
-            $db->f('priority'),
-            $db->f('lang_file'),
-            unpack_id($db->f('owner')),
-            $db->f('deleted'),
-            $slice_owners );
-    }
-    return false;
+    return $arr;
 }
 
 

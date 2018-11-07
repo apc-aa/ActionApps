@@ -162,8 +162,14 @@ class inputform {
         return ($profile_text === '') ? array() : array( $key => array('type'=>$type, 'value'=> get_if($profile_text, $default_text), 'url' => $url));
     }
 
-    /** printForm function
-     *  Displays the form
+
+    function dryEvaluate($content4id, $slice, $edit) {
+        $form = $this->getForm($content4id, $slice, $edit);
+        $out  = AA::Stringexpander()->unalias($form, '', GetItemFromContent($content4id));
+        return  AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
+    }
+
+    /** generateForm - generates the form html for printing
      * @param $content4id
      * @param AA_Slice $slice
      * @param $edit
@@ -2241,13 +2247,12 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $
  *  Prints two static text to 2-column table for use within <table> tag
  * @param $txt
  * @param $val
- * @param $needed
- * @param $hlp
- * @param $morehlp
- * @param $safing
+ * @param string $hlp
+ * @param string $morehlp
+ * @param bool $safing
  */
-function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=1 ) {
-    $input = new AA_Inputfield($val, false, 'normal', '', $txt, '', $needed, $hlp, $morehlp);
+function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true) {
+    $input = new AA_Inputfield($val, false, 'normal', '', $txt, '', false, $hlp, $morehlp);
     $input->staticText($safing);
     $input->print_result();
 }
@@ -2255,9 +2260,9 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=
 /** FrmHidden function
  *  Prints html tag <input type=hidden .. to 2-column table
  *  for use within <form> and <table> tag
- * @param $name
- * @param $val
- * @param $safing
+ * @param string $name
+ * @param string $val
+ * @param bool $safing
  */
 function FrmHidden($name, $val, $safing=true ) {
     $input = new AA_Inputfield($val, false, 'normal', $name);
@@ -2914,7 +2919,7 @@ function getFrmInputButtons( $buttons, $slice_id='', $valign='middle', $tr=true,
                     }
                     break;
                 default:
-                    $type = ($properties['type'] ? $properties['type'] : 'hidden');
+                    $type = ($properties['type'] ?: 'hidden');
                     if ( $no_hidden AND ($type == 'hidden') ) {
                         // do not print hidden fields if no_hidden is true
                         // (used for FrmTabSeparator, to not duplicate hiddens)

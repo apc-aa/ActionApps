@@ -213,8 +213,6 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
 
 $zids = QueryZids( array($slice_id), $aa_set->getConds(), $aa_set->getSort(), $BIN_CONDS[$manager->getBin()]);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'itemmanager', $manager->getBin(), $profile->getProperty('ui_manager', 'css_add'));
 
 page_close();

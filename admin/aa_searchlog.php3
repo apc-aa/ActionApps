@@ -73,7 +73,5 @@ $manager->performActions();
 $set  = $manager->getSet();
 $zids = AA_Metabase::queryZids(array('table'=>'searchlog'), $set);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'aaadmin', 'searchlog');
 page_close();

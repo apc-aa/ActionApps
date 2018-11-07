@@ -131,22 +131,13 @@ if ($insert  || $update ) {
     go_url(StateUrl(self_base(). "./index.php3"));  // back to poll manager
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+$apage = new AA_Adminpageutil('pollsmanager', 'main');
+$apage->setModuleMenu('modules/polls');
+$apage->setTitle($poll_id ? _m("Edit poll") : _m("Add poll"));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-?>
-<title><?php if ($poll_id) { echo _m("Edit poll"); } else { echo _m("Add poll"); } ?></title>
-
-</head> <?php
-FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);
-
-$db = new DB_AA;
-
-require_once AA_BASE_PATH."modules/polls/include/menu.php3";
-showMenu($aamenus, "polledit", "main");
-
-echo "<h1>". ($poll_id ? _m("Edit poll with id ".$poll_id) : _m("Add poll")). "</h1>";
-PrintArray($err);
-echo $Msg;
 
 if ($poll_id) {
     $form_buttons = array ("update",
@@ -218,6 +209,5 @@ FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close()
-?>
+
+$apage->printFoot();

@@ -161,10 +161,10 @@ FrmTabCaption(_m("Enable export to slice:"));
 <?php
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
   if ( isset($exported) AND is_array($exported) ) {
-      FrmStaticText(_m("Currently exported to"), join("<br>",$exported), false, '', '', false);
+      FrmStaticText(_m("Currently exported to"), join("<br>", $exported), '', '', false);
   }
   if ( isset($wrong_exp) AND is_array($wrong_exp) ) {
-      FrmStaticText(_m("Wrong export (non existant slice!):"), join("<br>",$wrong_exp), false, '', '', false);
+      FrmStaticText(_m("Wrong export (non existant slice!):"), join("<br>", $wrong_exp), '', '', false);
   }
 ?>
 </table></td></tr>

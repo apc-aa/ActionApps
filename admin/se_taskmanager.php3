@@ -101,8 +101,6 @@ $set->addCondition(new AA_Condition('execute_after', '=', TOEXECUTE_USER_TASK_TI
 $set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
 $zids = AA_Metabase::queryZids(array('table'=>'toexecute'), $set);
 
-require_once AA_INC_PATH."menu.php3";
-
 $manager->displayPage($zids, 'sliceadmin', 'taskmanager');
 page_close();
 

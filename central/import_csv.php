@@ -57,19 +57,10 @@ if (is_array($_FILES['csv_filex'])) {
 }
 
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<TITLE><?php echo _m("Central - Copy Slice (1/2) - Select Source ActionApps"); ?></TITLE>
-</HEAD>
-<BODY>
-<?php
-$useOnLoad = true;
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", "copyslice");
-
-echo "<H1><B>" . _m("Central - Import Sites from CSV") . "</B></H1>";
-PrintArray($err);
-echo $Msg;
+$apage = new AA_Adminpageutil('central', 'importcsv');
+$apage->setTitle(_m("Central - Import Sites from CSV"));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
 $form_buttons = array ("submit");
 ?>
@@ -81,8 +72,6 @@ FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php
-HtmlPageEnd();
-page_close();
 
 /*
 require($_REQUEST['file']);
@@ -118,5 +107,5 @@ $conf = array( 'dns_conf'                  => '',
                'status_code'               => 1
              );
 */
-?>
 
+$apage->printFoot();

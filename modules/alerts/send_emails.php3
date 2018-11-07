@@ -93,7 +93,7 @@ function ShowCollectionAddOns() {
 
     $ho_options = get_howoften_options();
     foreach ($ho_options as $ho => $msg) {
-        FrmStaticText($msg,  $last[$ho] ? date("j.n.Y H:i", $last[$ho]) : '--');
+        FrmStaticText($msg, $last[$ho] ? date("j.n.Y H:i", $last[$ho]) : '--');
     }
     FrmTabEnd();
     echo "</form>\n";

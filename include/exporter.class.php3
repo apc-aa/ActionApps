@@ -270,7 +270,6 @@ class AA_Exporter_Html extends AA_Exporter {
     }
 
     function _valueSanity(&$value, $key, $entity) {
-        //$value = "<$entity>". @htmlspecialchars($value, ENT_COMPAT, $this->getCharset()) ."</$entity>";
         $value = "<$entity>". myspecialchars($value) ."</$entity>";
     }
 

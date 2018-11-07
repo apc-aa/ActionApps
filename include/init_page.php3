@@ -38,16 +38,6 @@
  *
 */
 
-/** menu_include function
- * Use require menu_include(); to include module-specific menu,
- *   call showMenu() afterwards.
- */
-function menu_include() {
-    global $MODULES, $g_modules;
-    $menu = $MODULES[$g_modules[AA::$module_id]["type"]]["menu"];
-    return AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
-}
-
 // ----- input variables normalization - start
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
 // It make us sure, taht

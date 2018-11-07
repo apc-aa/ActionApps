@@ -48,7 +48,6 @@ $manager->performActions();
 $aa_set  = $manager->getSet();
 $zids    = AA_Metabase::queryZids(array('table'=>'toexecute'), $aa_set);
 
-require_once AA_INC_PATH."menu.php3";
 $manager->displayPage($zids, 'aaadmin', 'toexecute');
 
 page_close();

@@ -33,10 +33,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."varset.php3";
 
 // create the $jumps array:
-is_object( $db ) || ($db = getDB());
-$db->query("SELECT * FROM module WHERE type='J'");
-while ($db->next_record())
-    $jumps[unpack_id($db->f("id"))] = $db->f("name");
+$jumps = DB_AA::select(array('jid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', array(array('type','J')));
 
 // choose the first module when none is chosen
 if ($edit && !$jump_id && count ($jumps)) {
@@ -44,11 +41,12 @@ if ($edit && !$jump_id && count ($jumps)) {
     $jump_id = key ($jumps);
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "</head><body>";
 
-require_once menu_include();   //show navigation column depending on $show
-showMenu ($aamenus, "aaadmin","jumpedit");
+$apage = new AA_Adminpageutil('aaadmin', 'jumpedit');
+$apage->setTitle(!$jump_id ? _m("Create new Jump module") : _m("Edit Jump module"));
+$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
 if ($update) {
     if (!$jump_id) $jump_id = new_id ();
@@ -73,15 +71,22 @@ if ($update) {
         $varset->add("name","quoted",$jump_name);
         $varset->add("type","quoted",'J');
         $varset->add("lang_file","quoted","en_news_lang.php3");
+        $varset->add("owner","text",'');
+        $varset->add("created_by","text",$auth->auth["uid"]);
+        $varset->add("created_at","text",now());
+
+//        $varset->set("slice_url", $slice_url, "quoted");
+//        $varset->set("priority", $priority, "number");
+//        $varset->set("deleted", $deleted, "number");
 
         $varset->doINSERT('module');
     }
+    $jumps = DB_AA::select(array('jid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', array(array('type','J')));
 }
 
-if (!$jump_id)
+if (!$jump_id) {
     $jump_name = $jump_url = $dest_id = "";
-
-else {
+} else {
     $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
             ON jump.slice_id = module.id
             WHERE jump.slice_id = '".q_pack_id ($jump_id)."'");
@@ -91,8 +96,6 @@ else {
         $dest_id = unpack_id($db->f("dest_slice_id"));
     }
 }
-
-echo '<H1><B>'.( !$jump_id ? _m("Create new Jump module") : _m("Edit Jump module")) . '</B></H1>';
 
 // Show the select box to choose a module to edit
 if ($jump_id) {
@@ -143,7 +146,5 @@ echo '
 FrmTabEnd(array("update"=>array("value"=>($jump_id ? _m("Update") : _m("Create"))),
                 "cancel"=>array("url"=>AA_INSTAL_PATH."admin/um_uedit.php3")));
 echo "</form>";
-HtmlPageEnd();
-page_close();
 
-
+$apage->printFoot();

@@ -176,7 +176,7 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => _m('Polls for AA'),
                                 'show_templates' => 1,
                                 'directory' => "modules/polls/",
-                                'menu' => "modules/polls/include/menu.php3",
+                                'menu' => "modules/polls/menu.php3",
                                 'language_files' => array(
                                     "en_polls_lang.php3" => "en_polls_lang.php3",
                                     "es_polls_lang.php3" => "es_polls_lang.php3",
@@ -519,7 +519,9 @@ function getViewTypes() {
                          "scroller" => array (
                              "label" => _m("Accept site module paging - {xpage}"),
                              "help" => _m("if checked, no need to pass page-{xpage} param to the view")),
-                         "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                         "noitem_msg" => array (
+                                 "label" => _m("HTML code for \"No item found\" message"),
+                                 "help" => _m("use {#} if you do not want print anything")),
                          "flag" => _m("Add view ID as HTML comment")
     //                     "aditional" => _m("Additional") );
                        ),

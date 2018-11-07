@@ -166,7 +166,7 @@ $source_id   = ($template['W'] ? $template_id : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list($name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners) = GetModuleFields( $source_id, $db );
+list($name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners) = GetModuleFields($source_id);
 
 // load module specific data
 $SQL= " SELECT * FROM site WHERE id='$p_source_id'";
@@ -195,9 +195,8 @@ if ( $template['W'] ) {
 }
 
 
-HtmlPageBegin(true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-FrmJavascript('
+$headcode = <<<'EOT'
+<script>
     function ModeditSubmit() {
         var lb;
         for (var i = 0; i < listboxes.length; i++) {
@@ -207,25 +206,25 @@ FrmJavascript('
            }
         }
         return true;
-    }');
+    }
+</script>
+EOT;
 
-?>
- <TITLE><?php echo _m("Site Admin");?></TITLE>
-</HEAD>
-<?php
-    require_once AA_BASE_PATH."modules/site/menu.php3";
-    showMenu($aamenus, "modadmin", "main");
+$apage = new AA_Adminpageutil('modadmin', 'main');
+$apage->setModuleMenu('modules/site');
+$apage->setTitle($template['W'] ? _m("Add Site") : _m("Edit Site"));
+$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-    echo "<H1><B>" . ( $template['W'] ? _m("Add Site") : _m("Edit Site")) . "</B></H1>";
-    PrintArray($err);
-    echo $Msg;
 ?>
 <form name="inputform" method=post action="<?php echo StateUrl() ?>" onSubmit="return ModeditSubmit()">
 <?php
     FrmTabCaption(_m("Site"), '', '', $form_buttons, $module_id);
 
     ModW_HiddenRSpotId();
-    FrmStaticText(_m("Id"), $module_id, false);
+    FrmStaticText(_m("Id"), $module_id);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     //$include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."),'', 'false', 'text', 'https://www.example.org/');
@@ -254,12 +253,11 @@ FrmJavascript('
     FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
 
     if ($module_id) {
-        FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id),false,'','',false);
+        FrmStaticText(_m("Additional setting"), AA_Module_Site::getModuleObjectForm($module_id), '', '', false);
     }
 
     FrmTabEnd($form_buttons);
 
 echo "\n </form>";
-HtmlPageEnd();
-page_close();
-?>
+
+$apage->printFoot();

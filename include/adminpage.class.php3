@@ -26,6 +26,9 @@
 */
 
 
+require_once AA_INC_PATH."menu_util.php3";
+
+
 /** Admin page helper class
  *  Simplifies and unifies admin page apptroach. It uses {generate:head} for automatic script load, ...
  *  Used for slower move towards more radical AA_Adminpage approach below...
@@ -169,8 +172,7 @@ class AA_Adminpageutil {
         // this is old code used everywhere, so it is copied here. It should be rewritten - without globals...
 
         if ($this->menu != '') {
-            require_once AA_BASE_PATH. $this->modulemenu. '/menu.php3';
-            showMenu($GLOBALS['aamenus'], $this->menu, $this->submenu);
+            showMenu($this->menu, $this->submenu);
         }
 
         echo "<h1>" . $this->title . "</h1>";
@@ -302,7 +304,7 @@ class AA_Adminpage implements AA_iEditable {
 
         echo $html_start;
 
-        showMenu($GLOBALS['aamenus'], "sliceadmin", "fulltext");
+        showMenu("sliceadmin", "fulltext");
         PrintArray($r_err);
         PrintArray($r_msg);
         unset($r_err);

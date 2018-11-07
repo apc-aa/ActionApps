@@ -26,7 +26,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 require_once __DIR__. "/../../include/init_page.php3";
-require_once menu_include();
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."constedit_util.php3";

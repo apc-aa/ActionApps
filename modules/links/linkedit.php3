@@ -36,7 +36,7 @@ function printChange($field, $change_arr, $original_value="") {
             $accept     = " <a href=\"javascript:AcceptChange('$field','$hidden_field')\">"._m('Accept').'</a>';
             $changed_by = $created_by_change[$key] ? ' ('.$created_by_change[$key].')' : '';
             $new_val    = get_if( trim($val), '-- '. _m('unfilled'). ' --');
-            FrmStaticText( MarkChanged( _m('Change') ), MarkChanged( $new_val ) .$changed_by .$accept, false, "", "", false);
+            FrmStaticText(MarkChanged(_m('Change')), MarkChanged($new_val) . $changed_by . $accept, "", "", false);
         }
     }
 }
@@ -406,7 +406,7 @@ FrmTabCaption($caption, '', '', $form_buttons, $slice_id);
 
 $bin_names = get_bin_names();
 if ( $id ) {
-    FrmStaticText( _m('Id'),  $id .' ('.$bin_names[$folder].')', false, "", "", false);
+    FrmStaticText(_m('Id'), $id . ' (' . $bin_names[$folder] . ')', "", "", false);
 }
 
 echo '
@@ -458,9 +458,9 @@ echo '
     printChange('note', $note_change, $note);
 
 if ( $r_state['link_id'] ) {        // 'edit link', not 'add link'
-    FrmStaticText( _m('Last checked'), date(_m('n/j/Y'), $checked). ', '. perm_username($checked_by),  false, "", "", false);
-    FrmStaticText( _m('Last changed'), date(_m('n/j/Y'), $last_edit). ', '.  perm_username($edited_by), false, "", "", false);
-    FrmStaticText( _m('Inserted'),     date(_m('n/j/Y'), $created). ', '. perm_username($created_by),  false, "", "", false);
+    FrmStaticText(_m('Last checked'), date(_m('n/j/Y'), $checked) . ', ' . perm_username($checked_by), "", "", false);
+    FrmStaticText(_m('Last changed'), date(_m('n/j/Y'), $last_edit) . ', ' . perm_username($edited_by), "", "", false);
+    FrmStaticText(_m('Inserted'), date(_m('n/j/Y'), $created) . ', ' . perm_username($created_by), "", "", false);
 }
 if ( !Links_IsPublic() ) {
     FrmInputSelect('folder', _m('Folder'), $bin_names, $folder, true);

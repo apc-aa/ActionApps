@@ -34,38 +34,30 @@ require_once AA_INC_PATH."formutil.php3";  // for FrmJavascriptCached()
 
 //$debugsummarize = 01;
 
-// Quick test to show contents of slice record
-if (0) {
-    $db->query("SELECT * FROM slice LIMIT 1");
-    $db->next_record();
-    huhl(GetTable2Array("SELECT * FROM slice LIMIT 1",'NoCoLuMn',1));
-}
-
 // These parameters effect how slices compare to each other
 $scoreUnshown = 10;
 $scoreAddOrMiss = 50;
 
-HtmlPageBegin();
-?>
- <title><?php echo _m("Summarize slice differences");?></title>
-</head>
+$apage = new AA_Adminpageutil('aaadmin','summarize');
+$apage->setTitle(_m("AA - Summarize"));
+$apage->setSubtitle(_m("Summarize slice differences"));
+$apage->setForm();
+$apage->printHead($err, $Msg);
 
-<?php
-    require_once AA_INC_PATH."menu.php3";
-    showMenu($aamenus, "aaadmin","summarize");
-
-    echo "<h1><b>" . _m("AA - Summarize") . "</b></h1>";
-    PrintArray($err);
-    echo $Msg;
     initSummarize();
     $nocache=1;
     setnr();
-    print("<p>");
-    mapslice();
+
+    if (AA_Module::getModuleType($slice_id)!=='S') {
+        echo _m("You should switch to some slice - this function compares current slice (not other modules, like site, ...)") . "</b></h1>";
+    } else {
+        print("<p>");
+        mapslice();
 //    mapslices();
-    sliceshortcuts(1);
-    HtmlPageEnd();
-    page_close();
+        sliceshortcuts(1);
+    }
+
+$apage->printFoot();
 
 /** initSummarize function
  *
@@ -118,14 +110,14 @@ function ignored_slice($si) {
  * @return string
  */
 function editsliceinfo($sid) {
-    return "<a href=\"slicedit.php3?change_id=$sid\">Edit slice info</a>";
+    return "<a href=\"".StateUrl("slicedit.php3?change_id=$sid")."\">Edit slice info</a>";
 }
 /** editslicefields function
  * @param $sid
  * @return string
  */
 function editslicefields($sid) {
-    return "<a href=\"se_fields.php3?change_id=$sid\"> Edit fields </a>";
+    return "<a href=\"".StateUrl("se_fields.php3?change_id=$sid")."\"> Edit fields </a>";
 }
 /** url_slicefieldcopy function
  * @param $field
@@ -133,7 +125,7 @@ function editslicefields($sid) {
  */
 function url_slicefieldcopy($field) {
     global $nearest;
-    return "<a href=\"summarize.php3?nearest=$nearest&slicefieldcopy=$field\"> -> </a>";
+    return "<a href=\"".StateUrl("?nearest=$nearest&slicefieldcopy=$field")."\"> -> </a>";
 }
 /** url_copyfield function
  * @param $field
@@ -141,21 +133,21 @@ function url_slicefieldcopy($field) {
  */
 function url_copyfield($field) {
     global $nearest;
-    return "<a href=\"summarize.php3?nearest=$nearest&copyfield=$field\"> Copy Field </a>";
+    return "<a href=\"".StateUrl("?nearest=$nearest&copyfield=$field")."\"> Copy Field </a>";
 }
 /** url_showfield function
  * @param $field
  * @return string
  */
 function url_showfield($field) {
-    return "not shown <a href=\"summarize.php3?showfield=$field\"> (show it) </a>";
+    return "not shown <a href=\"".StateUrl("?showfield=$field")."\"> (show it) </a>";
 }
 /** comparewith function
  * @param $sid
  * @return string
  */
 function comparewith($sid) {
-    return "<a href=\"summarize.php3?nearest=$sid\"> Compare </a>";
+    return "<a href=\"".StateUrl("?nearest=$sid")."\"> Compare </a>";
 }
 /** mapslice function
  *
@@ -169,6 +161,7 @@ function mapslice() {
     }
     if ($nearest) {
         $sno = $sao[$nearest];
+        huhl($sno, $nearest, $slice_id, $sid, $so);
         print("<a name=\"$sid\"></a><font color=purple>$sid: '" . $so->name() . "'</font> closest to <font color=red><a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'</font><br>".editslicefields($sid));
         // Here is where we do any actions that change things, before doing
         // a comparisom
@@ -505,4 +498,3 @@ function setnr() {
  $nr["98122b72f41dcd4ac5724f91e9bd85c0"] = $alerts;
  $nr["635a1206228867bfc5d7e3feb1d950c8"] = $alerts;
 }
-?>

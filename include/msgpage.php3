@@ -30,11 +30,6 @@
 //
 
 require_once AA_INC_PATH."constants.php3";
-if ( isset($g_modules[$slice_id])) {
-    require_once menu_include();   //show navigation column depending on $show
-} else {
-    require_once AA_INC_PATH."menu.php3";
-}
 
 /** MsgPageMenu function
  *  Displays page with message and link to $url
@@ -44,40 +39,21 @@ if ( isset($g_modules[$slice_id])) {
  * @param $menu
  */
 function MsgPageMenu($url, $msg, $mode, $menu="") {
-  global $sess, $auth, $slice_id, $aamenus;
+    global $sess;
 
-  if ( !isset($sess) ) {
-    require_once AA_INC_PATH . "locauth.php3";
-    pageOpen();
-  }
+    if ( !isset($sess) ) {
+        require_once AA_INC_PATH . "locauth.php3";
+        pageOpen();
+    }
 
-  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  ?>
-  <title><?php echo _m("Toolkit news message") ?></title>
-  </head>
-  <body>
+    $apage = new AA_Adminpageutil($mode=='admin'? 'aaadmin' : 'sliceadmin', $menu);
+    $apage->setForm();
+    $apage->printHead($err, $msg);
 
-  <?php
+    echo "<a href=\"$url\">"._m("Back")."</a>";
+    $apage->printFoot();
 
-  switch( $mode ) {
-    case "items":    // Message page on main page (index.php3) or such page
-    case "sliceadmin":
-      showMenu($aamenus, "sliceadmin", $menu);
-      break;
-    case "admin":    // Message page on admin pages (se_*.php3) or such page
-      showMenu($aamenus, "aaadmin", $menu);
-      break;
-  }
-
-  if ( isset($msg) AND is_array($msg)) {
-      PrintArray($msg);
-  } else {
-      echo "<p>$msg</p><br><br>";
-  }
-  echo "<a href=\"$url\">"._m("Back")."</a>";
-  HtmlPageEnd();
-  page_close();
-  exit;
+    exit;
 }
 
 ?>
