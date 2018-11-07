@@ -1047,7 +1047,7 @@ function ParseFnc($s) {
 /** replaces htmlspecialchars because of changes in php 5.4
  */
 function myspecialchars( $var='', $double_encode=true) {
-    return htmlspecialchars( $var, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1', $double_encode);
+    return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1', $double_encode);
 }
 
 
@@ -1055,7 +1055,7 @@ function myspecialchars( $var='', $double_encode=true) {
  * @return html safe code (used for preparing variable to print in form)
  */
 function safe( $var ) {
-    return htmlspecialchars( magic_strip($var), ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
+    return htmlspecialchars( magic_strip($var), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
 }
 
 /** Base64url version of base64 */

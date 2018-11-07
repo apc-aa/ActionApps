@@ -92,7 +92,7 @@ if ( !constant('ACCESS_CODE') OR (strlen(constant('ACCESS_CODE'))<10) ) {
 
 if (!is_callable('myspecialchars')) {
     function myspecialchars( $var, $double_encode=true) {
-        return htmlspecialchars( $var, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1', $double_encode);
+        return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1', $double_encode);
     }
 }
 
