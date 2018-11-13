@@ -88,6 +88,7 @@ function GetFieldMapping($from_slice_id, $destination_id) {
 /** GetBaseItem function
  * get base item of $item_id from relation table
  * @param $item_id
+ * @return mixed
  */
 function GetBaseItem($item_id) {
     $db = getDb();
@@ -110,6 +111,7 @@ function GetBaseItem($item_id) {
  * find if item was already fed to $destination slice or it comes from it
  * @param $item_id
  * @param $destination
+ * @return bool
  */
 function IsItemFed($item_id, $destination) {
     $p_destination = q_pack_id($destination);
@@ -187,6 +189,7 @@ function FeedJoin($columns, $fields, $params, &$result) {
  * @param $approved
  * @param $tocategory
  * @param $content
+ * @return bool|mixed|string
  */
 function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory=0, $content="") {
 
@@ -288,15 +291,19 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     }
     return $id;
 }
+
 /** AddRelationFeed function
- * @param $dest_id
- * @param $source_id
+ * @param     $dest_id
+ * @param     $source_id
+ * @param int $flag
  */
-function AddRelationFeed($dest_id, $source_id) {
-    $p_dest_id   = q_pack_id($dest_id);
-    $p_source_id = q_pack_id($source_id);
-    // update relation table - stores where is what fed
-    DB_AA::sql("INSERT INTO relation ( destination_id, source_id,   flag ) VALUES ( '$p_dest_id', '$p_source_id', '". REL_FLAG_FEED ."' )");
+function AddRelationFeed($dest_id, $source_id, $flag = REL_FLAG_FEED) {
+    if ($dest_id != $source_id) {
+        $p_dest_id = q_pack_id($dest_id);
+        $p_source_id = q_pack_id($source_id);
+        // update relation table - stores where is what fed
+        DB_AA::sql("INSERT INTO relation (destination_id, source_id, flag ) VALUES ( '$p_dest_id', '$p_source_id', '$flag' )");
+    }
 }
 
 function FromFed($item_id) {
@@ -314,6 +321,7 @@ function WhereFed($item_id) {
  *  $appp="y" => active folder else hold bin.
  * @param $sl_id
  * @param $from_category_id
+ * @return mixed
  */
 
 function CreateFeedTree($sl_id, $from_category_id) {
@@ -361,17 +369,26 @@ function CreateFeedTree($sl_id, $from_category_id) {
  */
 function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
 
-    $slice       = AA_Slice::getModule($slice_id);
-    $fields      = $slice->getFields();
+    if (($item_id == $dest_id) OR ($slice_id==$destination_id)) {
+        return;
+    }
+
+    $fields      = AA_Slice::getModule($slice_id)->getFields();
 
     $map         = GetFieldMapping($slice_id, $destination_id);
 
-    $oldcontent    = GetItemContent($dest_id);
-    $oldcontent4id = $oldcontent[$dest_id];
-    $content       = GetItemContent($item_id);
-    $content4id    = $content[$item_id];   // shortcut
+    $destcontent    = GetItemContent($dest_id);
+    $destcontent4id = $destcontent[$dest_id];
+    $content        = GetItemContent($item_id);
+    $content4id     = $content[$item_id];   // shortcut
 
-    foreach($oldcontent4id as $key => $fval) {
+    $updatecontent  = new ItemContent();
+    $updatecontent->setItemID($dest_id);
+    $updatecontent->setSliceID($destination_id);
+
+    $do_update = false;
+
+    foreach($destcontent4id as $key => $fval) {
         // skip field, if field from source item is not mapped to dest
         if ($map[$key]['feedmap_flag'] != FEEDMAP_FLAG_MAP) {
             continue;
@@ -382,11 +399,14 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
         // as update&change, then status_code is changed also in destination slice
         // - Source admin APPROVE OR TRASHES items in destiation slice !!!
         if (($fval[0]['flag'] & FLAG_UPDATE) || $fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE ) {
-            $oldcontent4id[$key][0]['value'] = $content4id[$val][0]['value'];
+            $updatecontent->setAaValue($key, new AA_Value($content4id[$val], $fval[0]['flag']));
+            $do_update = true;
         }
     }
-    StoreItem( $dest_id, $destination_id, $oldcontent4id, false, true, false, 'feed' );
-    // update, invalidatecache, not feed
+
+    if ($do_update) {                       // update, invalidatecache, not feed
+        $updatecontent->storeItem('update', array(true, false), 'feed');
+    }
 }
 
 /** UpdateItems function
@@ -394,37 +414,30 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
  *  it's expected, that items don't change their category, so $cat_id is unneccessary.
  * @param $item_id
  * @param $slice_id
+ * @return bool
  */
 function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
-    $items = array($item_id => $slice_id);
+    $items  = array($item_id => $slice_id);
+    $update = false;
 
-    $db = getDB(); 	// do not use global db, because of conflict in UpdateFedItem - StoreItem
     foreach($items as $item_id => $slice_id) {
-        $p_item_id = q_pack_id($item_id);
-
-        // get fed items
-        $SQL = "SELECT destination_id, slice_id FROM relation INNER JOIN item ON relation.destination_id = item.id
-                 WHERE source_id='$p_item_id'
-                   AND ((flag & ". REL_FLAG_FEED .") != 0)";
-        $db->query($SQL);
-        while ( $db->next_record() ) {
+        $destinations = DB_AA::select(array('iid'=>'sid'), "SELECT LOWER(HEX(`destination_id`)) AS iid, LOWER(HEX(`slice_id`)) as sid FROM `relation`, `item`", array(array('relation.destination_id', 'item.id', 'j'),array('source_id', $item_id, 'l'),array('flag', REL_FLAG_FEED, 'set')));
+        foreach ($destinations as $d_iid => $d_sid) {
             $update     = true;
-            $d_id       = unpack_id($db->f('destination_id'));
-            $dest_sl_id = unpack_id($db->f('slice_id'));
             //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
             //      continue;
 
-            UpdateFedItem($item_id,$slice_id,$d_id,$dest_sl_id);
-            $items[$d_id] = $dest_sl_id;
+            UpdateFedItem($item_id, $slice_id, $d_iid, $d_sid);
+            $items[$d_iid] = $d_sid;
         }
     }
-    freeDB($db);
     return $update;
 }
 
 /** FeedItem function
  *  Feeds item to all apropriate slices
- *  @param $item_id is unpacked id of feeded item
+ * @param $item_id is unpacked id of feeded item
+ * @return bool
  */
 function FeedItem($item_id) {
     // get item field definition

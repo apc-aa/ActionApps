@@ -178,7 +178,6 @@ class AA_Saver {
 
             }
 
-
             $this->_updated_slices[$content4id->getOwnerId()] = true;
 
             if ($fire ) {
@@ -197,7 +196,7 @@ class AA_Saver {
 
                     // Update relation table to show where came from
                     if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
-                        AddRelationFeed($new_item_id, $content4id->getItemID());
+                        AddRelationFeed($new_item_id, $old_item_id, REL_FLAG_SOURCE);
                     }
                 }
             } else {
@@ -289,6 +288,7 @@ class AA_Grabber {
      *  Each grabber could have its own parameters (like separator for CSV, ...)
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {     // $input_prefix - here grabber_id
         $properties = static::getClassProperties();

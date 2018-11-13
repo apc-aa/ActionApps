@@ -60,6 +60,7 @@ function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pr
  * @param $fce
  * @param $field = ''
  * @param $hlp = ''
+ * @return array
  */
 function GetAliasDef( $fce, $field='', $hlp='') {
     return array('fce' => $fce, 'param' => $field, 'hlp' => $hlp);
@@ -118,7 +119,7 @@ class AA_Aliases {
      * @param $text
      */
     function addTextAlias($alias_name, $text) {
-        $this->addAlias(new AA_Alias($alias_name, "id..............", 'f_t'));
+        $this->addAlias(new AA_Alias($alias_name, "id..............", ParamImplode(array('f_t',$text))));
     }
     /** getArray function
      *
@@ -354,7 +355,8 @@ define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 
 /** relation table flags */
 define( "REL_FLAG_MODULE_DEPEND", 1 );  // specifies dependency between site modue and used slices
-define( "REL_FLAG_FEED", 2 );           // 2 - just to be compatible with content table
+define( "REL_FLAG_FEED",          2 );  // item is fed using AA feeding (value 2 - compatible with content table)
+define( "REL_FLAG_SOURCE",        4 );  // item is derived from other item ({newitem }, ...)
 
 /** view table flags */
 define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after the view
