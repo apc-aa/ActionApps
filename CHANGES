@@ -1,3 +1,12 @@
+18-11-13 - fixed problem with user login - password was corrupted by feeding action
+(honzam)   performed wrongly based on wrong relation table record.
+           To fix it you need to run:
+             AA -> Optimize -> Relation table duplicate records -> Repair
+         - improved {mail} function - AA removes the end-line whitespaces in the generated
+           plain-text version of e-mail (which broke responsivity in some templates in some
+           email clients - Zurb/Thunderbird...)
+         - small fixes, removed unnecessary functions and function parameters
+         - functions have better phpDoc
 18-11-07 - all AA admin pages converted to AA_Adminpageutil aproach
 (honzam) - better implementation of AA admin menu
          - AA UI improved - removed old links to documentation

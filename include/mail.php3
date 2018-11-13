@@ -95,6 +95,7 @@ class AA_Mail extends htmlMimeMail {
      *  in the template are expanded acording tho $item
      * @param $mail_id
      * @param $item
+     * @return bool
      */
     function setFromTemplate($mail_id, $item=null) {
 
@@ -154,6 +155,7 @@ class AA_Mail extends htmlMimeMail {
      *  Send prepared e-mail to adresses specified in the $to array.
      *  The e-mail is queued it AA_Toexecute queue before sending (not imediate)
      * @param $to
+     * @return int
      */
     function sendLater($to) {
         static $send_mails_total = 0;
@@ -244,6 +246,7 @@ class AA_Mail extends htmlMimeMail {
      *  Toexecutelater - special function called from AA_Toexecute class
      *  - used for queued tasks (runed form cron)
      * @param $to
+     * @return mixed
      */
     function toexecutelater($to) {
         return $this->send($to);
@@ -257,6 +260,7 @@ class AA_Mail extends htmlMimeMail {
      * @param $item
      *
      * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
+     * @return bool|int|mixed
      */
      static function sendTemplate($mail_id, $to, $item=null, $later=true) {
         // email has the templates in it
@@ -279,6 +283,7 @@ class AA_Mail extends htmlMimeMail {
      *  $zids (often Reader item). The recipients are Reders itself, by default.
      * @param $mail_id
      * @param $zids
+     * @return
      */
     static function sendToReader($mail_id, $zids) {
         $chunks = array_chunk($zids->longids(),50);  // plan 50 mails in one shot
@@ -338,6 +343,7 @@ class AA_Mail_Scheduler {
  *  Strips the HTML tags and lot more to get a plain text mail version.
  *   Replaces URL links by the link in compound brackets behind the linked text.
  * @param $html string
+ * @return null|string|string[]
  */
 function html2text($html) {
 
@@ -377,8 +383,6 @@ function html2text($html) {
         "'<hr>'si",
         "'</tr>'si",
         "'</table>'si",
-        // If the previous commands added too much whitespace, delete it
-        "'\\n\\n\\n+'si",
         "'<br[^>]{0,2}>'si",   // <br> as well as <br />
         "'</p>'si",
         "'</h[1-9]>'si",
@@ -387,7 +391,12 @@ function html2text($html) {
         "'<script[^>]*?>.*?</script>'si",
         "'<style[^>]*?>.*?</style>'si",
         // Strip out html tags
-        "'<[\/\!]*?[^<>]*?>'si");
+        "'<[\/\!]*?[^<>]*?>'si",
+        // trim end of line whitespaces (also fixes responsivnes when long line is present)
+        "'\\h+\\n'u",
+        // If the previous commands added too much whitespace, delete it
+        "'\\n\\n\\n+'si"
+    );
 
    $replace = array (
         // Strip out leading white space
@@ -396,8 +405,6 @@ function html2text($html) {
         "\n------------------------------------------------------------\n",
         "\n",
         "\n",
-        // If the previous commands added too much whitespace, delete it
-        "\n\n",
         "\n",   // <br> as well as <br />
         "\n\n",
         "\n\n",
@@ -406,7 +413,12 @@ function html2text($html) {
         "",
         "",
         // Strip out html tags
-        "");
+        "",
+        // trim end of line whitespaces (also fixes responsivnes when long line is present)
+        "\n",
+        // If the previous commands added too much whitespace, delete it
+        "\n\n\n"
+       );
 
         // Replace html entities - removed - now done by html_entity_decode() above
         // "'&(quot|#34);'i" => '"',
