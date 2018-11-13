@@ -126,6 +126,7 @@ class PageCache  {
      *  Returns cached informations or false
      * @param $keyId
      * @param $action
+     * @return bool
      */
     function get($key, $action='get') {
         AA::$debug && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
@@ -156,6 +157,7 @@ class PageCache  {
      * @param $params
      * @param $str2find
      * @param $action
+     * @return bool|mixed
      */
     function cacheDb($function, $params, $str2find, $action='get') {
         $key = get_hash($function, $params);
@@ -176,6 +178,7 @@ class PageCache  {
      * @param $params
      * @param $str2find
      * @param $action
+     * @return bool|false|mixed
      */
     function cacheMemDb($function, $params, $str2find, $action='get') {
         $key = get_hash($function, $params);
@@ -191,6 +194,7 @@ class PageCache  {
      *  Wrapper for contentcache->get_result
      * @param $function
      * @param $params
+     * @return mixed
      */
     function cacheMem($function, $params) {
         return AA::Contentcache()->get_result( $function, $params );
@@ -199,6 +203,7 @@ class PageCache  {
     /** getById function
      *  Get cache content by ID (not keystring)
      * @param $keyid
+     * @return bool
      */
     function getById($keyid) {
         $arr   = DB_AA::select1('SELECT stored, content FROM `pagecache`', '', array(array('id', $keyid)));
@@ -215,6 +220,7 @@ class PageCache  {
      *                 if ENABLE_PAGE_CACHE is false (we use cache for cached
      *                 javascript in admin interface (modules selectbox
      *                 for example), so we need to use cache here)
+     * @return mixed
      */
     function store($key, $content, $str2find, $force=false) {
         global $cache_nostore;

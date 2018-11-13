@@ -691,6 +691,7 @@ class AA_Field_Writer {
  * @param $fieldcontent
  * @param $field
  * @param $profile
+ * @return bool
  */
 function IsEditable($fieldcontent, $field, &$profile) {
     return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
@@ -737,6 +738,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  * @param $edit
  * @param $show is used by the Anonymous Form Wizard, it is an array
  *                (packed field id => 1) of fields to show
+ * @return string
  */
 function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
     global $slice_id, $auth;

@@ -36,7 +36,8 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
-*/
+ * @return array|string
+ */
 
 // ----- input variables normalization - start
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting

@@ -354,6 +354,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
               <td align="left">
               ';
 }
+
 /** GetMenuLink
  * @param $active
  * @param $label
@@ -361,6 +362,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
  * @param $aa_href
  * @param $exact_href
  * @param $slice_id
+ * @return string
  */
 function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='') {
 
@@ -454,10 +456,12 @@ function showSubmenu($aamenu, $active) {
           <tr><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
 }
+
 /** CreateMenuItem function
  * @param $label
  * @param $href
  * @param $cond
+ * @return array
  */
 function CreateMenuItem( $label, $href, $cond = true ) {
     return array('label' => $label, 'href' => $href, 'cond' => $cond);

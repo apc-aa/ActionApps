@@ -48,6 +48,7 @@ class FormArray
      *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
      *
+     * @return string
      * @throws Exception
      * @param $property_id string
      * @param $content AA_Item

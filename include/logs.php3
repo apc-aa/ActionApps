@@ -52,6 +52,7 @@ class AA_Log {
      * @param $event
      * @param $params
      * @param $selector
+     * @return bool
      */
     static function write($event, $params="", $selector="" ) {
         global $auth;
@@ -149,13 +150,14 @@ class AA_Log_Clenup {
 
 /** getLogEvents function
  *  Get events from log
- *  @param $event           - type of event
- *  @param $from            - events from date
- *  @param $to              - events to date
- *  @param $group_by_params - if true, returns events grouped by params and their count
+ * @param $event - type of event
+ * @param $from - events from date
+ * @param $to - events to date
+ * @param $group_by_params - if true, returns events grouped by params and their count
  *                            as count
- *  @param $delete_old_logs -
- *  @param $selector
+ * @param $delete_old_logs -
+ * @param $selector
+ * @return array|bool|string
  */
 function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false, $selector="") {
 

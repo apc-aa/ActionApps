@@ -41,6 +41,7 @@ define("UPDATE", 2);
  * @param $maxsize
  * @param $delimeter
  * @param $enclosure
+ * @return array|false|null
  */
 function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
     if ($delimiter == '\t') {
@@ -56,6 +57,7 @@ function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
  *                otherwise creates field1, field2, ...
  * @param $fileName
  * @param $addParams
+ * @return array
  */
 function createFieldNames($fileName,&$addParams) {
     $handle = fopen($fileName,"r");
@@ -78,12 +80,14 @@ function createFieldNames($fileName,&$addParams) {
     }
     return $fieldNames;
 }
+
 /** convertCSV2Items function
- * @param $csvRec
- * @param $fieldNames
- * @param $trans_actions
- * @param $slice_fields
+ * @param             $csvRec
+ * @param             $fieldNames
+ * @param             $trans_actions
+ * @param             $slice_fields
  * @param ItemContent $itemContent
+ * @return
  */
 function convertCSV2Items(&$csvRec,&$fieldNames,&$trans_actions,&$slice_fields,&$itemContent) {
     $itemContent1 = new ItemContent;
@@ -117,6 +121,7 @@ class Actions {
      * @param $itemcontent
      * @param $slice_fields
      * @param $outputItemContent
+     * @return
      */
      function transform(&$itemContent, $slice_fields, &$outputItemContent) {
          global $auth;
@@ -270,6 +275,7 @@ class Action {
      * @param $from
      * @param $globalParams
      * @param $fvalues
+     * @return string
      */
     function transform(&$itemContent, $from, &$globalParams, &$fvalues ) {
         switch ( $this->action) {

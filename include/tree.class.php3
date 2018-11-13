@@ -249,6 +249,7 @@ class AA_Trees {
     /** getTree function
      *  main factory static method
      * @param $id
+     * @return
      */
     function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
         $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);
@@ -258,6 +259,7 @@ class AA_Trees {
     /** getTree function
      *  main factory static method
      * @param $id
+     * @return mixed
      */
     function getIds($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
         $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);

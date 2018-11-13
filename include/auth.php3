@@ -95,9 +95,11 @@ class AA_Mysqlauth {
         }
         AA_Mysqlauth::maintenance();
     }
+
     /** AA_Mysqlauth::getReadersData function
      * @param $slice_id
      * @param $restrict_zids = false
+     * @return array
      */
     static function getReadersData($slice_id, $restrict_zids=false) {
         $auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
@@ -235,8 +237,10 @@ class AA_Mysqlauth {
     }
 
     // --------------------------------------------------------------------------
+
     /** AA_Mysqlauth::isActive function
      * @param $reader
+     * @return bool
      */
     static function isActive($reader) {
         return ($reader->getValue('status_code.....') == SC_ACTIVE) AND

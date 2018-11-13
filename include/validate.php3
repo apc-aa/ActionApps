@@ -34,7 +34,8 @@
  * @param $variable could be array or not
  * @param $err
  * @param $needed
- * @param $validator  (object of simple string)
+ * @param $validator (object of simple string)
+ * @return bool
  */
 function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $validator="all") {
     foreach ((array)$variable as $var) {
@@ -66,7 +67,8 @@ class AA_Validate extends AA_Serializable {
 
     /** factoryCached function
      *  Returns validators for standard data types
-     *   @param $v_type is string, or array($type,$parameter)
+     * @param $v_type is string, or array($type,$parameter)
+     * @return mixed|null
      */
     static function factoryCached($v_type) {
         static $standard_validators = array();
@@ -119,6 +121,7 @@ class AA_Validate extends AA_Serializable {
      * @param $var
      * @param $type
      * @param $default
+     * @return bool
      */
     function validate(&$var, $type, $default='AA_noDefault') {
         $validator = self::factoryCached($type);
@@ -133,6 +136,7 @@ class AA_Validate extends AA_Serializable {
      *      AA_Validate::filter($vararray, array('int', array('min'=>0, 'max'=>10))
      * @param $var
      * @param $type
+     * @return array
      */
     static function filter($vararray, $type) {
         return array_filter((array)$vararray, array(self::factoryCached($type),'validate'));
@@ -149,6 +153,7 @@ class AA_Validate extends AA_Serializable {
      * @param $err_id
      * @param $err_msg
      * @param $getmsg
+     * @return null
      */
     static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
@@ -173,6 +178,7 @@ class AA_Validate extends AA_Serializable {
      * @param $err_id
      * @param $err_msg
      * @param $default
+     * @return bool
      */
     function bad(&$var, $err_id, $err_msg, $default) {
         self::lastErr($err_id, $err_msg);
@@ -220,6 +226,7 @@ class AA_Validate_Signed extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         if (!IsSigInt($var)) {
@@ -306,6 +313,7 @@ class AA_Validate_Regexp extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
@@ -381,6 +389,7 @@ class AA_Validate_Id extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         if (!is_long_id($var)) {
@@ -411,6 +420,7 @@ class AA_Validate_Float extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         if ( !is_float($var) ) {
@@ -440,6 +450,7 @@ class AA_Validate_Enum extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $default);
@@ -452,6 +463,7 @@ class AA_Validate_Login extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         $len = strlen($var);
@@ -478,6 +490,7 @@ class AA_Validate_Pwd extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         $len = strlen($var);
@@ -528,6 +541,7 @@ class AA_Validate_Unique extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
 
@@ -597,6 +611,7 @@ class AA_Validate_Eunique extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
@@ -621,6 +636,7 @@ class AA_Validate_Text extends AA_Validate {
     /** validate function
      * @param $var
      * @param $default
+     * @return bool
      */
     function validate(&$var, $default='AA_noDefault') {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
@@ -642,15 +658,16 @@ class AA_Validate_Text extends AA_Validate {
 
 
 /** _ValidateSingleInput function
-*  Validate users input. Error is reported in $err array
-* @param $variableName
-* @param $inputName
-*  @param $variable is not array
-* @param $err
-* @param $needed
-* @param $validator  (object of simple string)
-*  You can add parameters to $type divided by ":".
-*/
+ *  Validate users input. Error is reported in $err array
+ * @param $variableName
+ * @param $inputName
+ * @param $variable is not array
+ * @param $err
+ * @param $needed
+ * @param $validator (object of simple string)
+ *  You can add parameters to $type divided by ":".
+ * @return bool
+ */
 function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $validator) {
 
     if (is_string($validator)) {

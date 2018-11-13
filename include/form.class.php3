@@ -311,7 +311,8 @@ class AA_Form extends AA_Object {
     }
 
     /** Edit item form
-     *  @param $type  ajax|live
+     * @param $type  ajax|live
+     * @return string
      */
     function getEditFormHtml($type='live') {
         if (!$this->object_id) {
@@ -328,7 +329,8 @@ class AA_Form extends AA_Object {
 
     /** @todo write permission function, which modifies the form based on the
      *        actual user's permissions and profile
-     *  @param $type  normal|ajax|live
+     * @param $type  normal|ajax|live
+     * @return string
      */
     public function getRowsHtml($content, $type='') {
         $ret = '';

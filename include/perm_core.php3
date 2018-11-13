@@ -183,6 +183,7 @@ class AA_Perm_Resource {
  *  Check, if specified $perm is in $perms list
  * @param $perms
  * @param $perm
+ * @return bool|string
  */
 function IsPerm($perms, $perm){
     return ( !$perms || !$perm ) ? false : strstr($perms,$perm);
@@ -194,6 +195,7 @@ function IsPerm($perms, $perm){
  * @param $objType
  * @param $objID
  * @param $perm
+ * @return bool|string
  */
 function CheckPerms( $user_id, $objType, $objID, $perm) {
     global $permission_uid, $permission_to;
@@ -214,6 +216,7 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
 
 /** GetUserSlices function
  * @param $user_id
+ * @return string
  */
 function GetUserSlices( $user_id = "current") {
     global $permission_uid, $permission_to, $auth;
@@ -235,6 +238,7 @@ function GetUserSlices( $user_id = "current") {
  *  shortcut for slice permission checking
  * @param $perm
  * @param $slice
+ * @return bool|string
  */
 function IfSlPerm($perm, $slice=null) {
     global $auth, $slice_id;
@@ -341,6 +345,7 @@ function ChangeCatPermAsIn($category, $template) {
  * (c) Jakub Adamek, Econnect, +-July 2002
  * @param $auth
  * @param $slice_id
+ * @return bool
  */
 function FilemanPerms($slice_id) {
     global $errcheck;
@@ -598,7 +603,8 @@ class AA_Perm {
 
     /** $this->_whichUsersystem($uid) function
      *  returns the permission system for the user id
-     *  @param $uid
+     * @param $uid
+     * @return bool|mixed
      */
     private function _whichUsersystem($uid) {
         foreach ($this->perm_systems as $perm_sys) {
@@ -686,6 +692,7 @@ class AA_Perm {
      *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
      * @param $perms1
      * @param $perms2
+     * @return string
      */
     public static function compare($perms1, $perms2) {
         $perms1 = AA_Perm::_resolve($perms1);
@@ -705,6 +712,7 @@ class AA_Perm {
      * @param $user_id
      * @param $objID
      * @param $whole
+     * @return mixed
      */
     function getModulePerms( $user_id, $objID, $whole=true) {
         $slice_perms = $this->getUserPerms($user_id, "slice", ($whole ? 0 : 1));
@@ -718,6 +726,7 @@ class AA_Perm {
      * Slice-specific perms take precedence except the SUPER access level
      * @param $slice_perm
      * @param $aa_perm
+     * @return mixed
      */
     public static function joinSliceAndAAPerm($slice_perm, $aa_perm) {
         global $perms_roles;
@@ -731,7 +740,8 @@ class AA_Perm {
     /** AA_Perm::_resolve($perms) function
      *  Replaces roles with apropriate perms
      *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
-     *  @param $perms
+     * @param $perms
+     * @return mixed
      */
     private static function _resolve($perms) {
         global $perms_roles;
@@ -812,6 +822,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      *  Returns ID of the user (item ID of the user in Reader slice, in this case)
      * @param $username
      * @param $password
+     * @return bool|mixed
      */
     function authenticateUsername($username, $password) {
         if ( !$username ) {
@@ -833,6 +844,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      *  Looks into reader management slices whether the reader name is not yet used.
      *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
      * @param $username
+     * @return bool
      */
     function isUsernameFree($username) {
         // search not only Active bin, but also Holding bin, Pending, ...
@@ -851,6 +863,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** findUsernames function
      *  return list of RM users which matches the pattern
      * @param $pattern - already quoted!!!
+     * @return array
      */
     private function _findUserPattern($pattern) {
         $db = getDB();
@@ -927,6 +940,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     /** _isUserReader, _isGroupReader, _isGroupReaderSetfunction
      * @param $user_id
+     * @return bool
      */
     private function _isUserReader($user_id)      { return (guesstype($user_id) == 'l');  }
     private function _isGroupReader($group_id)    { return ((guesstype($group_id) == 'l') AND (AA_Slice::getModuleProperty($group_id,'type')=='ReaderManagement')); }
@@ -935,6 +949,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** GetReaderIDsInfo function
      *  returns basic information on user grabed from any Reader Management slice
      * @param $user_id
+     * @return array|bool
      */
     private function _readerIDsInfo($user_id) {
         $user_info = GetAuthData($user_id);
@@ -956,6 +971,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** GetReaderGroupIDsInfo function
      *  returns basic information on user grabed from any Reader Management slice
      * @param $rm_id
+     * @return array
      */
     private function _readerGroupIDsInfo($rm_id) {
         $slice       = AA_Slice::getModule($rm_id);
@@ -967,6 +983,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     /** GetReaderSetIDsInfo function
      * @param $set_id
+     * @return array|bool
      */
     private function _readerSetIDsInfo($set_id) {
         $set  = AA_Object::load($set_id, 'AA_Set');
@@ -987,6 +1004,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** getMembership function
      *  return array of group_ids, where id (group or user) is a member (=Reader Management slice) in which is the user member
      * @param $user_id
+     * @return array
      */
     function getMembership($user_id, $flags=0) {
         if (!$user_id) {
@@ -1036,6 +1054,7 @@ function getReaderSlices() {
 /** GetAuthData function
  *  Fills content array for current loged user or specified user
  * @param $user_id
+ * @return ItemContent
  */
 function GetAuthData( $user_id = false ) {
     global $auth;
@@ -1078,6 +1097,7 @@ class AA_Reader {
      *  You can search all users or just the active (default)
      * @param $username
      * @param $bin
+     * @return mixed
      */
     static function name2Id($username, $slices=null, $bin=null ) {
         return AA_Reader::_find(FIELDID_USERNAME, $username, $slices, $bin );

@@ -57,6 +57,7 @@ $SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template",
  * @param $user_login
  * @param $slice_id
  * @param $role
+ * @return if|mixed|string
  */
 function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     global $auth;

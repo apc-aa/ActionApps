@@ -49,6 +49,7 @@ $langs = AA_Langs::getNames();
  * @param $column
  * @param $list
  * @param $type
+ * @return string
  */
 function CreateWhereFromList($column, $list, $type="number") {
     if (!is_array($list)) {

@@ -95,6 +95,7 @@ class AA_Linkcheck {
     /** check_irl function
      *  check url - returns error codes, content type, error weight and comment
      * @param $url
+     * @return array
      */
     function check_url($url) {
         $return = array();
@@ -185,6 +186,7 @@ class AA_Linkcheck {
      *  creates new valid_codes string (new is added as first)
      * @param $arr
      * @param $valid_codes
+     * @return string
      */
     function add_check($arr, $valid_codes) {
         $element = $this->remove_old($valid_codes);
@@ -195,6 +197,7 @@ class AA_Linkcheck {
     /** remove_old function
      *  remove old checks - more than 10
      * @param $valid_codes
+     * @return string
      */
     function remove_old($valid_codes) {
         $dummy = explode(":", $valid_codes);
@@ -213,6 +216,7 @@ class AA_Linkcheck {
     /** count_weight function
      *  counts weight of link from it's http error codes
      * @param $valid_codes
+     * @return float
      */
     function count_weight($valid_codes) {
         $dummy = explode(":", $valid_codes);

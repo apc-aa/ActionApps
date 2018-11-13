@@ -36,6 +36,7 @@ abstract class AA_Serializable {
     /** factory function
      * @param $classname
      * @param $params
+     * @return null
      */
     static function factory($classname, $params=null) {
         return class_exists($classname) ? new $classname($params) : null;
@@ -45,6 +46,7 @@ abstract class AA_Serializable {
      *   AA_Stingexpand::factoryByName('', $params);
      * @param $name
      * @param $params
+     * @return null
      */
     static function factoryByName($name, $params=null, $class_mask=null) {
         return self::factory(static::constructClassName($name, $class_mask), $params);
@@ -59,6 +61,7 @@ abstract class AA_Serializable {
      *
      * @param $string     like dte:1:10:1 in field.input_show_func
      * @param $class_mask like 'AA\Widget\Widget' or empty if it is the same class
+     * @return null
      */
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);
@@ -171,6 +174,7 @@ class AA_Storable extends AA_Serializable {
      *  Uses getClassProperties() method of the classes from which it grabs all
      *  all persistent properties
      * @param $class
+     * @return array
      */
     static function getPersistentProperties() {
         $ret        = array();
@@ -224,6 +228,7 @@ class AA_Storable extends AA_Serializable {
      * @param $obj
      * @param $property
      * @param $state
+     * @return
      */
     function _oneStatePropertyValue($obj, $property, $state) {
         if (!$property->isObject()) {
@@ -486,6 +491,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     /** getNameArray function
      * @param $obj_type
      * @param $owner
+     * @return array|bool|string
      */
     static function getNameArray($obj_type, $owner) {
         if ( empty($owner) ) {
@@ -512,9 +518,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
-     * @param $id     - aa_id - object id
-     * @param $type   - object class - like 'AA_Form'
+     * @param $id - aa_id - object id
+     * @param $type - object class - like 'AA_Form'
      * @static
+     * @return null
      */
     static function load($id, $type=null) {
         // @todo optimize the load
@@ -874,6 +881,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @param $classname
      * @param $params
      * @static
+     * @return array
      */
     static function getManagerConf($manager_url, $actions=null, $switches=null) {
         $object_class  = get_called_class();
@@ -1001,6 +1009,7 @@ class AA_Components extends AA_Object {
      *  Return names of all known AA classes, which begins with $mask
      *  static function
      * @param $mask
+     * @return array
      */
     static function getClassNames($mask)
     {
@@ -1028,6 +1037,7 @@ class AA_Components extends AA_Object {
      * @param $mask
      * @param $input_id
      * @param $params
+     * @return string
      */
     static function getSelectionCode($mask, $input_id, &$params) {
         $options      = array('AA_Empty' => _m('select ...'));

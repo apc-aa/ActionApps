@@ -195,6 +195,7 @@ class AA_Condition extends AA_Object {
 
     /** getAsString function
      * @param $condition_number
+     * @return string
      */
     function getAsString($condition_number=0) {
         $ret = array();
@@ -216,6 +217,7 @@ class AA_Condition extends AA_Object {
 
     /** matches function
      * @param $itemcontent
+     * @return bool
      */
     function matches(&$itemcontent) {
         foreach ($this->fields as $field) {
@@ -232,6 +234,7 @@ class AA_Condition extends AA_Object {
     /** _compare function
      *  Postfiltering, when the item (field value) is already loaded
      * @param $field_value
+     * @return bool
      */
     function _compare($field_value) {
         switch( $this->operator ) {
@@ -687,7 +690,8 @@ class AA_Set extends AA_Object {
 
     /** _parseViewConds function
      *  Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
-     *  @param $string ie:   d-headline........,category.......1-BEGIN-Bio
+     * @param $string ie:   d-headline........,category.......1-BEGIN-Bio
+     * @return bool
      */
     function _parseViewConds($string) {
         $commands = new AA_View_Commands($string);
@@ -697,8 +701,10 @@ class AA_Set extends AA_Object {
         }
         return $this->addFromCommand($command);
     }
+
     /** addFromCommand function
      * @param $command
+     * @return bool
      */
     function addFromCommand($command) {
         if ($command->getCommand() != 'd') {
@@ -796,6 +802,7 @@ class AA_Set extends AA_Object {
      *  Checks if the condition is in right format - is valid
      * @param $field
      * @param $value
+     * @return bool
      */
     static function check($field, $value) {
         return ($field && ($value != 'AAnoCONDITION'));
@@ -807,7 +814,8 @@ class AA_Set extends AA_Object {
      *  (which is new). We are trying to have the same syntax as classical
      *  $conds[] applayed to database selection.
      * @param $itemcontent
-     *  @todo allow to compare not only fields, but also aliases
+     * @todo allow to compare not only fields, but also aliases
+     * @return bool
      */
     function matches(&$itemcontent) {
         foreach ( $this->conds as $condition ) {
@@ -1017,6 +1025,7 @@ class AA_Dbcondition {
  * @param $operator
  * @param $querystring
  * @deprecated - use AA_Dbcondition directly
+ * @return
  */
 function GetWhereExp( $field, $operator, $querystring ) {
     return with(new AA_Dbcondition($field, $operator, $querystring))->getWhereExp();
@@ -1162,6 +1171,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
  *  Returns $conds[] array, which is created from conds[] 'url' string
  *  like conds[0][category........]=first&conds[1][switch.........1]=1
  * @param $conds_string
+ * @return array
  */
 function String2Conds( $conds_string ) {
     $set = new AA_Set(null, $conds_string);
@@ -1172,6 +1182,7 @@ function String2Conds( $conds_string ) {
  *  Returns $sort[] array, which is created from sort[] 'url' string
  *  like sort[0][headline........]=a&sort[2][publish_date....]=d
  * @param $sort_string
+ * @return array
  */
 function String2Sort( $sort_string ) {
     $set = new AA_Set(null, null, $sort_string);
@@ -1180,14 +1191,15 @@ function String2Sort( $sort_string ) {
 
 /** MakeSQLConditions function
  *  Creates array of SQL conditions based on $conds and fields $add
- * @param $fields_arr
- * @param $conds
- * @param $defaultCondsOperator
- * @param function $join_tables           - if some table is needed to join,
+ * @param          $fields_arr
+ * @param          $conds
+ * @param          $defaultCondsOperator
+ * @param function $join_tables - if some table is needed to join,
  *                                          this function adds it to the array
  * @param function $additional_field_cond - aditional condition function
  * @param function $additional_field_cond - aditional condition function parameter
- * @param $add_param
+ * @param          $add_param
+ * @return string
  */
 function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond='', $add_param=false) {
 
@@ -1227,13 +1239,14 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
 
 /** MakeSQLOrderBy function
  *  Creates array of SQL ORDER BY expresions based on $sort and fields array
- * @param $fields_arr
- * @param $sort
- *  @param function $join_tables           - if some table is needed to join,
+ * @param          $fields_arr
+ * @param          $sort
+ * @param function $join_tables - if some table is needed to join,
  *                                           this function adds it to the array
- *  @param function $additional_field_cond - aditional condition function
- *  @param function $additional_field_cond - aditional condition function parameter
- * @param $add_param
+ * @param function $additional_field_cond - aditional condition function
+ * @param function $additional_field_cond - aditional condition function parameter
+ * @param          $add_param
+ * @return string
  */
 function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond='', $add_param=false) {
     if ( isset($sort) AND is_array($sort)) {
@@ -1894,6 +1907,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
  * @param $conds
  * @param $sort
  * @param $slices
+ * @return array|void
  */
 
 function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {

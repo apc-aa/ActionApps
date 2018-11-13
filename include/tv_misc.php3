@@ -34,6 +34,7 @@ require_once AA_INC_PATH."tv_email.php3";
  *  see class tabledit :: var $getTableViewsFn for an explanation of the parameters
  * @param $viewID
  * @param $processForm
+ * @return array
  */
 function GetMiscTableView($viewID) {
     global $slice_id;

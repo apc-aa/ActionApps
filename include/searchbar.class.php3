@@ -53,6 +53,7 @@ function searchfields_cmp($a, $b) {
  *  helper function to sort order fields
  * @param $a
  * @param $b
+ * @return int
  */
 function orderfields_cmp($a, $b) {
     if ($a['order_pri'] == $b['order_pri']) {
@@ -74,6 +75,7 @@ class AA_Searchbar_Row extends AA_Storable {
 
     /** getClassProperties function of AA_Serializable
      * @param $class
+     * @return array
      */
     static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
@@ -374,6 +376,7 @@ class AA_Searchbar extends AA_Storable {
      *  Setting state from previou versions of state
      * @param $version
      * @param $state
+     * @return
      */
     function &convertState($version, &$state) {
         /* Current state store structure
@@ -541,6 +544,7 @@ class AA_Searchbar extends AA_Storable {
 
     /** getBookmarkParams function
      * @param $key
+     * @return bool
      */
     function getBookmarkParams($key) {
         return isset($this->bookmarks) ? $this->bookmarks->getBookmarkParams($key) : false;
@@ -753,6 +757,7 @@ class AA_Bookmarks {
      *  Get searchbar state for bookmark number $key.
      *  See AA_Storable in statestore.php3 for more info about 'state'
      * @param $param key
+     * @return bool
      */
     function get($key) {
         return $this->is_defined($key) ? $this->bookmarks[$key]['state'] : false;
@@ -777,6 +782,7 @@ class AA_Bookmarks {
     /** getBookmarkParams function
      *  Get parameters of bookmark defined by number $key
      * @param $key
+     * @return
      */
     function getBookmarkParams($key) {
         return $this->bookmarks[$key];
@@ -785,6 +791,7 @@ class AA_Bookmarks {
     /** is_defined function
      *  Is the bookmark number $key defined?
      * @param $key
+     * @return bool
      */
     function is_defined($key) {
         return isset( $this->bookmarks[$key] );
@@ -834,6 +841,7 @@ class AA_Bookmarks {
      * @param $name
      * @param $state
      * @param $to_global
+     * @return bool
      */
     function store( $name, $state, $to_global ) {
         if ( !is_object($this->profile) ) {
@@ -863,6 +871,7 @@ class AA_Bookmarks {
      * @param $state
      * @param $to_global
      * @param $id
+     * @return bool
      */
     function update( $name, $state, $to_global, $id) {
         if ( !is_object($this->profile) ) {
@@ -887,6 +896,7 @@ class AA_Bookmarks {
 
     /** is_global function
      * @param $key
+     * @return bool
      */
     function is_global($key) {
         return $this->bookmarks[$key]['type'] == '*';
@@ -894,6 +904,7 @@ class AA_Bookmarks {
 
     /** delete function
      * @param $key
+     * @return bool
      */
     function delete($key) {
         if ( !is_object($this->profile) ) {
@@ -916,6 +927,7 @@ class AA_Bookmarks {
     /** updateBookmark function
      * @param $key
      * @param $state
+     * @return bool
      */
     function updateBookmark($key, $state) {
         $old = $this->bookmarks[$key];
@@ -930,6 +942,7 @@ class AA_Bookmarks {
     /** renameBookmark function
      * @param $key
      * @param $newname
+     * @return bool
      */
     function renameBookmark($key, $newname) {
         $old = $this->bookmarks[$key];

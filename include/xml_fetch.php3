@@ -40,18 +40,19 @@ require_once AA_INC_PATH."xml_rssparse.php3";
  *   This function is used by the rss aa module client as well as by the admin
  *   interface.
  * @param $url
- *   @param $node_name       - the name of the node making the request
- *   @param $password        - the password of the node
- *   @param $user            - a user at the remote node. This is the user who
+ * @param $node_name - the name of the node making the request
+ * @param $password - the password of the node
+ * @param $user - a user at the remote node. This is the user who
  *                             is trying to establish a feed or who established
  *                             the feed
- *   @param $slice_id        - The id of the local slice from which a feed is
+ * @param $slice_id - The id of the local slice from which a feed is
  *                             requested
- *   @param $start_timestamp - a timestamp which indicates the creation time
+ * @param $start_timestamp - a timestamp which indicates the creation time
  *                             of the first item to be sent.
  *                             (www.w3.org/TR/NOTE-datetime format)
- *   @param $categories      - a list of local categories ids separated by space
+ * @param $categories - a list of local categories ids separated by space
  *                             (can be empty)
+ * @return string
  */
 function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timestamp, $categories) {
     $d["node_name"]       = $node_name;
@@ -67,6 +68,7 @@ function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timesta
  *  A generic fetching routine that takes an array of params (possibly empty)
  * @param $url
  * @param $d
+ * @return string
  */
 function http_fetch($url, $d=null) {
     if (isset($d)) {
@@ -91,12 +93,14 @@ function http_fetch($url, $d=null) {
     }
     return trim($data);
 }
+
 /** translteFeedCatid2Value function
  * @param $remote_cat_id
  * @param $remote_cat_value
  * @param $ext_categs
  * @param $l_categs
  * @param $all_categories
+ * @return array
  */
 function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs, $all_categories) {
 
@@ -118,12 +122,13 @@ function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs
 
 /** translateCategories function
  *  Translates remote categories to local one using external ext_categs array
- * @param $cat_field_id   - field id for category (category.......1)
- * @param $item           - data for current item. This will be updated by the values
+ * @param $cat_field_id - field id for category (category.......1)
+ * @param $item - data for current item. This will be updated by the values
  *                    for new categories ( $cat_field_id )
- * @param $ext_categs     - remote categories array (structure with name, value,
+ * @param $ext_categs - remote categories array (structure with name, value,
  *                    target_category_id, approved)
- * @param $l_categs       - local categories array [id] => (name, value, parent_id)
+ * @param $l_categs - local categories array [id] => (name, value, parent_id)
+ * @return mixed|null
  */
 function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) {
 
@@ -309,6 +314,7 @@ function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
  * Assumes that RSS1.0 will be explicit, RSS 0.9 and RSS2.0
  * should check
  * @param $field
+ * @return array
  */
 function field2arr($field) {
     global $rss_version;
@@ -375,6 +381,7 @@ function map1field($value,$item,$channel) {
 /** contentvalue function
  *  Extract the content from where the parser put it, and return as a value array.
  * @param $item
+ * @return array
  */
 function contentvalue($item) {
     $flag="";

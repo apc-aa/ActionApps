@@ -56,6 +56,7 @@ class AA_Poll {
 
     /** getProperty function
      * @param $fname
+     * @return
      */
     function getProperty($fname) {
         $this->loadSettings();
@@ -84,7 +85,8 @@ class AA_Poll {
 
     /** get_format_strings function
      *  Returns array of admin format strings as used in manager class
-     *  @param $design  beforevote|aftervote|<design_id>
+     * @param $design  beforevote|aftervote|<design_id>
+     * @return array
      */
     function get_format_strings($design='beforevote') {
         $this->loadSettings();
@@ -123,6 +125,7 @@ class AA_Poll {
     /** aliases function
      *  Get standard aliases definition from poll's fields
      * @param $additional_aliases
+     * @return array
      */
     function aliases() {
         return GetPollsAliases();
@@ -322,6 +325,7 @@ class AA_Polls {
     /** getPoll function
      *  main factory  method
      * @param $poll_id
+     * @return mixed
      */
     static function getPoll($poll_id) {
         $polls = AA_Polls::singleton();
@@ -332,6 +336,7 @@ class AA_Polls {
      *  static function
      * @param $poll_id
      * @param $field
+     * @return null
      */
     function getPollProperty($poll_id, $field) {
         $polls = AA_Polls::singleton();
@@ -342,6 +347,7 @@ class AA_Polls {
     /** getName function
      *  static function
      * @param $poll_id
+     * @return null
      */
     function getName($poll_id) {
         return AA_Polls::getPollProperty($poll_id, 'name');
@@ -349,6 +355,7 @@ class AA_Polls {
 
     /** _getPoll function
      * @param $poll_id
+     * @return mixed
      */
     function & _getPoll($poll_id) {
         if (!isset($this->a[$poll_id])) {

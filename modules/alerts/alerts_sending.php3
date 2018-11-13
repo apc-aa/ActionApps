@@ -331,10 +331,11 @@ class AA_Collection {
     }
 
     /** Used in send_emails(). Finds filter text for the given reader.
-    *   There are two modes: group by Selection and don't group. The
-    *   second one is more difficult.
-    *   @param object $readerContent  if null, use all filters
-    */
+     *   There are two modes: group by Selection and don't group. The
+     *   second one is more difficult.
+     * @param object $readerContent if null, use all filters
+     * @return string
+     */
     function getFilterText4Reader($readerContent, $filters) {
         $user_filters = array();
         if ($readerContent) {
@@ -493,12 +494,13 @@ function get_view_settings_cached($vid) {
 
 // -------------------------------------------------------------------------------------
 /** Warning: This function caches all combinations of selections. If there
-*   are too many different combinations, memory may be exhausted.
-*
-*   TODO: Rewrite this function using a DB table.
-*
-*   @param string $filter_settings  One or more filter IDs separted by comma ",".
-*/
+ *   are too many different combinations, memory may be exhausted.
+ *
+ *   TODO: Rewrite this function using a DB table.
+ *
+ * @param string $filter_settings One or more filter IDs separted by comma ",".
+ * @return mixed|null|string|string[]|void
+ */
 function get_filter_output_cached($vid, $filter_settings, $zids) {
     static $cached_filter_outputs;
 

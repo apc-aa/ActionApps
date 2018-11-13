@@ -39,6 +39,7 @@ $editor_perms = AA::$perm->getModulePerms($auth->auth["uid"], $slice_id);
  * @param $user_perm
  * @param $editor_perm
  * @param $role_perm
+ * @return bool
  */
 function CanChangeRole($user_perm, $editor_perm, $role_perm) {
     return ((AA_Perm::compare($editor_perm, $user_perm)=="G") AND (AA_Perm::compare($editor_perm, $role_perm)=="G"));

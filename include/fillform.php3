@@ -29,6 +29,7 @@
 
 /** fillFormFromVars function
  * @param $fillConds
+ * @return string
  */
 function fillFormFromVars($fillConds) {
     global $err;
@@ -56,6 +57,7 @@ function GetTimeZone() {
 
 /** safeChars function
  * @param $str
+ * @return string
  */
 function safeChars($str) {
     for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
@@ -193,6 +195,7 @@ function fillForm() {
 /** fillFormWithContent
  *  Returns HTML and Javascript for echoing
  * @param $oldcontent4id
+ * @return string
  */
 function fillFormWithContent($oldcontent4id) {
     global $form, $suffix, $my_item_id;

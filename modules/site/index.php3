@@ -81,7 +81,7 @@ if ($debug) print("<p>Action=$akce; r_spot_id=$r_spot_id</p>");
 
 switch( $akce ) {
     case 's': $tree->addInSequence( $r_spot_id, 'spot' ); break;  // Add Spot
-    case 'c': $tree->addChoice( $r_spot_id, 'option' );   break;  // Add Choice
+    case 'c': $tree->addChoice($r_spot_id, 'option');   break;  // Add Choice
     case 'r': $parent = $tree->get( 'parent', $r_spot_id );       // Remove
               if ($priorsib = $tree->removeSpot($r_spot_id)) {
                   $r_spot_id = $priorsib; // was set to $parent;

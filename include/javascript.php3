@@ -69,10 +69,12 @@ class AA_Jstriggers {
     }
 
     // $unpacked_fieldid -- the function ignores the first character (usually 'v')
+
     /** getTriggers function
      * @param $control
      * @param $upacked_fieldid
      * @param $add
+     * @return string
      */
     static function get($control, $unpacked_fieldid='', $add="") {
 

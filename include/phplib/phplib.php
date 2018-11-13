@@ -159,14 +159,14 @@ class Session {
     }
 
 
-
     /**
-    * Recall the session registration for named variable(s)
-    *
-    * @param	  mixed   String with the name of one or more variables seperated by comma
-    *                   or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
-    * @access public
-    */
+     * Recall the session registration for named variable(s)
+     *
+     * @param      mixed   String with the name of one or more variables seperated by comma
+     *                   or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
+     * @access public
+     * @return bool
+     */
     function unregister($var_names) {
         foreach (explode (',', $var_names) as $var_name) {
             $var_name=trim($var_name);

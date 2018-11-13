@@ -243,6 +243,7 @@ if ($debugsummarize) {
 /** nearestSlice function
  * @param $st
  * @param $possmodels
+ * @return string
  */
 function nearestSlice($st,$possmodels) {
     global $sao;
@@ -293,6 +294,7 @@ function compareSlices($st,$sm,$pr) {
     if ($pr) print("</ul>\n");
     return $score;
 }
+
 /** compareFields function
  * @param $fn
  * @param $ft
@@ -301,6 +303,7 @@ function compareSlices($st,$sm,$pr) {
  * @param $pre
  * @param $st
  * @param $sm
+ * @return int
  */
 function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     global $scoreUnshown;

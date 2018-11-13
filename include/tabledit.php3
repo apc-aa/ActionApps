@@ -172,6 +172,7 @@ class tabledit {
     /** view function
      *  shows the complete table
      * @param $where
+     * @return mixed
      */
     function view($where = "(1=1)") {
 
@@ -442,8 +443,10 @@ class tabledit {
     }
 
     // -----------------------------------------------------------------------------------
+
     /** getAction function
      * @param $viewID
+     * @return string
      */
     function getAction($viewID) {
         return $this->action. (strstr($this->action,"?") ? "&" : "?") . "set_tview=".$viewID
@@ -502,9 +505,11 @@ class tabledit {
     }
 
     // -----------------------------------------------------------------------------------
+
     /** GetWhere function
      *  sets $where and $this->show_new
      * @param $where
+     * @return string
      */
     function GetWhere($where)
     {
@@ -779,8 +784,10 @@ class tabledit {
     }
 
     // -----------------------------------------------------------------------------------
+
     /** ButtonsText function
      * @param $new_record
+     * @return mixed
      */
     function ButtonsText($new_record) {
         // "new" is label for new record, "new_name" is command for new record,
@@ -947,6 +954,7 @@ class tabledit {
      *  shows children forms
      *
      * @param $record - identification of the parent row
+     * @return mixed
      */
     function ShowChildren($record) {
         foreach ($this->view["children"] as $chview => $child) {

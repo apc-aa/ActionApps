@@ -153,9 +153,10 @@ function uilr($inp,$act) {
 
 /** inputplusaction function
  * Creates a input box and action, uses uilr and fileAction which vary
- *   @param string $name - the name of the javascript command
- *   @param string $value - the internationalized string to display
-*/
+ * @param string $name - the name of the javascript command
+ * @param string $value - the internationalized string to display
+ * @return two
+ */
 function inputplusaction($name,$value) {
     return uilr("<input name=\"arg[$name]\">", fileAction($name,$value));
 }

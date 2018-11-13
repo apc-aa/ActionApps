@@ -106,6 +106,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *  Returns the value for a field. If it is a multi-value
      *   field, this is the first value.
      * @param $i
+     * @return
      */
     function getValue($i=0) {
         return $this->val[$i];
@@ -266,7 +267,8 @@ class AA_Content {
 
     /** isField function
      *  Returns true, if the passed field_id is field id
-     *  @param $field_id
+     * @param $field_id
+     * @return bool
      */
     function isField($field_id) {
         return isset($this->content[$field_id]);
@@ -322,6 +324,7 @@ class AA_Content {
     /** getAaValue function
      *  Returns the AA_Value object for a field
      * @param $field_id
+     * @return AA_Value
      */
     function getAaValue($field_id) {
         return AA_Value::factoryFromContent( $this->content[$field_id] );
@@ -356,6 +359,7 @@ class AA_Content {
      *   field, this is the first value.
      * @param $field_id
      * @param $what
+     * @return bool
      */
     function getValue($field_id, $idx=0) {
         return (($index = $this->getIndex($field_id, $idx)) === false ) ? false : $this->content[$field_id][$index]['value'];
@@ -385,6 +389,7 @@ class AA_Content {
 
     /** getValues function
      * @param $field_id
+     * @return bool
      */
     function getValues($field_id) {
         return ( is_array($a = $this->content[$field_id]) ? $a : false );
@@ -392,6 +397,7 @@ class AA_Content {
 
     /** getValuesArray function
      * @param $field_id
+     * @return array
      */
     function getValuesArray($field_id) {
         return empty($this->content[$field_id]) ? array() : array_column($this->content[$field_id],'value');
@@ -480,9 +486,10 @@ class ItemContent extends AA_Content {
 
     /** isField function
      *  Returns true, if the passed field id looks like field id
-     *  @param $field_id
-     *  @todo - look directly into module, if the field is really field
+     * @param $field_id
+     * @todo - look directly into module, if the field is really field
      *          in specific slice/module
+     * @return bool
      */
     function isField($field_id) {
         static $f_def;
@@ -499,6 +506,7 @@ class ItemContent extends AA_Content {
      * @param $err_id
      * @param $err_msg
      * @param $getmsg
+     * @return null
      */
     static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
@@ -529,6 +537,7 @@ class ItemContent extends AA_Content {
      * Set by item ID (zid or unpacked or short)
      * @param $item_id
      * @param $ignore_reading_password
+     * @return bool
      */
     function setByItemID($item_id, $ignore_reading_password=false) {
         if (!$item_id) {
@@ -547,6 +556,7 @@ class ItemContent extends AA_Content {
      * @param $content4id
      * @param $insert
      * @param $slice_fields
+     * @return bool
      */
     function setFieldsFromForm($slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
         global $auth;
@@ -618,6 +628,7 @@ class ItemContent extends AA_Content {
      * @param $slice
      * @param $oldcontent4id
      * @param $insert
+     * @return bool
      */
     function setFromForm( $slice, $oldcontent4id="", $insert=true) {
         global $id;
@@ -653,6 +664,7 @@ class ItemContent extends AA_Content {
 
     /** is_set function
      * @param $field_id
+     * @return bool
      */
     function is_set($field_id) {
         return is_array($this->content[$field_id]);
@@ -680,6 +692,7 @@ class ItemContent extends AA_Content {
 
     /** matches function
      * @param $conditions
+     * @return
      */
     function matches(&$conditions) {
         return $conditions->matches($this);
@@ -748,6 +761,7 @@ class ItemContent extends AA_Content {
 
     /** setItemID function
      * @param $value
+     * @return bool
      */
     function setItemID($value) {
         if (!is_long_id($value)) {
@@ -882,8 +896,6 @@ class ItemContent extends AA_Content {
     }
 
 
-
-
     /** storeItem function
      *  Basic function for changing contents of items.
      *   Use always this function, not direct SQL queries.
@@ -891,7 +903,7 @@ class ItemContent extends AA_Content {
      *   $GLOBALS[err][field_id] should be set on error in function
      *   It looks like it will return true even if inset_fnc_xxx fails
      *
-     *   @param string $mode   how to deal with the stored item.
+     * @param string $mode how to deal with the stored item.
      *      update        - the fields defined in $this object are cleared and
      *                      then overwriten by values from $this object
      *                      - other fields of the item are untouched (except
@@ -925,14 +937,15 @@ class ItemContent extends AA_Content {
      *      insert_if_new - the item is stored only if the item with this id
      *                      ($this->getItemID()) is not in the database.
      *                      Otherwise it is skiped (not stored)
-     *    @param array  $flags    additional item processing flags.:
+     * @param array  $flags additional item processing flags.:
      *                  $flags[0] - invalidatecache - should we invalidate
      *                                                 the cache for the slice?
      *
      *                  $flags[1] - feed            - procces feeding (as in in
      *                                                the slice setting)?
      *                  $flags[2] - throw_events    - issue update/insert event?
-     *    @param string $context  special parameter used for thumbnails
+     * @param string $context special parameter used for thumbnails
+     * @return bool|mixed|string
      */
     function storeItem( $mode, $flags = array(), $context='direct' ) {
         global $event;
@@ -1136,6 +1149,7 @@ class ItemContent extends AA_Content {
      * @param $fields
      * @param $mode
      * @param $restict_fields
+     * @return bool
      */
     function updateComputedFields($fields=null, $mode='update', $restict_fields=null) {
 
@@ -1322,6 +1336,7 @@ class ItemContent extends AA_Content {
      * @param $id
      * @param $fields
      * @param $context
+     * @return Cvarset
      */
     function _store_fields($id, &$fields, $context='direct') {
         $field_writer = new AA_Field_Writer;
@@ -1381,6 +1396,7 @@ class ItemContent extends AA_Content {
      * @param $itemContent
      * @param $trans_actions
      * @param $slice_fields
+     * @return
      */
     function transform(&$itemContent, &$trans_actions, &$slice_fields) {
         return $trans_actions->transform($itemContent,$slice_fields,$this);
@@ -1421,6 +1437,7 @@ class ItemContent extends AA_Content {
  * Id's are unpacked
  * Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
  * @param $item_id
+ * @return bool
  */
 function itemIsDuplicate($item_id) {
     return DB_AA::test('item', array(array('id', $item_id, 'l')));

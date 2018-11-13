@@ -99,9 +99,10 @@ class AA_Toexecute {
      * @param $seletor
      * @param $priority
      * @param $time
-     *  @example: we need to recount all links in allcategories (Links module),
+     * @example: we need to recount all links in allcategories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
      *           be dubled in the queue (we call cancel_all() method for it)
+     * @return bool|mixed|string
      */
     function later( &$object, $params=array(), $selector='', $priority=100, $time=null ) {
         global $auth;
@@ -263,6 +264,7 @@ class AA_Toexecute {
     /** execute_one function
      * @param $object
      * @param $params
+     * @return mixed|string
      */
     function execute_one($object, $params) {
         if ( !is_object($object) ) {

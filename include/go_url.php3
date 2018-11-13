@@ -35,6 +35,7 @@
  *  printing
  * @param $url
  * @param $params
+ * @return string
  */
 function con_url($url, $params='') {
     return htmlspecialchars(get_url($url, $params), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
@@ -98,6 +99,7 @@ function get_url($url, $params='') {
 /** get_aa_url function
  * @param $href
  * @param $session
+ * @return mixed|string
  */
 function get_aa_url($href, $params='', $state=true) {
     $url = get_url(AA_INSTAL_PATH.$href, $params);
@@ -107,6 +109,7 @@ function get_aa_url($href, $params='', $state=true) {
 /** get_admin_url function
  * @param $href
  * @param $session
+ * @return mixed|string
  */
 function get_admin_url($href, $params='', $state=true) {
     return get_aa_url("admin/$href", $params, $state);
@@ -116,6 +119,7 @@ function get_admin_url($href, $params='', $state=true) {
  *  returns url for $morehlp parameter in Frm* functions
  * @param $href
  * @param $anchor
+ * @return string
  */
 function get_help_url($href, $anchor) {
     return $href."#".$anchor;

@@ -56,6 +56,7 @@ class AA_View {
 
     /** load function
      * @param $force
+     * @return bool
      */
     function load( $force=false ) {
         if (!isset($this->fields) OR $force) {
@@ -74,6 +75,7 @@ class AA_View {
 
     /** f function
      * @param $field
+     * @return string
      */
     function f( $field ) {
         if ( !$field ) {
@@ -99,6 +101,7 @@ class AA_View {
     /** jumpLink function
      *  Generates link to view edit
      * @param $name
+     * @return string
      */
     function jumpLink($name = null) {
         return "<a href=\"".$this->jumpUrl(). "\">".($name ? $name: $this->id)."</a>";
@@ -128,6 +131,7 @@ class AA_View {
 
     /** getViewFormat function
      * @param $selected_item
+     * @return array
      */
     function getViewFormat($selected_item='') {
         $format                        = array();
@@ -165,6 +169,7 @@ class AA_View {
      *  in the template code
      *  static method
      * @param $text
+     * @return if|mixed|string
      */
     static function getViewJumpLinks($text) {
         $ret = '';
@@ -195,6 +200,7 @@ class AA_View {
      * @param $i
      * @param $ii
      * @param $a
+     * @return string
      */
     function xml_serialize($t,$i,$ii,$a) {
         $f = $this->getViewInfo();
@@ -230,6 +236,7 @@ class AA_Views {
      * @param $i
      * @param $ii
      * @param $a
+     * @return string
      */
     function xml_serialize($t,$i,$ii,$a) {
         return xml_serialize("views",$this->a,$i.$ii,$ii,"tname=\"$t\" ".$a);
@@ -238,6 +245,7 @@ class AA_Views {
     /** getView function
      *  main factory static method
      * @param $vid
+     * @return mixed
      */
     static function getView($vid) {
         $views = AA_Views::singleton();
@@ -248,6 +256,7 @@ class AA_Views {
      *  static function
      * @param $vid
      * @param $field
+     * @return null
      */
     function getViewField($vid, $field) {
         $views = AA_Views::singleton();
@@ -257,6 +266,7 @@ class AA_Views {
 
     /** _getView function
      * @param $vid
+     * @return mixed
      */
     function & _getView($vid) {
         if (!isset($this->a[$vid])) {
@@ -268,6 +278,7 @@ class AA_Views {
     /** getSliceViews function
      *  Returns an array of slice views, caching results in allknownviews
      * @param $slice_id
+     * @return array
      */
     static function getSliceViews($slice_id) {
         $a = array();

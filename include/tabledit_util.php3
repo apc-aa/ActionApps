@@ -257,6 +257,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
  * @param $error_msg
  * @param $triggers
  * @param $be_cautious
+ * @return bool|int
  */
 function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
     global $err;
@@ -371,6 +372,7 @@ function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers 
  * @param $error_msg
  * @param $triggers
  * @param $be_cautious
+ * @return string
  */
 function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
     global $err;
@@ -507,6 +509,7 @@ function RunColumnFunctions(&$val, $columns, $table, $join) {
 /** ProoveVals function
  * @param $val
  * @param $columns
+ * @return bool
  */
 function ProoveVals($val, $columns) {
     global $err;
@@ -533,6 +536,7 @@ function ProoveVals($val, $columns) {
  * @param $primary
  * @param $columns
  * @param $varset
+ * @return string
  */
 function GetKey($primary, $columns, $varset) {
     foreach ($primary as $alias => $foo) {
@@ -546,6 +550,7 @@ function GetKey($primary, $columns, $varset) {
  * @param $primary
  * @param $columns
  * @param $record
+ * @return string|void
  */
 function GetKeyFromRecord($primary, $columns, $record) {
     if ( !isset($primary) OR !is_array($primary)) {
@@ -592,6 +597,7 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
  * @param $key_val
  * @param $primary
  * @param $columns
+ * @return mixed
  */
 function GetKeyValues($key_val, $primary, $columns) {
     $keys = split_escaped(":", $key_val, "#:");
@@ -614,6 +620,7 @@ function GetKeyValues($key_val, $primary, $columns) {
  * @param $primary
  * @param $columns
  * @param $table
+ * @return string
  */
 function CreateWhereCondition($key_val, $primary, $columns, $table) {
     $varset = new CVarset;
@@ -671,8 +678,10 @@ function PrintJavaScript_Validate() {
         }
     </script>";
 }
+
 /** GetEditedKey function
  * @param $tview
+ * @return int|null|string
  */
 function GetEditedKey($tview) {
     global $cmd;
@@ -685,10 +694,12 @@ function GetEditedKey($tview) {
     reset ($edit);
     return key($edit);
 }
+
 /** CallTriger function
  * @param $triggers
  * @param $event
  * @param $varset
+ * @return bool
  */
 function CallTrigger($triggers, $event, $varset) {
     if (is_array($triggers) && $triggers[$event]) {

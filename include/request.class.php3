@@ -47,6 +47,7 @@ class AA_Http {
      * @param $err_id
      * @param $err_msg
      * @param $getmsg
+     * @return null
      */
     function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
@@ -245,8 +246,9 @@ class AA_Request {
     }
 
     /** Sends request to remote AA
-     *  @param $url - url of remote AA
-     *  @param $parameters - optional array of additional url parameters 'k'=>'v'
+     * @param $url - url of remote AA
+     * @param $parameters - optional array of additional url parameters 'k'=>'v'
+     * @return AA_Response|mixed
      */
     function ask($url, $parameters=array(), $headers=array()) {
         $ask_arr = $this->_requestArr();

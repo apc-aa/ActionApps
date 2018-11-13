@@ -69,6 +69,7 @@ class AA_Exporter extends AA_Object {
      * @param $slice_id
      * @param $export_slices
      * @param $new_slice_id
+     * @return bool|resource
      */
     function _createTmpFile() {
         $temp_file = tmpfile();
@@ -119,6 +120,7 @@ class AA_Exporter_Csv extends AA_Exporter {
      * @param $slice_id
      * @param $export_slices
      * @param $new_slice_id
+     * @return bool|resource
      */
     function _createTmpFile() {
         $temp_file = tmpfile();

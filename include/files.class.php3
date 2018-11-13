@@ -47,6 +47,7 @@ class Files {
      * @param $err_id
      * @param $err_msg
      * @param $getmsg
+     * @return null
      */
     function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
@@ -70,6 +71,7 @@ class Files {
      *  Prepares slice directories for uploaded file and returns destination
      *  dir name
      * @param $slice
+     * @return bool
      */
     function destinationDir($slice) {
         $upload = $slice->getUploadBase();
@@ -88,6 +90,7 @@ class Files {
      *  Prepares directory for uploaded file and returns destination dir name
      * @param $path
      * @param $perms
+     * @return bool
      */
     function _destinationDirCreate($path, $perms) {
         if (!$path OR !is_dir($path)) {
@@ -105,6 +108,7 @@ class Files {
      *  added to fileneme (like '_thumb')
      * @param $file_name
      * @param $modificator
+     * @return string
      */
     function generateUnusedFilename($file_name, $modificator='') {
         $path_parts = pathinfo($file_name);
@@ -129,7 +133,8 @@ class Files {
     /** getUploadedFile function
      *  Returns all content of the uploaded file as the string.
      *  The file is deleted after read
-     *  @param string $filevarname - name of form variable, where the file is stored
+     * @param string $filevarname - name of form variable, where the file is stored
+     * @return bool|string
      */
     function getUploadedFile($filevarname) {
         $file_name  = Files::getTmpFilename('tmp');
@@ -153,18 +158,19 @@ class Files {
 
     /** uploadFile function
      *  Uploads file to slice's directory
-     *  @param $filevarname - name of form variable containing the uploaded data
+     * @param $filevarname - name of form variable containing the uploaded data
      *                        (like "upfile") or array with uploaded file
      *                        parameters as provided by $_FILES
-     *  @param $dest_dir
-     *  @param $type        - allowed file types (like 'image/jpeg', 'image/*')
-     *  @param $replacemethod - how to handle conflicts with existing file
+     * @param $dest_dir
+     * @param $type - allowed file types (like 'image/jpeg', 'image/*')
+     * @param $replacemethod - how to handle conflicts with existing file
      *                            'new'       - stored as new (unused) filename
      *                            'overwrite' - the old file is overwriten
      *                            'backup'    - old file is backuped to new
      *                                          (unused) filename
-     * @param $filename     - the name of file as you want to store it (if you
+     * @param $filename - the name of file as you want to store it (if you
      *                        do not want to use original name)
+     * @return bool|string
      */
     function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
@@ -228,6 +234,7 @@ class Files {
      * @param $text
      * @param $dest_dir
      * @param $filename
+     * @return bool|string
      */
     function createFileFromString(&$text, $dest_dir, $filename) {
         $dest_file = Files::makeFile($dest_dir, Files::escape($filename));
@@ -250,8 +257,10 @@ class Files {
 
         return $dest_file;
     }
+
     /** getTmpFilename function
      * @param $ident
+     * @return string
      */
     function getTmpFilename($ident) {
         return $ident . "_" . hash('md5', uniqid('',true)) . "_" . date("mdY");
@@ -665,8 +674,10 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
         }
         $this->headers[$name] = $value;
     }
+
     /** open function
      * @param $mode
+     * @return AA_File_Wrapper|bool
      */
     function open($mode = 'r') {
         $host = isset($this->info['host']) ? $this->info['host'] : $this->defaultHost;

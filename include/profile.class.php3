@@ -57,6 +57,7 @@ class AA_Profile {
     /** getProfile - main factory static method
      *  Profiles should be used like $profile = AA_Profile::getProfile($user_id, $module_id);
      * @param $slice_id
+     * @return mixed
      */
     static function getProfile($user_id, $module_id) {
         // AA_Profiles array
@@ -180,6 +181,7 @@ class AA_Profile {
      *  (<html_flag>:<default_fnc_* function>:<parameter>)
      *  This functions parses it and returns in array.
      * @param $value
+     * @return array
      */
     function parseContentProperty($value) {
         if (!($generator = AA_Generator::factoryByString(substr($value,2)))) {  // see format described above
@@ -197,11 +199,13 @@ class AA_Profile {
                                              AND slice_id='". q_pack_id($this->module_id) ."'",
                       "Can't delete profile");
     }
+
     /** insertProperty function
      * @param $property
      * @param $selector
      * @param $value
      * @param $global
+     * @return bool
      */
     function insertProperty($property, $selector, $value, $global=false) {
         $property = quote($property); $selector = quote($selector); $value = quote($value);
@@ -270,6 +274,7 @@ class AA_Profile {
     /** do_sql function
      * @param $SQL
      * @param $err
+     * @return bool
      */
     function do_sql($SQL, $err="") {
         if ( !$this->module_id OR !$this->user_id ) {
@@ -293,6 +298,7 @@ class AA_Profile {
      * @param $fnction
      * @param $param
      * @param $html
+     * @return string
      */
     static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
         $profile = AA_Profile::getProfile($uid, $slice_id); // user settings

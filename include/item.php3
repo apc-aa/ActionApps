@@ -34,6 +34,7 @@ require_once AA_BASE_PATH."modules/links/constants.php3";
 
 /** converts plain text to html
  * @param $txt
+ * @return string
  */
 function txt2html($txt) {
     // preg allows text to be pasted from Word
@@ -44,6 +45,7 @@ function txt2html($txt) {
 /** DeHtml function
  * @param $txt
  * @param $flag
+ * @return string
  */
 function DeHtml($txt, $flag) {
     return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
@@ -72,6 +74,7 @@ function DefineBaseAliases(&$aliases, $module_id) {
  *  Returns aliases
  * @param string type - 'const'/'links'/'categories' - just like *view* types
  * @param $additional
+ * @return array
  */
 function GetAliases4Type( $type, $additional="" ) {
     $aliases = array();
@@ -131,6 +134,7 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
  * global function to get return_url
  * this function may replaced by extension of $sess as a method $sess->return_url().
  * @param $url
+ * @return mixed|string
  */
 function sess_return_url($url) {
     global $return_url;
@@ -148,6 +152,7 @@ function sess_return_url($url) {
  *  make_return_url
  * function make_return_url($prifix="&return_url=")
  * @param $r1
+ * @return mixed|string
  */
 function make_return_url($r1="") {
     global $return_url, $sess;
@@ -171,6 +176,7 @@ function make_return_url($r1="") {
  * @param $ret_url
  * @param $vid
  * @param $var
+ * @return mixed|string
  */
 function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null, $safe=true) {
     global $profile;
@@ -212,10 +218,11 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
 
 /** GetFormatedItems function
  *  Fills array - [unpacked_item_id] => unaliased string (headline) for item_id
- * @param $zids      - items
- * @param $format    - normal AA alias string like {headline.......1} or more complicated
+ * @param $zids - items
+ * @param $format - normal AA alias string like {headline.......1} or more complicated
  * @param $crypted_additional_slice_pwd
  * @param $tagprefix - array as defined in itemfunc.php3
+ * @return array
  */
 function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null) {
     $ret  = array();
@@ -264,9 +271,10 @@ function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $
  * @param $restrict_zids
  * @param $conds
  * @param $sort
- *  @todo Teach itemview to return array (instead of whole listing) and convert
+ * @todo Teach itemview to return array (instead of whole listing) and convert
  *        those functions (GetFormatedConstants() and GetFormatedItems())
  *        to itemviwew
+ * @return array
  */
 function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort) {
     if (!trim($constgroup)) {
@@ -376,6 +384,7 @@ class AA_Item {
      * shortcut for AA_Content->getValue()
      * @param $field_id
      * @param $what
+     * @return bool
      */
     function getval($field_id, $index=0) {
         return $this->content4id->getValue($field_id, $index);
@@ -385,6 +394,7 @@ class AA_Item {
      * shortcut for AA_Content->getFlag()
      * @param $field_id
      * @param $what
+     * @return bool
      */
     function getFlag($field_id) {
         return $this->content4id->getFlag($field_id);
@@ -393,6 +403,7 @@ class AA_Item {
     /** getValues function
      * shortcut for ItemContent->getValues()
      * @param $field_id
+     * @return bool
      */
     function getValues($field_id) {
         return $this->content4id->getValues($field_id);
@@ -472,6 +483,7 @@ class AA_Item {
     /** getWidgetAjaxHtml function
      *  returns HTML code for Ajaxian Html input for the field_id
      * @param $field_id
+     * @return
      */
     function getWidgetAjaxHtml($field_id) {
         return AA_Slice::getModule($this->getSliceID())->getWidgetAjaxHtml($field_id, $this->getItemID());
@@ -480,6 +492,7 @@ class AA_Item {
     /** getbaseurl function
      * @param $redirect
      * @param $no_sess
+     * @return mixed|string
      */
     function getbaseurl($redirect, $no_sess) {
         global $sess;
@@ -501,6 +514,7 @@ class AA_Item {
      * @param $redirect
      * @param $condition
      * @param $no_sess
+     * @return bool|string
      */
     function getitemurl($extern, $extern_url, $redirect, $condition=true, $no_sess=false) {
         if ( $extern ) {      // link_only
@@ -531,6 +545,7 @@ class AA_Item {
      * @param $add
      * @param $html
      * @param $hide
+     * @return string
      */
     function getahref($url, $txt, $add="", $html=false, $hide=false) {
         if ( $url AND $txt ) {
@@ -561,6 +576,7 @@ class AA_Item {
     /** get_alias_subst function
      * @param $alias
      * @param $use_field
+     * @return if|mixed|null
      */
     function get_alias_subst( $alias, $default=null, $use_field="" ) {
         // use_field is for expanding aliases with loop - prefix {@
@@ -598,6 +614,7 @@ class AA_Item {
      * to empty string
      * @param $text
      * @param $remove_arr
+     * @return string
      */
     function substitute_alias_and_remove( $text, $remove_arr=null ) {
         if (empty($remove_arr)) {
@@ -642,6 +659,7 @@ class AA_Item {
     /** unalias function
      * @param $text
      * @param $remove
+     * @return mixed|null|string|string[]
      */
     function unalias( $text, $remove="" ) {
         return AA::Stringexpander()->unalias($text, $remove, $this);
@@ -649,6 +667,7 @@ class AA_Item {
 
     /** subst_alias function
      * @param $text
+     * @return bool|mixed|null|string|string[]
      */
     function subst_alias( $text ) {
         return ($this->isField($text) ? $this->getval($text) : $this->unalias($text));
@@ -656,6 +675,7 @@ class AA_Item {
 
     /** subst_aliases function
      * @param $var
+     * @return bool|mixed|null|string|string[]
      */
     function subst_aliases( $var ) {
         if ( !is_array( $var ) ) {
@@ -674,6 +694,7 @@ class AA_Item {
      * param: 0
      * @param $col
      * @param $param
+     * @return string
      */
     function f_0($col, $param="") {
         return "";
@@ -684,6 +705,7 @@ class AA_Item {
      *  used for _#ITEM_ID_, ...
      * @param $col
      * @param $param
+     * @return bool
      */
     function f_1($col, $param="") {
         return $this->getval($col);
@@ -693,6 +715,7 @@ class AA_Item {
      *  Prints translated field based on currently selected language
      * @param $col
      * @param $param
+     * @return string
      */
     function f_2($col, $param="") {
         // first_child try translation to right language
@@ -712,6 +735,7 @@ class AA_Item {
      * print due to html flag set (escape html special characters or just print)
      * @param $col
      * @param $param delimiter - used to separate values if the field is multi
+     * @return string
      */
     function f_h($col, $param="") {
         if ( empty($param) ) {
@@ -742,6 +766,7 @@ class AA_Item {
     /** f_d function
      * prints date in user defined format
      * @param $param date format like in PHP (like "m-d-Y")
+     * @return false|string
      */
     function f_d($col, $param="") {
         $param = $this->subst_alias( $param );
@@ -761,6 +786,7 @@ class AA_Item {
      * param: 0
      * @param $col
      * @param $param
+     * @return string
      */
     function f_i($col, $param="") {
         return get_if( $this->getval($col), NO_PICTURE_URL);
@@ -770,6 +796,7 @@ class AA_Item {
      *  expands and prints a string, if parameters are blank then expands field
      * @param $col
      * @param $param
+     * @return mixed|null|string|string[]
      */
     function f_y($col, $param="") {
         $str2unalias = $param ? $param : DeHtml($this->getval($col), $this->getFlag($col));
@@ -781,6 +808,7 @@ class AA_Item {
      * Could be special case if in uploads directory, so can read directly
      * @param $col
      * @param $param
+     * @return string
      */
     function i_s($col, $param="") {
         // No warning required, will be generated by getimagesize
@@ -796,6 +824,7 @@ class AA_Item {
      * param: 0
      * @param $col
      * @param $param
+     * @return string
      */
     function f_n($col, $param="") {
         return unpack_id( $this->getval($col) );
@@ -806,6 +835,7 @@ class AA_Item {
      * param: 0
      * @param $col
      * @param $param
+     * @return bool|string
      */
     function f_g($col, $param="") {    // image height
         global $out;
@@ -821,6 +851,7 @@ class AA_Item {
      * param: 0
      * @param $col
      * @param $param
+     * @return bool|string
      */
     function f_w($col, $param="") {    // image width
         global $out;
@@ -844,6 +875,7 @@ class AA_Item {
      *                     first paragraph or at least stop at the end of sentence
      * @param $col
      * @param $param
+     * @return string
      */
     function f_a($col, $param="") {
         list(         , $field )               = ParamExplode($param);  // we need $field unexpanded
@@ -871,6 +903,7 @@ class AA_Item {
      *     no_sess  - if true, it does not add session id to url
      * @param $col
      * @param $param
+     * @return bool|string
      */
     function f_f($col, $param="") {
         list($plink, $predir, $psess) = $this->subst_aliases(ParamExplode($param));
@@ -891,6 +924,7 @@ class AA_Item {
      *    no_sess  - if true, it does not add session id to url
      * @param $col
      * @param $param
+     * @return string
      */
     function f_b($col, $param="") {
         $p = ParamExplode($param);
@@ -926,6 +960,7 @@ class AA_Item {
      * returns fulltext of the blurb
      * @param $col
      * @param $param
+     * @return mixed|string
      */
     function f_q($col, $param="") {
         /* Usually this is called with no parameters.
@@ -1004,6 +1039,7 @@ class AA_Item {
      *  via  a new alias - mitra@mitra.biz 30Oct03
      * @param $txt
      * @param $len
+     * @return string
      */
     function RSS_restrict($txt, $len) {
         //    return utf8_encode(myspecialchars(substr($txt,0,$len)));
@@ -1014,6 +1050,7 @@ class AA_Item {
      *  standard aliases to generate RSS .91 compliant meta-information
      * @param $col
      * @param $param
+     * @return string
      */
     function f_r($col, $param="") {
         static $title, $link, $description, $q_owner;
@@ -1086,6 +1123,7 @@ class AA_Item {
      *  If there is no param, then it converts the field to HTML (if text)
      * @param $col
      * @param $param string to be printed (like <img src="{img_src........1}"></img>
+     * @return bool|mixed|null|string|string[]
      */
     function f_t($col, $param="") {
         $p = ParamExplode($param);
@@ -1111,6 +1149,7 @@ class AA_Item {
      * print database field or default value if empty
      * @param $col
      * @param $param default (like "javascript: window.alert('No source url specified')")
+     * @return bool|default|string
      */
     function f_s($col, $param="") {
         return ( $this->getval($col) ? $this->getval($col) : $param);
@@ -1121,6 +1160,7 @@ class AA_Item {
      * @param $col
      * @param $param field_id         - of possible link (like "source_href.....")
      *               additional atrib - for <a> tag
+     * @return string
      */
     function f_l($col, $param="") {
         list($plink, $padditional) = $this->subst_aliases( ParamExplode($param) );
@@ -1134,6 +1174,7 @@ class AA_Item {
      * param: 0
      * @param $col
      * @param $param
+     * @return mixed|string
      */
     function f_e($col, $param="") {
         global $sess;
@@ -1244,6 +1285,7 @@ class AA_Item {
      *  if pararam begins with "!", condition is negated
      * @param $col
      * @param $param
+     * @return string
      */
     function f_c($col, $param="") {
         if ( $param[0]=="!" ){
@@ -1269,6 +1311,7 @@ class AA_Item {
      * Calls user defined function in file /include/usr_aliasfnc.php3
      * @param $col
      * @param $param
+     * @return string
      */
     function f_u($col, $param="") {
         // first we substitute alias on whole param string
@@ -1296,6 +1339,7 @@ class AA_Item {
      *     addition      - additional parameter to <a tag (like target=_blank)
      * @param $col
      * @param $param
+     * @return
      */
 
     function f_v($col, $param="") {
@@ -1338,6 +1382,7 @@ class AA_Item {
      * linktype: mailto/href (default is mailto)
      * @param $col
      * @param $param
+     * @return string
      */
     function f_m($col, $param="") {
         $p = ParamExplode($param);
@@ -1367,6 +1412,7 @@ class AA_Item {
      *                  (probably something like [...])
      * @param $col
      * @param $param
+     * @return bool|string
      */
     function f_j($col, $param="") {
         $p = ParamExplode($param);
@@ -1398,6 +1444,7 @@ class AA_Item {
      *  live checkbox -- updates database immediately on clicking without reloading the page
      * @param $col
      * @param $param
+     * @return mixed|null|string|string[]
      */
     function f_k($col, $param = "") {
         return $this->unalias("{live::$col}");
@@ -1412,6 +1459,7 @@ class AA_Item {
      *   <to1>, <to2>, ... and <default> can be field ids
      * @param $col
      * @param $param
+     * @return
      */
     function f_x($col, $param="") {
         $p        = $this->subst_aliases( ParamExplode($param) );
@@ -1435,6 +1483,7 @@ class AA_Item {
      *   (this alias will be probably used with expiry date field)
      * @param $col
      * @param $param
+     * @return
      */
     function f_o($col, $param="") {
         $p = $this->subst_aliases( ParamExplode($param) );
@@ -1446,6 +1495,7 @@ class AA_Item {
      * @author Adam Sanchez
      * @param $col
      * @param $param
+     * @return string
      */
     function f_z($col, $param="") {
         return StrExpand('AA_Stringexpand_Fileinfo', array($this->getval($col),$param));
@@ -1457,6 +1507,7 @@ class AA_Item {
      *  param <crossreference_character> - specify if you want another, than '@'
      * @param $col
      * @param $param
+     * @return string
      */
     function l_b($col, $param="") {
         $p   = $this->subst_aliases( ParamExplode($param) );
@@ -1468,6 +1519,7 @@ class AA_Item {
      * Link module (category) function - prints 1 when category is general one
      * @param $col
      * @param $param
+     * @return string
      */
     function l_g($col, $param="") {
         return Links_IsGlobalCategory($this->getval($col)) ? '1' : '0';
@@ -1478,6 +1530,7 @@ class AA_Item {
      *  is general one
      * @param $col
      * @param $param
+     * @return int
      */
     function l_o($col, $param="") {
         return Links_GlobalCatPriority($this->getval($col));
@@ -1497,6 +1550,7 @@ class AA_Item {
      *                       - example: restict=1,23, - only categs under 23 shown
      * @param $col
      * @param $param
+     * @return string
      */
     function l_p($col, $param="") {
 
@@ -1568,8 +1622,9 @@ class AA_Item {
      *
      *  Creates item object just from item id and fills all necessary structures
      *
-     *  @param  zid     - an item id - zid object, unpacked or short id
-     *  @param  renew   - regenerate the item form database
+     * @param  zid     - an item id - zid object, unpacked or short id
+     * @param  renew   - regenerate the item form database
+     * @return AA_Item|bool
      */
     static function getItem($zid) {
         if (empty($zid)) {
@@ -1616,9 +1671,10 @@ class AA_Items {
      *  database just once during the page creation.
      *
      *  Creates item object just from item id and fills all necessary structures
-     *  @param  $zid zids    - an item id - zid object, unpacked or short id
-     *  @param  $crypted_additional_slice_pwd string
-     *  @param  $renew bool  - regenerate the item form database
+     * @param  $zid zids    - an item id - zid object, unpacked or short id
+     * @param  $crypted_additional_slice_pwd string
+     * @param  $renew bool  - regenerate the item form database
+     * @return AA_Item|bool|mixed|null
      */
     static function getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
         if (empty($zid)) {
@@ -1683,7 +1739,8 @@ class AA_Items {
     }
 
     /** returns output of Active items
-     *  @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     * @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
+     * @return array
      */
     static function getFormatted($zids, $expression, $bin=AA_BIN_ACTIVE) {
         $res = array();
@@ -1703,6 +1760,7 @@ class AA_Items {
     /** getItemProperty function
      * @param $item_zid
      * @param $field
+     * @return AA_Value|null
      */
     static function getItemProperty($item_zid, $field) {
         $item = AA_Items::getItem($item_zid);
@@ -1752,7 +1810,8 @@ class AA_Items {
     }
 
     /** @returns AA_Item or null (if not cached)
-     *  @param $zid zids
+     * @param $zid zids
+     * @return mixed|null
      */
     function _getFromCache($zid) {
         if ( $zid->use_short_ids() ) {

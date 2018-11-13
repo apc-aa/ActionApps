@@ -115,6 +115,7 @@ function ShowEmailAliases() {
 /** GetEmailTableView function
  *  see class tabledit :: var $getTableViewsFn for an explanation of the parameters
  * @param $viewID
+ * @return array
  */
 function GetEmailTableView($viewID) {
     global $attrs_edit, $attrs_browse;

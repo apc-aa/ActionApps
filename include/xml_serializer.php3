@@ -47,6 +47,7 @@
  * @param $i
  * @param $ii
  * @param $a
+ * @return string
  */
 function xml_serialize($k,&$v,$i,$ii,$a=null) {
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
@@ -109,8 +110,10 @@ class xml_unserializer {
         xml_set_element_handler($this->parser, "startElement", "endElement");
         xml_set_character_data_handler($this->parser,"charD");
     }
+
     /** parse function
      * @param $xml_data
+     * @return null|string
      */
     function parse($xml_data) {
         if (!xml_parse($this->parser, $xml_data, true)) {
@@ -227,8 +230,10 @@ class xml_unserializer {
         }
     }
 }
+
 /** xml_unserialize function
  * @param $xml_data
+ * @return null|string
  */
 function xml_unserialize($xml_data) {
     $x = new xml_unserializer();

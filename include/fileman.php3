@@ -37,6 +37,7 @@ $sortable_columns = array (
 /** filesuffix function
  *  returns the suffix part of the filename (beginning with the last dot (.) in the filename)
  * @param $filename
+ * @return bool|string
  */
 function filesuffix($filename) {
     if (!strstr ($filename,".")) {
@@ -68,9 +69,11 @@ function set_directory($dir) {
         $directory = substr ($directory, 2);
     }
 }
+
 /** compare_files function
  * @param $f1
  * @param $f2
+ * @return int
  */
 function compare_files($f1, $f2) {
     global $sort_key, $sort_order;
@@ -99,8 +102,10 @@ function compare_files($f1, $f2) {
         return -1;
     }
 }
+
 /** format_file_size function
  * @param $size
+ * @return bool|string
  */
 function format_file_size($size) {
     $i = strlen ($size) % 3;
@@ -128,6 +133,7 @@ $filetypes = array (
     _m("Other") => array ("img"=>"oth"));
 /** get_filetype function
  * @param $filepath
+ * @return if|int|mixed|string
  */
 function get_filetype($filepath) {
     global $filetypes;
@@ -168,6 +174,7 @@ function get_filetype($filepath) {
  *       "img" name of image file (from $filetypes, without extension)
  * @param $path
  * @param $dirname
+ * @return array
  */
 function get_file_array($path, $dirname) {
     global $filetypes;
@@ -235,6 +242,7 @@ function get_file_array($path, $dirname) {
  * returns HTML for AA file table
  * @param $path
  * @param $dirname
+ * @return string
  */
 function file_table($path, $dirname) {
     global $directory;
@@ -256,8 +264,10 @@ function file_table($path, $dirname) {
     }
     return $retval;
 }
+
 /** is_dir_empty function
  * @param $dirname
+ * @return bool
  */
 function is_dir_empty($dirname) {
     if ($dir = @opendir($dirname)) {
@@ -416,6 +426,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
  * returns a list of filenames including subdirectories' entries
  * (like dir1/dir2/filename1.txt etc.) with path relative to $mydir
  * @param $mydir
+ * @return array
  */
 function get_files_subtree($mydir) {
     endslash($mydir);
@@ -441,9 +452,11 @@ function get_files_subtree($mydir) {
     }
     return $retval;
 }
+
 /** fileman_copy_template function
  * @param $srcdir
  * @param $dstdir
+ * @return string
  */
 function fileman_copy_template($srcdir, $dstdir) {
     global $slice_id;

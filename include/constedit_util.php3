@@ -42,13 +42,14 @@ $hcCol = array("Name"  => 0,
               );
 
 /**  getHierConstInitJavaScript function
-Params:
- * @param  $hcid     - hc identifier
+ * Params:
+ * @param  $hcid - hc identifier
  * @param  $group_id - name of constant group
  * @param  $levelCount = 3 - count of level boxes
  * @param  $formName = 'f' - from <form name="formName"></form>
  * @param  $admin = true - if true, send all info (for constants admin)
-*/
+ * @return string
+ */
 function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true) {
     global $hcCol;
     $js = "
@@ -77,17 +78,18 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
 
 /** getHierConstBoxes function
  *     paints horizontally or vertically the level boxes in a table. Params:
- *  @param $hcid
- *  @param  $levelCount - count of boxes
- *  @param  $horizontal = 0 - should be the boxes placed horizontal?
- *  @param  $targetBox = "" - where to put selected values (usefull by admin=false)
- *  @param  $admin = true - are the boxes in admin interface?
+ * @param  $hcid
+ * @param  $levelCount - count of boxes
+ * @param  $horizontal = 0 - should be the boxes placed horizontal?
+ * @param  $targetBox = "" - where to put selected values (usefull by admin=false)
+ * @param  $admin = true - are the boxes in admin interface?
  *           if yes, buttons are "Add new" and "Select",
  *           else, buttons are "Select" - moves to the targetBox
- *  @param  $minLevelSelect = 0 - from which level should be the "Select" button shown
- *  @param  $boxwidth = 0
- *  @param  $levelNames = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
-*/
+ * @param  $minLevelSelect = 0 - from which level should be the "Select" button shown
+ * @param  $boxwidth = 0
+ * @param  $levelNames = array() - names for the level boxes (if you don't like Level 0, Level 1, etc.)
+ * @return string
+ */
 function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true,
     $minLevelSelect=0, $boxWidth=0, $levelNames=array()) {
 
@@ -161,9 +163,10 @@ function showHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $a
 /** createConstsJavaScript function
  *  creates string forming JavaScript array definition
  *
- *   @param $group_id - name of constants group
- *   @param $admin - admin pages
-*/
+ * @param $group_id - name of constants group
+ * @param $admin - admin pages
+ * @return string
+ */
 function createConstsJavaScript($group_id, $admin)
 {
     createConstsArray($group_id, $admin, $myconsts);
@@ -278,9 +281,11 @@ function createConstsArray($group_id, $admin, &$consts)
 
     $consts .= ")";
 }
+
 /** hcCompareConstants function
  * @param $a
  * @param $b
+ * @return bool|int
  */
 function hcCompareConstants($a, $b) {
     global $hcCol;
@@ -303,8 +308,10 @@ function hcSortArray(&$arr) {
         }
     }
 }
+
 /** ff function
  * @param $str
+ * @return mixed
  */
 function ff($str) {
     return str_replace(array("\r","\n","'"), array('','',"\\'"), $str);
@@ -313,6 +320,7 @@ function ff($str) {
 /** printConstsArray function
  * @param $arr (by link)
  * @param $admin
+ * @return string
  */
 function printConstsArray(&$arr, $admin) {
     global $hcCol;
@@ -471,6 +479,7 @@ function hcUpdate()
 // find new group_id by trying to add "_1", "_2", "_3", ... to the old one
 /** CopyConstants function
  * @param $slice_id
+ * @return bool
  */
 function CopyConstants($slice_id){
     global $err, $debug;
@@ -553,11 +562,13 @@ function CopyConstants($slice_id){
 
     return true;
 }
+
 /** get_unique_group_id function
  *   Looks into database if the group already exists. If yes, it returns modified,
  *   but unique group name
  *
  * @param $group_id
+ * @return mixed|string
  */
 function get_unique_group_id($group_id) {
     $db = getDB();

@@ -98,6 +98,7 @@ class Widget extends AA_Components
      * @param $restrict_zids zids[]
      * @param $searchterm
      * @param $ignore_filters bool
+     * @return array|null
      */
     public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm = '', $ignore_filters = false)
     {
@@ -357,6 +358,7 @@ class Widget extends AA_Components
      * @param  $content - contain the value of property to display
      *                       - never empty - it contain at least aa_owner for
      *                         new objects
+     * @throws Exception
      */
     function getHtml($aa_property, $content, $function = null)
     {
@@ -368,13 +370,16 @@ class Widget extends AA_Components
      * @param  $content - contain the value of property to display
      *                       - never empty - it contain at least aa_owner for
      *                         new objects
+     * @throws Exception
      */
     function getEditHtml($aa_property, $content, $function = null)
     {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
     }
 
-    /** @return string - just widget HTML for using in form - without label... */
+    /** @return string - just widget HTML for using in form - without label...
+     * @throws Exception
+     */
     function getEditfullHtml($aa_property, $content, $function = null)
     {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
@@ -408,6 +413,7 @@ class Widget extends AA_Components
     /** @return string - widget HTML for using as AJAX component
      * @param  $aa_property - the variable
      * @param  $content - contain the value of propertyu to display
+     * @throws Exception
      */
     function getAjaxHtml($aa_property, $content, $function = null)
     {
@@ -438,6 +444,7 @@ class Widget extends AA_Components
     /** @return string - widget HTML for using as Live component (in place editing)
      * @param  $aa_property AA_Property - the variable
      * @param  $content - contain the value of propertyu to display
+     * @throws Exception
      */
     function getLiveHtml($aa_property, $content, $function = null)
     {

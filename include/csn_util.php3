@@ -51,10 +51,11 @@ $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-typ
  *  ef_categories is used only for APC type of feedin (APC RSS) and the change
  *  would by tricky, since there could unfortunatelly be two feeds with the same
  *  id (one APC and one other RSS)
- *  @param $feed_id
- *  @param $add_other - if there are external categories it will add default
+ * @param $feed_id
+ * @param $add_other - if there are external categories it will add default
  *                      (AA_Other_Categor) category to the array (if not present
  *                      already
+ * @return array
  */
 function GetExternalCategories($feed_id, $add_other=false) {
     $db = getDB();
@@ -83,6 +84,7 @@ function GetExternalCategories($feed_id, $add_other=false) {
  *  Returns true if filters are set for 'All categories' option
  *  (and not separately for each category)
  * @param $ext_categs (by link)
+ * @return bool
  */
 function UseAllCategoriesOption( &$ext_categs ) {
     foreach ( $ext_categs as $k => $v ) {
@@ -98,8 +100,9 @@ function UseAllCategoriesOption( &$ext_categs ) {
  *  Get external mapping from remote slice to local slice = returns two array
  *  map_to = from_field_id -> from_field_name  (but just for fields with flag = FEEDMAP_FLAG_MAP
  *  map_from = to_field_id -> { feedmap_flag => flag, value => from_field_id|value, from_field_name
- *  @param $l_slice_id
- *  @param $r_slice_id
+ * @param $l_slice_id
+ * @param $r_slice_id
+ * @return array
  */
  function GetExternalMapping($l_slice_id, $r_slice_id) {
      $map_to   = array();
@@ -129,6 +132,7 @@ function UseAllCategoriesOption( &$ext_categs ) {
  * Returns first field id of specified type
  * @param $fields (by link)
  * @param $ftype
+ * @return bool|string
  */
 function GetBaseFieldId( &$fields, $ftype ) {
     $no = 10000;
@@ -148,7 +152,8 @@ function GetBaseFieldId( &$fields, $ftype ) {
 /** GetGroupConstants function
  *  Returns Category definitions for specified slice
  *  $cat[<unpacked_id>] = array( 'name'=> , 'value'=> 'parent_id'=> );
- *  @param $slice_id
+ * @param $slice_id
+ * @return array|bool
  */
 function GetGroupConstants($slice_id) {
     $cat_ids   = array();
@@ -168,10 +173,12 @@ function GetGroupConstants($slice_id) {
     freeDB($db);
     return $cat_ids;
 }
+
 /** MapDefaultCategory function
  * @param $categories (by link)
  * @param $value
  * @param $parent_id
+ * @return int|null|string
  */
 function MapDefaultCategory(&$categories, $value, $parent_id) {
     // try to find the same category
@@ -190,8 +197,10 @@ function MapDefaultCategory(&$categories, $value, $parent_id) {
     reset($categories);
     return key($categories);
 }
+
 /** unixstamp_to_iso8601 function
  * @param $t
+ * @return string
  */
 function unixstamp_to_iso8601($t) {
     $tz=date("Z", $t)/60;
@@ -213,6 +222,7 @@ function unixstamp_to_iso8601($t) {
 // used in rss feeds.
 /** iso8601_to_unixstamp function
  * @param $t
+ * @return false|int
  */
 function iso8601_to_unixstamp($t) {
     return strtotime($t);
@@ -221,6 +231,7 @@ function iso8601_to_unixstamp($t) {
 // TODO: remove this renamed function
 /** iso8601_to_unixstamp_old function
  * @param $t
+ * @return float|int
  */
 function iso8601_to_unixstamp_old($t) {
     preg_match("~([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})~", $t, $r);
@@ -255,6 +266,7 @@ $DEFAULT_RSS_MAP = array (
  * this function must: always return the same result; and not contain 00 or 27
  * the tricky part is that APC attribute strings contain a prefix and 32 digits,
  * while non APC strings need the whole string hashed.
+ * @return a
  */
 function attr2id($str) {
     if (preg_match("~/(items|cat|slices)/([0-9a-f]{32})~",$str,$regs)) { // Looks like an APC id
@@ -263,9 +275,11 @@ function attr2id($str) {
         return(string2id($str));
     }
 }
+
 /** name2rssfeed function
  * @param $slice_id
  * @param $name
+ * @return array
  */
 function name2rssfeed($slice_id,$name) {
     $db = getDB();
@@ -282,6 +296,7 @@ function name2rssfeed($slice_id,$name) {
 /** getFeedTypeName function
  *  Translates feed type number to human readable name (1 -> RSS, ...)
  * @param $type
+ * @return string
  */
 function getFeedTypeName($type) {
     return (($type == 1) ? 'RSS' : (($type == 2) ? 'APC' : 'EXACT'));

@@ -47,6 +47,7 @@ function with($object) {
  *  Get <a href> tag
  * @param $url
  * @param $txt
+ * @return string
  */
 function a_href($url, $txt, $class='', $blank=false) {
     $add  = $class ? " class=\"$class\"" : '';
@@ -57,6 +58,7 @@ function a_href($url, $txt, $class='', $blank=false) {
 /** expand_return_url function
  * Expand return_url, possibly adding a session to it
  * @param $session
+ * @return mixed|string
  */
 function expand_return_url($session=true) {
     global $return_url, $sess;
@@ -196,6 +198,7 @@ function IsAjaxCall() {
 /** DeBackslash function
  *  skips terminating backslashes
  * @param $txt
+ * @return mixed
  */
 function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
@@ -203,6 +206,7 @@ function DeBackslash($txt) {
 
 /** ParamImplode function
  * @param $param
+ * @return string
  */
 function ParamImplode($param) {
     if (!is_array($param)) {
@@ -244,6 +248,7 @@ function ConvertEncoding($str, $from, $to='UTF-8') {
  *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
  *   to GLOBALS.
  * @param $query_string
+ * @return array|mixed
  */
 function add_vars($query_string="", $where='GLOBALS') {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
@@ -281,7 +286,8 @@ function add_vars($query_string="", $where='GLOBALS') {
 
 /** NormalizeArrayIndex function
  *  Removes starting and closing quotes from array index
- *  @param $arr["key"]=...   transforms to arr[key]=...
+ * @param $arr ["key"]=...   transforms to arr[key]=...
+ * @return mixed
  */
 function NormalizeArrayIndex($arr) {
     if (!is_array($arr)) {
@@ -302,10 +308,11 @@ function NormalizeArrayIndex($arr) {
  *  uses the same key (regardless if string or numeric!)
  * @param $array
  * @param $newValues
- *  @example:
+ * @example:
  *    array_merge_append( $conds[0]['value']=x, $conds[0][operator]=LIKE )
  *    results in $conds[0] = array( 'value'=>'x', 'operator'=>'LIKE' )
  *  no PHP function do it ($a+$b nor array_merge()  array_merge_recursive())
+ * @return mixed
  */
 function array_merge_append(&$array, $newValues) {
     foreach ($newValues as $key => $value ) {
@@ -333,6 +340,7 @@ function recursive_array_replace($find, $replace, $array) {
 /** AddslashesArray function
  * function addslashes enhanced by array processing
  * @param $val
+ * @return array|string
  */
 function AddslashesArray($value) {
     return is_array($value) ? array_map('AddslashesArray', $value) : addslashes($value);
@@ -364,6 +372,7 @@ function QuoteVars($method="get", $skip='') {
 /** new_id function
  *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
  * @param $mark
+ * @return mixed|string
  */
 function new_id($mark=0){
     do {
@@ -415,7 +424,8 @@ function string2id($str) {
 
 /** now function
  *  returns current date/time as timestamp;
- *  @param $step - time could be returned in steps (good for database query speedup)
+ * @param $step - time could be returned in steps (good for database query speedup)
+ * @return float|int
  */
 function now($step=false) {
     return (($step!='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
@@ -483,6 +493,7 @@ function PrintArray($a) {
 /** MsgOK function
  * Prepare OK Message
  * @param $txt
+ * @return string
  */
 function MsgOk($txt){
     return "<div class=\"okmsg\">$txt</div>";
@@ -491,6 +502,7 @@ function MsgOk($txt){
 /** MsgERR function
  * Prepare Err Message
  * @param $txt
+ * @return string
  */
 function MsgErr($txt){
     return "<div class=\"err\">$txt</div>";
@@ -500,6 +512,7 @@ function MsgErr($txt){
  * function for unpacking string in edit_fields and needed_fields in database to array
  * @param $packed
  * @param $fields
+ * @return array
  */
 function UnpackFieldsToArray($packed, $fields) {
     $i=0;
@@ -517,6 +530,7 @@ function UnpackFieldsToArray($packed, $fields) {
  * @param $column - column used as values. We can use 'name' as well as
  *                   'const_name' for name of fields
  * @param $keycolumn
+ * @return mixed
  */
 function GetConstants($group, $order='pri', $column='name', $keycolumn='value') {
     // we can use 'const_name' instedad of real name of the column 'name' => translate
@@ -565,6 +579,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
  * @param $module_id
  * @param $type
  * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
+ * @return array|bool|string
  */
 function GetModuleInfo($module_id, $type) {
     global $MODULES;
@@ -591,6 +606,7 @@ function GetModuleInfo($module_id, $type) {
  *  gets slice fields
  * @param $slice_id
  * @deprecated - use AA_Slice::getModule($slice_id) and silmilar
+ * @return array|bool|string
  */
 function GetSliceInfo($slice_id) {
     return GetModuleInfo($slice_id,'S');
@@ -602,6 +618,7 @@ function GetSliceInfo($slice_id) {
  *  Returns part of SQL command used in where related to bins
  * @param $bin
  * @param $ignore_expiry_date
+ * @return string
  */
 function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
     // now is rounded in order the time is in steps - it is better for search
@@ -675,15 +692,16 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 
 /** GetItemContent function
  * Basic function to get item content. Use this function, not direct SQL queries.
- * @param $zids
- * @param $unused_use_short_ids // no longer used
- *   @param bool  $ignore_reading_password
+ * @param       $zids
+ * @param       $unused_use_short_ids // no longer used
+ * @param bool  $ignore_reading_password
  *       Use carefully only when you are sure the data is used safely and not viewed
  *       to unauthorized persons.
- *   @param array $fields2get
+ * @param array $fields2get
  *       restrict return fields only to listed fields (so the content4id array
  *       is not so big)
  *       like: array('headline........', 'category.......1')
+ * @return array
  */
 function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
@@ -903,6 +921,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
  *  If $fields2get is specified, it MUST contain at least 'id'.
  * @param $zids
  * @param $fields2get
+ * @return array|null
  */
 function GetItemContentMinimal($zids, $fields2get=false) {
     if ( !$fields2get ) {
@@ -938,6 +957,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
 /** GrabConstantColumn function
  * @param $db
  * @param $column
+ * @return array
  */
 function GrabConstantColumn(&$db, $column) {
     switch ($column) {
@@ -958,6 +978,7 @@ function GrabConstantColumn(&$db, $column) {
 /** GetConstantContent function
  *  Fills Abstract data srtructure for Constants
  * @param $zids
+ * @return array|bool
  */
 function GetConstantContent( $zids ) {
     if ( !$zids ) {
@@ -1010,6 +1031,7 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
 /** GetHeadlineFieldID function
  * @param $sid
  * @param $slice_field
+ * @return array|bool
  */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
     // first should be headline........, then headline.......1, etc.
@@ -1020,6 +1042,7 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
  * find group_id for constants of the slice
  * @param $slice_id
  * @param $field
+ * @return
  */
 function GetCategoryGroup($slice_id, $field='') {
     // first should be category........, then category.......1, etc.
@@ -1183,6 +1206,7 @@ function StoreToContent($item_id, $field, $value, $additional='') {
 /** gensalt function
  * generates random string of given length
  * @param $saltlen
+ * @return string
  */
 function gensalt($saltlen) {
     $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456589";
@@ -1206,6 +1230,7 @@ function gensalt($saltlen) {
  * @param $pattern
  * @param $string
  * @param $escape_pattern
+ * @return mixed
  */
 function split_escaped($pattern, $string, $escape_pattern) {
     $dummy = chr(0x1E);  // record separator ASCII character - we can use any other, however
@@ -1218,10 +1243,12 @@ function split_escaped($pattern, $string, $escape_pattern) {
    // }
    // return $strings;
 }
+
 /** join_escaped function
  * @param $pattern
  * @param $strings
  * @param $escape_pattern
+ * @return string
  */
 function join_escaped($pattern, $strings, $escape_pattern) {
     $retval = '';
@@ -1233,9 +1260,11 @@ function join_escaped($pattern, $strings, $escape_pattern) {
     }
     return $retval;
 }
+
 /** join_and_quote function
  * @param $pattern
  * @param $strings
+ * @return string
  */
 function join_and_quote( $pattern, $strings ) {
     $retval = '';
@@ -1251,12 +1280,15 @@ function join_and_quote( $pattern, $strings ) {
 /** magic_strip function
  *  stripslashes if magic quotes are set
  * @param $val
+ * @return array|string
  */
 function magic_strip($val) {
     return get_magic_quotes_gpc() ? StripslashesArray($val) : $val;
 }
+
 /** magic_add function
  * @param $str
+ * @return string
  */
 function magic_add($str) {
     return (get_magic_quotes_gpc() ? $str : addslashes($str));
@@ -1308,6 +1340,7 @@ function add_post2shtml_vars($delete = true) {
 /** getSelectBoxFromParamWizard function
  *  Creates values for a select box showing some param wizard section.
  * @param $var
+ * @return mixed
  */
 function getSelectBoxFromParamWizard($var) {
     foreach ($var["items"] as $value => $prop) {
@@ -1323,6 +1356,7 @@ function getSelectBoxFromParamWizard($var) {
  * @param $height
  * @param $add
  * @param $add_path
+ * @return string
  */
 function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path='') {
     $image_path = AA_BASE_PATH.   $add_path. "images/$filename";
@@ -1336,6 +1370,7 @@ function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path=
     }
     return "<img border=\"0\" src=\"$image_url\" alt=\"$alt\" $title $size $add>";
 }
+
 /** GetModuleImage function
  * @param $module
  * @param $filename
@@ -1343,6 +1378,7 @@ function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path=
  * @param $width
  * @param $height
  * @param $add
+ * @return string
  */
 function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='') {
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
@@ -1434,19 +1470,20 @@ class AA_Contentcache {
      *  same parameters is returned from cache - function is not performed.
      *  Use this feature mainly for repeating, time consuming functions!
      *
-     *  @param $function - name of function or you could use also object methods
+     * @param $function - name of function or you could use also object methods
      *                     then the $function parameter should be array
      *                     (see http://php.net/manual/en/function.call-user-func.php)
      *                     For static class methods:
      *                        $result = AA::Contentcache()->get_result(array('Classname', 'function_name'), array(param1, param2));
      *                     For instance methods:
      *                        $result = AA::Contentcache()->get_result(array($this, 'function_name'), array(param1, param2));
-     *  @param $params   - array of function's parameters
-     *  @param $additional_params - string
+     * @param $params - array of function's parameters
+     * @param $additional_params - string
      *                   - special param for cache - it is not passed to the
      *                     function but the cache counts with it (useful, if you
      *                     know, that the result of the $function depends not
      *                     only on its parameters, but also on some (global?) variable
+     * @return mixed
      */
     function get_result( $function, $params=array(), $additional_params='' ) {
         return $this->_get_result(get_hash(func_get_args()), $function, $params, $function);
@@ -1508,6 +1545,7 @@ class AA_Contentcache {
     /** exists function
      *  returns true or false if the key exists
      * @param $access_code
+     * @return bool
      */
     function exists($access_code) {
         return isset($this->content[hash('md5', $access_code)]);
@@ -1547,6 +1585,7 @@ class AA_Contentcache {
      *  used with push_arr for storing view qs parameters when entering view, for example
      * @param $access_code
      * @param $arr
+     * @return false
      */
     function pop($access_code) {
         $ret = $this->get($access_code);
@@ -1628,6 +1667,7 @@ class AA_Contentcache {
  * @param $value
  * @param $else
  * @param $else2
+ * @return string
  */
 function get_if($value, $else, $else2='aa_NoNe') {
     return $value ?: ($else ?: (($else2=='aa_NoNe') ? $else : $else2));
@@ -1658,8 +1698,10 @@ class CookieManager {
     function set($name, $value, $time=null) {
         setcookie('AA_'.$name, $value, $time ? time() + $time : 0, '/', $_SERVER['HTTP_HOST']);
     }
+
     /** get function
      * @param $name
+     * @return
      */
     function get($name) {
         return $_COOKIE['AA_'.$name];
@@ -1690,8 +1732,10 @@ class AA_GeneralizedArray {
         }
         $arr = array_merge($arr, array($value));
     }
+
     /** getValues function
      * @param $coordinates
+     * @return array|mixed|null
      */
     function getValues($coordinates) {
         $arr =& $this->arr;
@@ -1716,6 +1760,7 @@ class AA_GeneralizedArray {
 
 /** IsSpamText function
  * @param $text
+ * @return bool
  */
 function IsSpamText($text, $tolerance=4) {
     // we do not accept any text using something like:

@@ -6,7 +6,7 @@
  * Should be included to other scripts (admin/index.php3)
  *
  *   Move central_conf to app/hold/trash based on param
- *  @param $status    static function parameter defined in manager action
+ *  @param $status string - static function parameter defined in manager action
  *                   in this case it holds bin number, where the central_confs should go
  *  @param $item_arr array, where keys are unpacked ids of items prefixed by
  *                   'x' character (javascript purposes only)
@@ -49,10 +49,11 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     }
 
     /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
-    */
+     * @param $param - not used
+     * @param $item_arr - array of id of AA records to check
+     * @param $akce_param - not used
+     * @return bool|string
+     */
     function perform($manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
 
@@ -102,10 +103,11 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     }
 
     /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
-    */
+     * @param $param - not used
+     * @param $item_arr - array of id of AA records to check
+     * @param $akce_param - not used
+     * @return bool|string
+     */
     function perform($manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
 
@@ -161,10 +163,11 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
     }
 
     /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
-    */
+     * @param $param - not used
+     * @param $item_arr - array of id of AA records to check
+     * @param $akce_param - not used
+     * @return bool
+     */
     function perform($manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
 
@@ -220,10 +223,11 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
     }
 
     /** main executive function
-     *  @param $param       'selected' if we have to delete only items specified
+     * @param $param 'selected' if we have to delete only items specified
      *                      in $item_arr - otherwise delete all items in Trash
-     *  @param $item_arr    Items to delete (if 'selected' is $param)
-     *  @param $akce_param  Not used
+     * @param $item_arr    Items to delete (if 'selected' is $param)
+     * @param $akce_param  Not used
+     * @return bool|if|mixed|void
      */
     function perform($manager, &$state, $item_arr, $akce_param) {
         if ( !IsSuperadmin() ) {    // permission to delete items?
@@ -326,10 +330,11 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
     }
 
     /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
-    */
+     * @param $param - not used
+     * @param $item_arr - array of id of AA records to check
+     * @param $akce_param - not used
+     * @return string
+     */
     function perform($manager, &$state, $item_arr, $akce_param) {
         $ret    = array();
         $aa_ids = array_keys($item_arr);

@@ -445,7 +445,8 @@ function  Links_LoadGlobalCategories() {
 
 /**
  *  Returns $type, if the category type belongs to 'General categories'
- *  @param string $type      - category type
+ * @param string $type - category type
+ * @return bool|string
  */
 function Links_IsGlobalCategory($type) {
     global $LINK_TYPE_CONSTANTS_ARR;

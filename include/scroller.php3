@@ -87,6 +87,7 @@ class AA_Scroller extends AA_Storable {
     /** relative function
      *  return part of a query string for move of $pages relative of current position
      * @param $pages
+     * @return string
      */
     function relative($pages) {
         return urlencode("scr_" . $this->id . "_Mv") . "=" . urlencode($pages);
@@ -95,6 +96,7 @@ class AA_Scroller extends AA_Storable {
     /** absolute function
      *  return part of a query string for move to absolute position $page
      * @param $page
+     * @return string
      */
     function absolute($page) {
         return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
@@ -301,6 +303,7 @@ class AA_Scroller_Easy {
     /** Absolute function
      *  Return part of a query string for move to absolute position $page
      * @param $page
+     * @return string
      */
     function Absolute($page) {
         return urlencode("scr_{$this->id}_Go") . "=" . urlencode($page);
@@ -436,6 +439,7 @@ class AA_Scroller_Sitemodule {
     /** Absolute function
      *  Return part of a query string for move to absolute position $page
      * @param $page
+     * @return string
      */
     function Absolute($page) {
         return urlencode("scr_{$this->id}_Go") . "=" . urlencode($page);
@@ -509,6 +513,7 @@ class AA_Scroller_Sitemodule {
      * @param $end
      * @param $add
      * @param $nopage
+     * @return string
      */
     function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null) {
         // $url = con_url($this->urldefault,"scrl=".$this->id);
@@ -550,6 +555,7 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
     /** Absolute function
      *  Return part of a query string for move to absolute position $page
      * @param $page
+     * @return mixed|null|string|string[]
      */
     function Absolute($page) {
         // used for AJAX scroller in the SEO sitemodule, for example
@@ -570,6 +576,7 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
      * @param $end
      * @param $add
      * @param $nopage
+     * @return string
      */
     function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null) {
         $i   = 0;

@@ -104,6 +104,7 @@ class datectrl {
     /** setdate function
      *  set date, format form db
      * @param $date
+     * @return string
      */
     function setdate($date) {
         $regs = array();
@@ -174,6 +175,7 @@ class datectrl {
      * @param $err
      * @param $required = true
      * @param $default = '0'
+     * @return bool
      */
     function ValidateDate($inputName, &$err, $required=true, $default='0')  {
         $date = $this->get_date();

@@ -922,8 +922,10 @@ class AA_Metabase {
 
     /** Compares two metabases - this and the $metabase supplied by the parameter
      *  You can use it to check, which tables should be updated
-     *  @param $metabase - the second metabase which will be compated to $this
-     **/
+     * @param $metabase - the second metabase which will be compated to $this
+     *
+     * @return array
+     */
     function compare($metabase) {
         $diffs = array();
 
@@ -1003,12 +1005,13 @@ class AA_Metabase {
     }
 
     /** AA_Metabase::queryZids - Finds link IDs for links according to given  conditions
-     *  @param array  $settings - array - just one parameter: table, where to search
-     *  @param AA_Set $set      - AA_Set object which specifies Sortorder and Conditions
+     * @param array  $settings - array - just one parameter: table, where to search
+     * @param AA_Set $set - AA_Set object which specifies Sortorder and Conditions
      *                          - there we store also BINs conditions, since each
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
-     *  @global bool $debug=1       - many debug messages
+     * @global bool  $debug =1       - many debug messages
+     * @return zids
      */
     function queryZids($settings, $set) {
         global $debug;                 // displays debug messages
@@ -1107,6 +1110,7 @@ class AA_Metabase {
     /** generate manager from database structure
      * @param $classname
      * @param $params
+     * @return array
      */
     function getManagerConf($tablename, $actions=null, $switches=null) {
         $table         = $this->tables[$tablename];

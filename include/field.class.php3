@@ -150,7 +150,8 @@ class AA_Field {
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used
-     * @param $properties  - array of properties to redefine for $widget_type
+     * @param $properties - array of properties to redefine for $widget_type
+     * @return Widget|mixed
      */
     function getWidget($widget_type=null, $properties=array()) {
         $widget_hash = get_hash($widget_type,$properties);
@@ -265,10 +266,11 @@ class AA_Field {
     }
 
     /** getAaProperty function
-    * @param $multiple
-    * @param $required   - not usual, but sometimes we want to redefine it required for ajax...
-    * @todo create validator on input_validate
-    */
+     * @param $multiple
+     * @param $required - not usual, but sometimes we want to redefine it required for ajax...
+     * @todo create validator on input_validate
+     * @return AA_Property
+     */
     function getAaProperty($multiple=null, $required=null, $name=null, $input_help=null) {
         if (is_null($multiple)) {
             $multiple = $this->getWidget()->multiple();
@@ -295,13 +297,14 @@ class AA_Field {
     }
 
     /** getWidgetAjaxHtml function
-    * @param $item_id
-    * @param $required    - redefine default settings of required
-    * @param $function    - js function to call after the update
-    * @param $widget_type - wi2|sel|...
-    *                       used, when we want to use another widget, than the default one
-    * @param $widget_properties  - array of properties to redefine for $widget_type - array('columns' => 1)
-    */
+     * @param $item_id
+     * @param $required - redefine default settings of required
+     * @param $function - js function to call after the update
+     * @param $widget_type - wi2|sel|...
+     *                       used, when we want to use another widget, than the default one
+     * @param $widget_properties - array of properties to redefine for $widget_type - array('columns' => 1)
+     * @return
+     */
     function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
         return $this->_getWidget('getAjaxHtml', $item_id, $required, $function, $widget_type, $widget_properties);
     }
@@ -315,14 +318,15 @@ class AA_Field {
 
     /** getWidgetNewHtml function
      * @param $item_id
-     * @param $required  // redefine default settings of required
+     * @param $required // redefine default settings of required
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
-     * @param $widget_properties  - array of properties to redefine for $widget_type
-     * @param $item_index  - used to identify number of the item - aa[n1_...], aa[n2_...]
+     * @param $widget_properties - array of properties to redefine for $widget_type
+     * @param $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
      *
      * Ussage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
+     * @return string
      */
     function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null, $item_index=null) {
         $widget  = $this->getWidget($widget_type, $widget_properties);
@@ -459,6 +463,7 @@ class AA_Fields implements Iterator {
     /** getProperty function
      * @param $field_id
      * @param $property
+     * @return mixed|null
      */
     function getProperty($field_id, $property) {
         $this->load();
@@ -468,6 +473,7 @@ class AA_Fields implements Iterator {
     /** getAliases function
      * @param $additional
      * @param $type
+     * @return array|null|string
      */
     function getAliases($additional='', $type='') {
         if ( !is_null($this->aliases) ) {
@@ -585,6 +591,7 @@ class AA_Fields implements Iterator {
      *  "slice fields" are not used for items, but rather for slice setting.
      *  Such fields are destinguished by underscore on first letter of field_id
      * @param $field_id
+     * @return bool
      */
     static function isSliceField($field_id) {
         return $field_id AND ($field_id{0} == '_');
@@ -594,6 +601,7 @@ class AA_Fields implements Iterator {
      *  Create field id from type and number
      * @param $ftype
      * @param $no
+     * @return string
      */
     static function createFieldId($ftype, $no="0", $id_type='.') {
         $no = (int)$no;
@@ -610,6 +618,7 @@ class AA_Fields implements Iterator {
      *  get field type from id (works also for AA_Core_Fields (without dots))
      *  - static class function
      * @param $id
+     * @return bool|string
      */
     static function getFieldType($id) {
         $id = ltrim($id, "_");  // slice (module) fields are prefixed by underscore
@@ -620,6 +629,7 @@ class AA_Fields implements Iterator {
     /** getFieldNo function
      *  get field number from id ('.', '0', '1', '12', ... )
      * @param $id
+     * @return string
      */
     static function getFieldNo($id) {
         return (string)substr(strrchr($id,'.'), 1);
@@ -630,6 +640,7 @@ class AA_Fields implements Iterator {
      * @param $slice_fields
      * @param $order
      * @param $add_empty
+     * @return array
      */
     static function getFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false, $add_all=false) {
         $where = array(array('slice_id',$slice_id,'l'));

@@ -135,8 +135,10 @@ function proove_data_ID($data_id) {
     }
     return true;
 }
+
 /** import_slice function
  * @param $slice (by link)
+ * @return bool
  */
 // imports one slice (called by XML parser)
 function import_slice(&$slice){
@@ -189,6 +191,7 @@ function import_slice(&$slice){
  * @param $content4id
  * @param $insert
  * @param $feed
+ * @return bool
  */
  // returns false on failure, but ignored
 function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {

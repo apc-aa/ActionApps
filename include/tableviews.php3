@@ -28,6 +28,7 @@
 // Settings for each table view (see doc/tabledit.html for more info)
 /** GetTableView function
  * @param $viewID
+ * @return array
  */
 function GetTableView($viewID) {
     global $auth, $slice_id;
@@ -103,6 +104,7 @@ function GetTableView($viewID) {
 /** te_au_confirm function
  *  user function for confirmed
  * @param $val
+ * @return if|mixed
  */
 function te_au_confirm($val) {
     return $val ? _m("no") : _m("yes");

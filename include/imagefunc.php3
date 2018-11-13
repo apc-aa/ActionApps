@@ -200,8 +200,10 @@ function PrintSupportedTypes() {
         print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
     }
 }
+
 /** GetSupportedTypes function
  * @param $type
+ * @return bool
  */
 function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
     global $imageTable;
@@ -215,8 +217,10 @@ function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
     huhe("Warning: GD cant manipulate ".imgU($type)." images");
     return false;
 }
+
 /** imgU function
  * @param $type
+ * @return string
  */
 function imgU($type) {
     global $imageTable;

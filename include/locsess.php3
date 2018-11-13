@@ -608,6 +608,7 @@ class DB_AA extends DB_Sql {
      *     FILLED   -                   > ''             single             array('field3', 'FILLED')         // not null, not empty, not any whitespace character(s)
      *
      * @param $tablename
+     * @return string
      */
     static public function makeWhere($varlist) {
         $where = array();
@@ -681,6 +682,7 @@ class DB_AA extends DB_Sql {
 
     /** query function
      * @param $SQL
+     * @return int
      */
     function query($SQL) {
         AA::$debug&16 && AA::$dbg->tracestart('Query', $SQL);
@@ -691,6 +693,7 @@ class DB_AA extends DB_Sql {
 
     /** query_nohalt function
      * @param $SQL
+     * @return int
      */
     function query_nohalt($SQL) {
         $store_halt          = $this->Halt_On_Error;
@@ -764,13 +767,14 @@ function freeDB($db) {
 /** @deprecated GetTable2Array function
  *  function converts table from SQL query to array
  * @param $SQL
- * @param $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
+ * @param $key - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
  * @param $values - return array's val - 'aa_all' |
  *                                 'aa_mark' |
  *                                 'aa_fields' |
  *                                 <database_column> |
  *                                 'unpack:<database_column>' |
  *                                 true
+ * @return array|bool|string
  */
 function GetTable2Array($SQL, $key="id", $values='aa_all') {
     $db = getDB();

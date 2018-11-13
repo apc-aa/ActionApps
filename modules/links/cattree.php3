@@ -86,10 +86,11 @@ class cattree {
     }
 
     /** Compare function for sorting categories in subcategory
-    *  The sort oder is by name, but general categories goes as last and in its
-    *  own order
-    *  @param object $a,$b - instances of catassignment class
-    */
+     *  The sort oder is by name, but general categories goes as last and in its
+     *  own order
+     * @param object $a ,$b - instances of catassignment class
+     * @return int
+     */
     function cmp_assignments( $a, $b ) {
         $aname = $this->catnames[$a->getTo()];
         $bname = $this->catnames[$b->getTo()];
@@ -366,39 +367,35 @@ class cattree {
 
 
     /**
-    * Prints javascript which changes tree to given category
-    * There must be already includede js_lib_links.min.js file on the page
-    * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
-    *
-    * @param int $cat_path path of category to switch to (this->treeStart must
-    *                      be on the path
-    * @param int $pathDiv  <div> //id where the path should be displayed
-    * @param int $cat_id_field hidden form field which stores selected category
-    */
+     * Prints javascript which changes tree to given category
+     * There must be already includede js_lib_links.min.js file on the page
+     * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
+     *
+     * @param int $cat_path path of category to switch to (this->treeStart must
+     *                      be on the path
+     * @param int $pathDiv <div> //id where the path should be displayed
+     * @param int $cat_id_field hidden form field which stores selected category
+     * @return string
+     */
     function goCategory($cid, $pathDiv="", $cat_id_fld="", $form="") {
         return getFrmJavascript("GoToCategoryID('$cid', eval('document.$form.tree'), '$pathDiv', '$cat_id_fld')\n");
     }
 
     /**
-    * Returns multiple selectbox which behaves like category tree
-    * Links_PrintTreeData() function must be called first (to define javascript
-    * variables.
-    * @param bool   withState  Have we show also category state?
-    * @param string onWhat     Event to react (onchange/ondblclick)
-    * @param int    cat2show   Which category to show as default
-    * @param string pathdiv    id of an html element (<div id='...'>) where to
-    *                          display currently selected category path
-    * @param string cat_id_fld (probably hidden) form field, where the current
-    *                          selected category id is written
-    * @param string form       if specified, the cattree selectbox is enclosed
-    *                          by the form
-    * @param string in_form    the name of form, in which the tree selectbox is
-    *                          (it must be specified for $onWhat='dblclick' where
-    *                          $form is not specified)
-    * @return string selectbox prepared to print
-    */
-    function getFrmTree($withState, $onWhat, $cat2show=-1, $pathDiv="",
-                        $cat_id_fld="", $form="", $width=250, $rows=8, $in_form="") {
+     * Returns multiple selectbox which behaves like category tree
+     * Links_PrintTreeData() function must be called first (to define javascript
+     * variables.
+     * @param $onWhat
+     * @param int $cat2show
+     * @param string $pathDiv
+     * @param string $cat_id_fld
+     * @param string $form
+     * @param int $width
+     * @param int $rows
+     * @param string $in_form
+     * @return string selectbox prepared to print
+     */
+    function getFrmTree($onWhat, $cat2show = -1, $pathDiv = "", $cat_id_fld = "", $form = "", $width = 250, $rows = 8, $in_form = "") {
         $this->updateIfNeeded();
         if ( $cat2show == -1 ) {
             $cat2show = $this->treeStart;
@@ -465,11 +462,12 @@ class cattree {
     }
 
     /**
-    * Walks category tree and calls specified function
-    *
-    * @param string $function - called function (could be also method - then
-    *                           passed as array( $obj, method )
-    */
+     * Walks category tree and calls specified function
+     *
+     * @param string $function - called function (could be also method - then
+     *                           passed as array( $obj, method )
+     * @return bool
+     */
     function walkTree($start_id, $function, $level=0) {
         if (!isset($this->ancesors_idx) OR !is_array($this->ancesors_idx[$start_id])) {
             return false;

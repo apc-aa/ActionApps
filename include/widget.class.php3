@@ -231,7 +231,9 @@ class AA_Property extends AA_Storable {
 
     /** returns default widget for given property - it tries to identify,
      *  if it is multiple, uses constants, is bool, ...
-     *  @param $form AA_Form
+     * @param $form AA_Form
+     * @return mixed|void
+     * @throws Exception
      */
     function addPropertyFormrows($form) {
         if ($this->isObject()) {
@@ -327,6 +329,8 @@ class AA_Property extends AA_Storable {
     /** save property to the database
      * @param $value
      * @param $priority
+     * @return bool
+     * @throws Exception
      */
     function save($value, $object_id, $owner_id='') {
         $ret = true;
@@ -352,6 +356,8 @@ class AA_Property extends AA_Storable {
      * @param $value
      * @param $type
      * @param $priority
+     * @return bool
+     * @throws Exception
      */
     private function _saveSingle($value, $object_id, $priority, $owner_id) {
 //      not necessary - we must call validate before object saving,
@@ -433,9 +439,10 @@ class AA_Formatters {
 
     /** html_radio function
      * Prints html/plan_text radiobutton
-     * @param string $varname - name of widget variable
+     * @param string      $varname - name of widget variable
      * @param AA_Property $aa_property
-     * @param AA_Value $value
+     * @param AA_Value    $value
+     * @return string
      */
     static function getFormattersRadio($basevarname, $aa_property, $value) {
         if (!($contenttypes = $aa_property->getContentTypeSwitches())) {
@@ -464,9 +471,10 @@ class AA_Formatters {
 
     /**
      * Prints hidden formatter flag, if necessary
-     * @param string $varname - name of widget variable
+     * @param string      $varname - name of widget variable
      * @param AA_Property $aa_property
-     * @param AA_Value $value
+     * @param AA_Value    $value
+     * @return string
      */
     static function getHiddenFormatters($basevarname, $aa_property, $value) {
         $flag_frmtr  = self::getCurrentFormatter($value, $aa_property);
@@ -474,8 +482,9 @@ class AA_Formatters {
     }
 
     /** returns current formatter flag to set on widget
-     * @param AA_Value $value
+     * @param AA_Value    $value
      * @param AA_Property $aa_property
+     * @return int
      */
     static function getCurrentFormatter($value, $aa_property) {
         return $value->isEmpty() ? $aa_property->getContentTypeDefault() : ($value->getFlag() & AA_Formatters::STANDARD_FORMATTERS);

@@ -58,10 +58,12 @@ class Cvariable {
     function getValue() {
         return $this->value;
     }
+
     /** getSQLValue function
      *
      * @param AA_MbC $columns
      *
+     * @return float|int|string
      */
     function getSQLValue($column=null) {
         $ret = '';
@@ -150,13 +152,16 @@ class Cvarset {
     /** get function
      *  get variable value
      * @param $varname
+     * @return bool
      */
     function get($varname) {
         $cv = $this->vars["$varname"];
         return ( $cv ? $cv->getValue() : false);
     }
+
     /** getSQLvalue function
      * @param $varname
+     * @return bool
      */
     function getSQLvalue($varname) {
         $cv = $this->vars[$varname];
@@ -233,6 +238,7 @@ class Cvarset {
     /** value function
      *  return variable value
      * @param $varname
+     * @return
      */
     function value($varname){
         $v = $this->vars["$varname"];
@@ -294,6 +300,7 @@ class Cvarset {
      *  Private function: executes qiven query)
      * @param $SQL
      * @param $nohalt
+     * @return int|void
      */
     function _doQuery($SQL, $nohalt=null) {
         if ($this->just_print) {
@@ -313,6 +320,7 @@ class Cvarset {
     /** _makeInsertReplace function
      * @param $command
      * @param $tablename
+     * @return string
      */
     function _makeInsertReplace($command, $tablename) {
         if ( !($cols = AA::Metabase()->getColumns($tablename))) {
@@ -352,13 +360,16 @@ class Cvarset {
     /** makeINSERT function
      *  Makes SQL INSERT clause from varset
      * @param $tablename
+     * @return string
      */
     function makeINSERT($tablename) {
         return $this->_makeInsertReplace('INSERT', $tablename);
     }
+
     /** doInsert function
      * @param $tablename
      * @param $nohalt
+     * @return int|void
      */
     function doInsert($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
@@ -367,6 +378,7 @@ class Cvarset {
     /** makeUPDATE function
      *  Makes SQL UPDATE clause from varset
      * @param $tablename
+     * @return string
      */
     function makeUPDATE($tablename = "") {
         $updates = array();
@@ -404,6 +416,7 @@ class Cvarset {
     /** doUpdate function
      * @param $tablename
      * @param $nohalt
+     * @return int|void
      */
     function doUpdate($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
@@ -412,6 +425,7 @@ class Cvarset {
     /** doREPLACE function
      * @param $tablename
      * @param $nohalt
+     * @return int|void
      */
     // be sure, you have defined key field
     function doREPLACE($tablename, $nohalt=null) {
@@ -424,6 +438,7 @@ class Cvarset {
     /** doTrueReplace function
      * @param $tablename
      * @param $nohalt
+     * @return int|void
      */
     // be sure, you have defined key field
     function doTrueReplace($tablename, $nohalt=null) {
@@ -436,6 +451,7 @@ class Cvarset {
     /** doTruncate function - deletes all data from tabe
      * @param $tablename
      * @param $nohalt
+     * @return int|void
      */
     function doTruncate($tablename, $nohalt=null) {
         return $this->_doQuery("TRUNCATE $tablename", $nohalt);
@@ -443,15 +459,18 @@ class Cvarset {
 
     /** makeSELECT function
      * @param $tablename
+     * @return string
      */
     function makeSELECT($tablename) {
         $where = $this->makeWHERE();
         return ($where ? "SELECT * FROM `$tablename` WHERE ".$where :
                          "SELECT * FROM `$tablename`");
     }
+
     /** makeDELETE function
      * @param $tablename
      * @param $where
+     * @return string
      */
     function makeDELETE($tablename, $where=null) {
         if ( is_null($where) ) {
@@ -459,23 +478,29 @@ class Cvarset {
         }
         return ($where ? "DELETE FROM `$tablename` WHERE ".$where : 'Error');
     }
+
     /** doDelete function
      * @param $tablename
      * @param $nohalt
+     * @return int|void
      */
     function doDelete($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeDELETE($tablename), $nohalt);
     }
+
     /** doDeleteWhere function
      * @param $tablename
      * @param $where
      * @param $nohalt
+     * @return int|void
      */
     function doDeleteWhere($tablename, $where, $nohalt=null) {
         return $this->_doQuery($this->makeDELETE($tablename, $where), $nohalt);
     }
+
     /** makeWHERE function
      * @param $tablename
+     * @return string
      */
     function makeWHERE($tablename="") {
         $where = "";
@@ -498,6 +523,7 @@ class Cvarset {
      *  updated, if not then inserted. Add always all key fields by addkey()
      *  to the varset before using this function.
      * @param $tablename
+     * @return string
      */
     function makeINSERTorUPDATE($tablename) {
         $this->_doQuery($this->makeSELECT($tablename));
@@ -512,6 +538,7 @@ class Cvarset {
 
     /** last_insert_id function
      * @param $tablename
+     * @return
      */
     function last_insert_id() {
         return $this->last_used_db->last_insert_id();
@@ -523,6 +550,7 @@ class Cvarset {
      *  Returns part of SQL command sed in WHERE, column = value, or column IN (...)
      * @param $column
      * @param $values
+     * @return string
      */
     function sqlin($column, $values) {
         if (!is_array($values)) {
@@ -546,6 +574,7 @@ class Cvarset {
 
 /** is_field_type_numerical function
  * @param $field_type
+ * @return bool
  */
 function is_field_type_numerical($field_type) {
     return in_array($field_type, array("float","double","decimal","int","timestamp"));
@@ -668,6 +697,7 @@ class AA_ChangesMonitor {
 
     /** addProposal function
      * @param $change_proposals
+     * @return bool
      */
     function addProposal($change_proposals) {
         return $this->_add($change_proposals, 'p');
@@ -675,6 +705,7 @@ class AA_ChangesMonitor {
 
     /** addHistory function
      * @param $change_proposals
+     * @return bool
      */
     function addHistory($change_proposals) {
         return $this->_add($change_proposals, 'h');
@@ -698,6 +729,7 @@ class AA_ChangesMonitor {
     /** _add function
      * @param $change_proposals
      * @param $type
+     * @return bool
      */
     function _add($change_proposals, $type) {
         global $auth;
@@ -798,8 +830,10 @@ class AA_ChangesMonitor {
     function getProposals($resource_ids) {
         return $this->_get($resource_ids, 'p');
     }
+
     /** getHistory function
      * @param $resource_ids
+     * @return all
      */
     function getHistory($resource_ids) {
         return $this->_get($resource_ids, 'h');
@@ -874,6 +908,7 @@ class AA_ChangesMonitor {
 
     /** getProposalByID function
      * @param $change_id
+     * @return AA_GeneralizedArray|array
      */
     function getProposalByID($change_id) {
         $garr = new AA_GeneralizedArray();

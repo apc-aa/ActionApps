@@ -42,6 +42,7 @@ define ("D_ITEM",       6);
  * @param $width = 0
  * @param $height = 0
  * @param $path = 'rel'
+ * @return string
  */
 function PrintImg($src, $width=0, $height=0, $path='rel') {
     $width  = $width ? "width=\"$width\"" : "";
@@ -60,6 +61,7 @@ $imgsrc = array(
     D_ITEM       => "");
 /** GetImageSrc function
  * @param $img
+ * @return
  */
 function GetImageSrc($img) {
     global $imgsrc;
@@ -71,6 +73,7 @@ function GetImageSrc($img) {
  * @param $item_id
  * @param $ids = ""
  * @param $order = 'timeorder'
+ * @return bool|zids
  */
 function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     if ( !$item_id ) {
@@ -95,11 +98,13 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     }
     return new zids($ret, 'p');
 }
+
 /** GetDiscussionContent function
  * @param $zids
  * @param $state = true
  * @param $html_flag = false
  * @param $clean_url = ''
+ * @return array|bool
  */
 function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='') {
     /** Fills Abstract data srtructure for Constants */
@@ -196,9 +201,11 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
     }
     $content[$d_id]["d_treeimages...."][0]['value'] = $imgs;
 }
+
 /** GetButtons function
  * @param $empty
  * @param $script_loc
+ * @return string
  */
 function GetButtons($empty, $script_loc) {
     if (!$empty) {
@@ -235,8 +242,10 @@ function GetDiscussionAliases() {
 
     return $aliases;
 }
+
 /** GetdiscussionFormat function
  * @param $view_info
+ * @return mixed
  */
 function GetDiscussionFormat(&$view_info) {
     $VIEW_TYPES_INFO = getViewTypesInfo();
@@ -269,6 +278,7 @@ function GetDiscussionFormat(&$view_info) {
 
 /** Create discussion tree from d_content
  * @param $d_content
+ * @return bool
  */
 function GetDiscussionTree(&$d_content) {
     if (!$d_content) {
@@ -347,6 +357,7 @@ function DeleteTree(&$tree, $d_id) {
  * get parent of node $d_id in tree
  * @param $tree
  * @param $d_id
+ * @return bool|int|string
  */
 function GetParent(&$tree, $d_id) {
     if (!$tree) {

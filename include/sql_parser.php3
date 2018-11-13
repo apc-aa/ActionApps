@@ -137,6 +137,7 @@ $First = Array(
 
 /** resolveOperator function
  * @param $op
+ * @return array
  */
 function resolveOperator($op) {
     switch ($op) {
@@ -168,6 +169,7 @@ function isSpecial($text) {
  * @param $i
  * @param $length
  * @param $ending
+ * @return array
  */
 function tillTheEndingQuotApos($input, $i, $length, $ending) {
     $tok="";
@@ -179,10 +181,12 @@ function tillTheEndingQuotApos($input, $i, $length, $ending) {
     }
     return array("status"=>S_OK, "value"=>$tok, "i"=>$i+1);    // i+1  =>  skips string terminator
 }
+
 /** tillTheFirstSpecial function
  * @param $input
  * @param $i
  * @param $length
+ * @return array
  */
 function tillTheFirstSpecial($input, $i, $length) {
     $tok="";
@@ -200,10 +204,12 @@ function tillTheFirstSpecial($input, $i, $length) {
     }
     return array("status"=>S_OK, "value"=>$tok, "i"=>$i);
 }
+
 /** getToken function
  * @param $input
  * @param $i
  * @param $length
+ * @return array
  */
 function getToken($input, $i, $length) {
     // eat whitespaces
@@ -246,8 +252,9 @@ function getToken($input, $i, $length) {
 }
 
 /** preProcess function
-* @param $toks
-*/
+ * @param $toks
+ * @return array
+ */
 function preProcess($toks) {
     if ( isset($toks) AND is_array($toks) ) {
         foreach ( $toks as $ind => $val) {
@@ -296,6 +303,7 @@ function preProcess($toks) {
 
 /** lex function
  * @param $input
+ * @return array
  */
 function lex($input) {
     $length = strlen($input);
@@ -330,8 +338,10 @@ class TokenList {
     function lookAhead() {
         return $this->tList[$this->index]["type"];
     }
+
     /** match function
      * @param $symbol
+     * @return string
      */
     function match($symbol) {
         global $readable;

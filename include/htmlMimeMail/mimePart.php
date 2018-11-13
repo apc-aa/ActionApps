@@ -259,6 +259,7 @@ class Mail_mimePart {
      * @param $encoding The encoding type to use, 7bit, base64,
      *                  or quoted-printable.
      * @access private
+     * @return bool|string|The
      */
     function _getEncodedData($data, $encoding)
     {
@@ -291,6 +292,7 @@ class Mail_mimePart {
      *                  not be more than 76 chars
      *
      * @access private
+     * @return bool|string
      */
     function _quotedPrintableEncode($input , $line_max = 76)
     {

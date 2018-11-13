@@ -299,11 +299,12 @@ function import_views(&$slvs, $slice_id_new) {
 
 /** create_SQL_insert_statement function
  *  Creates SQL command for inserting
- * @param $fields      - fields for creating query
- * @param $table       - name of table
+ * @param $fields - fields for creating query
+ * @param $table - name of table
  * @param $pack_fields - whitch fields needs to be packed (some types of ids...)
  * @param $only_fields - put in SQL command only some values from $fields
- * @param $add_values  - adds some another values, whitch aren't in $fields
+ * @param $add_values - adds some another values, whitch aren't in $fields
+ * @return string
  */
 function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_fields="", $add_values="")
 {

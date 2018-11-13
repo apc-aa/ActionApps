@@ -64,14 +64,15 @@ $module2abbrev = array(
 // 6 -
 
 /** decode function
-  * Converts data to right character encoding (grabbed from slice setting)
-  * Older versions of AA RSS feeds do not contain XML encoding setting and uses
-  * iso-8859-1. New versions (>=2.8) uses encoding setting and utf-8
-  * which is correct also for non iso-8859-1 languages
-  * There must be global variable defined
-  * - g_slice_encoding    - destination encoding
-  * @param $v
-  */
+ * Converts data to right character encoding (grabbed from slice setting)
+ * Older versions of AA RSS feeds do not contain XML encoding setting and uses
+ * iso-8859-1. New versions (>=2.8) uses encoding setting and utf-8
+ * which is correct also for non iso-8859-1 languages
+ * There must be global variable defined
+ * - g_slice_encoding    - destination encoding
+ * @param $v
+ * @return string
+ */
 function decode($v) {
     static $encoder;
     if ( !$encoder ) {
@@ -83,6 +84,7 @@ function decode($v) {
 
 /** nsName2abbrevname function
  * @param $name
+ * @return string
  */
 function nsName2abbrevname($name) {
     global $module2abbrev; // Static array above
@@ -92,8 +94,10 @@ function nsName2abbrevname($name) {
     }
     return $name;
 }
+
 /** nsAbbrev2name function
  * @param $abbrev
+ * @return false|int|string
  */
 function nsAbbrev2name($abbrev) {
     global $module2abbrev; // static array above
@@ -310,6 +314,7 @@ function charD($parser, $data) {
  *  Parse feed, return array or false on failure
  * $GLOBALS['g_slice_encoding'] - destination slice encoding - must be set
  * @param $xml_data
+ * @return array|bool|mixed
  */
 function aa_rss_parse($xml_data) {
     global $aa_rss,

@@ -53,10 +53,12 @@ class aahandler {
         $this->funct = $funct;
         $this->conds = $conds;
     }
+
     /** matches function
      * @param $type
      * @param $slice
      * @param $slice_type
+     * @return bool
      */
     function matches( $type, $slice, $slice_type ) {
         if ( !(isset($this->conds) AND is_array($this->conds)) ) {
@@ -78,6 +80,7 @@ class aahandler {
      * @param $ret_params
      * @param $params
      * @param $params2
+     * @return
      */
     function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
         $function = $this->funct;
@@ -97,16 +100,17 @@ class aaevent {
     /** Main event function - called when any event ocures. The method then
      *  search all handlers and calls all that matches all criteria
      *
-     *  @param string $type        - event type identifier
-     *  @param string $slice       - slice id, where event occures
-     *  @param string $slice_type  - type of the slice, where event occures
+     * @param string $type - event type identifier
+     * @param string $slice - slice id, where event occures
+     * @param string $slice_type - type of the slice, where event occures
      *                              ('S' for slice, 'Links' for links, ...)
-     *  @param mixed  &$ret_params - event parameters which could be modified
+     * @param mixed  &$ret_params - event parameters which could be modified
      *                               by handler
-     *  @param mixed  $params      - event parameters - static different for
+     * @param mixed  $params - event parameters - static different for
      *                               each event $type (mainly new values)
-     *  @param mixed  $params2     - event parameters - static different for
+     * @param mixed  $params2 - event parameters - static different for
      *                               each event $type (mainly old values)
+     * @return bool
      */
     function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2='') {
         unset($this->returns);
@@ -212,6 +216,7 @@ class NewDiscussionCommentEvent {
      * @param $type
      * @param $slice
      * @param $slice_type
+     * @return bool
      */
     function matches( $type, $slice, $slice_type ) {
         return true;
@@ -262,6 +267,7 @@ class NewDiscussionCommentEvent {
  * @param $selector
  * @param $reaction
  * @param $params
+ * @return array
  */
 function GetNotifications($type, $class, $selector, $reaction=null, $params=null) {
     $type     = quote($type);
@@ -312,6 +318,7 @@ function AddNotification($type, $class, $selector, $reaction, $params) {
  * @param $disc_id
  * @param $foo
  * @param $foo2
+ * @return bool
  */
 function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $foo2 ) {
 
@@ -364,12 +371,13 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
 /** Event_ItemAfterInsert function
  *   Called after inserting a new item.
  *   $itemContent is sent by reference but for better performance only.
- * @param $type
- * @param $slice_id
- * @param $slice_type
+ * @param             $type
+ * @param             $slice_id
+ * @param             $slice_type
  * @param ItemContent $itemContent
- * @param $foo
- * @param $foo2
+ * @param             $foo
+ * @param             $foo2
+ * @return bool
  */
 function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
@@ -389,12 +397,13 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
 /** Event_ItemAfterUpdate function
  *   Called after updating an existing item.
  *   $itemContent is sent by reference but for better performance only.
- * @param $type
- * @param $slice_id
- * @param $slice_type
+ * @param             $type
+ * @param             $slice_id
+ * @param             $slice_type
  * @param ItemContent $itemContent
  * @param ItemContent $oldItemContent
- * @param $foo2
+ * @param             $foo2
+ * @return bool
  */
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
 
@@ -428,12 +437,13 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
 
 /** Event_ItemBeforeUpdate
  *   Called on updating an existing item.
- * @param $type
- * @param $slice_id
- * @param $slice_type
- * @param object $itemContent is sent by reference - you can change the data
+ * @param             $type
+ * @param             $slice_id
+ * @param             $slice_type
+ * @param object      $itemContent is sent by reference - you can change the data
  * @param ItemContent $oldItemContent
- * @param $foo2
+ * @param             $foo2
+ * @return bool
  */
 function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
     $item_id = $itemContent->getItemID();
@@ -445,12 +455,13 @@ function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $
 
 /** Event_ItemBeforeInsert function
  *   Called on inserting a new item.
- * @param $type
- * @param $slice_id
- * @param $slice_type
+ * @param        $type
+ * @param        $slice_id
+ * @param        $slice_type
  * @param object $itemContent is sent by reference - you can change the data
- * @param $foo
- * @param $foo2
+ * @param        $foo
+ * @param        $foo2
+ * @return bool
  */
 function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     return true;
@@ -458,12 +469,13 @@ function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $
 
 /** Event_ItemsBeforeDelete function
  *   Called on deleting several items.
- * @param $type
- * @param $slice_id
- * @param $slice_type
+ * @param        $type
+ * @param        $slice_id
+ * @param        $slice_type
  * @param object $item_ids is sent by reference but for better performance only
- * @param $foo
- * @param $foo2
+ * @param        $foo
+ * @param        $foo2
+ * @return bool
  */
 function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $foo, $foo2 ) {
     /* It is not really necessary to delete the readers from Auth tables,
@@ -493,12 +505,13 @@ function Event_ItemsMoved( $type, $slice_id, $slice_type, &$item_ids, $new_statu
 
 /** Event_ConstantBeforeUpdate function
  *  Called on propagating a change in a constant value.
- * @param $type
- * @param $slice_id
- * @param $slice_type
- * @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
- * @param $oldvalue
+ * @param        $type
+ * @param        $slice_id
+ * @param        $slice_type
+ * @param string $newvalue , $oldvalue Both have added slashes (e.g. from a form).
+ * @param        $oldvalue
  * @param string $constant_id Unpacked ID of constant from the constant table.
+ * @return bool
  */
 function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
     return true;
@@ -522,13 +535,14 @@ function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldv
 /** Event_AddLinkGlobalCat function
  *  Creates 'general' categories (if not created yet) when new link type belongs
  *  to 'global categories'. Then it modifies category set, where to assign link
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param array  &$ret_params  - category set, where to assign link - modified
+ * @param        $type
+ * @param        $slice
+ * @param        $slice_type
+ * @param array  &$ret_params - category set, where to assign link - modified
  *                               array[] = category_id
- * @param string  $params      - global category name or false
- * @param string  $params2     - old (previous) global category name or false
+ * @param string $params - global category name or false
+ * @param string $params2 - old (previous) global category name or false
+ * @return bool
  */
 function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     global $LINK_TYPE_CONSTANTS;
@@ -645,8 +659,9 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
 /** SendFilledItem function
  *  Send email with answer to Dropin staff with the answer (from item)
- * @param object  &$ret_params  - ItemContent object with new values
- * @param $email_template
+ * @param object &$ret_params - ItemContent object with new values
+ * @param        $email_template
+ * @return bool
  */
 function SendFilledItem(&$ret_params, $email_template) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
@@ -670,6 +685,7 @@ function SendFilledItem(&$ret_params, $email_template) {
  * @param $ret_params
  * @param $params
  * @param $params2
+ * @return bool
  */
 function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 8);
@@ -683,6 +699,7 @@ function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $pa
  * @param $ret_params
  * @param $params
  * @param $params2
+ * @return bool
  */
 function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 49);
@@ -696,6 +713,7 @@ function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $pa
  * @param $ret_params
  * @param $params
  * @param $params2
+ * @return bool
  */
 function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 50);
@@ -709,6 +727,7 @@ function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_param
  * @param $ret_params
  * @param $params
  * @param $params2
+ * @return bool
  */
 function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 62);
@@ -722,6 +741,7 @@ function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_param
  * @param $ret_params
  * @param $params
  * @param $params2
+ * @return bool
  */
 function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 53);
@@ -777,6 +797,7 @@ function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret
  * @param $ret_params
  * @param $foo
  * @param $foo2
+ * @return bool
  */
 function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id   = $ret_params->getValue('short_id........');              // item's short_id is in params
@@ -807,6 +828,7 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
  * @param $ret_params
  * @param $foo
  * @param $foo2
+ * @return bool
  */
 function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
@@ -831,6 +853,7 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, 
  * @param $ret_params
  * @param $foo
  * @param $foo2
+ * @return bool
  */
 function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     if ($_POST['souhlas'] != 1) {

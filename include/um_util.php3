@@ -61,11 +61,13 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
     }
     echo "</select>\n";
 }
+
 /** GetFiltered function
  * @param $type
  * @param $filter
  * @param $to_much
  * @param $none
+ * @return array
  */
 function GetFiltered($type, $filter, $to_much, $none) {
     switch( $type ) {
@@ -135,6 +137,7 @@ function PrintModulePermModificator($selected_user) {
  * @param $name
  * @param $perm
  * @param $odd
+ * @return string
  */
 function GetModulePermRow($mid, $type, $name, $perm, $odd=false) {
     global $MODULES, $perms_roles_modules, $perms_roles;
@@ -220,6 +223,7 @@ function AddUserModulePerms( $new_module, $new_module_role, $selected_user, $per
  * Returned Module letter is used for as full identification of the module
  * by 1-letter long id (we need it for some javascripts in um_util.php3)
  * @param $type
+ * @return bool|string
  */
 function GetModuleLetter($type) {
     global $MODULES;
@@ -282,6 +286,7 @@ function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
         }
     }
 }
+
 /** FillUserRecord function
  * @param $err
  * @param $user_login
@@ -292,6 +297,7 @@ function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
  * @param $user_mail1
  * @param $user_mail2
  * @param $user_mail3
+ * @return array
  */
 function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3) {
 

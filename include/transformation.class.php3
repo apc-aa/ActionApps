@@ -182,6 +182,7 @@ class AA_Transformation_Value extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
@@ -244,6 +245,7 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         ob_start();
@@ -296,6 +298,7 @@ class AA_Transformation_Recompute extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         ob_start();
@@ -346,6 +349,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
@@ -397,6 +401,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
+     * @return
      */
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
@@ -412,6 +417,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
@@ -469,6 +475,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
+     * @return AA_Value
      */
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
@@ -479,6 +486,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
@@ -638,6 +646,7 @@ class AA_Transformation_Translate extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
@@ -707,6 +716,7 @@ class AA_Transformation_Replace extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         ob_start();
@@ -780,6 +790,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         ob_start();
@@ -826,6 +837,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
+     * @return bool
      */
     function transform($field_id, $itemcontent, $silent=true) {
         if (($this->field2copy == 'no_field') OR !$field_id OR ($field_id == 'no_field')) {
@@ -839,6 +851,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
+     * @return string
      */
     function htmlSetting($input_prefix, $params) {
         ob_start();

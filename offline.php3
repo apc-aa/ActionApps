@@ -69,6 +69,7 @@ define("WDDX_BAD_PACKET", 2);
 /** IsDuplicated function
  *  is packet already stored in database?
  * @param $packet
+ * @return bool
  */
 function IsDuplicated( $packet ) {
     if ( is_array($packet) || is_object($packet)) {
@@ -95,6 +96,7 @@ function RegisterItem($id, $packet) {
  * @param $slice_id
  * @param $fields
  * @param $bin2fill
+ * @return int
  */
 function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 

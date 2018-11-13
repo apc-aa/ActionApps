@@ -47,6 +47,7 @@ function Page_HTML_End(){
 /** GetCAtegories function
  * @param $db
  * @param $p_slice_id
+ * @return mixed
  */
 function GetCategories($db,$p_slice_id){
      $SQL = "SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";

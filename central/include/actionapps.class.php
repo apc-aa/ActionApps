@@ -77,6 +77,7 @@ class AA_Actionapps {
      *  main factory static method called like:
      *     $aa = AA_Actionapps::getActionapps($aa_id);
      * @param $aa_id
+     * @return mixed
      */
     static function getActionapps($aa_id) {
         static $aas = array();
@@ -829,13 +830,14 @@ function Central_GetAaContent($zids) {
 }
 
 /** Central_QueryZids - Finds link IDs for links according to given  conditions
- *  @param array  $conds    - search conditions (see FAQ)
- *  @param array  $sort     - sort fields (see FAQ)
- *  @param string $type     - bins as known from items
+ * @param array  $conds - search conditions (see FAQ)
+ * @param array  $sort - sort fields (see FAQ)
+ * @param string $type - bins as known from items
  *       AA_BIN_ACTIVE | AA_BIN_HOLDING | AA_BIN_TRASH | AA_BIN_ALL
- *  @global int  $QueryIDsCount - set to the count of IDs returned
- *  @global bool $debug=1       - many debug messages
- *  @global bool $nocache       - do not use cache, even if use_cache is set
+ * @global int   $QueryIDsCount - set to the count of IDs returned
+ * @global bool  $debug =1       - many debug messages
+ * @global bool  $nocache - do not use cache, even if use_cache is set
+ * @return zids
  */
 function Central_QueryZids($conds, $sort="", $type="app") {
     global $debug;                 // displays debug messages

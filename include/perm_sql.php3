@@ -54,6 +54,7 @@ users        membership     perms
  * @param $user
  * @param $flags
  * creates new person in permission system
+ * @return bool
  */
 function AddUser($user, $flags = 0) {
     if (! AA::$perm->isUsernameFree($user["uid"])) {
@@ -76,6 +77,7 @@ function AddUser($user, $flags = 0) {
  * @param $flags
  *  deletes an user in permission system
  *  $user_id is DN
+ * @return bool
  */
 function DelUser($user_id, $flags = 3) {
      // To keep integrity of AA we should also delete all references
@@ -97,6 +99,7 @@ function DelUser($user_id, $flags = 3) {
  * @param $user
  * @param $flags
  *  changes user entry in permission system
+ * @return bool
  */
 function ChangeUser($user, $flags = 0) {
     $varset = new CVarset(array(
@@ -120,6 +123,7 @@ function ChangeUser($user, $flags = 0) {
  * creates new group in permission system
  * @param $group is an array ("name", "description", ...)
  * @param $flags
+ * @return
  */
 function AddGroup($group, $flags = 0) {
     // creates new person in permission system
@@ -135,6 +139,7 @@ function AddGroup($group, $flags = 0) {
  *  deletes an group in permission system
  * @param $group_id is DN
  * @param $flags
+ * @return bool
  */
 function DelGroup($group_id, $flags = 3) {
      // cancel other people's membership in this group
@@ -159,6 +164,7 @@ function DelGroup($group_id, $flags = 3) {
  *  changes fields about group
  * @param $group is an array ("name", "description", ...)
  * @param $flags
+ * @return bool
  */
 function ChangeGroup($group, $flags = 0) {
     $varset = new CVarset(array(
@@ -201,6 +207,7 @@ function DelGroupMember($group_id, $id, $flags = 0) {
  * @param $objectID
  * @param $objectType
  * @param $flags
+ * @return bool
  */
 function AddPermObject($objectID, $objectType, $flags = 0) {
     // we don't need to do that in mysql
@@ -212,6 +219,7 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
  * @param $objectID
  * @param $objectType
  * @param $flags
+ * @return bool
  */
 function DelPermObject($objectID, $objectType, $flags = 0) {
     // we don't need to do that in mysql
@@ -292,7 +300,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** isUsernameFree function
      *  Looks whether the username name is not yet used.
-     *  @param $username
+     * @param $username
+     * @return bool
      */
     function isUsernameFree($username) {
         return !(DB_AA::select1('SELECT uid FROM `users`', '', array(array('uid', $username))));
@@ -308,7 +317,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     }
 
     /** findUserByLogin function
-     *  @param $user_login
+     * @param $user_login
+     * @return array|bool
      */
     function findUserByLogin($user_login) {
         return DB_AA::select1("SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", array('id'=>array('name','mail')), array(array('uid', $user_login)));
@@ -355,6 +365,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     /** getGroupMembers function
      * @param $group_id
      * @todo  Make this recursive friendly?
+     * @return array
      */
     function getGroupMembers($group_id) {
         $ret = array();

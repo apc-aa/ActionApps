@@ -62,10 +62,11 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     }
 
     /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
-    */
+     * @param $param - not used
+     * @param $item_arr - array of id of AA records to check
+     * @param $akce_param - not used
+     * @return bool
+     */
     function perform($manager, &$state, $item_arr, $akce_param) {
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
@@ -117,10 +118,11 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
     }
 
     /** main executive function
-     *  @param $param       'selected' if we have to delete only items specified
+     * @param $param 'selected' if we have to delete only items specified
      *                      in $item_arr - otherwise delete all items in Trash
-     *  @param $item_arr    Items to delete (if 'selected' is $param)
-     *  @param $akce_param  Not used
+     * @param $item_arr    Items to delete (if 'selected' is $param)
+     * @param $akce_param  Not used
+     * @return if|mixed|void
      */
     function perform($manager, &$state, $item_arr, $akce_param) {
         if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?

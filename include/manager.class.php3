@@ -556,6 +556,7 @@ class AA_Manager extends AA_Storable {
     /** printItems function
      * Prints item/link/... table with scroller, actions, ...
      * @param $zids
+     * @return mixed
      */
     function printItems($zids) {
         echo '<form name="itemsform" id="itemsform" method="post" action="'. StateUrl() .'">';
