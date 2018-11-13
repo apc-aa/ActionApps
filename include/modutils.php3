@@ -34,10 +34,9 @@
  * @param $new_owner_email
  * @param $err
  * @param $varset
- * @param $db
- *  @return unpacked owner_id or false (on error)
+ * @return unpacked owner_id or false (on error)
  */
-function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
+function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset) {
     $varset->clear();
     ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
     ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
@@ -90,6 +89,7 @@ function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner,
  * @param $owner
  * @param $deleted
  * @param $new_id
+ * @return bool|mixed|string
  */
 function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, $new_id="" ) {
     global $auth, $err;

@@ -67,7 +67,7 @@ if ($template['Links']) {        // add module
 if ( ($insert AND $superadmin) OR $update ) {
     do {
         if ( !$owner )  { // insert new owner
-            if ( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset, $db))) {
+            if ( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
                 break;
             }
         }
@@ -215,10 +215,7 @@ if ( $superadmin ) {
 }
 
 if ( $template['Links'] ) {
-    FrmTabEnd( array( 'insert',
-        'template[Links]' => array( 'type'=>"hidden",
-            'value'=> $template['Links'])),
-        $sess, $slice_id);
+    FrmTabEnd( array( 'insert', 'template[Links]' => array( 'type'=>"hidden", 'value'=> $template['Links'])));
 } else {
     FrmTabEnd( array( 'update', 'reset', 'cancel' ) );
 }

@@ -24,7 +24,7 @@ function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
 }
 
-function add_vars($query_string="", $debug="") {
+function add_vars($query_string="") {
     if ( $query_string ) {
         $varstring = $query_string;
     } elseif (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])) {

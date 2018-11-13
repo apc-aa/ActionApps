@@ -484,7 +484,7 @@ echo '
           </tr>
           <tr>
            <td align="CENTER" valign="TOP">'.
-           $tree->getFrmTree(false, 'dblclick', $select_start, 'patharea', '', false, '', 15, 'f');
+           $tree->getFrmTree('dblclick', $select_start, 'patharea', '', false, '', 15, 'f');
            if ( $r_state['cat_id'] ) {
                 echo $tree->goCategory( $r_state['cat_id'], 'patharea', '', 'f' );
            }

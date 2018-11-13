@@ -47,7 +47,7 @@ echo '
        <td colspan="2"><div id="patharea">&nbsp;</div></td>
       <tr>
        <td colspan="2" align="CENTER" valign="TOP">'.
-         $tree->getFrmTree(false, 'change', $tree_start, 'patharea', '', false) .
+         $tree->getFrmTree('change', $tree_start, 'patharea', '', false) .
        '</td>
       </tr>
       ';

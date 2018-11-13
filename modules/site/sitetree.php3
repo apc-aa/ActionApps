@@ -294,8 +294,15 @@ class sitetree {
         return max(array_keys($this->tree))+1;
     }
 
-    /** Creates the spot object and adds it in the choices array */
-    function addChoice($where, $name, $content=false, $conditions=false, $variables=false, $flag=false) {
+    /** Creates the spot object and adds it in the choices array
+     * @param $where
+     * @param $name
+     * @param bool $conditions
+     * @param bool $variables
+     * @param bool $flag
+     * @return bool
+     */
+    function addChoice($where, $name, $conditions = false, $variables = false, $flag = false) {
         // parent is not set yet (set by addChoice() in next step);
         $new_id = $this->new_id();
         $spot = new spot( $new_id, $name, $conditions, $variables, false, array($new_id), $flag );
@@ -337,8 +344,9 @@ class sitetree {
 
     /** Moves the spot up or down within the sitetree. The move is done only
      *  within the same parent.
-     *  @param $spot_id int - id of spot to be moved
-     *  @param $direction string - 'moveDown' or 'moveLeft'
+     * @param $spot_id int - id of spot to be moved
+     * @param $direction string - 'moveDown' or 'moveLeft'
+     * @return bool
      */
     function move($spot_id, $direction) {
         $spot =& $this->tree[$spot_id];
@@ -356,7 +364,8 @@ class sitetree {
 
     /** Moves the spot left (to the parent) or right (to first child) within
      *  the sitetree.
-     *  @param string $direction - 'moveLeft' or 'moveRight'
+     * @param string $direction - 'moveLeft' or 'moveRight'
+     * @return bool
      */
     function moveLeftRight($spot_id, $direction) {
         $spot =& $this->tree[$spot_id];

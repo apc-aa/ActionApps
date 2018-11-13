@@ -95,8 +95,9 @@ class AA_Router {
     }
 
     /** view scroller function
-     * @param $page   - current page
-     * @param $max    - number of pages
+     * @param $page - current page
+     * @param $max - number of pages
+     * @return mixed|string
      */
     function scroller($page, $max, $target=null) {
         if ($max<=1) {
@@ -185,7 +186,7 @@ class AA_Router {
     }
 
     // should be refined in subclass
-    function xid($param='')   { return ''; }
+    function xid($param=null, $url=null)   { return ''; }
 
     // should be refined in subclass
     function xuser($param='') { return ''; }
@@ -484,9 +485,10 @@ class AA_Router_Seo extends AA_Router {
      *           3) IDs path of current item - like 2587(2877(3004)) as used
      *              in {item...} syntax (good for breadcrumbs)
      *              (if param = "path")
-     *  @param string $param specifies, which information you want to get (see above)
-     *  @param string $url   if filled, returns the information about the specified
+     * @param string $param specifies, which information you want to get (see above)
+     * @param string $url if filled, returns the information about the specified
      *                url instead of the current item
+     * @return string
      */
     function xid($param=null, $url=null) {
 

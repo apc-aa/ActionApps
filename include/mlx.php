@@ -148,6 +148,7 @@ function __mlx_fatal($msg) {
 /** MLXSlice function
  * returns unpacked mlx slice id - works also as test if the slice is MLX enabled
  * @param $slice
+ * @return bool|string
  */
 function MLXSlice($slice) {
     return ($p_mlxslice = $slice->getProperty('mlxctrl')) ? unpack_id($p_mlxslice) : false;
@@ -316,6 +317,7 @@ class MLX {
      *       language selections,
      *     - language
      *     - mlxid - id of the main mlx artice (where other items are joined)
+     * @return array
      */
     function itemform($params, $content4id, $action, $lang, $mlxid)
     {
@@ -431,6 +433,7 @@ class MLX {
      * @param $lang
      * @param $content4id
      * @param $content4mlxid
+     * @return bool|string
      */
     function getLangItem($lang, &$content4id, &$content4mlxid) {
         if (is_array($content4id)) {
@@ -461,8 +464,10 @@ class MLX {
         }
         return false;
     }
+
     /** getparamstring function
      * @param $params
+     * @return string
      */
     function getparamstring(&$params)
     {
@@ -651,6 +656,7 @@ class MLXView {
         $QueryIDsCount = count($arr);
         $zidsObj->a    = array_keys($arr);
     }
+
     /** getAlternatives function
      *   at the moment this is not useful unless you write your own
      *   stringexpand function to produce useable output
@@ -659,6 +665,7 @@ class MLXView {
      *   mlx can handle "wrong" itemids
      * @param $p_itemid
      * @param $slice_id
+     * @return string
      */
     function getAlternatives($p_itemid,$slice_id) {
         if(!$p_itemid) {
@@ -697,11 +704,13 @@ class MLXView {
         }
         return $o;
     }
+
     /** getTranslations function
      *  the mlx mini view generator
      * @param $p_itemid
      * @param $slice_id
      * @param $params
+     * @return string
      */
     function getTranslations($p_itemid,$slice_id,$params) {
         //__mlx_dbg(unpack_id($p_itemid),"itemid");
@@ -750,9 +759,11 @@ class MLXView {
         }
         return $o;
     }
+
     /** getPrioTranslationFields function
      * @param $ctrlsliceID
      * @param $slice_id
+     * @return array
      */
     function getPrioTranslationFields($ctrlSliceID,$slice_id=0) {
         if($GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID]) {
@@ -784,8 +795,10 @@ class MLXView {
         }
         return $translations;
     }
+
     /** getLangByIdx function
      * @param $idx
+     * @return bool|mixed
      */
     function getLangByIdx($idx) {
         if($idx > count($this->language)) {
@@ -861,12 +874,13 @@ class MLXGetText
         $ca = array('global');
         $this->setdomain($ca);
     }
+
     /** translate function
      * @param $args
      * @param $lang
-     * @param $slice_id
+     * @return mixed
      */
-    function translate(&$args,$lang,$slice_id=0) {
+    function translate(&$args, $lang) {
 //		__mlx_dbg($args,"translate args");
 //		__mlx_dbg($slice_id,"translate slice");
         $retval = $this->currentDomainRef[$lang][$args[0]];
@@ -890,9 +904,11 @@ class MLXGetText
         }
         return $retval;
     }
+
     /** command function
      * @param $args
      * @param $slice_id
+     * @return string
      */
     function command(&$args,$slice_id=0) {
 //		__mlx_dbg($args,"command args");
@@ -908,9 +924,8 @@ class MLXGetText
     ///			unknown texts (also set nocache=1, and be in default language)
     /** addslice function
      * @param $args
-     * @param $slice_id
      */
-    function addslice(&$args,$slice_id=0) {
+    function addslice(&$args) {
         //xdebug_start_profiling();
         list(,$slice2add,$lang,$domain,$mode) = $args;
         $scda = array($domain);
@@ -992,41 +1007,41 @@ class MLXGetText
 //		__mlx_dbg($current);
 //		__mlx_dbg($this->domains);
     }
+
     /** setdomain function
      * @param $args
-     * @param $slice_id
      */
-    function setdomain(&$args,$slice_id=0) {
+    function setdomain(&$args) {
         if( $args[1] ) { // make sure we stay in a domain
             $this->currentDomain = $args[1];
         }
         $this->currentDomainRef = &$this->domains[$this->currentDomain];
     }
+
     /** setLang function
      *  set the current language in case we are not in a view
      * @param $args
-     * @param $slice_id
      */
-    function setlang(&$args,$slice_id=0) {
+    function setlang(&$args) {
         $this->currentLang = strtoupper($args[1]);
         if($GLOBALS['mlxdbg']) {
             huhl("MLX setting language to <b>".$this->currentLang."</b>");
         }
     }
+
     /** debug function
      * @param $args
-     * @param $slice_id
      */
-    function debug(&$args,$slice_id=0) {
+    function debug(&$args) {
         __mlx_dbg($this->domains);
     }
+
     /** addtext function
      *  we are adding the item to the last slice added
      *  this could also be used for manually adding items
      * @param $args
-     * @param $slice_id
      */
-    function addtext(&$args,$slice_id=0) {
+    function addtext(&$args) {
         __mlx_dbg($this->domains);
         __mlx_dbg($args,__function__);
         $old_varset = $GLOBALS['varset'];

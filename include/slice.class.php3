@@ -64,6 +64,7 @@ class AA_Module {
      *   $name = AA_Module_Site::getModuleName($module_id)
      *   $name = AA_Slice::getModuleName($module_id)
      * @param $module_id
+     * @return bool|mixed|string
      */
     static public function getModuleName($module_id) {
         $module = static::getModule($module_id);
@@ -97,6 +98,7 @@ class AA_Module {
     /** AA_Module::getModuleInfo function
      * @param $info string
      * @param $module_id
+     * @return string
      */
     static public function getModuleInfo($info, $module_id)
     {
@@ -132,6 +134,7 @@ class AA_Module {
 
     /** AA_Module::getModuleType function
      * @param $module_id
+     * @return string
      */
     static public function getModuleType($module_id) {
         return self::getModuleInfo('type', $module_id);
@@ -140,6 +143,7 @@ class AA_Module {
 
     /** AA_Module::deleteModules function
      * @param $module_id
+     * @return bool
      */
     static public function deleteModules($module_ids) {
         foreach ($module_ids as $module_id) {
@@ -163,6 +167,7 @@ class AA_Module {
      *  static function
      * @param $module_id
      * @param $prop
+     * @return bool|mixed|null
      */
     static public function getModuleProperty($module_id, $prop) {
         $module = static::getModule($module_id);
@@ -360,6 +365,7 @@ class AA_Slice extends AA_Module {
 
     /** getProperty function
      * @param $fname
+     * @return bool|mixed|null
      */
     function getProperty($prop) {
         // test slice table property, module table property and moduleobject property
@@ -375,6 +381,7 @@ class AA_Slice extends AA_Module {
 
     /** isField function
      * @param bool $fname
+     * @return bool
      */
     function isField($fname) {
         return $this->fields->isField($fname);
@@ -422,7 +429,8 @@ class AA_Slice extends AA_Module {
     }
 
     /** AA_Slice::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
-     *  @param $module_id
+     * @param $module_id
+     * @return bool
      */
     static public function _deleteModules($module_ids) {
         if (!is_array($module_ids) OR !count($module_ids)) {
@@ -519,6 +527,7 @@ class AA_Slice extends AA_Module {
     /** get_dynamic_setting_content function
      *  Returns slice setting field content in ItemContent object
      * @param $ignore_reading_password
+     * @return bool
      */
     function get_dynamic_setting_content($ignore_reading_password = false) {
         if (!$ignore_reading_password) {
@@ -556,6 +565,7 @@ class AA_Slice extends AA_Module {
      *  Try to transform file path to file url - based on setting of file
      *  uploads or filemanager
      * @param $filename
+     * @return string
      */
     function getUrlFromPath($filename) {
         $upload = $this->getUploadBase();
@@ -598,6 +608,7 @@ class AA_Slice extends AA_Module {
     /** aliases function
      *  Get standard aliases definition from slice's fields
      * @param $additional_aliases
+     * @return array|null|string
      */
     function aliases($additional_aliases = false, $type='') {
         return $this->fields->getAliases($additional_aliases, $type);
@@ -635,12 +646,13 @@ class AA_Slice extends AA_Module {
 
     /** _compute_field_stats function
      *  Computes js_validation code and show_func_used
-     * @param $action       - 'update' | 'edit'
-     * @param $id           - id of item to edit
+     * @param $action - 'update' | 'edit'
+     * @param $id - id of item to edit
      * @param $shown_fields - array of field ids which we will use in the output
      *                  (inputform)(we have to count with them).
      *                  If false, then we use all the fields
      * @param $slice_fields
+     * @return string|void
      */
     function _compute_field_stats($action, $id=0, $shown_fields=false, $slice_fields=false) {
         if (isset($this->js_validation)) {
@@ -741,7 +753,7 @@ class AA_Module_Site extends AA_Module {
         $out         = '';
 
         // it fills $show_ids array
-        $tree->walkTree($apc_state, 1, function ($spot_id, $depth) use (&$show_ids) { $show_ids[] = $spot_id; }, 'cond');
+        $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; }, 'cond');
 
         if (count($show_ids)<1) {
             exit;
@@ -793,7 +805,8 @@ class AA_Module_Site extends AA_Module {
     }
 
     /** AA_Module_Site::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
-     *  @param $module_id
+     * @param $module_id
+     * @return bool
      */
     static public function _deleteModules($module_ids) {
         if (!is_array($module_ids) OR !count($module_ids)) {
@@ -813,7 +826,8 @@ class AA_Module_Alerts extends AA_Module {
     const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Alerts::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
-     *  @param $module_id
+     * @param $module_id
+     * @return bool
      */
     static public function _deleteModules($module_ids) {
         if (!is_array($module_ids) OR !count($module_ids)) {
@@ -836,7 +850,8 @@ class AA_Module_Links extends AA_Module {
     // const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Links::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
-     *  @param $module_id
+     * @param $module_id
+     * @return bool
      */
     static public function _deleteModules($module_ids) {
         if (!is_array($module_ids) OR !count($module_ids)) {
@@ -852,7 +867,8 @@ class AA_Module_Polls extends AA_Module {
     // const SETTING_TABLE = 'alerts_collection';
 
     /** AA_Module_Polls::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
-     *  @param $module_id
+     * @param $module_id
+     * @return bool
      */
     static public function _deleteModules($module_ids) {
         if (!is_array($module_ids) OR !count($module_ids)) {

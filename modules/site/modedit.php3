@@ -70,7 +70,7 @@ if (!$add) {
 if ($add || $update) {
     do {
         if (!$owner ) {  // insert new owner
-            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset, $db))) {
+            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
                 break;
             }
         }

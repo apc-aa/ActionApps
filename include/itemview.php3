@@ -146,9 +146,10 @@ class itemview {
       return (substr($this->from_record, 0, 6) == 'random');
   }
 
-   /** get_output_cached function
-    * @param $view_type
-    */
+    /** get_output_cached function
+     * @param $view_type
+     * @return bool|mixed|null|string|string[]|void
+     */
     function get_output_cached($view_type="") {
         //create keystring from values, which exactly identifies resulting content
 
@@ -183,9 +184,10 @@ class itemview {
         return $res;
     }
 
-  /** get_disc_buttons function
-   * @param $empty
-   */
+    /** get_disc_buttons function
+     * @param $empty
+     * @return string
+     */
   function get_disc_buttons($empty) {
     if (!$empty) {
       $out.= $this->slice_info['d_sel_butt'];
@@ -196,9 +198,11 @@ class itemview {
   }
 
   // show list of discussion items --- useful as search form return value
-  /** get_disc_list function
-   * @param $CurItem
-   */
+
+    /** get_disc_list function
+     * @param $CurItem
+     * @return string
+     */
   function get_disc_list($CurItem) {
       $top_html_already_printed = false;
       if (is_array($this->disc['disc_ids'])) {
@@ -227,10 +231,11 @@ class itemview {
       return $out;
   }
 
-  /** get_disc_thread function
-   *  show discussion comments in the thread mode
-   * @param $CurItem
-   */
+    /** get_disc_thread function
+     *  show discussion comments in the thread mode
+     * @param $CurItem
+     * @return string
+     */
   function get_disc_thread($CurItem) {
       $top_html_already_printed = false;
 
@@ -327,10 +332,11 @@ class itemview {
    return $out;
   }
 
-  /** get_disc_fulltext function
-   *  show discussion comments in the fulltext mode
-   * @param $CurItem
-   */
+    /** get_disc_fulltext function
+     *  show discussion comments in the fulltext mode
+     * @param $CurItem
+     * @return string
+     */
   function get_disc_fulltext($CurItem) {
       $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
       $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
@@ -374,10 +380,11 @@ class itemview {
       return $out;
   }
 
-  /** get_disc_add function
-   *  show the form for adding discussion comments
-   * @param $CurItem
-   */
+    /** get_disc_add function
+     *  show the form for adding discussion comments
+     * @param $CurItem
+     * @return string
+     */
   function get_disc_add($CurItem) {
       // if parent_id is set => show discussion comment
       $out.= '<a name="disc"></a>';
@@ -413,20 +420,23 @@ class itemview {
       return $out;
   }
 
-  /** unaliasWithScrollerEasy function
-   *  Just wrapper for unaliasWithScroller() without $item parameter
-   * @param $txt
-   */
+    /** unaliasWithScrollerEasy function
+     *  Just wrapper for unaliasWithScroller() without $item parameter
+     * @param $txt
+     * @return mixed|null|string|string[]
+     */
   function unaliasWithScrollerEasy(&$txt) {
       // we just need to pass something as item parameter
       // in unaliasWithScroller (in order we can use reference, there)
       $fooparameter = null;
       return $this->unaliasWithScroller($txt, $fooparameter);
   }
-  /** unaliasWithScroller function
-   * @param $txt
-   * @param $item
-   */
+
+    /** unaliasWithScroller function
+     * @param $txt
+     * @param $item
+     * @return mixed|null|string|string[]
+     */
   function unaliasWithScroller($txt, &$item) {
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
@@ -454,10 +464,11 @@ class itemview {
   // ----------------------------------------------------------------------------------
   //  get_output
 
-  /** get_output
-   *  view_type used internaly for different view types
-   * @param $view_type
-   */
+    /** get_output
+     *  view_type used internaly for different view types
+     * @param $view_type
+     * @return mixed|null|string|string[]|void
+     */
   function get_output($view_type="") {
     if ($view_type == "discussion") {
       $CurItem = new AA_Item("", $this->aliases);   // just prepare
@@ -483,7 +494,7 @@ class itemview {
     if ( !$is_random ) {
         if ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
             $SORT_CONST = array('0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric');
-            $this->zids = new zids(explode("-",StrExpand('AA_Stringexpand_Order', array(join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]))));
+            $this->zids = new zids(explode_ids(StrExpand('AA_Stringexpand_Order', array(join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]))));
         }
         $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
@@ -748,6 +759,7 @@ class itemview {
     /** resolve_calendar_aliases function
      * @param $txt
      * @param $day
+     * @return string
      */
     function resolve_calendar_aliases($txt,$day="") {
         $month = (int)$this->slice_info['calendar_month'];

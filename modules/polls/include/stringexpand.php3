@@ -37,18 +37,17 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
     /** expand function
      * @param $ids_string
      * @param $expression
+     * @return string
      */
     function expand($ids_string='', $expression='') {
-        $ids     = explode('-', $ids_string);
+        $ids     = explode_ids($ids_string);
         $results = array();
-        if ( is_array($ids) ) {
-            foreach ( $ids as $poll_id ) {
-                if ( $poll_id ) {
-                    $poll = AA_Polls::getPoll($poll_id);
-                    if ($poll) {
-                        if ($expression) {
-                            $results[$poll_id] = $poll->unalias($expression);
-                        }
+        foreach ( $ids as $poll_id ) {
+            if ( $poll_id ) {
+                $poll = AA_Polls::getPoll($poll_id);
+                if ($poll) {
+                    if ($expression) {
+                        $results[$poll_id] = $poll->unalias($expression);
                     }
                 }
             }
@@ -67,6 +66,7 @@ class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param $max - maximum the votes for the answer could reach, default is 100
+     * @return float|int
      */
     function expand($max='') {
         $poll     = AA_Polls::getPoll($this->item->getVal('poll_id'));

@@ -13,4 +13,3 @@ for ($i=1; $i < 1000; $i++) {
     // to produce some pause
     for ($j=1; $j < 100000; $j++);
 }
-?>

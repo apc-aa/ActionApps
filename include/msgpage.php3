@@ -56,4 +56,4 @@ function MsgPageMenu($url, $msg, $mode, $menu="") {
     exit;
 }
 
-?>
+

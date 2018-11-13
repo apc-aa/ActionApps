@@ -108,8 +108,7 @@ echo '
       </tr>
       <tr>
        <td align="CENTER" valign="TOP">'.
-       $tree->getFrmTree(false, 'dblclick', $links_info['select_start'] ? $links_info['select_start'] : 2,
-                                  'patharea', '', false, '', 8, 'f') .'</td>
+       $tree->getFrmTree('dblclick', $links_info['select_start'] ? $links_info['select_start'] : 2, 'patharea', '', false, '', 8, 'f') .'</td>
           <td><a href="javascript:MoveSelectedCat(\'document.f.tree\',\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td>
           <td align="CENTER" valign="TOP">'.
        $tree->getFrmSubCatList(true, '', $cid, 250, 'selcat') .'</td>

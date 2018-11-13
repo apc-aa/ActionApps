@@ -43,12 +43,12 @@ function IsFieldSupported($field_info, $v, $param) {
 
 
 /** Links_QueryZIDs - Finds link IDs for links according to given  conditions
- *  @param string $cat_path - path to category (like '1,4,78' for category 78)
- *  @param array  $conds    - search conditions (see FAQ)
- *  @param array  $sort     - sort fields (see FAQ)
- *  @param bool   $subcat   - search in the specified category only, or search
+ * @param string $cat_path - path to category (like '1,4,78' for category 78)
+ * @param array  $conds - search conditions (see FAQ)
+ * @param array  $sort - sort fields (see FAQ)
+ * @param bool   $subcat - search in the specified category only, or search
  *                            also in all subcategories
- *  @param string $type     - type is something like bins as known from items
+ * @param string $type - type is something like bins as known from items
  *                            type is one of the following:
  *                            'app'       - approved (normal shown links)
  *                            'changed'   - links containing unapproved changes
@@ -59,14 +59,10 @@ function IsFieldSupported($field_info, $v, $param) {
  *                                          number) - links in folder > 1 are
  *                                          hidden to public users
  *                            'all'       - all links in any folder
- *  @global int  $QueryIDsCount - set to the count of IDs returned
- *  @global bool $debug=1       - many debug messages
+ * @global int   $QueryIDsCount - set to the count of IDs returned
+ * @return zids
  */
 function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
-    global $debug;                 // displays debug messages
-
-    if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
-
     $LINKS_FIELDS = GetLinkFields();
 
     $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
@@ -139,23 +135,19 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
 
 
 /** Links_QueryCatZIDs - Finds category IDs according to given conditions
- *  @param string $cat_path - path to category (like '1,4,78' for category 78)
- *  @param array  $conds    - search conditions (see FAQ)
- *  @param array  $sort     - sort fields (see FAQ)
- *  @param bool   $subcat   - search in the specified category only, or search
+ * @param string $cat_path - path to category (like '1,4,78' for category 78)
+ * @param array  $conds - search conditions (see FAQ)
+ * @param array  $sort - sort fields (see FAQ)
+ * @param bool   $subcat - search in the specified category only, or search
  *                            also in all subcategories
- *  @param string $type     - type is something like bins as known from items
+ * @param string $type - type is something like bins as known from items
  *                            type is one of the following:
  *                            'app'       - approved (normal shown categories)
  *                            'all'       - all categories in any folder
- *  @global int  $QueryIDsCount - set to the count of IDs returned
- *  @global bool $debug=1       - many debug messages
+ * @global int   $QueryIDsCount - set to the count of IDs returned
+ * @return zids
  */
 function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") {
-    global $debug;                 // displays debug messages
-
-    if ( $debug ) huhl( "<br>CatPath:", $cat_path, '<br>Subcat:', $subcat,"<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
-
     $CATEGORY_FIELDS = GetCategoryFields();
 
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $CATEGORY_FIELDS, $foo);

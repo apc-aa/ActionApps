@@ -122,6 +122,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  $items[x767ab56353544242552637389a853673]=1
      * @param $item_arr
      * @param $type - type of ids, mostly 'l', but TaskManager f.e. uses short ones
+     * @return zids
      */
     function setFromItemArr($item_arr, $type='l') {
         $this->clear($type);
@@ -175,6 +176,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Adds new id or array of ids or zids object.
      *   The type must be already set (from init).
      * @param zids|array|string $ids
+     * @return bool
      */
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
@@ -256,6 +258,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Return an array of long ids
      *  TODO: look at where used, typically used in interface to pre-zid code
      * @param $i
+     * @return array|bool|mixed|null|string
      */
     function longids($i=null) {
         if ($this->warnid($i,"longids")) {
@@ -275,8 +278,10 @@ class zids implements Iterator, ArrayAccess, Countable {
                        return false;  //TODO - handle other types
         }
     }
+
     /** packedids function
      * @param $i
+     * @return array|bool|null|string
      */
     function packedids($i=null) {
         if ($this->warnid($i,"packedids")) {
@@ -297,6 +302,7 @@ class zids implements Iterator, ArrayAccess, Countable {
 
     /** shortids function
      * @param $i
+     * @return array|mixed|null
      */
     function shortids($i=null) {
         if ($this->warnid($i,"shortids")) {
@@ -314,6 +320,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Return either short id, or a long id, depending on use_short_ids()
      *  These are ids suitable for indexing return from GetItemContent
      * @param $i
+     * @return array|bool|mixed|null|string
      */
     function short_or_longids($i=null) {
         if ($this->warnid($i,"short_or_longids")) {
@@ -333,6 +340,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * Return nth id, note there is no guarrantee what format this will be in, so its
      * only really useful for serialization or if type is checked as well
      * @param $idx
+     * @return
      */
     function id($idx=0) {
         return $this->a[$idx];
@@ -343,6 +351,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * Parameters are same as for "array_slice"
      * @param $offset
      * @param $length
+     * @return zids
      */
     function slice($offset, $length=1) {
         if (is_array($this->a)) {
@@ -355,6 +364,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** zid function
      *  Returns n-th zid
      * @param $index
+     * @return zids
      */
     function zid($index) {
         return new zids($this->a[$index], $this->type);
@@ -393,6 +403,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *   Return resulting new zids
      *   Reasonably efficent, only loops through each array once
      * @param $zids
+     * @return void|zids
      */
     function retag($zids) {
         if ($zids->type != "t") {
@@ -422,6 +433,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      * Note that some code still does this by hand,
      * @param $column
      * @param $asis - returns the ids in long form (not packed even for 'l' type)
+     * @return string
      */
     function sqlin( $column = 'short_or_long', $asis = false ) {
         $id_list = '';
@@ -512,6 +524,7 @@ class zids implements Iterator, ArrayAccess, Countable {
  * short should be == 16 and long == 32 but there is or was somewhere a bug
  * leading to shorter (as short as 14) character ids.
  * @param $str
+ * @return string
  */
 function guesstype($str) {
     $s = strlen($str);
@@ -536,6 +549,13 @@ function is_short_id($id)  { return (strlen($id) < 12) AND ctype_digit((string) 
 function is_long_id($id)   { return ((strlen($id)==32) AND ctype_xdigit($id)); }
 function is_packed_id($id) { return (strlen($id)==16); }
 
+/** used instead of explode ('-'... which returns [0 => ''] for empty string and not empty string
+ *  @return string[] - array of non empty ids
+ *  @param  string   - dash-separated-ids
+ */
+function explode_ids($ids_string) {
+    return array_filter(array_map(explode('-',$ids_string),'trim'));
+}
 
 /** ParamExplode(), unpack_id() and get_hash() functions moved here from
  *  util.php3 because we do not want to include util.php3 file for cached pages,
@@ -589,6 +609,7 @@ function unpack_id($packed_id=''){
 /** quote function
  * function to double backslashes and apostrofs
  * @param $str
+ * @return string
  */
 function quote($str) {
     return addslashes($str);
@@ -597,6 +618,7 @@ function quote($str) {
 /** q_pack_id function
  * returns packed and quoted id
  * @param $unpacked_id
+ * @return string
  */
 function q_pack_id($unpacked_id){
     $foo = pack_id($unpacked_id);
@@ -605,6 +627,7 @@ function q_pack_id($unpacked_id){
 
 /** qquote function
  * @param $str
+ * @return string
  */
 function qquote($str) {
     return "'".quote($str)."'";
@@ -616,6 +639,7 @@ function qquote($str) {
  * Note that some code still does this by hand,
  * @param $column
  * @param $values - array of values
+ * @return string
  */
 function sqlin( $column, $values, $long=false ) {
     $fce = $long ? 'xpack_id' : 'qquote';
@@ -628,6 +652,7 @@ function sqlin( $column, $values, $long=false ) {
 
 /** id_t2l function
  * @param $str
+ * @return null
  */
 function id_t2l(&$str) {
     if (!$str) {

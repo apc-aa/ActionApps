@@ -40,6 +40,7 @@ require_once AA_INC_PATH . "mlx.php";
 // ----------------------------------------------------------------------------
 /** GetAliasesFromUrl function
  * @param $als
+ * @return array
  */
 function GetAliasesFromUrl($als) {
     $ret = array();
@@ -53,6 +54,7 @@ function GetAliasesFromUrl($als) {
 
 /** GetViewAliases function
  * @param $als
+ * @return array
  */
 function GetViewAliases($conds) {
     $ret = array();
@@ -94,14 +96,18 @@ class ViewCommand {
     function getCommand() {
         return $this->command;
     }
+
     /** getParameter function
      * @param $index
+     * @return mixed
      */
     function getParameter($index) {
         return $this->parameters[$index];
     }
+
     /** getParameterArray function
      * @param $offset
+     * @return array
      */
     function getParameterArray($offset=0) {
         return array_slice($this->parameters, $offset);
@@ -253,6 +259,7 @@ function ParseSettings($set_arr) {
 /** ParseViewParameters function
  *  Converts a query string into a data view_params data structure
  * @param $query_string
+ * @return array
  */
 function ParseViewParameters($query_string="") {
     if ($use_globals = (!$query_string OR !preg_match("/vid=[a-z]/", $query_string))) {
@@ -352,7 +359,7 @@ function ParseViewParameters($query_string="") {
     $arr['forcache'] = array($new_params);
 
     if ($arr['slices']) {
-        $arr['slices'] = array_filter(explode('-', $arr['slices']),'is_long_id');
+        $arr['slices'] = array_filter(explode_ids($arr['slices']),'is_long_id');
     }
 
 
@@ -450,9 +457,11 @@ function GetViewConds($view_info, $param_conds) {
 
     return $conds;
 }
+
 /** GetViewSort function
  * @param $view_info
  * @param $param_sort
+ * @return array|bool
  */
 function GetViewSort(&$view_info, $param_sort=null) {
     global $VIEW_SORT_DIRECTIONS;
@@ -512,6 +521,7 @@ function ParseBannerParam($banner_param) {
     }
     return $ret;
 }
+
 /** GetListLength function
  * @param $listlen
  * @param $to
@@ -519,6 +529,7 @@ function ParseBannerParam($banner_param) {
  * @param $page
  * @param $idscount
  * @param $random
+ * @return array
  */
 function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
     $list_from = max(0, $from-1);    // user counts items from 1, we from 0

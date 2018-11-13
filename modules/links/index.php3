@@ -390,8 +390,7 @@ $tree = new cattree( $links_info['start_id'], true, '<br> - ');
 FrmJavascriptFile('javascript/js_lib.min.js');
 FrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
 $tree->printTreeData($links_info['start_id'],1,true);
-$cat_tree = $tree->getFrmTree(false, 'change', $links_info['start_id'],
-                   'patharea', 'document.filterform.cat_id', false, 250, 8, 'filterform');
+$cat_tree = $tree->getFrmTree('change', $links_info['start_id'], 'patharea', 'document.filterform.cat_id', false, 250, 8, 'filterform');
 
 $r_state['bin_cnt'] = Links_CountLinkInBins($r_state['start_path']);
 
@@ -437,17 +436,17 @@ echo '<tr>
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
               class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
-FrmInputButtons( array( 'gocat'    => array('type'=>'button',
-                                            'value'=>_m('Show Links'),
-                                            'add'=>'onclick="document.filterform.submit()"',
-                                            'help'=>get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")),
-                        'editcat'  => array('type'=>'button',
-                                            'value'=>_m('Edit Category'),
-                                            'add'=>'onclick="EditCurrentCat()"',
-                                            'help'=>get_help_url(AA_LINKS_HELP_MAIN,"editujkat"))
+FrmInputButtons(array('gocat' => array('type' => 'button',
+    'value' => _m('Show Links'),
+    'add' => 'onclick="document.filterform.submit()"',
+    'help' => get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy")),
+    'editcat' => array('type' => 'button',
+        'value' => _m('Edit Category'),
+        'add' => 'onclick="EditCurrentCat()"',
+        'help' => get_help_url(AA_LINKS_HELP_MAIN, "editujkat"))
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
-                      ),  false, 'bottom');
+), 'bottom');
 
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
