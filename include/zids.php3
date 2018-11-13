@@ -554,7 +554,7 @@ function is_packed_id($id) { return (strlen($id)==16); }
  *  @param  string   - dash-separated-ids
  */
 function explode_ids($ids_string) {
-    return array_filter(array_map(explode('-',$ids_string),'trim'));
+    return array_filter(array_map('trim',explode('-',$ids_string)));
 }
 
 /** ParamExplode(), unpack_id() and get_hash() functions moved here from
