@@ -1658,7 +1658,7 @@ class AA_Stringexpand_Removeids extends AA_Stringexpand {
 
     /** expand function  */
     function expand($set1='', $set2='') {
-        return join('-', array_diff(explode_ids($set1),explode_id($set2)));
+        return join('-', array_diff(explode_ids($set1),explode_ids($set2)));
     }
 }
 
