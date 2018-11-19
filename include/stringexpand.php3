@@ -3415,7 +3415,7 @@ class AA_Stringexpand_Finduniq extends AA_Stringexpand {
         if (!trim($string)) {
             return new_id();   // just random text
         }
-        $slices = _ids($unique_slices);
+        $slices = explode_ids($unique_slices);
         $add = '';
         if ( !empty($slices) ) {
             for ($i=2; $i < 100000; $i++) {
