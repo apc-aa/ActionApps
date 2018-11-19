@@ -2673,7 +2673,11 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="") {
             $selectedused = true;
         }
         $title = '';
-        if (strlen($val = strip_tags(is_array($v) ? $v['name'] : $v)) > 100) {
+        $val = is_array($v) ? $v['name'] : $v;
+        if (strlen($val)>2) {                   // we do not want to strip '<', '<=' and '<>' for operator selection
+            $val = strip_tags($val);
+        }
+        if (strlen($val) > 100) {
             $title = ' title="'. myspecialchars( $val ) .'"';
             $val   = AA_Stringexpand_Shorten::shorten_middle($val, 100);
         }
