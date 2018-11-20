@@ -1,3 +1,8 @@
+18-11-20 - searchbar in Item Manager now allows to search in related fields
+(honzam)     1) the ones, where any of the current fields points to
+             2) the ones which points to current slice from any other slice
+18-11-19 - fixed operator selection in view setting
+(honzam) - fixed typo
 18-11-13 - fixed problem with user login - password was corrupted by feeding action
 (honzam)   performed wrongly based on wrong relation table record.
            To fix it you need to run:
