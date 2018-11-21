@@ -1,3 +1,6 @@
+18-11-21 - {menu} expression now matches as class="active" the last presented active menu item, even if this item is not
+(honzam)   {xid} - the last one in the url - the menuentry then remains active for example in detail of article
+           not presented in the menu. The exact match with the real last itenm id is marked as class=xidmatch
 18-11-20 - searchbar in Item Manager now allows to search in related fields
 (honzam)     1) the ones, where any of the current fields points to
              2) the ones which points to current slice from any other slice

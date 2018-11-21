@@ -110,7 +110,7 @@ class AA_Supertree {
         return $sub;
     }
 
-    function getMenu($ids, $current_ids, $code) {
+    function getMenu($ids, $current_ids, $code, $inner=false) {
         $ret = '';
         $xid = end($current_ids);
 
@@ -119,8 +119,8 @@ class AA_Supertree {
                 if ($menu_txt = trim($item->subst_alias($code))) {
                     if (in_array($mid, $current_ids)) {
                         $this->load($mid);
-                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code);
-                        $ret .= '  <li id="menu-'.$mid.'" class="inpath'.($mid==$xid  ? ' active':'').'">';
+                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true);
+                        $ret .= '  <li id="menu-'.$mid.'" class="inpath'.($mid==$xid  ? ' xidmatch':'').'">';
                         $ret .= $menu_txt. $sub;
                         $ret .= "</li>\n";
                     } else {
@@ -129,6 +129,11 @@ class AA_Supertree {
                 }
             }
         }
+        if (!$inner AND $ret AND (false !== ($pos = strrpos($ret, 'inpath')))) {
+            // add active to the closest active menu entry on final recursive return
+            $ret = substr_replace($ret, 'inpath active', $pos, 6);
+        }
+
         return ($ret ? "\n<ul>\n$ret</ul>\n" : '');
     }
 
@@ -266,6 +271,13 @@ class AA_Trees {
         return $supertree->getIds($id);
     }
 
+    /**
+     * @param       $relation_field
+     * @param       $reverse
+     * @param       $sort
+     * @param array $slices
+     * @return AA_Supertree|AA_Supertree_Reverse
+     */
     function getSupertree($relation_field, $reverse, $sort, $slices=array()) {
         $trees = AA_Trees::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
