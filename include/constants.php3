@@ -119,7 +119,7 @@ class AA_Aliases {
      * @param $text
      */
     function addTextAlias($alias_name, $text) {
-        $this->addAlias(new AA_Alias($alias_name, "id..............", ParamImplode(array('f_t',$text))));
+        $this->addAlias(new AA_Alias($alias_name, "id..............", ParamImplode(array('f_p',$text))));
     }
     /** getArray function
      *

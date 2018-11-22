@@ -1,3 +1,4 @@
+18-11-22 - fixed bug in sending alerts - the # was added befor all : characters like https#://...
 18-11-21 - {menu} expression now matches as class="active" the last presented active menu item, even if this item is not
 (honzam)   {xid} - the last one in the url - the menuentry then remains active for example in detail of article
            not presented in the menu. The exact match with the real last itenm id is marked as class=xidmatch

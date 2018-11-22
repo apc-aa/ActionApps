@@ -357,6 +357,7 @@ class AA_Collection {
 
         // add dummy filter
         $filters[99999] = "dummy";
+        $user_text = '';
 
         foreach ( $filters as $filterid => $fprop ) {
             // Send items from filters with "group" not set when the view changes.
@@ -389,7 +390,6 @@ class AA_Collection {
                 $last_fprop = $fprop;
             }
         }
-
         return $user_text;
     }
 }

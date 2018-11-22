@@ -730,6 +730,15 @@ class AA_Item {
         return DeHtml($txt, $this->getFlag($col));
     }
 
+    /** Prints the parameter - it is shortcut for f_t:<text>:asis
+     *  Internal function - used just for addTextAlias()
+     * @param string $col
+     * @param string $param
+     * @return string
+     */
+    function f_p($col, $param="") {
+        return str_replace('#:',':',$param);  // slower, but using the right code path: join(':',ParamExplode($param));
+    }
 
     /** f_h function
      * print due to html flag set (escape html special characters or just print)
