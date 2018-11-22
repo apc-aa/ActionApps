@@ -36,12 +36,12 @@ use AA\Widget\Widget;
 
 
 /** Saver class - Used for filling items into AA
- *  @param grabber          - provides source for item data
+ *  @param AA_Grabber grabber          - provides source for item data
  *  @param $transformations - defines, how the source item should be transformed
  *                            into destination item
  */
 class AA_Saver {
-    protected $grabber;            /** the object which deliveres the data */
+    protected $grabber;            /** @var AA_Grabber the object which deliveres the data */
     protected $transformations;    /** describes, what to do with data before storing */
     protected $slice_id;           /** id of destination slice */
     protected $store_mode;         /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
@@ -54,11 +54,11 @@ class AA_Saver {
 
 
     /** AA_Saver function
-     * @param $grabber
-     * @param $transformations
-     * @param $slice_id
-     * @param $store_mode
-     * @param $id_mode
+     * @param AA_Grabber $grabber
+     * @param AA_Transformation[] $transformations
+     * @param string $slice_id
+     * @param string $store_mode
+     * @param string $id_mode
      */
     function __construct($grabber, $transformations=null, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
         $this->grabber         = $grabber;
@@ -73,6 +73,7 @@ class AA_Saver {
 
     /** run function
      * Now import all items to the slice
+     * @param bool $fire
      */
     function run( $fire = true ) {
 

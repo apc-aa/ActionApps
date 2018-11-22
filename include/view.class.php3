@@ -222,7 +222,7 @@ class AA_Views {
      *  This function makes sure, there is global instance of the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function & singleton() {
+    static function singleton() {
         static $instance = null;
         if (is_null($instance)) {
             // Now create the AA_Views object
