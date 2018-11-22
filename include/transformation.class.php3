@@ -50,7 +50,10 @@ abstract class AA_Transformation {
     function description()  {}
 
     /** transform function
-     *
+     * @param string $field_id
+     * @param ItemContent
+     * @param bool $silent
+     * @return AA_Value|bool
      */
     function transform($field_id, $itemcontent, $silent=true)    {}
 
@@ -168,9 +171,10 @@ class AA_Transformation_Value extends AA_Transformation {
     }
 
     /** transform function
-     * @param $field_id
-     * @param $itemcontent (by link)
-     * @return array
+     * @param string $field_id
+     * @param ItemContent   $itemcontent (by link)
+     * @param bool $silent
+     * @return AA_Value
      */
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
@@ -286,12 +290,13 @@ class AA_Transformation_Recompute extends AA_Transformation {
     }
 
     /** transform function
-     * @param $field_id
-     * @param $itemcontent (by link)
-     * @return array
+     * @param string $field_id
+     * @param ItemContent
+     * @param bool $silent
+     * @return AA_Value|bool
      */
     function transform($field_id, $itemcontent, $silent=true) {
-        $itemcontent->updateComputedFields($itemcontent->getItemID(), null, 'update', $silent ? array($field_id) : array());
+        $itemcontent->updateComputedFields(null, 'update', $silent ? array($field_id) : array());
         return true; // this means: Success - no other operations are needed
     }
 
@@ -401,7 +406,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
-     * @return
+     * @return AA_Value
      */
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
