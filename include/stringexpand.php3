@@ -7090,7 +7090,7 @@ class AA_Password_Manager_Reader {
      */
     function getFirstForm() {  // Type in either your username or e-mail
         return '<form id="pwdmanager-firstform" action="" method="post"><div class="aa-widget">
-        <label for="pwdmanager-user">' ._m('Forgot your password? Fill in your email.'). '</label>
+        <label for="aapwd1">' ._m('Forgot your password? Fill in your email.'). '</label>
         <div class="aa-input">
            <input size="30" maxlength="128" name="aapwd1" id="aapwd1" value="" placeholder="'._m('e-mail').'" required type="email">
         </div>
