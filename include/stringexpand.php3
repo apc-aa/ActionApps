@@ -1639,6 +1639,23 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
 /** {intersect:<ids>:<ids>}
  *  @returns string - set of intersect of two set of ids (dash separated)
  */
+class AA_Stringexpand_Specialstring extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($type='') {
+        switch ($type) {
+            case 'BOM': return chr(239) . chr(187) . chr(191);
+        }
+        return '';
+    }
+}
+
+
+/** {intersect:<ids>:<ids>}
+ *  @returns string - set of intersect of two set of ids (dash separated)
+ */
 class AA_Stringexpand_Intersect extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -3027,6 +3044,7 @@ class AA_Stringexpand_Backlinks extends AA_Stringexpand {
             $sort      = $sort      ? (($sort == '-') ? '': $sort) : 'slice_id........,publish_date....-';
             return AA::Stringexpander()->unalias("{ids:$slice_ids:d-all_fields-=-{id..............}:$sort}", '', $item);
         }
+
         return '';
     }
 }
@@ -6458,6 +6476,18 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
             case 'typesize':
                 $fileinfo = join('&nbsp;-&nbsp;', array(StrExpand('AA_Stringexpand_Fileinfo', array($url,'type')), StrExpand('AA_Stringexpand_Fileinfo', array($url,'size'))));
                 return $fileinfo ? "&nbsp;<span class=\"fileinfo\"> [$fileinfo]</span>" : '';
+            case 'crc':
+                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
+                if (is_file($filename)) {
+                    return  @hash_file('crc32',$filename);
+                }
+                break;
+            case 'time':
+                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
+                if (is_file($filename)) {
+                    return  @filemtime($filename);
+                }
+                break;
         }
         return '';
     }
