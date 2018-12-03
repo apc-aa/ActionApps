@@ -58,13 +58,13 @@ define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
     // Retaining backward compatability with "[AMB]+" recognition
 $TPS = array (
   'AMB' => array (
-    'A' => array ( 'prefix' => '>> ',   'tag' => '',  'str' => _m("Add") ),  // removed x - we can treat it as normal value
-    'M' => array ( 'prefix' => '<> ',   'tag' => 'y', 'str' => _m("Add&nbsp;Mutual") ),
-    'B' => array ( 'prefix' => '<< ',   'tag' => 'z', 'str' => _m("Backward") ) ),
+    'A' => array ( 'prefix' => '>> ',   'tag' => '',  'str' => 'Add'),             // _m("Add") ),             - we call the translation later - here it is not translated
+    'M' => array ( 'prefix' => '<> ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'), // _m("Add&nbsp;Mutual") ),
+    'B' => array ( 'prefix' => '<< ',   'tag' => 'z', 'str' => 'Backward') ),      // _m("Backward") ) ),
   'GYR' => array (
-    'G' => array ( 'prefix' => 'Good:', 'tag' => 'x', 'str' => _m("Good") ),
-    'Y' => array ( 'prefix' => 'OK  :', 'tag' => 'y', 'str' => _m("OK") ),
-    'R' => array ( 'prefix' => 'Bad :', 'tag' => 'z', 'str' => _m("Bad") ) ) );
+    'G' => array ( 'prefix' => 'Good:', 'tag' => 'x', 'str' => 'Good'),
+    'Y' => array ( 'prefix' => 'OK  :', 'tag' => 'y', 'str' => 'OK'),
+    'R' => array ( 'prefix' => 'Bad :', 'tag' => 'z', 'str' => 'Bad') ) );
 
 /** varname4form function
  * @param $fid
