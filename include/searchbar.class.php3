@@ -232,9 +232,9 @@ class AA_Searchbar extends AA_Storable {
                     // orderfields could be splited into groups
                     // one group is allways with order_pri 0-999, 1000-1999, ...
                     if ( $last_pri AND (floor($last_pri/1000) != floor($v['order_pri']/1000)) ) {
-                        $this->order_fields['AA_OPTGROUP '.$last_pri] = '---------------';
+                        $this->order_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
                     }
-                    $last_pri = $v['search_pri'];
+                    $last_pri = $v['order_pri'];
                     $this->order_fields[$fid]     = $v['name'];
                 }
             }

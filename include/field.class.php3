@@ -590,6 +590,7 @@ class AA_Fields implements Iterator {
                         }
                         $r_fld['opt_group']  = $opt_group;
                         $r_fld['search_pri'] += $related;
+                        $r_fld['order_pri'] = 0;           // ordering by remote field is not supported in QueryZids  //  if ($r_fld['order_pri']>0) { $r_fld['order_pri'] += $related; }
                         $r_fld['name'] = ' > ' . $r_fld['name'];
                         $field_expr = $r_fid . '@' . $field_id;
                         $r_fld['field']   = $field_expr;
@@ -623,8 +624,9 @@ class AA_Fields implements Iterator {
                     if ($r_fld['search_pri'] == 0) {
                         continue;
                     }
-                    $r_fld['opt_group']  = $opt_group;
+                    $r_fld['opt_group'] = $opt_group;
                     $r_fld['search_pri'] += $related;
+                    $r_fld['order_pri'] = 0;           // ordering by remote field is not supported in QueryZids  //  if ($r_fld['order_pri']>0) { $r_fld['order_pri'] += $related; }
                     $r_fld['name'] = ' > ' . $r_fld['name'];
                     $field_expr = $r_fid . '@' . $rf_def['sid'] . '/' . $rf_def['id'];
                     $r_fld['field'] = $field_expr;
