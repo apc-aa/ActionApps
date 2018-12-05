@@ -47,10 +47,11 @@ class AA_Saver {
     protected $store_mode;         /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
     protected $id_mode;            /** id-policy    - how to construct id - old | new | combined */
 
-    private   $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
-    private   $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
-    private   $_updated_slices;    /** array of ids of rewritten items (after run()) - the long ones */
-    protected $_messages = array();
+    private   $_new_ids        = array();  /** array of newly inserted ids (after run()) - the long ones */
+    private   $_updated_ids    = array();  /** array of ids of rewritten items (after run()) - the long ones */
+    private   $_updated_slices = array();  /** array of slice ids with rewritten items (after run()) - the long ones */
+
+    protected $_messages       = array();
 
 
     /** AA_Saver function
@@ -66,6 +67,10 @@ class AA_Saver {
         $this->slice_id        = $slice_id;
         $this->store_mode      = $store_mode;
         $this->id_mode         = $id_mode;
+    }
+
+    /** resets item / slice counters */
+    function clear_ids() {
         $this->_new_ids        = array();
         $this->_updated_ids    = array();
         $this->_updated_slices = array();
@@ -74,6 +79,7 @@ class AA_Saver {
     /** run function
      * Now import all items to the slice
      * @param bool $fire
+     * @return int count of changed items
      */
     function run( $fire = true ) {
 
@@ -81,6 +87,8 @@ class AA_Saver {
 
         // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
         $directfill = $this->grabber->isDirectfill();
+
+        $ok_count = 0;
 
         while ($source_content4id = $this->grabber->getItem()) {
 
@@ -163,8 +171,9 @@ class AA_Saver {
             if ( !is_null($this->slice_id) ) {
                 // for AA_Grabber_Form we have the slice_id already filled
                 $content4id->setSliceID($this->slice_id);
-                AA::$slice_id = $this->slice_id;   // pass validator the current slice of added item for slice unique
             }
+
+            AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
 
             if (($store_mode == 'overwrite') OR (substr($store_mode,0,6) == 'insert')) {
                 if (!$content4id->complete4Insert()) {
@@ -176,7 +185,6 @@ class AA_Saver {
                     $this->message("AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
                     continue;
                 }
-
             }
 
             $this->_updated_slices[$content4id->getOwnerId()] = true;
@@ -194,6 +202,7 @@ class AA_Saver {
                     } else {
                         $this->_updated_ids[] = $new_item_id;
                     }
+                    $ok_count++;
 
                     // Update relation table to show where came from
                     if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
@@ -207,6 +216,7 @@ class AA_Saver {
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
         print($this->report());
+        return $ok_count;
     }
 
     /** Returns array of long new saved ids */
@@ -308,6 +318,7 @@ class AA_Grabber {
 
     /** getItem function
      *  Method called by the AA_Saver to get next item from the data input
+     * @return ItemContent
      */
     function getItem() {}
 
