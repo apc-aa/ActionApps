@@ -128,6 +128,7 @@ class AA_Mail extends htmlMimeMail {
         } else {
             $this->setText( html2text( nl2br($record["body"]) ));
         }
+
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
         $this->setCharset(strlen($record["lang"]) ? $record["lang"] : 'utf-8');
@@ -272,6 +273,7 @@ class AA_Mail extends htmlMimeMail {
         if ($later) {
             return $mail->sendLater($to);
         }
+
 
         $tos  = array_unique(array_map('trim', is_array($to) ? $to : array($to)));
         return $mail->send($tos);

@@ -82,32 +82,27 @@ class Mail_mimePart {
     * The encoding type of this part
     * @var string
     */
-    var $_encoding;
-
+	protected $_encoding;
    /**
     * An array of subparts
     * @var array
     */
-    var $_subparts;
-
+    protected $_subparts;
    /**
     * The output of this part after being built
     * @var string
     */
-    var $_encoded;
-
+    protected $_encoded;
    /**
     * Headers for this part
     * @var array
     */
-    var $_headers;
-
+    protected $_headers;
    /**
     * The body of this part (not encoded)
     * @var string
     */
-    var $_body;
-
+    protected $_body;
     /**
      * Constructor.
      *
@@ -193,11 +188,10 @@ class Mail_mimePart {
      * it in the encoded member variable
      *
      * @return An associative array containing two elements,
-     *         body and headers. The headers element is itself
-     *         an indexed array.
+	*  body and headers. The headers element is itself an indexed array.
      * @access public
      */
-    function encode()
+	public function encode()
     {
         $encoded =& $this->_encoded;
 
@@ -244,7 +238,7 @@ class Mail_mimePart {
      *         otherwise you will not be able to add further subparts.
      * @access public
      */
-    function &addSubPart($body, $params)
+	public function &addSubPart($body, $params)
     {
         $this->_subparts[] = new Mail_mimePart($body, $params);
         return $this->_subparts[count($this->_subparts) - 1];
@@ -300,34 +294,44 @@ class Mail_mimePart {
         $eol    = MAIL_MIMEPART_CRLF;
         $escape = '=';
         $output = '';
-
-        foreach ($lines as $line) {
-
-            $linlen     = strlen($line);
+        foreach ($lines as $idx => $line) {
             $newline = '';
-
-            for ($i = 0; $i < $linlen; ++$i) {
-                $char = substr($line, $i, 1);
+            $i = 0;
+            while (isset($line[$i])) {
+                $char = $line[$i];
                 $dec  = ord($char);
-
-                if (($dec == 32) AND ($i == ($linlen - 1))){    // convert space at eol only
+                $i++;
+                if (($dec == 32) && (!isset($line[$i]))) {
+                    // convert space at eol only
                     $char = '=20';
-
-                } elseif($dec == 9) {
-                    ; // Do nothing if a tab.
-                } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
-                    $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
+                } elseif ($dec == 9 && isset($line[$i])) {
+                    ; // Do nothing if a TAB is not on eol
+                } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
+                    $char = $escape . sprintf('%02X', $dec);
+                } elseif (($dec == 46) && (($newline == '')
+                    || ((strlen($newline) + strlen("=2E")) >= $line_max))
+                ) {
+                    // Bug #9722: convert full-stop at bol,
+                    // some Windows servers need this, won't break anything (cipri)
+                    // Bug #11731: full-stop at bol also needs to be encoded
+                    // if this line would push us over the line_max limit.
+                    $char = '=2E';
                 }
-
-                if ((strlen($newline) + strlen($char)) >= $line_max) {        // MAIL_MIMEPART_CRLF is not counted
-                    $output  .= $newline . $escape . $eol;                    // soft line break; " =\r\n" is okay
+                // Note, when changing this line, also change the ($dec == 46)
+                // check line, as it mimics this line due to Bug #11731
+                // EOL is not counted
+                if ((strlen($newline) + strlen($char)) >= $line_max) {
+                    // soft line break; " =\r\n" is okay
+                    $output  .= $newline . $escape . $eol;
                     $newline  = '';
                 }
                 $newline .= $char;
             } // end of for
             $output .= $newline . $eol;
+            unset($lines[$idx]);
         }
-        $output = substr($output, 0, -1 * strlen($eol)); // Don't want last crlf
+        // Don't want last crlf
+        $output = substr($output, 0, -1 * strlen($eol));
         return $output;
     }
 } // End of class
