@@ -1,3 +1,11 @@
+18-12-05 - fixed bug in text e-mails, which was truncated after dot on empty line
+(honzam) - fixed unique check in filler.php3
+         - better database handling in Alerts
+18-12-03 - new expression {specialstring:BOM} - prints 3-byte symbol BOM used as identifier
+(honzam)   at the beginning of utf-8 file on some systems
+         - new parameters time and crc for {fileinfo:<file>:crc}
+           - returns timestamp of last modification of the file or crc32 respectively
+         - the buttons Add, Add Mutual and Backward in Related item selection window is now correctly translated
 18-11-22 - fixed bug in sending alerts - the # was added befor all : characters like https#://...
 (honzam) - fixed "Recompute field" transformation in Item manager's "Modify content..." action
 18-11-21 - {menu} expression now matches as class="active" the last presented active menu item, even if this item is not

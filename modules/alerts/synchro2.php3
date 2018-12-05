@@ -31,37 +31,43 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."constedit_util.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 
-// --------------------------------------------------------------
+// -------------------------------------------------------------------
+/** Returns $alerts_specific_fields with keys updated to the values needed.
+ * @param string $collectionid - 5 letters id of collection
+ * @return array
+ */
+function get_alerts_specific_fields($collectionid) {
+    /* Fields to be added into the Reader Management Slice.
+       Field ID consists of "alerts1/2/3/4", dots, and collection ID, e.g. "alerts1.....154".
+    */
 
-/* Fields to be added into the Reader Management Slice.
-   Field ID consists of "alerts1/2/3/4", dots, and collection ID, e.g. "alerts1.....154".
-*/
-$alerts_specific_fields = array (
-    "alerts1" => array (
-        "name" => _m("How often"),
-        // {ALERNAME} will be replaced by the current Alerts Name
-        "input_help" => _m("How often for {ALERNAME}"),
-        "input_show_func" => "sel:{CONSTGROUP}",
-        // Add a constant group and add its name to "input_show_func"
-        "constants" => array (
-            "group" => "How often",
-            "items" => get_howoften_options() + array (" " => _m("not subscribed"))),
-        "alias1" => "_#HOWOFTEN",
-        "alias1_func" => "f_c:!:::&nbsp;",
-        "alias1_help" => _m("How often for {ALERNAME}"),
-    ),
-/*	"alerts3" => array (
-        "name" => _m("Status"),
-        "input_help" => _m("Status for {ALERNAME}"),
-        "input_show_func" => "sel:",
-        "constants" => array (
-            "group" => "Status",
-            "items" => get_bin_names()),
-        "alias1" => "_#STATCODE",
-        "alias1_func" => "f_h",
-        "alias1_help" => _m("Status for {ALERNAME}"),
-    ),*/
-    "alerts2" => array (
+    // Add this to each field definition alerts1, 2, ...
+    $FIELD_DEFAULTS = array (
+        'type' => '',
+        "input_default" => "txt:",
+        "required" => 0,
+        "feed" => 0,
+        "multiple" => 0,
+        "html_default" => 0,
+        "html_show" => 0,
+        "input_insert_func" => "qte",
+        "input_show" => 1,
+        "text_stored" => 1,
+        'input_validate' => ''
+    );
+
+    $retval[getAlertsField('alerts1', $collectionid)] = array_merge($FIELD_DEFAULTS, array (
+            "name" => _m("How often"),
+            "input_help" => _m("How often for {ALERNAME}"),   // {ALERNAME} will be replaced by the current Alerts Name
+            "input_show_func" => "sel:{CONSTGROUP}",          // Add a constant group and add its name to "input_show_func"
+            "constants" => array (
+                "group" => "How often",
+                "items" => get_howoften_options() + array (" " => _m("not subscribed"))),
+            "alias1" => "_#HOWOFTEN",
+            "alias1_func" => "f_c:!:::&nbsp;",
+            "alias1_help" => _m("How often for {ALERNAME}"),
+        ));
+    $retval[getAlertsField('alerts2', $collectionid)] = array_merge($FIELD_DEFAULTS, array (
         "name" => _m("Selections"),
         "input_help" => _m("Selections for {ALERNAME}"),
         "input_show_func" => "mch:{CONSTGROUP}:3:1",
@@ -71,72 +77,36 @@ $alerts_specific_fields = array (
         "alias1" => "_#FILTERS_",
         "alias1_func" => "f_h:,",
         "alias1_help" => _m("Selecetion IDs for {ALERNAME}"),
-    ));
-
-// Add this to each field definition alerts1-4
-$field_defaults = array (
-    "input_default" => "txt:",
-    "required" => 0,
-    "feed" => 0,
-    "multiple" => 0,
-    "html_default" => 0,
-    "html_show" => 0,
-    "input_insert_func" => "qte",
-    "input_show" => 1,
-    // stored in content.text?
-    "text_stored" => 1,
-    );
-
-// -------------------------------------------------------------------
-/** Returns $alerts_specific_fields with keys updated to the values needed. */
-function get_alerts_specific_fields($collectionid) {
-    global $alerts_specific_fields;
-    foreach ($alerts_specific_fields as $field_id => $fprop) {
-        $field_id = getAlertsField($field_id, $collectionid);
-        $retval[$field_id] = $fprop;
-    }
+        ));
     return $retval;
 }
 
 // -------------------------------------------------------------------
 
 /** Adds Alerts-specific fields to the Reader Management Slice.
-*   Skips fields which already are in the slice.
-*   @param string $slice_id	long ID of Reader Management Slice
-*	@return string Message about the number of field added. */
+ *   Skips fields which already are in the slice.
+ *   @param string $collectionid 5 letters logn collection id
+ *   @param string $slice_id	long ID of Reader Management Slice
+ *	 @return string Message about the number of field added. */
 function add_fields_2_slice($collectionid, $slice_id) {
-    global $field_defaults;
     $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
 
-    $db = getDB();
     // find current Alerts Name
-    $db->query ("
-        SELECT module.name FROM alerts_collection AC
-        INNER JOIN module ON AC.module_id = module.id
-        WHERE AC.id = '$collectionid'");
-    $db->next_record();
-    $alerts_name = $db->f ("name");
+    $alerts_name = DB_AA::select1('SELECT module.name FROM alerts_collection, module', 'name', array(array('alerts_collection.module_id','module.id','j'),array('alerts_collection.id',$collectionid)));
 
     // find filters to fill into the Filters constant group
-    $db->query("
-        SELECT AF.description, AF.id FROM alerts_filter AF
-        INNER JOIN alerts_collection_filter ACF ON AF.id = ACF.filterid
-        WHERE ACF.collectionid = '$collectionid'
-        ORDER BY ACF.myindex");
-    while ($db->next_record()) {
-        $filters["f".$db->f("id")] = $db->f("description");
-    }
+    $filters = DB_AA::select(array('fid'=>'description'), 'SELECT CONCAT("f",alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter', array(array('alerts_filter.id','alerts_collection_filter.filterid','j'),array('alerts_collection_filter.collectionid',$collectionid)), array('alerts_collection_filter.myindex'));
 
     // find priority: find gap beginning by 2000 with step 200
-    $input_pri = 1800;
-    do {
+    $input_pri = 2000;
+    while (DB_AA::test('field',array(array('slice_id',$slice_id,'l'),array('id', '\_%', 'NOT LIKE'),array('input_pri',$input_pri,'i')))) {
         $input_pri += 200;
-        $db->query("SELECT id FROM field WHERE slice_id = '". q_pack_id($slice_id)."' AND id NOT LIKE '\_%' AND input_pri = $input_pri");
-    } while ($db->next_record());
+    }
 
     $varset = new CVarset;
     // count of added fields
     $nadded = 0;
+
     foreach ($alerts_specific_fields as $field_id => $foo) {
         $fprop = &$alerts_specific_fields[$field_id];
 
@@ -145,10 +115,9 @@ function add_fields_2_slice($collectionid, $slice_id) {
         $varset->addkey("id",       "text", $field_id);
 
         // don't add fields twice
-        $db->query($varset->makeSELECT ("field"));
-        $exists     = $db->next_record();
-        $field_info = $db->Record;
-        if (! $exists ) {
+        $field_info = DB_AA::select1('SELECT * FROM field','', array(array('slice_id',$slice_id,'l'),array('id', $field_id)));
+
+        if (! is_array($field_info) ) {
             $nadded ++;
 
             $varset->add ("input_pri", "number", $input_pri);
@@ -159,7 +128,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
             $fprop ["constants"]["items"] = $filters;
         }
         if ($fprop ["constants"]) {
-            if ($exists) {
+            if (is_array($field_info)) {
                 list(,$groupname) = explode(":", $field_info["input_show_func"]);
                 refresh_constant_group($groupname, $fprop["constants"]["items"]);
                 $fprop["input_show_func"] = $field_info["input_show_func"];
@@ -183,13 +152,8 @@ function add_fields_2_slice($collectionid, $slice_id) {
                 $varset->add ($name, "text", $value);
             }
         }
-
-        foreach ($field_defaults as $name => $value) {
-            $varset->add ($name, "text", $value);
-        }
-        $db->query($varset->makeINSERTorUPDATE("field"));
+        $varset->doREPLACE("field");
     }
-    freeDB($db);
     return _m("%1 field(s) added", array ($nadded));
 }
 
