@@ -457,7 +457,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 
     switch( $input ) {
         case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
-        case "vid":     FrmInputText(  $k, $label. " - <a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", $value,  12, 12, false, $help, '', false, 'text', '', '[a-z][a-z_0-9]+'); break;
+        case "vid":     FrmInputText(  $k, $label. " - <a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", $value,  15, 15, false, $help, '', false, 'text', '', '[a-z][a-z_0-9]+'); break;
         case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help, '', 1); break;
         case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help, '', 1); break;
         case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type]['modification'], $value, false, $help); break;

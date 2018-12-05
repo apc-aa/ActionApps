@@ -1266,7 +1266,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
  * @return mixed|string
  */
 function calculate($exp) {
-    $exp = str_replace(array(' ',"\t", "\r", "\n", ',', '(+', '(-', '(*', '(/', '(%', '+)', '-)', '*)', '/)', '%)', '()') ,array('', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '+0)', '-0)', '*0)', '/0)', '%0)', '0'), "($exp)");
+    $exp = str_replace(array('{', '}', ' ',"\t", "\r", "\n", ',', '(+', '(-', '(*', '(/', '(%', '+)', '-)', '*)', '/)', '%)', '()') ,array('(', ')', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '+0)', '-0)', '*0)', '/0)', '%0)', '0'), "($exp)");
     if (strspn($exp, '0123456789.+-*/%()E') != strlen($exp)) {
         return 'wrong characters';
     }
@@ -1597,7 +1597,8 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
 
 /** Evaluates the expression
  *    {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>]]}
- *    {math:1+1-(2*6)}
+ *    {math:1+1-(2*6)}          - calculates the expression
+ *    {math:1 421,823 }         - returns number usable for calculation - 1421.823
  *    {math:478778:1:,: }
  *    {math:478778:1:,:&#8239;} - correct French SI type of number format with thin space
  *    {math:478778:1:FR}        - correct French SI type of number format with thin space
@@ -7828,6 +7829,7 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
             return '';
         }
         //return $form->getAjaxHtml($ret_code);
+        AA::Stringexpander()->addRequire('aa-jslib');  // for {AA_AjaxSendForm}
         return $form->getAjaxHtml($ok_code, 'inplace');
     }
 }
