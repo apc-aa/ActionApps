@@ -19,14 +19,14 @@
  *
  * @package   Include
  * @version   $Id$
- * @author    Jakub Ad�mek, Econnect
+ * @author    Jakub Adamek, Econnect
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
 */
 
-// (c) Jakub Ad�mek, Econnect, December 2002
+// (c) Jakub Adamek, Econnect, December 2002
 
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."item_content.php3";
@@ -123,15 +123,16 @@ class AA_Mail extends htmlMimeMail {
             return false;
         }
 
+        $lang = strlen($record["lang"]) ? $record["lang"] : 'utf-8';
         if ($record["html"]) {
-            $this->setHtml( $record["body"], html2text($record["body"]));
+            $this->setHtml( $record["body"], html2text($record["body"],$lang) );
         } else {
-            $this->setText( html2text( nl2br($record["body"]) ));
+            $this->setText( html2text( nl2br($record["body"]), $lang) );
         }
 
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
-        $this->setCharset(strlen($record["lang"]) ? $record["lang"] : 'utf-8');
+        $this->setCharset($lang);
 
         if ($record["cc"]) {
             $this->setCc($record["cc"]);
@@ -347,7 +348,7 @@ class AA_Mail_Scheduler {
  * @param $html string
  * @return null|string|string[]
  */
-function html2text($html) {
+function html2text($html, $encoding='utf-8') {
 
     $html = html_entity_decode(str_ireplace(array('&nbsp;','&ensp;','&emsp;','&thinsp;'), array(' ',' ',' ',' '), $html));
 
@@ -395,7 +396,7 @@ function html2text($html) {
         // Strip out html tags
         "'<[\/\!]*?[^<>]*?>'si",
         // trim end of line whitespaces (also fixes responsivnes when long line is present)
-        "'\\h+\\n'u",
+        ($encoding=='utf-8') ? "'\\h+\\n'u" : "'\\h+\\n'",
         // If the previous commands added too much whitespace, delete it
         "'\\n\\n\\n+'si"
     );
@@ -432,8 +433,5 @@ function html2text($html) {
         //"'&#(\d+);'e"     => "chr(\\1)");
 
     $html = preg_replace($search, $replace, $html);
-
     return $html;
 }
-
-
