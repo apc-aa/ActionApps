@@ -1,5 +1,10 @@
+18-12-11 - search fields in Item Manager serachbox is restricted to first 8 fields in the remotes slice.
+(honzam)   - "all fields"  search in remote slices is allowed
+         - new {xid:<slice_id>} expression, which returns the last item id in path, which is in the slice_id
+18-12-06 - fixed problem with non html e-mail with non utf-8 encoding - the mail is no longer empty
 18-12-05 - fixed bug in text e-mails, which was truncated after dot on empty line
-(honzam) - fixed unique check in filler.php3
+(honzam) - fixed list of search field in Item Manager Searchbar
+         - fixed unique check in filler.php3
          - better database handling in Alerts
 18-12-03 - new expression {specialstring:BOM} - prints 3-byte symbol BOM used as identifier
 (honzam)   at the beginning of utf-8 file on some systems

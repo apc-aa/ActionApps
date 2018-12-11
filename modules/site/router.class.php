@@ -517,17 +517,22 @@ class AA_Router_Seo extends AA_Router {
             }
             return $path;
         }
-        if ($param == 'list') {
+        if (($param == 'list') OR is_long_id($param)) {
             // list of ids - just like 7663-7434-7432
             $i     = 1;
-            $delim = '';
-            $list  = '';
+            $ids   = array();
             while (!empty($apc['xseo'.$i])) {
-                $list  .= $delim. $this->_xseo2id($apc['xseo'.$i]);
-                $delim  = '-';
-                $i++;
+                $ids[] = $this->_xseo2id($apc['xseo'.$i++]);
             }
-            return $list;
+            if ($param == 'list') {
+                return join('-',$ids);
+            }
+            for( $i=count($ids)-1; $i>=0; $i--) {
+                if ( $ids[$i] AND is_object($item = AA_Items::getItem($ids[$i])) AND ($item->getSliceID()==$param) ) {
+                    return $ids[$i];
+                }
+            }
+            return '';
         }
     }
 
@@ -606,6 +611,7 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
  *               {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
  *  {xid:list} - returns ids list from start to current item in the tree - like:
  *               2587-2877-3004
+ *  {xid:<slice_id>} - returns the last item id in path, which is in the slice_id
  *  {xid:this is my _#NAME____} - {item:{xid}:this is my _#NAME____}
  *  @param string $param specifies, which information you want to get (see above)
  *  @param string $url   if filled, returns the information about the specified
@@ -621,7 +627,7 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
             return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
         }
         $router = AA_Router::singleton($router_class);
-        if (empty($param) OR ctype_digit((string)$param) OR ($param=='path') OR ($param=='list')) {
+        if (empty($param) OR ctype_digit((string)$param) OR ($param=='path') OR ($param=='list') OR is_long_id($param)) {
             return $router->xid($param, $url);
         } else {
             return AA::Stringexpander()->unalias('{item:'.$router->xid().':'.$param.'}');
