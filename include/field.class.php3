@@ -584,6 +584,12 @@ class AA_Fields implements Iterator {
                     $related_fields = with(new AA_Fields($values_slice_or_const))->getSearchArray(false);
                     $related += 1000;
                     $opt_group = $field_name;
+
+                    // add "-- any text field --" search option
+                    if ($related_fields) {
+                        $ret['all_fields@' . $field_id] = array('opt_group'=>$opt_group, 'search_pri'=> $related++, 'order_pri'=>0, 'name' => ' > ' . _m('-- any text field --'), 'field'=>'all_fields@' . $field_id);
+                    }
+                    $i = 0;
                     foreach ($related_fields as $r_fid => $r_fld) {
                         if ($r_fld['search_pri'] == 0) {
                             continue;
@@ -595,6 +601,9 @@ class AA_Fields implements Iterator {
                         $field_expr = $r_fid . '@' . $field_id;
                         $r_fld['field']   = $field_expr;
                         $ret[$field_expr] = $r_fld;
+                        if (++$i>8) {  // the number of fields in related search is limited to forst 8 (just not to be so long for some heavy related slices)
+                            break;
+                        }
                     }
                 }
             }
@@ -620,6 +629,12 @@ class AA_Fields implements Iterator {
                 $related_fields = with(new AA_Fields($rf_def['sid']))->getSearchArray(false);
                 $related += 1000;
                 $opt_group = AA_Module::getModuleName($rf_def['sid']) . ' / ' . $rf_def['name'];
+                // add "-- any text field --" search option
+                // This does not work - all_fields@5cae6644f58fe31c4e704e3887e18524/relation........ is probably not implemented, yet
+                // if ($related_fields) {
+                //     $ret['all_fields@' . $rf_def['sid'] . '/' . $rf_def['id']] = array('opt_group'=>$opt_group, 'search_pri'=> $related++, 'order_pri'=>0, 'name' => ' > ' . _m('-- any text field --'), 'field'=>'all_fields@' . $rf_def['sid'] . '/' . $rf_def['id']);
+                // }
+                $i = 0;
                 foreach ($related_fields as $r_fid => $r_fld) {
                     if ($r_fld['search_pri'] == 0) {
                         continue;
@@ -631,6 +646,9 @@ class AA_Fields implements Iterator {
                     $field_expr = $r_fid . '@' . $rf_def['sid'] . '/' . $rf_def['id'];
                     $r_fld['field'] = $field_expr;
                     $ret[$field_expr] = $r_fld;
+                    if (++$i>8) {  // the number of fields in related search is limited to forst 8 (just not to be so long for some heavy related slices)
+                        break;
+                    }
                 }
             }
         }

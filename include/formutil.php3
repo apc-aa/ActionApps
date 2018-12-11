@@ -1539,6 +1539,7 @@ class AA_Inputfield {
         $already_selected = array();    // array where we mark selected values
         $pair_used        = array();    // array where we mark used pairs
         $this->_fillSelected();         // fill selected array by all values in order we can print invlaid values later
+        $ret = '';
         if (isset($arr) && is_array($arr)) {
             foreach ( $arr as $k => $v ) {
                 if ($usevalue) {
@@ -1563,7 +1564,7 @@ class AA_Inputfield {
                 if ( ($restrict == 'unselected') AND $selected  ){
                     continue;  // do not print this option
                 }
-                $ret .= "\n  <option value=\"". myspecialchars($k) ."\" $selected>".myspecialchars($v)."</option>";
+                $ret .= "\n <option value=\"". myspecialchars($k) ."\" $selected>".myspecialchars($v);
             }
         }
         // now add all values, which is not in the array, but field has this value
@@ -1571,13 +1572,13 @@ class AA_Inputfield {
         if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
-                    $ret .= "\n  <option value=\"". myspecialchars($k) ."\" selected class=\"sel_missing\">".myspecialchars($k)."</option>";
+                    $ret .= "\n <option value=\"". myspecialchars($k) ."\" selected class=\"sel_missing\">".myspecialchars($k);
                     $selectedused = true;
                 }
             }
         }
         if ( $add_empty ) {
-            $emptyret = "\n  <option value=\"\"";
+            $emptyret = "\n <option value=\"\"";
             if ($selectedused == false) {
                 $emptyret .= ' selected class="sel_on"';
             }
@@ -2660,14 +2661,14 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="") {
     if (!is_array($arr) OR (count($arr)==0)) {
         return '';
     }
-    $retval       = "\n<select name=\"$name\" $add>\n";
+    $retval       = "\n<select name=\"$name\" $add>";
     $selectedused = false;
     foreach ((array)$arr as $k => $v) {
         if (0===strpos($k,'AA_OPTGROUP')) {  // begins with AA_OPTGROUP
-            $retval .= '<optgroup label="'.myspecialchars($v).'">';
+            $retval .= "\n<optgroup label=\"".myspecialchars($v).'">';
             continue;
         }
-        $retval .= "\n  <option value=\"". myspecialchars($k)."\"";
+        $retval .= "\n <option value=\"". myspecialchars($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
             $selectedused = true;
@@ -2681,12 +2682,12 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="") {
             $title = ' title="'. myspecialchars( $val ) .'"';
             $val   = AA_Stringexpand_Shorten::shorten_middle($val, 100);
         }
-        $retval .= "$title>". myspecialchars( $val ) ."</option>\n";
+        $retval .= "$title>". myspecialchars( $val );
     }
 
     // now add all values, which is not in the array, but field has this value
     if ($selected AND !$selectedused) {
-        $retval .= "\n  <option value=\"". myspecialchars($selected) ."\" selected class=\"sel_missing\">".myspecialchars($selected)."</option>";
+        $retval .= "\n <option value=\"". myspecialchars($selected) ."\" selected class=\"sel_missing\">".myspecialchars($selected);
     }
 
     $retval .= "</select>\n";
