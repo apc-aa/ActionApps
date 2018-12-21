@@ -1,3 +1,12 @@
+18-12-21 - new implementation of {encrypt} and {decrypt}. It now uses libsodium, if available (php 7.2)
+(honzam)   or openssl (php 7.1). Old mcrypt based solution is no longer supported by PHP devs.
+           Unfortunately, the algorithms are not compatible, so you will be able to decrypt
+           previously encrypted string only in PHP<7.2.
+           {encrypt} in php 7.1 will produce result, which will be compatible in 7.1, 7.2, ...
+         - the AJAX calls (in {manager}...) now displays popup message, on error.
+         - cache header now uses Cache-Control private for pages with logged user, which should
+           be better for cacheability on proxy
+         - AA Admin interface now also displays debuggung statistic with added url parameter ?debug=255
 18-12-11 - search fields in Item Manager serachbox is restricted to first 8 fields in the remotes slice.
 (honzam)   - "all fields"  search in remote slices is allowed
          - new {xid:<slice_id>} expression, which returns the last item id in path, which is in the slice_id
