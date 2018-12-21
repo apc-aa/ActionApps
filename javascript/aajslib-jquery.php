@@ -603,7 +603,8 @@ function AA__SiteUpdateParts(data) {
     var re = /contenteditable=true id="([^"]*)"/g;
     for (var i in data) {
         if (i == 'message') {
-            AA_Message(data[i]);
+            $('article.aa-updating[data-aa-part]').removeClass('aa-updating');
+            AA_Message(data[i], 'err');
         } else {
             $("[data-aa-part='"+i+"'").replaceWith(data[i]);
             if (data[i].indexOf("contenteditable=true")) {

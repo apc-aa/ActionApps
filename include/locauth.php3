@@ -41,6 +41,11 @@ class AA_Auth extends Auth {
         $this->nobody    = false;
     }
 
+    /** Is some user logged in? The is_authenticated() works differently, so we added this one  */
+    public function is_user() {
+         return strlen($this->auth["uid"]) AND ($this->auth["uid"]!='nobody');
+    }
+
     function set_nobody($state=true) {
         $this->nobody = $state;
     }

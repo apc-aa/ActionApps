@@ -191,6 +191,10 @@ class AA_Router {
     // should be refined in subclass
     function xuser($param='') { return ''; }
 
+    // should be refined in subclass
+    function parse($url='') { return array(); }
+
+
 }
 
 
@@ -244,6 +248,10 @@ class AA_Router_Seo extends AA_Router {
     /** array of translations xseoX -> id */
     protected $_seocache;
 
+    /**
+     * @param $url
+     * @return array
+     */
     function parse($url) {
         $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
         $this->apc['state'] = self::getState($this->apc);

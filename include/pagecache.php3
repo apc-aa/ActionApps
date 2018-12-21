@@ -45,12 +45,14 @@ class AA_Cacheentry {
     protected $c = '';      // content
     protected $h = array(); // headers array
     protected $i = '';      // item id for page hit
+    protected $p = '';      // Cacheability - private/public/no-cache - private used for pages, where user is logged in
     protected $t = 0;       // timestamp
 
-    function __construct($content, array $headers=array(), $item_id='') {
+    function __construct($content, array $headers=array(), $item_id='', $cacheability='public') {
         $this->c = $content;
         $this->h = $headers;
         $this->i = $item_id;
+        $this->p = $cacheability;
         $this->t = time();
     }
 
@@ -61,11 +63,12 @@ class AA_Cacheentry {
         $etag            = hash('md5', 'x'.$this->c.'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
         $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$lastModified) : false;
         $etagMatch       = isset($_SERVER['HTTP_IF_NONE_MATCH'])     ? (trim($_SERVER['HTTP_IF_NONE_MATCH'])==$etag) : false;   //(etag: unique file hash)
+        $cacheability    = in_array($this->p,array('public','private','no_cache')) ? $this->p : 'public';
 
         header("Last-Modified: ".gmdate("D, d M Y H:i:s", $lastModified)." GMT");   // set last-modified header
         header("Etag: $etag");                                                      // set etag-header
         // maybe we do not have to chache all pages
-        header('Cache-Control: public');                                            // make sure caching is turned on
+        header("Cache-Control: $cacheability");                                     // make sure caching is turned on
         // maybe we can add max-age=60   (minute helps a lot on big loads (catches 99%), but is nothing for reader)
 
         // check if page has changed. If not, send 304 and exit

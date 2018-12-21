@@ -79,7 +79,7 @@ class AA_Saver {
     /** run function
      * Now import all items to the slice
      * @param bool $fire
-     * @return int count of changed items
+     * @return int[] count of [changed,error] items
      */
     function run( $fire = true ) {
 
@@ -88,7 +88,8 @@ class AA_Saver {
         // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
         $directfill = $this->grabber->isDirectfill();
 
-        $ok_count = 0;
+        $ok_count  = 0;
+        $err_count = 0;
 
         while ($source_content4id = $this->grabber->getItem()) {
 
@@ -177,11 +178,13 @@ class AA_Saver {
 
             if (($store_mode == 'overwrite') OR (substr($store_mode,0,6) == 'insert')) {
                 if (!$content4id->complete4Insert()) {
+                    $err_count++;
                     $this->message("AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
                     continue;
                 }
             } else { // @todo do validation for updates
                 if (!$content4id->validate4Update()) {
+                    $err_count++;
                     $this->message("AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
                     continue;
                 }
@@ -215,8 +218,10 @@ class AA_Saver {
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
-        print($this->report());
-        return $ok_count;
+        if (!$fire) {
+            print($this->report());
+        }
+        return array($ok_count,$err_count);
     }
 
     /** Returns array of long new saved ids */

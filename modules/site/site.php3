@@ -69,14 +69,25 @@ if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
 
 require_once AA_INC_PATH."util.php3";
 
+/**
+ * @param $domain
+ * @return bool
+ */
 function IsInDomain( $domain ) {
     return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
 }
 
+/**
+ * @param $value
+ * @return array|string
+ */
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
 
+/**
+ * @param null $page
+ */
 function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
@@ -231,16 +242,20 @@ $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpan
 
 if (IsAjaxCall()) {
     if ($is_valid != 'Valid') {
-        // @todo - implement it - show login, save data for aa[] and aaedit, ...
         header("Content-type: application/json");
-        echo json_encode('@todo - not implemented, yet');
+        if ($auth->is_user()) {
+            echo json_encode(array('message'=>_m('No permission for current user.')));  // .print_r($auth, true)));
+        } else {
+            // @todo - show login
+            echo json_encode(array('message'=>_m('No permission - no user is authenticated. Try to relogin, please.')));
+        }
         exit;
     }
     if (is_array($_POST['aa'])) {
         $grabber = new AA_Grabber_Form();
         $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
         // $saver - > check Perms @todo
-        $saver->run();
+        list($saved_ok,$saved_err) = $saver->run();
 
         // we need to evaluate $page_content in order to reevaluate DependentParts
         $apc_state['xajax'] = 2;  // to not be 1
@@ -254,6 +269,9 @@ if (IsAjaxCall()) {
             foreach ($parts as $k => $v) {
                 $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
             }
+        }
+        if ($saved_err) {
+             $parts['message'] = $saver->report();
         }
         echo json_encode($parts);
         exit;
@@ -288,7 +306,7 @@ if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAja
     AA::$headers['encoding'] = 'utf-8';
 }
 
-$cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid);
+$cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid, ($auth->is_user() ? 'private' : 'public'));
 $cacheentry->processPage();
 
 // changed the way, how to get $slices4cache - now we ask for module ids realy

@@ -264,7 +264,7 @@ class AA_Debug {
         $row    = array();
         foreach($this->_calls as $call) {
             if ($call[1]=="Query") {
-                $row['a' . sprintf('%f',($call[5]-$call[4])*1000.0)] = '<tr><td>' . safe(($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td>' . safe($call[6]) . '</td></tr>';
+                $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0)] = '<tr><td>'.safe(($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td>' . safe($call[6]) . '</td></tr>';
             }
         }
         if ($row) {

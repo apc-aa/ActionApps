@@ -767,6 +767,9 @@ class AA_Module_Site extends AA_Module {
         return AA::Stringexpander()->postprocess($out);
     }
 
+    /**
+     * @return AA_Router|null
+     */
     public function getRouter() {
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
