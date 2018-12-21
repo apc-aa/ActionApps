@@ -576,10 +576,7 @@ class AA_Stringexpand_Icq extends AA_Stringexpand {
 
         // set the url to the image and the stype of the image
         $image = '<img src="https://status.icq.com/online.gif?icq='.$user_id.'&img='.$style.'" border="0">' ;
-        // start the rendering the html outupt
-        $output .= '<a href="https://www.icq.com/people/cmd.php?uin='.$user_id.'&action='.$action.'">'.$image.'</a>';
-        // send the output to MediaWiki
-        return $output;
+        return '<a href="https://www.icq.com/people/cmd.php?uin='.$user_id.'&action='.$action.'">'.$image.'</a>';
     }
 }
 
@@ -642,7 +639,8 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
         // set your defaults for the style and action (addfriend, call or sendim) (0, 1, 2, 3 and 4)
 
         $action_default = "sendim" ;
-        $style_default = "2" ;
+        $style_default  = "2" ;
+        $image          = '';
 
         // test to see if the optinal elements of the params are supported. if not set them to the defaults
 
@@ -681,14 +679,8 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
                 $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=4" ' ;
                 $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
                 break;
-
         }
-
-        // start the rendering the html outupt
-        $output .= '<a href="ymsgr:'.$action.'?'.$user_id.'">'.$image.'</a>';
-
-        // send the output to MediaWiki
-        return $output;
+        return '<a href="ymsgr:'.$action.'?'.$user_id.'">'.$image.'</a>';
     }
 }
 
@@ -6766,13 +6758,11 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
     /**
      * @param string $text
      * @param string $key
-     * @param null $output_type
+     * @param null $output_type - no longer used - previously used 'url' to encode result in url-friendly base64_url, now it is allways
      * @return string|void
      */
     function expand($text='', $key='', $output_type=null) {
-        //$ret = AA_Stringexpand_Encrypt::_encryptdecrypt(true, $text, $key);
-        $ret = self::_encryptdecrypt(true, $text, $key);     //. ' - '. self::_test($text, $key);
-        return ($output_type=='url') ? bin2url($ret) : $ret;
+        return AA\Util\Crypt::encryptAesGcm($text,$key);
     }
 
     /**
@@ -6780,82 +6770,19 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
      * @return string
      */
     static function get_time_token($data) {
-        return base64_encode(self::_encryptdecrypt(true, serialize($data), 'aa-sul'.AA_ID.date('j.n.y H')));
+        return AA\Util\Crypt::encryptAesGcm(serialize($data), 'aa-sul'.AA_ID.date('j.n.y H'));
     }
 
     /** Try to decode sent token - not older than $hours
      *  $hours must count with cache - the tokens on the form could be in the cache
      */
     static function decrypt_time_token($token, $hours=24) {
-        $token = base64_decode($token);
         for ($i=0; $i<$hours; ++$i) {
-            if (strlen($serialized = self::_encryptdecrypt(false, $token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
+            if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
                 return unserialize($serialized);
             }
         }
         return '';
-    }
-
-    /** just developer method - tests the new encryption in php 7.2
-     * @param $mode_encrypt
-     * @param $text
-     * @param $key
-     * @return string
-     */
-    function _test($text, $key) {
-        $mc = self::_encryptdecrypt(true, $text, $key);
-        $ret = "<br>mcrypt: $mc - " . bin2url($mc);
-        $ret .= count(openssl_get_cipher_methods())."<br>------------------<br>";
-        foreach (openssl_get_cipher_methods() as $cipher) {
-            $ret .= '$cipher*';
-            $oc = self::_encryptdecrypt2(true, $text, $key,$cipher);
-            $x = "$cipher: $oc - " . bin2url($oc);
-            $ret .= ($mc == $oc) ? "<br><b>$x</b>" : "<br>$x";
-        }
-        return $ret;
-    }
-
-
-        /**
-     * @param $mode_encrypt
-     * @param $text
-     * @param $key
-     * @return string
-     */
-    function _encryptdecrypt($mode_encrypt, $text, $key) {
-        /* Open module, and create IV */
-        $td      = mcrypt_module_open('des', '', 'ecb', '');
-        $key     = substr($key, 0, mcrypt_enc_get_key_size($td));
-        $iv_size = mcrypt_enc_get_iv_size($td);
-        $iv      = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-
-        $ret = '';
-        /* Initialize encryption handle */
-        if (mcrypt_generic_init($td, $key, $iv) != -1) {
-            $ret = $mode_encrypt ? mcrypt_generic($td, $text) : mdecrypt_generic($td, $text);
-            mcrypt_generic_deinit($td);
-            mcrypt_module_close($td);
-        }
-        return $ret;
-    }
-
-
-    /** just developer method - tests the new encryption in php 7.2
-     * @param $mode_encrypt
-     * @param $text
-     * @param $key
-     * @return string
-     */
-    function _encryptdecrypt2($mode_encrypt, $text, $key, $cipher)
-    {
-        //$cipher = "aes-128-gcm";
-        if (in_array($cipher, openssl_get_cipher_methods()))
-        {
-            $ivlen = openssl_cipher_iv_length($cipher);
-            $iv  = openssl_random_pseudo_bytes($ivlen);
-            $ret = $mode_encrypt ? openssl_encrypt($text, $cipher, $key, $options=0, $iv, $tag) : openssl_decrypt($ciphertext, $cipher, $key, $options=0, $iv, $tag);
-        }
-        return $ret;
     }
 }
 
@@ -6872,7 +6799,40 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
      * @return string|void
      */
     function expand($text='', $key='', $output_type=null) {
-        return AA_Stringexpand_Encrypt::_encryptdecrypt(false, (($output_type=='url') ? url2bin($text) : $text), $key);
+        if (false !== ($ret = AA\Util\Crypt::decryptAesGcm($text,$key))) {
+            return $ret;
+        }
+        // if we fail with the decryption, we try, is the string wasn't encrypted in older AA version, which used mcrypt
+        // However this approach will work just for PHP <= 7.1, so users will need to reencrypt the texts, if they need
+        // to use old crypted texts
+        return self::_encryptdecrypt_legacy(false,(($output_type=='url') ? url2bin($text) : $text), $key);
+    }
+
+    /**
+     * Old legacy en/de-crypt function which uses mcrypt - the results are completely incompatible with other cryptolibs
+     * @param $mode_encrypt
+     * @param $text
+     * @param $key
+     * @return string
+     */
+    protected function _encryptdecrypt_legacy($mode_encrypt, $text, $key) {
+        if (!function_exists('mcrypt_module_open')) {
+            return '';
+        }
+        /* Open module, and create IV */
+        $td      = mcrypt_module_open('des', '', 'ecb', '');
+        $key     = substr($key, 0, mcrypt_enc_get_key_size($td));
+        $iv_size = mcrypt_enc_get_iv_size($td);
+        $iv      = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+
+        $ret = '';
+        /* Initialize encryption handle */
+        if (mcrypt_generic_init($td, $key, $iv) != -1) {
+            $ret = $mode_encrypt ? mcrypt_generic($td, $text) : mdecrypt_generic($td, $text);
+            mcrypt_generic_deinit($td);
+            mcrypt_module_close($td);
+        }
+        return $ret;
     }
 }
 
