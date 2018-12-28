@@ -766,6 +766,7 @@ class AA_Item {
         if (strlen($param)>2) {  // for speedup of standard {relation........} alias
             $param = $this->unalias( $param );
         }
+        $res = '';
         foreach ( $values as $v ) {
             $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
         }

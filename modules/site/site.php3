@@ -306,7 +306,7 @@ if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAja
     AA::$headers['encoding'] = 'utf-8';
 }
 
-$cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid, ($auth->is_user() ? 'private' : 'public'));
+$cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
 $cacheentry->processPage();
 
 // changed the way, how to get $slices4cache - now we ask for module ids realy

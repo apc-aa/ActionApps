@@ -1322,6 +1322,8 @@ function parseLoop($out, $item) {
         $out = '@'. substr($out,5);
     }
 
+    $params     = array();
+    $format_str = '';
     // @field........... - without parameters
     if (strpos($out, ":") === false) {
         $field = substr($out, 1);
@@ -1332,7 +1334,7 @@ function parseLoop($out, $item) {
         // parameters - first is separator, second is format string
         list($separator,$format_str) = ParamExplode(substr($out,strpos($out,":")+1));
 
-        if (strpos($field, "(") == true) { // if we have special parameters - in () after field name
+        if (strpos($field, "(") !== false) { // if we have special parameters - in () after field name
             // get this special parameters
             $param  = substr($field, strpos($field, "(")+1,strpos($field, ")")-strpos($field, "(")-1);
             $params = explode(",",$param);
@@ -1361,6 +1363,7 @@ function parseLoop($out, $item) {
         return '';
     }
 
+    $ret_str = '';
     if (!$format_str) {
         if ($separator=='json') {
             // we want JSON encoded array [value1,value2]
@@ -1368,22 +1371,23 @@ function parseLoop($out, $item) {
         } else {
             // we don't have format string, so we return
             // separated values by $separator (default is ", ")
-            foreach ($val as $value) {
-                $ret_str = $ret_str . (strlen(trim($ret_str)) ? $separator : "") . $value;
-            }
+            $ret_str = join($separator, array_filter(array_map('trim',$val), 'strlen'));
         }
     } else { // we have format string
-        if ( !is_array($params) ) {
+        if ( !$params ) {
             // case if we have only one parameter for substitution
-            $val_delim = '';
-            foreach ($val as $value) {
-                if (!strlen($value['value'])) {
-                    continue;
-                }
-                $dummy     = str_replace("_#1", $value, $format_str);
-                $ret_str   = $ret_str . $val_delim . $dummy;
-                $val_delim = $separator;
-            }
+            $ret_str = join($separator,  array_filter( array_map( function($value) use ($format_str) { return str_replace('_#1', $value, $format_str); }, $val), 'strlen'));
+
+            // $val_delim = '';
+            // foreach ($val as $value) {
+            //     // nonsence check - $value is normal array - HM - 18-12-28
+            //     // if (!strlen($value['value'])) {
+            //     //     continue;
+            //     // }
+            //     $dummy     = str_replace("_#1", $value, $format_str);
+            //     $ret_str   = $ret_str . $val_delim . $dummy;
+            //     $val_delim = $separator;
+            // }
         } else {
             $val_delim = '';
             // case with special parameters in ()

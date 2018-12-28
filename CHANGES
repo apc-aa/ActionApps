@@ -1,3 +1,5 @@
+18-12-28 - "AA -> Finder" now allows to search and replace by multiline string
+(honzam) - fix for private/public caching
 18-12-21 - new implementation of {encrypt} and {decrypt}. It now uses libsodium, if available (php 7.2)
 (honzam)   or openssl (php 7.1). Old mcrypt based solution is no longer supported by PHP devs.
            Unfortunately, the algorithms are not compatible, so you will be able to decrypt
