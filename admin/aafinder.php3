@@ -524,8 +524,8 @@ echo '<b>'._m('Search and Replace in').'</b>
       <label><input type="checkbox" name="searchinitems"  value="1" '. ((                    $_GET['searchinitems' ])? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchindiscus" value="1" '. ((                    $_GET['searchindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
-    <input type="text" name="search" value="'.safe($_GET['search']).'" size=60 placeholder="'._m('minimum 6 chracters for replace function').'">&nbsp;&nbsp;
-    <input type="text" name="replace" value="'.safe($_GET['replace']).'" size=60 placeholder="'._m('minimum 6 chracters for replace function').'">&nbsp;&nbsp;
+    <textarea name="search" placeholder="'._m('minimum 6 chracters for replace function').'" rows=6 style="width:40%">'.safe($_GET['search']).'</textarea>&nbsp;&nbsp;
+    <textarea name="replace" placeholder="'._m('minimum 6 chracters for replace function').'" rows=6 style="width:40%">'.safe($_GET['replace']).'</textarea>&nbsp;&nbsp;
     <input type="submit" name="go_search" value="'._m("Search").'">
     <input type="submit" name="go_replace" value="'._m("Replace!").'">'.StateHidden();
 
