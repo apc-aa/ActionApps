@@ -1283,6 +1283,7 @@ function parseMath($text) {
     $twos     = ParamExplode( strtok("") );
     $i        = 0;
     $key      = true;
+    $ret      = '';
 
     while ( $i < count($twos) ) {
         $val = trim($twos[$i]);
@@ -4202,7 +4203,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
             if (!empty($item)) {
-                $show_alias  = ($show_alias == '') ? '{@'.$field_id.':, }' : $show_alias;
+                $show_alias  = ($show_alias == '') ? "{alias:$field_id:f_h:, }" : $show_alias;
                 if (strlen($repre_value = $item->subst_alias($show_alias)) < 1) {
                     $repre_value = '--';
                 }
