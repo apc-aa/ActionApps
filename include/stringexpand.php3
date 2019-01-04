@@ -3778,26 +3778,6 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
      */
     function expand() {
         return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), function($a,$b) {return !strlen($b) OR strpos($a, $b) !== false;} );
-        //$arg_list = func_get_args();   // must be asssigned to the variable
-        //$haystack = array_shift($arg_list);
-        //$ret      = false;
-        //$i        = 0;
-        //$matched  = '';
-        //while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-        //    if (!strlen($arg_list[$i]) OR strpos($haystack, $arg_list[$i]) !== false) {
-        //        $ret     = $arg_list[$i+1];
-        //        $matched = $arg_list[$i];
-        //        break;
-        //    }
-        //    $i += 2;
-        //}
-        //if ($ret === false) {
-        //    // else text
-        //    $ret     = isset($arg_list[$i]) ? $arg_list[$i] : '';
-        //    $matched = $ret;
-        //}
-        //// _#2 is not very usefull but we have it from the times the function was just for one option
-        //return str_replace(array('_#1','_#2'), array($haystack, $matched), $ret);
     }
 
     /**
@@ -3831,8 +3811,6 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
  *  Example: {ifintersect:{_#P_RIGHTS}:{_#MY_ROLES}:Access granted:Access denied}
  */
 class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
-    /** Do not trim all parameters (maybe we can?) */
-    function doTrimParams() { return false; }
 
     /** expand function
      * @param $haystack
@@ -3845,6 +3823,38 @@ class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
         return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), function($a,$b) {return count(array_filter(array_intersect(array_map('trim', explode_ids($a)),array_map('trim',explode_ids($b))),'strlen'))>0;} );
     }
 }
+
+/** Tests type of the string
+ *  Example: {iftype:{qs:id}:longid:_#1:shortid:warning - use long id:parameter is not id}
+ */
+class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
+
+    /** expand function
+     * @param $haystack
+     * @param $test
+     * @param $text
+     * ...
+     * @param $else_text
+     * @return mixed
+     */
+    function expand() {
+        return AA_Stringexpand_Ifin::_resolveCompare(func_get_args(), array('AA_Stringexpand_Iftype','typeCompare'));
+    }
+
+    /** Compare function
+     * @param $test_string string - test string
+     * @param $test string - test type - one of longid|shortid|...   (we have just two, at this moment, but there will be more...)
+     * @return bool     - if the string is of type $b
+     */
+    public function typeCompare($test_string, $test) {
+        switch ($test) {
+            case 'longid' : return is_long_id($test_string);
+            case 'shortid': return is_short_id($test_string) AND ($test_string > 0);  // maybe we should update the is_short_id test
+        }
+        return false;
+    }
+}
+
 
 /** Takes unlimited number of parameters and jioins the unempty ones into one
  *  string ussing first parameter as delimiter
