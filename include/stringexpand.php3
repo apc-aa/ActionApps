@@ -3316,8 +3316,9 @@ class AA_Stringexpand_Siteitem extends AA_Stringexpand
  */
 class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
     /** expand function
-     * @param $slices
-     * @param $seo_string
+     * @param string $slices
+     * @param string $seo_string
+     * @param string $bins
      * @return string
      */
     function expand($slices='', $seo_string='', $bins='') {

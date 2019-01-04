@@ -1,3 +1,6 @@
+19-01-02 - better JS code for {tooltip} - the tippy library is loaded at the bottom of the page
+(honzam) - Widgets Select and Multiselect on Inputform accepts "values array" setting
+           (constants defined by string (json) and not constants or slice)
 18-12-28 - "AA -> Finder" now allows to search and replace by multiline string
 (honzam) - fixed {ajax:...} - the shown values respects plaintext/html setting, so newlines are displayed correctly
          - fix for private/public caching

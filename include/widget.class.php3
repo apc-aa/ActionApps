@@ -145,7 +145,7 @@ class AA_Property extends AA_Storable {
      */
     static function getClassProperties()  {
         return array (
-            //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            //                                                 id                            name                                 type    multi  persist validator, required, help, morehelp, example
             'id'                          => new AA_Property( 'id'                         , _m('id'                         ), 'string',   false),
             'name'                        => new AA_Property( 'name'                       , _m('name'                       ), 'string',   false),
             'type'                        => new AA_Property( 'type'                       , _m('type'                       ), 'string',   false),

@@ -596,7 +596,7 @@ class AA_Inputfield {
             if ($field["multiple"] & 2) {   // translation
                 $this->translations = AA_Slice::getModule(unpack_id($field["slice_id"]))->getTranslations();
             }
-            // romoved - const_arr should be in input_show_func param
+            // removed - const_arr should be in input_show_func param
             // if ( isset($field["const_arr"]) ) {
             //     $this->const_arr  = $field["const_arr"];
             // }
@@ -643,11 +643,16 @@ class AA_Inputfield {
       * @param $ids_arr
       * @param $tagprefix
       */
-    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null) {
         $constgroup = $this->param[0];
         $sid        = (substr($constgroup,0,7) == "#sLiCe-") ? substr($constgroup, 7) : '';
 
         if ( isset($this->const_arr) AND is_array($this->const_arr) ) {  // already filled
+            return $sid;
+        }
+
+        if ($const_arr_param) {
+            $this->const_arr = $const_arr_param;
             return $sid;
         }
 
@@ -661,6 +666,9 @@ class AA_Inputfield {
                 if (!$slice_field) {
                     $slice_field = 'publish_date....';
                 }
+            }
+            if ( $whichitems < 1 ) {
+                $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
             }
             $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
             $zids            = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
@@ -855,12 +863,12 @@ class AA_Inputfield {
                 // //                      get_if($this->param[2],'class')); // type
                 //            $GLOBALS['list_fnc_edt'][] = $this->varname();
                 //            break;
-                case 'sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                case 'sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
                             }
                             if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);  // if we fill it there, it is not refilled in inputSel()
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
                             $this->inputSelect($usevalue);
                             break;
 //                case 'rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
@@ -876,12 +884,13 @@ class AA_Inputfield {
                 //            $this->varname_modify('[]');         // use slightly modified varname
                 //            $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
                 //            break;
-                case 'mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                case 'mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
                             }
                             $rows = ($rows < 1) ? 5 : $rows;
                             $this->varname_modify('[]');         // use slightly modified varname
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                             $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
                             break;
                 case 'fil': list($accepts, $text, $hlp) = $this->param;
@@ -893,10 +902,10 @@ class AA_Inputfield {
                             list($y_range_minus, $y_range_plus, $from_now, $display_time) = $this->param;
                             $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_time);
                             break;
-                case 'pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str) = $this->param;
+                case 'pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
                             // add2constant is used in insert_fnc_qte - adds new value to constant table
                             if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                             $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
                             break;
                 case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
@@ -1594,18 +1603,10 @@ class AA_Inputfield {
      * Prints html tag <select multiple .. to 2-column table
      * for use within <form> and <table> tag
      * @param $rows
-     * @param $slice_field
-     * @param $whichitems
-     * @param $conds_str
-     * @param $sort_str
      */
-    function inputMultiSelect($rows=6, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false) {
+    function inputMultiSelect($rows=6) {
         list($name,$val,$add) = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
-        if ( $whichitems < 1 ) {
-            $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
         $this->field_name('plus');
