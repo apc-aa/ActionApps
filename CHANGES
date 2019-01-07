@@ -1,3 +1,6 @@
+19-01-07 - sitemodule Aliases edit now uses Codemirror editor (and possibly all Object edited in AA)
+(honzam) - improved HTML code - <center> replaced with style="text-align: center;"
+         - improved function PHPDoc
 19-01-02 - new {iftype:teststring:test:ok:...:else} Tests type of the string
 (honzam)     test could be longid or shortid at this moment
              example: {iftype:{qs:id}:longid:_#1:shortid:warning - use long id:parameter is not id}
