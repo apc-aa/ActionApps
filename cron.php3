@@ -170,7 +170,7 @@ function cron($time = 0) {
             if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
                  echo "<b>$url</b> will be run<BR>";
             } else {
-                echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
+                echo "<small>$url will be run on " .date( "d.m.y H:i",$nearest_time). " ($nearest_time)</small><BR>";
             }
             //echo "Nearest time: "; print_r ($nearest);
             // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));

@@ -56,8 +56,9 @@ class AA_Profile {
 
     /** getProfile - main factory static method
      *  Profiles should be used like $profile = AA_Profile::getProfile($user_id, $module_id);
-     * @param $slice_id
-     * @return mixed
+     * @param string $user_id
+     * @param string $module_id
+     * @return AA_Profile
      */
     static function getProfile($user_id, $module_id) {
         // AA_Profiles array
@@ -181,11 +182,11 @@ class AA_Profile {
      *  (<html_flag>:<default_fnc_* function>:<parameter>)
      *  This functions parses it and returns in array.
      * @param $value
-     * @return array
+     * @return AA_Value
      */
     function parseContentProperty($value) {
         if (!($generator = AA_Generator::factoryByString(substr($value,2)))) {  // see format described above
-            return array();
+            return new AA_Value;
         }
         return $generator->generate()->setFlag(($value[0] == '1') ? FLAG_HTML : 0);
     }

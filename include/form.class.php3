@@ -37,10 +37,15 @@ use AA\Widget\HidWidget;
 
 class AA_Formrow extends AA_Storable {
     function getRowProperty() {}
+
+    /**
+     * @return AA\Widget\Widget
+     */
     function getWidget()      {}
 
     function getRowHtml($content, $type='') {
         $widget = $this->getWidget();
+        $widget->registerRequires();
         switch ($type) {
             case 'ajax': return $widget->getAjaxHtml($this->getRowProperty(), $content);
             case 'live': return $widget->getliveHtml($this->getRowProperty(), $content);

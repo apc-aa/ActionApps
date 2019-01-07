@@ -373,7 +373,7 @@ class AA_Searchbar extends AA_Storable {
     }
 
     /** convertState function
-     *  Setting state from previou versions of state
+     *  Setting state from previous versions of state
      * @param $version
      * @param $state
      * @return

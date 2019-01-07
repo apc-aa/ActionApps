@@ -32,7 +32,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 </head>
 <body>
-<center>
+<div style="text-align: center;">
 <?php
 // we do not want to allow users to go back to edit, when it is opened in popup
 // (test for openervar (see itemedit.php3) would do the same)
@@ -49,6 +49,6 @@ if ( $return_url == 'close_dialog' ) {
 }
 echo '<a href="'. $go2url .'" target="_parent" class="ipreview">'. _m("OK") .'</a>';
 ?>
-</center>
+</div>
 </body>
 </html>

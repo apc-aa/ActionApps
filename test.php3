@@ -27,7 +27,7 @@ if (extension_loaded('gd')) {
     require_once __DIR__.'/include/imagefunc.php3';
     PrintSupportedTypes();
 } else {
-    print("<li><font color=\"red\">Warning: GD is unavailable, image manipulation won't be available</li>\n");
+    print("<li style=\"color: red; \">Warning: GD is unavailable, image manipulation won't be available</li>\n");
 }
 require_once __DIR__.'/include/config.php3';
 

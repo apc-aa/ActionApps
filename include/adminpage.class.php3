@@ -150,7 +150,6 @@ class AA_Adminpageutil {
         $this->sendHeaders();
 
         $html_start = $this->getPageBegin();
-        $out = '';
 
         if ($this->require) {
             foreach ($this->require as $req) {
@@ -222,6 +221,12 @@ class AA_Adminpageutil {
         $html_end = AA::Stringexpander()->postprocess($html_end);
         echo $html_end;
         page_close();
+    }
+
+    public function printAllPage($body_html, $err, $Msg) {
+        $this->printHead($err, $Msg);
+        echo $body_html;
+        $this->printFoot();
     }
 }
 
@@ -319,7 +324,7 @@ class AA_Adminpage implements AA_iEditable {
                                           'value' => _m("Default"),
                                           'add'   => 'onclick="Defaults()"'));
 
-        FrmTabCaption(_m("Object Edit"), '', '', $form_buttons, $slice_id);
+        FrmTabCaption(_m("Object Edit"), '', '', $form_buttons);
         // FrmHidden('ret_url', $ret_url);
         // FrmHidden('oid',     $oid);
         // FrmHidden('otype',   $otype);

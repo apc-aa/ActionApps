@@ -80,13 +80,12 @@ if ($sel_text) {
 
 $field = $slice->getField($field_name);
 
-echo "<center>";
 echo "$Msg <br>";
 
 // ------- Caption -----------
 
 echo '<form name="inputform" method=post action="'. StateUrl() .'">';
-FrmTabCaption(_m("Select constants"), '', '', '', $slice_id);
+FrmTabCaption(_m("Select constants"), '', '', '');
 
 echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1), $preset_value) : '') .'</td></tr>';
 

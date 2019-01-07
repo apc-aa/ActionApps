@@ -34,9 +34,9 @@
 abstract class AA_Serializable {
 
     /** factory function
-     * @param $classname
-     * @param $params
-     * @return null
+     * @param string $classname
+     * @param array $params
+     * @return AA_Serializable
      */
     static function factory($classname, $params=null) {
         return class_exists($classname) ? new $classname($params) : null;
@@ -44,9 +44,10 @@ abstract class AA_Serializable {
 
     /** factoryByName function - creates any object based on mask and name:
      *   AA_Stingexpand::factoryByName('', $params);
-     * @param $name
-     * @param $params
-     * @return null
+     * @param string $name
+     * @param array  $params
+     * @param null $class_mask
+     * @return AA_Serializable
      */
     static function factoryByName($name, $params=null, $class_mask=null) {
         return self::factory(static::constructClassName($name, $class_mask), $params);
@@ -59,9 +60,8 @@ abstract class AA_Serializable {
      *  which means, that it is instance of AA\Widget\DteWidget (when $class_mask == 'AA\Widget\Widget')
      *  and the properties are filled with values 1, 10 and 1 (in this order)
      *
-     * @param $string     like dte:1:10:1 in field.input_show_func
-     * @param $class_mask like 'AA\Widget\Widget' or empty if it is the same class
-     * @return null
+     * @param string $string     like dte:1:10:1 in field.input_show_func
+     * @return AA_Serializable
      */
     static function factoryByString($string) {
         $params = static::parseClassProperties($string);
@@ -77,6 +77,9 @@ abstract class AA_Serializable {
         $this->setProperties($params);
     }
 
+    /**
+     * @param array $params
+     */
     function setProperties($params=array()) {
         $class = get_class($this);
         $props = $class::getClassProperties();
@@ -98,20 +101,23 @@ abstract class AA_Serializable {
      */
     static function getClassProperties()  {
         // array of AA parameters (can't be object's data, since we need
-        // to call it staticaly (as class method)
+        // to call it statically (as class method)
         return array();
     }
 
     /** create the name of class from the type and name
      *  static class method
-     **/
+     * @param string $name
+     * @param string $class_mask
+     * @return string
+     */
     static function constructClassName($name, $class_mask=null) {
-        $name = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not neccessary
+        $name = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not necessary
         $class_mask = rtrim($class_mask,'_') ?: get_called_class();
         if (($pos=strrpos($class_mask, '\\')) !== false) {
             return substr_replace($class_mask, "\\$name", $pos, 1);
         } else {
-            return $class_mask . '_' . ucwords(strtolower(str_replace('-', '', $name)));   // str_replace probably for validator e-mail, but maybe not neccessary
+            return $class_mask . '_' . ucwords(strtolower(str_replace('-', '', $name)));   // str_replace probably for validator e-mail, but maybe not necessary
         }
     }
 
@@ -119,8 +125,8 @@ abstract class AA_Serializable {
      *  Parses class parameters from the string, which is stored in the database
      *  Typical use is for fields.input_show_func, where parameters are stored
      *  as string in the form: fnc:const:param
-     *  @param $param
-     *  @return asociative array of parameters, the name of parameters is given
+     *  @param string $string
+     *  @return array - asociative array of parameters, the name of parameters is given
      *  by the class itself ($class_mask . fnc).
      */
     static function parseClassProperties($string) {
@@ -135,6 +141,7 @@ abstract class AA_Serializable {
             // ask class, which parameters uses
             // call AA\Widget\TxtWidget::getClassProperties()), for example
             $props = $class::getClassProperties();
+            $name  = '';
 
             foreach ($props as $name =>$property) {
                 $value = array_shift($splited);
@@ -147,7 +154,7 @@ abstract class AA_Serializable {
             // is there rest? Add all the values to the last parameter
             // It isthere for older 1-parameter classes, where we do not escape ":"
             // like AA_Generator_Txt - we want it as it was written - not splitted
-            if (count($splited)) {
+            if (count($splited) AND $name) {
                 $params[$name] .= ':'.join(':',$splited);
             }
         }
@@ -186,6 +193,17 @@ class AA_Storable extends AA_Serializable {
         }
         return $ret;
     }
+
+    /** convertState function
+     *  Setting state from previous versions of state
+     * @param int   $version
+     * @param array $state
+     * @return array state transformed
+     */
+    function &convertState($version, &$state) {
+        return $state;
+    }
+
 
     /** setFromState function
      * Restores the object's data from $state

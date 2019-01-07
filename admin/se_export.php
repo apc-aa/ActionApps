@@ -108,7 +108,7 @@ foreach ($format_classes as $fclass) {
 ?>
 <form name="f" method="get" action="<?php echo StateUrl() ?>">
 <?php
-FrmTabCaption(_m("Export Items"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Export Items"), '', '', $form_buttons);
 
 FrmInputSelect('format', _m("Output Format"),    $format_arr, $format, true);
 FrmInputSelect('type', _m("Type"),    $types_arr, $type, true);

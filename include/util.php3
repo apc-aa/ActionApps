@@ -1075,18 +1075,25 @@ function myspecialchars( $var='', $double_encode=true) {
 
 
 /** safe function
- * @return html safe code (used for preparing variable to print in form)
+ * @param string $var
+ * @return string - html safe code (used for preparing variable to print in form)
  */
 function safe( $var ) {
     return htmlspecialchars( magic_strip($var), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
 }
 
-/** Base64url version of base64 */
+/** Base64url version of base64
+ * @param string $data
+ * @return string
+ */
 function bin2url($data) {
     return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
 }
 
-/** reverse Base64url version of base64 */
+/** reverse Base64url version of base64
+ * @param string $data
+ * @return bool|string
+ */
 function url2bin($data) {
     return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
 }

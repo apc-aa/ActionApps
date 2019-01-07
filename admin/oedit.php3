@@ -107,22 +107,22 @@ $apage = new AA_Adminpageutil('sliceadmin','forms');
 $apage->setTitle( _m("Admin - Object Edit") );
 // for widgets
 $apage->addRequire('aa-jslib' );
-$apage->printHead($err, $Msg);
 
 
 $form_buttons = array ("update",
                        "cancel" =>array("url"=>$ret_url),
                       );
 
-FrmTabCaption(_m("Object Edit"), '', '', $form_buttons, $slice_id);
-FrmHidden('ret_url', $ret_url);
-FrmHidden('oid',     $oid);
-FrmHidden('otype',   $otype);
+$html  = getFrmTabCaption(_m("Object Edit"), '', '', $form_buttons);
+$html .= '<tr><td colspan="2">';
+$html .= $form->getObjectEditHtml();
+$html .= '</td></tr>';
 
-echo '<tr><td colspan="2">';
-echo $form->getObjectEditHtml();
-echo '</td></tr>';
+$form_buttons['ret_url'] = array ("value"=> $ret_url);
+$form_buttons['oid']     = array ("value"=> $oid);
+$form_buttons['otype']   = array ("value"=> $otype);
 
-FrmTabEnd($form_buttons);
+$html .= getFrmTabEnd($form_buttons);
 
-$apage->printFoot();
+// this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
+$apage->printAllPage($html, $err, $Msg);

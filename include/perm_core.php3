@@ -417,7 +417,7 @@ function GetUserEmails($type = "", $user_id = "current") {
 
 /** Grabs User name from LDAP/SQL/AA
  *  @param $user_id (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
- *  @return name of the user ('Peter Fiala' in our example)
+ *  @return string name of the user ('Peter Fiala' in our example)
  *  @todo   we should propaply provide realy the username (like peterf) here
  */
 function perm_username( $user_id ) {

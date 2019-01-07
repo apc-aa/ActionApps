@@ -46,7 +46,7 @@ $form_buttons = array ("submit");
 ?>
 <form name=f method=post action="<?php echo StateUrl(self_base() ."synchronize2.php") ?>">
 <?php
-FrmTabCaption('', '', '', $form_buttons, $slice_id);
+FrmTabCaption('', '', '', $form_buttons);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
 FrmInputSelect('comparation_aa', _m('AA to compare'),    $aas_array, $_POST['comparation_aa'], true, _m('ActionApps installation to check for differences (just checking right now - noting is changed by this step)'));
 FrmTabEnd($form_buttons);

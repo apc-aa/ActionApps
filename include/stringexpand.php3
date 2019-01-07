@@ -4122,7 +4122,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_prop['name'], $widget_prop['input_help']);
                 $ret         = $widget->$type($aa_property, $item, $function);
                 $widget->registerRequires();
-                AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we shoul distinguish
+                AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
             }
         }
         return $ret;

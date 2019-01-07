@@ -422,7 +422,7 @@ $form_buttons = array( 'update',
                       );
 
 // Print View Form ----------
-FrmTabCaption(_m("Defined Views"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Defined Views"), '', '', $form_buttons);
 
 $view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
 //FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
