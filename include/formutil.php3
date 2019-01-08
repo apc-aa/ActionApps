@@ -344,7 +344,7 @@ class inputform {
 
             // field_mode - how to display the field
             $field_mode  = !IsEditable($content4id->getValues($pri_field_id), $f, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
-            $field_value = '';
+            $field_value = array();
 
             if ( $edit ) {
                 $field_value     = $content4id->getValues($pri_field_id);
