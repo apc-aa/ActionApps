@@ -58,7 +58,12 @@ class TxtWidget extends \AA\Widget\Widget
         $value = $content->getAaValue($aa_property->getId());
         $def_rows = $this->getProperty('rows', 4);
 
-        $max_characters = (int)$this->getProperty('max_characters', 0);
+        $attrs = array();
+        if ($maxlength = (int)$this->getProperty('max_characters', 0)) {
+            $attrs['maxlength'] = $maxlength;
+        }
+        $attrs['style'] = 'width:95%';
+
         $required = $aa_property->isRequired() ? 'required' : '';
 
         $widget .= ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
@@ -68,15 +73,11 @@ class TxtWidget extends \AA\Widget\Widget
         }
         $value->fixTranslations($aa_property->getTranslations());
         foreach ($value as $i => $val) {
-            if (($my_rows = substr_count($val, "\n")) > $def_rows) {
-                $rows = min($my_rows + 2, 30);
-            } else {
-                $rows = $def_rows;
-            }
+            $attrs['rows'] = (($my_rows = substr_count($val, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
             // $rows         = max( $def_rows, min($my_rows>$def_rowssubstr_count($val,"\n")+4, 30));
 
             $input_name = $base_name . "[$i]";
-            $widget .= $delim . $this->_getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches());
+            $widget .= $delim. $this->_getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'));
             $delim = "\n<br />";
             $required = ''; // only one is required
         }
@@ -87,7 +88,7 @@ class TxtWidget extends \AA\Widget\Widget
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      */
-    protected function _getOneInput($input_name, $i, $val, $rows, $max_characters, $widget_add, $widget_add2, $required, $no_htmleditor)
+    protected function _getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor)
     {
 
         $showhtmlarea = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
@@ -103,13 +104,12 @@ class TxtWidget extends \AA\Widget\Widget
 
         $input_id = FormArray::formName2Id($input_name);
         $input_value = myspecialchars($val);
-        $maxlength = $max_characters ? " maxlength=\"$max_characters\"" : '';
 
         $areaclass = '';
         $htmlareaedit = '';
 
         if ($showhtmlarea) {
-            $areaclass = ' class=ckeditor';
+            $attrs['class'] = 'ckeditor';
         } elseif (!$no_htmleditor) {
             $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
             // conversions menu
@@ -119,7 +119,11 @@ class TxtWidget extends \AA\Widget\Widget
             //}
         }
 
-        $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
+        $attr_string = join(' ', array_map(function ($k, $v) {
+            return "$k=\"$v\"";
+        }, array_keys($attrs), $attrs));
+
+        $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
         if ($lang = AA_Content::getLangId($i)) {
             $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
         }
