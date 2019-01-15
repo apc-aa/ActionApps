@@ -1445,7 +1445,12 @@ function itemIsDuplicate($item_id) {
 
 /** field_content is AA_Value object
  *  $field_content could be AA_Value or scallar or array()
- *  */
+ * @param string $item_id long item id
+ * @param string $field_id field id
+ * @param string|AA_Value $field_content
+ * @param bool $invalidate
+ * @return int
+ */
 function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     $content4id = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password

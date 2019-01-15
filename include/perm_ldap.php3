@@ -62,7 +62,8 @@ function AddUser($user, $flags = 0) {
         $record["mail"]         = $user["mail"];   // can be an array
     }
     $record["uid"]              = $user["uid"];
-    $record["userPassword"]     = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));
+    $record["userPassword"]     = AA_Permsystem_Ldap::generatePasswordHash($user["userpassword"]);
+
     if ($user["phone"]) {
         $record["telephoneNumber"] = $user["phone"];
     }
@@ -133,7 +134,7 @@ function ChangeUser($user, $flags = 0) {
     $record["givenname"] = $user["givenname"];
     $record["mail"]      = $user["mail"];                // can be an array
     if ($user["userpassword"]) {
-        $record["userPassword"]    = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));
+        $record["userPassword"]    = AA_Permsystem_Ldap::generatePasswordHash($user["userpassword"]);
     }
     if ($user["phone"]) {
         $record["telephoneNumber"] = $user["phone"];
@@ -500,6 +501,17 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
     function isUserEditable()                                   { return true; }
+
+    /** Creates a password hash for given Permsystem */
+    public static function generatePasswordHash($password) {
+        // $hash = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));  // old version
+
+        // new version of password hash - sha-512 - 2019-01-15 HM
+        // it is not fully universal accross LDAPs, but should be in most cases
+        // generate a 16-character salt string
+        $salt = substr(str_replace('+','.',base64_encode(md5(mt_rand(), true))),0,16);
+        return '{CRYPT}'.crypt($password, '$6$rounds=5000$'.$salt.'$');
+    }
 
     /** userIdFormatMatches - is user id in correct format?
      *  we MUST use specific UIDs for every single Permission Type

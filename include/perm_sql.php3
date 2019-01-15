@@ -67,7 +67,7 @@ function AddUser($user, $flags = 0) {
                                 array('sn'         , $user["sn"]),
                                 array('givenname'  , $user["givenname"]),
                                 array('description', ''),
-                                array('password'   , AA_Perm::cryptPwd($user["userpassword"]))));
+                                array('password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]))));
     $varset->doInsert('users');
     return $varset->last_insert_id();
 }
@@ -110,7 +110,7 @@ function ChangeUser($user, $flags = 0) {
                                 )
                           );
     if ($user["userpassword"]) {
-        $varset->add("password", "text", AA_Perm::cryptPwd($user["userpassword"]));
+        $varset->add("password", "text", AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]));
     }
     $varset->addkey("id", "text", $user["uid"]);
     $varset->doUpdate('users');

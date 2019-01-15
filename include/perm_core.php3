@@ -626,6 +626,10 @@ class AA_Perm {
         return false;
     }
 
+    /** Creates a password hash
+     * @param $password
+     * @return bool|string
+     */
     public static function cryptPwd($password) {
         if (function_exists('password_hash')) { // php 5.5
             return password_hash($password, PASSWORD_DEFAULT);
@@ -640,21 +644,37 @@ class AA_Perm {
         return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
     }
 
-    public static function comparePwds($password, $hash) {
+    /**
+     * @param      $password
+     * @param      $hash
+     * @param bool $try_old  - allow to check sha1() hash (we use for Reader slice users imported from some external datasource)
+     * @return bool
+     */
+    public static function comparePwds($password, $hash, $try_old=false) {
+        $ret = false;
         if (strlen($hash) == 30) {
             // legacy only - not so secure to timing attacks... but in current AA it shouldn't be executed
             // passwords in SQL perms in AA 2.x was 30 characers long (in user table),
             // so we have to compare it with shortened hash
-            return $hash == substr(crypt($password, $hash),0,30);
-        }
-        if (function_exists('password_verify')) { // php 5.5
-            return password_verify($password, $hash);
-        }
-        // remove for php >= 5.5
+            $ret = ($hash === substr(crypt($password, $hash),0,30));
+        } elseif (function_exists('password_verify')) { // php 5.5
+            $ret = password_verify($password, $hash);
+        } else {
+            // remove for php >= 5.5
 
-        // looks ugly for the first_child look, but it is really how the crypt
-        // with salt works - see php documentation
-        return $hash == crypt($password, $hash);
+            // looks ugly for the first_child look, but it is really how the crypt
+            // with salt works - see php documentation
+            $ret = ($hash === crypt($password, $hash));
+        }
+
+        // now we have tested the "current" password hash on this system - the result is in $ret
+
+        // we allow check for sha1 hash in Reader slice (in order we can import users to Reader sklice from legacy system with sha1 passwords)
+        // such hashes are then converted to standard hashes in slice using rehashPassword()
+        if (!$ret AND $try_old) {
+            $ret = ($hash === sha1($password));
+        }
+        return $ret;
     }
 
     /** AA::$perm->cache function
@@ -785,6 +805,16 @@ class AA_Permsystem {
     /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
     function isUserEditable()                                   { return false; }
 
+    /** true, if the password is in old format and needs to be updated with new hash */
+    protected function needsRehashPassword($hash)               { return false; }
+
+    /** updates user password - should be called after succesfull authentication and if we needsRehashPassword() */
+    protected function rehashPassword($user_id, $password)     {}
+
+    /** Creates a password hash for given Permsystem */
+    public static function generatePasswordHash($password)      { return AA_Perm::cryptPwd($password); }
+
+
     /** getUserPerms function
      * @param $uid
      * @param $objectType
@@ -832,13 +862,27 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $user_id   = AA_Reader::name2Id($username, $this->rm_slices);
         $user_info = GetAuthData( $user_id );
 
-        if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
+        if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
+            if ($this->needsRehashPassword($pwdhash)) {
+                $this->rehashPassword($user_id, $password);
+            }
             // user id is the id of the item in the Reader Management slice
             return $user_id;
         }
         return false;
     }
 
+    /** true, if the hash is in old format and needs to be updated with new hash */
+    protected function needsRehashPassword($hash) {
+        return $hash{0} !== '$';
+    }
+
+    /** updates user password - should be called after succesfull authentication and if we needsRehashPassword() */
+    protected function rehashPassword($user_id, $password) {
+        if ($user_id AND $password) {
+            UpdateField($user_id, FIELDID_PASSWORD, self::generatePasswordHash($password), false); // we do not need to invalidate cache - from the outside it is the same
+        }
+    }
 
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.

@@ -1218,6 +1218,7 @@ function StoreToContent($item_id, $field, $value, $additional='') {
 function gensalt($saltlen) {
     $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456589";
     $more_sec = '';
+    $salt = '';
 
     do {
         $more_sec .= hash('md5', microtime().'xy');
