@@ -3083,8 +3083,8 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param $ids - dash separated item ids
-     * @param $expression - expression for ordering
-     * @param $equals - numeric | rnumeric | string | rstring | locale | rlocale
+     * @param $expression - expression for filtering
+     * @param $equals - value to match expression
      * @param $operator - = | contain
      * @return string
      */
@@ -5485,12 +5485,12 @@ class AA_Stringexpander {
     }
 
     /**
-     * @param $slices
+     * @param array $vars - slices or vars
      * @param $hash
      * @param $code
      */
-    function setDependentParts($slices, $hash, $code) {
-        foreach ($slices as $s) {
+    function setDependentParts($vars, $hash, $code) {
+        foreach ($vars as $s) {
             if (isset($this->dependent_parts[$s])) {
                 $this->dependent_parts[$s][] = array($hash,$code);
             } else {
@@ -5500,12 +5500,12 @@ class AA_Stringexpander {
     }
 
     /**
-     * @param $slices
+     * @param array $vars - slices or vars
      * @return array
      */
-    function getDependentParts($slices) {
+    function getDependentParts($vars) {
         $ret = array();
-        foreach ($slices as $s) {
+        foreach ($vars as $s) {
             if (is_array($this->dependent_parts[$s])) {
                 foreach ($this->dependent_parts[$s] as $part) {
                     $ret[$part[0]] = $part[1];
@@ -7315,6 +7315,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
         $xpath = new DOMXPath($doc);
 
         $entries = $xpath->query($query);
+        $ret = '';
         foreach ($entries as $entry) {
             if ($attr=='XML') {
                 $ret.= $entry->ownerDocument->saveHTML($entry);
@@ -7845,7 +7846,7 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
 }
 
 /** Item manager in remote slice related to the item
- *    {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>]]]}
+ *    {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>[:<edit_code>]]]]}
  *        - manage a related items to the edited one - like:
  *  my_item <-- photos,
  *        where photos have relation........ field which points to item.
@@ -7855,73 +7856,122 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  *        photo - could contain {live} edits, ... It allows you also to add new
  *        photo with instant redraw.
  *  <mode> - which edit features present. default is all possible
- *           - 'N' - new, 'D' - delete, '-' - no manage (just view)
- *           - could be also defined as asoc array: {jsonasoc:N:Add item:D:Delete item:Dconfirm:Are you sure to delete item?}
+ *           - N - new,
+ *           - D - delete (with json you can specify also Dconfirm:<question> - see below)
+ *           - S - setting (edit item in Toolbox)
+ *           - E - edit - used with <edit_code> parameter
+ *           - B - back - used with <edit_code> parameter
+ *           - - - no manage (just view)
+ *         - could be also defined as asoc array: {jsonasoc:N:Add item:D:Delete item:Dconfirm:Are you sure to delete item?}
+ *  <edit_code> - code for edit - like _#EDIT_ITM - displays _#EDIT_ITM for item defined in {qss:aaedit}
  */
 class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
     /**
      * @param string $slices
-     * @param null $field
-     * @param null $item_id
-     * @param null $code
-     * @param null $conds
-     * @param null $sort
-     * @param null $mode
+     * @param string $field
+     * @param string $item_id
+     * @param string $code
+     * @param string $conds
+     * @param string $sort
+     * @param string $mode      - "SDHE" as flags for Settings / Delete / New  OR  {jsonasoc:N:Add item:D:Delete item} - with named buttons
+     * @param string $edit_code - code for edit - like _#EDIT_ITM - displays _#EDIT_ITM for item defined in {qss:aaedit}
      * @return string|void
      */
-    function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null) {
+    function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
 
-        if ($field AND ($item_id = $item_id ?: ($this ? $this->item->getId() : null))) {
-            $conds  .= $conds ? "-$field-=-$item_id" :  "d-$field-=-$item_id";
-        }
-        if (!$sort) {
-            $sort = 'publish_date....';
-        }
-        $mode     = $mode ?: 'ND'; // add here all possible options, whichis ND currently
+        $hash       = get_short_hash('manager', $slices, $conds, $sort, $code, $edit_code);
+        $slices_arr = explode_ids($slices);
+
+        $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, whichis ND currently
         $mode_arr = array();
 
         if ($mode{0} == '{') { // we define buttons using asociative array - {jsonasoc:N:Add item:D:Delete item}
             $mode_arr = json2asoc($mode);
-            if (array_key_exists('S', $mode_arr) AND !strlen($mode_arr['S'])) $mode_arr['S'] = '&#x2261';
-            if (array_key_exists('D', $mode_arr) AND !strlen($mode_arr['D'])) $mode_arr['D'] = '&#xd7;';
-            if (array_key_exists('Dconfirm', $mode_arr) AND !strlen($mode_arr['Dconfirm'])) $mode_arr['Dconfirm'] = _m('Are you sure you want to permanently DELETE this record?');
-            if (array_key_exists('N', $mode_arr) AND !strlen($mode_arr['N'])) $mode_arr['N'] = _m('new');
+            if (array_key_exists('S', $mode_arr) AND !strlen($mode_arr['S'])) {
+                $mode_arr['S'] = '&#x2261';
+            }
+            if (array_key_exists('D', $mode_arr) AND !strlen($mode_arr['D'])) {
+                $mode_arr['D'] = '&#xd7;';
+            }
+            if (array_key_exists('Dconfirm', $mode_arr) AND !strlen($mode_arr['Dconfirm'])) {
+                $mode_arr['Dconfirm'] = _m('Are you sure you want to permanently DELETE this record?');
+            }
+            if (array_key_exists('N', $mode_arr) AND !strlen($mode_arr['N'])) {
+                $mode_arr['N'] = _m('new');
+            }
+            if (array_key_exists('E', $mode_arr) AND !strlen($mode_arr['E'])) {
+                $mode_arr['E'] = _m('edit');
+            }
+            if (array_key_exists('B', $mode_arr) AND !strlen($mode_arr['B'])) {
+                $mode_arr['B'] = _m('back');
+            }
         } else {
-            if (strpos($mode,'S')!==false) { $mode_arr['S'] = '&#x2261'; }
-            if (strpos($mode,'D')!==false) { $mode_arr['D'] = '&#xd7;';  $mode_arr['Dconfirm'] = _m('Are you sure you want to permanently DELETE this record?'); }
-            if (strpos($mode,'N')!==false) { $mode_arr['N'] = _m('new'); }
+            if (strpos($mode, 'S') !== false) {
+                $mode_arr['S'] = '&#x2261';
+            }
+            if (strpos($mode, 'D') !== false) {
+                $mode_arr['D'] = '&#xd7;';
+                $mode_arr['Dconfirm'] = _m('Are you sure you want to permanently DELETE this record?');
+            }
+            if (strpos($mode, 'N') !== false) {
+                $mode_arr['N'] = _m('new');
+            }
+            if (strpos($mode, 'E') !== false) {
+                $mode_arr['E'] = _m('edit');
+            }
+            if (strpos($mode, 'B') !== false) {
+                $mode_arr['B'] = _m('back');
+            }
         }
-        $set  = new AA_Set($slices_arr=explode_ids($slices), $conds, $sort);
-        $zids = $set->query();
 
-        // load all mentioned items in one step
-        AA_Items::preload($zids);
-        $hash = get_hash('manager', $slices, $conds, $sort, $code);
+        if ($edit_code AND is_long_id($_GET['aaedit'])) {
+            // @todo check slice of edited item to match $slices
+            $inner_code = StrExpand('AA_Stringexpand_Item', array($_GET['aaedit'], $edit_code));
+            $footer     = $mode_arr['B'] ? '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>' : '';
+        } else {
 
-        $code_actions  = $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">'.$mode_arr['S'].'</i></article>') : '';
-        $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\''.$mode_arr['Dconfirm']. '\')) { document.querySelector(\'article[data-aa-part=&quot;'.$hash.'&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">'.$mode_arr['D'].'</i></article>') : '';
-        $footer        = $mode_arr['N'] ? ('<footer><article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;'.$hash.'&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\''. $slices_arr[0] .'\',\'\',\''.$field.'\',\''.$item_id.'\');">'.$mode_arr['N'].'</i></article></footer>') : '';
+            if ($field AND ($item_id = $item_id ?: ($this ? $this->item->getId() : null))) {
+                $conds .= $conds ? "-$field-=-$item_id" : "d-$field-=-$item_id";
+            }
+            if (!$sort) {
+                $sort = 'publish_date....';
+            }
+
+            // @todo check $slices to be from current site module
+            $set = new AA_Set($slices_arr, $conds, $sort);
+            $zids = $set->query();
+
+            // load all mentioned items in one step
+            AA_Items::preload($zids);
+
+            $code_actions  = $mode_arr['E'] ? ('<article><i class="ico edit" onclick="AA_SiteEdit(\'{id..............}\');">' . $mode_arr['E'] . '</i></article>') : '';
+            $code_actions .= $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">' . $mode_arr['S'] . '</i></article>') : '';
+            $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\'' . $mode_arr['Dconfirm'] . '\')) { document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">' . $mode_arr['D'] . '</i></article>') : '';
+            $footer = $mode_arr['N'] ? ('<footer><article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article></footer>') : '';
+
+            $list_code = '<article class="item">
+                            <section class="iteminfo">
+                              ' . $code . '
+                            </section>
+                            <section class="icogroup">
+                              ' . $code_actions . '
+                            </section>
+                          </article>';
+
+            // expired, ... are already filtered by query() above (if expiry_date is not in conds)
+            $inner_code = AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $list_code, AA_BIN_ALL), '');
+
+        }
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
-                    <section class="itemgroup">';
-        $code =      '<article class="item">
-                        <section class="iteminfo">
-                          '. $code .'
-                        </section>
-                        <section class="icogroup">
-                          '. $code_actions .'
-                        </section>
-                      </article>';
-
-        // expired, ... are already filtered by query() above (if expiry_date is not in conds)
-        $ret .= AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $code, AA_BIN_ALL), '');
-        $ret .= '
+                    <section class="itemgroup">'
+                       .$inner_code.'
                     </section>
-                          '. $footer .'
+                       '. $footer .'
                  </article>';
 
-        AA::Stringexpander()->setDependentParts($slices_arr, $hash, $ret);
+        AA::Stringexpander()->setDependentParts(array_merge($slices_arr, array('aaedit')), $hash, $ret);
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteNewitem, ...
         return $ret;

@@ -583,6 +583,12 @@ function get_hash() {
     return hash('md5', serialize($arg_list));  // quicker than md5()
 }
 
+/** shortest possible base64url encoded hash */
+function get_short_hash() {
+    $arg_list = func_get_args();   // must be asssigned to the variable
+    return bin2url(hash('crc32b', serialize($arg_list), true));
+}
+
 /** pack_id function
  * @param $unpacked_id
  * @return string packed md5 id, not quoted !!!

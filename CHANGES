@@ -1,3 +1,14 @@
+19-01-16 - new parameter <edit_code> in
+             {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>[:<edit_code>]]]]}
+           which allows you to specify code for edit - like _#EDIT_ITM.
+           Displays _#EDIT_ITM for item defined in {qss:aaedit}.
+           Two related buttons are added in <mode>
+             - E for Edit,
+             - B for Back
+19-01-15 - Reader slice password now allows to authenticate with old sha1 hash. This could be used
+(honzam)   for imported user database which uses this algorithm to authenticate. The hash is automatically
+           updated to newer one upon user login
+         - the LDAP permission system now stores passwords crypted with sha512
 19-01-07 - sitemodule Aliases edit now uses Codemirror editor (and possibly all Object edited in AA)
 (honzam) - improved HTML code - <center> replaced with style="text-align: center;"
          - improved function PHPDoc
