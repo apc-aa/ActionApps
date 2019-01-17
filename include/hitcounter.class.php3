@@ -226,6 +226,9 @@ class AA_Hitcounter_Stats {
         $this->field_id = $field_id;
     }
 
+    /**
+     *
+     */
     function toexecutelater() {
         $days        = $this->getDays();
         $time        = time() - ($days * 86400);
@@ -241,9 +244,9 @@ class AA_Hitcounter_Stats {
             shuffle($item_ids);
             $field = GetTable2Array("SELECT * FROM field WHERE slice_id = '$qp_slice_id' AND id='". quote($this->field_id) ."'", 'aa_first');
             foreach ($item_ids as $id) {
-                $db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
-                $value = isset($hits[$id]) ? $hits[$id] : 0;
-                StoreToContent(unpack_id($id), $field, array('value'=>$value, 'flag'=>0));
+                //$db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
+                $value = $hits[$id] ?: 0;
+                StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], array('value'=>$value, 'flag'=>0), array(), true);
             }
         }
         freeDb($db);

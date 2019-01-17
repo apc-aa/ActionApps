@@ -1181,10 +1181,22 @@ function MsgPage($url, $msg) {
     exit;
 }
 
-function StoreToContent($item_id, $field, $value, $additional='') {
+/**  Low level save data to the content table
+ *   Should not be used by "user" scripts
+ * @param string $item_id long item id
+ * @param string $field_id field id
+ * @param bool   $text_stored AA_Field['text_stored']
+ * @param array  $value ['value'=>.., 'flag'=>..]
+ * @param array  $additional
+ * @param bool   $delete    - erease the old values
+ */
+function StoreToContent($item_id, $field_id, $text_stored, $value, $additional=array(), $delete=false) {
+    if (!is_long_id($item_id) OR (strlen($field_id)!=16)) {
+        return;
+    }
     $varset = new Cvarset();
     $varset->clear();
-    if ($field["text_stored"]) {
+    if ($text_stored) {
         // do not store empty values in content table for text_stored fields
         // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
         $varset->add("text", "text", $value['value']);
@@ -1203,7 +1215,15 @@ function StoreToContent($item_id, $field, $value, $additional='') {
 
     // insert item but new field
     $varset->add("item_id", "unpacked", $item_id);
-    $varset->add("field_id", "text", $field["id"]);
+    $varset->add("field_id", "text", $field_id);
+
+    // not used yet
+    // if ($history) {
+    //     $varset->saveHistory('content', $item_id);
+    // }
+    if ($delete) {
+        $varset->doDelete('content');
+    }
     $varset->doInsert('content');
 }
 

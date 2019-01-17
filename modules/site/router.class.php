@@ -279,7 +279,8 @@ class AA_Router_Seo extends AA_Router {
         }
 
         if ( $_REQUEST['username'] ) {
-            $GLOBALS['auth']->relogin();
+            // not necessary - we alredy logged in by pageOpen() in site.php3
+            //$GLOBALS['auth']->relogin();
             $this->apc['xuser'] = $GLOBALS['auth']->auth["uname"];
 
             if ($GLOBALS['auth']->auth["uname"] AND $_REQUEST["ok_url"]) {
@@ -288,7 +289,6 @@ class AA_Router_Seo extends AA_Router {
                 go_url($_REQUEST["err_url"]);
             }
         }
-
 
 
         //huhl($GLOBALS['auth'], $GLOBALS['sess']);

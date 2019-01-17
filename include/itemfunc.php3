@@ -679,7 +679,7 @@ class AA_Field_Writer {
         }
 
         // field in content table (function defined in util.php since we need it for display count
-        StoreToContent($item_id, $field, $value, $additional);
+        StoreToContent($item_id, $field['id'], $field["text_stored"], $value, $additional);
     }
 }
 

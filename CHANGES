@@ -1,5 +1,8 @@
+19-01-17 - fixed problem with Reader slice password rehashing from 19-01-15
+(honzam) - fixed site module login - removed duplicated login process on the page
+         - hitcounter now uses newer approach to write the result to hit_x... fields
 19-01-16 - new parameter <edit_code> in
-             {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>[:<edit_code>]]]]}
+(honzam)     {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>[:<edit_code>]]]]}
            which allows you to specify code for edit - like _#EDIT_ITM.
            Displays _#EDIT_ITM for item defined in {qss:aaedit}.
            Two related buttons are added in <mode>

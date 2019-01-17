@@ -750,7 +750,6 @@ class AA_Metabase {
     }
 
     function doInsert($tablename, $data, $nohalt=null) {
-        $cols = array();
         if ( !($cols = $this->getColumns($tablename))) {
             return false;
         }
