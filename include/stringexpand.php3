@@ -3384,7 +3384,7 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($string='', $unique_slices='', $encoding='') {
-        $base = ConvertCharset::singleton()->escape($string, empty($encoding) ? 'utf-8' : $encoding);
+        $base = ConvertCharset::singleton()->escape($string, empty($encoding) ? 'utf-8' : $encoding, true);
         // we do not want to have looooong urls
         if (strlen($base) > 124) {
             $base = substr($base, 0, 124);

@@ -391,9 +391,12 @@ class ConvertCharset {
     }
 
 
-
     /** prepares the string for url name or filename (removes all accents, ...)
      *  ConvertCharset::singleton()->escape($string, $encoding=null);
+     * @param string $string   - string to escape
+     * @param string $encoding
+     * @param bool $dot        - allow dot in the escaped sequence
+     * @return string
      */
     function escape($string, $encoding=null, $dot=false) {
         $base  = html_entity_decode($string, ENT_QUOTES);

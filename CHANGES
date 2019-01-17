@@ -1,5 +1,6 @@
 19-01-17 - fixed problem with Reader slice password rehashing from 19-01-15
 (honzam) - fixed site module login - removed duplicated login process on the page
+         - allow dot in the seoname
          - hitcounter now uses newer approach to write the result to hit_x... fields
 19-01-16 - new parameter <edit_code> in
 (honzam)     {manager:<slice>:<relation-field>:<item>:<code>[:<conds>[:<sort>[:<mode>[:<edit_code>]]]]}
