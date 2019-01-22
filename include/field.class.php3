@@ -517,23 +517,25 @@ class AA_Fields implements Iterator {
     }
 
     /** getCategoryFieldId function
-     *  returns field id of field which stores category (usually "category........")
+     *  returns first field id of given field_type (category........, file............)
+     * @param string $field_type
+     * @return string
      */
-    function getCategoryFieldId() {
+    function getCategoryFieldId($field_type = 'category') {
         $this->load();
         $no = 10000;
         foreach ($this->fields as  $fid => $foo ) {
-            if ( substr($fid, 0, 8) != "category" ) {
+            if ( strpos($fid, $field_type) !== 0 ) {
                 continue;
             }
             $last = AA_Fields::getFieldNo($fid);
             $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
         }
         if ($no==10000) {
-            return false;
+            return '';
         }
         $no = ( ($no==-1) ? '.' : (string)$no);
-        return AA_Fields::createFieldId("category", $no);
+        return AA_Fields::createFieldId($field_type, $no);
     }
 
     /** getRecordArray function

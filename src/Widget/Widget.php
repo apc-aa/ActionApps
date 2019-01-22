@@ -399,6 +399,8 @@ class Widget extends AA_Components
         $help = $aa_property->getHelp();
         $class = $aa_property->getTranslations() ? 'aa-widget aa-langdiv' : 'aa-widget';
 
+        $this->registerRequires();
+
         $ret = "<div class=\"$class\"" . ($required ? ' data-aa-required' : '') . " id=\"widget-$base_id\" data-aa-basename=\"$base_name\">\n";
         $ret .= $widget_only ? '' : "  <label for=\"" . FormArray::formName2Id($winfo['last_input_name']) . "\">" . $aa_property->getName() . "</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";

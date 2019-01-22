@@ -136,6 +136,7 @@ class AA_Saver {
                 case ''         :
                 case 'new'      : $new_item_id = new_id();                 break;
 
+                // ["relation.......1","year............"]
                 default         :
                     // should be allowed just to slice admins (for security reasons)
                     if ($store_mode == 'update/insert') {
@@ -165,7 +166,7 @@ class AA_Saver {
 
             $old_item_id = $content4id->getItemID();
 
-            // set the item to be recevied from remote node
+            // set the item to be received from remote node
             $content4id->setItemID($new_item_id);
 
             // @todo - move to translations
@@ -218,6 +219,7 @@ class AA_Saver {
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
+
         if (!$fire) {
             print($this->report());
         }
@@ -876,12 +878,14 @@ class AA_Grabber_Aarss extends AA_Grabber {
 *          'n<number>_long_slice_id' if you want to add the item to slice_id
 *                                    <number> is used to add more than one
 *                                    item at the time
+*          'f_long_slice_id' new item form file upload to slice
 *      modified_field_id is field_id, where all dots are replaced by '_'
 *      we always add [] at the end, so it becames array at the end
 *   Example:
 *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
 *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+*       aa[f_54343ea876898b6754e3578a8cc544e6][file][fil][var][0]
 *
 *   There could be also compound widgets, which consists from more than one
 *   input - just like date selector. In such case we use following syntax:
@@ -944,6 +948,25 @@ class AA_Grabber_Form extends AA_Grabber {
         return $ret;
     }
 
+    /** process the   aa[f_54343ea876898b6754e3578a8cc544e6][file][fil][var][] type of upload produced by {manager} and
+     *  convert it to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][fil][var][]
+     */
+    private function fileUploadToNewItem(array &$aa) {
+        $i = 0;
+        foreach ($aa as $type => $file) {
+            list($letter,$sid) = explode('_',$type);
+            if ($letter{0} == 'f') {
+                unset($aa[$type]);   // remove old form and add new one
+                if ( is_array($file['file']['fil']['var']) AND ($s = AA_Slice::getModule($sid)) AND ( ($fid = $s->getFields()->getCategoryFieldId('file')) OR ($fid = $s->getFields()->getCategoryFieldId('img_upload')) ) ) {
+                    foreach ($file['file']['fil']['var'] as $f) {
+                        $aa['n'.(++$i)."_$sid"] = array($fid=>array('fil'=>array('var'=>array($f))));
+                    }
+                }
+            }
+        }
+    }
+
+
     /** Method called by the AA_Saver to get next item from the data input */
     function getItem() {
         if (!($tostore = current($this->_items))) {
@@ -958,6 +981,7 @@ class AA_Grabber_Form extends AA_Grabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
+
         $this->_items = array();
         if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
             if (!isset($_FILES['aa']) OR !is_array($_FILES['aa'])) {
@@ -983,6 +1007,11 @@ class AA_Grabber_Form extends AA_Grabber {
             // collect together the informations about one file - array(name, type, tmp_name, error, size)
             //$files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
             $files = $this->rearangeAaFilesArray($_FILES['aa']);
+
+            // now process the aa[f_54343ea876898b6754e3578a8cc544e6][file][] type of upload and convert it
+            // to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][]
+            $this->fileUploadToNewItem($files);
+
             // add it to POSTed variables
             $aa    = array_merge_recursive($aa, $files);
         }

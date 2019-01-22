@@ -4121,7 +4121,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 $widget      = $field->getWidget($widget_type, $widget_prop);
                 $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_prop['name'], $widget_prop['input_help']);
                 $ret         = $widget->$type($aa_property, $item, $function);
-                $widget->registerRequires();
+                // $widget->registerRequires(); // now in _finalizeHtml
                 AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
             }
         }
@@ -5899,12 +5899,13 @@ class AA_Requires {
           'tableexport@4'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
           'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.13.3/dist/xlsx.core.min.js', 'sha256-9y2mRIiL7T2ufFN4OF1Q6kgDNk9Q1rtMRl1WUp/VQEk='),
           'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
-          'lightgallery@1'             => new AA_Req_Lib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
           'leaflet@1'                  => new AA_Req_Lib('https://unpkg.com/leaflet@1.3.3/dist/leaflet.js', 'sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==', array('_css-leaflet@1')),
           'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
+          'dropzone@5'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
+          'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
           'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
           'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
-          'ckeditor@4'                 => new AA_Req_Lib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
+          'ckeditor@4'                 => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
           'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
           'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
           'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
@@ -5916,6 +5917,7 @@ class AA_Requires {
           '_css-jquery-ui@1'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
           '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
           '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
+          '_css-dropzone@5'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.css', 'sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g='),
           '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
           '_css-leaflet@1'             => new AA_Req_Css('https://unpkg.com/leaflet@1.3.3/dist/leaflet.css', 'sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=='),
           'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
@@ -7861,6 +7863,7 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  *           - S - setting (edit item in Toolbox)
  *           - E - edit - used with <edit_code> parameter
  *           - B - back - used with <edit_code> parameter
+ *           - F - file upload to first file...........x or img_source.....x field
  *           - - - no manage (just view)
  *         - could be also defined as asoc array: {jsonasoc:N:Add item:D:Delete item:Dconfirm:Are you sure to delete item?}
  *  <edit_code> - code for edit - like _#EDIT_ITM - displays _#EDIT_ITM for item defined in {qss:aaedit}
@@ -7874,9 +7877,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      * @param string $code
      * @param string $conds
      * @param string $sort
-     * @param string $mode      - "SDHE" as flags for Settings / Delete / New  OR  {jsonasoc:N:Add item:D:Delete item} - with named buttons
+     * @param string $mode      - "SDNEF" as flags for Settings / Delete / New / Edit / FileUpload OR  {jsonasoc:N:Add item:D:Delete item} - with named buttons
      * @param string $edit_code - code for edit - like _#EDIT_ITM - displays _#EDIT_ITM for item defined in {qss:aaedit}
-     * @return string|void
+     * @return string
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
 
@@ -7906,6 +7909,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             if (array_key_exists('B', $mode_arr) AND !strlen($mode_arr['B'])) {
                 $mode_arr['B'] = _m('back');
             }
+            if (array_key_exists('F', $mode_arr) AND !strlen($mode_arr['F'])) {
+                $mode_arr['F'] = _m('drop files here or click to upload');
+            }
         } else {
             if (strpos($mode, 'S') !== false) {
                 $mode_arr['S'] = '&#x2261';
@@ -7922,6 +7928,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             }
             if (strpos($mode, 'B') !== false) {
                 $mode_arr['B'] = _m('back');
+            }
+            if (strpos($mode, 'F') !== false) {
+                $mode_arr['F'] = _m('drop files here or click to upload');
             }
         }
 
@@ -7948,7 +7957,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             $code_actions  = $mode_arr['E'] ? ('<article><i class="ico edit" onclick="AA_SiteEdit(\'{id..............}\');">' . $mode_arr['E'] . '</i></article>') : '';
             $code_actions .= $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">' . $mode_arr['S'] . '</i></article>') : '';
             $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\'' . $mode_arr['Dconfirm'] . '\')) { document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">' . $mode_arr['D'] . '</i></article>') : '';
-            $footer = $mode_arr['N'] ? ('<footer><article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article></footer>') : '';
+            $footer  = $mode_arr['N'] ? ('<article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article>') : '';
 
             $list_code = '<article class="item">
                             <section class="iteminfo">
@@ -7962,14 +7971,41 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             // expired, ... are already filtered by query() above (if expiry_date is not in conds)
             $inner_code = AA_Stringexpand_Item::itemJoin(AA_Items::getFormatted($zids, $list_code, AA_BIN_ALL), '');
 
+            if ($mode_arr['F']) {
+
+                $input_name =  "aa[f_".reset($slices_arr)."][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
+                $inner_code .= "<article class=\"item\" id=\"fileup$hash\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
+                AA::Stringexpander()->addRequire('dropzone');
+
+                $script2run = <<<EOT
+    function AA_UploadInit(fu_id,field_id,item_id) {
+        var prms = {}; 
+        prms['aa[all]['+ field_id+'][0]'] = item_id;
+        var aaDz = new Dropzone('#'+fu_id, { url: "?", uploadMultiple: true, params: prms });
+        aaDz.on("completemultiple", function(files) {
+            var f = files[files.length-1];
+            AA__SiteUpdateParts(JSON.parse(f.xhr.response));
+        });
+    };
+EOT;
+                AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
+
+                $dz_setup_code = "Dropzone.options.fileup$hash = { paramName: '$input_name' }; AA_UploadInit('fileup$hash','$field','$item_id');";
+                if (!IsAjaxCall()) {
+                    $dz_setup_code = "document.addEventListener('DOMContentLoaded', function() { $dz_setup_code });";
+                }
+            }
+
         }
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
                     <section class="itemgroup">'
                        .$inner_code.'
                     </section>
-                       '. $footer .'
+                       '. ($footer ? "<footer>$footer</footer>" : '') .'
                  </article>';
+        $ret .= "<script>$dz_setup_code</script>";
+        
 
         AA::Stringexpander()->setDependentParts(array_merge($slices_arr, array('aaedit')), $hash, $ret);
         AA::Stringexpander()->addRequire('css-aa-system');

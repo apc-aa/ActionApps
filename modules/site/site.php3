@@ -240,6 +240,7 @@ if ($lang_file) {
 
 $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpander()->unalias("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
 
+
 if (IsAjaxCall()) {
     if ($is_valid != 'Valid') {
         header("Content-type: application/json");
@@ -251,7 +252,8 @@ if (IsAjaxCall()) {
         }
         exit;
     }
-    if (is_array($_POST['aa'])) {
+
+    if (is_array($_POST['aa']) OR is_array($_FILES['aa'])) {
         $grabber = new AA_Grabber_Form();
         $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
         // $saver - > check Perms @todo

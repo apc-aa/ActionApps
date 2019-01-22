@@ -1157,15 +1157,16 @@ class ItemContent extends AA_Content {
             return false;
         }
 
-        $field_writer = new AA_Field_Writer;
-
-        $update       = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
-        $computed_field_exist = false;
-
         // could be called also from outside to recompute fields
         if (! ($slice = AA_Slice::getModule($this->getSliceID())) ) {
             return false;
         }
+
+        $field_writer = new AA_Field_Writer($this->getSliceID());
+
+        $update       = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
+        $computed_field_exist = false;
+
         if (!$fields) {
             $fields   = $slice->fields('record');
         }
@@ -1339,7 +1340,7 @@ class ItemContent extends AA_Content {
      * @return Cvarset
      */
     function _store_fields($id, &$fields, $context='direct') {
-        $field_writer = new AA_Field_Writer;
+        $field_writer = new AA_Field_Writer($this->getSliceID());
         $parameters   = array();
         $thumbnails   = array();
 

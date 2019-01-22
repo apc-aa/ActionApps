@@ -425,23 +425,16 @@ $r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_na
 
 // ***** CONDS *****
 
-if ($cat_id) {  // optional parameter cat_id - deprecated - slow ------
-    $tmpobj = $slice->getFields();
-    $cat_field = $tmpobj->getCategoryFieldId();
-
+if ($cat_id AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCategoryFieldId())) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = GetCategoryGroup($slice_id);
-
-    $SQL = "SELECT value FROM constant
-             WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
+    $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
     $db->query($SQL);
     if ( $db->next_record() ) {
         $conds[] = array( $cat_field => 1,
                           'value'    => $db->f('value'),
                           'operator' => ($exact ? '=' : 'LIKE'));
     }
-} elseif ($cat_name)  {  // optional parameter cat_name -------
-    $tmpobj = $slice->getFields();
-    $cat_field = $tmpobj->getCategoryFieldId();
+} elseif ($cat_name AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCategoryFieldId()))  {  // optional parameter cat_name -------
     $conds[]     = array( $cat_field => 1,
                           'value'    => $cat_name,
                           'operator' => ($exact ? '=' : 'LIKE'));
@@ -500,9 +493,7 @@ if ($group_by) {
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
 }
-elseif ($slice_info['category_sort']) {
-    $tmpobj = $slice->getFields();
-    $group_field = $tmpobj->getCategoryFieldId();
+elseif ($slice_info['category_sort'] AND ($tmpobj = $slice->getFields()) AND ($group_field = $tmpobj->getCategoryFieldId())) {
     $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
     $sort_tmp[]  = array( $group_field => $grp_odir );
 }

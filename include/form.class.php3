@@ -45,7 +45,7 @@ class AA_Formrow extends AA_Storable {
 
     function getRowHtml($content, $type='') {
         $widget = $this->getWidget();
-        $widget->registerRequires();
+        // $widget->registerRequires(); // now in _finalizeHtml
         switch ($type) {
             case 'ajax': return $widget->getAjaxHtml($this->getRowProperty(), $content);
             case 'live': return $widget->getliveHtml($this->getRowProperty(), $content);

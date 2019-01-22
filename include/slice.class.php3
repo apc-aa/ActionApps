@@ -420,10 +420,16 @@ class AA_Slice extends AA_Module {
         return $this->getProperty('type');
     }
 
+    /**
+     * @return bool
+     */
     function isExpiredContentAllowed() {
         return ($this->getProperty('flag') & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
     }
 
+    /**
+     * @return bool
+     */
     function isPendingContentAllowed() {
         return ($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
     }
@@ -638,6 +644,9 @@ class AA_Slice extends AA_Module {
         return $this->show_func_used;
     }
 
+    /**
+     * @return int
+     */
     function allowed_bin_4_user() {
         // put the item into the right bin
         $bin2fill = IfSlPerm(PS_EDIT_ALL_ITEMS, $this->module_id) ? 1 : (int) $this->getProperty("permit_anonymous_post");

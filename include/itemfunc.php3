@@ -231,8 +231,10 @@ class AA_Generator_Mul extends AA_Generator {
 class AA_Field_Writer {
 
     protected $item_varset;
+    protected $slice_id;
 
-    function __construct() {
+    function __construct($slice_id) {
+        $this->slice_id    = $slice_id;
         $this->item_varset = new Cvarset;
     }
 
@@ -479,7 +481,7 @@ class AA_Field_Writer {
 
         // look if the uploaded picture exists
         if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
-            $sid = $GLOBALS["slice_id"];
+            $sid = $this->slice_id;       // GLOBALS["slice_id"];
             if (!$sid AND $item_id) {
                 $item  = AA_Items::getItem(new zids($item_id));
                 if ($item) {
@@ -589,7 +591,7 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_unq($item_id, $field, $value, $param, $additional='') {
-        $value['value'] = StrExpand('AA_Stringexpand_Finduniq', array($value['value'], $field["id"], empty($unique_slices) ? $GLOBALS["slice_id"] : $unique_slices, $item_id));
+        $value['value'] = StrExpand('AA_Stringexpand_Finduniq', array($value['value'], $field["id"], empty($unique_slices) ? $this->slice_id : $unique_slices, $item_id));
         $this->_store($item_id, $field, $value, $param, $additional);
     }
 
