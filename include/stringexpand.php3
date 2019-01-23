@@ -2189,7 +2189,7 @@ class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
      * @return string
      */
     function expand($field_id='') {
-        return ($this AND is_object($item = $this->item) AND $item->isField($field_id)) ? $this->htmlEscapeAndLinkUrls($item->getval($field_id),false) : '';
+        return ($this AND is_object($item = $this->item) AND $item->isField($field_id)) ? $item->col2Html($field_id) : '';
     }
 }
 
@@ -2208,7 +2208,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($text='') {
-        return nl2br(str_replace('  ', ' &ensp;', $this->htmlEscapeAndLinkUrls($text)));
+        return nl2br(str_replace('  ', ' &ensp;', self::htmlEscapeAndLinkUrls($text)));
     }
 
     /**
@@ -2219,7 +2219,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
      * @param bool $escape
      * @return string
      */
-    function htmlEscapeAndLinkUrls($text, $escape=true) {
+    public static function htmlEscapeAndLinkUrls($text, $escape=true) {
         /* Regular expression bits used by htmlEscapeAndLinkUrls() to match URLs.   */
         $rexScheme    = 'https?://';
         // $rexScheme    = "$rexScheme|ftp://"; // Uncomment this line to allow FTP addresses.

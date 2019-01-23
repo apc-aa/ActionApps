@@ -32,25 +32,6 @@ if ( file_exists( AA_INC_PATH."usr_aliasfnc.php3" ) ) {
 require_once AA_INC_PATH. "item_content.php3";
 require_once AA_BASE_PATH."modules/links/constants.php3";
 
-/** converts plain text to html
- * @param $txt
- * @return string
- */
-function txt2html($txt) {
-    // preg allows text to be pasted from Word
-    // displays qoutes instead of &8221;
-    return (strpos($txt, '&')===false) ? nl2br(myspecialchars($txt)) : nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",myspecialchars($txt)));
-}
-
-/** DeHtml function
- * @param $txt
- * @param $flag
- * @return string
- */
-function DeHtml($txt, $flag) {
-    return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
-}
-
 /** DefineBaseAliases function
  * @param $aliases
  * @param $module_id
@@ -480,6 +461,31 @@ class AA_Item {
         return $this->content4id->getSliceID();
     }
 
+    /** text2Html function
+     * @param $txt
+     * @param $flag
+     * @return string
+     */
+    function text2Html($txt, $flag) {
+        if ($flag & FLAG_HTML) {
+            return $txt;
+        }
+        // converts plain text to basic html
+        return (strpos($txt, '&') === false) ? nl2br(myspecialchars($txt)) : nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", myspecialchars($txt)));
+    }
+
+    /** col2Html function - better txt2html function - it replaces also urls...
+     * @param $txt
+     * @param $flag
+     * @return string
+     */
+    function col2Html($col) {
+        if (($flag=$this->getFlag($col)) & FLAG_HTML) {
+            return $this->getval($col);
+        }
+        return nl2br(str_replace('  ', ' &ensp;', AA_Stringexpand_Text2html::htmlEscapeAndLinkUrls($this->getval($col))));
+    }
+
     /** getWidgetAjaxHtml function
      *  returns HTML code for Ajaxian Html input for the field_id
      * @param $field_id
@@ -538,6 +544,7 @@ class AA_Item {
         return array_keys($this->aliases);
     }
 
+
     /** getahref function
      * get link from url and text
      * @param $url
@@ -555,7 +562,7 @@ class AA_Item {
             }
             // hide email from spam robots
             if ($hide=='1') {
-                $linkpart=explode('@',str_replace("'", "\'", $url.'@'.DeHtml($txt, $html)),4);
+                $linkpart=explode('@',str_replace("'", "\'", $url.'@'.$this->text2Html($txt, $html)),4);
                 $link  = $linkpart[0]."'+'@'+'".$linkpart[1];
                 $inner = $linkpart[2] . ($linkpart[3] ? "'+'@'+'".$linkpart[3] : '');
                 if (!$add) {
@@ -567,10 +574,10 @@ class AA_Item {
                 }
                 return $ret;
             } else {
-                return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
+                return '<a href="'. $url ."\" $add>". $this->text2Html($txt, $html).'</a>';
             }
         }
-        return DeHtml($txt,$html);
+        return $this->text2Html($txt,$html);
     }
 
     /** get_alias_subst function
@@ -727,7 +734,7 @@ class AA_Item {
                 $txt = $this->getval($col);
             }
         }
-        return DeHtml($txt, $this->getFlag($col));
+        return $this->text2Html($txt, $this->getFlag($col));
     }
 
     /** Prints the parameter - it is shortcut for f_t:<text>:asis
@@ -748,11 +755,11 @@ class AA_Item {
      */
     function f_h($col, $param="") {
         if ( empty($param) ) {
-            return DeHtml($this->getval($col), $this->getFlag($col));
+            return $this->text2Html($this->getval($col), $this->getFlag($col));
         }
         if ($param=='AA_DashOrLanG') {
             if ($this->isMultilingual($col)) {
-                return DeHtml($this->getval($col), $this->getFlag($col));
+                return $this->text2Html($this->getval($col), $this->getFlag($col));
             } else {
                 $param = '-';
             }
@@ -768,7 +775,7 @@ class AA_Item {
         }
         $res = '';
         foreach ( $values as $v ) {
-            $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
+            $res .= ($res ? $param : ''). $this->text2Html($v['value'], $v['flag']); // add value separator just if field is filled
         }
         return $res;
     }
@@ -809,7 +816,7 @@ class AA_Item {
      * @return mixed|null|string|string[]
      */
     function f_y($col, $param="") {
-        $str2unalias = $param ? $param : DeHtml($this->getval($col), $this->getFlag($col));
+        $str2unalias = $param ? $param : $this->text2Html($this->getval($col), $this->getFlag($col));
         return $this->unalias( $str2unalias );
     }
 
@@ -892,7 +899,7 @@ class AA_Item {
         list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
         $value = $this->getval($col);
         if ($value AND !($col == $field)) {  // special case - return whole field
-            return DeHtml( $value, $this->getFlag($col) );
+            return $this->text2Html( $value, $this->getFlag($col) );
         }
 
         if ($pparagraph) {
@@ -1152,7 +1159,7 @@ class AA_Item {
                 $param = $p[0];
             }
         }
-        return strlen($param) ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getFlag($col));
+        return strlen($param) ? $this->subst_alias( $param ): $this->text2Html($this->getval($col), $this->getFlag($col));
     }
 
     /** f_s function
@@ -1231,6 +1238,7 @@ class AA_Item {
                     return "";
                 }
                 $delim = '';
+                $ret   = '';
                 foreach($cat_names as $k => $cat) {
                     $print_cname = $cat['value'];
                     if ( $cat_highlight[$k]['value']=='highlight' ) {
@@ -1312,7 +1320,7 @@ class AA_Item {
             $negate = !$negate;
         }
         if (!$pskip_col) {
-            $coltxt = DeHtml($this->getval($col), $this->getFlag($col));
+            $coltxt = $this->text2Html($this->getval($col), $this->getFlag($col));
         }
         return  ($negate ? $pnone : $pbegin. $coltxt .$pend);
     }
