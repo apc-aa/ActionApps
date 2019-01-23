@@ -2171,6 +2171,30 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Converts the content of the field to html better than standard {text............} comand would do
+ *  (makes html links from urls...)Checks the text for urls and make it clickable
+ */
+class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
+
+    /**
+     * @return string
+     */
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getId();
+    }
+
+    /** expand function
+     * @param $field_id string
+     * @return string
+     */
+    function expand($field_id='') {
+        return ($this AND is_object($item = $this->item) AND $item->isField($field_id)) ? $this->htmlEscapeAndLinkUrls($item->getval($field_id),false) : '';
+    }
+}
+
+
+
 /** Used for sending text e-mails by {mail...} function */
 class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2191,8 +2215,11 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
      *  UrlLinker - facilitates turning plain text URLs into HTML links.
      *  Author: Søren Løvborg (https://bitbucket.org/kwi/urllinker)
      *  http://creativecommons.org/publicdomain/zero/1.0/
+     * @param      $text
+     * @param bool $escape
+     * @return string
      */
-    function htmlEscapeAndLinkUrls($text) {
+    function htmlEscapeAndLinkUrls($text, $escape=true) {
         /* Regular expression bits used by htmlEscapeAndLinkUrls() to match URLs.   */
         $rexScheme    = 'https?://';
         // $rexScheme    = "$rexScheme|ftp://"; // Uncomment this line to allow FTP addresses.
@@ -2224,7 +2251,11 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
             list($url, $urlPosition) = $match[0];
 
             // Add the text leading up to the URL.
-            $html .= myspecialchars(substr($text, $position, $urlPosition - $position));
+            if ($escape) {
+                $html .= myspecialchars(substr($text, $position, $urlPosition - $position));
+            } else {
+                $html .= substr($text, $position, $urlPosition - $position);
+            }
 
             $scheme      = $match[1][0];
             $username    = $match[2][0];

@@ -1,3 +1,5 @@
+19-01-23 - new {field2html:<field_id>} - converts the content of the field to html better
+(honzam)   than standard {text............} comand would do (makes html links from urls...).
 19-01-22 - manager now allows to create items by upload file to slice (allows drag&drop)
 (honzam) - {input:<slice_id>:<field_id>} as well as {edit:<item_id>:<field_id>} now works
            with CKEditor (Rich Edit Text Area widget)
