@@ -475,15 +475,14 @@ class AA_Item {
     }
 
     /** col2Html function - better txt2html function - it replaces also urls...
-     * @param $txt
-     * @param $flag
+     * @param $col
      * @return string
      */
     function col2Html($col) {
-        if (($flag=$this->getFlag($col)) & FLAG_HTML) {
-            return $this->getval($col);
+        if (!strlen($txt = $this->getval($col)) OR (($flag=$this->getFlag($col)) & FLAG_HTML)) {
+            return $txt;
         }
-        return nl2br(str_replace('  ', ' &ensp;', AA_Stringexpand_Text2html::htmlEscapeAndLinkUrls($this->getval($col))));
+        return nl2br(str_replace('  ', ' &ensp;', AA_Stringexpand_Text2html::htmlEscapeAndLinkUrls($txt)));
     }
 
     /** getWidgetAjaxHtml function
