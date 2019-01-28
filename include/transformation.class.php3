@@ -167,7 +167,7 @@ class AA_Transformation_Value extends AA_Transformation {
      * @return message
      */
     function description() {
-        return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {switch()...}, ...");
+        return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ...");
     }
 
     /** transform function
@@ -400,7 +400,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @return message
      */
     function description() {
-        return _m("Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {switch()...}, ... for new value.");
+        return _m("Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value.");
     }
 
     /** transform function

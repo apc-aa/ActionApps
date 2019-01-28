@@ -3366,7 +3366,7 @@ $_m["Fill by value"]
  = "";
 
 // admin/search_replace.php3, row 236
-$_m["Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {switch()...}, ..."]
+$_m["Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ..."]
  = "";
 
 // admin/search_replace.php3, row 263, 336, 420, 571
@@ -3395,7 +3395,7 @@ $_m["Add value to field"]
  = "";
 
 // admin/search_replace.php3, row 310
-$_m["Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {switch()...}, ... for new value."]
+$_m["Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value."]
  = "";
 
 // admin/search_replace.php3, row 376

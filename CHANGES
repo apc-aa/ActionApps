@@ -1,3 +1,20 @@
+19-01-28 - new JSON Web Token stateless authentication possibility using {jwtencode} and {jwtdecode}
+(honzam) - new {jwtencode:<secret-key>:<username>:<password>[:<lifetime>[:<add-validity>]]}
+            - Generates JWT (JSON Web Token) for user identified by <username> and <password>. The validity is
+              checked in {jwtdecode} using secret-key and optional <add-validity>
+            - add-validity - aditional check - alias or aa code evaluated for the user. When user then access
+              the AA with token, the evaluated text for the user must be the same for success login
+            - could be used for invalidating of the token. Let's create end_date........ field with _#EXITTIME alias
+              passed as $add_validity. Then with user logout we just update the end_date........ field of the user
+            - works only for Readermanagement users
+           Ussage: {jwtencode:secret-key:{qss:email}:{qss:password}:3600:_#EXITTIME}
+         - new {jwtdecode:<secret-key>[:<add-validity>]} - checks the validity of the JWS token in Authorization header
+           an if OK, returns user id of authenticated user
+           <add-validity> is the additional check which allows invalidate older tokens - see {jwtencode:...}
+           Note: Appache webserver sometimes do not pass the Authorization header. The solution could be in adding
+                   FcgidPassHeader Authorization
+                in Apache configuration (for Apache/mod_fcgid)
+         - new \Firebase\JWT\JWT library (used for JWT parsing)
 19-01-23 - new {field2html:<field_id>} - converts the content of the field to html better
 (honzam)   than standard {text............} comand would do (makes html links from urls...).
 19-01-22 - manager now allows to create items by upload file to slice (allows drag&drop)

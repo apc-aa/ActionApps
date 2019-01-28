@@ -436,6 +436,7 @@ require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 /** main AA permissions */
 class AA_Perm {
 
+    /** @var array AA_Permsystem */
     private $perm_systems;
 
     function __construct($systems) {
