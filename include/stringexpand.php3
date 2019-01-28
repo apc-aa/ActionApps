@@ -155,7 +155,7 @@ function json2asoc($string) {
 }
 
 /** @return string - JSON array form string where values are delimited by $delimiter.
- *  Input text mut be in utf8
+ *  Input text must be in utf8
  */
 class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters ($delimiter could be space) */
@@ -6892,6 +6892,95 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
             mcrypt_module_close($td);
         }
         return $ret;
+    }
+}
+
+/** Generates JWT (JSON Web Token) for user identified by <username> and <password>
+ *  Ussage: {jwtencode:secret-key:{qss:email}:{qss:password}:3600:_#EXITTIME}
+ */
+class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
+
+    /**
+     * @param string $key          - secretkey for JWT sign
+     * @param string $username     - username
+     * @param string $password     - password
+     * @param string $lifetime     - lifetime in seconds (default - 1 day)
+     * @param string $add_validity - aditional check - alias or aa code evaluated for the user. When user then access the
+     *                               the AA with token, the evaluated text for the user must be the same for success login
+     *                             - could be used for invalidating of the token. Let's create end_date........ field
+     *                               with _#EXITTIME alias passed as $add_validity. Then with user logout we just update
+     *                               the end_date........ field of the user
+     *                             - works only for Readermanagement users
+     * @return string
+     */
+    function expand($key='', $username='', $password='', $lifetime='', $add_validity='') {
+
+        if (!strlen($key) OR !strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password))) {
+            return '';
+        }
+
+        if (strlen($add_validity) AND !is_long_id($uid)) {
+            // if we are using $add_validity, then the user MUST be from Reader Management so we can compute the add_valid
+            return '';
+        }
+
+        $token = array();
+        $token['sub'] = $uid;
+        $token['exp'] = time() + ((int)$lifetime ?: 24*3600);
+        $token['iat'] = time();
+        if (strlen($add_validity)) {
+            $token['aaValid'] = StrExpand('AA_Stringexpand_Item', array($uid,$add_validity));
+        }
+
+        // IMPORTANT:
+        // You must specify supported algorithms for your application. See
+        // https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40
+        // for a list of spec-compliant algorithms.
+        $jwt = \Firebase\JWT\JWT::encode($token, $key);
+
+        // This will now be an object instead of an associative array. To get
+        // an associative array, you will need to cast it as such:
+        // $decoded = (array)\Firebase\JWT\JWT::decode($jwt, $key, array('HS256'));
+
+        return $jwt;
+    }
+}
+
+/** {jwtdecode:<secret-key>[:<add-validity>]} - checks the validity of the JWS token in Authorization header an if OK,
+ *  returns user id of authenticated user
+ *   <add-validity> is the additional check which allows invalidate older tokens - see add-validity in {jwtencode:...}
+ *  The Appache webserver sometimes do not pass the Authorization header. The solution could be in adding
+ *       FcgidPassHeader Authorization
+ *  in Apache configuration (for Apache/mod_fcgid)
+ */
+class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
+
+    /**
+     */
+    function expand($key='', $add_validity='') {
+
+        // Get header Authorization
+        if (strlen($key) AND ($auth_header = trim($_SERVER['Authorization'] ?: $_SERVER['HTTP_AUTHORIZATION']))) {
+            list($type, $jwt) = explode(" ", $auth_header, 2);
+
+            if (strcasecmp($type, "Bearer") == 0) {
+                try {
+                    $decoded = (array)\Firebase\JWT\JWT::decode($jwt, $key, array('HS256'));
+                    $uid = $decoded['sub'];
+                    if (is_long_id($uid) AND strlen($add_validity)) {
+                        if ($decoded['aaValid'] == StrExpand('AA_Stringexpand_Item', array($uid,$add_validity))) {
+                            return $uid;
+                        }
+                        return '';
+                    }
+                    return $uid;
+                } catch ( Exception $e ) {
+                }
+            }
+            // wrong Auth header
+        }
+        // no Auth header
+        return '';
     }
 }
 
