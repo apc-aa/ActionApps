@@ -72,7 +72,7 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2, pe
         $(jqid(link_id)).removeClass("is-on");
     }
     if (persist_id) {
-       localStorage[persist_id] = ($(jqid(div_id_1)).visible() ? '1' : '2');
+       localStorage[persist_id] = ($(jqid(div_id_1)).is(':visible') ? '1' : '2');
     }
 }
 
