@@ -59,14 +59,17 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2, pe
         $(jqid(div_id_2)).show('fast');
         $(jqid(link_id)).html(link_text_2);
         $(jqid(link_id)).addClass("is-on");
+        if (persist_id) {
+            localStorage[persist_id] = '2';
+        }
     } else {
         $(jqid(div_id_2)).hide('fast');
         $(jqid(div_id_1)).show('fast');
         $(jqid(link_id)).html(link_text_1);
         $(jqid(link_id)).removeClass("is-on");
-    }
-    if (persist_id) {
-        localStorage[persist_id] = ($(jqid(div_id_1)).is(':visible') ? '1' : '2');
+        if (persist_id) {
+            localStorage[persist_id] = '1';
+        }
     }
 }
 
