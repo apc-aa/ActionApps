@@ -59,7 +59,7 @@ function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
 }
 
 // now AA specific functions
-function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
+function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2, persist_id) {
     if ( $(jqid(div_id_1)).is(':visible') ) {
         $(jqid(div_id_1)).hide('fast');
         $(jqid(div_id_2)).show('fast');
@@ -70,6 +70,9 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
         $(jqid(div_id_1)).show('fast');
         $(jqid(link_id)).html(link_text_1);
         $(jqid(link_id)).removeClass("is-on");
+    }
+    if (persist_id) {
+       localStorage[persist_id] = ($(jqid(div_id_1)).visible() ? '1' : '2');
     }
 }
 

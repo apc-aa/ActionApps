@@ -1,3 +1,5 @@
+19-01-29 - fix - <persistent-id> parameter for {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]}
+(honzam)   now works also in jQuery version of the aajslib
 19-01-28 - new JSON Web Token stateless authentication possibility using {jwtencode} and {jwtdecode}
 (honzam) - new {jwtencode:<secret-key>:<username>:<password>[:<lifetime>[:<add-validity>]]}
             - Generates JWT (JSON Web Token) for user identified by <username> and <password>. The validity is
