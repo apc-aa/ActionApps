@@ -1,3 +1,5 @@
+19-01-30 - {editable:...} text editor now asks user, when (s)he wants to leave the page without saving changes
+(honzam)
 19-01-29 - fix - <persistent-id> parameter for {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]}
 (honzam)   now works also in jQuery version of the aajslib
 19-01-28 - new JSON Web Token stateless authentication possibility using {jwtencode} and {jwtdecode}
@@ -884,7 +886,7 @@
 16-04-14 - AA COULD NOT BE PRODUCTION READY right now from svn
 (honzam) - quite big internal change - phplib session system switched to
            standard $_SESSIONs. With this change we also have to switch to
-           cookies based sessions, so the AA_CP_Sess is no longer in URL. For
+           cookies based sessions, so the AA_CP_Session is no longer in URL. For
            this reason we do can not to store slice_id/module_id in the sessions
            - so we have to put it in URL all the time in admin interface. This
            is long awaited and good change - this allow us to be logged once and

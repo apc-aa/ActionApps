@@ -4315,6 +4315,7 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $script2run = 'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
                                   '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
                                   '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
+                                  '    window.addEventListener("beforeunload", function (e) {  e.preventDefault(); e.returnValue = "' ._m('Changes are not saved. Do you really want to exit this page?'). "\";});\n" .
                                   '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
                                   '  });' . "\n" .
                                   '});' . "\n";
