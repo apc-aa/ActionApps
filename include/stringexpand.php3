@@ -8094,7 +8094,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             if ($mode_arr['F']) {
 
                 $input_name =  "aa[f_".reset($slices_arr)."][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
-                $inner_code .= "<article class=\"item\" id=\"fileup$hash\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
+//              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at thee and of page...)
+//              $inner_code .= "<article class=\"item\" id=\"fileup$hash\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
+                $inner_code .= "<article class=\"item\" id=\"fileup$hash\">".$mode_arr['F']."</article>";
                 AA::Stringexpander()->addRequire('dropzone');
 
                 $script2run = <<<EOT

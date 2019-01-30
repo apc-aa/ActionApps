@@ -37,31 +37,31 @@ class FilWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('allowed_ftypes', 'label', 'hint', 'display_url', 'multiple'));
     }
 
-    function requireLibs()
-    {
-        return array('https://unpkg.com/filepond/dist/filepond.css', 'https://unpkg.com/filepond/dist/filepond.js');
-    }
-
-    /** script to run after the page DOM is loaded */
-    function requireRun()
-    {
-        return '
-        
-        FilePond.setOptions({
-            allowReplace: false,
-            instantUpload: false,
-            server: {
-                url: \'http://192.168.33.10\',
-                process: \'./process.php\',
-                revert: \'./revert.php\',
-                restore: \'./restore.php?id=\',
-                fetch: \'./fetch.php?data=\'
-            }
-        });        
-        
-        FilePond.parse(document.body);
-      ';
-    }
+//    function requireLibs()
+//    {
+//        return array('https://unpkg.com/filepond/dist/filepond.css', 'https://unpkg.com/filepond/dist/filepond.js');
+//    }
+//
+//    /** script to run after the page DOM is loaded */
+//    function requireRun()
+//    {
+//        return '
+//
+//        FilePond.setOptions({
+//            allowReplace: false,
+//            instantUpload: false,
+//            server: {
+//                url: \'http://192.168.33.10\',
+//                process: \'./process.php\',
+//                revert: \'./revert.php\',
+//                restore: \'./restore.php?id=\',
+//                fetch: \'./fetch.php?data=\'
+//            }
+//        });
+//
+//        FilePond.parse(document.body);
+//      ';
+//    }
 
 
     /** @return AA_Value for the data send by the widget
