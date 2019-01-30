@@ -575,10 +575,17 @@ function AA_SaveEditors() {
 
     $.post(AA_GetConf('path') + 'filler.php3', params, function(data) {
         AA_Toolbar('');
+        window.removeEventListener("beforeunload", AA_WindowUnloadQ);
         AA_Message((Object.keys(data).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(data).length +' zmen'));
     }, 'json');
 }
 
+// used in window.addEventListener("beforeunload", AA_WindowUnloadQ)
+function AA_WindowUnloadQ(e) {
+    e.preventDefault();
+    // The text is not displayed in most modern browsers, but the value must be set;
+    e.returnValue = "Changes are not saved. Do you really want to exit this page?";
+}
 
 function AA_SiteUpdate(item, field, value) {
     var params = {};
