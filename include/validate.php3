@@ -620,6 +620,13 @@ class AA_Validate_Eunique extends AA_Validate {
         $validator = new AA_Validate_Unique(array('field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id));
         return $validator->validate($var, $default);
     }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return array('type'=>'email');
+    }
 }
 
 /** Test for text (any characters allowed)

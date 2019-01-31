@@ -1,3 +1,5 @@
+19-01-30 - input type for "Unique email" changed to <input type=email ...>
+(honzam)
 19-01-30 - {editable:...} text editor now asks user, when (s)he wants to leave the page without saving changes
 (honzam)
 19-01-29 - fix - <persistent-id> parameter for {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]}
