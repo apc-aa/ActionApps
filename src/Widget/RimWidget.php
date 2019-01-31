@@ -86,6 +86,8 @@ class RimWidget extends \AA\Widget\Widget
         $widget = '<article class="aa-rim relactionitem flex">
                               <section class="itemgroup">';
 
+        $def_field_id = $aa_property->getId();
+        $def_slice_id = $content->getOwnerId();
 
         $options = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
 
@@ -136,9 +138,6 @@ class RimWidget extends \AA\Widget\Widget
         $input_id = FormArray::formName2Id($input_name);
 
         // <input type="text" id="finduser" name="finduser" onkeyup="PlanSearch($('#finduser').val()+$('#prispeluser').val(), ReloadUserTable,500)" placeholder="hledej...">
-
-        $def_field_id = $aa_property->getId();
-        $def_slice_id = $content->getOwnerId();
 
         $downbuttons = join("\n", array_values($actbuttonsdown));
 

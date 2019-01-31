@@ -64,8 +64,8 @@ class TagWidget extends \AA\Widget\Widget
         // we send to responder the slice and field id of the field with the DEFINITION
         // I do not want to transport all the settings over GET parameter
 
-        // $def_field_id = $aa_property->getId();
-        // $def_slice_id = $content->getOwnerId();
+        $def_field_id = $aa_property->getId();
+        $def_slice_id = $content->getOwnerId();
 
         $opts = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
         $json_val = array();
