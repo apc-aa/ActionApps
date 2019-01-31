@@ -1,5 +1,8 @@
-19-01-30 - input type for "Unique email" changed to <input type=email ...>
-(honzam)
+19-01-30 - new {formantispam} command -generates html code (<input name=answer) to be inside <form> which protects
+(honzam)   the form from spammers by easy trick (the generated code could be changed in future)
+         - input type for "Unique email" changed to <input type=email ...>
+         - fixed Tags widget - now works again
+         - fixed crypt functions, when the password is longer than 32 characters
 19-01-30 - {editable:...} text editor now asks user, when (s)he wants to leave the page without saving changes
 (honzam)
 19-01-29 - fix - <persistent-id> parameter for {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>][:<persistent-id>]}
@@ -1517,7 +1520,7 @@
            Used "select2" library, which use jQuery. Just include
            /apc-aa/javascript/aajslib-jquery.php in your pages - all is loaded
            dynamicaly after the first ussage
-           Not working insite AA admin interface, yet (there we use normal
+           Not working inside AA admin interface, yet (there we use normal
            relation field)
          - {tagcloud:<item_ids>[:<count>[:<alias>[:<count_field>]]]} - Creates
            tag cloud from the items.

@@ -28,7 +28,7 @@ final class Crypt {
      * @throws \Exception
      */
     public static function encryptAesGcm($text, $pass) {
-        $key = str_pad($pass,self::AES256GCM_KEYBYTES, pack("H*",hash('sha256', $pass)));
+        $key   = self::createKey($pass);
         $nonce = mb_substr(bin2url(random_bytes(self::AES256GCM_NPUBBYTES)),0,self::AES256GCM_NPUBBYTES,'8bit'); // nonce is already base64_url encoded
 
         if (function_exists('sodium_crypto_aead_aes256gcm_encrypt')) {
@@ -49,7 +49,7 @@ final class Crypt {
         if (strlen($text) < self::AES256GCM_NPUBBYTES) {
             return false;
         }
-        $key = str_pad($pass,self::AES256GCM_KEYBYTES, pack("H*",hash('sha256', $pass)));
+        $key   = self::createKey($pass);
         $nonce = mb_substr($text, 0, self::AES256GCM_NPUBBYTES, '8bit');
         $enc   = url2bin(mb_substr($text, self::AES256GCM_NPUBBYTES, null,'8bit'));
 
@@ -61,6 +61,19 @@ final class Crypt {
         }
 
         return is_string($decrypted) ? $decrypted : false;
+    }
+
+    /**
+     * @param string $pass
+     * @return string - $kay modified to exact self::AES256GCM_KEYBYTES bytes
+     */
+    static private function createKey($pass) {
+        if ( ($passlen = strlen($pass)) > self::AES256GCM_KEYBYTES ) {
+            return pack("H*", hash('sha256', $pass));
+        } elseif ($passlen == self::AES256GCM_KEYBYTES) {
+            return $pass;
+        }
+        return str_pad($pass,self::AES256GCM_KEYBYTES, pack("H*",hash('sha256', $pass)));
     }
 
     /**
