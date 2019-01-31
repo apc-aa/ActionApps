@@ -5215,10 +5215,11 @@ class AA_Unalias_Callback {
     }
 }
 
-/** StrExpand($outcmd, array('item'=>$this->item, 'itemview'=> $this->itemview))
- *
+/**
+ *  Ussage: StrExpand('AA_Stringexpand_Date', array($format,$timestamp));
+ *          StrExpand($outcmd, array($format,$timestamp), array('item'=>$this->item, 'itemview'=> $this->itemview))
  */
-function StrExpand($class_name, $params, $context_arr=array(), $allow_quote_colons=false, $ignore_cache=false) {
+function StrExpand($class_name, $params=array(), $context_arr=array(), $allow_quote_colons=false, $ignore_cache=false) {
     /** @var AA_Stringexpand $stringexpand */
     $stringexpand = new $class_name($context_arr);
     if ( $stringexpand->doCache() AND !$ignore_cache) {
@@ -7648,7 +7649,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
      * @param string $ok
      * @param string $lang
      * @param string $from
-     * @return string|void
+     * @return string
      */
     function expand($to='', $subject='', $html='', $body='', $ok='', $lang='', $from='') {
 
@@ -7662,16 +7663,27 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);
 
         $ret = "<form id=\"$form_id\" onsubmit=\"AA_AjaxSendForm('$form_id', '".AA_INSTAL_PATH."/mail.php'); return false;\">
-        <input type=hidden name=aa_mailconf value=\"$mailconf\">
-        <style type=\"text/css\">
-           div.skryto { display:none };
-        </style>
-        <div class=\"skryto\"><input type=\"text\" name=\"answer\" value=\"\"></div>
-        $html
-        </form>
+        <input type=hidden name=aa_mailconf value=\"$mailconf\">".
+            StrExpand('AA_Stringexpand_Formantispam') .
+            $html .
+        "</form>
         ";
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_AjaxSendForm
         return $ret;
+    }
+}
+
+/** Generates html code (<input name=answer) to be inside <form> which protects the form from spammers by easy trick
+ *  The code could be changed in future
+ */
+class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
+
+    /**  */
+    function expand() {
+        return '<style type="text/css">
+           div.aaskryto { display:none };
+        </style>
+        <div class="aaskryto"><input type="text" name="answer" value=""></div>';
     }
 }
 
