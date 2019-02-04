@@ -235,21 +235,20 @@ class AA_Hitcounter_Stats {
         $qp_slice_id = q_pack_id($this->slice_id);
         $hits        = GetTable2Array("SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
                                         WHERE hit_archive.time > $time AND item.slice_id = '$qp_slice_id' GROUP BY hit_archive.id", 'id', 'count');
-        $item_ids    = GetTable2Array("SELECT id FROM item WHERE slice_id = '$qp_slice_id'", '', 'id');
+        $item_ids    = DB_AA::select('','SELECT id FROM item', array(array('slice_id', $this->slice_id, 'l')));
 
-        $db = getDb();
         if ( is_array($item_ids) ) {
             // shuffle - if there are a lot of items, so we reach timelimit, it is better to
             // count hits in random order, so each item will be counted after some time period
             shuffle($item_ids);
-            $field = GetTable2Array("SELECT * FROM field WHERE slice_id = '$qp_slice_id' AND id='". quote($this->field_id) ."'", 'aa_first');
+            $field = DB_AA::select1('SELECT `id`,`text_stored` FROM `field`', '', array(array('slice_id', $this->slice_id, 'l'),array('id',$this->field_id)));
+
             foreach ($item_ids as $id) {
                 //$db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
                 $value = $hits[$id] ?: 0;
                 StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], array('value'=>$value, 'flag'=>0), array(), true);
             }
         }
-        freeDb($db);
     }
 
     function getDays() {

@@ -1,3 +1,6 @@
+19-02-04 - "AA -> Scheduled tasks" now allows to run individual task
+(honzam) - the user interface for "AA -> Scheduled tasks" is the same as for "Slice Admin -> Task Manager"
+         - fixed problem with hit...........xx fields - it did not count hits after last update
 19-01-30 - new {formantispam} command -generates html code (<input name=answer) to be inside <form> which protects
 (honzam)   the form from spammers by easy trick (the generated code could be changed in future)
          - input type for "Unique email" changed to <input type=email ...>

@@ -1214,8 +1214,8 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, $additional=a
     }
 
     // insert item but new field
-    $varset->add("item_id", "unpacked", $item_id);
-    $varset->add("field_id", "text", $field_id);
+    $varset->addkey("item_id", "unpacked", $item_id);
+    $varset->addkey("field_id", "text", $field_id);
 
     // not used yet
     // if ($history) {

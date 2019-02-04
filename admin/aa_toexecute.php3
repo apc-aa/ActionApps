@@ -39,8 +39,9 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-$manager_settings = AA::Metabase()->getManagerConf('toexecute');
-$manager_settings['searchbar']['default_sort'] =  array( 0 => array('execute_after' => 'a'));
+
+/** Common manager settings for Tasks */
+$manager_settings = GetToexecuteManagerSettings();
 
 $manager = new AA_Manager('toexecute', $manager_settings);
 $manager->performActions();

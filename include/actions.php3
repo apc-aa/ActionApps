@@ -653,3 +653,46 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
 }
 
 
+/** Generates manager settings for aa_toexecute.php3 and se_taskmanager.php3
+ * @return array - manager settings
+ */
+function GetToexecuteManagerSettings() {
+    $actions   = new AA_Manageractions;
+    $actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'));
+    $actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'));
+
+    //$switches  = new AA_Manageractions;  // we do not need switches here
+
+    $manager_settings = AA::Metabase()->getManagerConf('toexecute', $actions);
+    $manager_settings['itemview']['format']['compact_top'] = '
+                                        <div class="aa-items-manager">
+                                          <table border="0" cellpadding="5" cellspacing="0">
+                                            <tbody><tr>
+                                              <th width="30">&nbsp;</th>
+                                              <th>id</th>
+                                              <th>created</th>
+                                              <th>execute after</th>
+                                              <th>aa_user</th>
+                                              <th>priority</th>
+                                              <th>selector</th>
+                                              <th>object</th>
+                                              <th>params</th>
+                                            </tr>';
+    $manager_settings['itemview']['format']['odd_row_format'] = '
+                                      <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
+                                        <td>_#ID______</td>
+                                        <td>_#CREATED_</td>
+                                        <td>_#EXECUTE_</td>
+                                        <td>_#AA_USER_</td>
+                                        <td>_#PRIORITY</td>
+                                        <td>_#SELECTOR</td>
+                                        <td>{htmlspecialchars:{_#OBJECT__}}</td>
+                                        <td>{htmlspecialchars:{_#PARAMS__}}</td>
+                                    </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
+
+    $manager_settings['searchbar']['default_sort'] =  array( 0 => array('execute_after' => 'a'));
+    return $manager_settings;
+}
+
+
+
