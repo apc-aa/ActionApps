@@ -873,7 +873,7 @@ class AA_Dbcondition {
     private $type;              // text|number   - store type - used for check for c0.number = 'honza'  (which would equals to TRUE in MySQL)
 
     /** @var bool - some contitions are different, when is done for joined (content) table - the case with multivalues and "<>" operator */
-    private $joined;
+    private $joined    = false;
     private $condition = null;
     private $jointype  = null;
     private $joincond  = null;
@@ -1016,7 +1016,8 @@ class AA_Dbcondition {
     //        - so we can use INNER join
 
             case '<>' :       // for work with multivalues we look for non existatnt join by value
-            case '!=' :       return $this->joined ? array('LEFT', "($field = '$cleanstr')", "($field IS NULL)") : array('LEFT', "", "($field $operator '$cleanstr')");
+            case '!=' :       return $this->joined ? array('LEFT', "($field = '$cleanstr')", "($field IS NULL)") :
+                                                     array('LEFT', "", "($field $operator '$cleanstr')");
 
             case '<=' :       return array('LEFT',     '', "($field $operator '$cleanstr')");
             case '<'  :       return array('LEFT',     '', "($field $operator '$cleanstr')");
@@ -1636,7 +1637,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                     }
 
                     if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond) ". $dbcond->getJoinCond();
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond)";
                     } elseif ($field_count>1) {
                         $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond)";
                     } else {
