@@ -97,8 +97,8 @@ class AA_Operators {
             var operator_names  = new Array();
             var operator_values = new Array();
             // text
-            operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m('match (RegExp)').' ", " '._m('not match (RegExp)').' ", " '._m('is e-mail').' ", " '._m('not e-mail').' ");
-            operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=",              "ISNULL",              "NOTNULL",              "REGEXP",                    "NOTREGEXP",                       "ISMAIL",               "NOTMAIL");
+            operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('is not').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m('match (RegExp)').' ", " '._m('not match (RegExp)').' ", " '._m('is e-mail').' ", " '._m('not e-mail').' ");
+            operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=",                "<>",               "ISNULL",              "NOTNULL",              "REGEXP",                    "NOTREGEXP",                       "ISMAIL",               "NOTMAIL");
             // numeric
             operator_names[1]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ");
             operator_values[1] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL");
@@ -106,8 +106,8 @@ class AA_Operators {
             operator_names[2]  = new Array(" < (m/d/y)"," > (m/d/y)", " '._m('not set').' ", " '._m('is set').' ", " = (timestamp) "," < (timestamp) "," > (timestamp) ", " <> (timestamp) ");
             operator_values[2] = new Array("d:<","d:>",         "ISNULL",             "NOTNULL"    ,  "=" ,              "<" ,            ">" ,         "<>" );
             // constants
-            operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m('match (RegExp)').' ", " '._m('not match (RegExp)').' ", " '._m("select ...").' ");
-            operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",                "REGEXP",                    "NOTREGEXP",                    "select");
+            operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' "," '._m('is not').' ",  " '._m('not set').' ", " '._m('is set').' ", " '._m('match (RegExp)').' ", " '._m('not match (RegExp)').' ", " '._m("select ...").' ");
+            operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "<>",                 "ISNULL"     ,        "NOTNULL",                "REGEXP",                    "NOTREGEXP",                    "select");
             // numconstants
             operator_names[4]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
             operator_values[4] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL",            "select");
@@ -871,11 +871,14 @@ class AA_Dbcondition {
     private $operator;          // string
     private $querystring;       // string
     private $type;              // text|number   - store type - used for check for c0.number = 'honza'  (which would equals to TRUE in MySQL)
+
+    /** @var bool - some contitions are different, when is done for joined (content) table - the case with multivalues and "<>" operator */
+    private $joined;
     private $condition = null;
     private $jointype  = null;
     private $joincond  = null;
 
-    function __construct($field, $operator, $querystring, $type='text') {
+    function __construct($field, $operator, $querystring, $type='text', $joined=false) {
         $this->field       = trim($field);
 
         // normalize operator
@@ -884,7 +887,8 @@ class AA_Dbcondition {
         $this->operator    = str_replace(array('#:',':','&gt;','&lt;'),array('','','>','<'), trim($operator)); // #: - fix mistaken escaping of d#:>...
 
         $this->querystring = $querystring;
-        $this->type = $type;
+        $this->type   = $type;
+        $this->joined = $joined;
 
         $arr = $this->_calculate();
         $this->jointype  = $arr[0];
@@ -1010,8 +1014,10 @@ class AA_Dbcondition {
     //      case '<=>':  //MySQL know this operator, but we do not use it in AA
     //      MariDB doc: NULL values cannot be used with most comparison operators. For example, =, >, >=, <=, <, or != cannot be used, as any comparison with a NULL always returns a NULL value, never true (1) or false (0).
     //        - so we can use INNER join
-            case '<>' :       return array('LEFTNULL', "($field = '$cleanstr')", "($field IS NULL)");      // for work with multivalues we look for non existatnt join by value
-            case '!=' :       return array('LEFTNULL', "($field = '$cleanstr')", "($field IS NULL)");      // for work with multivalues we look for non existatnt join by value
+
+            case '<>' :       // for work with multivalues we look for non existatnt join by value
+            case '!=' :       return $this->joined ? array('LEFT', "($field = '$cleanstr')", "($field IS NULL)") : array('LEFT', "", "($field $operator '$cleanstr')");
+
             case '<=' :       return array('LEFT',     '', "($field $operator '$cleanstr')");
             case '<'  :       return array('LEFT',     '', "($field $operator '$cleanstr')");
             case '>=' :       return array('LEFT',     '', "($field $operator '$cleanstr')");
@@ -1020,18 +1026,6 @@ class AA_Dbcondition {
         return array('ALL', '', "1=1");
     }
 
-}
-
-
-/** GetWhereExp function
- * @param $field
- * @param $operator
- * @param $querystring
- * @deprecated - use AA_Dbcondition directly
- * @return
- */
-function GetWhereExp( $field, $operator, $querystring ) {
-    return with(new AA_Dbcondition($field, $operator, $querystring))->getWhereExp();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1223,7 +1217,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                                 continue;
                             }
                         }
-                        $onecond[] = GetWhereExp( $finfo['field'], $cond['operator'], $cond['value'] );
+                        $onecond[] = with(new AA_Dbcondition($finfo['field'], $cond['operator'], $cond['value']))->getWhereExp();
                         if ( $finfo['table'] ) {
                             $join_tables[$finfo['table']] = true;
                         }
@@ -1510,7 +1504,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                             $tbl2      = 'c'.$tbl_count++;
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
-                            $cur_cond = GetWhereExp( $tbl2.'.text', $cond['operator'], $cond['value'] );
+                            $cur_cond = with(new AA_Dbcondition($tbl2 . '.text', $cond['operator'], $cond['value']))->getWhereExp();
                         } else {
                             $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cf);
                             if (!is_object($cond_field)) {
@@ -1529,7 +1523,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                                 $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                                   LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                             }
-                            $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
+                            $cur_cond = with(new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                             if (in_array($cf, array('id..............', 'slice_id........'))) {
                                 $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                             }
@@ -1579,7 +1573,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND item.id=UNHEX($tbl.text))
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                         }
-                        $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
+                        $cur_cond = with(new AA_Dbcondition($tbl2 . '.' . $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                         if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
                             $cur_cond =  preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                         }
@@ -1599,7 +1593,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
                 if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
-                    $cur_cond = GetWhereExp( 'item.'. $field->storageColumn(), $cond['operator'], $cond['value'] );
+                    $cur_cond = with(new AA_Dbcondition('item.' . $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                     switch ($fid) {
                     case 'id..............':
                     case 'slice_id........':
@@ -1620,7 +1614,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
             if ( $cond_flds != '' ) {
 
-                $dbcond = new AA_Dbcondition('c'.$tbl_count.".$store", $cond['operator'], $cond['value'], $store);
+                $dbcond = new AA_Dbcondition('c'.$tbl_count.".$store", $cond['operator'], $cond['value'], $store, true);
                 $dbcjointype = $dbcond->getJoinType();
                 if ($dbcjointype == 'ALL') {
                     // nothing;
@@ -1954,7 +1948,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                     unset ($select_cond);
                     foreach ($vv as $fid2 => $foo) {
                         if ( in_array($fid2,$fields) AND $cond['value'] > "" ) {
-                            $select_cond[] = GetWhereExp( "discussion.$fid2", $cond['operator'], $cond['value'] );
+                            $select_cond[] = with(new AA_Dbcondition("discussion.$fid2", $cond['operator'], $cond['value']))->getWhereExp();
                         }
                     }
                     if (is_array($select_cond)) {
