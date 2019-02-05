@@ -57,8 +57,8 @@ class AA_Operators {
                                    '>'         => '>',
                                    '<>'        => '<>',
                                    '!='        => '<>',
-                                   '<='        => '<>',
-                                   '>='        => '<>',
+                                   '<='        => '<=',
+                                   '>='        => '>=',
                                    'd:<'       => 'd:<',
                                    'd:>'       => 'd:>',
                                    'd:<='      => 'd:<=',
@@ -873,6 +873,7 @@ class AA_Dbcondition {
     private $type;              // text|number   - store type - used for check for c0.number = 'honza'  (which would equals to TRUE in MySQL)
     private $condition = null;
     private $jointype  = null;
+    private $joincond  = null;
 
     function __construct($field, $operator, $querystring, $type='text') {
         $this->field       = trim($field);
@@ -887,11 +888,13 @@ class AA_Dbcondition {
 
         $arr = $this->_calculate();
         $this->jointype  = $arr[0];
-        $this->condition = $arr[1];
+        $this->joincond  = $arr[1];
+        $this->condition = $arr[2];
     }
 
     function getWhereExp() { return $this->condition; }
     function getJoinType() { return $this->jointype;  }
+    function getJoinCond() { return $this->joincond;  }
 
     function _calculate() {
         AA::$debug&64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring );
@@ -903,24 +906,24 @@ class AA_Dbcondition {
 
         // check for illegal characters in filed_id
         if (strlen($field) != strspn($field,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_")) {
-            return array('NONE', '1=0');
+            return array('NONE', '', '1=0');
         }
 
         // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
         if ( ($this->type == 'number') ) {
             $querystring = trim($querystring);
             if (strlen($querystring) != strspn($querystring,"0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
-                return array('NONE', '1=0');
+                return array('NONE', '', '1=0');
             } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
-                return array('NONE', '1=0');
+                return array('NONE', '', '1=0');
             }
         }
 
         // new operators - no SQL parsing, no stripslashes
         switch ($operator) {
-            case '==':      return array('INNER', " ($field = '".     addcslashes($querystring,"'")   ."') ");  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
-            case 'BEGIN':   return array('INNER', " ($field LIKE '".  addcslashes(quote($querystring),"_%") ."%') ");
-            case 'CONTAIN': return array('INNER', " ($field LIKE '%". addcslashes(quote($querystring),"_%") ."%') ");
+            case '==':      return array('INNER', '', "($field = '".     addcslashes($querystring,"'")   ."')");  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
+            case 'BEGIN':   return array('INNER', '', "($field LIKE '".  addcslashes(quote($querystring),"_%") ."%')");
+            case 'CONTAIN': return array('INNER', '', "($field LIKE '%". addcslashes(quote($querystring),"_%") ."%')");
         }
 
         // query string could be slashed - sometimes :-(
@@ -992,29 +995,29 @@ class AA_Dbcondition {
                     if ( $GLOBALS['debug'] ) {
                         echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
                     }
-                    return array('ALL', "1=1");
+                    return array('ALL', '', "1=1");
                 }
-                return ( $ret ? array('INNER', " ($ret) ") : array('ALL', "1=1") );   // maybe we can change LEFT to INNER
+                return ( $ret ? array('INNER', '', "($ret)") : array('ALL', '', "1=1") );   // maybe we can change LEFT to INNER
             case 'BETWEEN':
                 $arr = explode( ",", quote($querystring) );
-                return  array('INNER', " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
-            case 'ISNULL':    return array('LEFT',  " (($field IS NULL) OR ($field='')) ");
-            case 'NOTNULL':   return array('INNER', " (($field IS NOT NULL) AND ($field<>'')) ");
-            case 'ISMAIL':    return array('INNER', " ($field REGEXP '". quote(AA_REGEXP_MAIL). "') ");
-            case 'REGEXP':    return array('INNER', " ($field REGEXP '". quote($querystring). "') ");
-            case 'NOTMAIL':   return array('LEFT',  " ($field NOT REGEXP '". quote(AA_REGEXP_MAIL). "') ");
-            case 'NOTREGEXP': return array('LEFT',  " ($field NOT REGEXP '". quote($querystring). "') ");
+                return  array('INNER', '', "(($field >= $arr[0]) AND ($field <= $arr[1]))");
+            case 'ISNULL':    return array('LEFT',  '', "(($field IS NULL) OR ($field=''))");
+            case 'NOTNULL':   return array('INNER', '', "(($field IS NOT NULL) AND ($field<>''))");
+            case 'ISMAIL':    return array('INNER', '', "($field REGEXP '". quote(AA_REGEXP_MAIL). "')");
+            case 'REGEXP':    return array('INNER', '', "($field REGEXP '". quote($querystring). "')");
+            case 'NOTMAIL':   return array('LEFT',  '', "($field NOT REGEXP '". quote(AA_REGEXP_MAIL). "')");
+            case 'NOTREGEXP': return array('LEFT',  '', "($field NOT REGEXP '". quote($querystring). "')");
     //      case '<=>':  //MySQL know this operator, but we do not use it in AA
     //      MariDB doc: NULL values cannot be used with most comparison operators. For example, =, >, >=, <=, <, or != cannot be used, as any comparison with a NULL always returns a NULL value, never true (1) or false (0).
     //        - so we can use INNER join
-            case '<>' :       return array('LEFT', " ($field $operator '$cleanstr') ");
-            case '!=' :       return array('LEFT', " ($field $operator '$cleanstr') ");
-            case '<=' :       return array('LEFT', " ($field $operator '$cleanstr') ");
-            case '<'  :       return array('LEFT', " ($field $operator '$cleanstr') ");
-            case '>=' :       return array('LEFT', " ($field $operator '$cleanstr') ");
-            case '>'  :       return array('LEFT', " ($field $operator '$cleanstr') ");
+            case '<>' :       return array('LEFTNULL', "($field = '$cleanstr')", "($field IS NULL)");      // for work with multivalues we look for non existatnt join by value
+            case '!=' :       return array('LEFTNULL', "($field = '$cleanstr')", "($field IS NULL)");      // for work with multivalues we look for non existatnt join by value
+            case '<=' :       return array('LEFT',     '', "($field $operator '$cleanstr')");
+            case '<'  :       return array('LEFT',     '', "($field $operator '$cleanstr')");
+            case '>=' :       return array('LEFT',     '', "($field $operator '$cleanstr')");
+            case '>'  :       return array('LEFT',     '', "($field $operator '$cleanstr')");
         }
-        return array('ALL', "1=1");
+        return array('ALL', '', "1=1");
     }
 
 }
@@ -1628,17 +1631,22 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                     $tbl = 'c'.$tbl_count++;
 
                     $selprefix  = ($dbcjointype == 'INNER') ? 'INNER' : 'LEFT';
+
                     $selcondadd = ($dbcjointype == 'INNER') ? '' : "OR $tbl.field_id is NULL";
 
                     // fill arrays to be able construct select command
                     $select_conds[] = $dbcond->getWhereExp();
 
+                    if ($addjoincond = $dbcond->getJoinCond()) {
+                        $addjoincond = " AND $addjoincond";
+                    }
+
                     if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id)";
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond) ". $dbcond->getJoinCond();
                     } elseif ($field_count>1) {
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd))";
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond)";
                     } else {
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd))";
+                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd)$addjoincond)";
                         // mark this field as sortable (store without apostrofs)
                         $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
                     }
@@ -1648,6 +1656,8 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     }
 
     $delim='';
+    $select_distinct = '';
+
     if ( !is_array($sort) OR count($sort)<1 ) {
         $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
     } else {
@@ -1828,9 +1838,8 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // if neverAllItems is set, return empty set if no conds[] are used
     $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems, $select_limit_field);
 
-    if ( $debug ) {
-        huhl("QueryZids: result:", $ret);
-    }
+    AA::$debug && AA::$dbg->log("QueryZids: result:", $ret);
+
     return $ret;
 }
 
@@ -1993,13 +2002,6 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
     }
   }
 */
-
-    if ( $debug ) {
-      echo "<br><br>select_conds:";
-      print_r($select_conds);
-      echo "<br><br>select_order:";
-      print_r($select_order);
-    }
 
     // construct query --------------------------
     $SQL = "SELECT discussion.id as id

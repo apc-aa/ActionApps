@@ -233,7 +233,12 @@ class AA_Field_Writer {
     protected $item_varset;
     protected $slice_id;
 
-    function __construct($slice_id) {
+    /**
+     * AA_Field_Writer constructor.
+     * @param string $slice_id - long slice id - it is optional for backward compatibility, but should be provided
+     *                           in order fileupload and uniques works...
+     */
+    function __construct($slice_id=null) {
         $this->slice_id    = $slice_id;
         $this->item_varset = new Cvarset;
     }
