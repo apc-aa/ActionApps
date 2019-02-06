@@ -1845,4 +1845,7 @@ function RestoreVariables(array $r_state_vars) {
     }
 }
 
-
+/** susbstr with utf in mind */
+function aa_substr($text, $start, $len=null) {
+    return mb_substr($text, $start, $len, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
+}
