@@ -1849,3 +1849,8 @@ function RestoreVariables(array $r_state_vars) {
 function aa_substr($text, $start, $len=null) {
     return mb_substr($text, $start, $len, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
 }
+
+/** strrpos with utf in mind */
+function aa_strrpos($haystack , $needle , $offset = 0) {
+    return mb_strrpos($haystack , $needle , $offset, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
+}
