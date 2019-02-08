@@ -1,3 +1,17 @@
+19-02-08 - better {shorten:...} behavior - better strips tags, when the text is shorten
+(honzam) - new possible {headers:CSP:param} - Content-Security-Policy:
+                        {headers:CSP-RO:param} - Content-Security-Policy-Report-Only:
+                        {headers:RT:param} - Report-To:
+                        {headers:NEL:param} - NEL:
+                        {headers:Xss:param} - X-Xss-Protection:
+             example of usage using report-uri.com:
+              {header:CSP-RO:{- default-src 'self' https://myexamplesite.ecn.cz; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com/; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://myexamplesite.ecn.cz/ https://*.tile.openstreetmap.org https://unpkg.com/; form-action 'self'; frame-ancestors 'self'; report-uri https://myexample.report-uri.com/r/d/csp/reportOnly}}
+              {header:RT:{- {"group":"myexamplegroup","max_age":31536000,"endpoints":[{"url":"https://myexample.report-uri.com/a/d/g"}],"include_subdomains":true}}}
+              {header:NEL:{- {"report_to":"myexamplegroup","max_age":31536000,"include_subdomains":true}}}
+              {header:XSS:{- 1; mode=block; report=https://example.report-uri.com/r/d/xss/enforce}}
+         - fixed file upload for {manager:..} - now works also on pages with parameter in url
+         - fixed problem with {recount} called from computed field - the cached
+           old content of the item is invalidated before counting' include/item_content.php3 CHANGES
 19-02-05 - better item filtering for "<>" conditions - now works well also with multivalues
 (honzam) - added new "is not" ("<>") operator in Admin searchbar.
 19-02-04 - "AA -> Scheduled tasks" now allows to run individual task
