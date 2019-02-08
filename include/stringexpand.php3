@@ -82,7 +82,7 @@ class AA_Aliasfunc extends AA_Object {
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',    false, true, '', true,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
             'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',    false, true, '', false),
             'ussage' => new AA_Property( 'ussage', _m("Ussage example"), 'string', true,  true, '', false, '', '', '{_:Message_box:Update successfull:green}')
-            );
+        );
     }
 
     // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
@@ -229,8 +229,8 @@ class AA_Stringexpand_Colonescape extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
     /** redefine parseParam - we can't use the standard function - there is problem with:
-    *  {switch({text............}).:OK} if the text.. contain ')' - we do not know, where the parameters are separated
-    */
+     *  {switch({text............}).:OK} if the text.. contain ')' - we do not know, where the parameters are separated
+     */
     static function parseParam($params) {
         if (empty($params)) {
             return array();
@@ -327,13 +327,13 @@ class AA_Stringexpand_User extends AA_Stringexpand {
 }
 
 /** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
-*   @param $field - field to show ('headline........', '_#SURNAME_' ...).
-*                   empty for username (of curent logged user)
-*                   id - for long id
-*
-*   We do not use {user} in this case, since views with {user} are not cached,
-*   but the views with {xuser} could be (xuser is part of apc variable)
-*/
+ *   @param $field - field to show ('headline........', '_#SURNAME_' ...).
+ *                   empty for username (of curent logged user)
+ *                   id - for long id
+ *
+ *   We do not use {user} in this case, since views with {user} are not cached,
+ *   but the views with {xuser} could be (xuser is part of apc variable)
+ */
 class AA_Stringexpand_Xuser extends AA_Stringexpand {
 
     /** expand function
@@ -355,7 +355,7 @@ class AA_Stringexpand_Xuser extends AA_Stringexpand {
 }
 
 /** experimental
-*/
+ */
 class AA_Stringexpand_Internal extends AA_Stringexpand_Nevercache {
 
     // not needed right now for Nevercached functions, but who knows in the future
@@ -1081,7 +1081,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     public static function shorten_middle($text, $length)
     {
         $text = trim(strip_tags($text));
-        $ret = substr($text, 0, $length / 2 - 1) . '...';
+        $ret = aa_substr($text, 0, $length / 2 - 1) . '...';
         return $ret . substr($text, strlen($ret) - $length);
     }
 
@@ -1096,48 +1096,44 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand($text='', $length=49, $mode=2, $add='') {
-        if ($mode==='') {
-            $mode = 2;
-        }
-        $mode   = (int)$mode;
-        $length = (int)$length;
+        $length   = (int)$length;
         if (strlen($text) <= $length) {
             return $text;
         }
-        $shorted_text = substr($text, 0, $length);
-        $shorted_len  = strlen($shorted_text);
-        $text_add     = $add;
+        if (strlen($strip_text = trim(strip_tags( $text ))) <= $length) {
+            return $strip_text;
+        }
+        if ($mode==='') {
+            $mode = 2;
+        }
+        $mode     = (int)$mode;
         if ($mode==2) {
             // do not try to find end of paragraph for short texts by default
             $mode = ($length >= 50) ? 1 : 0;
         }
-
-        // search the text for following ocurrences in the order!
-        $PARAGRAPH_ENDS = array( '</p>','<p>');
-        if ($mode == 3) {
-            return self::shorten_middle($text, $length). $text_add;
-        }
-
-        if ($mode == 1) {
-            foreach ( $PARAGRAPH_ENDS as $end_str ) {
-                $paraend = strpos(strtolower($shorted_text), $end_str, min($shorted_len,10));  // we do not want to
-                if ( $paraend !== false ) {   // end_str found
-                    $shorted_text = substr($shorted_text, 0, $paraend);
+        $text_add = $add;
+        switch ($mode) {
+            case 3: return self::shorten_middle($strip_text, $length);
+            case 1:
+                $shorted_modif = aa_substr(trim(strip_tags(str_ireplace(array('</p>', '<p>', '<br>', '<br />', '<br/>'), array('~@|^1', '~@|^1', '~@|^1', '~@|^1', '~@|^1'), $text))), 0, $length);
+                if ( (($paraend = aa_strrpos($shorted_modif, '~@|^1')) > $length/2) ) {  // half is minimum
+                    $shorted_text = str_replace('~@|^1',"\n",aa_substr($shorted_modif, 0, $paraend));
                     break;
                 }
-            }
-            if ($paraend===false) {      // no <BR>, <P>, ... found
-                // try to find dot (first from the end)
-                $PARAGRAPH_ENDS = array( '<br>', '.', "\n", "\r", ' ');
-                foreach ( $PARAGRAPH_ENDS as $end_str ) {
-                    if ( ($dot = strrpos( $shorted_text, $end_str)) > ($shorted_len/2) ) { // take at least one half of text
-                        $shorted_text = substr($shorted_text, 0, $dot+1);
-                        break;
+
+                $shorted_text = aa_substr($strip_text, 0, $length);
+                $SEARCH_CRIT = array(array("\n", 2,0), array("\r", 2,0), array('.', 2,1), array("\n", 5,0), array("\r", 5,0), array('.', 5,1),array(' ', 10,0));
+                foreach ($SEARCH_CRIT as $criterium) {
+                    if ( (($paraend = aa_strrpos($shorted_text, $criterium[0])) > $length/$criterium[1])) {  // half is minimum
+                        $shorted_text = aa_substr($shorted_text, 0, $paraend+$criterium[2]);
+                        break 2;
                     }
-                } // no dot, no space - leave the text length long
-            }
+                }
+                break;
+
+            default:
+                $shorted_text = aa_substr($strip_text, 0, $length);
         }
-        $shorted_text = trim(strip_tags( $shorted_text ));
         return strlen($shorted_text) ? $shorted_text . $text_add : '';
     }
 }
@@ -1445,7 +1441,7 @@ function getConstantsGroupID($slice_id, $field) {
  * @param $what
  * @param $field_name
  *  @return $what (name, value, short_id,...) of constants with
- group $group and name $field_name)
+group $group and name $field_name)
  */
 function getConstantValue($group, $what, $field_name) {
     switch ($what) { // this switch is for future changes in this code
@@ -1458,7 +1454,7 @@ function getConstantValue($group, $what, $field_name) {
         case "class" :
         case "id" :
         case "level" :
-        // get values from contentcache or use GetConstants function to get it from db
+            // get values from contentcache or use GetConstants function to get it from db
             $val = AA::Contentcache()->get_result("GetConstants", array($group, 'pri', $what));
             return $val[$field_name];
             break;
@@ -1918,7 +1914,7 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
      */
     function expand($values='', $type=null, $unique='', $delimiter='',$limit='', $add='') {
         if (!strlen($delimiter)) {
-           $delimiter = '-';
+            $delimiter = '-';
         }
         $arr = explode($delimiter, $values);
         switch ($type) {
@@ -1935,7 +1931,7 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
         if (ctype_digit((string)$limit) AND (count($arr)>$limit)) {
             $arr   = array_slice($arr,0,$limit);
             if (strlen($add)) {
-               $arr[] = $add;
+                $arr[] = $add;
             }
         }
         return join($delimiter, $arr);
@@ -2075,8 +2071,8 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
 
 
 /** Escapes the HTML special chars (>,<,&,...) and also prevents to double_encode
-*  already encoded entities (like &amp;quote;) - as oposite to {htmlspecialchars}
-*/
+ *  already encoded entities (like &amp;quote;) - as oposite to {htmlspecialchars}
+ */
 class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -2570,7 +2566,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
             }
 
             $ret  .= $delim. ($no_url_encode ? ('"'. str_replace(array('-','"'), array('--','\"'), $val) .'"') :
-                                               ('%22'. str_replace(array('-',' '), array('--','%20'), $val) .'%22'));
+                    ('%22'. str_replace(array('-',' '), array('--','%20'), $val) .'%22'));
             $delim = $no_url_encode ? ' OR ' : '%20OR%20';
         }
         return empty($ret) ? $default : $ret;
@@ -2822,7 +2818,7 @@ class AA_Treecache {
         if (!isset($this->cache[$key])) {
             $subtree  = $this->top     ? $this->_get_item($match[1], $this->top) : '';
             $subtree .= $this->content ? $this->get_concat($match[2]) : '';
-         // $subtree .= $this->content ? str_replace('_#aa_parent', $match[1], $this->get_concat($match[2])) : '';
+            // $subtree .= $this->content ? str_replace('_#aa_parent', $match[1], $this->get_concat($match[2])) : '';
             $subtree .= $this->bottom  ? $this->_get_item($match[1], $this->bottom) : '';
 
             $this->_cache[$key] = $subtree;
@@ -3302,7 +3298,7 @@ class AA_Stringexpand_Menu extends AA_Stringexpand {
 
         $supertree = AA_Trees::getSupertree(get_if($relation_field, 'relation........'), 1, $sort);
         return $supertree->getMenu($long_ids, $current_ids, $code);
-     }
+    }
 }
 
 
@@ -3534,9 +3530,9 @@ class AA_Stringexpand_Constants extends AA_Stringexpand {
         $constants = GetConstants(trim($group));
         if (is_array($constants)) {
             switch (trim($format)) {
-               case 'name':  $format = '_#NAME###_'; break;
-               case '':
-               case 'value': $format = '_#VALUE##_';
+                case 'name':  $format = '_#NAME###_'; break;
+                case '':
+                case 'value': $format = '_#VALUE##_';
             }
             foreach ($constants as $k => $v) {
                 if (strlen($res = str_replace(array('_#VALUE##_','_#NAME###_'), array($k, $v), $format))) {
@@ -3604,16 +3600,16 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
     function expand($type='', $min='', $max='', $step='', $delimiter='') {
         $arr = array();
         switch ($type) {
-        case 'num':
-            if (ctype_digit((string)$min) AND ctype_digit((string)$max)) {
-                $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
-            }
-            break;
-        case 'string':
-            if (strlen($min) AND strlen($max)) {
-                $arr = range($min, $max);
-            }
-            break;
+            case 'num':
+                if (ctype_digit((string)$min) AND ctype_digit((string)$max)) {
+                    $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
+                }
+                break;
+            case 'string':
+                if (strlen($min) AND strlen($max)) {
+                    $arr = range($min, $max);
+                }
+                break;
         }
         return empty($arr) ? '' : (strlen($delimiter) ? join($delimiter, $arr) : json_encode($arr));
     }
@@ -3713,8 +3709,8 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
             case '=' :
             case '==':
             case 'eq':    $cmp = function( $a,  $b) { return $a == $b; };  break;
-                          // typehints doesn't work for float in php 5.6
-                          // $cmp = function(float $a, float $b) { return $a == $b; };  break;
+            // typehints doesn't work for float in php 5.6
+            // $cmp = function(float $a, float $b) { return $a == $b; };  break;
 
             case '>':
             case 'gt':
@@ -4078,27 +4074,27 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
      * @param $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
      * @return string
      */
-     function expand($slice_id='', $field_id='', $required=null, $widget_type=null, $widget_properties=null, $preset_value=null, $item_index=null) {
-         if ( !($field = $this->_getField($slice_id, $field_id))) {
-             if ( AA_Slice::getModuleProperty($slice_id,'autofields') AND ($field = $this->_getField($slice_id, 'text............'))) {
-                 $field = $field->cloneWithId($field_id);
-             } else {
-                 return '';
-             }
-         }
-         // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
-         $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
+    function expand($slice_id='', $field_id='', $required=null, $widget_type=null, $widget_properties=null, $preset_value=null, $item_index=null) {
+        if ( !($field = $this->_getField($slice_id, $field_id))) {
+            if ( AA_Slice::getModuleProperty($slice_id,'autofields') AND ($field = $this->_getField($slice_id, 'text............'))) {
+                $field = $field->cloneWithId($field_id);
+            } else {
+                return '';
+            }
+        }
+        // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
+        $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
 
-         return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index);
-     }
+        return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index);
+    }
 }
 
 /** Allows on-line editing of field content
  *    {edit:{_#ITEM_ID_}:headline........}
  *    {edit:{_#ITEM_ID_}:text..........23:::::2}
- *    {edit:{_#ITEM_ID_}:headline........:::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
- *    {edit:{_#ITEM_ID_}:category........::sel:{"const_arr":{"0":"yes","1":"no"}}}          (1)
- *    {edit:{_#ITEM_ID_}:category........::sel:{"const_arr":{jsonasoc:0:yes:1:no}}}         (2)
+ *    {edit:{_#ITEM_ID_}:headline........::::{"name":"Project name","input_help":"fill in the project name","row_count":"10"}}
+ *    {edit:{_#ITEM_ID_}:category........:::sel:{"const_arr":{"0":"yes","1":"no"}}}          (1)
+ *    {edit:{_#ITEM_ID_}:category........:::sel:{"const_arr":{jsonasoc:0:yes:1:no}}}         (2)
  */
 class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4311,14 +4307,14 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
 
                     AA::Stringexpander()->addRequire('ckeditor');
 
-                                   // '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
+                    // '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
                     $script2run = 'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
-                                  '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
-                                  '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
-                                  '    window.addEventListener("beforeunload", AA_WindowUnloadQ);' . "\n" .
-                                  '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
-                                  '  });' . "\n" .
-                                  '});' . "\n";
+                        '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
+                        '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
+                        '    window.addEventListener("beforeunload", AA_WindowUnloadQ);' . "\n" .
+                        '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
+                        '  });' . "\n" .
+                        '});' . "\n";
                     AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
                 }
             }
@@ -4716,10 +4712,10 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 
         $html_subst_arr = array();
         $search = array ("'<script[^>]*?>.*?</script>'si",  // Strip out javascript
-                "'<h[1-6][^>]*?>.*?</h[1-6]>'si",  // Strip out titles
-                // can't be nested
-                "'<a[^>]*?>.*?</a>'si",            // Strip out links
-                "'<[\/\!]*?[^<>]*?>'si");          // Strip out HTML tags
+            "'<h[1-6][^>]*?>.*?</h[1-6]>'si",  // Strip out titles
+            // can't be nested
+            "'<a[^>]*?>.*?</a>'si",            // Strip out links
+            "'<[\/\!]*?[^<>]*?>'si");          // Strip out HTML tags
 
         // substitute html tags with shortcuts
         // (= remove the code where we do not want replace text)
@@ -4822,7 +4818,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      */
     function defineDelimiters() {
         $delimiter_chars = "()[] ,.;:?!\"'\n\r";   // I removed & in order you can disable substitution by adding
-                                                   // &nbsp; or even better &zwnj; character to the word - like: gender&zwnj;
+        // &nbsp; or even better &zwnj; character to the word - like: gender&zwnj;
         $delimiters = array();
         for ($i=0, $len=strlen($delimiter_chars); $i<$len; $i++) {
             $index              = $delimiter_chars[$i];
@@ -4863,8 +4859,8 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
                 $fileout = expandFilenameWithHttp($fn);
                 break;
             case "fileman":
-            // Note this won't work if called from a Static view because no slice_id available
-            // This should be fixed.
+                // Note this won't work if called from a Static view because no slice_id available
+                // This should be fixed.
                 if ($this->itemview->slice_info["id"]) {
                     $mysliceid = unpack_id($this->itemview->slice_info['id']);
                 } elseif ($GLOBALS['slice_id']) {
@@ -5035,40 +5031,40 @@ class AA_Unalias_Callback {
         $outlen     = strlen($out);
 
         switch ($out[0]) {
-                      // remove comments
+            // remove comments
             case '#': return '';
-                      /** Wraps the text, so you can use the content without taking care about quoting
-                       *  of parameter delimiters ":"
-                       *
-                       *  Example: {-<a href="http://ecn.cz">ecn</a>}
-                       *           {ifset:{_#ABSTRACT}:{-<div style="color:red">_#1</div>}}
-                       */
+            /** Wraps the text, so you can use the content without taking care about quoting
+             *  of parameter delimiters ":"
+             *
+             *  Example: {-<a href="http://ecn.cz">ecn</a>}
+             *           {ifset:{_#ABSTRACT}:{-<div style="color:red">_#1</div>}}
+             */
             case '-': return QuoteColons(substr($out,1));
             case '@': return QuoteColons(parseLoop($out, $this->item));
             case ' ':
             case "\n":
             case "\t":
-                      return QuoteColons("{" . $out . "}");
+                return QuoteColons("{" . $out . "}");
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
-                      if ($out[1] == "#") {
-                          if (isset($als[substr($out,2)])) {
-                              return QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
-                          } elseif (isset($this->item)) {
-                              // just alias or not so common: {_#SOME_ALSand maybe some text}
-                              return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
-                          }
-                          //// This somehow did not work for {item:{xid:1}:{ifeq:{_#EVERMA21}:1::...}} so the concept of localcache is removed. Honza 2015-07-27
-                          // if (isset($this->_localcache[$loccache_id = $out.$this->item->getItemID()])) {
-                          //     return $this->_localcache[$loccache_id];
-                          // }
-                          // if (isset($als[substr($out,2)])) {
-                          //     return ($this->_localcache[$loccache_id] = QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
-                          // } elseif (isset($this->item)) {
-                          //     // just alias or not so common: {_#SOME_ALSand maybe some text}
-                          //     return ($this->_localcache[$loccache_id] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
-                          // }
-                      }
-                      break;
+                if ($out[1] == "#") {
+                    if (isset($als[substr($out,2)])) {
+                        return QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
+                    } elseif (isset($this->item)) {
+                        // just alias or not so common: {_#SOME_ALSand maybe some text}
+                        return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
+                    }
+                    //// This somehow did not work for {item:{xid:1}:{ifeq:{_#EVERMA21}:1::...}} so the concept of localcache is removed. Honza 2015-07-27
+                    // if (isset($this->_localcache[$loccache_id = $out.$this->item->getItemID()])) {
+                    //     return $this->_localcache[$loccache_id];
+                    // }
+                    // if (isset($als[substr($out,2)])) {
+                    //     return ($this->_localcache[$loccache_id] = QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview)));
+                    // } elseif (isset($this->item)) {
+                    //     // just alias or not so common: {_#SOME_ALSand maybe some text}
+                    //     return ($this->_localcache[$loccache_id] = QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out)));
+                    // }
+                }
+                break;
         }
 
         if (($outlen == 16) AND isset($this->item)) {
@@ -5164,7 +5160,7 @@ class AA_Unalias_Callback {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
         $initiallen = strspn(strtolower(substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
         if ( $outcmd   = substr($out,0,$initiallen) ) {
-             $outparam = substr($out,$initiallen+1);  // skip one more char - delimiter
+            $outparam = substr($out,$initiallen+1);  // skip one more char - delimiter
 
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
                 return StrExpand($class_name, $class_name::parseParam($outparam), array('item'=>$this->item, 'itemview'=> $this->itemview), true);
@@ -5201,7 +5197,7 @@ class AA_Unalias_Callback {
             }
             //$param = array_map('DeQuoteColons',ParamExplode($parts[2]));
             return $GLOBALS['mlxView']->getTranslations($this->item->getval('id..............'),
-                    $this->item->getval('slice_id........'),array_map('DeQuoteColons',ParamExplode($parts[2])));
+                $this->item->getval('slice_id........'),array_map('DeQuoteColons',ParamExplode($parts[2])));
         }
         // Put the braces back around the text and quote them if we can't match
         else {
@@ -5345,7 +5341,7 @@ class AA_Stringexpander {
         /** math function log() */
         'log'              => 'log',                // old  AA_Stringexpand_Log
         'unpack'           => 'unpack_id',          // old  AA_Stringexpand_Unpack
-     // 'packid'           => 'packid',             // see  AA_Stringexpand_Packid
+        // 'packid'           => 'packid',             // see  AA_Stringexpand_Packid
         'string2id'        => 'string2id',          // old  AA_Stringexpand_String2id
         'base64'           => 'base64_encode',      // old  AA_Stringexpand_Base64
 
@@ -5359,7 +5355,7 @@ class AA_Stringexpander {
     /** replaces inline aliasses {(....)} with {var:...} references (which will be later expanded into {...}) and defines appropriate contentcache entries
      *  this alows to write expressions like
      *    {item:6625:{(some text {headline........}...etc.)}}
-    */
+     */
     static function ApplyInlineAlias($text) {
         $last_replacements = 0;
         do {
@@ -5916,49 +5912,49 @@ class AA_Requires {
      */
     static function systemDefinitions() {
         return array(
-                          //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
+            //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
             // all versions updated 2018-08-07 HM
-          'codemirror@5'               => new AA_Req(array('_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5','css-aa-system@1')),
-          '_codemirror_htmlmixed@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/htmlmixed/htmlmixed.js', 'sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA='),
-          '_codemirror_xml@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/xml/xml.js', 'sha256-Zz+CQg6Vpg4lnsAJtC7AqpIFO+OFRb0m/Zw7l9hx6nA='),
-          '_codemirror_css@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/css/css.js', 'sha256-A3dmy5MnEwoDZJmeJUoj98Al4uPPcF47typ3TSLhA0g='),
-          '_codemirror_javascript@5'   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/javascript/javascript.js', 'sha256-mEBPfQj3tWr3WUpxoFSsaydJ/OPTvR8H/rW0X/VEcG0='),
-          '_codemirror_matchbrackets@5'=> new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchbrackets.js', 'sha256-1ZBoXf1PnYzxJ7zY5+7ZAJbUh9xXYGUUXHn8r21LHWg='),
-          '_codemirror_matchtags@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchtags.js', 'sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8='),
-          '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/fold/xml-fold.js', 'sha256-0NR53Omilqa/gGNsbd6g0IjppcgdSabwMu8jOTk6vFE='),
-          '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.js', 'sha256-dlU448ajDtrzPvUfqkvdw6yT52NgWy0UmxUgclvPEAc=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
-          'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.0/src-noconflict/ace.js', 'sha256-YpEMJafqo1GM1gdYZ8o7AlzowvKpgjxtm4ALyij/E04=',array('jquery@3')),
-          'tableexport@5'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/js/tableexport.min.js', 'sha256-xqLIIDLeHPe6Mmnksf1sHPC+jxuS4wKCmLrj/4sKDTM=', array('_css-tableexport@5','filesaver@1','js-xlsx@0')),
-          'tableexport@4'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
-          'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.13.3/dist/xlsx.core.min.js', 'sha256-9y2mRIiL7T2ufFN4OF1Q6kgDNk9Q1rtMRl1WUp/VQEk='),
-          'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
-          'leaflet@1'                  => new AA_Req_Lib('https://unpkg.com/leaflet@1.3.3/dist/leaflet.js', 'sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==', array('_css-leaflet@1')),
-          'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
-          'dropzone@5'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
-          'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
-          'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
-          'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
-          'ckeditor@4'                 => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
-          'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
-          'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
-          'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
-          'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION,'',false)),
-          'jquery-ui@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', array('jquery@3', '_css-jquery-ui@1')),
-          'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js', 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8='),
-          'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js', 'sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc='),
-          'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js', 'sha256-3kjowa0CUPPK4W+yaGpNP1exjs8gbX2SSsToEMd06K8='),
-          '_css-jquery-ui@1'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
-          '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
-          '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
-          '_css-dropzone@5'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.css', 'sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g='),
-          '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
-          '_css-leaflet@1'             => new AA_Req_Css('https://unpkg.com/leaflet@1.3.3/dist/leaflet.css', 'sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=='),
-          'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
-          'css-normalize@8'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.css', 'sha256-7GAtDQ79wTEOjhBKf70uBQG7A5yyb+8rigu07atXWDY='),
-          'css-normalize@7'            => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
-          'css-fontawesome@4'          => new AA_Req_Css('https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
-          '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.css', 'sha256-o/v/5fOniPHMAww4EAIfRBFV0SeoqksPrY0Yq5x+wSM='),
-          'htm-aa-system@1'            => new AA_Req_Htm('AA_Tools::getBottomCode')
+            'codemirror@5'               => new AA_Req(array('_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5','css-aa-system@1')),
+            '_codemirror_htmlmixed@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/htmlmixed/htmlmixed.js', 'sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA='),
+            '_codemirror_xml@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/xml/xml.js', 'sha256-Zz+CQg6Vpg4lnsAJtC7AqpIFO+OFRb0m/Zw7l9hx6nA='),
+            '_codemirror_css@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/css/css.js', 'sha256-A3dmy5MnEwoDZJmeJUoj98Al4uPPcF47typ3TSLhA0g='),
+            '_codemirror_javascript@5'   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/javascript/javascript.js', 'sha256-mEBPfQj3tWr3WUpxoFSsaydJ/OPTvR8H/rW0X/VEcG0='),
+            '_codemirror_matchbrackets@5'=> new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchbrackets.js', 'sha256-1ZBoXf1PnYzxJ7zY5+7ZAJbUh9xXYGUUXHn8r21LHWg='),
+            '_codemirror_matchtags@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchtags.js', 'sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8='),
+            '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/fold/xml-fold.js', 'sha256-0NR53Omilqa/gGNsbd6g0IjppcgdSabwMu8jOTk6vFE='),
+            '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.js', 'sha256-dlU448ajDtrzPvUfqkvdw6yT52NgWy0UmxUgclvPEAc=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
+            'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.0/src-noconflict/ace.js', 'sha256-YpEMJafqo1GM1gdYZ8o7AlzowvKpgjxtm4ALyij/E04=',array('jquery@3')),
+            'tableexport@5'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/js/tableexport.min.js', 'sha256-xqLIIDLeHPe6Mmnksf1sHPC+jxuS4wKCmLrj/4sKDTM=', array('_css-tableexport@5','filesaver@1','js-xlsx@0')),
+            'tableexport@4'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
+            'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.13.3/dist/xlsx.core.min.js', 'sha256-9y2mRIiL7T2ufFN4OF1Q6kgDNk9Q1rtMRl1WUp/VQEk='),
+            'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
+            'leaflet@1'                  => new AA_Req_Lib('https://unpkg.com/leaflet@1.3.3/dist/leaflet.js', 'sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==', array('_css-leaflet@1')),
+            'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
+            'dropzone@5'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
+            'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
+            'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
+            'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
+            'ckeditor@4'                 => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
+            'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
+            'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
+            'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
+            'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION,'',false)),
+            'jquery-ui@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', array('jquery@3', '_css-jquery-ui@1')),
+            'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js', 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8='),
+            'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js', 'sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc='),
+            'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js', 'sha256-3kjowa0CUPPK4W+yaGpNP1exjs8gbX2SSsToEMd06K8='),
+            '_css-jquery-ui@1'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
+            '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
+            '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
+            '_css-dropzone@5'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.css', 'sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g='),
+            '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
+            '_css-leaflet@1'             => new AA_Req_Css('https://unpkg.com/leaflet@1.3.3/dist/leaflet.css', 'sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=='),
+            'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
+            'css-normalize@8'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.css', 'sha256-7GAtDQ79wTEOjhBKf70uBQG7A5yyb+8rigu07atXWDY='),
+            'css-normalize@7'            => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
+            'css-fontawesome@4'          => new AA_Req_Css('https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
+            '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.css', 'sha256-o/v/5fOniPHMAww4EAIfRBFV0SeoqksPrY0Yq5x+wSM='),
+            'htm-aa-system@1'            => new AA_Req_Htm('AA_Tools::getBottomCode')
         );
     }
 
@@ -6214,8 +6210,8 @@ class AA_Stringexpand_Max extends AA_Stringexpand {
      */
     function _get_result($func, $arg_list) {
         switch (count($arg_list)) {
-        case 0: return '';
-        case 1: $values = json2arr($arg_list[0]); // can't be inside empty()  - Honza, php 5.2
+            case 0: return '';
+            case 1: $values = json2arr($arg_list[0]); // can't be inside empty()  - Honza, php 5.2
                 return (count($values)<2) ? $values[0] : call_user_func_array($func, $values);
         }
         return call_user_func_array($func, $arg_list);
@@ -6397,11 +6393,11 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'mime':    return image_type_to_mime_type($a[2]);
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
-          //case 'im':      quick version - img without width and height - see above
+            //case 'im':      quick version - img without width and height - see above
             case 'imgb':    $param2 .= ' border="0"';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
-                            $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                            return "<img src=\"$img_short\" ". $a[3] ." $alt $param2 />";
+                $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
+                return "<img src=\"$img_short\" ". $a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -7046,24 +7042,24 @@ class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
         $ret   = '';
 
         switch ($cmd) {
-        case 'set':
-            $table->set($r, $c, $val, $param);   // param as attribute
-            break;
-        case 'get':
-            $ret = $table->get($r, $c, strlen($val) ? $val : '_#1');
-            break;
-        case 'addset':
-            $table->addset($r, $c, $val);
-            break;
-        case 'joinset':
-            $table->joinset($r, $c, $val, $param); // param as delimiter
-            break;
-        case 'sum':
-            $ret = $table->sum($r, $c, strlen($val) ? $val : '_#1');
-            break;
-        case 'print':
-            $ret = $table->gethtml();
-            break;
+            case 'set':
+                $table->set($r, $c, $val, $param);   // param as attribute
+                break;
+            case 'get':
+                $ret = $table->get($r, $c, strlen($val) ? $val : '_#1');
+                break;
+            case 'addset':
+                $table->addset($r, $c, $val);
+                break;
+            case 'joinset':
+                $table->joinset($r, $c, $val, $param); // param as delimiter
+                break;
+            case 'sum':
+                $ret = $table->sum($r, $c, strlen($val) ? $val : '_#1');
+                break;
+            case 'print':
+                $ret = $table->gethtml();
+                break;
         }
 
         return $ret;
@@ -7095,26 +7091,26 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
         $ret   = '';
 
         switch ($cmd) {
-        case 'set':
-            $arr->set($par1, $par2);
-            break;
-        case 'get':
-            $ret = $arr->get($par1);
-            break;
-        case 'addset':
-            $arr->addset($par1, $par2);
-            break;
-        case 'joinset':
-            // $i, $value, $delimiter
-            $arr->joinset($par1, $par2, $par3);
-            break;
-        case 'getall':
-            // $expr with _#1, $delimiter, $sort (key|)
-            $ret = $arr->getAll(strlen($par1) ? $par1 : '_#1', $par2, $par3);
-            break;
-        case 'sum':
+            case 'set':
+                $arr->set($par1, $par2);
+                break;
+            case 'get':
+                $ret = $arr->get($par1);
+                break;
+            case 'addset':
+                $arr->addset($par1, $par2);
+                break;
+            case 'joinset':
+                // $i, $value, $delimiter
+                $arr->joinset($par1, $par2, $par3);
+                break;
+            case 'getall':
+                // $expr with _#1, $delimiter, $sort (key|)
+                $ret = $arr->getAll(strlen($par1) ? $par1 : '_#1', $par2, $par3);
+                break;
+            case 'sum':
 //            $ret = $arr->sum($i, strlen($val) ? $val : '_#1');
-            break;
+                break;
         }
 
         return $ret;
@@ -7183,33 +7179,38 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
 class AA_Stringexpand_Header extends AA_Stringexpand {
     /**
      * @param null $header
-     * @param null $filename
+     * @param null $parameter
      * @return string|void
      */
-    function expand($header=null, $filename=null) {
+    function expand($header=null, $parameter=null) {
         switch ($header) {
-            case '200':       AA::$headers['status']      = 'HTTP/1.1 200 OK';                      break;
-            case '201':       AA::$headers['status']      = 'HTTP/1.1 201 Created';                 break;
-            case '304':       AA::$headers['status']      = 'HTTP/1.1 304 Not Modified';            break;
-            case '400':       AA::$headers['status']      = 'HTTP/1.1 400 Bad Request';             break;
-            case '401':       AA::$headers['status']      = 'HTTP/1.1 401 Unauthorized';            break;
-            case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';               break;
-            case '409':       AA::$headers['status']      = 'HTTP/1.1 409 Conflict';                break;
-            case 'plain':     AA::$headers['type']        = 'text/plain';                           break;  // default header text content
-            case 'css':       AA::$headers['type']        = 'text/css';                             break;
-            case 'html':      AA::$headers['type']        = 'text/html';                            break;
-            case 'bin':       AA::$headers['type']        = 'application/octet-stream';             break;  // default header for binary content
-            case 'js':        AA::$headers['type']        = 'application/javascript';               break;
-            case 'xml':       AA::$headers['type']        = 'text/xml';                             break;
-            case 'gif':       AA::$headers['type']        = 'image/gif';                            break;
-            case 'jpg':       AA::$headers['type']        = 'image/jpeg';                           break;
-            case 'png':       AA::$headers['type']        = 'image/png';                            break;
-            case 'ico':       AA::$headers['type']        = 'image/x-icon';                         break;
-            case 'svg':       AA::$headers['type']        = 'image/svg+xml';                        break;
-            case 'json':      AA::$headers['type']        = 'application/json';                     break;
-            case 'csv':       AA::$headers['type']        = 'text/csv';                             break;
-            case 'filename':  AA::$headers['disposition'] = 'attachment; filename="'.$filename.'"'; break;  // $filename should be escaped - JirkaR
-            case 'utf-8':     AA::$headers['encoding']    = 'utf-8';                                break;
+            case '200':       AA::$headers['status']      = 'HTTP/1.1 200 OK';                       break;
+            case '201':       AA::$headers['status']      = 'HTTP/1.1 201 Created';                  break;
+            case '304':       AA::$headers['status']      = 'HTTP/1.1 304 Not Modified';             break;
+            case '400':       AA::$headers['status']      = 'HTTP/1.1 400 Bad Request';              break;
+            case '401':       AA::$headers['status']      = 'HTTP/1.1 401 Unauthorized';             break;
+            case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';                break;
+            case '409':       AA::$headers['status']      = 'HTTP/1.1 409 Conflict';                 break;
+            case 'plain':     AA::$headers['type']        = 'text/plain';                            break;  // default header text content
+            case 'css':       AA::$headers['type']        = 'text/css';                              break;
+            case 'html':      AA::$headers['type']        = 'text/html';                             break;
+            case 'bin':       AA::$headers['type']        = 'application/octet-stream';              break;  // default header for binary content
+            case 'js':        AA::$headers['type']        = 'application/javascript';                break;
+            case 'xml':       AA::$headers['type']        = 'text/xml';                              break;
+            case 'gif':       AA::$headers['type']        = 'image/gif';                             break;
+            case 'jpg':       AA::$headers['type']        = 'image/jpeg';                            break;
+            case 'png':       AA::$headers['type']        = 'image/png';                             break;
+            case 'ico':       AA::$headers['type']        = 'image/x-icon';                          break;
+            case 'svg':       AA::$headers['type']        = 'image/svg+xml';                         break;
+            case 'json':      AA::$headers['type']        = 'application/json';                      break;
+            case 'csv':       AA::$headers['type']        = 'text/csv';                              break;
+            case 'filename':  AA::$headers['disposition'] = 'attachment; filename="'.$parameter.'"'; break;  // $parameter is OK not escaped
+            case 'utf-8':     AA::$headers['encoding']    = 'utf-8';                                 break;
+            case 'CSP':       AA::$headers['CSP']         = 'Content-Security-Policy: '.$parameter;  break;
+            case 'CSP-RO':    AA::$headers['CSP-RO']      = 'Content-Security-Policy-Report-Only: '.$parameter;  break;
+            case 'RT':        AA::$headers['RT']          = 'Report-To: '.$parameter;                break;
+            case 'NEL':       AA::$headers['NEL']         = 'NEL: '.$parameter;                      break;
+            case 'XSS':       AA::$headers['XSS']         = 'X-Xss-Protection: '.$parameter;         break;
         }
         return '';
     }
@@ -7499,7 +7500,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
 
         $item   = $this ? $this->item : null;
         if (!strlen($valdelimiter)) {
-           $valdelimiter = '-';
+            $valdelimiter = '-';
         }
         $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, $values);
         $arr = array_filter(array_map('trim', $arr), 'strlen');
@@ -7561,17 +7562,17 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
         $attach = ParamImplode(json2arr($attachments));
 
         $mail_arr = array( 'subject'     => $subject,
-                           'body'        => $body,
-                           'header_from' => $from,
-                           'reply_to'    => $reply_to,
-                           'errors_to'   => $errors_to,
-                           'sender'      => $sender,
-                           'lang'        => $lang,
-                           'html'        => 1,
-                           'cc'          => $cc,
-                           'bcc'         => $bcc,
-                           'attachments' => $attach
-                           );
+            'body'        => $body,
+            'header_from' => $from,
+            'reply_to'    => $reply_to,
+            'errors_to'   => $errors_to,
+            'sender'      => $sender,
+            'lang'        => $lang,
+            'html'        => 1,
+            'cc'          => $cc,
+            'bcc'         => $bcc,
+            'attachments' => $attach
+        );
 
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
@@ -7615,16 +7616,16 @@ class AA_Stringexpand_Xxmail extends AA_Stringexpand_Nevercache {
         $bcc = join(',',AA_Validate::filter(json2arr($bcc), 'email'));
 
         $mail_arr = array( 'subject'     => $subject,
-                           'body'        => $body,
-                           'header_from' => $from,
-                           'reply_to'    => $reply_to,
-                           'errors_to'   => $errors_to,
-                           'sender'      => $sender,
-                           'lang'        => $lang,
-                           'html'        => 1,
-                           'cc'          => $cc,
-                           'bcc'         => $bcc
-                           );
+            'body'        => $body,
+            'header_from' => $from,
+            'reply_to'    => $reply_to,
+            'errors_to'   => $errors_to,
+            'sender'      => $sender,
+            'lang'        => $lang,
+            'html'        => 1,
+            'cc'          => $cc,
+            'bcc'         => $bcc
+        );
 
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
@@ -7654,11 +7655,11 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
     function expand($to='', $subject='', $html='', $body='', $ok='', $lang='', $from='') {
 
         $config_arr = array('to' => $to,
-                            'subject' => $subject,
-                            'body' => $body,
-                            'ok' => $ok,
-                            'lang' => $lang,
-                            'from' => $from );
+            'subject' => $subject,
+            'body' => $body,
+            'ok' => $ok,
+            'lang' => $lang,
+            'from' => $from );
         $form_id  = 'form'.new_id();
         $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);
 
@@ -7666,7 +7667,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         <input type=hidden name=aa_mailconf value=\"$mailconf\">".
             StrExpand('AA_Stringexpand_Formantispam') .
             $html .
-        "</form>
+            "</form>
         ";
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_AjaxSendForm
         return $ret;
@@ -8114,9 +8115,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
                 $script2run = <<<EOT
     function AA_UploadInit(fu_id,field_id,item_id) {
-        var prms = {}; 
+        var prms = {};
         prms['aa[all]['+ field_id+'][0]'] = item_id;
-        var aaDz = new Dropzone('#'+fu_id, { url: "?", uploadMultiple: true, params: prms });
+        var aaDz = new Dropzone('#'+fu_id, { url: window.location.href, uploadMultiple: true, params: prms });
         aaDz.on("completemultiple", function(files) {
             var f = files[files.length-1];
             AA__SiteUpdateParts(JSON.parse(f.xhr.response));
@@ -8135,12 +8136,12 @@ EOT;
 
         $ret  = '<article class="aa-rim relactionitem" data-aa-part="'.$hash.'">
                     <section class="itemgroup">'
-                       .$inner_code.'
+            .$inner_code.'
                     </section>
                        '. ($footer ? "<footer>$footer</footer>" : '') .'
                  </article>';
         $ret .= "<script>$dz_setup_code</script>";
-        
+
 
         AA::Stringexpander()->setDependentParts(array_merge($slices_arr, array('aaedit')), $hash, $ret);
         AA::Stringexpander()->addRequire('css-aa-system');
@@ -8340,8 +8341,8 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
     function expand($selector='') {
         if ($selector) {
             AA::Stringexpander()->addRequire('tableexport');
-                          //'TableExport.prototype.charset = "charset=utf-8";' . "\n" .    // possible addition
-                          //'TableExport.prototype.defaultButton = "big-button";' . "\n" . // possible addition
+            //'TableExport.prototype.charset = "charset=utf-8";' . "\n" .    // possible addition
+            //'TableExport.prototype.defaultButton = "big-button";' . "\n" . // possible addition
             $script2run = "TableExport(document.querySelectorAll('$selector'),{ formats: ['xlsx'], position: 'bottom'}); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         }
