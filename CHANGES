@@ -1,3 +1,4 @@
+19-02-15 - better generated SeoName - trim multiple dots as well as dots at the end and start
 19-02-08 - better {shorten:...} behavior - better strips tags, when the text is shorten
 (honzam) - new possible {headers:CSP:param} - Content-Security-Policy:
                         {headers:CSP-RO:param} - Content-Security-Policy-Report-Only:
@@ -12,6 +13,8 @@
          - fixed file upload for {manager:..} - now works also on pages with parameter in url
          - fixed problem with {recount} called from computed field - the cached
            old content of the item is invalidated before counting' include/item_content.php3 CHANGES
+19-02-06 - substrings now counts with different encodings
+(honzam)
 19-02-05 - better item filtering for "<>" conditions - now works well also with multivalues
 (honzam) - added new "is not" ("<>") operator in Admin searchbar.
 19-02-04 - "AA -> Scheduled tasks" now allows to run individual task
@@ -1097,7 +1100,7 @@
            in order you can skip escaping, so d:> could be d> ...
          - new Transformation "Fill by exact values" which returns values
            exactly as specified (no evaluation, ...) - used internaly for for
-           {newitem:...} at this moment through AA_Saver API
+           {newitem:...} at this moment through AA\IO\Saver API
          - {_:...} aliases could be deleted through admin interface (Site Module -> Aliases)
          - new possibility to search for seo............. value in AA -> Find;
          - better - tabled - output for found item in AA -> Find
@@ -2343,7 +2346,7 @@
          - fixed searches with id.............. field and operators (AND, OR...)
          - fixed error on Cancel in Form editor
          - remove unused directories - misc/oldDb2Db, misc/file2slice/tab2slice_php
-         - {ajax} and {live} now uses standard AA_Saver functions
+         - {ajax} and {live} now uses standard AA\IO\Saver functions
          - changed some queries from QuerySet() to better $aa_set->query()
          - zids have ArrayAccess interface, so you can use it just like
            $zids[1], ...
@@ -2469,7 +2472,7 @@
            by AA_Manager; refactoring a bit
          - zids now uses Iterator (PHP 5 needed)
          - started usage of class autoloading
-         - new AA_Grabber_Form which uses the new standard way of input
+         - new AA\IO\AbstractGrabber\AbstractGrabber\Form which uses the new standard way of input
            the items to the database
          - log viewer and searchlog viewer rewriten to AA_Manager class
            instead of old tabeedit
@@ -2614,7 +2617,7 @@
          - fixed {dictionary:...} broken in last commit
          - some error messages are printed into <div class="aa-error"> div,
            so it can be hidden by CSS ({pager} error)
-         - items are read in chunk (100) at once in AA_Grabber_Slice
+         - items are read in chunk (100) at once in AA\IO\AbstractGrabber\AbstractGrabber\Slice
            for speedup of export
 09-04-15 - new code for slice password slice_pwd handling using AA_Credentials
 (honzam)   class - allows to access protected slices from widgets (for related
@@ -3087,7 +3090,7 @@
            like from your domain.
            See "Slice Admin" -> "Slice Fields" -> "Upload URL" field
          - new support for compound widgets (like date, file upload) in
-           AA_Widget_* class and its support in AA_Grabber_Form API.
+           AA_Widget_* class and its support in AA\IO\AbstractGrabber\AbstractGrabber\Form API.
            Compound widgets, which consists from more than one input. In such
            case we use following syntax:
              aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
@@ -3740,7 +3743,7 @@
            class variable to cache the view properties which reduces the number
            of database queries. Static class variable also allows us not to use
            global variables for that cache.
-         - grabber class renamed to AA_Grabber, saver class to AA_Saver
+         - grabber class renamed to AA\IO\AbstractGrabber\AbstractGrabber, saver class to AA\IO\Saver
            and moved to grabber.class.php3 file
 
 --------------------

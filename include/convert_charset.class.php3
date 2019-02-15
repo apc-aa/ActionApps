@@ -403,13 +403,13 @@ class ConvertCharset {
         if ($encoding) {
             $base  = $this->Convert($base, $encoding, 'us-ascii');
         }
-        $base  = str_replace(' ', '-', $base);
-        $base  = preg_replace($dot ? '/[^\da-z-_.]/i' : '/[^\da-z-_]/i', '-', $base) ;
-        while ( strpos($base, '--') !== false ) {
-            $base = str_replace('--', '-', $base);
+        $base  = trim(preg_replace($dot ? '/[^\da-z-_.]/i' : '/[^\da-z-_]/i', '-', $base), '-.');
+        $count = 1;
+        while ( $count ) {
+            $base = str_replace(array('--','..','.-','-.'), array('-','.','.','.'), $base, $count);
         }
         // remove starting and ending dash
-        return trim(strtolower($base), '-');
+        return strtolower($base);
     }
 
     /**
