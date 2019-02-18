@@ -1558,9 +1558,8 @@ class AA_Contentcache {
      * @return bool
      */
     function is_soft($access_code) {
-        return strpos($access_code, 'define') === 0;
+        return strpos($access_code, 'define') !== 0;
     }
-
 
     /** set function
      *  set new value for key $key
