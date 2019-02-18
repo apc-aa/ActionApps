@@ -1490,7 +1490,10 @@ class AA_Credentials {
  */
 class AA_Contentcache {
     // used for global cache of contents
-    protected $content;   // array of cache entry - 'key'=>[result, generation_time, uses, identification]
+    /** @var $content string[] - array of cache entry - 'key'=>[result, generation_time, uses, identification] */
+    protected $content;
+    /** @var $content_stable string[] - the same as $content, but for special content, which is not deleted by clear_soft() */
+    protected $content_stable;
 
     /** get_result function
      *  Calls $function with $params and returns its return value. The result
@@ -1548,13 +1551,28 @@ class AA_Contentcache {
         return $this->_get_result(get_hash($classname_hint, $params, $add), $function, $params, $classname_hint);
     }
 
+
+    /** Decides if the content should go to stable or soft chache - $content_stable - not deleted by clear_soft()
+     *  (we don want to invalidate the variables {(  )} when {newitem::} (so StoreItem()) is called  )
+     * @param $access_code string  - access code to check
+     * @return bool
+     */
+    function is_soft($access_code) {
+        return strpos($access_code, 'define') === 0;
+    }
+
+
     /** set function
      *  set new value for key $key
      * @param $access_code
      * @param $val
      */
     function set($access_code, $val) {
-        $this->content[hash('md5', $access_code)] = array($val,0,0);
+        if ($this->is_soft($access_code)) {
+            $this->content[hash('md5', $access_code)] = array($val, 0, 0);
+        } else {
+            $this->content_stable[hash('md5', $access_code)] = array($val, 0, 0);
+        }
     }
 
     /** get function
@@ -1564,8 +1582,12 @@ class AA_Contentcache {
      */
     function get($access_code) {
         $key = hash('md5', $access_code);
-        if ( isset($this->content[$key]) ) {
-            return $this->content[$key][0];
+        if ($this->is_soft($access_code)) {
+            if ( isset($this->content[$key]) ) {
+                return $this->content[$key][0];
+            }
+        } elseif ( isset($this->content_stable[$key]) ) {
+            return $this->content_stable[$key][0];
         }
         return false;
     }
@@ -1587,10 +1609,19 @@ class AA_Contentcache {
     function clear($key=null) {
         if (!is_null($key)) {
             unset($this->content[$key]);
+            unset($this->content_stable[$key]);
         } else {
             unset($this->content);
+            unset($this->content_stable);
         }
     }
+
+    /** clear_soft function
+     */
+    function clear_soft() {
+        unset($this->content);
+    }
+
 
     /** push function
      *  stores value for access_code to cache and backups the old values

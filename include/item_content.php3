@@ -571,6 +571,7 @@ class ItemContent extends AA_Content {
         $aacontent4id = null; // modern input format - introduced with [rim]
         if ($_POST['aa']) {
             $grabber = new AA_Grabber_Form();
+            // $grabber = new AA\IO\Grabber\Form();
             $grabber->prepare();    // maybe some initialization in grabber
             $aacontent4id = $grabber->getItem();
             $grabber->finish();
@@ -1125,7 +1126,7 @@ class ItemContent extends AA_Content {
         // maybe we can delete this condition - we just know we need to invalidate old contents for recomputing items in ITEM_NEW task
         if ($throw_events) {
             AA_Items::invalidate();
-            AA::Contentcache()->clear();
+            AA::Contentcache()->clear_soft();  // do not delete {define:..} used by {var:..} - sometimes used by {newitem}
         }
         // renew content if the item in the cache - we will use it in Planned tasks, ... where we do not know slice password...
         AA_Items::getItem($zid, $slice->getProperty('reading_password'), true);
