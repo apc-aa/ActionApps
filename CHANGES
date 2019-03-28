@@ -1,3 +1,5 @@
+19-03-28 - {math} allows also bitwise operators & and |
+(honzam)
 19-02-15 - better generated SeoName - trim multiple dots as well as dots at the end and start
 19-02-08 - better {shorten:...} behavior - better strips tags, when the text is shorten
 (honzam) - new possible {headers:CSP:param} - Content-Security-Policy:
