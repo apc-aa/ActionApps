@@ -189,7 +189,7 @@ is_object( $db ) || ($db = getDB());
 
 if (strlen($_GET['findtext'])) {
     if ($_GET['findinseo']) {
-        if ('l' == guesstype(trim($_GET['findtext']))) {
+        if ( in_array(guesstype(trim($_GET['findtext'])), array('s','l')) ) {
             PrintItemInfo(trim($_GET['findtext']));
         } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['findtext'], $ids)) {
             $ids = array_unique($ids[0]);
