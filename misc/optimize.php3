@@ -42,35 +42,32 @@ require_once AA_INC_PATH."util.php3";
 
 set_time_limit(160);
 
-if ( substr( DB_PASSWORD, 0, 5 ) != $key ) {
+if ( substr( DB_PASSWORD, 0, 5 ) != $_GET['key'] ) {
     exit;                 // We need first five characters of database password
 }                         // Noone then can run the script icidentaly (or with
                           // bad thoughts)
-// init used objects
-is_object( $db ) || ($db = getDB());
-$err["Init"] = "";          // error array (Init - just for initializing variable
 
-// optimize slice tables ------------------------------------------------------
-$db->query("OPTIMIZE TABLE module");
-$db->query("OPTIMIZE TABLE slice");
-$db->query("OPTIMIZE TABLE field");
-$db->query("OPTIMIZE TABLE content");
-$db->query("OPTIMIZE TABLE offline");
-$db->query("OPTIMIZE TABLE item");
-$db->query("OPTIMIZE TABLE feedmap");
-$db->query("OPTIMIZE TABLE feedperms");
-$db->query("OPTIMIZE TABLE email_notify");
-$db->query("OPTIMIZE TABLE relation");
+$template_metabase = AA::Metabase();
+$template_tables = $template_metabase->getTableNames();
 
-// optimize tables for polls module -------------------------------------------
-$db->query("OPTIMIZE TABLE polls");
-$db->query("OPTIMIZE TABLE polls_ip_lock");
-$db->query("OPTIMIZE TABLE polls_data");
-$db->query("OPTIMIZE TABLE polls_log");
-$db->query("OPTIMIZE TABLE polls_designs");
+$this_metabase = new AA_Metabase;
+$this_metabase->loadFromDb();
+$this_tables = $this_metabase->getTableNames();
 
-// optimize tables for site module --------------------------------------------
-$db->query("OPTIMIZE TABLE site");
-$db->query("OPTIMIZE TABLE site_spot");
+// stert with different table each time to minimize impact of corrupted/bigb/... tables
+shuffle($template_tables);
+    
+// optimize only current AA tables (not bck_* tables ...    )
+foreach ( $template_tables as $table ) {
+    if ( in_array($table, $this_tables) ) {
+        DB_AA::sql("OPTIMIZE TABLE `$table`");
+        echo "<br> $table optimized";
+    } else {
+        echo "<br> $table not exist";
+    }
+}
+
+
+
 
 
