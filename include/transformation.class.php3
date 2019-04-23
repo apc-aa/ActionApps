@@ -508,7 +508,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
         FrmTextarea(  $varname_source, _m('Source text'),  $_GET[$varname_source],  12, 80, false,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
-        FrmInputText( $varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 255, 25, false);
+        FrmTextarea( $varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 2, 80, false);
 
         FrmTabEnd();
         return ob_get_clean();
