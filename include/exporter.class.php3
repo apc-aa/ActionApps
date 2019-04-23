@@ -1,4 +1,9 @@
 <?php
+
+use AA\IO\Grabber\AbstractGrabber;
+use AA\IO\Grabber\Discussion;
+use AA\IO\Grabber\Slice;
+
 /**
  *
  * PHP versions 4 and 5
@@ -33,7 +38,7 @@ class AA_Exporter extends AA_Object {
     var $field_set;
 
     /**
-     * @var AA_Grabber
+     * @var AbstractGrabber
      */
     var $grabber;
 
@@ -475,8 +480,8 @@ class AA_Exportsetings extends AA_Object {
         }
 
         $grabber_arr = array(
-           'AA_Grabber_Slice'      => _m('Item Contents'),
-           'AA_Grabber_Discussion' => _m('Discussion')
+           'AA\IO\Grabber\Slice' => _m('Item Contents'),
+           'AA\IO\Grabber\Discussion' => _m('Discussion')
         );
 
         $grabber_type = new AA_Property( 'grabber_type', _m("What to export"), 'string', false, true, '', true);
@@ -515,13 +520,13 @@ class AA_Exportsetings extends AA_Object {
         $set = new AA_Set($slice_id, AA::Stringexpander()->unalias($this->conds), AA::Stringexpander()->unalias($this->sort), $this->bins);
         $fs  = new AA_Fieldset;
 
-        if ($this->grabber_type=='AA_Grabber_Discussion') {
+        if ($this->grabber_type== 'AA\IO\Grabber\Discussion') {
             $possible_fields = array('d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........');
-            $grabber         = new AA_Grabber_Discussion($set);
+            $grabber         = new Discussion($set);
         } else {
             $fields          = $slice->getFields();
             $possible_fields = $fields->getPriorityArray();
-            $grabber         = new AA_Grabber_Slice($set, $restict_zids);
+            $grabber         = new Slice($set, $restict_zids);
         }
 
         if (is_array($this->fields) AND count($this->fields) ) {
@@ -534,7 +539,7 @@ class AA_Exportsetings extends AA_Object {
                 }
             }
         } else {
-            if ($this->grabber_type=='AA_Grabber_Discussion') {
+            if ($this->grabber_type== 'AA\IO\Grabber\Discussion') {
                 foreach ($possible_fields as $field_id) {
                     $fs->addField($field_id);
                 }
@@ -570,7 +575,7 @@ class AA_Exportsetings extends AA_Object {
             exit;
         }
 
-        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', array($slice->name(), '',$slice->getCharset())). (($this->grabber_type=='AA_Grabber_Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
+        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', array($slice->name(), '',$slice->getCharset())). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
 
         $exporter->sendFile($filename);
     }

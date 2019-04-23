@@ -26,6 +26,8 @@
 */
 
 
+use AA\IO\Grabber\Form;
+
 require_once AA_INC_PATH."menu_util.php3";
 
 
@@ -389,7 +391,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
     }
 
     protected function setFromForm() {
-        $grabber = new AA_Grabber_Form();
+        $grabber = new Form();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
         $content    = $grabber->getContent();

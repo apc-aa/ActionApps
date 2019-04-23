@@ -1884,3 +1884,23 @@ function aa_substr($text, $start, $len=null) {
 function aa_strrpos($haystack , $needle , $offset = 0) {
     return mb_strrpos($haystack , $needle , $offset, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
 }
+
+
+/** Get Authorization Header
+ * @return string
+ */
+function get_authorization_header() {
+    $ret='';
+    if (isset($_SERVER['Authorization'])) {
+        $ret = $_SERVER['Authorization'];
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $ret = $_SERVER['HTTP_AUTHORIZATION'];
+    } elseif ( function_exists('apache_request_headers')) {
+        $apache_auth_tmp = apache_request_headers();
+        if ( strlen($apache_auth_tmp['Authorization']) ) {
+             $ret = 'Bearer '.$apache_auth_tmp['Authorization'];
+        }
+    }
+    return trim($ret);
+}
+

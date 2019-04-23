@@ -37,6 +37,8 @@
  *
 */
 
+use AA\IO\Grabber\Slice;
+use AA\IO\Saver;
 
 
 /** AA_Manageraction - Item manager actions. Just create new class and assign
@@ -176,9 +178,9 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
         $sid = $manager->getModuleId();
 
         $zids = AA_Manageraction::getZidsSanitized($item_arr, $sid);
-        $grabber = new AA_Grabber_Slice( new AA_Set(array($sid),null,null,AA_BIN_ALL), $zids);
+        $grabber = new Slice( new AA_Set(array($sid),null,null,AA_BIN_ALL), $zids);
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
-        $saver   = new AA_Saver($grabber, null, null, 'insert_if_new', 'new');
+        $saver   = new Saver($grabber, null, null, 'insert_if_new', 'new');
         $saver->run();
         //SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
         return false;                                     // OK - no error
@@ -502,7 +504,7 @@ class AA_Manageraction_Item_Export extends AA_Manageraction {
         $zids->setFromItemArr($item_arr);
 
         if ($zids->count() > 0) {
-            $exportset = AA_Object::factory('AA_Exportsetings', array('grabber_type'=>'AA_Grabber_Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human', 'bins'=>AA_BIN_ALL));
+            $exportset = AA_Object::factory('AA_Exportsetings', array('grabber_type'=> 'AA\IO\Grabber\Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human', 'bins'=>AA_BIN_ALL));
             $exportset->setOwnerId($manager->getModuleId());
             $exportset->export($zids);
         }

@@ -53,6 +53,8 @@ http://www.apc.org/
 */
 
 use AA\FormArray;
+use AA\IO\Grabber\Form;
+use AA\IO\Saver;
 
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
@@ -325,8 +327,8 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         // }
     }
 
-    $grabber = new AA_Grabber_Form();
-    $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
+    $grabber = new Form();
+    $saver   = new Saver($grabber, null, null, 'by_grabber');
     $saver->run();
     SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
     exit;

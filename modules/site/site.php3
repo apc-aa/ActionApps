@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\Grabber\Form;
+use AA\IO\Saver;
+
 $timestart = microtime(true);
 
 // APC AA site Module main administration page
@@ -46,7 +49,7 @@ if ($_COOKIE['AA_Session']) {
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
+$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], get_authorization_header(), $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
@@ -254,8 +257,8 @@ if (IsAjaxCall()) {
     }
 
     if (is_array($_POST['aa']) OR is_array($_FILES['aa'])) {
-        $grabber = new AA_Grabber_Form();
-        $saver   = new AA_Saver($grabber, null, null, 'by_grabber');
+        $grabber = new Form();
+        $saver   = new Saver($grabber, null, null, 'by_grabber');
         // $saver - > check Perms @todo
         list($saved_ok,$saved_err) = $saver->run();
 

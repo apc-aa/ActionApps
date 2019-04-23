@@ -30,6 +30,9 @@
 // Cross-Server Networking - xml_aa_rss fetch function
 //
 
+use AA\IO\AARSS;
+use AA\IO\Saver;
+
 require_once AA_INC_PATH."logs.php3";
 require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."xml_rssparse.php3";
@@ -300,8 +303,8 @@ function updateFieldsMapping($l_slice_id, $r_slice_id, &$field_refs, &$fields) {
 function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
     $slice_id = unpack_id($feed['slice_id']);
     if ( $fire=='write' ) {
-        $grabber      = new AA_Grabber_Aarss($feed_id, $feed, $fire);
-        $saver        = new AA_Saver($grabber, null, $slice_id);
+        $grabber      = new AARSS($feed_id, $feed, $fire);
+        $saver        = new Saver($grabber, null, $slice_id);
         $saver->run();
     }
     if ($debugfeed >= 8) {

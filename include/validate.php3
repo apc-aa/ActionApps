@@ -561,7 +561,7 @@ class AA_Validate_Unique extends AA_Validate {
         $conds  = array();
         if ( $this->scope == 'slice') {
             $slice = null;
-            $slice_id = AA::$slice_id ?: AA::$module_id;   // AA_Saver or itemedit.php tells us the current slice
+            $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
             if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($this->field_id) ) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
             }

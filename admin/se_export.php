@@ -79,8 +79,8 @@ $apage->printHead($err, $Msg);
 $form_buttons = array ('export' => array('type'=>'submit', 'value'=> _m('Export')));
 
 $grabber_arr = array(
-    'AA_Grabber_Slice'      => _m('Item Contents'),
-    'AA_Grabber_Discussion' => _m('Discussion')
+    'AA\IO\Grabber\Slice' => _m('Item Contents'),
+    'AA\IO\Grabber\Discussion' => _m('Discussion')
     );
 
 $bins_arr = array(

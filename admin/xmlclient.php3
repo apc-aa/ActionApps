@@ -1,5 +1,8 @@
 <?php
 
+use AA\IO\AARSS;
+use AA\IO\Saver;
+
 /** Cross-Server Networking - client module
  *
  * @params feed_id    - id of APC RSS Feed to proceed
@@ -133,7 +136,7 @@ class AA_Feed {
         // fictive remote slice id, but always the same for the same url
         $feeddata['remote_slice_id'] = pack_id(attr2id($feeddata['server_url']));
 
-        $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
+        $this->grabber               = new AARSS($id, $feeddata, $this->fire);
         $this->destination_slice_id  = unpack_id($feeddata['slice_id']);
 
         if ($url) {
@@ -151,7 +154,7 @@ class AA_Feed {
         $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         $feeddata['feed_type']       = ($feeddata['feed_mode'] == 'exact') ? FEEDTYPE_EXACT : FEEDTYPE_APC;
 
-        $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
+        $this->grabber               = new AARSS($id, $feeddata, $this->fire);
         $this->destination_slice_id  = unpack_id($feeddata['slice_id']);
 
         if ($time) {
@@ -160,7 +163,7 @@ class AA_Feed {
     }
 
     /** feed function
-     * Process one feed RSS, or APC AA RSS, or CSV or ... - based on AA_Grabber
+     * Process one feed RSS, or APC AA RSS, or CSV or ... - based on AA\IO\AbstractGrabber\AbstractGrabber
      *  @param  $feed_id   - id of feed (it is autoincremented number from 1 ...
      *                     - RSS and APC feeds could have the same id :-(
      *  @param  $feed      - feed definition array (server_url, password, ...)
@@ -171,7 +174,7 @@ class AA_Feed {
      */
     function feed() {
         if ( $this->fire = 'write' ) {
-            $saver        = new AA_Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
+            $saver        = new Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
             $saver->run();
         }
     }

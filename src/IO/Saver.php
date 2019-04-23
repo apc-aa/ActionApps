@@ -1,0 +1,275 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 13.2.19
+ * Time: 10:48
+ */
+
+namespace AA\IO;
+
+use AA;
+use AA_Condition;
+use AA\IO\Grabber\AbstractGrabber;
+use AA_Set;
+use AA_Transformation;
+use ItemContent;
+
+/** Saver class - Used for filling items into AA
+ * @param \AA\IO\Grabber\AbstractGrabber grabber          - provides source for item data
+ * @param $transformations - defines, how the source item should be transformed
+ *                            into destination item
+ */
+class Saver {
+    protected $grabber;
+    /** @var \AA\IO\Grabber\AbstractGrabber the object which deliveres the data */
+    protected $transformations;
+    /** describes, what to do with data before storing */
+    protected $slice_id;
+    /** id of destination slice */
+    protected $store_mode;
+    /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
+    protected $id_mode;
+    /** id-policy    - how to construct id - old | new | combined */
+
+    private $_new_ids = array();
+    /** array of newly inserted ids (after run()) - the long ones */
+    private $_updated_ids = array();
+    /** array of ids of rewritten items (after run()) - the long ones */
+    private $_updated_slices = array();
+    /** array of slice ids with rewritten items (after run()) - the long ones */
+
+    protected $_messages = array();
+
+
+    /** AA\IO\Saver function
+     * @param \AA\IO\Grabber\AbstractGrabber $grabber
+     * @param AA_Transformation[]            $transformations
+     * @param string                         $slice_id
+     * @param string                         $store_mode
+     * @param string                         $id_mode
+     */
+    function __construct($grabber,
+        $transformations = null,
+        $slice_id = null,
+        $store_mode = 'overwrite',
+        $id_mode = 'old') {
+        $this->grabber = $grabber;
+        $this->transformations = is_array($transformations) ? $transformations : array();
+        $this->slice_id = $slice_id;
+        $this->store_mode = $store_mode;
+        $this->id_mode = $id_mode;
+    }
+
+    /** resets item / slice counters */
+    function clear_ids() {
+        $this->_new_ids = array();
+        $this->_updated_ids = array();
+        $this->_updated_slices = array();
+    }
+
+    /** run function
+     * Now import all items to the slice
+     * @param bool $fire
+     * @return int[] count of [changed,error] items
+     */
+    function run($fire = true) {
+
+        $this->grabber->prepare();    // maybe some initialization in grabber
+
+        // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
+        $directfill = $this->grabber->isDirectfill();
+
+        $ok_count = 0;
+        $err_count = 0;
+
+        while ($source_content4id = $this->grabber->getItem()) {
+
+            if (!$fire) {
+                $this->message("AA\IO\AA_Saver->run(): grabbed item: ");
+                $this->message($source_content4id);
+            }
+
+            // check, if grabber returns already prepared item
+            $content4id = $directfill ? $source_content4id : new ItemContent();
+
+            // if we want some Transformations, do them here
+            foreach ($this->transformations as $field_id => $transformation) {
+                $field_content = $transformation->transform($field_id, $source_content4id);
+                if (!$field_content) {
+                    // no need to change, or something goes wrong - missing parameter for transformation, ....
+                    continue;
+                }
+                $field_content->removeDuplicates();
+                $content4id->setAaValue($field_id, $field_content);
+            }
+
+            // now the $content4id should be filled in both cases - directfill as well as indirect
+
+            $id_mode = ($this->id_mode == 'by_grabber') ? $this->grabber->getIdMode() : $this->id_mode;
+            $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
+
+            if (!$fire) {
+                $this->message("AA\IO\AA_Saver->run(): id_mode: $id_mode, store_mode: $store_mode");
+            }
+
+            switch ($id_mode) {
+                // Create new item id (always the same for item-slice pair)
+                case 'combined' :
+                    $new_item_id = string2id($content4id->getItemID() . $this->slice_id);
+                    break;
+
+                // Use id from source
+                case 'old'      :
+                    $new_item_id = $content4id->getItemID();
+                    break;
+
+                // Generate completely new id
+                //default         :
+                //case 'new'      : $new_item_id = new_id();                 break;
+
+
+                case ''         :
+                case 'new'      :
+                    $new_item_id = new_id();
+                    break;
+
+                // ["relation.......1","year............"]
+                default         :
+                    // should be allowed just to slice admins (for security reasons)
+                    if ($store_mode == 'update/insert') {
+                        // this allows you to update item based on the key fields.
+                        // if $id_mode is ["relation.......1","year............"], then saver searches the slice for the item matching the two fields.
+                        // If found, then the item is updated
+                        // If not found, the item is_a created, but only with fields if $content4id (not whole insert)
+
+                        $set = new AA_Set(array($this->slice_id));
+                        if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
+                            foreach ($flds as $fld) {
+                                $set->addCondition(new AA_Condition($fld, '=', $content4id->getValue($fld)));
+                            }
+                            $zids = $set->query(null, 1);
+                            if (!$fire) {
+                                $this->message("AA\IO\AA_Saver->run(): update/insert - condition:");
+                                $this->message($set);
+                                $this->message($zids);
+                            }
+                            $new_item_id = $zids->count() ? $zids->longids(0) : new_id();
+
+                            break;
+                        }
+                    }
+                    $new_item_id = new_id();
+            }
+
+            $old_item_id = $content4id->getItemID();
+
+            // set the item to be received from remote node
+            $content4id->setItemID($new_item_id);
+
+            // @todo - move to translations
+            if (!is_null($this->slice_id)) {
+                // for AA\IO\AbstractGrabber\AbstractGrabber\Form we have the slice_id already filled
+                $content4id->setSliceID($this->slice_id);
+            }
+
+            AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
+
+            if (($store_mode == 'overwrite') OR (substr($store_mode, 0, 6) == 'insert')) {
+                if (!$content4id->complete4Insert()) {
+                    $err_count++;
+                    $this->message("AA\IO\AA_Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
+                    continue;
+                }
+            } else { // @todo do validation for updates
+                if (!$content4id->validate4Update()) {
+                    $err_count++;
+                    $this->message("AA\IO\AA_Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
+                    continue;
+                }
+            }
+
+            $this->_updated_slices[$content4id->getOwnerId()] = true;
+
+            if ($fire) {
+                // id_mode - overwrite or insert_if_new
+                // (the $new_item_id should not be changed by storeItem)
+                if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
+                    // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
+                    $this->message(ItemContent::lastErrMsg());
+                } else {
+                    // @todo better check of new ids
+                    if ($store_mode == 'insert') {
+                        $this->_new_ids[] = $new_item_id;
+                    } else {
+                        $this->_updated_ids[] = $new_item_id;
+                    }
+                    $ok_count++;
+
+                    // Update relation table to show where came from
+                    if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
+                        AddRelationFeed($new_item_id, $old_item_id, REL_FLAG_SOURCE);
+                    }
+                }
+            } else {
+                $this->message($new_item_id);
+                $this->message($content4id);
+            }
+        } // while grabber->getItem()
+        $this->grabber->finish();    // maybe some finalization in grabber
+
+        if (!$fire) {
+            print($this->report());
+        }
+        return array($ok_count, $err_count);
+    }
+
+    /** Returns array of long new saved ids */
+    function newIds() {
+        return $this->_new_ids;
+    }
+
+    function changedIds() {
+        return array_merge($this->_new_ids, $this->_updated_ids);
+    }
+
+    function changedModules() {
+        return array_keys($this->_updated_slices);
+    }
+
+    /** toexecutelater function
+     *  Toexecutelater - special function called from toexecute class
+     *  - used for queued tasks (runed from cron)
+     *  You can use $toexecute->later($saver, array(), 'feed_external') instead
+     *  of calling $saver->run() - the saving will be planed for future
+     */
+    function toexecutelater() {
+        return $this->run();
+    }
+
+    /** message function
+     *  Records Error/Information message
+     * @param $text
+     */
+    function message($text) {
+        $this->_messages[] = (is_object($text) && !is_callable(array(
+                $text,
+                "__toString"
+            ))) ? print_r($text, true) : $text;
+    }
+
+    /** report function
+     * Print Error/Information messaages
+     */
+    function report() {
+        return join("<br>\n", $this->_messages);
+    }
+
+    /** clear_report function
+     *
+     */
+    function clear_report() {
+        unset($this->_messages);
+        $this->_messages = array();
+    }
+}

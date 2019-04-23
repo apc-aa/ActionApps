@@ -717,3 +717,30 @@ function AA_NewId() {
     }
     return uuid.join('');
 }
+
+function aa_maketags(id, prefill, slice_id, field_id, aa_path, add_new ) {
+    var responder = aa_path + 'central/responder.php';
+    $('#'+id).select2( {
+        separator:"|||",
+        ajax: { url: responder,
+            dataType: 'json',
+            quietMillis: 100,
+            data: function (term, page) { // page is the one-based page number tracked by Select2
+                return {
+                    free: "nobody",
+                    command: "tags",
+                    q: term,     //search term
+                    p: page,     // page number
+                    s: slice_id, // slice_id
+                    f: field_id  // field_id
+                };
+            },
+            results: function (data, page) {
+                var more = (page * 10) < data.total; // whether or not there are more results available
+                // notice we return the value of more so Select2 knows if more results can be loaded
+                return {results: data, more: more};
+            }
+        }
+    });
+    $('#'+id).select2("data", prefill);
+}

@@ -1,6 +1,7 @@
 <?php
 
 use AA\FormArray;
+use AA\IO\Grabber\ObjectForm;
 use AA\Widget\Widget;
 use AA\Widget\HidWidget;
 
@@ -360,7 +361,7 @@ class AA_Form extends AA_Object {
 
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {
-        $grabber = new AA_Objectgrabber_Form();
+        $grabber = new ObjectForm();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
         $content    = $grabber->getContent();

@@ -94,7 +94,7 @@ spl_autoload_register(function ($class_name) {
         case 'difftext':
         case 'field':
         case 'form':
-        case 'grabber':
+//        case 'grabber':
         case 'hitcounter':
         case 'manager':
         case 'profile':
@@ -132,9 +132,9 @@ spl_autoload_register(function ($class_name) {
         case 'views':
             require_once __DIR__. '/view.class.php3';
             return;
-        case 'saver':
-        case 'objectgrabber':
-            require_once __DIR__. '/grabber.class.php3';
+
+
+
         case 'trees':
         case 'supertree':
             require_once __DIR__. '/tree.class.php3';
