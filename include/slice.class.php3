@@ -773,7 +773,8 @@ class AA_Module_Site extends AA_Module {
         foreach ( $show_ids as $v ) {
             $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Stringexpander()->unalias($spots[$v]['content'], '', $apc_state['item']));
         }
-        return AA::Stringexpander()->postprocess($out);
+        // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
+        return trim(AA::Stringexpander()->postprocess($out));
     }
 
     /**
