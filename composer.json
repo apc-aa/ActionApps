@@ -15,7 +15,8 @@
   ],
   "require": {
     "php": ">=5.3.0",
-    "firebase/php-jwt": "v5.0.0"
+    "firebase/php-jwt": "v5.0.0",
+    "mobiledetect/mobiledetectlib": "2.8.33"
   },
   "autoload": {
     "psr-4": {

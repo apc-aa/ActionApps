@@ -720,11 +720,23 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
  */
 class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
     /** expand function
-     * @param $url
+     * @param string $url
+     * @param string $type '+share' to add share button
      * @return string
      */
-    function expand($url='') {
-        return !$url ? '' : '<iframe src="https://www.facebook.com/plugins/like.php?href='.urlencode($url).'&amp;send=false&amp;layout=button_count&amp;width=120&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" style="border: medium none; overflow: hidden; width: 120px; height: 21px;" allowtransparency="true" frameborder="0" scrolling="no"></iframe>';
+    function expand($url='', $type='') {
+        if (!$url) {
+            return '';
+        }
+        $share  = 'false';
+        $width  = 79;
+        $height = 21;
+        if ($type ==  '+share') {
+            $share  = 'true';
+            $width  = 124;
+            $height = 46;
+        }
+        return !$url ? '' : "<iframe src=\"https://www.facebook.com/plugins/like.php?href=".urlencode($url)."&amp;width=$width&amp;layout=button_count&amp;action=like&amp;size=small&amp;show_faces=false&amp;share=$share&amp;height=$height\" width=\"$width\" height=\"$height\" style=\"border:none;overflow:hidden\" scrolling=no frameborder=0 allowTransparency=true allow=\"encrypted-media\"></iframe>";
     }
 }
 
@@ -4382,9 +4394,9 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $grabber = new AA_Grabber_Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
+        $grabber = new Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
-        $saver   = new AA_Saver($grabber, $transformations, null, 'insert_if_new', 'new');
+        $saver   = new Saver($grabber, $transformations, null, 'insert_if_new', 'new');
         $saver->run();
 
         return join('-',$saver->changedIds());
@@ -4457,8 +4469,8 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         $slices     = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
 
         if ($item_slice AND count($slices) AND in_array($item_slice, $slices) AND (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL)) {
-            $grabber = new AA_Grabber_Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
-            $saver   = new AA_Saver($grabber, $transformations, $item_slice, 'update');
+            $grabber = new Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
+            $saver   = new Saver($grabber, $transformations, $item_slice, 'update');
             $saver->run();
             return join('-',$saver->changedIds());
         }
@@ -5930,7 +5942,10 @@ class AA_Requires {
             'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
             'leaflet@1'                  => new AA_Req_Lib('https://unpkg.com/leaflet@1.3.3/dist/leaflet.js', 'sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==', array('_css-leaflet@1')),
             'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
-            'dropzone@5'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
+            'dropzone@5'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
+            //'select2@4'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
+            'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
+            'select2@4'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.full.min.js', 'sha256-FcVIknBiVRk5KLQeIBb9VQdtFRMqwffXyZ+D8q0gQro=', array('jquery@3','_css-select2@4')),
             'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
             'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
             'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
@@ -5947,6 +5962,8 @@ class AA_Requires {
             '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
             '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
             '_css-dropzone@5'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.css', 'sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g='),
+            '_css-select2@3'             => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.css', 'sha256-ijlUKKj3hJCiiT2HWo1kqkI79NTEYpzOsw5Rs3k42dI='),
+            '_css-select2@4'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/css/select2.min.css', 'sha256-xJOZHfpxLR/uhh1BwYFS5fhmOAdIRQaiOul5F/b7v3s='),
             '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
             '_css-leaflet@1'             => new AA_Req_Css('https://unpkg.com/leaflet@1.3.3/dist/leaflet.css', 'sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=='),
             'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
@@ -6912,7 +6929,6 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
      * @return string
      */
     function expand($key='', $username='', $password='', $lifetime='', $add_validity='') {
-
         if (!strlen($key) OR !strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password))) {
             return '';
         }
@@ -6958,7 +6974,7 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
     function expand($key='', $add_validity='') {
 
         // Get header Authorization
-        if (strlen($key) AND ($auth_header = trim($_SERVER['Authorization'] ?: $_SERVER['HTTP_AUTHORIZATION']))) {
+        if (strlen($key) AND ($auth_header = get_authorization_header())) {
             list($type, $jwt) = explode(" ", $auth_header, 2);
 
             if (strcasecmp($type, "Bearer") == 0) {
@@ -6981,6 +6997,7 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
         return '';
     }
 }
+
 
 /** computes MD5 hash */
 class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
@@ -7376,6 +7393,11 @@ class AA_Password_Manager_Reader {
     function _ok($text) {
         return '<div class="aa-ok">'.$text.'</div>';
     }
+
+    /** we need to check, if the text answer means OK or Bad */
+    public static function is_ok($text) {
+        return strpos($text, '<div class="aa-ok">') === 0;
+    }
 }
 
 /** manages forgotten password
@@ -7406,6 +7428,28 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
         return AA_Password_Manager_Reader::getFirstForm();
     }
 }
+
+/** Sends mail to the user identified by username and readerslice to allow password change
+ *    {changepwdsendmail:<reader_slice_id>:<from-email>:<username>}
+ *  @return 1 if mail is sent, anything else in case of error
+ */
+class AA_Stringexpand_Changepwdsendmail  extends AA_Stringexpand_Nevercache {
+
+    /** expand function
+     * @param $reader_slice_id - reader module id - required
+     * @return string
+     */
+    function expand($reader_slice_id='', $from_email='', $username='') {
+        if (!is_long_id($reader_slice_id)) {
+            return '';
+        }
+        $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
+        return AA_Password_Manager_Reader::is_ok(AA_Password_Manager_Reader::askForMail($username, $reader_slice_id, $from_email) ? '1' : 'err');
+    }
+}
+
+
+
 
 /** returns part of the XML or HTML <string > based on <xpath> query
  *  Use as:
@@ -8439,4 +8483,38 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
 ';
     }
 }
+
+/** Detects mobile/tablet/desktop (and print one of the mentioned keywords)
+ *    {detect}
+ */
+class AA_Stringexpand_Detect extends AA_Stringexpand {
+    /** expand function
+     * @param $test - test type - not used, yet
+     * @return string  mobile|tablet|desktop|
+     */
+    function expand($test='') {
+        $detect = new Mobile_Detect;
+
+        //  Keep the value in $_SESSION for later use
+        //    and for optimizing the speed of the code.
+        // if(!$_SESSION['isMobile']){
+        //     $_SESSION['isMobile'] = $detect->isMobile();
+        // }
+
+        // for future extension
+        if (!$test) {
+            if ($detect->isMobile()) return 'mobile';
+            if ($detect->isTablet()) return 'tablet';
+            return 'desktop';
+        }
+        return '';
+    }
+}
+
+
+
+
+
+
+
 
