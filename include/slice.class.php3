@@ -523,11 +523,17 @@ class AA_Slice extends AA_Module {
             // record - deprecated
             case 'record':  return $fields->getRecordArray();    // array of field definitions where field_id is key
             case 'pri':     return $fields->getPriorityArray();  // array of field definitions sorted by priority - integer key
-            case 'search':  return $fields->getSearchArray();
             case 'name':    return $fields->getNameArray();
 
         }
         return array($fields->getRecordArray(), $fields->getPriorityArray());                         // two member array ('record' array, 'pri' array)
+    }
+
+    /**
+     * @return \AA\Util\Searchfields
+     */
+    function getSearchfields() {
+        return $this->fields->getSearchfields();
     }
 
     /** get_dynamic_setting_content function

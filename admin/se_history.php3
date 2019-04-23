@@ -127,20 +127,23 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
 /** GetHistoryFields function
  * List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
- * @return array
+ * @return AA\Util\Searchfields
  */
 function GetHistoryFields() {  // function - we need trnslate _m() on use (not at include time)
-    return array(
-     'change_id'   => GetFieldDef( _m('Id'),          'change.id',          'text', false,           10, 10),
-     'resource_id' => GetFieldDef( _m('Resource ID'), 'change.resource_id', 'text',    false,           20, 20),
-     'type'        => GetFieldDef( _m('Type'),        'change.type',        'text',    false,           30, 30),
-     'user'        => GetFieldDef( _m('User'),        'change.user',        'text', false,           40, 40),
-     'time'        => GetFieldDef( _m('Time'),        'change.time',        'date',    false,           50, 50)
-  // 'selector'    => GetFieldDef( _m('Selector'),    'change_record.selector',    'text',    'change_record',           60, 60),
-  // 'priority'    => GetFieldDef( _m('Priority'),    'change_record.priority',    'numeric', 'change_record', 70, 70),
-  // '_value'      => GetFieldDef( _m('Value'),       'change_record.value',       'text',    'change_record', 80, 80),   // we do not use change_record, yet. I added underscore to _value, because it makes MakeSQLConditions to return wrong conditions (condition[value] badly detected)
-  // 'vtype'       => GetFieldDef( _m('Value Type'),  'change_record.type',        'text',    'change_record', 90, 90)
-               );
+    $searchfields = new AA\Util\Searchfields();
+    //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
+    $searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);
+
+    $searchfields->add('change_id'   , _m('Id'),          'change.id',                 'text', false,           10, 10);
+    $searchfields->add('resource_id' , _m('Resource ID'), 'change.resource_id',        'text', false,           20, 20);
+    $searchfields->add('type'        , _m('Type'),        'change.type',               'text', false,           30, 30);
+    $searchfields->add('user'        , _m('User'),        'change.user',               'text', false,           40, 40);
+    $searchfields->add('time'        , _m('Time'),        'change.time',               'date', false,           50, 50);
+    // $searchfields->add('selector'    , _m('Selector'),    'change_record.selector',    'text',    'change_record', 60, 60);
+    // $searchfields->add('priority'    , _m('Priority'),    'change_record.priority',    'numeric', 'change_record', 70, 70);
+    // $searchfields->add('_value'      , _m('Value'),       'change_record.value',       'text',    'change_record', 80, 80);   // we do not use change_record, yet. I added underscore to _value, because it makes MakeSQLConditions to return wrong conditions (condition[value] badly detected)
+    // $searchfields->add('vtype'       , _m('Value Type'),  'change_record.type',        'text',    'change_record', 90, 90);
+    return $searchfields;
 }
 
 /** GetHistoryAliases function
@@ -207,7 +210,7 @@ function GetHistoryContent($zids) {
  */
 function QueryHistoryZIDs($slice_id, $conds, $sort="") {
 
-    $HISTORY_FIELDS = GetHistoryFields();
+    $HISTORY_FIELDS = GetHistoryFields()->getArrayDeprecated();
 
     $where_sql      = MakeSQLConditions($HISTORY_FIELDS, $conds, 'LIKE', $foo);
     $order_by_sql   = MakeSQLOrderBy(   $HISTORY_FIELDS, $sort,  $foo);

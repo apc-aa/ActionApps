@@ -30,6 +30,8 @@
  * @link      http://www.apc.org/ APC
 */
 
+use AA\IO\Grabber\ObjectForm;
+
 /** allows serialize objects */
 abstract class AA_Serializable {
 
@@ -783,11 +785,13 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return GetZidsFromSQL( $SQL, 'objectid', 'l');
     }
 
-    /** getSearchArray function
+    /**
+     * @param $properties
+     * @return \AA\Util\Searchfields
      */
-    static function _getSearchArray($properties) {
+    protected static function getSearchfields($properties) {
         $i   = 0;
-        $ret = array();
+        $searchfields = new AA\Util\Searchfields();
         $props = array_merge(array('aa_name' => self::getPropertyObject('aa_name')), $properties);
         //if (!isset($properties['aa_name']))  { $properties['aa_name']  = self::getPropertyObject('aa_name'); }
         //if (!isset($properties['aa_owner'])) { $properties['aa_owner'] = self::getPropertyObject('aa_owner'); }
@@ -818,9 +822,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             // we can hide the field, if we put in fields.search_pri=0
             $search_pri = ++$i;
                                //             $name,        $field,       $operators, $table, $search_pri, $order_pri
-            $ret[$prop_id] = GetFieldDef( $property->getName(), $prop_id, $field_type, false, $search_pri, $search_pri);
+            $searchfields->add($prop_id, $property->getName(), $prop_id, $field_type, false, $search_pri, $search_pri);
         }
-        return $ret;
+        return $searchfields;
     }
 
     /** generateAliases
@@ -907,7 +911,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $aliases       = AA_Object::_generateAliases($properties);
 
-        $search_fields = AA_Object::_getSearchArray($properties);
+        $search_fields = AA_Object::getSearchfields($properties);
         $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
 
@@ -961,7 +965,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {
-        $grabber = new AA_Objectgrabber_Form();
+        $grabber = new ObjectForm();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
         $content    = $grabber->getContent();
@@ -1033,13 +1037,24 @@ class AA_Components extends AA_Object {
     {
         $right_classes = array();
         if (false !== $pos = strrpos($mask, '\\')) {  // new composer approach with autoload - we can't use  get_declared_classes()
-            $classtype = substr($mask,$pos+1);
-            $dirname = AA_BASE_PATH.'src/'.$classtype;
+            $classfilter = substr($mask,$pos+1);
+            $classdir    = substr($mask,3,$pos-3);
+
+            //huhl($pos, $mask, $classfilter, $classdir);
+
+
+            $dirname = AA_BASE_PATH.'src/'.$classdir;
             $files = AA_Directory_Wrapper::wrapper($dirname)->getFileNames();
             foreach ($files as $file) {
-                $name = strstr($file,'.',true);
-                if (strlen($shortcut = strtolower(str_replace($classtype,'',$name)))) {
-                    $right_classes[strtolower($shortcut)] = $mask.'\\'.$name;
+                $name = str_replace(array('.php'), array(''),$file);
+
+                // filter out other possible classes
+                if (!$name OR ($name=='Abstract')) {
+                    continue;
+                }
+
+                if (strlen($shortcut = strtolower(str_replace($classfilter,'',$name)))) {
+                    $right_classes[strtolower($shortcut)] = 'AA\\'. $classdir.'\\'.$name;
                 }
             }
             return $right_classes;

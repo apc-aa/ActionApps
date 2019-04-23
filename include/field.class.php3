@@ -569,27 +569,27 @@ class AA_Fields implements Iterator {
     }
 
     /** getSearchArray function
-     * @param bool $get_related return also related fields (we do not want it for recurent call)
-     * @return array
+     * @param int $related_cnt - return also $related_cnt related fields (we do not want it for recurent call)
+     * @return AA\Util\Searchfields
      */
-    function getSearchArray($get_related=true) {
+    function getSearchfields($related_cnt=8) {
         $this->load();
         $i = 0;
         $related = 0;
-        $ret = array();
+        $searchfields = new AA\Util\Searchfields();
         foreach ( $this->fields as $field_id => $field ) { // in priority order
             $field_name = $field->getProperty('name');
             list($field_type, $values_slice_or_const) = $field->getSearchType();
             if ($field_type=='relation') {
-                $field_type = 'constants';     // @todo - deal with relations in search
-                if ($get_related) {
-                    $related_fields = with(new AA_Fields($values_slice_or_const))->getSearchArray(false);
+                $field_type = 'constants';
+                if ($related_cnt) {
+                    $related_fields = with(new AA_Fields($values_slice_or_const))->getSearchfields(0);
                     $related += 1000;
                     $opt_group = $field_name;
 
                     // add "-- any text field --" search option
                     if ($related_fields) {
-                        $ret['all_fields@' . $field_id] = array('opt_group'=>$opt_group, 'search_pri'=> $related++, 'order_pri'=>0, 'name' => ' > ' . _m('-- any text field --'), 'field'=>'all_fields@' . $field_id);
+                        $searchfields->add('all_fields@' . $field_id, ' > ' . _m('-- any text field --'), 'all_fields@' . $field_id, 'text', '', $related++, 0, $opt_group);
                     }
                     $i = 0;
                     foreach ($related_fields as $r_fid => $r_fld) {
@@ -602,33 +602,32 @@ class AA_Fields implements Iterator {
                         $r_fld['name'] = ' > ' . $r_fld['name'];
                         $field_expr = $r_fid . '@' . $field_id;
                         $r_fld['field']   = $field_expr;
-                        $ret[$field_expr] = $r_fld;
-                        if (++$i>8) {  // the number of fields in related search is limited to forst 8 (just not to be so long for some heavy related slices)
+                        $searchfields->addArray($field_expr, $r_fld);
+                        if (++$i>$related_cnt) {  // the number of fields in related search is limited to first $related_cnt (just not to be so long for some heavy related slices)
                             break;
                         }
                     }
                 }
             }
 
-
             // we can hide the field, if we put in fields.search_pri=0
             $search_pri = ($field->getProperty('search_pri') ? ++$i : 0 );
                                //             $name,        $field,   $operators, $table, $search_pri, $order_pri
-            $ret[$field_id] = GetFieldDef( $field_name, $field_id, $field_type, false, $search_pri, $search_pri);
+            $searchfields->add($field_id, $field_name, $field_id, $field_type, false, $search_pri, $search_pri);
         }
 
-        // we are construction something like:
+        // we are constructing something like:
         //   (case 1 - above - link from this slice)
         //     $fields['headline........@relation.......2']=array('search_pri'=>1,'name'=>'headline........@relation.......2', 'operators'=>'text');
         //   (case 2 - below - link from other slice to this one)
         //     $fields['headline........@de0cfa6d391d6365181855801925ffe6/relation.......2']=array('search_pri'=>1,'name'=>'headline........@de0cfa6d391d6365181855801925ffe6/relation.......2', 'operators'=>'text');
 
-        if ($get_related) {
+        if ($related_cnt) {
 
             // add all fields of slices which points to this sice
             $related_fields = DB_AA::select(array(), 'SELECT id, name, LOWER(HEX(slice_id)) as sid FROM `field`', array(array('input_show_func','___:#sLiCe-' . $this->master_id . '%','LIKE')));
             foreach ($related_fields as $rf_def) {
-                $related_fields = with(new AA_Fields($rf_def['sid']))->getSearchArray(false);
+                $related_fields = with(new AA_Fields($rf_def['sid']))->getSearchfields(0);
                 $related += 1000;
                 $opt_group = AA_Module::getModuleName($rf_def['sid']) . ' / ' . $rf_def['name'];
                 // add "-- any text field --" search option
@@ -647,7 +646,7 @@ class AA_Fields implements Iterator {
                     $r_fld['name'] = ' > ' . $r_fld['name'];
                     $field_expr = $r_fid . '@' . $rf_def['sid'] . '/' . $rf_def['id'];
                     $r_fld['field'] = $field_expr;
-                    $ret[$field_expr] = $r_fld;
+                    $searchfields->addArray($field_expr, $r_fld);
                     if (++$i>8) {  // the number of fields in related search is limited to forst 8 (just not to be so long for some heavy related slices)
                         break;
                     }
@@ -655,9 +654,7 @@ class AA_Fields implements Iterator {
             }
         }
 
-
-
-        return $ret;
+        return $searchfields;
     }
 
     /** isSliceField function

@@ -145,9 +145,6 @@ class AA_Searchbar_Row extends AA_Storable {
  * (on Links Manager page, for example)
  */
 class AA_Searchbar extends AA_Storable {
-    var $search_fields;   // fields (options) used in search selectboxes
-    var $search_operators;// operators used for fields in search selectboxes
-    var $order_fields;    // fields (options) used in order selectboxes
     var $fields;          // fields definitions
     var $form_name;       // name of the form (for submit)
 
@@ -180,73 +177,27 @@ class AA_Searchbar extends AA_Storable {
 
     /** AA_Searchbar function
      *  constructor
-     * @param $fields
-     * @param $f
-     * @param $srcm
-     * @param $orcm
-     * @param $aesr
+     * @param $fields AA\Util\Searchfields
+     * @param $form_name
+     * @param $search_row_count_min
+     * @param $order_row_count_min
+     * @param $add_empty_search_row
      * @param $show
      * @param $hint
      * @param $hint_url
      */
-    function __construct($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show=null, $hint='', $hint_url='') {
+    function __construct($fields=null, $form_name='foo', $search_row_count_min=1, $order_row_count_min=1, $add_empty_search_row=1, $show=null, $hint='', $hint_url='') {
         $this->fields               = $fields;
-        $this->show                 = is_null($show) ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show;
-        $this->hint                 = $hint;
-        $this->hint_url             = $hint_url;
-        $this->search_fields        = array();
-        $this->search_operators     = array();
-
-        if ( isset($fields) AND is_array($fields) ) {
-            // add "all fields" search
-            if ($this->show & MGR_SB_ALLTEXT) {
-                $this->search_fields['all_fields']            = _m('-- any text field --');
-                $this->search_operators['all_fields']         = 'text';
-            }
-            if ($this->show & MGR_SB_ALLNUM) {
-                $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
-                $this->search_operators['all_fields_numeric'] = 'numeric';
-            }
-
-            uasort ($fields, "searchfields_cmp");
-            $last_pri = 0;
-            foreach ( $fields as $fid => $v) {
-                if ($v['search_pri'] > 0 ) {           // not searchable fields
-                    // searchfields could be splited into groups
-                    // one group is allways with search_pri 0-999, 1000-1999, ...
-                    if ( $last_pri AND (floor($last_pri/1000) != floor($v['search_pri']/1000)) ) {
-                        $this->search_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
-                        $this->search_operators[$fid] = 'text';
-                    }
-                    $last_pri = $v['search_pri'];
-                    $this->search_fields[$fid]    = $v['name'];
-                    $this->search_operators[$fid] = $v['operators'];
-                }
-            }
-
-            // sort
-            uasort ($fields, "orderfields_cmp");
-            $last_pri = 0;
-            foreach ( $fields as $fid => $v) {
-                if ($v['order_pri'] > 0 ) {
-                    // orderfields could be splited into groups
-                    // one group is allways with order_pri 0-999, 1000-1999, ...
-                    if ( $last_pri AND (floor($last_pri/1000) != floor($v['order_pri']/1000)) ) {
-                        $this->order_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
-                    }
-                    $last_pri = $v['order_pri'];
-                    $this->order_fields[$fid]     = $v['name'];
-                }
-            }
-        }
-        $this->form_name            = $f;
-        $this->search_row_count_min = $srcm;
-        $this->order_row_count_min  = $orcm;
-        $this->add_empty_search_row = $aesr;
+        $this->form_name            = $form_name;
+        $this->search_row_count_min = $search_row_count_min;
+        $this->order_row_count_min  = $order_row_count_min;
+        $this->add_empty_search_row = $add_empty_search_row;
         $this->bookmarks            = new AA_Bookmarks; // stores bookmarks (stored queries)
         $this->search_row           = array();          // internal array - stores current state of search rows
         $this->order_row            = array();          // internal array - stores current state of order rows
-
+        $this->show                 = is_null($show) ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show;
+        $this->hint                 = $hint;
+        $this->hint_url             = $hint_url;
     }
 
     /** update funtion
@@ -481,7 +432,8 @@ class AA_Searchbar extends AA_Storable {
         // global $auth, $slice_id;  // @todo - tried to set right order after searchbox is cleaned, but it shows some errors. I have to look on it later. Honza 6.9.2012
         // $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
         // $this->setFromProfile($profile);
-        if (($this->order_row_count_min > 0) AND isset( $this->order_fields['publish_date....'])) {
+        $order_fields = $this->fields->getOrderArray();
+        if (($this->order_row_count_min > 0) AND isset( $order_fields['publish_date....'])) {
             $this->addOrder( array( 0=>array('publish_date....' => 'd')) );
         }
     }
@@ -557,9 +509,11 @@ class AA_Searchbar extends AA_Storable {
      */
     function print_search_bar($bar) {
 
+        $search_arr = $this->fields->getSearchArray($this->show & MGR_SB_ALLTEXT, $this->show & MGR_SB_ALLNUM);
+
         if (empty($this->search_row[$bar])) {
             $val      = '';
-            $fld      = $this->search_fields[0];
+            $fld      = $search_arr[0];
             $oper     = '';
             $readonly = false;
         } else {
@@ -592,7 +546,7 @@ class AA_Searchbar extends AA_Storable {
             echo "<td class=\"tabtxteven\">".$val."</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
         } else {
             echo "<td>";
-            FrmSelectEasy("srchbr_field[$bar]", $this->search_fields, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
+            FrmSelectEasy("srchbr_field[$bar]", $search_arr, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
             echo '</td><td>';
             FrmSelectEasy("srchbr_oper[$bar]", array(' ' => ' '), null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php3").'\')" ');
             echo '</td><td>';
@@ -631,19 +585,13 @@ class AA_Searchbar extends AA_Storable {
      * @param int $bar which bar to print (index)
      */
     function print_order_bar($bar) {
-
-        list($dir, $fld) = ( isset($this->order_row[$bar]) AND
-            is_array($this->order_row[$bar]) ) ?
-            array(safe($this->order_row[$bar]['dir']),
-                $this->order_row[$bar]['field']) :
-            array( "a", $this->order_fields[0]);
+        $order_fields = $this->fields->getOrderArray();
+        list($dir, $fld) = ( isset($this->order_row[$bar]) AND is_array($this->order_row[$bar]) ) ?  array(safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']) :  array( "a", $order_fields[0]);
 
         $searchtext  = _m('Order');
-        $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">".
-            GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
-        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>".
-            str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
-        FrmSelectEasy("srchbr_order[$bar]", $this->order_fields, $fld);
+        $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">". GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
+        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>". str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
+        FrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld);
         echo '</td><td colspan="2" class="leftmenuy">';
         FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
         echo _m('Descending'). "</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
@@ -711,10 +659,9 @@ class AA_Searchbar extends AA_Storable {
 
         // print string like "120021020010" which defines field type (charAt())
         $oper_translate = array( 'text' => 0, 'numeric' => 1, 'date' => 2, 'constants' => 3, 'numconstants' => 4);
-        if ( isset($this->search_operators) AND is_array($this->search_operators) ) {
-            foreach ($this->search_operators as $v) {
-                echo $oper_translate[$v];
-            }
+        $search_operators = $this->fields->getOperatorsArray($this->show & MGR_SB_ALLTEXT, $this->show & MGR_SB_ALLNUM);
+        foreach ($search_operators as $v) {
+            echo $oper_translate[$v];
         }
         echo "\";\n";
 

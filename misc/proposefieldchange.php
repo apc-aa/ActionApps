@@ -18,7 +18,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once "../include/config.php3";
+    use AA\IO\Grabber\AbstractGrabber;
+    use AA\IO\Saver;
+
+    require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 
@@ -62,9 +65,9 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
 }
 
 
-/** AA_Grabber_Form - Grabbs data POSTed by AA form
+/** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabbs data POSTed by AA form
 */
-class AA_Grabber_Assignmentform extends AA_Grabber {
+class AbstractGrabberAssignmentform extends AbstractGrabber {
     var $_items;            /** list if files to grab - internal array */
     var $_index;              /**  */
 
@@ -111,7 +114,7 @@ class AA_Grabber_Assignmentform extends AA_Grabber {
         reset($this->_items);   // go to first long id
     }
 
-    /** Method called by the AA_Saver to get next item from the data input */
+    /** Method called by the AA\IO\Saver to get next item from the data input */
     function getItem() {
         if (!($item = $this->_items[$this->_index])) {
             return false;
@@ -167,8 +170,8 @@ elseif ( AA_V::P('assignment') == 1 ) {
             DB_AA::sql($SQL);
         }
 
-        $grabber      = new AA_Grabber_Assignmentform();
-        $saver        = new AA_Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
+        $grabber      = new AbstractGrabberAssignmentform();
+        $saver        = new Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
         $saver->run();
 
         AA::Pagecache()->invalidateFor("slice_id=de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values

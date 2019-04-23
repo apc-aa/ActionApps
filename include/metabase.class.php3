@@ -750,6 +750,7 @@ class AA_Metabase {
     }
 
     function doInsert($tablename, $data, $nohalt=null) {
+        $cols = array();
         if ( !($cols = $this->getColumns($tablename))) {
             return false;
         }
@@ -834,9 +835,16 @@ class AA_Metabase {
     }
 
     /** getSearchArray function
+     * @deprecated - use getSearchfields
      */
     function getSearchArray($tablename) {
         return $this->tables[$tablename]->getSearchArray();
+    }
+
+    /** getSearchfields function
+     */
+    function getSearchfields($tablename) {
+        return $this->tables[$tablename]->getSearchfields();
     }
 
     /** @return rows from $tablename for given $module_id in form
@@ -1107,15 +1115,14 @@ class AA_Metabase {
     }
 
     /** generate manager from database structure
-     * @param      $tablename
-     * @param null $actions
-     * @param null $switches
+     * @param $classname
+     * @param $params
      * @return array
      */
     function getManagerConf($tablename, $actions=null, $switches=null) {
         $table         = $this->tables[$tablename];
         $aliases       = $table->generateAliases();
-        $search_fields = $this->getSearchArray($tablename);
+        $search_fields = $this->getSearchfields($tablename);
 
         $manager_settings = array(
             'show'      =>  MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM),
