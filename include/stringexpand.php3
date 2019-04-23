@@ -7183,6 +7183,7 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
      * @return string|void
      */
     function expand($header=null, $parameter=null) {
+        $parameter = strlen($parameter) ? str_replace(array("\r\n","\n", "\r"), ' ', $parameter) : '';       // remove line endings
         switch ($header) {
             case '200':       AA::$headers['status']      = 'HTTP/1.1 200 OK';                       break;
             case '201':       AA::$headers['status']      = 'HTTP/1.1 201 Created';                  break;
@@ -8074,9 +8075,14 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             $footer     = $mode_arr['B'] ? '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>' : '';
         } else {
 
-            if ($field AND ($item_id = $item_id ?: ($this ? $this->item->getId() : null))) {
+            $item_id = $item_id ?: ($this ? $this->item->getId() : null);
+            if ($field AND $item_id) {
                 $conds .= $conds ? "-$field-=-$item_id" : "d-$field-=-$item_id";
             }
+            if (!$conds) {
+                return '';
+            }
+
             if (!$sort) {
                 $sort = 'publish_date....';
             }
