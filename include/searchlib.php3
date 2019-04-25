@@ -928,6 +928,7 @@ class AA_Dbcondition {
             case '==':      return array('INNER', '', "($field = '".     addcslashes($querystring,"'")   ."')");  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
             case 'BEGIN':   return array('INNER', '', "($field LIKE '".  addcslashes(quote($querystring),"_%") ."%')");
             case 'CONTAIN': return array('INNER', '', "($field LIKE '%". addcslashes(quote($querystring),"_%") ."%')");
+            case 'BITSET':  return array('INNER', '', "($field & ". (int)$querystring ." = ". (int)$querystring .")");
         }
 
         // query string could be slashed - sometimes :-(
