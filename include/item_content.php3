@@ -494,8 +494,9 @@ class ItemContent extends AA_Content {
     function isField($field_id) {
         static $f_def;
         if ( !isset($f_def) ) {
-            $f_def = array_flip(array_merge(array_keys(GetLinkFields()), array_keys(GetCategoryFields()), array_keys(GetConstantFields())));
+            $f_def = array_flip(array_merge(GetLinkFields()->getFieldidsArray(), array_keys(GetCategoryFields()), array_keys(GetConstantFields())));
         }
+
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
         return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR $f_def[$field_id]);
     }

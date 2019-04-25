@@ -87,6 +87,14 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         return $order_fields;
     }
 
+    /** Return array of field ids
+     * @return array
+     */
+    public function getFieldidsArray() {
+        return array_keys($this->fields);
+    }
+
+
     /**
      * @param string $type      search | operators
      * @param bool $add_alltext

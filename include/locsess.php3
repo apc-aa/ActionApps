@@ -608,7 +608,7 @@ class DB_AA extends DB_Sql {
      *     s        - string (default)  =                single or array    array('field_id',$id)
      *     i        - integer           =                single or array    array('id', $task_id, 'i')
      *     l        - longid            =                single or array    array('item_id', $ids_arr, 'l')
-     *     set      - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set')
+     *     set      - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set') - good for bitfields
      *     j        - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join  (SELECT ... FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), a..
      *     >        - integer           >                single             array('date', 1478547854, '>')
      *     <        - integer           <                single             array('date', 1478547854, '<')
