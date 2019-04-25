@@ -877,18 +877,24 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** Manager top HTML
      *  could be changed in child classes
+     * @param AA\Util\Searchfields $fields
+     * @return string
      */
     protected static function getManagerTopHtml($fields) {
         return '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')),array_column($fields,'name'),array( _m('ID'), _m('Owner')))).'</th>
+              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')), $fields->getFieldnamesArray(), array( _m('ID'), _m('Owner')))).'</th>
             </tr>
             ';
     }
 
     /** Manager row HTML
      *  could be changed in child classes
+     * @param AA\Util\Searchfields $fields
+     * @param $aliases
+     * @param $links
+     * @return string
      */
     protected static function getManagerRowHtml($fields, $aliases, $links) {
         return '

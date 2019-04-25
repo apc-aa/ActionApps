@@ -94,6 +94,13 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         return array_keys($this->fields);
     }
 
+    /** Return array of field names
+     * @return array
+     */
+    public function getFieldnamesArray() {
+        return array_column($this->fields,'name');
+    }
+
 
     /**
      * @param string $type      search | operators
