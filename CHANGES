@@ -1,3 +1,7 @@
+19-04-25 - new operator BITSET for bitwise AND - test if the bit(s) are set - goot for bitfields
+(honzam)     {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-4}:_#HEADLINE:<br>} - third bit of highlight field must be set (val & 4 == 4)
+             {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-6}:_#HEADLINE:<br>} - second and third bit of highlight field must be set (val & 6 == 6)
+         - fix Two boxes widget - wrong constants - broken after previous commit
 19-04-23 - fix {manager} - do not show all items when no item is edited (adding item)
 (honzam) - {header} now removes newlines, so the code could be more readable
          - site module now removes initial and ending newlines from the page output,
