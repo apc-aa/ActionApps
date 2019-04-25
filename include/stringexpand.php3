@@ -729,11 +729,11 @@ class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
             return '';
         }
         $share  = 'false';
-        $width  = 79;
+        $width  = 120;
         $height = 21;
         if ($type ==  '+share') {
             $share  = 'true';
-            $width  = 124;
+            $width  = 149;
             $height = 46;
         }
         return !$url ? '' : "<iframe src=\"https://www.facebook.com/plugins/like.php?href=".urlencode($url)."&amp;width=$width&amp;layout=button_count&amp;action=like&amp;size=small&amp;show_faces=false&amp;share=$share&amp;height=$height\" width=\"$width\" height=\"$height\" style=\"border:none;overflow:hidden\" scrolling=no frameborder=0 allowTransparency=true allow=\"encrypted-media\"></iframe>";
