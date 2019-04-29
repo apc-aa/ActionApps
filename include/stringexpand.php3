@@ -7784,8 +7784,10 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
         $extrahightdiv = ($effect == 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
         $liswitcher    = $li_code ? "<ul class=\"rot-switcher\">".join("\n",$lis)."</ul>" : '';
 
+        $framesdiv = '<div class="rot-frames">'.join("\n",$frames).'</div>';
+
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Rotator
-        return "<div id=\"$div_id\" style=\"position:relative\">".join("\n",$frames).$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
+        return "<div id=\"$div_id\" style=\"position:relative\">".$framesdiv.$extrahightdiv.$liswitcher."</div><script>AA_Rotator('$div_id', $interval, ".count($frames).", '$speed', '$effect');</script>";
     }
 }
 
