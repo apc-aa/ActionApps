@@ -64,7 +64,8 @@ do  {
     // Procces users data ---------------------
     // posted_users contains comma delimeted list of selected users of group
     if ($posted_users) {
-        $assigned_users = explode(",",$posted_users);
+        // we use urldecode in order to use comma as separator
+        $assigned_users = array_map('urldecode', explode(",",$posted_users));
     }
 
     if (isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
@@ -74,7 +75,6 @@ do  {
     }
     if (isset($assigned_users)) {
         foreach ( $assigned_users as $foo_uid) {
-            $foo_uid = urldecode($foo_uid);                 // we use urldecode in order to use comma as separator
             AddGroupMember($selected_group, $foo_uid);
         }
     }
