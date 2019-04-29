@@ -1,3 +1,4 @@
+19-04-29 - html code for {rotator} improved a bit
 19-04-25 - new operator BITSET for bitwise AND - test if the bit(s) are set - goot for bitfields
 (honzam)     {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-4}:_#HEADLINE:<br>} - third bit of highlight field must be set (val & 4 == 4)
              {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-6}:_#HEADLINE:<br>} - second and third bit of highlight field must be set (val & 6 == 6)
