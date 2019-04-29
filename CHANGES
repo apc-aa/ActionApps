@@ -5,9 +5,20 @@
          - fix Two boxes widget - wrong constants - broken after previous commit
 19-04-23 - fix {manager} - do not show all items when no item is edited (adding item)
 (honzam) - {header} now removes newlines, so the code could be more readable
+         - new parameter <type> for {facebook:<url>:<type>} - when <type> is "+share", 
+           then the FB button will contain Like + Share button
+         - new libraries select2@3 and select2@4 added for {require:} 
+         - new {changepwdsendmail:<reader_slice_id>:<from-email>:<username>} sends mail 
+           to the user identified by username and readerslice to allow password change. 
+           Return 1 if mail is sent, anything else in case of error
+         - new {detect} - Detects mobile/tablet/desktop (and print one of the mentioned keywords)
          - site module now removes initial and ending newlines from the page output,
            so the page begins with usefull content
          - The transformation "Divide the text to multiple values" now allows multiline delimiters
+         - Page is not cached when Authorization header is changed
+         - Grabbers and Savers moved form global AA_Grabber_* namespace to its own AA\IO\Grabber, AA\IO\Saver
+         - new searchfileds class to manipulate slice/view condition fields. 
+           It will be used for view filtering on remote fields (headline........@relation.......1)
 19-04-04 - fix optimize.php3 script which time to time calls OPTIMIZE on database tables
 (honzam)   (it wasn't executed in php >=5.3. It is also called on all tables, now)
 19-03-28 - {math} allows also bitwise operators & and |
