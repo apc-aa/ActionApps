@@ -71,7 +71,7 @@ function MoveSelectedDown(listbox)
 function CommaDelimeted(elid) {
   if (el = document.getElementById(elid)) {
       return [].slice.call(el.querySelectorAll('option')).map(function (v) {
-          return v.value;
+          return encodeURIComponent(v.value);
       }).join(",");
   }
   return '';
