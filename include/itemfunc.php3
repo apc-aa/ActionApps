@@ -132,7 +132,7 @@ class AA_Generator_Txt extends AA_Generator {
 
     /** generate() velue of currrent timestamp */
     function generate() {
-        return strlen($this->text) ? new AA_Value($this->text) : new AA_Value(); 
+        return strlen($this->text) ? new AA_Value($this->text) : new AA_Value();
     }
 }
 

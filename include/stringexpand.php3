@@ -4394,9 +4394,9 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $grabber = new Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
+        $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
-        $saver   = new Saver($grabber, $transformations, null, 'insert_if_new', 'new');
+        $saver   = new AA\IO\Saver($grabber, $transformations, null, 'insert_if_new', 'new');
         $saver->run();
 
         return join('-',$saver->changedIds());
@@ -4469,8 +4469,8 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         $slices     = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
 
         if ($item_slice AND count($slices) AND in_array($item_slice, $slices) AND (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL)) {
-            $grabber = new Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
-            $saver   = new Saver($grabber, $transformations, $item_slice, 'update');
+            $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
+            $saver   = new AA\IO\Saver($grabber, $transformations, $item_slice, 'update');
             $saver->run();
             return join('-',$saver->changedIds());
         }

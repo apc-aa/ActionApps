@@ -86,7 +86,7 @@ class Saver {
         while ($source_content4id = $this->grabber->getItem()) {
 
             if (!$fire) {
-                $this->message("AA\IO\AA_Saver->run(): grabbed item: ");
+                $this->message("AA\IO\Saver->run(): grabbed item: ");
                 $this->message($source_content4id);
             }
 
@@ -110,7 +110,7 @@ class Saver {
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
             if (!$fire) {
-                $this->message("AA\IO\AA_Saver->run(): id_mode: $id_mode, store_mode: $store_mode");
+                $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode");
             }
 
             switch ($id_mode) {
@@ -150,7 +150,7 @@ class Saver {
                             }
                             $zids = $set->query(null, 1);
                             if (!$fire) {
-                                $this->message("AA\IO\AA_Saver->run(): update/insert - condition:");
+                                $this->message("AA\IO\Saver->run(): update/insert - condition:");
                                 $this->message($set);
                                 $this->message($zids);
                             }
@@ -178,13 +178,13 @@ class Saver {
             if (($store_mode == 'overwrite') OR (substr($store_mode, 0, 6) == 'insert')) {
                 if (!$content4id->complete4Insert()) {
                     $err_count++;
-                    $this->message("AA\IO\AA_Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
+                    $this->message("AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
                     continue;
                 }
             } else { // @todo do validation for updates
                 if (!$content4id->validate4Update()) {
                     $err_count++;
-                    $this->message("AA\IO\AA_Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
+                    $this->message("AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
                     continue;
                 }
             }
