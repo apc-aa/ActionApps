@@ -59,24 +59,25 @@ class Widget extends AA_Components
     }
 
     /** array of libs needed for the widget - automaticaly inserted to the inputform */
-    function requireLibs()
+    function requireLibs($aa_property, $winfo)
     {
         return array();
     }
 
     /** script to run after the page DOM is loaded */
-    function requireRun()
+    function requireRun($aa_property, $winfo)
     {
         return '';
     }
 
     /** register Requires */
-    public function registerRequires()
+    public function registerRequires($aa_property, $winfo)
     {
-        foreach ($this->requireLibs() as $lib) {
+        $libs =  $this->requireLibs($aa_property, $winfo);
+        foreach ($libs as $lib) {
             AA::Stringexpander()->addRequire($lib);
         }
-        if ($script2run = $this->requireRun()) {
+        if ($script2run = $this->requireRun($aa_property, $winfo)) {
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         }
     }
@@ -212,7 +213,7 @@ class Widget extends AA_Components
     /** returns options array with marked selected options, missing options,...
      *  This method is rewritten get_options() method form formutil.php3
      */
-    function getOptions($selected = null, $content = null, $use_name = false, $testval = false, $add_empty = false)
+    function getOptions($selected = null, $content = null, $use_name = false, $testval = false, $add_empty = 0)
     {
         $selectedused = false;
 
@@ -399,7 +400,7 @@ class Widget extends AA_Components
         $help = $aa_property->getHelp();
         $class = $aa_property->getTranslations() ? 'aa-widget aa-langdiv' : 'aa-widget';
 
-        $this->registerRequires();
+        $this->registerRequires($aa_property, $winfo);
 
         $ret = "<div class=\"$class\"" . ($required ? ' data-aa-required' : '') . " id=\"widget-$base_id\" data-aa-basename=\"$base_name\">\n";
         $ret .= $widget_only ? '' : "  <label for=\"" . FormArray::formName2Id($winfo['last_input_name']) . "\">" . $aa_property->getName() . "</label>\n";
@@ -675,6 +676,12 @@ class Widget extends AA_Components
                     break;
                 case 'code':
                     $ret[$pid] = new AA_Property($pid, _m("Code to show"), 'string', false, true, 'string', false, _m("HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed"), '', '_#HEADLINE');
+                    break;
+                case 'disable_new':
+                    $ret[$pid] = new AA_Property($pid, _m("Disable new tags"), 'bool', false, true, 'bool', false, _m("Disallow creation of new tags - new items in related slice"), '', '0');
+                    break;
+                case 'max_values':
+                    $ret[$pid] = new AA_Property($pid, _m("Max values"), 'int', false, true, 'int', false, _m("Limit the number of values entered. If 0 or empty, the number is unlimitted"), '', '0');
                     break;
             }
         }

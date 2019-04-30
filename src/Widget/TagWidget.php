@@ -32,9 +32,9 @@ class TagWidget extends \AA\Widget\Widget
         return true;
     }
 
-    function requireLibs()
+    function requireLibs($aa_property, $winfo)
     {
-        return array('aa-jslib@2');
+        return array('select2@4','aa-jslib@3');
     }
 
     /** getClassProperties function of AA_Serializable
@@ -42,7 +42,7 @@ class TagWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd'));
+        return \AA\Widget\Widget::propertiesShop(array('const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new'));
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -50,38 +50,85 @@ class TagWidget extends \AA\Widget\Widget
      */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
-        $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
-        $base_id = FormArray::formName2Id($base_name);
-
-        $input_name = $base_name . '[tag][]';
-        $input_id = FormArray::formName2Id($input_name);
-
-        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
-        // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
-
-        // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
-
-        // we send to responder the slice and field id of the field with the DEFINITION
-        // I do not want to transport all the settings over GET parameter
-
         $def_field_id = $aa_property->getId();
         $def_slice_id = $content->getOwnerId();
 
-        $opts = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
-        $json_val = array();
-        foreach ($opts as $id => $text) {
-            $json_val[] = array('id' => $id, 'text' => $text);
+    //    $disable_new = (int)$this->getProperty('disable_new', 0);
+    //
+    //    $base_name = FormArray::getName4Form($def_field_id, $content, $this->item_index);
+    //    $base_id = FormArray::formName2Id($base_name);
+    //
+    //    $input_name = $base_name . '[tag][]';
+    //    $input_id = FormArray::formName2Id($input_name);
+    //
+    //    // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+    //    // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+    //
+    //    // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
+    //
+    //    // we send to responder the slice and field id of the field with the DEFINITION
+    //    // I do not want to transport all the settings over GET parameter
+    //
+    //    $opts = $this->getFormattedOptions(null, new zids($content->getValuesArray($def_field_id), 'l'));
+    //    $json_val = array();
+    //    foreach ($opts as $id => $text) {
+    //        $json_val[] = array('id' => $id, 'text' => $text);
+    //    }
+    //
+    //    $prefill = json_encode($json_val);     //'[{id:"CA", text:"Califoria"}, {id:"CERVENA", text:"Red"}]';
+    //
+    //    $widget = "<input type=hidden id=\"$input_id\" name=\"$input_name\" style=\"width:300px;\">
+    //    <script>
+    //      //AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
+    //      AA_LoadJs( true, function() {aa_maketags('$input_id', $prefill, '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "', $disable_new);}, '');
+    //    </script>
+    //    ";
+    //    return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+
+        // $disable_new = (int)$this->getProperty('disable_new', 0); // this parameter is maintained in responder
+
+        $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id = FormArray::formName2Id($base_name);
+        $required = $aa_property->isRequired() ? 'required' : '';
+        $widget_add = '';
+        //$widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
+        $widget = '';
+        $autofocus = ($type == 'ajax') ? 'autofocus' : '';
+
+        // This widget uses constants - show selectbox!
+        $input_name = $base_name . "[tag][]";
+        $input_id = FormArray::formName2Id($input_name);
+
+        $max_values = (int)$this->getProperty('max_values', 0); // Limit the number of values entered. If 0 or empty, the number is unlimitted
+
+        $multiple = ($max_values == 1) ? '' : ' multiple';
+
+        //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
+        $widget = \AA\Widget\Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus style=\"width:95%\">";
+        //$selected = $content->getAaValue($aa_property->getId());
+        // empty select option for not required fields and also for live selectbox,
+        // because people thinks, that the first value is filled in the database (which is not)
+        //$options = $this->getOptions($selected, $content);
+        $sel_options_plain = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
+        $sel_options = array();
+        foreach ($sel_options_plain as $k => $v) {
+            $sel_options[] = array('k'=>$k, 'v'=>$v, 'selected'=>true);
         }
+        $widget .= $this->getSelectOptions($sel_options);
+        $widget .= "</select>";
 
-        $prefill = json_encode($json_val);     //'[{id:"CA", text:"Califoria"}, {id:"CERVENA", text:"Red"}]';
+        $widget .=  "
+            <script>
+              //AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
+              // AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '');
+              AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values);}, '');
+            </script>";
 
-        $widget = "<input type=hidden id=\"$input_id\" name=\"$input_name\" style=\"width:300px;\">
-        <script>
-          AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
-          AA_LoadJs( window.Select2 !== undefined, function() {aa_maketags('$input_id', $prefill, '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '" . AA_INSTAL_PATH . "javascript/select2/select2.min.js');
-        </script>
-        ";
+
         return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        
+
     }
 
     /** @return AA_Value for the data send by the widget

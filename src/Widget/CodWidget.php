@@ -19,13 +19,13 @@ class CodWidget extends \AA\Widget\Widget
         return _m('Code editor');
     }
 
-    function requireLibs()
+    function requireLibs($aa_property, $winfo)
     {
         return array('codemirror@5');
     }
 
     /** script to run after the page DOM is loaded */
-    function requireRun()
+    function requireRun($aa_property, $winfo)
     {
         return '
       var tas = document.querySelectorAll("textarea[data-editor]");
@@ -76,12 +76,12 @@ class CodWidget extends \AA\Widget\Widget
 //        return _m('Code editor');
 //    }
 
-//    function requireLibs() {
+//    function requireLibs($aa_property, $winfo) {
 //        return array('ace@1');
 //    }
 
 //    /** script to run after the page DOM is loaded */
-//    function requireRun()  {
+//    function requireRun($aa_property, $winfo)  {
 //      return "
 //      $('textarea[data-editor]').each(function() {
 //        var textarea = $(this);

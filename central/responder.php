@@ -299,7 +299,7 @@ class AA_Responder_Tags extends AA_Responder {
                 }
             }
         }
-        if ($trimed AND !$found) {
+        if ($trimed AND !$found AND ((int)$widget->getProperty('disable_new', 0) != 1)) {
             array_unshift($ret, array('id'=>$this->input, 'text'=>$this->input));
         }
         header("Content-type: application/json");

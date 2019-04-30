@@ -37,13 +37,13 @@ class FilWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('allowed_ftypes', 'label', 'hint', 'display_url', 'multiple'));
     }
 
-//    function requireLibs()
+//    function requireLibs($aa_property, $winfo)
 //    {
 //        return array('https://unpkg.com/filepond/dist/filepond.css', 'https://unpkg.com/filepond/dist/filepond.js');
 //    }
 //
 //    /** script to run after the page DOM is loaded */
-//    function requireRun()
+//    function requireRun($aa_property, $winfo)
 //    {
 //        return '
 //

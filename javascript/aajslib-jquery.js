@@ -718,29 +718,34 @@ function AA_NewId() {
     return uuid.join('');
 }
 
-function aa_maketags(id, prefill, slice_id, field_id, aa_path, add_new ) {
-    var responder = aa_path + 'central/responder.php';
-    $('#'+id).select2( {
-        separator:"|||",
+function aa_maketags(id, slice_id, field_id, max_values ) {
+    var responder = AA_GetConf('path') + 'central/responder.php';
+    var conf = {
+        templateResult: function (d) { return $("<span>"+d.text+"</span>"); },
+        templateSelection: function (d) { return $("<span>"+d.text+"</span>"); },
+        createTag: function (params) { return undefined; },
         ajax: { url: responder,
             dataType: 'json',
-            quietMillis: 100,
-            data: function (term, page) { // page is the one-based page number tracked by Select2
+            delay: 250,
+            data: function (params) { // page is the one-based page number tracked by Select2
                 return {
                     free: "nobody",
                     command: "tags",
-                    q: term,     //search term
-                    p: page,     // page number
+                    q: params.term,     //search term
+                    p: params.page,     // page number
                     s: slice_id, // slice_id
                     f: field_id  // field_id
                 };
             },
-            results: function (data, page) {
-                var more = (page * 10) < data.total; // whether or not there are more results available
+            processResults: function (data, params) {
+                params.page = params.page || 1; // whether or not there are more results available
                 // notice we return the value of more so Select2 knows if more results can be loaded
-                return {results: data, more: more};
+                return {results: data, pagination: {more: (params.page * 10) < data.count_filtered} }
             }
         }
-    });
-    $('#'+id).select2("data", prefill);
+    }
+    if (max_values > 1) {
+        conf.maximumSelectionLength =  max_values;
+    }
+    $('#'+id).select2( conf );
 }

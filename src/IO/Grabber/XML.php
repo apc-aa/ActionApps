@@ -12,7 +12,9 @@ use AA_Property;
 use Exception;
 use ItemContent;
 
-/** AA_Grabber_XML
+/**
+ * Class XML
+ * @package AA\IO\Grabber
  */
 class XML extends \AA\IO\Grabber\AbstractGrabber {
 
@@ -21,6 +23,11 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
     protected $item_xpath;
     private $_items;
 
+    /**
+     * XML constructor.
+     * @param        $file
+     * @param string $item_xpath
+     */
     function __construct($file, $item_xpath = '') {
         $this->file = $file;
         $this->item_xpath = $item_xpath;

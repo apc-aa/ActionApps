@@ -31,7 +31,7 @@ class EdtWidget extends \AA\Widget\TxtWidget
         return \AA\Widget\Widget::propertiesShop(array('rows', 'cols', 'area_type'));
     }
 
-    function requireLibs()
+    function requireLibs($aa_property, $winfo)
     {
         return array('ckeditor');
     }

@@ -1,4 +1,10 @@
+19-04-30 - tag widget now allows two more options
+(honzam)      - disable_new - disallow to add new items to related slice
+              - max_values  - allows to limit maximum number of options (even 1)
+         - tag widget moved to select2 v4 library
+         - fix error when updated User Group with MariaDB 10.3
 19-04-29 - html code for {rotator} improved a bit
+(honzam) - fixed AA -> User Group - assigning users to group work with LDAP again
 19-04-25 - new operator BITSET for bitwise AND - test if the bit(s) are set - goot for bitfields
 (honzam)     {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-4}:_#HEADLINE:<br>} - third bit of highlight field must be set (val & 4 == 4)
              {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-6}:_#HEADLINE:<br>} - second and third bit of highlight field must be set (val & 6 == 6)

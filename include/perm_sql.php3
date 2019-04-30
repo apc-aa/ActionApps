@@ -128,7 +128,11 @@ function ChangeUser($user, $flags = 0) {
 function AddGroup($group, $flags = 0) {
     // creates new person in permission system
     $varset = new CVarset(array(array('type'       , 'Group'),
+                                array('uid'        , ''),
+                                array('mail'       , ''),
                                 array('name'       , $group['name']),
+                                array('sn'         , ''),
+                                array('givenname'  , ''),
                                 array('description', $group['description']),
                                 array('password'   , 'crypt will never return this')));
     $varset->doInsert('users');
