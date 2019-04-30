@@ -724,6 +724,7 @@ function aa_maketags(id, slice_id, field_id, max_values ) {
         templateResult: function (d) { return $("<span>"+d.text+"</span>"); },
         templateSelection: function (d) { return $("<span>"+d.text+"</span>"); },
         createTag: function (params) { return undefined; },
+        selectOnClose: true,
         ajax: { url: responder,
             dataType: 'json',
             delay: 250,
