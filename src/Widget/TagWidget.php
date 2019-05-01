@@ -93,7 +93,7 @@ class TagWidget extends \AA\Widget\Widget
         $widget_add = '';
         //$widget_add = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
         //$widget_adds = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-left:16px;\"" : '';
-        $widget = '';
+
         $autofocus = ($type == 'ajax') ? 'autofocus' : '';
 
         // This widget uses constants - show selectbox!
@@ -104,8 +104,11 @@ class TagWidget extends \AA\Widget\Widget
 
         $multiple = ($max_values == 1) ? '' : ' multiple';
 
+        // send emtu string allwaus - used for send value, even if the select is empty, so we know, the widget is in use
+        $widget =  "<input type=hidden name=\"$input_name\" value=\"\">";
+
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type == 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
-        $widget = \AA\Widget\Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus style=\"width:95%\">";
+        $widget .= \AA\Widget\Widget::_saveIcon($base_id, $type == 'live') . "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add $autofocus style=\"width:95%\">";
         //$selected = $content->getAaValue($aa_property->getId());
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)
