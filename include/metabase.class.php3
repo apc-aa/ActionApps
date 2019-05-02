@@ -470,6 +470,17 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $fieldarr;
     }
 
+    /** getSearchArray function
+     *
+     */
+    function getSearchfields() {
+        $searchfields = new AA\Util\Searchfields();
+        foreach ($this->c as $column_name => $column) {
+            $searchfields->addArray($column_name, $column->getFieldDef());
+        }
+        return $searchfields;
+    }
+
     /** returns asociative array of table fields filled with '' or 0 (based on column type) */
     function getEmptyRowArray() {
         $fieldarr = array();
