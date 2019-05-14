@@ -136,36 +136,47 @@ if ( $slice_id!="" ) {  // set variables from database - allways
 $headcode = <<<'EOT'
 <script>
     function Defaults() {
-      document.f.odd_row_format.value = '<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>';
-      document.f.even_row_format.value = '';
       document.f.group_by.selectIndex = -1;
       document.f.gb_direction.selectIndex = 0;
       document.f.gb_header.selectIndex = 0;
-      document.f.category_top.value = '';
-      document.f.category_format.value = '<p>_#CATEGORY</p>';
-      document.f.category_bottom.value = '';
-      document.f.compact_top.value = '';
       document.f.compact_remove.value = '';
       document.f.even_odd_differ.checked = false;
-      document.f.noitem_msg.value = '';
+      window.cm_top.setValue("");    
+      window.cm_odd.setValue('<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>');    
+      window.cm_even.setValue("");   
+      window.cm_bottom.setValue(""); 
+      window.cm_ctop.setValue("");   
+      window.cm_cformat.setValue("<p>_#CATEGORY</p>");
+      window.cm_cbottom.setValue("");
+      window.cm_noitem.setValue("");       
       InitPage()
     }
 
     function InitPage() {
-      EnableClick('even_odd_differ','even_row_format');
-    }
-
-    function EnableClick(cond,what) {
-      document.f[what].disabled = !(document.f[cond].checked);
+      [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), function(e) { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
     }
 </script>
 EOT;
+
+
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
+   window.cm_top     = CodeMirror.fromTextArea(document.getElementById("compact_top"), opts);
+   window.cm_odd     = CodeMirror.fromTextArea(document.getElementById("odd_row_format"), opts);
+   window.cm_even    = CodeMirror.fromTextArea(document.getElementById("even_row_format"), opts);
+   window.cm_bottom  = CodeMirror.fromTextArea(document.getElementById("compact_bottom"), opts);
+   window.cm_ctop    = CodeMirror.fromTextArea(document.getElementById("category_top"), opts);
+   window.cm_cformat = CodeMirror.fromTextArea(document.getElementById("category_format"), opts);
+   window.cm_cbottom = CodeMirror.fromTextArea(document.getElementById("category_bottom"), opts);
+   window.cm_noitem  = CodeMirror.fromTextArea(document.getElementById("noitem_msg"), opts);
+   InitPage();
+   ';
 
 $apage = new AA_Adminpageutil('sliceadmin','compact');
 $apage->setTitle(_m("Admin - design Index view"));
 $apage->setSubtitle(_m("Use these boxes ( and the tags listed below ) to control what appears on summary page"));
 $apage->addRequire('codemirror@5');
-$apage->addRequire('InitPage();', 'AA_Req_Load');
+$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
@@ -187,7 +198,7 @@ FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
 FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
            _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
            .'<br>'.AA_View::getViewJumpLinks($odd_row_format), '', 1);
-FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "OnClick=\"EnableClick('even_odd_differ','even_row_format')\"");
+FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "onclick=\"InitPage()\"");
 FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
            _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example")
            .'<br>'.AA_View::getViewJumpLinks($even_row_format), '', 1);

@@ -210,11 +210,14 @@ $headcode = <<<'EOT'
 </script>
 EOT;
 
+
 $apage = new AA_Adminpageutil('modadmin', 'main');
 $apage->setModuleMenu('modules/site');
 $apage->setTitle($template['W'] ? _m("Add Site") : _m("Edit Site"));
 $apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
+$apage->addRequire('codemirror@5');
+//$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
