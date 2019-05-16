@@ -69,10 +69,6 @@ class AA_Searchbar_Row extends AA_Storable {
     var $condition;
     var $readonly;
 
-    // required - class name (just for PHPLib sessions)
-    var $classname        = "AA_Searchbar_Row";
-    var $persistent_slots = array('condition', 'readonly');
-
     /** getClassProperties function of AA_Serializable
      * @param $class
      * @return array
@@ -158,12 +154,6 @@ class AA_Searchbar extends AA_Storable {
     var $add_empty_search_row;
     var $show;           //
     var $hint, $hint_url;
-
-    // PHPLib variables - used to store class instances into sessions
-    var $classname = "AA_Searchbar";    // required - class name
-    var $persistent_slots =             // required - object's slots to save
-            // save only small or dynamicaly changed values - not base setting
-            array("search_row", "order_row");
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -683,7 +673,6 @@ class AA_Searchbar extends AA_Storable {
  * bookmarks class - stores queries (searchbar state)
  */
 class AA_Bookmarks {
-    var $classname = "AA_Bookmarks"; // required - class name
     var $bookmarks;                  // array of stored bookmarks
                                      // bookmarks[] = array('name' => <name>, 'state'=> <searchbar_state>)
     var $profile;                    // profile, where to store bookmarks

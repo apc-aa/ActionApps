@@ -36,8 +36,6 @@ $new_key = "__new__";
 /** See @link ../tabledit.html, @link ../tabledit_developer.html, @link ../tableview.html for more info.
 */
 class tabledit {
-    // serialization purposes??
-    var $classname = "tabledit";
 
     // VARIABLES SET IN CONSTRUCTOR
     /// active TableView definition (see doc/tableview.html) completed by default values

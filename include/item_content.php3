@@ -468,7 +468,6 @@ define('ITEMCONTENT_ERROR_NO_PERM',     204);
  *   array $content4id.
  */
 class ItemContent extends AA_Content {
-    var $classname = "ItemContent";
 
     /** ItemContent function
      *  Constructor which takes content for ID or item_id (unpacked).

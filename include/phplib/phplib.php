@@ -15,84 +15,41 @@
 */
 class Session {
 
-    /** Session name */
-    var $classname;
-
-    /**
-    * Current session id.
-    *
-    * @var  string
-    * @see  id(), Session()
-    */
-    var $id = "";
-
     /**
     * [Current] Session name.
     *
     * @var  string
     * @see  name(), Session()
     */
-    var $name = "";
+    protected $name = "";
 
     /**
     *
     * @var  string
     */
-    var $cookie_path = '/';
+    protected $cookie_path = '/';
 
 
     /**
     *
     * @var  strings
     */
-    var $cookiename = "";
+    protected $cookiename = "";
 
 
     /**
     *
     * @var  int
     */
-    var $lifetime = 0;
+    protected $lifetime = 0;
 
-
-    /**
-    * If set, the domain for which the session cookie is set.
-    *
-    * @var  string
-    */
-    var $cookie_domain = '';
-
-
-    /**
-    * Propagation mode is by default set to cookie
-    * The other parameter, fallback_mode, decides wether
-    * we accept ONLY cookies, or cookies and eventually get params
-    * in php4 parlance, these variables cause a setting of either
-    * the php.ini directive session.use_cookie or session.use_only_cookie
-    * The session.use_only_cookie possibility was introdiced in PHP 4.2.2, and
-    * has no effect on previous versions
-    *
-    * @var    string
-    * @deprec $Id$
-    */
-    var $mode = "cookie";               // We propagate session IDs with cookies
-
-    /**
-    * If fallback_mode is set to 'cookie', php4 will impose a cookie-only
-    * propagation policy, which is a safer  propagation method that get mode
-    *
-    * @var    string
-    * @deprec $Id$
-    */
-    var $fallback_mode;                 // if fallback_mode is also 'cookie'
-                                        // we enforce session.use_only_cookie
 
     /**
     * See the session_cache_limit() options
     *
     * @var  string
     */
-    var $allowcache = 'nocache';
+    protected $allowcache = 'nocache';
 
     /**
     * Do we need session forgery check?
@@ -103,14 +60,22 @@ class Session {
     * We don't check cookie-enabled clients.
     * @var boolean
     */
-    var $forgery_check_enabled = false;
+    protected $forgery_check_enabled = false;
 
     /**
     * the name of the variable to hold the IP of the session
     * @see $forgery_check_enabled
     * @var string
     */
-    var $session_ip = '__session_ip';
+    protected $session_ip = '__session_ip';
+
+
+    /**
+     * Store domain for which the session cookie is set.
+     *
+     * @var  string
+     */
+    protected $cookie_domain = '';
 
 
     /**
@@ -121,9 +86,9 @@ class Session {
     * @see  name()
     */
     function __construct() {
-        $this->name($this->name);
-        $this->classname = get_class($this);
-    } // end constructor
+        $this->name          = $this->cookiename  ?: get_class($this);
+        // $this->cookie_domain = $_SERVER['SERVER_NAME']; // this does not work - it depends on server configuration so it breaks login on some sites
+    }
 
     /**
     * Register the variable(s) that should become persistent.
@@ -154,7 +119,7 @@ class Session {
     * @return false if variable not registered true on success.
     * @access public
     */
-    function is_registered($var_name) {
+    public function is_registered($var_name) {
         return isset($_SESSION[trim($var_name)]);
     }
 
@@ -167,7 +132,7 @@ class Session {
      * @access public
      * @return bool
      */
-    function unregister($var_names) {
+    public function unregister($var_names) {
         foreach (explode (',', $var_names) as $var_name) {
             $var_name=trim($var_name);
             unset($_SESSION[$var_name]);  // unset is no more a function in php4
@@ -176,18 +141,11 @@ class Session {
     }
 
     /**
-    * @brother id()
-    * @deprec  $Id$
     * @access public
     */
-    function get_id($sid = '') {
-        return $this->id($sid);
-    } // end func get_id
-
-
-
-
-
+    public function id() {
+        return session_id();
+    }
 
     /**
     * Delete the cookie holding the session id.
@@ -199,9 +157,8 @@ class Session {
     * uw: yes we should keep it to remain the same interface, but deprec.
     *
     * @deprec $Id$
-    * @access public
     */
-    function put_id() {
+    protected function put_id() {
         if (get_cfg_var('session.use_cookies') == 1) {
             $cookie_params = session_get_cookie_params();
             setcookie($this->name, '', 0, $cookie_params['path'], $cookie_params['domain']);
@@ -219,7 +176,7 @@ class Session {
     * @return boolean session_destroy return value
     * @access public
     */
-    function delete() {
+    public function delete() {
         $this->put_id();
         return session_destroy();
     } // end func delete
@@ -236,7 +193,7 @@ class Session {
     * @deprec $Id$
     * @access public
     */
-    function url($url) {
+    public function url($url) {
         return $url;
     } // end func url
 
@@ -252,7 +209,7 @@ class Session {
     * @global $REQUEST_URI
     * @access public
     */
-    function self_url() {
+    public function self_url() {
       if ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) {
           $qs = substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?'));
       } else {
@@ -262,23 +219,14 @@ class Session {
     }
 
     /**
-    * Sets or returns the name of the current session
+    * Returns the name of the current session
     *
-    * @param  string  If given, sets the session name
     * @return string  session_name() return value
     * @access public
     */
-    function name($name = '') {
-
-        if ($name = (string)$name) {
-            $this->name = $name;
-            $ok = session_name($name);
-        } else {
-            $ok = session_name();
-        }
-        return $ok;
-    } // end func name
-
+    public function name() {
+        return $this->name;         //$ok = session_name();
+    }
 
     /**
     * Returns the session id for the current session.
@@ -289,18 +237,12 @@ class Session {
     * @return string  current session id
     * @access public
     */
-    function id($sid = '') {
-        if (!$sid) {
-            $sid = ("" == $this->cookiename) ? $this->classname : $this->cookiename;
-        }
-
+    function set_id($sid = '') {
         if ($sid = (string)$sid) {
-            $this->id = $sid;
             $ok = session_id($sid);
         } else {
             $ok = session_id();
         }
-
         return $ok;
     } // end func id
 
@@ -323,9 +265,7 @@ class Session {
     * ?
     *
     */
-    function set_tokenname(){
-
-        $this->name = $this->cookiename  ?: $this->classname;
+    protected function set_tokenname(){
         session_name($this->name);
 
         if (!$this->cookie_domain) {
@@ -351,10 +291,10 @@ class Session {
 
 
     /**
-    * ?
+    * How to deal with caching
     *
     */
-    function put_headers() {
+    protected function put_headers() {
         // set session.cache_limiter corresponding to $this->allowcache.
         switch ($this->allowcache) {
             case 'passive':
@@ -364,6 +304,27 @@ class Session {
         }
     } // end func put_headers
 
+
+    protected function session_setup() {
+        $ret = array();
+        if (version_compare(phpversion(), '7.0.0', '<')) {
+            ini_set("session.use_only_cookies", "1");
+        } else {
+            $ret['use_only_cookies'] = 1;
+            $ret['use_trans_sid']    = 0;
+            $ret['cookie_httponly']  = 1;
+            $ret['use_strict_mode']  = 1;
+            if (isset($_SERVER['HTTPS'])) {
+                $ret['cookie_secure'] = 1;
+            }
+            if (version_compare(phpversion(), '7.3.0', '>=')) {
+                $ret['samesite'] = 'Strict';   // maybe we will use 'Lax' if we found Strict too restrictive
+            }
+            // $ret['read_and_close'] = true;  // no locking - @todo - use it when we do not store to the session - just we read
+        }
+        return $ret;
+    }
+
     /**
     * Start a new session or recovers from an existing session
     *
@@ -372,19 +333,19 @@ class Session {
     */
     function start() {
 
-        if ( $this->mode=="cookie" && $this->fallback_mode=="cookie")  {
-            ini_set ("session.use_only_cookies","1");
-        }
-
+        $start_array = $this->session_setup();
         $this->set_tokenname();
         $this->put_headers();
 
-        $ok = session_start();
-        $this->id = session_id();
+        if ($start_array) {  // defined for PHP >= 7.0
+            $ok = session_start($start_array);
+        } else {
+            $ok = session_start();
+        }
 
         if($this->forgery_check_enabled && $this->session_ip) {
             $sess_forged = false;
-            $mysid = $this->name.'='.$this->id;
+            $mysid = $this->name.'='.session_id();
 
             // check cookies first.
             if(!isset($_COOKIE[$this->name]) &&  (strpos($_SERVER['REQUEST_URI'],$mysid) || $_POST[$this->name])) {
@@ -412,13 +373,13 @@ class Session {
 
                     // clear new cookie, if set
                     $cprm = session_get_cookie_params();
-                    setcookie($sname, '', time() - 3600, $cprm['path'], $cprm['domain'], $cprm['secure']);
+                    setcookie($this->name, '', time() - 3600, $cprm['path'], $cprm['domain'], $cprm['secure']);
                     header('Location: '.$new_qs);
                     exit();
                 }
 
                 // maybe should seed better?
-                $this->id(md5(uniqid(rand())));
+                $this->set_id(md5(uniqid(rand())));
                 $ok = session_start();
             }
         }
@@ -448,7 +409,6 @@ class Session {
  */
 
 class Auth {
-    var $classname = "Auth";
 
     var $lifetime = 200;            // Max allowed idle time before
                                     // reauthentication is necessary.

@@ -112,9 +112,6 @@ class inputform {
     var $js_proove_fields;  // javascript form validation code
 
 
-    // required - class name (just for PHPLib sessions)
-    var $classname = "inputform";
-
     /** inputform function
      *  Constructor - initializes inputform
      * @param $settings
@@ -485,7 +482,7 @@ class AA_Inputfield {
                            // value is selected (mainly for multivalues)
     var $const_arr;        // array of constants used for selections (selectbox, radio, ...)
     var $msg;                         // stores return code from functions
-    var $classname = "AA_Inputfield"; // class name (just for PHPLib sessions)
+
     protected $use_triggers = false;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
 
     /** AA_Inputfield function

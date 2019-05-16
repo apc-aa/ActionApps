@@ -42,14 +42,6 @@ class AA_Scroller extends AA_Storable {
     var $metapage         = 10;	    // "metapage" size
     var $urldefault;		        // cache self url
 
-    // needed for PHPlib's session storing.
-    // @todo rewrite PHPlib's sessions to AA_Storable approach (since there is
-    // problem that you need to have class already defined before you try to
-    // get data from session. It is not so good, since you need to include all the
-    // class definition files which could be potentialy stored in the session
-    var $classname        = "AA_Scroller";
-    var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir", "sortcol", "filters", "itmcnt", "metapage", "urldefault");
-
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */
@@ -258,8 +250,6 @@ class AA_Scroller extends AA_Storable {
  */
 
 class AA_Scroller_Easy {
-    var $classname = 'AA_Scroller_Easy';
-    var $persistent_slots = array('current', 'id', 'itmcnt', 'metapage', 'urldefault', 'show_all');
     var $current = 1;	  /** current page     */
     var $id;			  /** scroller id - identifies scroller on a web page */
     var $itmcnt;          /** total item count */
@@ -572,10 +562,11 @@ class AA_Scroller_View extends AA_Scroller_Sitemodule {
     /** get function
      *  Convert array provided by navarray into HTML code
      *  Commands are added to $url
-     * @param $begin
-     * @param $end
-     * @param $add
-     * @param $nopage
+     * @param string $begin
+     * @param string $end
+     * @param string $add
+     * @param string $nopage
+     * @param string $target
      * @return string
      */
     function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null) {

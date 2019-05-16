@@ -59,22 +59,6 @@ class AA_Manager extends AA_Storable {
 
     var $msg;             // stores return code from action functions
 
-    // PHPLib variables - used to store class instances into sessions
-    // (in fact, we do not use PHPLib sessions for storing manager class
-    //  object - there are some issues, like you have to have defined the
-    //  class before calling page_open(), but it is quite hard to do, because
-    //  of language settings (for example), which is stored right in sessions.
-    //  We use our own AA_Storable for this purpose (in manager, searchbar,
-    //  scroller), but we are using the $persistent_slots array in the same way)
-
-    // required - class name (just for PHPLib sessions)
-    var $classname = "AA_Manager";
-
-    // required - object's slots to save in session
-    //            (no itemview, actions, switches, messages, searchbar_funct
-    //             - we want to have it fresh (from constructor and $settings))
-    var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin', 'module_id', '_manager_id');
-
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      */

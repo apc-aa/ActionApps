@@ -50,7 +50,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
 
     function run() {
         global $sess, $auth;
-        return new AA_Response(array($sess->id, $auth));
+        return new AA_Response(array($sess->id(), $auth));
     }
 }
 
@@ -66,7 +66,7 @@ class AA_Responder_Logout extends AA_Responder {
 
     function run() {
         global $sess;
-        $ret = array('sessid'=>$sess->id, 'command' => $GLOBALS['request']->getCommand());
+        $ret = array('sessid'=>$sess->id(), 'command' => $GLOBALS['request']->getCommand());
         if (is_object($sess)) {
             $sess->delete();
         }

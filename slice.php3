@@ -321,7 +321,7 @@ $add_aliases = $aliases    = GetAliasesFromUrl($als);
 
 // this is not good way - aliases are then different on each call, so it isn't
 // cached. The better way is below
-// $add_aliases['_#SESSION_'] = GetAliasDef( 'f_s:'. $sess->id, '', _m('session id'));
+// $add_aliases['_#SESSION_'] = GetAliasDef( 'f_s:'. $sess->id(), '', _m('session id'));
 
 $add_aliases['_#SESSION_'] = GetAliasDef( 'f_e:session', 'id..............', _m('session id'));
 

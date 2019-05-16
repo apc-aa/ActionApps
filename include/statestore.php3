@@ -171,7 +171,7 @@ abstract class AA_Serializable {
  * restoring class data (used in searchbar class, manager class, ...).
  *
  * If you want to use storable methods in your class, you should derive the new
- * class from AA_Storable. Then you should define $persistent_slots array,
+ * class from AA_Storable. Then the property shoul be marked as persistent
  * where you specify all the variables you want to store. Then you just call
  * getState() and setFromState() methods for storing and restoring object's data
  */
@@ -906,8 +906,6 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** generate manager from object structure
-     * @param $classname
-     * @param $params
      * @static
      * @return array
      */

@@ -139,10 +139,6 @@ class AA_Condition extends AA_Object {
             );
     }
 
-    // required - class name (just for PHPLib sessions)
-    var $classname        = "AA_Condition";
-    var $persistent_slots = array('fields', 'operator', 'value');
-
     /** AA_Condition function
      *   The parameters are optional, because we are storing AA_Condition
      *  to the session (with AA_Search_Row) and phplib session management uses
@@ -293,11 +289,6 @@ class AA_Sortorder extends AA_Object {
             'limit' => new AA_Property( 'limit', _m("Limit"),      'text',  false,  true, 'int' ),
             );
     }
-
-    // required - class name (just for PHPLib sessions)
-    var $classname        = "AA_Sortorder";
-    var $persistent_slots = array('field', 'desc', 'limit');
-
 
     /** AA_Sortorder function  */
     function __construct($sort=array()) {

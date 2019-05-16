@@ -36,8 +36,6 @@ require_once AA_INC_PATH. "locauth.php3";  // for getMembership()
  *  in one specific slice
  */
 class AA_Profile {
-    var $classname = "AA_Profile";   // sometimes it is required class property
-
     var $module_id;      // for which slice/module we hold the profile?
     var $user_id;        // for which user we hold the profile?
     var $properties;     // user's profile/settings
