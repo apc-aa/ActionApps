@@ -18,10 +18,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-    use AA\IO\Grabber\AbstractGrabber;
-    use AA\IO\Saver;
 
-    require_once "../include/config.php3";
+require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 
@@ -67,7 +65,7 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\Form - Grabbs data POSTed by AA form
 */
-class AbstractGrabberAssignmentform extends AbstractGrabber {
+class AbstractGrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     var $_items;            /** list if files to grab - internal array */
     var $_index;              /**  */
 
@@ -171,7 +169,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         }
 
         $grabber      = new AbstractGrabberAssignmentform();
-        $saver        = new Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
+        $saver        = new AA\IO\Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
         $saver->run();
 
         AA::Pagecache()->invalidateFor("slice_id=de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values

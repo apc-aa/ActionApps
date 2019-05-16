@@ -19,9 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-use AA\IO\Grabber\Form;
-use AA\IO\Saver;
-
 $timestart = microtime(true);
 
 // APC AA site Module main administration page
@@ -257,8 +254,8 @@ if (IsAjaxCall()) {
     }
 
     if (is_array($_POST['aa']) OR is_array($_FILES['aa'])) {
-        $grabber = new Form();
-        $saver   = new Saver($grabber, null, null, 'by_grabber');
+        $grabber = new AA\IO\Grabber\Form();
+        $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
         // $saver - > check Perms @todo
         list($saved_ok,$saved_err) = $saver->run();
 

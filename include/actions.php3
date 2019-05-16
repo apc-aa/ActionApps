@@ -37,9 +37,6 @@
  *
 */
 
-use AA\IO\Grabber\Slice;
-use AA\IO\Saver;
-
 
 /** AA_Manageraction - Item manager actions. Just create new class and assign
  *  it to your manager
@@ -178,9 +175,9 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
         $sid = $manager->getModuleId();
 
         $zids = AA_Manageraction::getZidsSanitized($item_arr, $sid);
-        $grabber = new Slice( new AA_Set(array($sid),null,null,AA_BIN_ALL), $zids);
+        $grabber = new AA\IO\Grabber\Slice( new AA_Set(array($sid),null,null,AA_BIN_ALL), $zids);
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
-        $saver   = new Saver($grabber, null, null, 'insert_if_new', 'new');
+        $saver   = new AA\IO\Saver($grabber, null, null, 'insert_if_new', 'new');
         $saver->run();
         //SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
         return false;                                     // OK - no error
