@@ -788,10 +788,13 @@ function AA__doChange(params) {
 
 /* Cookies */
 function SetCookie(name, value, plustime) {
+    var coo = encodeURIComponent(name) + "=" + encodeURIComponent(value);
    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
    var expires = new Date();
    expires.setTime(expires.getTime() + plustime);
-   document.cookie = name + "=" + escape(value) + "; expires=" + expires.toGMTString() + "; path=/";
+    coo += "; expires=" + expires.toGMTString() + "; path=/";
+    coo += (document.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
+    document.cookie = coo;
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))
     // + ((domain == null)  ? "" : ("; domain=" + domain))

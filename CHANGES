@@ -1,3 +1,6 @@
+19-05-16 - sessions in AA improvad - used more secure settings, removed old unused directions
+(honzam) - used fully qualified class names for namespaced classes
+         - cookies are set as secure (and samesit=lax) for https pages
 19-05-10 - fixed problem (fatal error) with RSS feeding
 19-05-02 - fixed bug in central (bug introduced with refactoring last week)
 19-04-30 - tag widget now allows two more options
@@ -1733,7 +1736,7 @@
          - fixed validation of empty values for relational fields
          - fixed {xuser} in ajax widgets settings now works well
 12-09-21 - {array:<name>:set:...} now could be used with empty index
-(honzam)   it adds new member to the array - the same as in phparr_var[] = "..."
+(honzam)   it adds new member to the array - the same as in php arr_var[] = "..."
          - new view.php3 parameter group_by which allows you to change
            the group by field of view:
               view.php3?vid=24&cmd[24]=d-...&set[24]=group_by-category........

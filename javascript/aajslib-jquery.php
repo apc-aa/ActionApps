@@ -662,10 +662,13 @@ function AA__doChange(params, type) {
 
 /* Cookies */
 function SetCookie(name, value, plustime) {
+    var coo = encodeURIComponent(name) + "=" + encodeURIComponent(value);
    plustime = (typeof plustime === "undefined") ? (1000 * 60 * 60 * 24) : plustime;   // a day
    var expires = new Date();
    expires.setTime(expires.getTime() + plustime);
-   document.cookie = name + "=" + escape(value) + "; expires=" + expires.toGMTString() + "; path=/";
+    coo += "; expires=" + expires.toGMTString() + "; path=/";
+    coo += (document.location.protocol == 'https:') ? ';secure;samesite=lax' : '';
+    document.cookie = coo;
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))
     // + ((domain == null)  ? "" : ("; domain=" + domain))
@@ -723,4 +726,37 @@ function AA_NewId() {
         uuid[2*i+1] = chars[0 | (Math.random()*16)];
     }
     return uuid.join('');
+}
+
+function aa_maketags(id, slice_id, field_id, max_values ) {
+    var responder = AA_GetConf('path') + 'central/responder.php';
+    var conf = {
+        templateResult: function (d) { return $("<span>"+d.text+"</span>"); },
+        templateSelection: function (d) { return $("<span>"+d.text+"</span>"); },
+        createTag: function (params) { return undefined; },
+        selectOnClose: true,
+        ajax: { url: responder,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) { // page is the one-based page number tracked by Select2
+                return {
+                    free: "nobody",
+                    command: "tags",
+                    q: params.term,     //search term
+                    p: params.page,     // page number
+                    s: slice_id, // slice_id
+                    f: field_id  // field_id
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1; // whether or not there are more results available
+                // notice we return the value of more so Select2 knows if more results can be loaded
+                return {results: data, pagination: {more: (params.page * 10) < data.count_filtered} }
+            }
+        }
+    }
+    if (max_values > 1) {
+        conf.maximumSelectionLength =  max_values;
+    }
+    $('#'+id).select2( conf );
 }
