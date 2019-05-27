@@ -29,9 +29,9 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."locauth.php3";
 
 $auth4cache = '';
-if ($_COOKIE['AA_Session']) {
+if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
     pageOpen('nobody');
-    $auth4cache = $auth->auth['uname'];
+    $auth4cache = is_object($auth) ? $auth->auth['uname'] : '';
 }
 
 // -- CACHE -------------------------------------------------------------------
