@@ -3938,9 +3938,9 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
             return '';
         }
         switch($url) {
-            case '':       return $sess->id();
-            case 'hidden': return "<input type=\"hidden\" name=\"".$sess->name()."\" value=\"".$sess->id()."\">";
-            case 'param':  return $sess->name().'='.$sess->id();
+            case '':       return $sess->id;
+            case 'hidden': return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
+            case 'param':  return $sess->name.'='.$sess->id;
         }
         return StateUrl($url);
     }
@@ -4466,7 +4466,16 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         }
 
         $item_slice = $item->getSliceId();
-        $slices     = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
+        $slices = array();
+        if (AA::$site_id) {
+            if ($site = AA_Module_Site::getModule(AA::$site_id)) {
+                $slices = $site->getRelatedSlices();
+            }
+        } elseif (AA::$module_id) {  // called inside AA admin interface
+            $slices = array(AA::$module_id);
+        } elseif (AA::$slice_id) {  // called in view
+            $slices = array(AA::$slice_id);
+        }
 
         if ($item_slice AND count($slices) AND in_array($item_slice, $slices) AND (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL)) {
             $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
@@ -4644,10 +4653,6 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
             return "Err in {pager} - pager not valid without a view, or for group display";
         }
 
-        if ($target) {
-            AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Ajax
-        }
-
         if (!isset($apc_state['router'])) {
             // used for AJAX scroller in the SEO sitemodule, for example
             $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
@@ -4663,55 +4668,6 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         return $router->scroller($page, $max, $target);
     }
 }
-
-
-/** page scroller for site modules views - displys page scroller for view
- *
- *  It calls router methods, so it displays the right urls in the scroller
- *  @see AA_Router::scroller() method
- *
- *  Must be issued inside the view
- *
- *  Now it is possibile to use {pager} on views called by AJAX (for live searches, ...).
- *  Just put the parameter "div-id" to pager:
- *           {pager:resuts}
- *  where result is the div id, in which the view dispays the values
- *           <div id="results">..view output there</div>
- */
-class AA_Stringexpand_Pagermorexxx extends AA_Stringexpand_Nevercache {
-
-    // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
-     */
-    function additionalCacheParam() {
-        global $apc_state;
-        $itemview = $this->itemview;
-        return !is_object($itemview) ? '' : serialize($apc_state['router']).':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
-    }
-
-    /** expand function
-     * @param $property
-     * @return mixed|string
-     */
-    function expand() {
-        global $apc_state;
-
-        $itemview = $this->itemview;
-        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
-            return "Err in {pager} - pager not valid without a view, or for group display";
-        }
-
-        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Ajax
-
-        $target = '';
-
-        $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
-        return $viewScr->get( '', '', '', '', $target);
-    }
-}
-
-
 
 /** debugging
  */
@@ -6086,12 +6042,6 @@ class AA_Stringexpand {
     }
 
     /** @deprecated - use AA::Stringexpander()->unalias() directly
-     * @param          $text
-     * @param string   $remove
-     * @param null     $item
-     * @param bool     $dequote
-     * @param itemview $itemview
-     * @return mixed|null|string|string[]
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
         return AA::Stringexpander()->unalias($text, $remove, $item, $dequote, $itemview);
@@ -6345,7 +6295,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
             case 'days':      $group_string = 'Y-m-d'; break;
             case 'dayhours':  $group_string = 'H';     break;
             case 'weeks':     $group_string = 'o-W';   break;
-            case 'weekdays':  $group_string = 'N-D';     break;
+            case 'weekdays':  $group_string = 'D';     break;
             case 'months':    $group_string = 'Y-m';   break;
             case 'years':     $group_string = 'Y';     break;
             default:          return '';
@@ -6675,12 +6625,12 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
         $reader_slice_id = $collectionprop['slice_id'];
         if ($_GET["aw"]) {
             if (confirm_email($reader_slice_id, $_GET["aw"])) {
-                return '<div class="aa-ok">E-mail confirmed</div>';  // @todo get messages from alerts module
+                return '<div class="aa-ok">'._m('E-mail confirmed.').'</div>';  // @todo get messages from alerts module
             }
         }
         if ($_GET["au"]) {
             if (unsubscribe_reader($reader_slice_id, $_GET["au"], $_GET["c"])) {
-                return '<div class="aa-ok">E-mail unsubscribed</div>';  // @todo get messages from alerts module
+                return '<div class="aa-ok">'._m('E-mail unsubscribed').'</div>';  // @todo get messages from alerts module
             }
         }
         return '';
@@ -8573,27 +8523,9 @@ class AA_Stringexpand_Detect extends AA_Stringexpand {
 }
 
 
-/** Detects mobile/tablet/desktop (and print one of the mentioned keywords)
- *    {detect}
- */
-class AA_Stringexpand_Aadocumentationxxx extends AA_Stringexpand {
 
-    /** expand function
-     */
-    function expand($stringexpand='') {
-        if (class_exists($class_name = AA_Serializable::constructClassName($stringexpand, 'AA_Stringexpand_'))) {
-            $comment_string= with(new ReflectionClass($class_name))->getDocComment();
-            $explode_string= with(new ReflectionClass($class_name))->getMethod('expand')->getDocComment();
-        }
-        $pattern = "#(@[a-zA-Z]+\s*[a-zA-Z0-9, ()_].*)#";
-        //perform the regular expression on the string provided
-        preg_match_all($pattern, $comment_string, $matches1, PREG_PATTERN_ORDER);
-        preg_match_all($pattern, $explode_string, $matches2, PREG_PATTERN_ORDER);
 
-        $ret  = "<pre>". join("\n<br>", $matches1[0]). join("\n<br>", $matches1[1]). "\n<br>". $comment_string. '</pre>';
-        $ret .= "<pre>". join("\n<br>", $matches2[0]). join("\n<br>", $matches2[1]). "\n<br>". $explode_string. '</pre>';
-        return $ret;
-    }
-}
+
+
 
 
