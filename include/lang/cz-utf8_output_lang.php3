@@ -463,7 +463,7 @@ $_m["To save changes click here or outside the field."]
  = "Změna hesla";
 
  $_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
- = "Pro zadani noveho hesla prosim navstivte nasledujici adresu:<br>%1<br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.";
+ = "Pro zadání nového hesla prosím navštivte následující adresu:<br>%1<br>Změna bude možná po dobu dvou hodin - jinak tento klíč vyprší a budete si muset požádat o nový.";
 
  $_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
  = "E-mail s klíčem pro zadání nového hesla byl právě odeslán na e-mail: %1";
@@ -492,7 +492,12 @@ $_m["To save changes click here or outside the field."]
 $_m["Selected"]
  = "Vybrané";
 
- $_m["Delete"]
- = " Odstranit ";
+$_m["Delete"]
+= " Odstranit ";
 
+$_m["E-mail confirmed."]
+= "E-mail potvrzen";
+
+$_m["E-mail unsubscribed"]
+= "E-mail odhlášen";
 
