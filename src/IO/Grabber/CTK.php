@@ -91,6 +91,9 @@ class CTK extends \AA\IO\Grabber\AbstractGrabber {
         foreach ($polozka->ContentItem->DataContent->body->p as $f) {
             $ftext .= $f->asXML() . "\n";
         };
+	// cisteni kodu
+	$EraseCTKStrings = array('<span class="linkTagNoBg">', '<i class="icon-ico-arrow-up icon"/></span>');
+	$ftext = str_replace($EraseCTKStrings,'',$ftext);
 
         $item = new ItemContent();
         $item->setItemID(new_id());

@@ -1,4 +1,11 @@
-19-05-16 - sessions in AA improvad - used more secure settings, removed old unused directions
+19-05-28 - fixed error in {sessurl}
+(honzam)
+19-05-27 - fixed problem with Authentication. User was able to login into sitemodule
+(honzam)   with Reader slice not belonginig to this site
+         - {updateitem:...} now works also in view.php and AA admin interface
+            - the item updated must be from slice of the view or current slice
+         - some messages with alerst are translateable, now ("E-mail unsubscribed",...)
+19-05-16 - sessions in AA improved - used more secure settings, removed old unused directions
 (honzam) - used fully qualified class names for namespaced classes
          - cookies are set as secure (and samesit=lax) for https pages
 19-05-10 - fixed problem (fatal error) with RSS feeding
@@ -12,8 +19,10 @@
 19-04-29 - html code for {rotator} improved a bit
 (honzam) - fixed AA -> User Group - assigning users to group work with LDAP again
 19-04-25 - new operator BITSET for bitwise AND - test if the bit(s) are set - goot for bitfields
-(honzam)     {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-4}:_#HEADLINE:<br>} - third bit of highlight field must be set (val & 4 == 4)
-             {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-6}:_#HEADLINE:<br>} - second and third bit of highlight field must be set (val & 6 == 6)
+(honzam)     {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-4}:_#HEADLINE:<br>}
+                - third bit of highlight field must be set (val & 4 == 4)
+             {item:{ids:{_#SLICE_ID}:d-highlight.......-BITSET-6}:_#HEADLINE:<br>}
+                - second and third bit of highlight field must be set (val & 6 == 6)
          - fix Two boxes widget - wrong constants - broken after previous commit
 19-04-23 - fix {manager} - do not show all items when no item is edited (adding item)
 (honzam) - {header} now removes newlines, so the code could be more readable
