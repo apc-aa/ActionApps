@@ -3168,23 +3168,28 @@ class AA_Stringexpand_Path extends AA_Stringexpand {
     }
 }
 
-/** returns string usefull for sorting the tree of items. The string is based on
- *  the short_ids, so if the branch of current item 35897 is 2458-15878-35897,
+/** returns string usefull for sorting the tree of items.
+ *  The string is based on the short_ids by default, which is quickest and works well with discussions, ...
+ *  If the branch of current item 35897 is 2458-15878-35897,
  *  then the string will be E2458F15878F35897, which works well for ordering
  *  the tree
  *  {sortstring:<shortitem_id>[:<relation_field>]}
- *  {path:2a4352366262227383484784635362ab:relation.......1}
+ *  {sortstring:2a4352366262227383484784635362ab:relation.......1}
+ *  {sortstring:2a4352366262227383484784635362ab:relation.......1:_#ORDER___}
+ *    - use _#ORDER___ alias instead of short ID. _#ORDER___ could be number or any other string
  *  @return string - dash separated long ids of items from root to the item
  */
 class AA_Stringexpand_Sortstring extends AA_Stringexpand {
     /** expand function
-     * @param $item_id         string - item id of the tree root (short or long)
-     * @param $relation_field  string - tree relation field (default relation........)
+     * @param      $item_id         string - item id of the tree root (short or long)
+     * @param      $relation_field  string - tree relation field (default relation........)
+     * @param      $expression      string - expression to use for ordering. The default is short item id
      * @return string
      */
-    function expand($item_id='', $relation_field=null) {
+    function expand($item_id='', $relation_field=null, $expression=null) {
         $zids = new zids(array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field), 'l'));
-        return join('', array_map( array('AA_Stringexpand_Sortid','expand') , $zids->shortids()));
+        $orderstrings =  strlen($expression) ? AA_Items::getFormatted($zids, $expression, AA_BIN_ALL) : $zids->shortids();
+        return join('', array_map( array('AA_Stringexpand_Sortid','expand') , $orderstrings));
     }
 }
 
@@ -3237,15 +3242,15 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
     }
 
     /**
-     * @param $func
-     * @param $item_id
-     * @param $relation_field
+     * @param        $func
+     * @param        $item_id
+     * @param        $relation_field
      * @param string $reverse
      * @param string $sort_string
      * @param string $slices
-     * @return string
+     * @return string|array
      */
-    function treefunc($func, $item_id, $relation_field, $reverse='', $sort_string='', $slices='') {
+    static function treefunc($func, $item_id, $relation_field, $reverse='', $sort_string='', $slices='') {
         $zid     = new zids($item_id);
         $long_id = $zid->longids(0);
         if (empty($item_id)) {
@@ -4653,6 +4658,10 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
             return "Err in {pager} - pager not valid without a view, or for group display";
         }
 
+        if ($target) {
+            AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Ajax
+        }
+
         if (!isset($apc_state['router'])) {
             // used for AJAX scroller in the SEO sitemodule, for example
             $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
@@ -4668,6 +4677,57 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         return $router->scroller($page, $max, $target);
     }
 }
+
+
+/** page scroller for site modules views - displys page scroller for view
+ *
+ *  It calls router methods, so it displays the right urls in the scroller
+ *  @see AA_Router::scroller() method
+ *
+ *  Must be issued inside the view
+ *
+ *  Now it is possibile to use {pager} on views called by AJAX (for live searches, ...).
+ *  Just put the parameter "div-id" to pager:
+ *           {pager:resuts}
+ *  where result is the div id, in which the view dispays the values
+ *           <div id="results">..view output there</div>
+ */
+class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
+// @todo - experimental - not finished
+
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    /**
+     * @return string
+     */
+    function additionalCacheParam() {
+        global $apc_state;
+        $itemview = $this->itemview;
+        return !is_object($itemview) ? '' : serialize($apc_state['router']).':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
+    }
+
+    /** expand function
+     * @param $property
+     * @return mixed|string
+     */
+    function expand() {
+        global $apc_state;
+
+        $itemview = $this->itemview;
+        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
+            return "Err in {pager} - pager not valid without a view, or for group display";
+        }
+
+        AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Ajax
+
+        $target = '';
+
+        $viewScr = new AA_Scroller_View($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
+        return $viewScr->get( '', '', '', '', $target);
+    }
+}
+
+
 
 /** debugging
  */
@@ -6042,6 +6102,12 @@ class AA_Stringexpand {
     }
 
     /** @deprecated - use AA::Stringexpander()->unalias() directly
+     * @param          $text
+     * @param string   $remove
+     * @param null     $item
+     * @param bool     $dequote
+     * @param itemview $itemview
+     * @return mixed|null|string|string[]
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ) {
         return AA::Stringexpander()->unalias($text, $remove, $item, $dequote, $itemview);
@@ -6295,7 +6361,7 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
             case 'days':      $group_string = 'Y-m-d'; break;
             case 'dayhours':  $group_string = 'H';     break;
             case 'weeks':     $group_string = 'o-W';   break;
-            case 'weekdays':  $group_string = 'D';     break;
+            case 'weekdays':  $group_string = 'N-D';     break;
             case 'months':    $group_string = 'Y-m';   break;
             case 'years':     $group_string = 'Y';     break;
             default:          return '';
@@ -8523,9 +8589,28 @@ class AA_Stringexpand_Detect extends AA_Stringexpand {
 }
 
 
+/** Detects mobile/tablet/desktop (and print one of the mentioned keywords)
+ *    {detect}
+ */
+class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
+// @todo - experimental - not finished
 
+    /** expand function
+     */
+    function expand($stringexpand='') {
+        if (class_exists($class_name = AA_Serializable::constructClassName($stringexpand, 'AA_Stringexpand_'))) {
+            $comment_string= with(new ReflectionClass($class_name))->getDocComment();
+            $explode_string= with(new ReflectionClass($class_name))->getMethod('expand')->getDocComment();
+        }
+        $pattern = "#(@[a-zA-Z]+\s*[a-zA-Z0-9, ()_].*)#";
+        //perform the regular expression on the string provided
+        preg_match_all($pattern, $comment_string, $matches1, PREG_PATTERN_ORDER);
+        preg_match_all($pattern, $explode_string, $matches2, PREG_PATTERN_ORDER);
 
-
-
+        $ret  = "<pre>". join("\n<br>", $matches1[0]). join("\n<br>", $matches1[1]). "\n<br>". $comment_string. '</pre>';
+        $ret .= "<pre>". join("\n<br>", $matches2[0]). join("\n<br>", $matches2[1]). "\n<br>". $explode_string. '</pre>';
+        return $ret;
+    }
+}
 
 

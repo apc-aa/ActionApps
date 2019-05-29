@@ -91,13 +91,21 @@ class AA_Supertree {
         return;
     }
 
-    /** returns ids in array - ids are in tree order (walked into deep) */
+    /**  returns ids in array - ids are in tree order (walked into deep)
+     * @param $id
+     * @return array
+     */
     function getIds($id) {
         $this->load($id);
         $ids = $this->_subIds($id, 1);
         return $ids;
     }
 
+    /**
+     * @param     $id
+     * @param int $level
+     * @return array
+     */
     function _subIds($id, $level=1) {
         if ($level > 100) {
             // @todo throw error
@@ -137,13 +145,21 @@ class AA_Supertree {
         return ($ret ? "\n<ul>\n$ret</ul>\n" : '');
     }
 
-    /** returns ids in array - ids are in tree order (walked into deep) */
+    /**
+     * @param $id
+     * @return string
+     */
     function getTreeString($id) {
         $this->load($id);
         $ids = $this->_subTreeString($id, 1);
         return $ids;
     }
 
+    /**
+     * @param $id
+     * @param $level
+     * @return string
+     */
     function _subTreeString($id, $level) {
         if ($level > 100) {
             // @todo throw error

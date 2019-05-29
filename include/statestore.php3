@@ -907,6 +907,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     /** generate manager from object structure
      * @static
+     * @param      $manager_url
+     * @param null $actions
+     * @param null $switches
      * @return array
      */
     static function getManagerConf($manager_url, $actions=null, $switches=null) {
