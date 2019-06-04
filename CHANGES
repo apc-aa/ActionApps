@@ -1,3 +1,8 @@
+19-06-04 -
+19-05-29 - new parameter expression in {sortstring:<item-id>[:<relation-field>[:<expression>]]}
+(honzam)   which allows to use other expression for tree ordering, than the default short ID
+           (which is OK for discussions, .. but maybe not for the use cases, where one want
+           to move items in tree)
 19-05-28 - fixed error in {sessurl}
 (honzam)
 19-05-27 - fixed problem with Authentication. User was able to login into sitemodule

@@ -612,7 +612,7 @@ function AA__SiteUpdateParts(data) {
             $('article.aa-updating[data-aa-part]').removeClass('aa-updating');
             AA_Message(data[i], 'err');
         } else {
-            $("[data-aa-part='"+i+"'").replaceWith(data[i]);
+            $("[data-aa-part='"+i+"']").replaceWith(data[i]);
             if (data[i].indexOf("contenteditable=true")) {
                 while (matches = re.exec(data[i])) {
                     if (matches[1]) {
