@@ -122,6 +122,11 @@ class PageCache  {
                 }
             }
         }
+
+        // for the websites using {detect} in the site
+        $detect = new Mobile_Detect;
+        $ks['detect'] = $detect->isMobile() . ','. $detect->isTablet();
+
         return $ks;
     }
 
