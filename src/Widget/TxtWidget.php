@@ -47,6 +47,8 @@ class TxtWidget extends \AA\Widget\Widget
      */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
+        global $sess, $r_last_module_id;
+
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $widget_add = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : 'style="width:99%"';
@@ -81,6 +83,10 @@ class TxtWidget extends \AA\Widget\Widget
             $delim = "\n<br />";
             $required = ''; // only one is required
         }
+
+        // if CKEditor called outside AA - in sitemodule, we have to tell, which slice to use for image uploads
+        $sess->register('r_last_module_id');
+        $r_last_module_id = $content->getOwnerID();
 
         return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
     }

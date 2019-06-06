@@ -19,7 +19,8 @@ require_once AA_INC_PATH. "locauth.php3";
 
 
 function CheckAuthentication() {
-    pageOpen();
+    //pageOpen();
+    pageOpen('noauth');
 
     $_SESSION['KCFINDER']['uploadURL'] = IMG_UPLOAD_URL. $_SESSION['r_last_module_id'];
     $_SESSION['KCFINDER']['uploadDir'] = IMG_UPLOAD_PATH. $_SESSION['r_last_module_id'];
