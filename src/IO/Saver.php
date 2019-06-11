@@ -71,7 +71,12 @@ class Saver {
      */
     function run($fire = true) {
 
-        $this->grabber->prepare();    // maybe some initialization in grabber
+        try {
+            $this->grabber->prepare();    // maybe some initialization in grabber
+        } catch (\Exception $e) {
+            $this->message("grabber->prepare() Error: ". $e->getMessage());
+            return array(0,1);
+        }
 
         // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
         $directfill = $this->grabber->isDirectfill();

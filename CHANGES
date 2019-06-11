@@ -1,4 +1,15 @@
-19-06-04 -
+19-06-11 - new SOAP grabber implementing SOAP interface
+(honzam) - XML grabber now allows load data by POST request
+         - XML grabber now works with namespaced XML files
+           (the best approach is to use useFakeNamespaces() to convert res:result to res_result)
+         - new AA\IO\Importer which allows to create scheduled task from the import
+19-06-06 - site chache now caches desktop / mobile / tablet separatelly
+(honzam)   (you can have the different content on the same url switched by {detect} condition
+           in the sitemodule, for example)
+         - Rich Text Editor fileupload now works outside the AA Admin interface (in sitemodule)
+(honzam)   did not work on Safari 12.1
+19-06-04 - fixed syntax Error in JS AA__SiteUpdatePart causing the Dropzone for image upload
+(honzam)   did not work on Safari 12.1
 19-05-29 - new parameter expression in {sortstring:<item-id>[:<relation-field>[:<expression>]]}
 (honzam)   which allows to use other expression for tree ordering, than the default short ID
            (which is OK for discussions, .. but maybe not for the use cases, where one want
@@ -3782,7 +3793,7 @@
            in AA Item Manager as well as on public page - you just need
            to attach javascript/ajax.js to your page. It is just experimental
            version, yet.
-         - Started work on AA_ChangesMonitor class which will track the field
+         - Started work on AA\Util\ChangesMonitor class which will track the field
            changes/history - we are still at the beginning, here.
          - New class AA_Fields holding information the field information
          - New AA_Metabase class which will be used to hold all the informations

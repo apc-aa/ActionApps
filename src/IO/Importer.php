@@ -23,6 +23,11 @@ class Importer implements \AA\Util\LaterInterface {
 
     public function toexecutelater($params = array()) {
         list($ok,$err) = $this->saver->run(true);
+        $ret = "changed items OK: $ok";
+        if ($err) {
+            $ret .= ", error items: $err, ". $this->saver->report();
+        }
+        return $ret;
     }
 
 }
