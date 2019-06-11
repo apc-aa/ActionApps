@@ -49,11 +49,7 @@ class Saver {
      * @param string                         $store_mode
      * @param string                         $id_mode
      */
-    function __construct($grabber,
-        $transformations = null,
-        $slice_id = null,
-        $store_mode = 'overwrite',
-        $id_mode = 'old') {
+    function __construct($grabber, $transformations = null, $slice_id = null, $store_mode = 'overwrite', $id_mode = 'old') {
         $this->grabber = $grabber;
         $this->transformations = is_array($transformations) ? $transformations : array();
         $this->slice_id = $slice_id;
