@@ -31,6 +31,8 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
      */
     protected $fake_namespaces = false;
 
+    /** @var int $protect_domain - do not contact the same domain more often than $protect_domain miliseconds */
+    protected $protect_domain  = 2000;
 
     /** file to grab - internal array */
     protected $item_xpath;
@@ -84,6 +86,17 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
      * @throws Exception
      */
     protected function loadData() {
+        static $last_req_4_domain = array();
+
+        // wait in order we do not contact the same domain more often than $protect miliseconds
+        if ($this->protect_domain AND ($domain = parse_url($this->file, PHP_URL_HOST))) {
+            $time_diff = microtime(true) - ($last_req_4_domain[$domain] ?: 0);
+            if ($time_diff < ($this->protect_domain/1000.0)) {   // protect is in miliseconds, $time_diff in seconds
+                usleep( (int)(1000000*(($this->protect_domain/1000.0)-$time_diff)));
+            }
+            $last_req_4_domain[$domain] = microtime(true);
+        }
+
         $context = !($this->post_body) ? null : stream_context_create(array('http' => array('method'=>'POST','header'=>'Content-Type: text/xml','content'=>$this->post_body)));
         if (false === ($data = file_get_contents($this->file, false, $context))) {
             throw new Exception('file not loaded: ' . $this->file);

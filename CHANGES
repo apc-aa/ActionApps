@@ -1,7 +1,9 @@
 19-06-11 - new SOAP grabber implementing SOAP interface
-(honzam) - XML grabber now allows load data by POST request
-         - XML grabber now works with namespaced XML files
-           (the best approach is to use useFakeNamespaces() to convert res:result to res_result)
+(honzam) - XML grabber now
+               - allows load data by POST request
+               - works with namespaced XML files
+                 (the best approach is to use useFakeNamespaces() to convert res:result to res_result)
+               - have domain protection, so the request for one domain is not more otfen than 2 seconds (by default)
          - new AA\IO\Importer which allows to create scheduled task from the import
 19-06-06 - site chache now caches desktop / mobile / tablet separatelly
 (honzam)   (you can have the different content on the same url switched by {detect} condition
