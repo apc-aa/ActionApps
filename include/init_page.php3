@@ -128,7 +128,7 @@ require_once AA_INC_PATH. "event.class.php3";
    (see $pass_sliceid above). */
 // $sess->register("slice_id");
 // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
-$sess->register(array('r_hidden','r_last_module_id' ));
+$sess->register('r_hidden');
 
 // sometimes we need not to unset hidden - popup for related stories ...
 // only acceptor can read values. For others they are destroyed.
@@ -225,6 +225,6 @@ bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
 AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
 AA::$langnum      = array(AA_Content::getLangNumber(AA::$lang)); // array of prefered languages in priority order.
 AA::$slice_id     = AA::$module_id;
-$r_last_module_id = AA::$module_id; // we need it only in filebrowser of CKEditor
+$_SESSION['r_last_module_id'] = AA::$module_id; // we need it only in filebrowser of CKEditor
 
 
