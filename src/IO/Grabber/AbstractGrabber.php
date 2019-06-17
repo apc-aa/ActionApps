@@ -1,10 +1,31 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: honzama
- * Date: 13.2.19
- * Time: 10:56
+ *
+ * PHP versions 5 and 7
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
  */
+
+
 
 namespace AA\IO\Grabber;
 
@@ -20,6 +41,12 @@ use ItemContent;
  */
 abstract class AbstractGrabber {
     protected $_messages = array();
+
+    /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
+    protected static $last_reqest_4_domain = array();
+
+    /** @var float wait in order we do not contact the same domain more often than $load_frequency miliseconds */
+    protected $load_frequency = null;
 
     /** */
     static function factoryFromFile($file) {
@@ -131,5 +158,25 @@ abstract class AbstractGrabber {
     function clear_report() {
         unset($this->_messages);
         $this->_messages = array();
+    }
+
+    /**
+     * @param float $load_frequency - how often we can contact domain in miliseconds - 1000.0 = 1s
+     * @return AbstractGrabber
+     */
+    public function setLoadFrequency($load_frequency) {
+        $this->load_frequency = $load_frequency;
+        return $this;
+    }
+
+    /** wait in order we do not contact the same domain more often than $protect miliseconds
+     * @param string $domain
+     */
+    protected function waitForDomain($domain) {
+        $time_diff = microtime(true) - (self::$last_reqest_4_domain[$domain] ?: 0);
+        if ($time_diff < ($this->load_frequency / 1000.0)) {   // protect is in miliseconds, $time_diff in seconds
+            usleep((int)(1000000 * (($this->load_frequency / 1000.0) - $time_diff)));
+        }
+        self::$last_reqest_4_domain[$domain] = microtime(true);
     }
 }

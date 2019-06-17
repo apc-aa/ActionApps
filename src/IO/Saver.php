@@ -1,9 +1,28 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: honzama
- * Date: 13.2.19
- * Time: 10:48
+ *
+ * PHP versions 5 and 7
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
  */
 
 namespace AA\IO;
@@ -20,7 +39,7 @@ use ItemContent;
  * @param $transformations - defines, how the source item should be transformed
  *                            into destination item
  */
-class Saver {
+class Saver implements AA\Util\LaterInterface {
     protected $grabber;
     /** @var \AA\IO\Grabber\AbstractGrabber the object which deliveres the data */
     protected $transformations;
@@ -238,13 +257,14 @@ class Saver {
         return array_keys($this->_updated_slices);
     }
 
-    /** toexecutelater function
-     *  Toexecutelater - special function called from toexecute class
-     *  - used for queued tasks (runed from cron)
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
      *  You can use $toexecute->later($saver, array(), 'feed_external') instead
      *  of calling $saver->run() - the saving will be planed for future
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
      */
-    function toexecutelater() {
+    public function toexecutelater($params=array()) {
         return $this->run();
     }
 

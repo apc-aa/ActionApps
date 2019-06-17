@@ -1,9 +1,28 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: honzama
- * Date: 13.2.19
- * Time: 11:03
+ *
+ * PHP versions 5 and 7
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
  */
 
 namespace AA\IO\Grabber;
@@ -24,15 +43,16 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
     /** @var if not null, POST request used using this body */
     protected $post_body = null;
 
+    /** @var use direct text instead of file */
+    protected $direct_input = '';
+
+
     /** @var bool $fake_namespaces - simpleXML PHP interface work with namespaces is nightmare, so if this config option is true, the namespaces
      *                               are converted to underscore
      *                               soap:Body -> soap_Body, ...
      *                             - i tdoes not work well, when namespace string are in the xml text part - "<soap:Body"...
      */
     protected $fake_namespaces = false;
-
-    /** @var int $protect_domain - do not contact the same domain more often than $protect_domain miliseconds */
-    protected $protect_domain  = 2000;
 
     /** file to grab - internal array */
     protected $item_xpath;
@@ -41,11 +61,14 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
     /**
      * XML constructor.
      * @param        $file
+     * @param null   $post_body
+     * @param string $direct_input
      * @param string $item_xpath
      */
-    function __construct($file, $post_body=null, $item_xpath = '') {
+    function __construct($file, $post_body=null, $direct_input='', $item_xpath = '') {
         $this->file = $file;
         $this->post_body = $post_body;
+        $this->direct_input = $direct_input;
         $this->item_xpath = $item_xpath;
     }
 
@@ -71,14 +94,16 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
      */
     static function getClassProperties() {
         $properties = array();//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
-        $properties['file']       = new AA_Property('file',      _m("URL of the file"), 'string', false, true);
-        $properties['post_body']  = new AA_Property('post_body', _m("POST request body"), 'string', false, true);
-        $properties['item_xpath'] = new AA_Property('item_xpath', _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
+        $properties['file']         = new AA_Property('file',         _m("URL of the file"), 'string', false, true);
+        $properties['post_body']    = new AA_Property('post_body',    _m("POST request body"), 'string', false, true);
+        $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
+        $properties['item_xpath']   = new AA_Property('item_xpath',   _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
         return $properties;
     }
 
     public function useFakeNamespaces() {
         $this->fake_namespaces = true;
+        return $this;
     }
 
     /**
@@ -86,15 +111,13 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
      * @throws Exception
      */
     protected function loadData() {
-        static $last_req_4_domain = array();
+        if (strlen($this->direct_input)) {
+            return $this->direct_input;
+        }
 
         // wait in order we do not contact the same domain more often than $protect miliseconds
-        if ($this->protect_domain AND ($domain = parse_url($this->file, PHP_URL_HOST))) {
-            $time_diff = microtime(true) - ($last_req_4_domain[$domain] ?: 0);
-            if ($time_diff < ($this->protect_domain/1000.0)) {   // protect is in miliseconds, $time_diff in seconds
-                usleep( (int)(1000000*(($this->protect_domain/1000.0)-$time_diff)));
-            }
-            $last_req_4_domain[$domain] = microtime(true);
+        if ($domain = parse_url($this->file, PHP_URL_HOST)) {
+            $this->waitForDomain($domain);
         }
 
         $context = !($this->post_body) ? null : stream_context_create(array('http' => array('method'=>'POST','header'=>'Content-Type: text/xml','content'=>$this->post_body)));
