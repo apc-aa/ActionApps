@@ -1,4 +1,9 @@
+19-06-18 - AA_Message() - better CSS - inner div are not scrambled
+(honzam)
+19-06-17 - protecting of domain by specify request frequency moved to more genaral AbsractGrabber class
+(honzam)
 19-06-14 - fixed bug with session
+(honzam)
 19-06-11 - new SOAP grabber implementing SOAP interface
 (honzam) - XML grabber now
                - allows load data by POST request
