@@ -1008,8 +1008,8 @@ class AA_Dbcondition {
     //        - so we can use INNER join
 
             case '<>' :       // for work with multivalues we look for non existatnt join by value
-            case '!=' :       return $this->joined ? array('LEFT', "($field = '$cleanstr')", "($field IS NULL)") :
-                                                     array('LEFT', "", "($field $operator '$cleanstr')");
+            case '!=' :       return $this->joined ? array('LEFT', "($field <> '$cleanstr')", "($field IS NULL)") :
+                                                     array('LEFT', "", "($field <> '$cleanstr')");
 
             case '<=' :       return array('LEFT',     '', "($field $operator '$cleanstr')");
             case '<'  :       return array('LEFT',     '', "($field $operator '$cleanstr')");
