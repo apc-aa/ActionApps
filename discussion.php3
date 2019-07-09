@@ -108,14 +108,14 @@ if ( $disc_url ) {
 $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
-    $cacheentry->processPage();
+    $cacheentry->processPage(1);
 } else {
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
     $cache_sid    = $showview->lastUsedSliceId();
 
     $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
-    $cacheentry->processPage();
+    $cacheentry->processPage(0);
 
     if (!$nocache) {
         $str2find = new CacheStr2find($cache_sid, 'slice_id');

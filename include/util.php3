@@ -457,8 +457,12 @@ function huhe() {
     }
 }
 
-if ( !$timestart ) {
-    $timestart = microtime(true);
+/** return time from start of the script (page start) in seconds (float)
+ * @return float
+ */
+function timestartdiff() {
+    $start_time = $_SERVER['REQUEST_TIME_FLOAT'] ?: (float)$_SERVER['REQUEST_TIME'];  // FLOAT version is not in PHP <5.4
+    return microtime(true) - $start_time;
 }
 
 // Set a starting timestamp, if checking times, huhl can report
@@ -1130,9 +1134,9 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
-    AA::$debug && AA::$dbg->info('time: '. (microtime(true) - $GLOBALS['timestart']));
+    AA::$debug && AA::$dbg->info('time: '. timestartdiff());
     if (AA::$debug&16) {
-        echo '<br>Page generation time: '. (microtime(true) - $timestart);
+        echo '<br>Page generation time: '. timestartdiff();
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
         echo '<br>  (spareDBs): '. count($spareDBs);
         echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
@@ -1868,7 +1872,7 @@ if(!function_exists("array_column")) {
 }
 
 
-/** RestoreVariables to global context - kind of deprecated */
+/** RestoreVariables to global context - kind of @deprecated */
 function RestoreVariables(array $r_state_vars) {
     foreach ($r_state_vars as $k => $v) {
         $GLOBALS[$k] = $v;

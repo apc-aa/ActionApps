@@ -19,8 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-$timestart = microtime(true);
-
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
@@ -54,10 +52,10 @@ $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI
 $site_nocache = ($_REQUEST['nocache'] OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])));
 
 if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
-    $cacheentry->processPage();
+    $cacheentry->processPage(1);
     if ( AA::$debug ) {
         echo '<br><br>Site cache hit!!!';
-        echo '<br>Page generation time: '. (microtime(true) - $timestart);
+        echo '<br>Page generation time: '. timestartdiff();
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
         echo '<br>  (spareDBs): '. count($spareDBs);
         AA::$dbg->duration_stat();
@@ -309,7 +307,7 @@ if ((AA::$headers['encoding'] != 'utf-8') && (AA::$encoding != 'utf-8') && IsAja
 }
 
 $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) AND $auth->is_user()) ? 'private' : 'public'));
-$cacheentry->processPage();
+$cacheentry->processPage(0);
 
 // changed the way, how to get $slices4cache - now we ask for module ids realy
 // used during page generation. Honza 2015-12-29
@@ -327,7 +325,7 @@ if (!$site_nocache AND empty($apc_state['xuser'])) {
 
 if (AA::$debug&2) {
     echo '<br><br>Site cache MIS!!!';
-    echo '<br>Page generation time: '. (microtime(true) - $timestart);
+    echo '<br>Page generation time: '. timestartdiff();
     echo '<br>Dababase instances: '. DB_AA::$_instances_no;
     echo '<br>  (spareDBs): '. count($spareDBs);
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));

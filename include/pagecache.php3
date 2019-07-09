@@ -57,8 +57,7 @@ class AA_Cacheentry {
     }
 
     /** send headers, print output and count hit */
-    function processPage() {
-
+    function processPage($cached=0) {
         $lastModified    = $this->t;     // get the last-modified-date of this very file
         $etag            = hash('md5', 'x'.$this->c.'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
         $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$lastModified) : false;
@@ -75,12 +74,13 @@ class AA_Cacheentry {
         // Maybe we should check also $this->h, if they do not contain 404, 302 or other status code already
         if ( $ifModifiedMatch OR $etagMatch ) {
             header("HTTP/1.1 304 Not Modified");
+            $cached = 1000*$cached + 304;
         } else {
             AA::sendHeaders($this->h);
             echo $this->c;
         }
         if ($this->i) {
-            AA_Hitcounter::hit(new zids($this->i, 'l'));
+            AA_Hitcounter::hit(new zids($this->i, 'l'), $cached);
         }
     }
 }
@@ -338,11 +338,16 @@ class PageCache  {
 }
 
 
-class AA_Pagecache_Purge {
-    /** purge function
-     *  Clears all old cached data
+class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
+
+    /** purge function  - Clears all old cached data
+     *  special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
      */
-    function toexecutelater($cache_time) {
+    public function toexecutelater($params=array()) {
+        list($cache_time) = $params;
         // $tm   = time();
         // we tired to speed up the deletion by multi-table delete:
         // DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find

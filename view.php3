@@ -46,6 +46,7 @@ http://www.apc.org/
 
 //ini_set('display_errors', 1);
 
+
 // ----- input variables normalization - start --------------------------------
 
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
@@ -81,6 +82,8 @@ require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
+
+pageOpen('noauth');   // just to start $sess with right parameters
 
 // we tried to remove all global $db, so let's try to comment out following global object
 // honza 2015-12-30
@@ -126,14 +129,14 @@ $cache_key = get_hash($view_param, PageCache::globalKeyArray(), $GLOBALS['apc_st
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     AA::$debug && AA::$dbg->log("view from cache");
-    $cacheentry->processPage();
+    $cacheentry->processPage(1);
 } else {
     AA::$debug && AA::$dbg->log("view not found in cache");
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
     $cache_sid    = $showview->lastUsedSliceId();
     $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
-    $cacheentry->processPage();
+    $cacheentry->processPage(0);
 
     if (!$nocache AND $cache_sid) {
         $str2find = new CacheStr2find($cache_sid, 'slice_id');
