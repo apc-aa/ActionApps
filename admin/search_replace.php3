@@ -54,7 +54,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
         $zids          = new zids;
         $updated_items = 0;
         if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
-            $transformation = AA_Components::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
+            $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
             $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
             $transformator  = new AA_Transformator;
