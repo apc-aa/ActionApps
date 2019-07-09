@@ -83,6 +83,10 @@ TD.tablename {
     text-align: center;
 }
 
+select:empty {
+    min-width: 100px;
+}
+
 H1 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
@@ -420,12 +424,12 @@ select.live, input.live, textarea.live {
     border: 1px solid #589868;
 }
 
-div.ajax_value {
-    background: url("images/edit.png") no-repeat scroll right bottom transparent;
+div.ajax_value {       /* edit.png */
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAMAAACKYC6uAAAATlBMVEUAAADW1M3IxbyEhILj3sPLyMG0s6vEvaeIh4Xh4eHb29PZ0a2bmpbz8/Pk4+DOzcjAv7/Tzr7Ewbm9urCqqKTBuqPBuaG3sqCTkYqKiogs0voaAAAAAXRSTlMAQObYZgAAAEBJREFUCNdVx0kSgCAQBEF0VAZFZV/+/1E4QARddUoB+ULg7dMafNT/BJNEM/phuYMprlaZ02oRrJtW190n8w43fzoBwKirrscAAAAASUVORK5CYII=) no-repeat scroll right bottom transparent;
     padding-right: 20px;
 }
-div.ajax_value:hover {
-    background-image: url("images/edit-a.png");
+div.ajax_value:hover { /* edit-a.png */
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAMAAACKYC6uAAAAZlBMVEUAAADtzjOSg1KUhlYBAQExJgCUhFGTg1FqVx0AAACpnXhycGImJBrFxaesoH61mDy0ljTtzjMtKyMhHxbo6enLy8rSzsKsppOMi4ijmXWeknDHsm+Wil9pYk9HR0GWgTaykixDOhxpZKX9AAAACnRSTlMAuZmV5dObm446ao9KlAAAAEhJREFUCNdjQAEyiiwofGYxOVYUPqOQOAcSn4lRmJ8Pic/OyIPCZxPkEeBCVi8ojMIXledRQOYzyEpLSUKZnNy8QCgkIQLlAwDJswLr2bELKAAAAABJRU5ErkJggg==);
 }
 
 div.ajax_value[data-aa-edited="1"],
@@ -441,8 +445,8 @@ input.save-button, input.cancel-button {
     font-size: 9px;
     text-transform: lowercase;
 }
-input.save-button {
-    background : url("images/save.png") no-repeat #DBDAD9 0 -2px;
+input.save-button {   /* save.png */
+     background : url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAAAzdGmcq6RijYMK9IDiAAAABHRSTlMAx8fHpsjwxQAAADNJREFUCNdjQADR+isMDFLOkiBCyoFBygFEhEYBiVWrHBikQ+McGCQZ2DAI0f9fHRCGAACp6wrUxFiLHgAAAABJRU5ErkJggg==) no-repeat #DBDAD9 0 -2px;
 }
 input.cancel-button {
     background-color: #DBDAD9;
@@ -452,14 +456,14 @@ input.cancel-button {
 
 
 /* -- common -- */
-.aa-items-manager table {
+.aa-table table {
     border: 1px solid #86682D;
     box-shadow: inset 0 0 16px #96805D;
     color: #000;
     padding: 15px;
     border-collapse: collapse;
 }
-.aa-items-manager th {
+.aa-table th {
     text-align: left;
     padding: 7px 10px 4px;
     font-size: 0.9em;
@@ -468,12 +472,12 @@ input.cancel-button {
     text-shadow: 1px 1px 1px #464545;
     font-weight: normal;
 }
-.aa-items-manager td {
+.aa-table td {
     border-top: 1px solid #BEB29F;
     padding: 5px 10px;
     font-size: 0.85em;
 }
-.aa-items-manager tr:hover {
+.aa-table tr:hover {
     background-color: #F0E8DC;
 }
 [class^="aa-button-"] {
