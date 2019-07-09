@@ -33,33 +33,13 @@ require_once AA_INC_PATH."constants.php3";
  * @param $arr
  * @param $selected
  * @param $type
- * @param $substract
  */
-function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
-    if ( $substract=="" ) {                // $substract list of values not shovn in <select> even if in $arr
-        $substract = array();
+function SelectGU_ID($name, $arr, $selected="", $type="short") {
+    if ( !is_array($arr)) {
+        $arr = array();
     }
-    if ( $type == "short" ) {              // 1-row listbox
-        echo "<select name=\"$name\" id=\"$name\">";
-    } else {                               // 8-row listbox
-        echo "<select name=\"$name\" id=\"$name\" size=8>";
-    }
-    if ( isset($arr) AND is_array($arr)) {
-        foreach ($arr as $k => $v) {
-            if ( ($v['name'] != "") AND ($substract[$k] == "") ) {
-                $option_exist = true;
-                echo "<option value=\"". myspecialchars($k)."\"";
-                if ((string)$selected == (string)$k) {
-                    echo " selected";
-                }
-                echo "> ". myspecialchars($v['name']. " (".perm_username($k).")") ." </option>";
-            }
-        }
-        if ( !$option_exist ) { // if no options, we must set width of <select> box
-            echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
-        }
-    }
-    echo "</select>\n";
+    array_walk($arr, function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    echo getFrmSelectEasy($name, $arr, $selected, "id=\"$name\"". ($type=="short" ? '' : ' size=8'). ($arr ? '' : ' style="min-width:100px;"'), true);
 }
 
 /** GetFiltered function

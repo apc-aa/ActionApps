@@ -549,6 +549,28 @@ class AA_Perm {
         return false;
     }
 
+    /** Grabs User name from LDAP/SQL/AA
+     *  @param $user_id (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
+     *  @return string name of the user ('Peter Fiala' in our example)
+     *  @todo   we should propaply provide realy the username (like peterf) here
+     */
+    public function getUserName( $user_id ) {
+        if ( $user_id == '9999999999' ) {
+            return "anonym";
+        }
+        $userinfo = $this->getIDsInfo($user_id);
+        return empty($userinfo) ? $user_id : $userinfo['name'];
+    }
+
+    /** Grabs User loginname from LDAP/SQL/AA
+     *  @param $user_id (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
+     *  @return string login of the user ('Peter Fiala' in our example)
+     */
+    public function getUserLoginName( $user_id ) {
+        $userinfo = $this->getIDsInfo($user_id);
+        return empty($userinfo) ? '' : $userinfo['login'];
+    }
+
     /** isUserEditable function
      * @param $uid
      * @return true, if the User data (name, mail, ..) could be edited on AA Permission page
@@ -556,6 +578,17 @@ class AA_Perm {
     public function isUserEditable($uid) {
         if ( $uid AND ($ps = $this->_whichUsersystem($uid))) {
             return $ps->isUserEditable($uid);
+        }
+        return false;
+    }
+
+    /** isGroupWritable function
+     * @param $gid
+     * @return true, if the Group can accept members by direst write - AddMember, .. (Readder group and ReaderSet are not writable, for example)
+     */
+    public function isGroupWritable($gid) {
+        if ( $gid AND ($ps = $this->_whichUsersystem($gid))) {
+            return $ps->isGroupWritable($gid);
         }
         return false;
     }
@@ -806,6 +839,9 @@ class AA_Permsystem {
     /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
     function isUserEditable()                                   { return false; }
 
+    /** true, if the Group can accept members by direst write - AddMember, .. (Readder group and ReaderSet are not writable, for example) */
+    function isGroupWritable()                                   { return true; }
+
     /** true, if the password is in old format and needs to be updated with new hash */
     protected function needsRehashPassword($hash)               { return false; }
 
@@ -894,6 +930,11 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     function isUsernameFree($username) {
         // search not only Active bin, but also Holding bin, Pending, ...
         return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
+    }
+
+    /** true, if the Group can accept members by direst write - AddMember, .. (Readder group and ReaderSet are not writable, for example) */
+    function isGroupWritable() {
+        return false;
     }
 
 
