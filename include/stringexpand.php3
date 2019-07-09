@@ -34,6 +34,7 @@
 // Code by Mitra based on code in existing other files
 
 use AA\FormArray;
+use AA\Util\ChangesMonitor;
 
 require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 
@@ -1266,7 +1267,11 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
  * @return mixed|string
  */
 function calculate($exp) {
-    $exp = str_replace(array('{', '}', ' ',"\t", "\r", "\n", ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '()') ,array('(', ')', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '0'), "($exp)");
+    $replaces = 1;
+    $exp = "($exp)";
+    while ($replaces) {
+        $exp = str_replace(array('{', '}', ' ',"\t", "\r", "\n", '&#8239;', ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '()', '++', '--', '**') ,array('(', ')', '', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '0', '+', '-', '*'), "$exp", $replaces);
+    }
     if (strspn($exp, '0123456789.+-*/%&|()E') != strlen($exp)) {
         return 'wrong characters';
     }
@@ -2448,14 +2453,19 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
 
 
 /**
- * Class AA_Stringexpand_Convert
+ * Converts the string to anoteher encoding. Wrong characters are transliterated.
+ * Ussage:  {convert:{include:http://example.org/page.html}:windows-1250:utf-8}
+ *          {convert:{full_text.......}:windows-1250:us-ascii}
+ *
  */
 class AA_Stringexpand_Convert extends AA_Stringexpand {
     /** Do not trim all parameters (the $delimiter parameter could contain space) */
     function doTrimParams() { return false; }
 
     /** expand function
-     * @param $text
+     * @param string $text  text to convert
+     * @param string $from  source      encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
+     * @param string $to    destination encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
      * @return string
      */
     function expand($text='', $from='', $to='') {
@@ -4396,14 +4406,15 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         }
 
         if (!count($slices)) {
+            AA::$debug && AA::$dbg->warn(__FUNCTION__ . ' no related slice found');
             return '';
         }
 
         $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
         $saver   = new AA\IO\Saver($grabber, $transformations, null, 'insert_if_new', 'new');
-        $saver->run();
-
+        list($ok,$err) = $saver->run();
+        $err && AA::$debug && AA::$dbg->warn(__FUNCTION__ . 'saver run err '. $err. ': '. $saver->report());
         return join('-',$saver->changedIds());
     }
 
@@ -4493,8 +4504,11 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
 }
 
 /** Get module (slice, ...) property (currently only "module fileds"
- *  (beggining with underscore), 'url', 'name' and 'site_ids' is supported
+ *  (beggining with underscore), 'url', 'name', 'charset' and 'site_ids' is supported
  *  replacing older {alias:_abstract.......:f_s:slice_info} syntax
+ *  Ussage:
+ *         {modulefield:2e637469436961532d65732e332e446a:charset}
+ *         {modulefield:{_#SLICE_ID}:url}
  **/
 class AA_Stringexpand_Modulefield extends AA_Stringexpand {
     /** expand function
@@ -4506,9 +4520,13 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
 
-        // site_id is older, but better is to use site_ids, since it could return more than one ids (dash separated)
-        if (($property == 'site_ids') OR ($property == 'site_id')) {
-            return join('-', (array)GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
+        switch ($property) {
+            // site_id is older, but better is to use site_ids, since it could return more than one ids (dash separated)
+            case 'site_ids':
+            case 'site_id':
+                return join('-', (array)GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
+            case 'charset':
+                return ($m = AA_Module::getModule($slice_id)) ? $m->getCharset() : '';
         }
         if (!AA_Fields::isSliceField($property)) {  // it is "slice field" (begins with underscore _)
             $property = ($property=='url') ? 'slice_url' : 'name';
@@ -4561,7 +4579,7 @@ class AA_Stringexpand_Sitespot extends AA_Stringexpand {
 
 
 
-/** Deprecated - use AA_Stringexpand_Modulefield instead
+/** @deprecated - use AA_Stringexpand_Modulefield instead
  *
  *  Get module (slice, ...) property (currently only 'name' is supported
  *
@@ -4592,7 +4610,7 @@ class AA_Stringexpand_Slice extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Deprecated for site modules - use AA_Stringexpand_Pager instead
+/** do not use for site modules - use AA_Stringexpand_Pager instead
  *
  *  {scroller:<begin>:<end>:<add>:<nopage>}
  *  Displys page scroller for view
@@ -7243,7 +7261,7 @@ class AA_Stringexpand_Changed extends AA_Stringexpand {
      * @return string|void
      */
     function expand($item_id=null) {
-        return (guesstype($item_id) != 'l') ? '' : AA_ChangesMonitor::singleton()->lastChanged($item_id);
+        return (guesstype($item_id) != 'l') ? '' : ChangesMonitor::singleton()->lastChanged($item_id);
     }
 }
 
@@ -7258,7 +7276,7 @@ class AA_Stringexpand_Changedate extends AA_Stringexpand {
      * @return string|void
      */
     function expand($item_id=null, $field_id=null, $format=null) {
-        $time = ((guesstype($item_id) != 'l') OR !$field_id) ? '0' : (string)AA_ChangesMonitor::singleton()->lastChangeDate($item_id,$field_id);
+        $time = ((guesstype($item_id) != 'l') OR !$field_id) ? '0' : (string)ChangesMonitor::singleton()->lastChangeDate($item_id,$field_id);
         return StrExpand('AA_Stringexpand_Date', array($format, $time, '--'));
     }
 }
@@ -7554,7 +7572,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
             return '';
         }
         $doc = new DOMDocument();
-        if (!$doc->loadHTML($string)) {   // I tried to contentcached this load to save time on parsing document, but it had absolutely no effect - PHP 7.0 - Honza 2017-01-25
+        if (!$doc->loadHTML(trim($string))) {   // I tried to contentcached this load to save time on parsing document, but it had absolutely no effect - PHP 7.0 - Honza 2017-01-25
             return 'Error parsing';
         }
         $xpath = new DOMXPath($doc);
