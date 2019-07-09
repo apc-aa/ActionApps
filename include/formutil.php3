@@ -1588,7 +1588,7 @@ class AA_Inputfield {
                 if ( ($restrict == 'unselected') AND $selected  ){
                     continue;  // do not print this option
                 }
-                $ret .= "\n <option value=\"". myspecialchars($k) ."\" $selected>".myspecialchars($v);
+                $ret .= "<option value=\"". myspecialchars($k) ."\" $selected>".myspecialchars($v);    // do not put newlines here in order select:epty css selector works
             }
         }
         // now add all values, which is not in the array, but field has this value
@@ -1596,13 +1596,13 @@ class AA_Inputfield {
         if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
-                    $ret .= "\n <option value=\"". myspecialchars($k) ."\" selected class=\"sel_missing\">".myspecialchars($k);
+                    $ret .= "<option value=\"". myspecialchars($k) ."\" selected class=\"sel_missing\">".myspecialchars($k);
                     $selectedused = true;
                 }
             }
         }
         if ( $add_empty ) {
-            $emptyret = "\n <option value=\"\"";
+            $emptyret = "<option value=\"\"";
             if ($selectedused == false) {
                 $emptyret .= ' selected class="sel_on"';
             }
@@ -1692,11 +1692,11 @@ class AA_Inputfield {
         if ($movebuttons) {
              $this->echoo("<td valign=\"top\">");
              $this->echoo("<input type=\"button\" value=\" &#9650; \" ".
-             " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
+             " onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">");
              $this->echoo('</td></tr>');
              $this->echoo('<tr><td valign="bottom">');
              $this->echoo("<input type=\"button\" value=\" &#9660; \" ".
-             " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
+             " onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\">");
              $this->echoo("</td>");
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">\n");
@@ -2016,6 +2016,9 @@ class AA_Inputfield {
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
+        // for MoveSelected(), MoveItem()
+        AA::Stringexpander()->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION,'',false));
+
         $this->field_name('plus');
         $this->echoo("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">
           <tr align=\"left\">
@@ -2029,14 +2032,14 @@ class AA_Inputfield {
 
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
         $offername = str_replace("[]", "", $name). '_1';
-        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers>\n";
+        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers>";  // do not put newlines here in order select:epty css selector works
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
 
         $this->echoo("</td>
-            <td rowspan=\"2\">&nbsp;&nbsp;<input type=button value=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$offername.",document.inputform['".$name."'])\" align=\"center\">
-              <br><br>&nbsp;&nbsp;<input type=button value=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."'],document.inputform.".$offername.")\" align=\"center\">&nbsp;&nbsp;</td>
+            <td rowspan=\"2\">&nbsp;&nbsp;<input type=button value=\"  &#9654;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\" align=\"center\">
+              <br><br>&nbsp;&nbsp;<input type=button value=\"  &#9664;  \" onClick = \"MoveSelected(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\" align=\"center\">&nbsp;&nbsp;</td>
             <td align=\"center\" valign=\"top\" rowspan=\"2\">");
 
         // varname - name without []
@@ -2060,9 +2063,9 @@ class AA_Inputfield {
 
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("\n      </td>");
-        $this->echoo("\n      <td valign=\"top\"><input type=button value=\" &#9650; \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
+        $this->echoo("\n      <td valign=\"top\"><input type=button value=\" &#9650; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\"></td>");
         $this->echoo("\n      </tr>");
-        $this->echoo("<tr><td valign=\"bottom\"><input type=button value=\" &#9660; \" onClick=\"moveItem(document.inputform['".$name."'], 'down');\"></td></tr>");
+        $this->echoo("<tr><td valign=\"bottom\"><input type=button value=\" &#9660; \" onClick=\"moveItem(this.parentNode.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\"></td></tr>");
 
         if (!empty($addform) AND !empty($sid)) {
             $this->echoo("\n<tr><td colspan=\"4\">");
@@ -2670,16 +2673,17 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
 }
 
 /** getFrmSelectEasy function
- * @param $name
- * @param $arr
- * @param $selected
- * @param $add
+ * @param        $name
+ * @param        $arr
+ * @param string $selected
+ * @param string $add
+ * @param bool   $showempty - display select even if is empty (for two boxes of user admin... )
  * @return string
  */
-function getFrmSelectEasy($name, $arr, $selected="", $add="") {
+function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
-    if (!is_array($arr) OR (count($arr)==0)) {
+    if (!is_array($arr) OR (count($arr)==0) AND !$showempty) {
         return '';
     }
     $retval       = "\n<select name=\"$name\" $add>";
@@ -2714,6 +2718,7 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="") {
     $retval .= "</select>\n";
     return $retval;
 }
+
 /** FrmRadioEasy function
  * @param $name
  * @param $arr
@@ -2936,15 +2941,22 @@ function getFrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor =
                     }
                     break;
                 default:
-                    $type = ($properties['type'] ?: 'hidden');
+                    if ($properties['url']) {
+                        $type = ($properties['type'] ?: 'button');
+                        $onclick = ' onclick="document.location=\''. StateUrl($properties['url']).'\'"';
+                    } else {
+                        $type = ($properties['type'] ?: 'hidden');
+                        $onclick = '';
+                    }
+
                     if ( $no_hidden AND ($type == 'hidden') ) {
                         // do not print hidden fields if no_hidden is true
                         // (used for FrmTabSeparator, to not duplicate hiddens)
                         break;
                     }
                     $nbsp = ( $type == 'hidden' ) ? '' : '&nbsp;';
-                    $ret .= $nbsp.'<input type="'.  $type .
-                         '" name="'.  $name .
+                    $ret .= $nbsp.'<input type="'.  $type .'"'.$onclick .
+                          ' name="'.  $name .
                          '" id="'.  $prefix . $name .
                          '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>'.$nbsp;

@@ -148,23 +148,28 @@ function moveItem(selectbox, type) {
     selectbox.selectedIndex = s2;
 }
 
+//moves selected rows of left listbox to the right one
 function MoveSelected(left, right) {
-    var i=eval(left).selectedIndex;
-    if( !eval(left).disabled && ( i >= 0 ) )
-    {
-        var temptxt = eval(left).options[i].text;
-        var tempval = eval(left).options[i].value;
-        var length  = eval(right).length;
-        if ( (length == 1) && (eval(right).options[0].value=='wIdThTor') ) {  // blank rows are just for <select> size setting
-            eval(right).options[0].text = temptxt;
-            eval(right).options[0].value = tempval;
+    var temptxt, tempval, length;
+    var i=left.selectedIndex;
+    var last_selected = i;
+    while( !left.disabled && ( i >= 0 ) ) {
+        temptxt = left.options[i].text
+        tempval = left.options[i].value
+        length  = right.length
+        if( (length == 1) && (right.options[0].value=='wIdThTor') ){  // blank rows are just for <select> size setting
+            right.options[0].text = temptxt;
+            right.options[0].value = tempval;
         } else {
-            eval(right).options[length] = new Option(temptxt, tempval);
+            right.options[length] = new Option(temptxt, tempval);
         }
-        eval(left).options[i] = null;
-        if ( eval(left).length != 0 ) {
-            eval(left).selectedIndex = ( (i==0) ? 0 : i-1 );
-        }
+        left.options[i] = null
+        last_selected = i;
+        i=left.selectedIndex
+    }
+    // now select next option
+    if( left.length != 0 ) {
+        left.selectedIndex = ((last_selected < left.length) && (last_selected > 0) ? last_selected : 0);
     }
 }
 

@@ -144,8 +144,8 @@ FrmTabCaption(_m("Enable export to slice:"));
   }
   ?>
 </select></td>
-<td><input type="button" value="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align="center">
-    <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected('document.f.export_y','document.f.export_n')" align="center"></td>
+<td><input type="button" value="  >>  " onClick = "MoveSelected(document.f.export_n, document.f.export_y)" align="center">
+    <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected(document.f.export_y, document.f.export_n)" align="center"></td>
 <td align="center" valign="top">
 <select name="export_y" size="8" class="tabtxt" multiple>
   <?php
@@ -195,8 +195,8 @@ FrmTabCaption(_m("Enable export to slice:"));
   }
   ?>
 </select></td>
-<td><input type="button" value="  >>  " onClick = "MoveSelected('document.f.import_n','document.f.import_y')" align="center">
-    <br><br><input type="button" value="  <<  " onClick = "MoveSelected('document.f.import_y','document.f.import_n')" align="center"></td>
+<td><input type="button" value="  >>  " onClick = "MoveSelected(document.f.import_n,document.f.import_y)" align="center">
+    <br><br><input type="button" value="  <<  " onClick = "MoveSelected(document.f.import_y,document.f.import_n)" align="center"></td>
 <td align="center" valign="top">
 <select name="import_y" size="8" class="tabtxt">
   <?php

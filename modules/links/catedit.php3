@@ -117,8 +117,6 @@ echo '
        <td>&nbsp;</td>
        <td>&nbsp;</td>
        <td align="center">';
-//         <a href="javascript:MoveSelectedUp(\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/cup.gif" border="0" alt="'. _m('Up') .'"></a>
-//         <a href="javascript:MoveSelectedDown(\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/cdown.gif" border="0" alt="'. _m('Down') .'"></a><br>';
 if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
 if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )

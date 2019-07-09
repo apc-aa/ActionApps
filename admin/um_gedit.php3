@@ -278,12 +278,12 @@ if ( !$add_submit AND !$grp_new ) {
                       <td>&nbsp;</td>
                       <td>&nbsp;</td></tr>
             <tr><td align="center" valign="TOP">';
-        SelectGU_ID("all_users_sel", $all_users, $all_users_sel, "long", $sel_users);
+        SelectGU_ID("all_users_sel", array_diff_key($all_users,$sel_users), $all_users_sel, "multi");
         echo '    </td>
-                <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(\'document.f.all_users_sel\',\'document.f.sel_users_sel\')" align="center"><br><br>
-                    <input type="button" VALUE="  <<  " onClick = "MoveSelected(\'document.f.sel_users_sel\',\'document.f.all_users_sel\')" align="center"></td>
+                <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(document.f.all_users_sel, document.f.sel_users_sel)" align="center"><br><br>
+                    <input type="button" VALUE="  <<  " onClick = "MoveSelected(document.f.sel_users_sel, document.f.all_users_sel)" align="center"></td>
                       <td align="CENTER" valign="TOP">';
-        SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "long");
+        SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "multi");
         echo '    </td>
             </tr></table></td></tr>
             ';

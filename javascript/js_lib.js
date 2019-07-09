@@ -7,62 +7,29 @@ function OpenWindowTop(url) {
 }
 
 //moves selected rows of left listbox to the right one
-function MoveSelected(left, right)
-{
+function MoveSelected(left, right) {
   var temptxt
   var tempval
   var length
-  var i=eval(left).selectedIndex
+  var i=left.selectedIndex
   var last_selected = i;
-  while( !eval(left).disabled && ( i >= 0 ) ) {
-    temptxt = eval(left).options[i].text
-    tempval = eval(left).options[i].value
-    length  = eval(right).length
-    if( (length == 1) && (eval(right).options[0].value=='wIdThTor') ){  // blank rows are just for <select> size setting
-      eval(right).options[0].text = temptxt;
-      eval(right).options[0].value = tempval;
+  while( !left.disabled && ( i >= 0 ) ) {
+    temptxt = left.options[i].text
+    tempval = left.options[i].value
+    length  = right.length
+    if( (length == 1) && (right.options[0].value=='wIdThTor') ){  // blank rows are just for <select> size setting
+      right.options[0].text = temptxt;
+      right.options[0].value = tempval;
     } else {
-      eval(right).options[length] = new Option(temptxt, tempval);
+      right.options[length] = new Option(temptxt, tempval);
     }
-    eval(left).options[i] = null
+    left.options[i] = null
     last_selected = i;
-    i=eval(left).selectedIndex
+    i=left.selectedIndex
   }
   // now select next option
-  if( eval(left).length != 0 ) {
-      eval(left).selectedIndex = ((last_selected < eval(left).length) && (last_selected > 0) ? last_selected : 0);
-  }
-}
-
-// moves selected row of listbox up
-function MoveSelectedUp(listbox)
-{
-  var i=eval(listbox).selectedIndex
-  if( !eval(listbox).disabled && ( i > 0 ) )
-  {
-    var temptxt = eval(listbox).options[i].text
-    var tempval = eval(listbox).options[i].value
-    eval(listbox).options[i].text = eval(listbox).options[i-1].text;
-    eval(listbox).options[i].value = eval(listbox).options[i-1].value;
-    eval(listbox).options[i-1].text = temptxt;
-    eval(listbox).options[i-1].value = tempval;
-    eval(listbox).selectedIndex=i-1
-  }
-}
-
-// moves selected row of listbox down
-function MoveSelectedDown(listbox)
-{
-  var i=eval(listbox).selectedIndex
-  if( !eval(listbox).disabled && ( i < eval(listbox).length-1 ) )
-  {
-    var temptxt = eval(listbox).options[i].text
-    var tempval = eval(listbox).options[i].value
-    eval(listbox).options[i].text = eval(listbox).options[i+1].text;
-    eval(listbox).options[i].value = eval(listbox).options[i+1].value;
-    eval(listbox).options[i+1].text = temptxt;
-    eval(listbox).options[i+1].value = tempval;
-    eval(listbox).selectedIndex=i+1
+  if( left.length != 0 ) {
+      left.selectedIndex = ((last_selected < left.length) && (last_selected > 0) ? last_selected : 0);
   }
 }
 

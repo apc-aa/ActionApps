@@ -199,7 +199,8 @@ $headcode = "
 $apage = new AA_Adminpageutil('aaadmin',$usr_new ? "u_new" : "u_edit");
 $apage->setTitle(_m("User management").' - '. ($usr_new ? _m("New User") : _m("Edit User")));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js?v='.AA_JS_VERSION, '', false)); // for MoveSelected(), Moveitem()
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false)); // for CommaDelimited
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
@@ -300,23 +301,38 @@ if ( !$add_submit AND !$usr_new) {
     // User - group membership -----------------------------------------
 
     FrmTabSeparator(_m("Groups"));
+    array_walk($all_groups, function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+    $writable_groups        = array_filter($all_groups, array(AA::$perm, 'isGroupWritable'), ARRAY_FILTER_USE_KEY);
+    $user_writable_groups   = array_filter($sel_groups, array(AA::$perm, 'isGroupWritable'), ARRAY_FILTER_USE_KEY);
+    $user_unwritable_groups = array_diff_key($sel_groups, $user_writable_groups);
 
-    echo '<tr><td width="190" align="center">'. _m("All Groups") .'</td>
-                    <td width="60">&nbsp;</td>
-                    <td width="190" align="center">'. _m("User's Groups") .'</td></tr>
-          <tr><td><input type="text" name="grp1_flt" value="'. safe($grp1_flt) .'">
-                  <input type="submit" name="grp1_submit" value="'. _m("Search") .'"></td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td></tr>
-          <tr><td align="center" valign="top">';
-                SelectGU_ID("all_groups_sel", $all_groups, $all_groups_sel, "long", $sel_groups);
-    echo '    </td>
-              <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(\'document.fx.all_groups_sel\',\'document.fx.sel_groups_sel\')" align=center><br><br>
-                  <input type="button" VALUE="  <<  " onClick = "MoveSelected(\'document.fx.sel_groups_sel\',\'document.fx.all_groups_sel\')" align=center></td>
-                    <td align="center" valign="TOP">';
-                SelectGU_ID("sel_groups_sel", $sel_groups, $sel_groups_sel, "long");
-    echo '    </td>
-          </tr>';
+    FrmTwoBox('sel_groups_sel', _m("Groups"), $writable_groups, array_keys($user_writable_groups), 8, false, _m("All Writable Groups"), _m("User's Groups"));
+
+    array_walk($user_unwritable_groups, function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
+
+    if ($user_unwritable_groups) {
+        FrmStaticText(_m("Member of Unwritable Groups"), join("<br>\n", $user_unwritable_groups), '', '', false);
+    }
+
+
+
+
+//    echo '<tr><td width="190" align="center">'. _m("All Groups") .'</td>
+//                    <td width="60">&nbsp;</td>
+//                    <td width="190" align="center">'. _m("User's Groups") .'</td></tr>
+//          <tr><td><input type="text" name="grp1_flt" value="'. safe($grp1_flt) .'">
+//                  <input type="submit" name="grp1_submit" value="'. _m("Search") .'"></td>
+//                    <td>&nbsp;</td>
+//                    <td>&nbsp;</td></tr>
+//          <tr><td align="center" valign="top">';
+//                SelectGU_ID("all_groups_sel", array_diff_key($all_groups, $sel_groups), $all_groups_sel, "multi");
+//    echo '    </td>
+//              <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(document.fx.all_groups_sel, document.fx.sel_groups_sel\')" align=center><br><br>
+//                  <input type="button" VALUE="  <<  " onClick = "MoveSelected(document.fx.sel_groups_sel, document.fx.all_groups_sel\')" align=center></td>
+//                    <td align="center" valign="TOP">';
+//                SelectGU_ID("sel_groups_sel", $sel_groups, $sel_groups_sel, "multi");
+//    echo '    </td>
+//          </tr>';
 
     // User - permissions -----------------------------------------
     $mod_types = PrintModulePermModificator($selected_user);   // shared with um_gedit.php3
