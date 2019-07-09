@@ -271,7 +271,7 @@ class AA_Toexecute {
             return 'AA_Toexecute:execute_one: No object: '. serialize($object); // Error
         }
         set_time_limit(max(30,ini_get('max_execution_time')));   // 30 seconds (at least) for each task
-        return call_user_func_array(array($object, 'toexecutelater'), (array)$params);
+        return call_user_func(array($object, 'toexecutelater'), (array)$params);
     }
 } // end of toexecute class
 

@@ -41,25 +41,30 @@ if ( !IsSuperadmin() ) {
 }
 
 /** Test Task */
-/*
-class AA_Task_Test {
 
-    function __construct() {
-    }
+//class AA_Task_Test implements \AA\Util\LaterInterface {
+//
+//    function __construct() {
+//    }
+//
+//    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+//     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+//     *  @return string - message about execution to be logged
+//     *  @see \AA\Util\LaterInterface
+//     */
+//    public function toexecutelater($params=array()) {
+//        // synchronize accepts array of sync_actions, so it is possible
+//        // to do more action by one call
+//        echo time(). " ";
+//        sleep(25);
+//        return "OK" ;
+//    }
+//}
+//
+//$toexecute = new AA_Toexecute;
+//$test_task = new AA_Task_Test();
+//$toexecute->userQueue($test_task, array(), 'AA_Task_Test');
 
-    function toexecutelater() {
-        // synchronize accepts array of sync_actions, so it is possible
-        // to do more action by one call
-        echo time(). " ";
-        sleep(25);
-        return "OK" ;
-    }
-}
-
-$toexecute = new AA_Toexecute;
-$test_task = new AA_Task_Test();
-$toexecute->userQueue($test_task, array(), 'AA_Task_Test');
-*/
 
 // Common manager settings for Tasks 
 $manager_settings = GetToexecuteManagerSettings();

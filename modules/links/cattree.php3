@@ -502,7 +502,7 @@ class cattree {
 }
 
 /** class used just for counting of links */
-class linkcounter {
+class linkcounter implements \AA\Util\LaterInterface {
 
     /** constructor */
     function __construct() {}
@@ -523,10 +523,13 @@ class linkcounter {
         return $count;
     }
 
-    /** Toexecutelater - special function called from AA_Toexecute class
-    *  - used for queued tasks (runed form cron)
-    */
-    function toexecutelater($cpath) {
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
+        list($cpath) = $params;
         return $this->get_link_count($cpath, true);
     }
 }

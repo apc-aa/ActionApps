@@ -32,7 +32,7 @@
 
 /** Task executed at planed time
  */
-class AA_Plannedtask extends AA_Object {
+class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
 
     protected $task      = '';
     protected $condition = '';
@@ -117,7 +117,12 @@ class AA_Plannedtask extends AA_Object {
         return '';
     }
 
-    function toexecutelater() {
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
         $ret = $this->task;
         AA::$slice_id = $this->getOwnerId();
         if (is_long_id($this->item_id)) {
@@ -196,9 +201,14 @@ class AA_Plannedtask extends AA_Object {
 
 /** Check all AA_Planedtask and schedule it for execution, if not scheduled
  */
-class AA_Plannedtask_Schedule {
+class AA_Plannedtask_Schedule implements \AA\Util\LaterInterface {
 
-    function toexecutelater() {
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
 
         $ret = '';
         $aa_set = new AA_Set();

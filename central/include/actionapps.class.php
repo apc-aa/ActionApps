@@ -760,7 +760,7 @@ class AA_Sync_Action {
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA_Toexecute queue for running from Task Manager
  **/
-class AA_Task_Sync {
+class AA_Task_Sync implements \AA\Util\LaterInterface {
     /** AA_Sync_Action object - Action to do */
     var $sync_action;
 
@@ -772,7 +772,11 @@ class AA_Task_Sync {
         $this->actionapps  = $actionapps;
     }
 
-    function toexecutelater() {
+    /**
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     */
+    public function toexecutelater($params=array()) {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
         return $this->actionapps->synchronize(array($this->sync_action));
@@ -782,7 +786,7 @@ class AA_Task_Sync {
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA_Toexecute queue for running from Task Manager
  **/
-class AA_Task_Import_Module_Chunk {
+class AA_Task_Import_Module_Chunk implements \AA\Util\LaterInterface {
     /** AA_Module_Definition_* object for import */
     var $module_definition_chunk;
 
@@ -794,7 +798,12 @@ class AA_Task_Import_Module_Chunk {
         $this->actionapps              = $actionapps;
     }
 
-    function toexecutelater() {
+    /**
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
         return $this->actionapps->importModuleChunk($this->module_definition_chunk);

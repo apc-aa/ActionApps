@@ -123,7 +123,7 @@ class AA_Log {
     }
 }
 
-class AA_Log_Clenup {
+class AA_Log_Clenup implements \AA\Util\LaterInterface {
 
     var $time;
     var $type;
@@ -133,7 +133,13 @@ class AA_Log_Clenup {
         $this->type = $type;
     }
 
-    function toexecutelater() {
+    /** just plan item updates in chunks
+     *  special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
         $type_where = ( $this->type ) ? " AND type = '".quote($this->type)."' " : '';
         $db_time    = quote($this->time);
         DB_AA::sql("DELETE FROM log WHERE time < '$db_time' $type_where");

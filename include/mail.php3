@@ -73,7 +73,7 @@ class AA_Mailtemplate implements AA_iEditable {
     public        function save() {}
 }
 
-class AA_Mail extends htmlMimeMail {
+class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
 
     /** $template_id and $reader_id is mainly for getId() used in AA_Log after toexecute */
     protected $template_id = '';
@@ -244,13 +244,14 @@ class AA_Mail extends htmlMimeMail {
         $this->setTextCharset($charset);
     }
 
-    /** toexecutelater function
-     *  Toexecutelater - special function called from AA_Toexecute class
-     *  - used for queued tasks (runed form cron)
-     * @param $to
-     * @return mixed
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *                       - [0] - $to
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
      */
-    function toexecutelater($to) {
+    public function toexecutelater($params=array()) {
+        list($to) = $params;
         return $this->send($to);
     }
 
@@ -311,7 +312,7 @@ class AA_Mail extends htmlMimeMail {
  *  there was problems with more than 1000 mails - it wasn't possible to plan it in one shot
  *  @see AA_Mail::sendToReader();
  */
-class AA_Mail_Scheduler {
+class AA_Mail_Scheduler implements \AA\Util\LaterInterface {
     protected $mail_id;
     protected $reader_ids;
 
@@ -337,7 +338,12 @@ class AA_Mail_Scheduler {
         return $mail_count;
     }
 
-    function toexecutelater() {
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  @param array $params - numeric array of additional parameters for the execution passed in time of call
+     *  @return string - message about execution to be logged
+     *  @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
         return $this->schedule();
     }
 }
