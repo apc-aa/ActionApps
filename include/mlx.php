@@ -42,7 +42,7 @@ $mlxScriptsTable = array(
     "KU" => array("name"=>"Kurdish","DIR"=>"RTL","FONT"=>"FACE=\"Ali_Web_Samik\"")
 );
 
-/** deprecated: using mlxctrl instead
+/** @deprecated: using mlxctrl instead
     the field type in the Control Slice whose name sets the
     field in the item in Content Slice that links to the Control Item **/
 //define ('MLX_ITEM2MLX_FIELD','lang_code.......');

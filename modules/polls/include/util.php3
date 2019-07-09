@@ -35,7 +35,7 @@ require_once AA_INC_PATH. "varset.php3";
 function GetAnswerAliases() {
     $aliases = array (
         "_#QUESTION" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),
-        "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),  // deprecated
+        "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),  // @deprecated
         "_#PUB_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PUB_DATE}",   "", _m('Poll publish date')),
         "_#EXP_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#EXP_DATE}",   "", _m('Poll expiry date')),
         "_#PARAMS__" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PARAMS__}",   "", _m('Poll params')),

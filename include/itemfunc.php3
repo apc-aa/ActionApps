@@ -440,7 +440,9 @@ class AA_Field_Writer {
     /** insert_fnc_com function - Computed field */
     function insert_fnc_com($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
 
-    /** insert_fnc_seo function - SEO Name */
+    /** insert_fnc_seo function - SEO Name
+     *  the value computed in updateComputedFields
+     */
     function insert_fnc_seo($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
 
     /** insert_fnc_seo function - Unique number for this field (from 1,..)    */

@@ -273,8 +273,8 @@ function ParseViewParameters($query_string="") {
         // if view in cmd[] or set[] is not specified - fill it from vid
         if ( preg_match("/vid=([0-9a-z_]*)/", $query_string, $parts) ) {
             $vid = $parts[1];
-            $query_string = str_replace( 'cmd[]', "cmd[$vid]", $query_string );
-            $query_string = str_replace( 'set[]', "set[$vid]", $query_string );
+            $query_string = str_replace( array('cmd[]','set[]'), array("cmd[$vid]", "set[$vid]"), $query_string );
+
             // we no not want older calls to ParseViewParameters() will infect this call
             // @todo - make two versions - one for url parameters, second for
             // {view.php3...} parameters, where we do not want to read global data

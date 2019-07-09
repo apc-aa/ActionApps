@@ -55,8 +55,8 @@ spl_autoload_register(function ($class_name) {
         'AA_Computedfields_Updater'      => 'include/hitcounter.class.php3',
         'AA_ComputedfieldsItem_Updater'  => 'include/hitcounter.class.php3',
         'AA_Fields'                      => 'include/field.class.php3',
-        'AA\FormArray' => 'include/widget.class.php3',
-        'AA_Formatters' => 'include/widget.class.php3',
+        'AA\FormArray'                   => 'include/widget.class.php3',
+        'AA_Formatters'                  => 'include/widget.class.php3',
         'AA_iEditable'                   => 'include/statestore.php3',
         'AA_Items'                       => 'include/item.php3',
         'AA_Mailman'                     => 'include/mailman.php3',
@@ -68,9 +68,9 @@ spl_autoload_register(function ($class_name) {
         'AA_Property'                    => 'include/widget.class.php3',
         'AA_Poll'                        => 'modules/polls/include/poll.class.php3',
         'AA_Polls'                       => 'modules/polls/include/poll.class.php3',
-        'AA_Serializable  '              => 'include/statestore.php3',
+        'AA_Serializable'                => 'include/statestore.php3',
         'AA_Storable'                    => 'include/statestore.php3',
-        'FormrowWidget' => 'include/form.class.php3',
+        'FormrowWidget'                  => 'include/form.class.php3',
         'AA_Jstriggers'                  => 'include/javascript.php3',
         'ConvertCharset'                 => 'include/convert_charset.class.php3',
         'Files'                          => 'include/files.class.php3',
@@ -838,7 +838,7 @@ class AA_Session extends Session {
     }
 }
 
-function pageOpen($type = '') {
+    function pageOpen($type = '') {
     global $sess, $auth;
 
     $sess = new AA_Session;

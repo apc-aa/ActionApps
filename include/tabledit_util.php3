@@ -269,7 +269,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
 
     $db = getDB();
     if ($be_cautious) {
-        $db->query($varset->makeSELECT ($table));
+        $db->query($varset->makeSELECT($table));
         if ($db->num_rows() != 1) {
             $err[] = $error_msg ? $error_msg : "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
             freeDB($db);
@@ -280,7 +280,7 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
         freeDB($db);
         return false;
     }
-    $retval = $db->query($varset->makeDELETE ($table));
+    $retval = $db->query($varset->makeDELETE($table));
     CallTrigger($triggers, "AfterDelete", $varset);
     freeDB($db);
     return $retval;
