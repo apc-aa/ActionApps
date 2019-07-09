@@ -1,3 +1,21 @@
+19-07-09 - SEO field now can have multivalue when using SEO Name insert function
+(honzam) - new possibility to get charset of the slice - {modulefield:2e637469436961532d65732e332e446a:charset}
+         - improved {math} - more "strange" expressions are accepted
+         - Improved history
+             - more links to history versions in AA admin interface
+             - history is now stored also for fields, users, slice, spot ...
+             - better history design
+         - fixed implementation of "!=" and "<>"" operator in conditions ({view}, {ids}, ...)
+         - hitcounter now writes info about page generation time and caching into the log for future statistics
+         - new NamedInterface for better internal AA API on components naming
+         - changes monitor moved to separate file/namespace
+         - toexecute now uses new LaterInterface for cleaner internal AA API
+         - css improvements - images as data/base64, UI improvement
+         - improved user management UX - standard widgets used
+         - improved internal Javascripts
+             - removed eval() calls
+             - removed old tricks with selectbox widths
+         - removed unused files (old unused CSS)
 19-06-18 - AA_Message() - better CSS - inner div are not scrambled
 (honzam)
 19-06-17 - protecting of domain by specify request frequency moved to more genaral AbsractGrabber class
