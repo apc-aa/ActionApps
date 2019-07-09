@@ -71,7 +71,7 @@ class AA_Hitcounter {
      *  We use two temporary tables - hit_short_id (for short item ids) and
      *  hit_long_id (for long item ids).
      */
-    static function hit($zids) {
+    static function hit($zids, $cached='-') {
         if (!is_object($zids) OR $zids->is_empty()) {
             return;
         }
@@ -90,7 +90,10 @@ class AA_Hitcounter {
         $varset = new CVarset;
         $varset->add('time', 'number', time());
         $varset->add('agent', 'text', substr($_SERVER["HTTP_USER_AGENT"],0,255));  // @todo - convert to metabase and check the length using metabase real field length
-        $varset->add('info',  'text', substr($_SERVER["REQUEST_URI"],0,255)); // @todo - convert to metabase and check the length using metabase real field length
+        $info  = (string)$cached;
+        $info .= ':'. timestartdiff();
+        $info .= ':'. substr($_SERVER["REQUEST_URI"],0,255-strlen($info));
+        $varset->add('info',  'text', $info); // @todo - convert to metabase and check the length using metabase real field length
 
         if ($zids->use_short_ids()) {
             $varset->add('id', 'number', $zids->id(0));
@@ -127,14 +130,18 @@ class AA_Hitcounter {
  *  based on hit log in hit_short_id and hit_long_id tables
  *  It also plans the the hit_x..... field counting into toexecute queue
  */
-class AA_Hitcounter_Update {
+class AA_Hitcounter_Update implements \AA\Util\LaterInterface {
 
     /** updateDisplayCount - updates item.display_count and hit_archive based
      *  on hit log in hit_short_id and hit_long_id tables
      *                     - it also plans the the hit_x..... field counting
      *                       into toexecute queue
+     *  Special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
      */
-    function toexecutelater() {
+    public function toexecutelater($params=array()) {
 
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.
@@ -213,7 +220,7 @@ class AA_Hitcounter_Update {
 /** Updates the hit_x..... fields for all items from the slice based on the data
  *  in hit_archive table.
  */
-class AA_Hitcounter_Stats {
+class AA_Hitcounter_Stats implements \AA\Util\LaterInterface {
 
     /** For which slice we will cout the hits */
     var $slice_id;
@@ -226,10 +233,12 @@ class AA_Hitcounter_Stats {
         $this->field_id = $field_id;
     }
 
-    /**
-     *
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
      */
-    function toexecutelater() {
+    public function toexecutelater($params=array()) {
         $days        = $this->getDays();
         $time        = time() - ($days * 86400);
         $qp_slice_id = q_pack_id($this->slice_id);
@@ -262,10 +271,17 @@ class AA_Hitcounter_Stats {
  *  On the other hand the amount of data is huge, so we group the hit count for
  *  item on day basis (for older hits)
  **/
-class AA_Hitcounter_Group {
+class AA_Hitcounter_Group implements \AA\Util\LaterInterface {
 
-    function toexecutelater($begin, $step) {
-        $varset = new CVarset;
+    /** special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
+        list($begin, $step) = $params;
+
+        $varset    = new CVarset;
         $time_cond = "time >= $begin AND time < ". ($begin + $step);
         $hits      = GetTable2Array("SELECT id, sum(hits) as sum FROM hit_archive WHERE $time_cond GROUP BY id", 'id', 'sum');
 
@@ -303,7 +319,7 @@ class AA_Hitcounter_Group {
     }
 }
 
-class AA_Computedfields_Updater {
+class AA_Computedfields_Updater implements \AA\Util\LaterInterface {
 
     /** plan filed updater proces for future time based on field settings
      */
@@ -340,8 +356,14 @@ class AA_Computedfields_Updater {
         }
     }
 
-    // just plan item updates in chunks
-    function toexecutelater($sid) {
+    /**  just plan item updates in chunks
+     *  special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
+        list($sid) = $params;
         $aa_set       = new AA_Set();
         $aa_set->setModules($sid);
         $zids         = $aa_set->query();
@@ -363,8 +385,15 @@ class AA_Computedfields_Updater {
     }
 }
 
-class AA_ComputedfieldsItem_Updater {
-    function toexecutelater($sid, $ids) {
+class AA_ComputedfieldsItem_Updater implements \AA\Util\LaterInterface {
+
+    /**  just plan item updates in chunks
+     * @param array $params - numeric array of additional parameters for the execution passed in time of call
+     * @return string - message about execution to be logged
+     * @see \AA\Util\LaterInterface
+     */
+    public function toexecutelater($params=array()) {
+        list($sid, $ids) = $params;
         foreach ($ids as $item_id) {
             $item = new ItemContent($item_id);
             $item->updateComputedFields();

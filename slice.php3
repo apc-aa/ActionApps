@@ -187,8 +187,6 @@ function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility wit
 }
 
 
-$slice_starttime = microtime(true);
-
 //MLX stuff
 require_once AA_INC_PATH."mlx.php";
 
@@ -348,17 +346,17 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ( $x ) {
         $zid = new zids((int)$x, 's');
-        AA_Hitcounter::hit($zid);
+        AA_Hitcounter::hit($zid, 0);
     }
     elseif ( $seo ) {
         $zid = new zids(explode_ids(StrExpand('AA_Stringexpand_Seo2ids', array($slice_id, $seo))), 'l');
-        AA_Hitcounter::hit($zid);
+        AA_Hitcounter::hit($zid, 0);
     }
     elseif ( $o ) {
         $zid = new zids((int)$o, 's');
     } else {
         $zid = new zids($sh_itm, 'l');
-        AA_Hitcounter::hit($zid);
+        AA_Hitcounter::hit($zid, 0);
     }
     
     if ( !is_object($item = AA_Items::getItem($zid)) OR ($item->getStatusCode()<>1) ) {
@@ -602,9 +600,7 @@ if ($searchlog) {
 }
 
 if ($debug) {
-    $timeend = microtime(true);
-    $time    = $timeend - $slice_starttime;
-    echo "<br><br>Page generation time: $time";
+    echo "<br><br>Page generation time: ". timestartdiff();
 }
 
 ExitPage();
