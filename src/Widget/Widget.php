@@ -22,8 +22,7 @@ use AA_Value;
 use Exception;
 use zids;
 
-class Widget extends AA_Components
-{
+class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
     /** array of possible values (for selectbox, two boxes, ...) */
     var $_const_arr = null;
