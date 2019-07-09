@@ -274,8 +274,7 @@ if ( $update ) {
 
         if ( $view_id ) {
             $varset->addkey('id','number', $view_id);
-            $varset->saveHistory('view', unpack_id(substr($view_id.'_'.$slice_id, 0, 16)));
-            if ( !$varset->doUpdate('view',null,true) ) {  // track history
+            if ( !$varset->doUpdate('view', null, "V.$view_id") ) {  // track history
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
                 break;   // not necessary - we have set the halt_on_error
             }
@@ -344,6 +343,7 @@ if ( !$update ) {  // set variables from database
 $lookup_op = array( "<"  => "<",
                     "<=" => "<=",
                     "="  => "=",
+                    "==" => "== (exact match)",
                     "<>" => "<>",
                     ">"  => ">",
                     ">=" => ">=",
@@ -363,8 +363,12 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
     $lookup_fields += $field_func();
 } else {
+    $serchbar = new AA_Searchbar();
+
     $lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true, true);
 }
+$slice = AA_Slice::getModule($slice_id);
+//huhl($lookup_fields, $slice->getSearchfields());
 
 
 $headcode = <<<'EOT'

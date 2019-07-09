@@ -941,7 +941,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
              'itemview'  => array(
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                  'format'               => array(    // optionaly to manager_vid you can set format array
-                     'compact_top'      => '<div class="aa-items-manager">'. static::getManagerTopHtml($search_fields),
+                     'compact_top'      => '<div class="aa-table aa-items-manager">'. static::getManagerTopHtml($search_fields),
                      'category_sort'    => false,
                      'category_format'  => "",
                      'category_top'     => "",
@@ -1023,7 +1023,7 @@ interface AA_iEditable {
 }
 
 /** Components (plugins) manipulation class */
-class AA_Components extends AA_Object {
+class AA_Components {
 
     /// Static ///
 

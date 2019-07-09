@@ -166,7 +166,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
 }
 
 function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
-    $content = DB_AA::select1('SELECT content FROM site_spot','content',array(array('site_id', $site_id, 'l'), array('spot_id',$spot_id,'i')));
+    $spot_data = DB_AA::select1('SELECT id, content FROM site_spot','',array(array('site_id', $site_id, 'l'), array('spot_id',$spot_id,'i')));
     FrmTabCaption();
     FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', array($spot_id)));
 
@@ -180,8 +180,8 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     FrmTabCaption();
     ModW_HiddenRSpotId();
     FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
-    FrmTextarea('content', '', $content, 50, 80, false, AA_View::getViewJumpLinks($content), "", true);
-    FrmTabEnd(array('submit'));
+    FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
+    FrmTabEnd(array('submit', "cancel"=>array('value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]"))));
     echo "</form>";
 }
 

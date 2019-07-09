@@ -216,7 +216,7 @@ if ( $add || $update ) {
             }
             $varset->add("lang_file", "quoted", $lang_file);
 
-            if (!$varset->doUpdate('module')) {
+            if (!$varset->doUpdate('module', null, $slice_id)) {
                 // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change slice");
                 break;
@@ -246,7 +246,7 @@ if ( $add || $update ) {
             $varset->add('mlxctrl', "unpacked", $mlxctrl); //store 16bytes packed
 
 
-            if (!$varset->doUpdate('slice')) {  // not necessary - we have set the halt_on_error
+            if (!$varset->doUpdate('slice', null, $slice_id)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change slice");
                 break;
             }

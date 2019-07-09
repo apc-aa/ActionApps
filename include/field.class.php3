@@ -539,7 +539,7 @@ class AA_Fields implements Iterator {
     }
 
     /** getRecordArray function
-     *  deprecated - for backward compatibility only
+     *  @deprecated - for backward compatibility only
      */
     function getRecordArray() {
         $this->load();
@@ -683,6 +683,14 @@ class AA_Fields implements Iterator {
             $no = "";    // id for 0 is "xxxxx..........."
         }
         return $ftype. substr( str_pad($no, 16, $id_type, STR_PAD_LEFT), -(16-strlen($ftype)));
+    }
+
+    /** Experimental field - now used just for history records
+     * @param $fid string
+     * @return string
+     */
+    static function createShortId($fid) {
+        return preg_replace("/\.+/", ".", $fid);
     }
 
     /** getFieldType function

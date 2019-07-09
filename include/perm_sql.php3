@@ -113,7 +113,7 @@ function ChangeUser($user, $flags = 0) {
         $varset->add("password", "text", AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]));
     }
     $varset->addkey("id", "text", $user["uid"]);
-    $varset->doUpdate('users');
+    $varset->doUpdate('users', null, $user["uid"]);
     return true;
 }
 
@@ -177,7 +177,7 @@ function ChangeGroup($group, $flags = 0) {
                                 )
                           );
     $varset->addkey("id", "text", $group["uid"]);
-    $varset->doUpdate('users');
+    $varset->doUpdate('users', null, $group["uid"]);
     return true;
 }
 

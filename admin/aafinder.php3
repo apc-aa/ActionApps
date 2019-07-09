@@ -25,6 +25,8 @@
  * @link      http://www.apc.org/ APC
 */
 
+use AA\Util\ChangesMonitor;
+
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
@@ -73,20 +75,20 @@ function AafinderItemLink($item_id, $slice_id='') {
     } else {
         return '';
     }
-    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")");
+    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")"). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl($item_id), _m('history'));
 }
 
 function AafinderSliceLink($slice_id) {
-    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Module::getModuleName($slice_id) .")");
+    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Module::getModuleName($slice_id) .")"). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl($slice_id), _m('history'));
 }
 
 function AafinderSiteLink($spot_id, $slice_id) {
-    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")");
+    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")"). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl($slice_id), _m('history')). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl("S.$spot_id"), _m('history'));
 }
 
 function AafinderViewLink($view_id, $slice_name='') {
     $view = AA_Views::getView($view_id);
-    return $view->jumpLink($view_id." -  ".$view->f("name"). ($slice_name ? " ($slice_name) ":''));
+    return $view->jumpLink($view_id." -  ".$view->f("name"). ($slice_name ? " ($slice_name) ":'')). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl("V.$view_id"), _m('history'));
 }
 
 function query_search($where) {
@@ -117,7 +119,7 @@ function PrintItemInfo($item_id) {
     if ($item) {
         $long_id = $item->getItemID();
         $sid     = $item->getSliceID();
-        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>";
+        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>". ' | '. a_href(ChangesMonitor::getHistoryUrl($item_id), _m('History'));;
         echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
         $format = '_#HEADLINE';
         echo "<br>_#HEADLINE: ". $item->unalias($format);
@@ -161,11 +163,14 @@ function PrintItemInfo($item_id) {
         }
 
         echo '<h3>'. _m('History') .'</h3>';
+
+        echo 'show '. a_href(ChangesMonitor::getHistoryUrl($item_id), _m('history'));
+
         //echo "<pre>";
         //print_r($changes->getHistory(array($long_id)));
         //echo "</pre>";
 
-        AA_ChangesMonitor::singleton()->display(array($long_id));
+        //ChangesMonitor::singleton()->display(array($long_id));
       //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
       //  print_r($changes->getProposals(array($long_id)));
       //  echo "</pre>";
@@ -478,6 +483,14 @@ if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET[
     echo '</table>';
 
 }
+
+if ($_GET['showhistory']) {
+    echo '<h3>'. _m('History') .'</h3>';
+    ChangesMonitor::singleton()->display(array($_GET['showhistory']));
+    echo '<br><br>';
+
+}
+
 
 
 // ------------------------------------------------------------------------------------------

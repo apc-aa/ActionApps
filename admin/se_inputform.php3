@@ -213,12 +213,16 @@ if ($update) {
         }
         Qvarsetadd("html_show", "number", ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
         Qvarsetadd("text_stored", "number", $text_stored);
-        $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
 
-        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-            $err["DB"] = MsgErr("Can't change field");
-            break;
-        }
+        $varset->addkey('id', 'text', $fid);
+        $varset->addkey('slice_id', 'unpacked', $slice_id);
+        $varset->doUpdate('field', null, "F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id));
+//        $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
+//
+//        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+//            $err["DB"] = MsgErr("Can't change field");
+//            break;
+//        }
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         if ( count($err) <= 1 ) {
@@ -339,6 +343,7 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
                       "fid"      => array("type"=>"hidden", "value"=>$fid),
                       "update",
                       "upd_edit" => array("type"=>"submit", "value"=>_m("Update & Edit")),
+                      "cancel2"   => array('value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id))),
                       "cancel"   => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
                      );
 

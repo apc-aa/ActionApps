@@ -664,7 +664,7 @@ function GetToexecuteManagerSettings() {
 
     $manager_settings = AA::Metabase()->getManagerConf('toexecute', $actions);
     $manager_settings['itemview']['format']['compact_top'] = '
-                                        <div class="aa-items-manager">
+                                        <div class="aa-table">
                                           <table border="0" cellpadding="5" cellspacing="0">
                                             <tbody><tr>
                                               <th width="30">&nbsp;</th>

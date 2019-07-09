@@ -1151,7 +1151,7 @@ class AA_Metabase {
             'itemview'  => array(
                 'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
                 'format'               => array(    // optionaly to manager_vid you can set format array
-                    'compact_top'      => '<div class="aa-items-manager"><table>
+                    'compact_top'      => '<div class="aa-table aa-items-manager"><table>
                                             <tr>
                                               <th width="30">&nbsp;</td>
                                               <th>'.join("</th>\n<th>", array_keys($search_fields)).'</th>

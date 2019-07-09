@@ -106,7 +106,7 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
             $varset->add("deleted", "number", $deleted);
         }
 
-        if (!$varset->doUpdate('module')) {  // not necessary - we have set the halt_on_error
+        if (!$varset->doUpdate('module', null, $module_id)) {  // not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change module");
             return false;
         }

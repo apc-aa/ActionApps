@@ -108,12 +108,25 @@ if ($addcond) {
 } elseif($delcond) {
     $tree->removeCondition($r_spot_id, $delcond);
 } elseif($content OR $name) {
-    $SQL = "SELECT id FROM site_spot WHERE site_id='$p_module_id' AND spot_id='$r_spot_id'";
-    $db->query($SQL);
-    $SQL = ($db->next_record() ?
-           "UPDATE site_spot SET content='$content' WHERE id='". $db->f('id') ."'" :
-           "INSERT INTO site_spot (site_id, spot_id, content) VALUES ('$p_module_id', '$r_spot_id', '$content')");
-    $db->query($SQL);
+    $varset     = new CVarset();
+    $varset->add("content", "quoted", $content);
+
+    $db_id = DB_AA::select1('SELECT `id` FROM `site_spot`', 'id', array(array('site_id',$module_id,'l'), array('spot_id',$r_spot_id)));
+    if ($db_id) {
+        $varset->addkey("id", "number", $db_id);
+        $varset->doUpdate('site_spot', null, "S.$db_id");
+    } else {
+        $varset->add("site_id", "unpacked", $module_id);
+        $varset->add("spot_id", "number", $r_spot_id);
+        $varset->doInsert('site_spot');
+    }
+
+    // $SQL = "SELECT id FROM site_spot WHERE site_id='$p_module_id' AND spot_id='$r_spot_id'";
+    // $db->query($SQL);
+    // $SQL = ($db->next_record() ?
+    //        "UPDATE site_spot SET content='$content' WHERE id='". $db->f('id') ."'" :
+    //        "INSERT INTO site_spot (site_id, spot_id, content) VALUES ('$p_module_id', '$r_spot_id', '$content')");
+    // $db->query($SQL);
 
     if ($name) {  // do not change to empty
         $tree->set('name', $r_spot_id, $name);

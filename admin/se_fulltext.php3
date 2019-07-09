@@ -103,7 +103,7 @@ if ( $update ) {
         $varset->add("vid",  "number", $discus_sel);
         $varset->addkey("id", "unpacked", $slice_id);
 
-        if ( !$varset->doUpdate('slice') ) {
+        if ( !$varset->doUpdate('slice', null, $slice_id) ) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }
