@@ -26,6 +26,10 @@
  * @link      http://www.apc.org/ APC
  *
 */
+
+use AA\Util\ChangeProposal;
+use AA\Util\ChangesMonitor;
+
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."itemfunc.php3";
@@ -408,14 +412,14 @@ class AA_Content {
         foreach ($this->content as $fid => $a) {
             $b = $object2compare->getValuesArray($fid);
             if ($this->getValuesArray($fid) != $b) {
-                $changes[] = new AA_ChangeProposal($this->getId(), $fid, $b);
+                $changes[] = new ChangeProposal($this->getId(), $fid, $b);
             }
         }
         // search for values not present in current object
         $b_fields = $object2compare->getFields();
         foreach ($b_fields as $fid) {
             if (!$this->isField($fid)) {
-                $changes[] = new AA_ChangeProposal($this->getId(), $fid, $object2compare->getValuesArray($fid));
+                $changes[] = new ChangeProposal($this->getId(), $fid, $object2compare->getValuesArray($fid));
             }
         }
         return $changes;
@@ -1142,7 +1146,7 @@ class ItemContent extends AA_Content {
             } else {
                 $diff = $itemContent->diff($oldItemContent);
                 if (count($diff)) {
-                    AA_ChangesMonitor::singleton()->addHistory($diff);
+                    ChangesMonitor::singleton()->addHistory($diff);
                 }
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
@@ -1195,11 +1199,12 @@ class ItemContent extends AA_Content {
             // computed field?
             switch ($fnc["fnc"]) {
                 case 'seo':
-                    $seo_alias     = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
-                    $slice_charset = $slice->getCharset();
-                    $seo_charset   = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
-                    $expand_string = '{ifset:{'.$fid.'}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
-                    unset($expand_insert,$expand_update,$expand_delimiter, $recompute);
+                    $seo_alias        = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
+                    $slice_charset    = $slice->getCharset();
+                    $seo_charset      = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
+                    $expand_string    = '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
+                    $expand_delimiter = '| /';     // just some unprobabale string from the line above
+                    unset($expand_insert,$expand_update,$recompute);
                     break;
                 case 'com':
                     $expand_string = $fnc["param"];
