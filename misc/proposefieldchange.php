@@ -19,7 +19,10 @@ http://www.apc.org/
 */
 
 
-require_once "../include/config.php3";
+    use AA\Util\ChangeProposal;
+    use AA\Util\ChangesMonitor;
+
+    require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 
@@ -49,8 +52,8 @@ class AA_V {
 
 /** field_content is AA_Value object */
 function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = true) {
-    $changes       = new AA_ChangesMonitor();
-    $changes->addHistory(new AA_ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
+    $changes       = new ChangesMonitor();
+    $changes->addHistory(new ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
 
     UpdateField($item_id, $field_id, $field_content, $invalidate);
 }
@@ -200,7 +203,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
     $field_content->setFlag($item->getFlag($field_id));
 
     UpdateFieldContent($item_id, $field_id, $field_content);
-    $changes = new AA_ChangesMonitor();
+    $changes = new AA\Util\ChangesMonitor();
     $changes->deleteProposalForSelector($item_id, $field_id);
 
     $repre_value = GetRepreValue($item_id, $field_id, $_POST['alias_name']);
@@ -208,7 +211,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
 }
 */
 elseif (AA_V::P('cancel_changes') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
-    $changes = new AA_ChangesMonitor();
+    $changes = new ChangesMonitor();
     $changes->deleteProposalForSelector(AA_V::P('item_id'), AA_V::P('field_id'));
     $encoder = new ConvertCharset;
     $repre_value = GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name'));
@@ -218,7 +221,7 @@ elseif (AA_V::P('do_change') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $encoder       = new ConvertCharset;
     $val           = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
     UpdateFieldContent(AA_V::P('item_id'), AA_V::P('field_id'), new AA_Value($val));
-    $changes = new AA_ChangesMonitor();
+    $changes = new ChangesMonitor();
     $changes->deleteProposalForSelector(AA_V::P('item_id'), AA_V::P('field_id'));
     $encoder = new ConvertCharset;
     $repre_value = GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name'));
@@ -228,12 +231,12 @@ elseif (AA_V::P('item_id') AND AA_V::P('field_id')) {
     $encoder = new ConvertCharset;
     $text = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
 
-    $changes = new AA_ChangesMonitor();
-    $changes->addProposal(new AA_ChangeProposal(AA_V::P('item_id'), AA_V::P('field_id'), array($text)));
+    $changes = new ChangesMonitor();
+    $changes->addProposal(new ChangeProposal(AA_V::P('item_id'), AA_V::P('field_id'), array($text)));
     echo $encoder->Convert($text, 'windows-1250', 'utf-8');
 }
 elseif (AA_V::P('change_id')) {
-    $changes = new AA_ChangesMonitor();
+    $changes = new ChangesMonitor();
 
     // changes_arr[item_id] = [[field_id] => [0 => value1, 1 => value2, ...]]
     $changes_arr = $changes->getProposalByID(AA_V::P('change_id'));

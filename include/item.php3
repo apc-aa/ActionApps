@@ -24,6 +24,9 @@
  * @link      http://www.apc.org/ APC
  *
 */
+
+use AA\Util\ChangesMonitor;
+
 require_once AA_INC_PATH. "stringexpand.php3";
 if ( file_exists( AA_INC_PATH."usr_aliasfnc.php3" ) ) {
   require_once AA_INC_PATH."usr_aliasfnc.php3";
@@ -1799,7 +1802,7 @@ class AA_Items {
         DB_AA::delete_low_priority('hit_short_id',array(array('id',             $short_arr, 'i')));
         DB_AA::delete_low_priority('hit_long_id', array(array('id',             $ids_arr,   'l')));
 
-        AA_ChangesMonitor::deleteChanges($ids_arr);
+        ChangesMonitor::deleteChanges($ids_arr);
     }
 
     /** Invalidate item cache */
