@@ -1095,7 +1095,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     {
         $text = trim(strip_tags($text));
         $ret = aa_substr($text, 0, $length / 2 - 1) . '...';
-        return $ret . substr($text, strlen($ret) - $length);
+        return $ret . aa_substr($text, aa_strlen($ret) - $length);
     }
 
     /** Do not trim all parameters (the $add parameter could contain space) */
