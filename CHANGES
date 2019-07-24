@@ -1,3 +1,8 @@
+19-07-24 - diff of database structure in "Update database structure" optimize task is nicer
+(honzam) - better AA Finder - now is possible to - replace text with empty or shorter string
+                                                 - search for shorter strings
+19-07-18 - fix {shorten} - now works correctly with utf8 encoding
+(honzam)
 19-07-09 - SEO field now can have multivalue when using SEO Name insert function
 (honzam) - new possibility to get charset of the slice - {modulefield:2e637469436961532d65732e332e446a:charset}
          - improved {math} - more "strange" expressions are accepted

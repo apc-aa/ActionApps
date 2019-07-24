@@ -193,20 +193,6 @@ $apage->printHead($err, $Msg);
 is_object( $db ) || ($db = getDB());
 
 if (strlen($_GET['findtext'])) {
-    if ($_GET['findinseo']) {
-        if ( in_array(guesstype(trim($_GET['findtext'])), array('s','l')) ) {
-            PrintItemInfo(trim($_GET['findtext']));
-        } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['findtext'], $ids)) {
-            $ids = array_unique($ids[0]);
-            foreach ($ids as $id) {
-                PrintItemInfo($id);
-                echo '<hr>';
-            }
-        } else {
-            print query_search("content.text = '". quote($_GET['findtext'])."' AND content.field_id = 'seo.............'");
-        }
-    }
-
     if ($_GET['findinview']) {
         $fields = array (
             'id',
@@ -285,7 +271,6 @@ if (strlen($_GET['findtext'])) {
         echo '<br><br>';
     }
 
-
     if ($_GET['findinfield']) {
         $fields = array (
             'id',
@@ -328,7 +313,6 @@ if (strlen($_GET['findtext'])) {
         echo '<br><br>';
     }
 
-
     if ($_GET['findinspot']) {
         $like_text = addcslashes(quote($_GET['findtext']),'_%');
 
@@ -361,6 +345,20 @@ if (strlen($_GET['findtext'])) {
             $manager = new AA_Manager('aafindaliases'.$module_id, $manager_settings);
             $manager->performActions();
             $manager->display($zids);
+        }
+    }
+
+    if ($_GET['findinseo']) {
+        if ( in_array(guesstype(trim($_GET['findtext'])), array('s','l')) ) {
+            PrintItemInfo(trim($_GET['findtext']));
+        } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['findtext'], $ids)) {
+            $ids = array_unique($ids[0]);
+            foreach ($ids as $id) {
+                PrintItemInfo($id);
+                echo '<hr>';
+            }
+        } else {
+            print query_search("content.text = '". quote($_GET['findtext'])."' AND content.field_id = 'seo.............'");
         }
     }
 
@@ -424,64 +422,83 @@ if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_
     }
 }
 
-if ( (strlen($_GET['go_search']) AND strlen($_GET['search'])) OR ( strlen($_GET['go_replace']) AND (strlen($_GET['search'])>5) AND (strlen($_GET['replace'])>5) ) ) {
-    $metabase = AA::Metabase();
+if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
+    if ( strlen($_GET['search']) OR ( strlen($_GET['go_replace']) AND (strlen($_GET['replace'])>5) ) ) {
+        $metabase = AA::Metabase();
 
-    $table2search = array();
-    if ($_GET['searchinview']  ==1) $table2search['view']       = array('id'=>'`id`','slice_id'=>'LOWER(HEX(`slice_id`))');
-    if ($_GET['searchinslice'] ==1) $table2search['slice']      = array('id'=>'LOWER(HEX(`id`))');
-    if ($_GET['searchinfield'] ==1) $table2search['field']      = array('id'=>'`id`','slice_id'=>'LOWER(HEX(`slice_id`))');
-    if ($_GET['searchinspot']  ==1) $table2search['site_spot']  = array('id'=>'`spot_id`','slice_id'=>'LOWER(HEX(`site_id`))');
-    if ($_GET['searchinitems'] ==1) $table2search['content']    = array('id'=>'LOWER(HEX(`item_id`))');
-    if ($_GET['searchindiscus']==1) $table2search['discussion'] = array('id'=>'LOWER(HEX(`item_id`))');
+        $table2search = array();
+        if ($_GET['searchinview'] == 1) {
+            $table2search['view'] = array('id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))');
+        }
+        if ($_GET['searchinslice'] == 1) {
+            $table2search['slice'] = array('id' => 'LOWER(HEX(`id`))');
+        }
+        if ($_GET['searchinfield'] == 1) {
+            $table2search['field'] = array('id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))');
+        }
+        if ($_GET['searchinspot'] == 1) {
+            $table2search['site_spot'] = array('id' => '`spot_id`', 'slice_id' => 'LOWER(HEX(`site_id`))');
+        }
+        if ($_GET['searchinitems'] == 1) {
+            $table2search['content'] = array('id' => 'LOWER(HEX(`item_id`))');
+        }
+        if ($_GET['searchindiscus'] == 1) {
+            $table2search['discussion'] = array('id' => 'LOWER(HEX(`item_id`))');
+        }
 
-    echo '<table>';
-    foreach($table2search as $tbl => $tblinfo) {
-        $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function($col) { return ($col['operators'] == 'text'); }));
-        $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), array(AA_Metabase::getModuleField($tbl))));
+        echo '<table>';
+        foreach ($table2search as $tbl => $tblinfo) {
+            $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function ($col) {
+                return ($col['operators'] == 'text');
+            }));
+            $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), array(AA_Metabase::getModuleField($tbl))));
 
-        $addfields  = $tblinfo['id']       ? (', '.$tblinfo['id'] ).       ' as iid' : '';
-        $addfields .= $tblinfo['slice_id'] ? (', '.$tblinfo['slice_id'] ). ' as sid' : '';
+            $addfields = $tblinfo['id'] ? (', ' . $tblinfo['id']) . ' as iid' : '';
+            $addfields .= $tblinfo['slice_id'] ? (', ' . $tblinfo['slice_id']) . ' as sid' : '';
 
-        foreach ($fields as $fld) {
-            $row = array();
-
-            if (strlen($_GET['go_search'])) {
-                $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"".quote($_GET['search'])."\") as pos $addfields FROM `$tbl` WHERE INSTR(`$fld`,\"".quote($_GET['search'])."\")>0";
-                $txt = DB_AA::select(array(), $SQL);
-                $row[0] = count($txt) ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
-                $row[1] = count($txt);
-                FrmTabRow($row);
+            foreach ($fields as $fld) {
                 $row = array();
-                foreach ($txt as $t) {
-                    $code = substr_replace($t['txt'], 'AA_$@MArK%', $t['pos']-1, 0);
-                    if (strlen($code) > 210) {
-                        if ($t['pos']>40) {
-                            $code = substr($code,0,40).'...'.substr($code,max($t['pos']-107,43),177).'...';
-                        } else {
-                            $code = substr($code,0,210).'...';
+
+                if (strlen($_GET['go_search'])) {
+                    $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"" . quote($_GET['search']) . "\") as pos $addfields FROM `$tbl` WHERE INSTR(`$fld`,\"" . quote($_GET['search']) . "\")>0";
+                    $txt = DB_AA::select(array(), $SQL);
+                    $row[0] = count($txt) ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
+                    $row[1] = count($txt);
+                    FrmTabRow($row);
+                    $row = array();
+                    foreach ($txt as $t) {
+                        $code = substr_replace($t['txt'], 'AA_$@MArK%', $t['pos'] - 1, 0);
+                        if (strlen($code) > 210) {
+                            if ($t['pos'] > 40) {
+                                $code = substr($code, 0, 40) . '...' . substr($code, max($t['pos'] - 107, 43), 177) . '...';
+                            } else {
+                                $code = substr($code, 0, 210) . '...';
+                            }
                         }
+                        $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)) . '</span>';
+                        $row[0] = "<small>" . ($t['iid'] ? AdminLink($tbl, $t['iid'], $t['sid']) : '') . "</small>";
+                        $row[1] = "<small> $code</small>";
+                        FrmTabRow($row);
                     }
-                    $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)).'</span>';
-                    $row[0] = "<small>".($t['iid'] ? AdminLink($tbl, $t['iid'], $t['sid'])  : ''). "</small>";
-                    $row[1] = "<small> $code</small>";
+                } elseif (strlen($_GET['go_replace']) AND strlen($_GET['search']) AND (strlen($_GET['replace']) > 5)) {
+                    $replace_str = str_replace('{#AAA}', '', $_GET['replace']);
+                    $SQL = "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, \"" . quote($_GET['search']) . "\", \"" . quote($replace_str) . "\")";
+                    $rep = DB_AA::sql($SQL);
+                    $row[0] = $rep ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
+                    $row[1] = "($rep replaces)";
+                    FrmTabRow($row);
+                } else {
+                    // just to not make damage in id fields, ...
+                    $row[0] = "Search phrase must be at least 1 character and replace phrase must be 6 character long at least";
                     FrmTabRow($row);
                 }
-            } elseif ( strlen($_GET['go_replace']) AND (strlen($_GET['search'])>5) AND (strlen($_GET['replace'])>5) ) {
-                $SQL =  "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, \"".quote($_GET['search'])."\", \"".quote($_GET['replace'])."\")";
-                $rep = DB_AA::sql($SQL);
-                $row[0] =  $rep ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
-                $row[1] =  "($rep replaces)";
-                FrmTabRow($row);
-            } else {
-                // just to not make damage in id fields, ...
-                $row[0] = "Serach phrase as well as replace phrase must be 5 character long at least";
-                FrmTabRow($row);
             }
         }
+    } else {
+        $row[0] = "Search phrase must be at least 1 character and replace phrase must be 6 character long at least";
+        FrmTabRow($row);
     }
     echo '</table>';
-
 }
 
 if ($_GET['showhistory']) {
@@ -537,8 +554,8 @@ echo '<b>'._m('Search and Replace in').'</b>
       <label><input type="checkbox" name="searchinitems"  value="1" '. ((                    $_GET['searchinitems' ])? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchindiscus" value="1" '. ((                    $_GET['searchindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
-    <textarea name="search" placeholder="'._m('minimum 6 chracters for replace function').'" rows=6 style="width:40%">'.safe($_GET['search']).'</textarea>&nbsp;&nbsp;
-    <textarea name="replace" placeholder="'._m('minimum 6 chracters for replace function').'" rows=6 style="width:40%">'.safe($_GET['replace']).'</textarea>&nbsp;&nbsp;
+    <textarea name="search" placeholder="'._m('minimum 2 chracters for replace function').'" rows=6 style="width:40%">'.safe($_GET['search']).'</textarea>&nbsp;&nbsp;
+    <textarea name="replace" placeholder="'._m('minimum 6 chracters for replace function (or use {#AAA} value which will be replaced by empty string)').'" rows=6 style="width:40%">'.safe($_GET['replace']).'</textarea>&nbsp;&nbsp;
     <input type="submit" name="go_search" value="'._m("Search").'">
     <input type="submit" name="go_replace" value="'._m("Replace!").'">'.StateHidden();
 
