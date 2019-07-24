@@ -26,12 +26,15 @@
 */
 
 /** @todo this class should be abstract after we switch to PHP5 */
-class AA_Optimize {
+class AA_Optimize implements \AA\Util\NamedInterface {
     var $messages = array();
     var $db;
 
+    /** \AA\Util\NamedInterface function */
     function name()         {}
+    /** \AA\Util\NamedInterface function */
     function description()  {}
+
     function test()         {}
     function repair()       {}
 
@@ -238,12 +241,15 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
         $this_metabase->loadFromDb();
         $diffs     = $template_metabase->compare($this_metabase);
         $different = false;
+
+        $this->message(AA_Difftext::renderHtml(" Actual Database ", " AA Template "));
+
         foreach($diffs as $tablename => $diff) {
             if ($diff['equal']) {
                 //huhl($diff);
-                $this->message(_m('Tables %1 are identical.', array($tablename)));
+                $this->message(_m('<em>Tables %1 are identical.</em><br>', array($tablename)));
             } else {
-                $this->message(_m('Tables %1 are different: <br>%2', array($tablename, AA_Difftext::renderHtml($diff['table2'], $diff['table1']))));
+                $this->message(AA_Difftext::renderHtml($diff['table1'], $diff['table2']));
                 $different = true;
             }
         }

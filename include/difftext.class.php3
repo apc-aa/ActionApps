@@ -47,7 +47,7 @@ class AA_Difftext {
     static function renderHtml($from_text, $to_text) {
         $diff     = new Text_Diff(array($from_text), array($to_text));
         $renderer = new Text_Diff_Renderer_inline();
-        return $renderer->render($diff);
+        return '<div class="difftext">'. $renderer->render($diff). '</div>';
     }
 }
 
@@ -296,7 +296,7 @@ class Text_MappedDiff extends Text_Diff {
         assert(count($from_lines) == count($mapped_from_lines));
         assert(count($to_lines) == count($mapped_to_lines));
 
-        parent::Text_Diff($mapped_from_lines, $mapped_to_lines);
+        parent::__construct($mapped_from_lines, $mapped_to_lines);
 
         $xi = $yi = 0;
         for ($i = 0; $i < count($this->_edits); $i++) {

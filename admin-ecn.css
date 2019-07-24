@@ -470,6 +470,18 @@ tr.leftmenuy a:hover {
      background-color: #D5C2A4;
 }
 
+.difftext {
+    font-size: small;
+    font-family: monospace;
+}
+.difftext ins {
+    background-color: #0F02;
+    text-decoration: none;
+}
+.difftext del {
+    background-color: #F002;
+    text-decoration: none;
+}
 
 /* -------------------- Sitemodule CSS - begin --------------------------- */
 #sitetree {

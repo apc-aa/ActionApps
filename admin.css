@@ -314,6 +314,19 @@ TD.leftmenuy {
   font-size: 8pt;
 }
 
+.difftext {
+    font-size: small;
+    font-family: monospace;
+}
+.difftext ins {
+    background-color: #0F02;
+    text-decoration: none;
+}
+.difftext del {
+    background-color: #F002;
+    text-decoration: none;
+}
+
 /* -------------------- Sitemodule CSS - begin --------------------------- */
 #sitetree {
     font-size: 8pt;

@@ -40,13 +40,13 @@ $Msg = '';
 
 // php4 returns class names in lower case, so we need itin lower case
 if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
-    $optimizer = AA_Components::factory($_GET['test']);
+    $optimizer = AA_Serializable::factory($_GET['test']);
     $optimizer->test();
     $Msg .= $optimizer->report();
 }
 
 if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0)) {
-    $optimizer = AA_Components::factory($_GET['repair']);
+    $optimizer = AA_Serializable::factory($_GET['repair']);
     $optimizer->repair();
     $Msg .= $optimizer->report();
 }
