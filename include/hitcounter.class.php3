@@ -92,8 +92,8 @@ class AA_Hitcounter {
         $varset->add('agent', 'text', substr($_SERVER["HTTP_USER_AGENT"],0,255));  // @todo - convert to metabase and check the length using metabase real field length
         $info  = (string)$cached;
         $info .= ':'. timestartdiff();
-        $info .= ':'. substr($_SERVER["REQUEST_URI"],0,255-strlen($info));
-        $varset->add('info',  'text', $info); // @todo - convert to metabase and check the length using metabase real field length
+        $info .= ':'. $_SERVER["REQUEST_URI"];
+        $varset->add('info',  'text', substr($info,0,255)); // @todo - convert to metabase and check the length using metabase real field length
 
         if ($zids->use_short_ids()) {
             $varset->add('id', 'number', $zids->id(0));
