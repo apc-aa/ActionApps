@@ -1292,7 +1292,7 @@ function parseMath($text) {
     // get format string, need to add and remove // to
     // allow for empty string
 
-    $variable = substr(strtok("#".$text,")"),1);
+    $variable = aa_substr(strtok("#".$text,")"),1);
     $twos     = ParamExplode( strtok("") );
     $i        = 0;
     $key      = true;
@@ -1332,28 +1332,28 @@ function parseLoop($out, $item) {
     }
 
     // alternative syntax {@field...} or {list:field...}
-    if ( (substr($out,0,5) == "list:") ) {
-        $out = '@'. substr($out,5);
+    if ( (aa_substr($out,0,5) == "list:") ) {
+        $out = '@'. aa_substr($out,5);
     }
 
     $params     = array();
     $format_str = '';
     // @field........... - without parameters
-    if (strpos($out, ":") === false) {
-        $field = substr($out, 1);
+    if (aa_strpos($out, ":") === false) {
+        $field = aa_substr($out, 1);
         $separator = ", "; // default separator
     } else { // with parameters
         // get field name
-        $field = substr($out, 1, strpos($out, ":") - strpos($out, "@")-1);
+        $field = aa_substr($out, 1, aa_strpos($out, ":") - aa_strpos($out, "@")-1);
         // parameters - first is separator, second is format string
-        list($separator,$format_str) = ParamExplode(substr($out,strpos($out,":")+1));
+        list($separator,$format_str) = ParamExplode(aa_substr($out,aa_strpos($out,":")+1));
 
-        if (strpos($field, "(") !== false) { // if we have special parameters - in () after field name
+        if (aa_strpos($field, "(") !== false) { // if we have special parameters - in () after field name
             // get this special parameters
-            $param  = substr($field, strpos($field, "(")+1,strpos($field, ")")-strpos($field, "(")-1);
+            $param  = aa_substr($field, aa_strpos($field, "(")+1,aa_strpos($field, ")")-aa_strpos($field, "(")-1);
             $params = explode(",",$param);
             // field name
-            $field    = substr($field, 0, strpos($field, "("));
+            $field    = aa_substr($field, 0, aa_strpos($field, "("));
             $group_id = getConstantsGroupID($item->getSliceID(), $field);
         }
     }
@@ -1408,16 +1408,16 @@ function parseLoop($out, $item) {
             foreach ($val as $value) { // loop for all values
                 $dummy = $format_str; // make work-copy of format string
                 for ($i=0, $forcount=count($params); $i<$forcount; $i++) { // for every special parameter do:
-                    if (substr($params[$i],0,6) == "const_") {
+                    if (aa_substr($params[$i],0,6) == "const_") {
                         // what we need some constants parameters ( like name, short_id, value, ...)
-                        $what = substr($params[$i], strpos($params[$i], "_")+1);
+                        $what = aa_substr($params[$i], aa_strpos($params[$i], "_")+1);
                         if ($what == 'value') {
                             $par = $value; // value is in $item, no need to use db
                         } else {
                             // for something else we need use db
                             $par = getConstantValue($group_id, $what, $value);
                         }
-                    } elseif (substr($params[$i],0,2) == "_#") { // special parameter is alias
+                    } elseif (aa_substr($params[$i],0,2) == "_#") { // special parameter is alias
                         /** alias could be used as:
                          *       {list:relation........(_#GET_HEAD): ,:_#1}
                          *  where _#GET_HEAD is alias defined somewhere in
@@ -1713,7 +1713,7 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
     function expand($format='', $timestamp='', $no_date_text=null, $zone=null) {
         if ( empty($format) ) {
             $format = "U";
-        } elseif ( (strpos($format, 'DATE_') === 0) AND defined($format)) {
+        } elseif ( (aa_strpos($format, 'DATE_') === 0) AND defined($format)) {
             $format = constant($format);
         }
 
@@ -1851,16 +1851,9 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
      * @return bool|string
      */
     function expand($string='', $start='', $length=999999999, $add='') {
-        if (AA::$encoding == 'utf-8') {
-            $ret = mb_substr($string,$start,$length,'utf-8');
-            if ( $add AND (mb_strlen($ret) < mb_strlen($string)) ) {
-                $ret .= $add;
-            }
-        } else {
-            $ret = substr($string,$start,$length);
-            if ( $add AND (strlen($ret) < strlen($string)) ) {
-                $ret .= $add;
-            }
+        $ret = aa_substr($string,$start,$length);
+        if ( $add AND (aa_strlen($ret) < aa_strlen($string)) ) {
+            $ret .= $add;
         }
         return $ret;
     }
@@ -2265,9 +2258,9 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
 
             // Add the text leading up to the URL.
             if ($escape) {
-                $html .= myspecialchars(substr($text, $position, $urlPosition - $position));
+                $html .= myspecialchars(aa_substr($text, $position, $urlPosition - $position));
             } else {
-                $html .= substr($text, $position, $urlPosition - $position);
+                $html .= aa_substr($text, $position, $urlPosition - $position);
             }
 
             $scheme      = $match[1][0];
@@ -2287,7 +2280,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
                     $html .= myspecialchars($username);
 
                     // Continue text parsing at the ':' following the "username".
-                    $position = $urlPosition + strlen($username);
+                    $position = $urlPosition + aa_strlen($username);
                     continue;
                 }
 
@@ -2312,7 +2305,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
         }
 
         // Add the remainder of the text.
-        $html .= myspecialchars(substr($text, $position));
+        $html .= myspecialchars(aa_substr($text, $position));
         return $html;
     }
 }
@@ -2398,7 +2391,7 @@ class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
         $entities_old = array('&nbsp;', '& ');
         $entities_new = array(' ', '&amp; ');
         $ret = trim(str_replace($entities_old, $entities_new, strip_tags($text)));
-        return ctype_digit((string)$maxlen) ? substr($ret, 0, $maxlen) : $ret;
+        return ctype_digit((string)$maxlen) ? aa_substr($ret, 0, $maxlen) : $ret;
     }
 }
 
@@ -2486,6 +2479,7 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
  *    {view:57::page-{xpage}}
  *    {view:57:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}}
  *    {view:45::group_by-}   // switches off grouping in the view
+ *    {view:45::listlen-3,sort-headline........-,from-2}}
  */
 class AA_Stringexpand_View extends AA_Stringexpand {
     /** expand function
@@ -2503,7 +2497,7 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             $view_param['zids'] = $zids;
         }
         if (isset($settings)) {
-            $view_param = array_merge($view_param, ParseSettings($settings));
+            $view_param = array_merge($view_param, ParseSettings(array($settings)));
         }
         // do not pagecache the view
         return with(new AA_Showview($view_param))->getViewOutput();
@@ -2639,7 +2633,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
         // load all mentioned items in one step
         AA_Items::preload($zids);
 
-        if (strpos($ids_string,'(')===false) {
+        if (aa_strpos($ids_string,'(')===false) {
             if (strlen($bin)) {
                 $bins        = explode('-',$bin);
                 $numeric_bin = 0 | (in_array('ACTIVE',$bins) ?  AA_BIN_ACTIVE : 0) | (in_array('HOLDING',$bins) ?  AA_BIN_HOLDING : 0) | (in_array('TRASH',$bins) ?  AA_BIN_TRASH : 0);
@@ -2974,7 +2968,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 $arr       = array();
                 $parameter = (string)$parameter;
                 foreach ($results as $k => $v) {
-                    if (strpos((string)$v, $parameter) !== false) {
+                    if (aa_strpos((string)$v, $parameter) !== false) {
                         $arr[] = $k;
                     }
                 }
@@ -3440,11 +3434,11 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
     function expand($string='', $unique_slices='', $encoding='') {
         $base = ConvertCharset::singleton()->escape($string, empty($encoding) ? 'utf-8' : $encoding, true);
         // we do not want to have looooong urls
-        if (strlen($base) > 124) {
-            $base = substr($base, 0, 124);
-            if (strrpos($base, '-') > 80) {
+        if (aa_strlen($base) > 124) {
+            $base = aa_substr($base, 0, 124);
+            if (aa_strrpos($base, '-') > 80) {
                 // do not split in middle of the word
-                $base = substr($base, 0, strrpos($base, '-'));
+                $base = aa_substr($base, 0, aa_strrpos($base, '-'));
             }
         }
 
@@ -3618,6 +3612,8 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
 /** Sequence - returns sequence of values in JSON Array (could be used with {options}, for example)
  *    {sequence:num:min:max:step:delimiter}
  *    {options:{sequence:num:1998:2012}:{date:Y}}
+ *    {options:{sequence:num:2012:1998}:{date:Y}}   // could be descending
+ *    {options:{sequence:string:A:H}:{date:Y}}
  */
 class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -4185,7 +4181,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     static function WidgetPropsString2Arr($widget_properties) {
         // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
         $widget_prop = json2asoc($widget_properties);
-        if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (substr($widget_prop['const_arr'],0,2) == '{"')) {
+        if (isset($widget_prop['const_arr']) AND !is_array($widget_prop['const_arr']) AND (aa_substr($widget_prop['const_arr'],0,2) == '{"')) {
             $widget_prop['const_arr'] = json2asoc($widget_prop['const_arr']);
         }
         return $widget_prop;
@@ -4406,7 +4402,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         }
 
         if (!count($slices)) {
-            AA::$debug && AA::$dbg->warn(__FUNCTION__ . ' no related slice found');
+            warn('No related slice found');
             return '';
         }
 
@@ -4414,7 +4410,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
         $saver   = new AA\IO\Saver($grabber, $transformations, null, 'insert_if_new', 'new');
         list($ok,$err) = $saver->run();
-        $err && AA::$debug && AA::$dbg->warn(__FUNCTION__ . 'saver run err '. $err. ': '. $saver->report());
+        $err && warn('Saver run err '. $err. ': '. $saver->report());
         return join('-',$saver->changedIds());
     }
 
@@ -4471,13 +4467,12 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         $arg_list = func_get_args();   // must be asssigned to the variable
         $zid      = new zids(array_shift($arg_list), 'l');
 
-        if ( !is_object($item = AA_Items::getItem($zid)) ) {
-            return '';
-        }
+        if ( !is_object($item = AA_Items::getItem($zid)) ) { warn(_m('No item ID')); return ''; }
 
         $transformations = self::_getTransformationsFromArgs($arg_list);
 
         if ( !count($restrict_fields  = array_filter(array_keys($transformations), function($fld) { return strlen($fld)==16; })) ) {
+            warn(_m('No transformations'));
             return '';
         }
 
@@ -4493,13 +4488,17 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
             $slices = array(AA::$slice_id);
         }
 
-        if ($item_slice AND count($slices) AND in_array($item_slice, $slices) AND (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL)) {
-            $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
-            $saver   = new AA\IO\Saver($grabber, $transformations, $item_slice, 'update');
-            $saver->run();
-            return join('-',$saver->changedIds());
-        }
-        return '';
+        if (!$item_slice)                    { warn(_m('No slice for item')); return ''; }
+        if (!count($slices))                 { warn(_m('No current slice(s)')); return ''; }
+        if (!in_array($item_slice, $slices)) { warn(_m('Item slice is not in list of allowed slices')); return ''; }
+
+        $perm = (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL) OR (AA::$perm->getPermMode()=='cron');
+        if (!$perm) { warn(_m('No permit_anonymous_edit permission for the slice')); return ''; }
+
+        $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
+        $saver   = new AA\IO\Saver($grabber, $transformations, $item_slice, 'update');
+        $saver->run();
+        return join('-',$saver->changedIds());
     }
 }
 
@@ -5012,7 +5011,7 @@ function expandFilenameWithHttp($parturl) {
 
     $headers  = array();
     // if no http request - add server name
-    if (!(substr($filename, 0, 7) == 'http://') AND !(substr($filename, 0, 8) == 'https://')) {
+    if (!(aa_substr($filename, 0, 7) == 'http://') AND !(aa_substr($filename, 0, 8) == 'https://')) {
         $filename = self_server(). (($filename{0}=='/') ? '' : '/'). $filename;
         if (!empty($_SERVER["HTTP_COOKIE"])) {
             // we resend cookies only for local requests (It could be usefull for AA_Auth ...)
@@ -5074,7 +5073,7 @@ class AA_Unalias_Callback {
      * @return mixed|string
      */
     function expand_bracketed_timedebug($match) {
-        $func = current(explode(':',substr($match[1],0,18),2));
+        $func = current(explode(':',aa_substr($match[1],0,18),2));
         AA::$dbg->tracestart($func, $match[1]);
         $ret  = $this->expand_bracketed($match);
         AA::$dbg->traceend($func, $ret);
@@ -5138,7 +5137,7 @@ class AA_Unalias_Callback {
              *  Example: {-<a href="http://ecn.cz">ecn</a>}
              *           {ifset:{_#ABSTRACT}:{-<div style="color:red">_#1</div>}}
              */
-            case '-': return QuoteColons(substr($out,1));
+            case '-': return QuoteColons(aa_substr($out,1));
             case '@': return QuoteColons(parseLoop($out, $this->item));
             case ' ':
             case "\n":
@@ -5146,8 +5145,8 @@ class AA_Unalias_Callback {
                 return QuoteColons("{" . $out . "}");
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                 if ($out[1] == "#") {
-                    if (isset($als[substr($out,2)])) {
-                        return QuoteColons(AA::Stringexpander()->unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
+                    if (isset($als[aa_substr($out,2)])) {
+                        return QuoteColons(AA::Stringexpander()->unalias($als[aa_substr($out,2)], '', $this->item, false, $this->itemview));
                     } elseif (isset($this->item)) {
                         // just alias or not so common: {_#SOME_ALSand maybe some text}
                         return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
@@ -5195,13 +5194,13 @@ class AA_Unalias_Callback {
         }
 
         // if in_array - for speedup
-        if (in_array(substr($out, 0, 5), array('const', 'alias', 'math(', 'inclu', 'view.', 'dequo', 'list:'))) {
+        if (in_array(aa_substr($out, 0, 5), array('const', 'alias', 'math(', 'inclu', 'view.', 'dequo', 'list:'))) {
             // look for {const_*:} for changing viewing type of constants
-            if ((substr($out, 0, 6) == "const_") AND isset($this->item)) {
+            if ((aa_substr($out, 0, 6) == "const_") AND isset($this->item)) {
                 // $what - name of column (eg. from const_name we get name)
-                $what = substr($out, strpos($out, "_")+1, strpos($out, ":") - strpos($out, "_")-1);
+                $what = aa_substr($out, aa_strpos($out, "_")+1, aa_strpos($out, ":") - aa_strpos($out, "_")-1);
                 // parameters - first is field
-                $parts = ParamExplode(substr($out,strpos($out,":")+1));
+                $parts = ParamExplode(aa_substr($out,aa_strpos($out,":")+1));
                 // get group id
                 $group_id = getConstantsGroupID($this->item->getSliceID(), $parts[0]);
                 /* get short_id/name/... of constant with specified value from constants category with
@@ -5212,7 +5211,7 @@ class AA_Unalias_Callback {
                 return QuoteColons($value);
             }
             // s - multiline - without it it does not work for expressions across multiple lines
-            elseif ( (substr($out, 0, 5)=='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
+            elseif ( (aa_substr($out, 0, 5)=='alias') AND isset($this->item) AND preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
                 // call function (called by function reference (pointer))
                 // like f_d("start_date......", "m-d")
                 if ($parts[1] && !$this->item->isField($parts[1])) {
@@ -5222,25 +5221,25 @@ class AA_Unalias_Callback {
                 return QuoteColons($this->item->$fce($parts[1], $parts[3]));
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-            elseif( substr($out, 0, 5) == "math(" ) {
+            elseif( aa_substr($out, 0, 5) == "math(" ) {
                 // replace math
-                return QuoteColons( parseMath(DeQuoteColons(AA::Stringexpander()->unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
+                return QuoteColons( parseMath(DeQuoteColons(AA::Stringexpander()->unalias(aa_substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
-            elseif( substr($out, 0, 5) == "list:" ) {
+            elseif( aa_substr($out, 0, 5) == "list:" ) {
                 return QuoteColons(parseLoop($out, $this->item));
             }
-            elseif( substr($out, 0, 8) == "include(" ) {
+            elseif( aa_substr($out, 0, 8) == "include(" ) {
                 // include file
-                if ( !($pos = strpos($out,')')) ) {
+                if ( !($pos = aa_strpos($out,')')) ) {
                     return "";
                 }
-                $fileout = expandFilenameWithHttp(DeQuoteColons(substr($out, 8, $pos-8)));
+                $fileout = expandFilenameWithHttp(DeQuoteColons(aa_substr($out, 8, $pos-8)));
                 return QuoteColons($fileout);
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-            elseif ( substr($out, 0,10) == "view.php3?" ) {
+            elseif ( aa_substr($out, 0,10) == "view.php3?" ) {
                 // Xinha editor replaces & with &amp; so we need to change it back
-                $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), substr($out,10));
+                $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), aa_substr($out,10));
                 // do not store in the pagecache, but store into contentcache
 
 
@@ -5250,16 +5249,16 @@ class AA_Unalias_Callback {
             }
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
-            elseif ( substr($out, 0, 8) == "dequote:" ) {
-                return DeQuoteColons(substr($out,8));
+            elseif ( aa_substr($out, 0, 8) == "dequote:" ) {
+                return DeQuoteColons(aa_substr($out,8));
             }
         }
         // OK - its not a known fixed string, look in various places for the whole string
         // if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
-        $initiallen = strspn(strtolower(substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
-        if ( $outcmd   = substr($out,0,$initiallen) ) {
-            $outparam = substr($out,$initiallen+1);  // skip one more char - delimiter
+        $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
+        if ( $outcmd   = aa_substr($out,0,$initiallen) ) {
+            $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
 
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
                 return StrExpand($class_name, $class_name::parseParam($outparam), array('item'=>$this->item, 'itemview'=> $this->itemview), true);
@@ -5290,7 +5289,7 @@ class AA_Unalias_Callback {
         elseif (isset($als[$out])) {
             return QuoteColons(AA::Stringexpander()->unalias($als[$out], '', $this->item, false, $this->itemview));
         }
-        elseif (substr($out,0,8) == "mlx_view") {
+        elseif (aa_substr($out,0,8) == "mlx_view") {
             if(!$GLOBALS['mlxView']) {
                 return "$out";
             }
@@ -5919,9 +5918,9 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Footcode');
         } elseif ($type == 'AA_Req_Htm') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
-        } elseif ((substr($require,-4)=='.css') OR strpos($require,'.css?') OR strpos($require,'.css ')) {
+        } elseif ((aa_substr($require,-4)=='.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ')) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
-        } elseif (substr($require,-3)=='.js' OR (strpos($require,'/')!==false)) {
+        } elseif (aa_substr($require,-3)=='.js' OR (aa_strpos($require,'/')!==false)) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
         } else {
             $hash = $require;   // must be system require
@@ -6435,7 +6434,7 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
      */
     function expand($image='', $name='', $size='') {
         $size  = get_if($size, 48);
-        $title = (strpos($name,'@')===false) ? $name : substr($name,0,strpos($name,'@'));
+        $title = (strpos($name,'@')===false) ? $name : aa_substr($name,0,aa_strpos($name,'@'));
 
         if ($img = AA::Stringexpander()->unalias("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
             return $img;
@@ -6476,7 +6475,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     function expand($image='', $phpthumb_params='', $info='', $param1='', $param2='') {
 
-        //AA::$debug && AA::$dbg->info('AA_Stringexpand_Img0', $image, $phpthumb_params, $info, $param1, $param2);
+        //AA::$debug&2 && AA::$dbg->info('AA_Stringexpand_Img0', $image, $phpthumb_params, $info, $param1, $param2);
 
         if (!$image) {
             return '';
@@ -6531,7 +6530,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (AA_HTTP_DOMAIN !== "/") {
             $image = str_replace(AA_HTTP_DOMAIN, '', $image);
         }
-        if (substr($image,0,4)=="http") {
+        if (aa_substr($image,0,4)=="http") {
             $image = preg_replace("~http(s?)://(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
         }
 
@@ -7767,7 +7766,7 @@ class AA_Stringexpand_Xxmail extends AA_Stringexpand_Nevercache {
 
         $mail = new AA_Mail;
         $mail->setFromArray($mail_arr);
-        AA_Log::write('DEBUG', join('-',$to), substr($subject, 0,16));
+        AA_Log::write('DEBUG', join('-',$to), aa_substr($subject, 0,16));
         return '';
     }
 }
@@ -8160,7 +8159,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $hash       = get_short_hash('manager', $slices, $conds, $sort, $code, $edit_code);
         $slices_arr = explode_ids($slices);
 
-        $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, whichis ND currently
+        $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
         $mode_arr = array();
 
         if ($mode{0} == '{') { // we define buttons using asociative array - {jsonasoc:N:Add item:D:Delete item}
@@ -8214,11 +8213,12 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             $footer     = $mode_arr['B'] ? '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\');">' . $mode_arr['B'] . '</i></article></footer>' : '';
         } else {
 
-            $item_id = $item_id ?: ($this ? $this->item->getId() : null);
-            if ($field AND $item_id) {
+            $item_id = $item_id ?: (($this AND $this->item) ? $this->item->getId() : null);
+            if ($field AND ($s = AA_Slice::getModule(reset($slices_arr))) AND $s->isField($field) AND strlen($item_id)) {
                 $conds .= $conds ? "-$field-=-$item_id" : "d-$field-=-$item_id";
             }
             if (!$conds) {
+                warn("No conditions");
                 return '';
             }
 
@@ -8234,7 +8234,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             AA_Items::preload($zids);
 
             $code_actions  = $mode_arr['E'] ? ('<article><i class="ico edit" onclick="AA_SiteEdit(\'{id..............}\');">' . $mode_arr['E'] . '</i></article>') : '';
-            $code_actions .= $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');}">' . $mode_arr['S'] . '</i></article>') : '';
+            $code_actions .= $mode_arr['S'] ? ('<article><i class="ico setting" onclick="AA_ToolboxEdit(\'{id..............}\');">' . $mode_arr['S'] . '</i></article>') : '';
             $code_actions .= $mode_arr['D'] ? ('<article><i class="ico delete"  onclick="if (confirm(\'' . $mode_arr['Dconfirm'] . '\')) { document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');  AA_SiteUpdate(\'{id..............}\',\'status_code.....\',3);}">' . $mode_arr['D'] . '</i></article>') : '';
             $footer  = $mode_arr['N'] ? ('<article><i class="ico new" onclick="document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\'); AA_SiteNewitem(\'' . $slices_arr[0] . '\',\'\',\'' . $field . '\',\'' . $item_id . '\');">' . $mode_arr['N'] . '</i></article>') : '';
 
@@ -8368,7 +8368,7 @@ class AA_Stringexpand_Aalang extends AA_Stringexpand_Nevercache {
 
     /** expand function */
     function expand() {
-        return AA::$lang ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));
+        return AA::$lang ?: strtolower(aa_substr(DEFAULT_LANG_INCLUDE,0,2));
     }
 }
 
