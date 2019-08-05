@@ -86,7 +86,7 @@ if (!IfSlPerm(PS_EDIT)) {
 
 // initialization of vars needed by the next 3 parts of the program
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $superadmin  = IsSuperadmin();
 
@@ -101,7 +101,7 @@ if ( $update ) {
   //  ValidateInput("name", _m("Title"), $name, $err, true, "text");
 
   // check to make sure we passed our validation cleanly
-    if ( count($err) > 1) {
+    if ( count($err)) {
         exit;
     }
 

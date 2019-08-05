@@ -94,7 +94,7 @@ list($fields, $prifields) = $slice->fields(null, true);
 
 
 //  update database
-if ( $update AND (count($err)<=1) AND is_array($prifields) ) {
+if ( $update AND (!count($err)) AND is_array($prifields) ) {
 
     // prepare content4id array before call StoreItem function
     $content4id = new ItemContent;
@@ -104,7 +104,7 @@ if ( $update AND (count($err)<=1) AND is_array($prifields) ) {
     // removed $oldcontent4id (see ItemContent::storeItem)
     $added_to_db = $content4id->storeSliceFields( $slice_id, $fields);
 
-    if (count($err) <= 1) {
+    if (!count($err)) {
         page_close();
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );

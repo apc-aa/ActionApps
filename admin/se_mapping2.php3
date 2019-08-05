@@ -42,7 +42,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 
 $p_from_slice_id = q_pack_id($from_slice_id);
 
-$err["Init"] = "";       // error array (Init - just for initializing variable)
+$err = array();       // error array (Init - just for initializing variable)
 
 // save old values
 list($map_to,$field_map) = GetExternalMapping($slice_id, $from_slice_id );

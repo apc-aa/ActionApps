@@ -44,7 +44,7 @@ if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable($auth->auth[
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
@@ -57,11 +57,11 @@ if ( $update ) {
     }
     $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
 
-    if ( count($err) <= 1) {
+    if ( !count($err)) {
         ChangeUserData($err, $auth->auth["uid"], $userrecord, 'AA_NO_CHANGE', $perms_roles);
     }
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("User data modified"));
     }
 } else {

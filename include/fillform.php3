@@ -35,7 +35,7 @@ function fillFormFromVars($fillConds) {
     global $err;
 
     // init used objects
-    $err["Init"] = "";     // error array (Init - just for initializing variable
+    $err = array();     // error array (Init - just for initializing variable
     add_vars();
     add_post2shtml_vars();
 

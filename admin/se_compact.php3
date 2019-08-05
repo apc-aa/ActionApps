@@ -43,13 +43,12 @@ if (!IfSlPerm(PS_COMPACT)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-$p_slice_id  = q_pack_id($slice_id);
 
 if ( $update ) {
     do {
-        ValidateInput("odd_row_format", _m("Odd Rows"), $odd_row_format, $err, true, "text");
+        ValidateInput("odd_row_format", _m("Odd Rows"), $odd_row_format, $err, false, "text");
         ValidateInput("compact_top", _m("Top HTML"), $compact_top, $err, false, "text");
         ValidateInput("compact_bottom", _m("Bottom HTML"), $compact_bottom, $err, false, "text");
         ValidateInput("compact_remove", _m("Remove strings"), $compact_remove, $err, false, "text");
@@ -62,7 +61,7 @@ if ( $update ) {
             ValidateInput("category_format", _m("Category Headline"), $category_format, $err, true, "text");
             ValidateInput("category_bottom", _m("Category bottom HTML"), $category_bottom, $err, false, "text");
         }
-        if ( count($err) > 1) {
+        if ( count($err) ) {
             break;
         }
 
@@ -91,7 +90,7 @@ if ( $update ) {
 
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
     }while(false);
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("Design of compact design successfully changed"));
     }
 }

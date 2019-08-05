@@ -46,7 +46,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
@@ -81,7 +81,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         ValidateInput("tree_start", _m("Tree start id"), $tree_start, $err, false, "number");
         ValidateInput("select_start", _m("Select start id"), $select_start, $err, false, "number");
 
-        if ( count($err) > 1) {
+        if ( count($err)) {
             break;
         }
 
@@ -143,7 +143,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         AA::Pagecache()->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
     } while (false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         page_close();                                // to save session variables
         $netscape = (($r=="") ? "r=1" : "r=".++$r);  // special parameter for Netscape to reload page
         // added by Setu, 2002-0227

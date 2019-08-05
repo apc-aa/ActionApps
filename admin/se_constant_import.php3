@@ -51,12 +51,12 @@ $back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_ur
 
 if ($update) {
     do {
-        $err["Init"]  = "";          // error array (Init - just for initializing variable
+        $err = array();          // error array (Init - just for initializing variable
         $new_group_id = stripslashes(str_replace(':','-',$new_group_id));  // we don't need ':'
                                                              // in id (parameter separator)
         ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
         ValidateInput("constant_list", _m("Constants"), $constant_list, $err, true, "text");
-        if (count($err) > 1) {
+        if (count($err)) {
             break;
         }
 
@@ -82,7 +82,7 @@ if ($update) {
             break;
         }
 
-        if (count($err) <= 1) {
+        if (!count($err)) {
             $Msg .= MsgOk(_m("Constants update successful"));
         }
         go_url(StateUrl(get_url($back_url, 'Msg='.urlencode($Msg))));

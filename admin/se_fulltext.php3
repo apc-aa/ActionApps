@@ -73,9 +73,8 @@ require_once AA_INC_PATH."msgpage.php3";
 
 
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-$p_slice_id  = q_pack_id($slice_id);
 
 if ( $update ) {
     do {
@@ -85,7 +84,7 @@ if ( $update ) {
         ValidateInput("fulltext_remove",        _m("Remove strings"),     $fulltext_remove,        $err, false, "text");
         ValidateInput("discus_sel",             _m("Show discussion"),    $discus_sel,             $err, false,  "text");
 
-        if ( count($err) > 1) {
+        if ( count($err) ) {
             break;
         }
 
@@ -111,7 +110,7 @@ if ( $update ) {
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     } while (false);
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("Fulltext format update successful"));
     }
 }
@@ -125,7 +124,7 @@ if ( $slice_id != "" ) {  // set variables from database
         $fulltext_remove        =  $rec['fulltext_remove'];
         $discus_htmlf           = ($rec['flag'] & DISCUS_HTML_FORMAT)  == DISCUS_HTML_FORMAT;
         $discus_disabled        = ($rec['flag'] & DISCUS_ADD_DISABLED) == DISCUS_ADD_DISABLED;
-        $discus_vid             =  $rec['vid'];
+        $discus_vid             =  $rec['vid'] ?: '';
     }
 }
 
@@ -155,7 +154,7 @@ $apage->printHead($err, $Msg);
 
 
 // lookup discussion views
-$discus_vids    = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_slice_id' AND type='discus'",    'id', 'name');
+$discus_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", array(array('slice_id', $slice_id, 'l'),array('type','discus')));
 
 $form_buttons = array ("update",
                        "update" => array ('type' => 'hidden', 'value'=>'1'),

@@ -43,7 +43,7 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ( $update ) {
@@ -60,7 +60,7 @@ if ( $update ) {
         if ( $user_password1 != $user_password2 ) {
             $err[$user_password2] = MsgErr(_m("Retyped password is not the same as the first one"));
         }
-        if ( count($err) > 1) {
+        if ( count($err)) {
             break;
         }
 
@@ -79,7 +79,7 @@ if ( $update ) {
             $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
         }
     }while(false);
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("User successfully added to permission system"));
         $url = con_url(StateUrl(self_base() . "se_users.php3"),"Msg=".rawurlencode($Msg));
         $url = con_url($url, "UsrSrch=".rawurlencode(_m("Search")));

@@ -53,7 +53,7 @@ if ($cancel) {
   go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Create New Slice / Module"));

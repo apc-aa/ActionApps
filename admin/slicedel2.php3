@@ -45,7 +45,7 @@ if ($del OR $deletearr) {
     exit;
 }
 
-$err["Init"] = "";      // error array (Init - just for initializing variable
+$err = array();      // error array (Init - just for initializing variable
 //AA::$debug = 127;
 
 if (!AA_Module::deleteModules($del ? array($del) : $deletearr)) {

@@ -91,7 +91,7 @@ if ($_GET['delete']==1) {
 }
 
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 
 $form       = AA_Form::factoryForm($otype, $oid, $oowner);

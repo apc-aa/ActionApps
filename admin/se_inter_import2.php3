@@ -71,7 +71,7 @@ foreach ($aa_rss['channels'] as $id => $foo) {
     $chan[$id] = $aa_rss['channels'][$id]['title'];
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 $apage = new AA_Adminpageutil('sliceadmin','n_import');
 $apage->setTitle(_m("Inter node import settings"));

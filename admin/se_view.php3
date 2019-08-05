@@ -231,7 +231,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
@@ -251,7 +251,7 @@ if ( $update ) {
                 ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
             }
         }
-        if (count($err) > 1) {
+        if (count($err)) {
             break;
         }
 
@@ -296,7 +296,7 @@ if ( $update ) {
         // go_url( $back_url );
     } while(false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("View successfully changed"));
         // in order we reread the data from the database (see below)
         unset($update);

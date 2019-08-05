@@ -45,7 +45,7 @@ if ($add) {
     require_once AA_INC_PATH."slicedit.php3";
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 
 $apage = new AA_Adminpageutil();

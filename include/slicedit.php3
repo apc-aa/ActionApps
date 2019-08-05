@@ -123,7 +123,7 @@ if ($user_firstname || $user_surname) {
         // Procces user data -------------------------------------------------------
         $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
 
-        if ( count($err) > 1) {
+        if ( count($err)) {
             break;
         }
 
@@ -157,7 +157,7 @@ if ( $add || $update ) {
             ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
             ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
-            if ( count($err) > 1) {
+            if ( count($err)) {
                 break;
             }
 
@@ -196,7 +196,7 @@ if ( $add || $update ) {
             if ($db->num_rows()) $err[] = _m("This File Manager Directory is already used by another slice.");
         }
 
-        if ( count($err) > 1) {
+        if ( count($err)) {
             break;
         }
         $template           = ( $template            ? 1 : 0 );
@@ -363,7 +363,7 @@ if ( $add || $update ) {
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice
     } while(false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         go_return_or_url(StateUrl(self_base() . "slicedit.php3"),0,0);
     }
 }

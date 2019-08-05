@@ -45,7 +45,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 if ( $update ) {
     do {
@@ -62,7 +62,7 @@ if ( $update ) {
             ValidateInput("sort$k",  _m("Sort $k"),      $sort,  $err, false, "text");
             ValidateInput("objid$k", _m("Object ID $k"), $objid, $err, false, "text");
 
-            if ( count($err) > 1) {
+            if ( count($err)) {
                 break;
             }
 
@@ -80,7 +80,7 @@ if ( $update ) {
 
     } while (false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("Sets stored successfully"));
     }
 }

@@ -90,7 +90,7 @@ if ( !$send ) {               // for the first time - directly from item manager
 
             $attachments = ParamImplode($attachs);
 
-            if ( count($err) > 1) {
+            if ( count($err)) {
                 break;
             }
 

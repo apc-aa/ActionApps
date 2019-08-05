@@ -39,7 +39,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 // update database or get the value
 

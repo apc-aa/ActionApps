@@ -39,7 +39,7 @@ if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
     exit;
 }
-$err["Init"] = "";
+$err = array();
 require_once AA_INC_PATH . "formutil.php3";
 
 if ($mode == "edit") {

@@ -40,7 +40,7 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
               // lookup all slices without this one
 $SQL        = "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";

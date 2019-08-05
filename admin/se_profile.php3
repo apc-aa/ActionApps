@@ -42,7 +42,7 @@ if (!IfSlPerm(PS_USERS)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ( $del ) {

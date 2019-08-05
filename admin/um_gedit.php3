@@ -86,7 +86,7 @@ if ( $selected_group ) {
     }
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 
@@ -98,7 +98,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
     // slice wizard ...
     require_once AA_INC_PATH."um_gedit.php3";
 
-    if (count($err) <= 1) {
+    if (!count($err)) {
         $Msg = MsgOk(_m("Group successfully added to permission system"));
         go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
     }

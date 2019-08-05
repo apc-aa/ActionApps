@@ -39,7 +39,7 @@ if ($del) {
   exit;
 }
 
-$err["Init"] = "";      // error array (Init - just for initializing variable
+$err = array();      // error array (Init - just for initializing variable
 
 // check if module can be deleted
 ExitIfCantDelete( $del );

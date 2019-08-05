@@ -41,7 +41,7 @@ require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."csn_util.php3";
 
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 $p_slice_id = q_pack_id($slice_id);
 

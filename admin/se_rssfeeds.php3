@@ -43,7 +43,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."xml_fetch.php3";
 
-$err["Init"]="";
+$err = array();
 require_once AA_INC_PATH."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 

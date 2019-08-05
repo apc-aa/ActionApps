@@ -85,7 +85,7 @@ require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."event.class.php3";
 require_once AA_INC_PATH."validate.php3";
 
-$err["Init"] = "";       // error array (Init - just for initializing variable)
+$err = array();       // error array (Init - just for initializing variable)
 
 // trap field for spammer bots
 if ( $answer )    {

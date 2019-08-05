@@ -77,7 +77,7 @@ if ($ext_feeds AND is_array($ext_feeds)) {
 }
 
 $nodes = GetTable2Array('SELECT name FROM nodes ORDER BY name', 'name', 'name');
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 
 $apage = new AA_Adminpageutil('sliceadmin','n_import');

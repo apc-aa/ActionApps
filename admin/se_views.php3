@@ -41,7 +41,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 

@@ -66,7 +66,7 @@ $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`", '', array('name'));
 //}
 
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 $headcode = '<script>
     function SelectValue(sel) {

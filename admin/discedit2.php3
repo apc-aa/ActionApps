@@ -45,7 +45,7 @@ require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ($update) {
@@ -65,7 +65,7 @@ if ($update) {
     $date     = $datectrl->get_date();
 
 
-    if (count($err)<=1) {
+    if (!count($err)) {
         $varset->add("subject", "quoted", $subject);
         $varset->add("author", "quoted", $author);
         $varset->add("e_mail", "quoted", $e_mail);

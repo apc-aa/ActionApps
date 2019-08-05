@@ -40,7 +40,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
@@ -78,7 +78,7 @@ if ( $insert || $update ) {
         $ip_locking   = ( $ip_locking  ? 1 : 0 );
         $set_cookies  = ( $set_cookies ? 1 : 0 );
 
-        if ( count($err) > 1) {
+        if ( count($err)) {
             break;
         }
 
@@ -152,7 +152,7 @@ if ( $insert || $update ) {
         AA::Pagecache()->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
     } while(false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         go_return_or_url(self_base() . "modedit.php3", 0, 0);
     }
 }

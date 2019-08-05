@@ -856,7 +856,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {
-        $err["Init"] = "";
+        $err = array();
     }
 
     // Are we editing dynamic slice setting fields?

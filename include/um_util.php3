@@ -325,7 +325,7 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um
     if (!($newuserid = AddUser($userrecord))) {
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
     }
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         if ($user_super) {	// set super admin privilege
             AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
         }

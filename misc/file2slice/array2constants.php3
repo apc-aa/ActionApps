@@ -47,7 +47,7 @@ $timeLimit = 600;                               // time limit in seconds
 // set in seconds - allows the script to work so long
 set_time_limit($time_limit);
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 is_object( $db ) || ($db = getDB());
 
@@ -76,7 +76,7 @@ foreach ($constants2import as $cnst) {
 }
 
 
-if (count($err) > 1) {
+if (count($err)) {
   print("<br><b>Import error!</b>");
   print_r($err);
 } else

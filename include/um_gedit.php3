@@ -30,7 +30,7 @@ do  {
     // Procces group data ---------------------
     ValidateInput("group_name",        _m("Name"),        $group_name,        $err, ($add_submit ? true : false), "text");
     ValidateInput("group_description", _m("Description"), $group_description, $err, false,                        "text");
-    if ( count($err) > 1) {
+    if ( count($err)) {
         break;
     }
 
@@ -42,7 +42,7 @@ do  {
         if (!($newgroupid = AddGroup($grouprecord))) {
             $err["LDAP"] = MsgErr( _m("It is impossible to add group to permission system") );
         }
-        if ( count($err) <= 1 ) {
+        if ( !count($err) ) {
             if ($group_super) {	// set super admin privilege
                 AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
             }

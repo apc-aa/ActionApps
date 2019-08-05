@@ -37,7 +37,7 @@ if (!IfSlPerm(PS_FEEDING)) {
   exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $catVS       = new Cvarset();
 $expVS       = new Cvarset();
 
@@ -124,7 +124,7 @@ do {
 } while (false);
 
 
-if ( count($err) <= 1 ) {
+if ( !count($err) ) {
     if ( isset($I) AND is_array($I) ) {   // slice imports some slices
         go_url( StateUrl(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     } else {

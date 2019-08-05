@@ -112,7 +112,7 @@ if ( $selected_group ) {
     }
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
@@ -126,7 +126,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
             $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
         }
 
-        if ( count($err) > 1) {
+        if ( count($err)) {
             break;
         }
 
@@ -149,7 +149,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
     } while (false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
         go_url( get_url(StateUrl($_SERVER['PHP_SELF']), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
     }

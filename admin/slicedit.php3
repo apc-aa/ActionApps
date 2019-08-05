@@ -44,6 +44,7 @@ $PERMS_ANONYMOUS_EDIT = array(
     ANONYMOUS_EDIT_NOT_EDITED_IN_AA => _m("-\"- and not edited in AA"),
     ANONYMOUS_EDIT_PASSWORD         => _m("Authorized by a password field"),
     ANONYMOUS_EDIT_HTTP_AUTH        => _m("Readers, authorized by HTTP auth"),
+    ANONYMOUS_EDIT_CRON             => _m("Only by Planned tasks (cron-toexecute)")
 );
 
 if ($cancel) {
@@ -60,7 +61,7 @@ foreach ($MODULES as $type => $module) {
     }
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();
 
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];

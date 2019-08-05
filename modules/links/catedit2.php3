@@ -178,7 +178,7 @@ if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     exit;
 }
 
-$r_err[0] = "";            // error array (just for initializing variable)
+$err = array();            // error array (just for initializing variable)
 $varset = new Cvarset();
 
 // Category properties ------------------
