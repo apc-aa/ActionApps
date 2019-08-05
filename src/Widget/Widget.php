@@ -92,6 +92,13 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $this->item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
     }
 
+    /**  get Slice for constants or empty string
+     *   @return string slice with constants | ""
+     */
+    public function getConstSlice() {
+         return (substr($constgroup = $this->getProperty('const'), 0, 7) == "#sLiCe-") ?  substr($constgroup, 7) : '';
+    }
+
     /** returns array(ids => formated text) for the current widget based on
      *  the widget settings
      * @param $content AA_Item
@@ -125,7 +132,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $slice_field = $this->getProperty('slice_field');
 
 
-        // AA::$debug && AA::$dbg->log($filter_conds);
+        // AA::$debug&2 && AA::$dbg->log($filter_conds);
 
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
@@ -136,13 +143,12 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         }
 
         // "#sLiCe-" prefix indicates select from items
-        if (substr($constgroup, 0, 7) == "#sLiCe-") {
+        if ($sid = $this->getConstSlice()) {
 
             $bin_filter = $this->getProperty('bin_filter', AA_BIN_ACT_PEND);
             $tag_prefix = $this->getProperty('tag_prefix');  // tag_prfix is deprecated - should not be used
             $crypted_additional_slice_pwd = AA_Credentials::encrypt($this->getProperty('additional_slice_pwd'));
 
-            $sid = substr($constgroup, 7);
             /** Get format for which represents the id
              *  Could be field_id (then it is grabbed from item and truncated to 50
              *  characters, or normal AA format string.
@@ -681,6 +687,18 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                     break;
                 case 'max_values':
                     $ret[$pid] = new AA_Property($pid, _m("Max values"), 'int', false, true, 'int', false, _m("Limit the number of values entered. If 0 or empty, the number is unlimitted"), '', '0');
+                    break;
+                case 'related_field':
+                    $ret[$pid] = new AA_Property($pid, _m("Related field"), 'string', false, true, 'string', false, _m("Field to use for related items (relation........ is default)"), '', 'relation........');
+                    break;
+                case 'row_code':
+                    $ret[$pid] = new AA_Property($pid, _m("Row Code"), 'string', false, true, 'string', false, _m("Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)"), '', '_#ROW_CODE');
+                    break;
+                case 'row_edit':
+                    $ret[$pid] = new AA_Property($pid, _m("Row Edit Code"), 'string', false, true, 'string', false, _m("Alias in constant slice or HTML code to use for editing relateded item (_#ROW_EDIT is default)"), '', '_#ROW_EDIT');
+                    break;
+                case 'mng_buttons':
+                    $ret[$pid] = new AA_Property($pid, _m("Buttons to Show"), 'string', false, true, 'string', false, _m("N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_source.....x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"\D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}"), '', 'ND');
                     break;
             }
         }

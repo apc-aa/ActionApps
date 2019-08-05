@@ -135,6 +135,12 @@ class inputform {
     }
 
 
+    /**
+     * @param ItemContent $content4id
+     * @param AA_Slice    $slice
+     * @param bool        $edit
+     * @return mixed
+     */
     function dryEvaluate($content4id, $slice, $edit) {
         $form = $this->getForm($content4id, $slice, $edit);
         $out  = AA::Stringexpander()->unalias($form, '', GetItemFromContent($content4id));
@@ -964,6 +970,7 @@ class AA_Inputfield {
                 case 'inf':
                 case 'edt':
                 case 'mch':
+                case 'mng': // Manager
                 //case 'txt':
                 //case 'fld':
                 default:    $this->inputWidget($item, $slice_id);
@@ -1226,7 +1233,7 @@ class AA_Inputfield {
         $datectrl = new datectrl($this->varname(), $y_range_minus, $y_range_plus, $from_now, $display_time, $this->required);
         $datectrl->setdate_int($val);
 
-        AA::$debug && AA::$dbg->log('---------------', $this, $val, $datectrl);
+        AA::$debug&2 && AA::$dbg->log('---------------', $this, $val, $datectrl);
 
         $this->field_name('plus');
 
@@ -2746,8 +2753,12 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
     echo $retval;
 }
 
+/**
+ * @param string $add  - if contains class="aa-table", then the newer design is used
+ * @return string
+ */
 function getTabStart($add='') {
-    return '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG .'" align="center" '.$add.'>';
+    return (strpos($add, 'aa-table')!==false) ? "<table $add>" : '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG .'" align="center" '.$add.'>';
 }
 
 
@@ -3046,15 +3057,20 @@ function FrmTabs( $tabs, $tabsId ) {
 /** GetHtmlTable function
  * Returns table based on config array
  * @param        $content
- * @param string $mode = td | th
+ * @param string $mode = td | th | key
  * @param string $caption
+ * @param bool   $clasic
  * @return string
  */
-function GetHtmlTable( $content, $mode='td', $caption='' ) {
+function GetHtmlTable( $content, $mode='td', $caption='', $clasic=false ) {
     if ( !(isset($content) AND is_array($content)) ) {
         return "";
     }
-    $ret = getFrmTabCaption($caption);
+    if ($mode == 'key') {
+        array_unshift($content,array_keys(reset($content)));
+        $mode = 'th';
+    }
+    $ret = getFrmTabCaption($caption, $clasic ? '' : 'class="aa-table"');
     $first = true;
     foreach ($content as $row) {
         $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');

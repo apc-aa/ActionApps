@@ -116,7 +116,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
             list($letter, $sid) = explode('_', $type);
             if ($letter{0} == 'f') {
                 unset($aa[$type]);   // remove old form and add new one
-                if (is_array($file['file']['fil']['var']) AND ($s = AA_Slice::getModule($sid)) AND (($fid = $s->getFields()->getCategoryFieldId('file')) OR ($fid = $s->getFields()->getCategoryFieldId('img_upload')))) {
+                if (is_array($file['file']['fil']['var']) AND ($s = AA_Slice::getModule($sid)) AND ($fid = $s->getDefaultUploadField())) {
                     foreach ($file['file']['fil']['var'] as $f) {
                         $aa['n' . (++$i) . "_$sid"] = array($fid => array('fil' => array('var' => array($f))));
                     }
