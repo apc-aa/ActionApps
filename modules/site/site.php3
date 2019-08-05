@@ -49,7 +49,7 @@ $cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = ($_REQUEST['nocache'] OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])));
+    $site_nocache = ($_REQUEST['nocache'] OR isset($_POST['aa']) OR (isset($_REQUEST['username']) AND isset($_REQUEST['password'])) OR $_REQUEST['logout']);
 
 if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
     $cacheentry->processPage(1);
@@ -109,7 +109,7 @@ if ( get_magic_quotes_gpc() ) {
 
 require_once AA_BASE_PATH."modules/site/router.class.php";
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 
 if (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) {
     $host2      = substr($host,4);
@@ -125,7 +125,7 @@ if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
 }
 
 $lang_file    = $module->getProperty('lang_file');
-AA::$encoding = $module->getCharset();
+AA::setEncoding($module->getCharset());
 
 // @deprecated - use AA_Router_Seo instead
 // There are two possibilities, how to control the apc_state variable. It could
@@ -236,67 +236,24 @@ if ($lang_file) {
     AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
 }
 
+
+
 $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Stringexpander()->unalias("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
 
 
-if (IsAjaxCall()) {
-    if ($is_valid != 'Valid') {
-        header("Content-type: application/json");
-        if ($auth->is_user()) {
-            echo json_encode(array('message'=>_m('No permission for current user.')));  // .print_r($auth, true)));
-        } else {
-            // @todo - show login
-            echo json_encode(array('message'=>_m('No permission - no user is authenticated. Try to relogin, please.')));
-        }
-        exit;
-    }
+// --- Process all AJAX commandes and possibly EXIT ---------------------
 
-    if (is_array($_POST['aa']) OR is_array($_FILES['aa'])) {
-        $grabber = new AA\IO\Grabber\Form();
-        $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
-        // $saver - > check Perms @todo
-        list($saved_ok,$saved_err) = $saver->run();
+$content_function = function () use (&$module, &$apc_state) {
+    // we need to evaluate $page_content in order to reevaluate DependentParts
+    $apc_state['xajax'] = 2;  // to not be 1
+    return $module->getSite( $apc_state );
+};
 
-        // we need to evaluate $page_content in order to reevaluate DependentParts
-        $apc_state['xajax'] = 2;  // to not be 1
-        $page_content = $module->getSite( $apc_state );
+$page_changer = new \AA\IO\OnPageChanger($content_function);
+$page_changer->checkAndProcessCall($is_valid == 'Valid');
 
-        header("Content-type: application/json");
+// --- if not EXITEed above, continue
 
-        $parts = AA::Stringexpander()->getDependentParts($saver->changedModules());
-        if (AA::$encoding != 'utf-8') {
-            $convertor = ConvertCharset::singleton();
-            foreach ($parts as $k => $v) {
-                $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
-            }
-        }
-        if ($saved_err) {
-             $parts['message'] = $saver->report();
-        }
-        echo json_encode($parts);
-        exit;
-    }
-    if (isset($_GET['aaedit'])) {
-
-        // we need to evaluate $page_content in order to reevaluate DependentParts
-        $apc_state['xajax'] = 2;  // to not be 1
-        $page_content = $module->getSite( $apc_state );
-
-        header("Content-type: application/json");
-
-        $parts = AA::Stringexpander()->getDependentParts(array('aaedit'));
-        //echo $parts;
-        //echo AA::Stringexpander();
-        if (AA::$encoding != 'utf-8') {
-            $convertor = ConvertCharset::singleton();
-            foreach ($parts as $k => $v) {
-                $parts[$k] = $convertor->Convert($v, AA::$encoding, 'utf-8');
-            }
-        }
-        echo json_encode($parts);
-        exit;
-    }
-}
 
 $page_content = ($is_valid == 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($module->getProperty('loginpage_code')));
 
@@ -331,6 +288,7 @@ if (AA::$debug&2) {
     echo '<br>UsedModules:<br> - '. join('<br> - ', array_map(function($mid) {return AA_Module::getModuleName($mid);}, $slices4cache));
     AA::$debug&4 && AA::$dbg->duration_stat();
 }
+
 
 // do not remove this exit - we do not want to allow users
 // to include this script (honzam)
