@@ -276,6 +276,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
         $title_out   = $title_img .'&nbsp;'. $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
 
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
+
         if ( $prop_logout === false ) {
             $logout_out = '<input type="submit" name="logout" value="'._m('logout').'">';
         } elseif ( $prop_logout === '' ) {
@@ -286,6 +287,8 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
 
         $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3'));
 
+        $search_out = IsSuperadmin() ? "<form name=aaserchform method=post action=".get_admin_url('aafinder.php3?findinseo=1&findinview=1&findinslice=1&findinfield=1&findinspot=1&go_findtext=1')."><input type=search name=findtext value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"></form>"  : '';
+
         echo '
         <td colspan="2" id="aa_top">
           <table border="0" cellpadding="0" cellspacing="0" width="100%" class="noprint">
@@ -294,8 +297,8 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
               <td height="43" align="center" valign="middle" class="slicehead">'.
                   $title_out .
               '</td>
-              <td align="right" class="navbar">
-                <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">
+              <td align="right" class="navbar">'. $search_out .'
+                <form name=logoutform method="post" action="'. get_admin_url('logout.php3').'">
                    '. $user_out .' '. $logout_out .'&nbsp;
                 </form>
               </td>
