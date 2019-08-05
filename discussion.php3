@@ -89,7 +89,6 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
 
-$p_slice_id= q_pack_id($slice_id);
 is_object( $db ) || ($db = getDB());
 
 list($usec, $sec) = explode(" ",microtime());

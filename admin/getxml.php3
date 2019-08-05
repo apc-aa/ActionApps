@@ -137,7 +137,7 @@ function Error($str) {
  * @return array of unpacked slice ids
  */
 function GetFeedingSlices( $node_name, $user) {
-    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid) FROM ef_permissions", array(array('node',array($node_name,'')),array('user',array($user,''))));
+    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM ef_permissions", array(array('node',array($node_name,'')),array('user',array($user,''))));
 //    $db = getDB();
 //    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='') AND (user='$user' OR user='')");
 //    while ($db->next_record()) {
@@ -263,6 +263,7 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
     if (!$cont_vals || !is_array($cont_vals)) {
         return;
     }
+    $out = '';
 
     foreach ($cont_vals as $v) {
         $flag_format = GetFlagFormat($v['flag']);
@@ -306,7 +307,7 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
 
     $item_link = ($link_only ? $hl_href : con_url($slice_url[$slice_id],"x=".$content4id['short_id........'][0]['value']) );
 
-    $xml_items .= "<item rdf:about=\"".AA_INSTAL_URL     ."items/$item_id\">\n".
+    $xml_items = "<item rdf:about=\"".AA_INSTAL_URL     ."items/$item_id\">\n".
                   "\t<title>"         .code($title)      ."</title>\n".
                   "\t<description>"   .code($description)."</description>\n".
                   "\t<link>"          .code($item_link)  ."</link>\n".
@@ -394,7 +395,7 @@ function CreateXMLItems($slice_id, &$items_ids, &$content, &$slice_fields) {
  * @return prints <items> and <rdf> tags for each item
  */
 function GetXMLItemsRefs(&$items_ids) {
-    $out .="\t<items><rdf:Seq>\n";
+    $out ="\t<items><rdf:Seq>\n";
     foreach ( $items_ids as $id) {
         $out .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."items/$id\"/>\n";
     }
@@ -530,28 +531,18 @@ if ($ids) {
     $start_timestamp      = iso8601_to_unixstamp($start_timestamp);
     $tmpobj               = $slice->getFields();
     $cat_field            = $tmpobj->getCategoryFieldId();
-    $p_slice_id           = q_pack_id($slice_id);
-
     $now   = now();
-    $cond1 = "(item.status_code=1 AND item.publish_date <= '$now' AND item.expiry_date > '$now')";
-    $cond2 = "(item.last_edit >'$start_timestamp' OR item.publish_date > '$start_timestamp')";
 
-    $SQL   = "SELECT id, publish_date, last_edit FROM item
-               WHERE slice_id = '$p_slice_id'
-                 AND $cond1
-                 AND $cond2";
-    // AND (externally_fed='' OR externally_fed IS NULL)
+    $cond  = DB_AA::makeWhere(array(array('slice_id', $slice_id, 'l'),array('status_code', 1),array('publish_date', $now, '<='),array('expiry_date', $now, '>')));
+    $cond .= " AND (item.last_edit >'$start_timestamp' OR item.publish_date > '$start_timestamp')";
 
-    $db = getDB();
-    $db->query($SQL);
-
-    $ids  = "";
-    $time = 0;
-    while ($db->next_record()) {
-        $ids[] = unpack_id($db->f('id'));
-        $time  = max( $time, $db->f('publish_date'), $db->f('last_edit'));   // save time of the newest item
+    $ids   = array();
+    $time  = 0;
+    $arr   = DB_AA::select( array('unpackid'=>'edittime'), "SELECT LOWER(HEX(`id`)) AS unpackid, GREATEST(publish_date, last_edit) as edittime FROM item ". $cond);
+    if ($arr) {
+        $ids = array_keys($arr);
+        $time = max($arr);
     }
-    freeDB($db);
 
     $time = unixstamp_to_iso8601($time);
 

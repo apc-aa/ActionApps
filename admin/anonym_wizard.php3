@@ -133,13 +133,7 @@ if (!IfSlPerm(PS_FIELDS)) {
 $warning = array();
 $slice   = AA_Slice::getModule($slice_id);
 
-
-// lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
-        FROM field
-        WHERE slice_id='$p_slice_id' AND id NOT LIKE '\_%'
-        ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL);
+$s_fields = DB_AA::select(array('id'=>array()),'SELECT id, name, input_pri, required, input_show, in_item_tbl FROM field', array(array('slice_id', $slice_id, 'l'),array('id', '\_%', 'NOT LIKE')), array('input_pri'));
 
 if ($slice->getProperty('permit_anonymous_post') == 0) {
     $warning[] = _m("WARNING: You did not permit anonymous posting in slice settings.");

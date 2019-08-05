@@ -254,8 +254,6 @@ if (!$slice_id AND is_array($slices)) {
 // (or other variables) could contain \n. Should be fixed more generaly -
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
 $slice_id   = trim($slice_id);
-$p_slice_id = q_pack_id($slice_id);
-
 require_once AA_INC_PATH."javascript.php3";
 
 is_object( $db ) || ($db = getDB());
@@ -388,7 +386,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $aliases = GetDiscussionAliases();
 
             $format  = GetDiscussionFormat($view_info);
-            $format['id'] = $p_slice_id;                  // set slice_id because of caching
+            $format['id'] = q_pack_id($slice_id);                  // set slice_id because of caching
 
             $itemview = new itemview($format, '', $aliases, null,"", "", MyUrl($encap, $scr_url), $disc);
             echo $itemview->get_output("discussion");
@@ -573,7 +571,7 @@ if ( !$scrl ) {
 
 
 if ( !$srch AND !$encap AND !$easy_query ) {
-    $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
+    $cur_cats=GetCategories($db, q_pack_id($slice_id));     // get list of categories
     pCatSelector(MyUrl($encap, $scr_url), $cur_cats, $scr->filters['category_id']['value'], $slice_id, $encap);
 }
 

@@ -55,9 +55,7 @@ function ParseIdA($param,&$app) {
    }
 }
 
-$p_import_id= q_pack_id($import_id);
-
-$err["Init"] = "";       // error array (Init - just for initializing variable)
+$err = array();       // error array (Init - just for initializing variable)
 $catVS       = new Cvarset();
 
 if ($feed_id) { // cross server feeding
@@ -65,7 +63,7 @@ if ($feed_id) { // cross server feeding
 
     if ($ext_categs = GetExternalCategories($feed_id)) {
         // delete current filters and then insert new
-        $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");
+        DB_AA::delete('ef_categories', array(array('feed_id', $feed_id)));
 
         // clear setting of feeding
         // Note all external categories MUST be stored in the ef_categories
@@ -116,8 +114,7 @@ if ($feed_id) { // cross server feeding
     // We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
     // A transaction would be nice.
 
-    $db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' " .
-                  "AND from_id = '$p_import_id'");
+    DB_AA::delete('feeds', array(array('to_id', $slice_id, 'l'), array('from_id', $import_id, 'l')));
 
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);
@@ -155,7 +152,7 @@ if ($feed_id) { // cross server feeding
     }
 }
 
-if ( count($err) <= 1 ) {
+if ( !count($err) ) {
     go_url( StateUrl(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
 } else {
     MsgPageMenu(StateUrl(self_base()."se_import.php3"), $err, "admin");

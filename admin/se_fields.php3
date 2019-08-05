@@ -44,7 +44,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 /** ShowField function
@@ -128,8 +128,7 @@ function ShowNewField($from_slice, $slice_id) {
 
 
 if ($_REQUEST['del']) {
-    $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+    if (!DB_AA::delete('field', array(array('id',$fid), array('slice_id',$slice_id,'l')))) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't change field");
         exit;
     }
@@ -153,7 +152,7 @@ if ($update) {
             ValidateInput("prior", _m("Priority"), $prior, $err, true, "number");
         }
 
-        if (count($err) > 1) {
+        if (count($err)) {
           break;
         }
 
@@ -165,8 +164,7 @@ if ($update) {
                 }
 
                 list($field_slice, $field_type) = explode('-',$ftype,2);
-                $p_field_slice = q_pack_id($field_slice);
-                $field_setting = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_field_slice' AND id='$field_type'",'aa_first');
+                $field_setting = DB_AA::select1("SELECT * FROM field", '', array(array('slice_id', $field_slice, 'l'),array('id',$field_type)));
 
                 // copy fields
                 // use the same setting for new field as template in AA_Core_Fields..
@@ -183,12 +181,10 @@ if ($update) {
                 $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($field_type);
 
                 // get new field id
-                $SQL = "SELECT id FROM field
-                        WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
                 $max = -1;  // Was 0
-                $db->query($SQL);   // get all fields with the same type in this slice
-                while ( $db->next_record() ) {
-                    $max = max( $max, AA_Fields::getFieldNo($db->f('id')), 0);
+                $arr = DB_AA::select('id',"SELECT id FROM field", array(array('slice_id', $slice_id, 'l'),array('id',$ftype_base."%", 'LIKE')));
+                foreach ($arr as $arr_fid) {
+                    $max = max( $max, AA_Fields::getFieldNo($arr_fid), 0);
                 }
                 $max++;
                 //create name like "time...........2"
@@ -210,8 +206,7 @@ if ($update) {
                 $varset->add("input_pri", "number", $pri[$key]);
                 $varset->add("required", "number", ($req[$key] ? 1 : 0));
                 $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
-                $SQL = "UPDATE field SET ". $varset->makeUPDATE() .
-                      " WHERE id='$key' AND slice_id='$p_slice_id'";
+                $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$key' AND slice_id=". xpack_id($slice_id);
                 if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                     $err["DB"] = MsgErr("Can't change field");
                     break;
@@ -221,7 +216,7 @@ if ($update) {
         freeDB($db);
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-        if (count($err) <= 1) {
+        if (!count($err)) {
             $Msg = MsgOk(_m("Fields update successful"));
             $update = false;   // displyas fields from database instead of posted values (next in the code)
             }

@@ -349,7 +349,6 @@ if ( !$slice_id ) {
 }
 AA::$slice_id = $slice_id;
 $slice        = AA_Slice::getModule($slice_id);
-$p_slice_id   = q_pack_id($slice_id);
 
 if (!is_object($slice) OR !$slice->isValid()) {
     SendErrorPage(array ("fatal"=>_m("Bad slice ID")));

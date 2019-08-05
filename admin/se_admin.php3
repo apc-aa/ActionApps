@@ -49,9 +49,8 @@ if (!IfSlPerm(PS_CONFIG)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-$p_slice_id  = q_pack_id($slice_id);
 
 if ($update) {
     do {
@@ -62,7 +61,7 @@ if ($update) {
         ValidateInput("admin_noitem_msg",    _m("HTML code for \"No item found\" message"), $admin_noitem_msg,    $err, false, "text");
         ValidateInput("inputform_sel",       _m("Show discussion"),                         $inputform_sel,       $err, false,  "text");
 
-        if ( count($err) > 1) {
+        if ( count($err) ) {
             break;
         }
 
@@ -84,7 +83,7 @@ if ($update) {
 
     } while(false);
 
-    if ( count($err) <= 1 ) {
+    if ( !count($err) ) {
         $Msg = MsgOk(_m("Admin fields update successful"));
     }
 }
@@ -107,8 +106,7 @@ if ( $slice_id!="" ) {  // set variables from database
 }
 
 // lookup inputform views
-$inputform_vids = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_slice_id' AND type='inputform'", 'id', 'name');
-
+$inputform_vids = DB_AA::select(array('id'=>'name'), "SELECT id, name FROM view", array(array('slice_id', $slice_id, 'l'),array('type', 'inputform')));
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };

@@ -54,7 +54,7 @@ if ($deleteGroup AND $group_id) {
     go_url(StateUrl($back_url));
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 // Check permissions
@@ -167,7 +167,7 @@ if ($update) {
             $new_group_id = str_replace(':','-',$new_group_id);  // we don't need ':'
                                                                  // in id (parameter separator)
             ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
-            if (count($err) > 1) {
+            if (count($err)) {
                 break;
             }
             $SQL = "SELECT * FROM constant WHERE group_id = '$new_group_id'";
@@ -180,7 +180,7 @@ if ($update) {
             }
         }
 
-        if (count($err) > 1) {
+        if (count($err)) {
             break;
         }
 
@@ -190,7 +190,7 @@ if ($update) {
             if (!$db->next_record()) {
                 $db->query("
                 INSERT INTO constant_slice (slice_id,group_id,propagate)
-                VALUES ('$p_slice_id','$group_id',".($propagate_changes ? 1 : 0).");");
+                VALUES ( xpack_id($slice_id),'$group_id',".($propagate_changes ? 1 : 0).");");
             } else {
                 $db->query("
                 UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
@@ -253,7 +253,7 @@ if ($update) {
         }
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-        if (count($err) <= 1) {
+        if (!count($err)) {
             $from_form = false;
             $Msg .= MsgOk(_m("Constants update successful"));
         }

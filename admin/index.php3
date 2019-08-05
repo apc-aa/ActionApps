@@ -39,40 +39,6 @@ require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "msgpage.php3";
 require_once AA_INC_PATH . "actions.php3";
 
-function CountItemsInBins() {
-    global $p_slice_id;
-    $db = getDB();
-    $now = now('step');
-    $ret = array('folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0);
-
-    $db->query("SELECT status_code, count(*) as cnt FROM item
-                 WHERE slice_id = '$p_slice_id'
-                 GROUP BY status_code");
-                 while ( $db->next_record() ) {
-                     $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
-                 }
-
-    $db->query("SELECT count(*) as cnt FROM item
-                 WHERE slice_id = '$p_slice_id'
-                   AND status_code=1
-                   AND expiry_date <= '$now' ");
-                   if ( $db->next_record() ) {
-                       $ret['expired'] = $db->f('cnt');
-                   }
-
-    $db->query("SELECT count(*) as cnt FROM item
-                 WHERE slice_id = '$p_slice_id'
-                   AND status_code=1
-                   AND publish_date > '$now'
-                   AND expiry_date > '$now' ");
-                   if ( $db->next_record() ) {
-                       $ret['pending'] = $db->f('cnt');
-                   }
-
-    $ret['app'] = $ret['folder1']-$ret['pending']-$ret['expired'];
-    return $ret;
-}
-
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice($slice_id);
 
@@ -82,7 +48,6 @@ $module_id = $slice_id;
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
 
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slice::getModule($module_id);
 
 $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
@@ -176,7 +141,7 @@ if ( $change_id OR ($r_state["module_id"] != $module_id)) {
 
 $manager->performActions();
 
-$r_state['bin_cnt'] = CountItemsInBins();
+$r_state['bin_cnt'] = $slice->countItemsInBins();
 
 // just for menu
 $bookmarks = $manager->getBookmarkNames();

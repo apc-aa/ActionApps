@@ -64,7 +64,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 
@@ -145,7 +145,7 @@ if ($update) {
             QValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
         }
 
-        if (count($err) > 1) {
+        if (count($err)) {
             break;
         }
         // A group that only appear with onlyupdate, normally edited in se_fields
@@ -225,7 +225,7 @@ if ($update) {
 //        }
         AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-        if ( count($err) <= 1 ) {
+        if ( !count($err) ) {
             $Msg = MsgOk(_m("Fields update successful"));
             go_url( $return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) : $back_admin_url );  // back to field page
         }
@@ -427,9 +427,9 @@ echo "
          if ($fld['in_item_tbl']) {
              echo _m('Stored in <em>item</em> table - it is not possible to change store method');
          } else {
+             $text_rows    = DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+             $numeric_rows = DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
              FrmSelectEasy("text_stored", array('1'=>_m('Text'), '0'=>_m('Number')), $text_stored);
-             $text_rows    = DB_AA::select1("SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id=item.id WHERE item.slice_id = '$p_slice_id' AND content.field_id = '".$fld['id']."' AND (content.flag & 64) = 64", 'cnt');
-             $numeric_rows = DB_AA::select1("SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id=item.id WHERE item.slice_id = '$p_slice_id' AND content.field_id = '".$fld['id']."' AND (content.flag & 64) = 0", 'cnt');
              echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }
          echo "

@@ -176,7 +176,7 @@ function SendOkPage($txt) {
 }
 
   // init used objects
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ( !$slice_id ) {
@@ -186,7 +186,6 @@ if ( !$slice_id ) {
 $error = "";
 $ok = "";
 
-$p_slice_id = q_pack_id($slice_id);
 $slice      = AA_Slice::getModule($slice_id);
 
 // There are two possibilities, how to send the data

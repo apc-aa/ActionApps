@@ -118,11 +118,11 @@ $maintain_fields = array (
                 "field2",
                 "field3")));
 
+$xslice_id = xpack_id($slice_id);
+
 $maintain_sql = array (
-    "UPDATE feedmap SET to_field_id=':new_id:'
-     WHERE to_field_id=':old_id:' AND to_slice_id = '$p_slice_id'" ,
-    "UPDATE feedmap SET from_field_id=':new_id:'
-     WHERE from_field_id=':old_id:' AND from_slice_id = '$p_slice_id'");
+    "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id" ,
+    "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id");
 
 
 if ($cancel) {
@@ -135,7 +135,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 /** ChangefieldID function
@@ -144,7 +144,7 @@ $varset = new Cvarset();
  */
 function ChangeFieldID($old_id, $new_id)
 {
-    global $maintain_fields, $maintain_sql, $p_slice_id;
+    global $maintain_fields, $maintain_sql, $xslice_id;
 
     $varset = new Cvarset();
     foreach ( $maintain_fields as $table => $settings) {
@@ -153,7 +153,7 @@ function ChangeFieldID($old_id, $new_id)
             $keyfield = $settings['primary_part'];
         }
         $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table`
-                WHERE ".$settings['slice_id']." = '$p_slice_id'";
+                WHERE ".$settings['slice_id']." = $xslice_id";
         $rows = GetTable2Array ($SQL);
         if (is_array($rows)) {
             foreach ($rows as $row) {
@@ -174,7 +174,7 @@ function ChangeFieldID($old_id, $new_id)
                         $SQL .= $row[$keyfield];
                     }
                     if ($settings['primary_part']) {
-                        $SQL .= " AND ". $settings["slice_id"]." = '$p_slice_id'";
+                        $SQL .= " AND ". $settings["slice_id"]." = $xslice_id";
                     }
                     DB_AA::sql($SQL);
                 }
@@ -190,7 +190,7 @@ function ChangeFieldID($old_id, $new_id)
 
     // replace the field id in table content
     $db = getDB();
-    $db->query("SELECT id FROM item WHERE slice_id='$p_slice_id'");
+    $db->query("SELECT id FROM item WHERE slice_id=$xslice_id");
     while ($db->next_record()) {
         $item_ids[] = quote($db->f("id"));
     }
@@ -200,7 +200,7 @@ function ChangeFieldID($old_id, $new_id)
     }
 }
 
-if ($update && $new_id_text && $p_slice_id) {
+if ($update && $new_id_text && $slice_id) {
     $nchanges = 0;
     if (strlen($new_id_text) + strlen($new_id_number) <= 16) {
         $new_id = $new_id_text;
@@ -214,13 +214,13 @@ if ($update && $new_id_text && $p_slice_id) {
             } else {
                 // proove the field does not exist
                 $db = getDB();
-                $db->query("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
+                $db->query("SELECT id FROM field WHERE slice_id=$xslice_id AND id='$new_id'");
                 if ($db->next_record()) {
                     $err[] = _m("This ID is already used")." ($new_id).";
                 }
                 freeDB($db);
             }
-            if (count($err) <= 1 ) {
+            if (!count($err)) {
                 ++$nchanges;
                 ChangeFieldID($old_id, $new_id);
             }
