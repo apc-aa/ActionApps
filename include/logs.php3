@@ -42,6 +42,7 @@ EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
 TOEXECUTE       object's class                  return code
 ALERTS          howoften                        Start/email sent
 HITCOUNT        type
+ITEM_DEL        item_id
 */
 
 class AA_Log {
@@ -50,8 +51,8 @@ class AA_Log {
      *  Static function
      *
      * @param $event
-     * @param $params
-     * @param $selector
+     * @param string|array $params   - if array, joined
+     * @param string|array $selector - if array, stored as separate enties (for ITEM_DEL, ...)
      * @return bool
      */
     static function write($event, $params="", $selector="" ) {
@@ -65,7 +66,16 @@ class AA_Log {
             $params = ParamImplode($params);
         }
 
-        AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
+        $rows = array();
+        if (is_array($selector)) {
+            foreach ($selector as $sel) {
+                $rows[] = array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$sel, 'params'=>$params);
+            }
+        } else {
+            $rows[] = array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params);
+        }
+
+        AA::Metabase()->doInsertMulti('log', $rows);
 
         // with probability 1:1000 set up log cleanup
         if ( mt_rand(0,1000) == 1) {
@@ -118,6 +128,7 @@ class AA_Log {
            // 'TOEXECUTE'
            // 'HITCOUNT'
            // 'AA_WARN'
+           // 'ITEM_DEL'
         );
         return !in_array($event_type, $DO_NOT_LOG);
     }
