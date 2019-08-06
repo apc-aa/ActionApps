@@ -591,6 +591,17 @@ class sitetree {
         return $s ? $s->conditionMatches($state) : false;
     }
 
+
+    /** get all spot ids in the tree
+     *  @return array
+     */
+    public function getAllSpotIds() {
+        $foo_apc  = array();
+        $spot_ids = array();
+        $this->walkTree($foo_apc, 1, function ($spot_id) use (&$spot_ids) { $spot_ids[] = $spot_id; }, 'all');
+        return $spot_ids;
+    }
+
     /** Walk the tree, starting at $id, calling $functions for each spot
      *
      *

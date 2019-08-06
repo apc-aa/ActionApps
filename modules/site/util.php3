@@ -41,19 +41,6 @@ function ModW_HiddenRSpotId() {
     print('<input type="hidden" name="spot_id" value="'.$GLOBALS['r_spot_id'].'">');
 }
 
-function ModW_StoreTree(&$tree, $site_id) {
-    $p_site_id = q_pack_id($site_id);
-    $data      = addslashes(serialize($tree));
-    $SQL       = "UPDATE site SET structure='$data' WHERE id='$p_site_id'";
-    DB_AA::sql($SQL);
-}
-
-function ModW_GetTree( &$tree, $site_id ) {
-    if ($structure = DB_AA::select1('SELECT structure FROM site','structure',array(array('id', $site_id, 'l')))) {
-        $tree = unserialize( $structure );
-    }
-}
-
 // This function does nothing and is used when walking the tree fixing it
 function ModW_DoNothing($spot_id,$depth) {
     return;
@@ -163,25 +150,5 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
         }
     }
     echo "</td></tr>";
-}
-
-function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
-    $spot_data = DB_AA::select1('SELECT id, content FROM site_spot','',array(array('site_id', $site_id, 'l'), array('spot_id',$spot_id,'i')));
-    FrmTabCaption();
-    FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', array($spot_id)));
-
-    ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
-    if (($vars=$tree->isOption($spot_id))) {
-        ModW_PrintConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
-    }
-    FrmTabEnd();
-
-    echo "<form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
-    FrmTabCaption();
-    ModW_HiddenRSpotId();
-    FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
-    FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
-    FrmTabEnd(array('submit', "cancel"=>array('value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]"))));
-    echo "</form>";
 }
 

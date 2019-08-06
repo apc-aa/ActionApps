@@ -34,6 +34,12 @@ require_once AA_BASE_PATH."modules/site/sitetree.php3";   // module specific uti
 $module_id   = $slice_id;
 $p_module_id = q_pack_id($module_id);
 
+if ( !($module = AA_Module_Site::getModule($module_id)) ) {
+    MsgErr(_m("Site module not found"));
+    page_close();
+    exit;
+}
+
 // r_spot_id holds current position in the tree
 if (!isset($r_spot_id)) {
     $r_spot_id = 1;
@@ -55,17 +61,10 @@ if (isset($go_sid)) {
     $r_spot_id = $go_sid;
 }
 
-$tree = new sitetree();
-
-if ( ($structre = AA_Module_Site::getModuleProperty($module_id,'structure')) != '') {
-    $tree = unserialize($structre);
-} elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', array(array('site_id', $module_id, 'l'), array('spot_id','1')))) {  // false if not found
-    // get information about start spot (=start of the tree)
-    $tree = new sitetree($spotrow);
-} else {
-        MsgErr(_m("Starting spot not found"));
-        page_close();
-        exit;
+if (!($tree = $module->getTree())) {
+    MsgErr(_m("Starting spot not found"));
+    page_close();
+    exit;
 }
 
 //  try
@@ -98,6 +97,7 @@ switch( $akce ) {
     case 'p': $tree->setFlag($r_spot_id, MODW_FLAG_COLLAPSE);   break;  // Collapse
     case 'm': $tree->clearFlag($r_spot_id, MODW_FLAG_COLLAPSE); break;  // Expand
 }
+
 
 if ($addcond) {
     $tree->addCondition($r_spot_id, $addcondvar, $addcond, $addcondop);
@@ -133,17 +133,20 @@ if ($addcond) {
     }
 }
 
-if ($addcond OR $delcond OR $content OR $name OR $akce) {
-    AA::Pagecache()->invalidateFor("slice_id=".$module_id);  // invalidate old cached values
-}
-
 // This is only run with a hand-coded URL to clean out the site
 // and remove corruption, ideally should fix the cause of the corruption!
 // - Mitra
 if ($sitefix) {
     $tree->walkTree($apc_state, 1, 'ModW_DoNothing', 'all');
 }
-ModW_StoreTree($tree, $module_id);
+
+if ($addcond OR $delcond OR $content OR $name OR $akce) {
+    AA::Pagecache()->invalidateFor("slice_id=".$module_id);  // invalidate old cached values
+}
+
+if ($addcond OR $delcond OR $content OR $name OR $akce OR $sitefix OR $addvar OR $delvar) {
+    $module->saveTree($tree, $akce=='r');  // delete unused spots after we delete one spot
+}
 
 $apage = new AA_Adminpageutil('codemanager');
 $apage->setModuleMenu( 'modules/site');
@@ -207,7 +210,7 @@ $tree->walkTree($apc_state, 1, $functions, 'collapsed', 0);
 
 echo '</td><td valign="top">';
 
-ModW_ShowSpot($tree, $module_id, $r_spot_id);
+$module->showSpot($tree, $r_spot_id);
 
 $apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), '{htmltoggle::::'.GetHtmlTable(AA_Requires::getAvailableLibs(),'th').'}');
 $apage->printHelpbox();

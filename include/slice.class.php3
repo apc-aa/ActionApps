@@ -434,6 +434,18 @@ class AA_Slice extends AA_Module {
         return ($this->getProperty('flag') & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
     }
 
+    public function countItemsInBins() {
+        $now = now('step');
+        $ret = array('folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0);
+
+        $ret = array_merge($ret, DB_AA::select(array('fldr'=>'cnt'), "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item ". DB_AA::makeWhere(array(array('slice_id', $this->module_id, 'l'))). ' GROUP BY status_code'));
+        $ret['expired'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', array(array('slice_id', $this->module_id, 'l'),array('status_code', 1),array('expiry_date', $now, '<=')));
+        $ret['pending'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', array(array('slice_id', $this->module_id, 'l'),array('status_code', 1),array('publish_date', $now, '>'),array('expiry_date', $now, '>')));
+        $ret['app']     = $ret['folder1']-$ret['pending']-$ret['expired'];
+
+        return $ret;
+    }
+
     /** AA_Slice::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
      * @param $module_id
      * @return bool
@@ -505,8 +517,16 @@ class AA_Slice extends AA_Module {
         return is_array($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
     }
 
+    /** find default field for upload to - first file...........x or img_source.....x field
+     */
+    function getDefaultUploadField() {
+        $flds = $this->getFields();
+        return (($fid = $flds->getCategoryFieldId('file')) OR ($fid = $flds->getCategoryFieldId('img_upload'))) ? $fid : '';
+    }
+
     /** sql_id function - removed - use DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l'))); */
     // function sql_id()      { return q_pack_id($this->module_id); }
+
 
     /** fields function
      *  fetch the fields
@@ -763,7 +783,7 @@ class AA_Module_Site extends AA_Module {
     }
 
     function getSite($apc_state) {
-        $tree        = unserialize($this->getProperty('structure'));   // new sitetree();
+        $tree        = $this->getTree();   // new sitetree();
         $show_ids    = array();
         $out         = '';
 
@@ -782,6 +802,65 @@ class AA_Module_Site extends AA_Module {
         // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
         return trim(AA::Stringexpander()->postprocess($out));
     }
+
+    public function getTree() {
+        $tree = null;
+        if ($structre = $this->getProperty('structure')) {
+            $tree = unserialize($structre);
+        } elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', array(array('site_id', $this->module_id, 'l'), array('spot_id','1')))) {  // false if not found
+            // get information about start spot (=start of the tree)
+            $tree = new sitetree($spotrow);
+        }
+        return ($tree instanceof sitetree) ? $tree : null;
+    }
+
+    /**
+     * @param      $tree
+     * @param bool $clean_unused
+     */
+    public function saveTree($tree, $clean_unused=false) {
+        DB_AA::update('site', array(array('structure', serialize($tree))), array(array('id',$this->module_id, 'l')));
+        if ($clean_unused) {
+            $this->cleanTree($tree);
+        }
+    }
+
+    /** Delete all unused spots in the site
+     * @param sitetree $tree
+     */
+    public function cleanTree($tree) {
+        $show_ids  = $tree->getAllSpotIds();
+        $all_spots = DB_AA::select(array('id'=>'spot_id'), 'SELECT id, spot_id FROM site_spot',array(array('site_id', $this->module_id, 'l')));
+        if ( $ids2delete = array_keys(array_diff($all_spots, $show_ids)) ) {
+            DB_AA::delete('site_spot', array(array('site_id', $this->module_id, 'l'), array('id',$ids2delete,'i')));
+        }
+    }
+
+    /** site editing functions */
+
+
+
+    public function showSpot($tree, $spot_id) {
+        $spot_data = DB_AA::select1('SELECT id, content FROM site_spot','',array(array('site_id', $this->module_id, 'l'), array('spot_id',$spot_id,'i')));
+        FrmTabCaption();
+        FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', array($spot_id)));
+
+        ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
+        if (($vars=$tree->isOption($spot_id))) {
+            ModW_PrintConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
+        }
+        FrmTabEnd();
+
+        echo "<form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
+        FrmTabCaption();
+        ModW_HiddenRSpotId();
+        FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
+        FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
+        FrmTabEnd(array('submit', "cancel"=>array('value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]"))));
+        echo "</form>";
+    }
+
+
 
     /**
      * @return AA_Router|null
