@@ -445,6 +445,14 @@ function debug() {
     }
 }
 
+/** Debug warn function - when something is not OK
+ * @param string $msg
+ */
+function warn($msg) {
+    $trace = debug_backtrace();
+    AA::$debug && AA::$dbg->warn( join('->',array($trace[1]['class'],$trace[1]['function'])).': '.$msg );
+}
+
 /** huhe function
  * Report only if errcheck is set, this is used to test for errors to speed debugging
  * Use to catch cases in the code which shouldn't exist, but are handled anyway.
@@ -1039,7 +1047,7 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
  */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
     // first should be headline........, then headline.......1, etc.
-    return DB_AA::select1("SELECT id FROM field WHERE slice_id = '". q_pack_id( $sid ) ."' AND id LIKE '$slice_field%' ORDER BY id", 'id');  // false if not found
+    return DB_AA::select1("SELECT id FROM field", 'id', array( array('slice_id', $sid, 'l'), array('id',"$slice_field%", 'LIKE') ), array('id'));  // false if not found
 }
 
 /** GetCategoryGroup function
@@ -1050,8 +1058,15 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
  */
 function GetCategoryGroup($slice_id, $field='') {
     // first should be category........, then category.......1, etc.
-    $condition = $field ? "id = '$field'" : "id LIKE 'category%' ORDER BY id";
-    $arr = explode( ":", DB_AA::select1("SELECT input_show_func FROM field WHERE slice_id='". q_pack_id($slice_id) ."' AND $condition", 'input_show_func'));  // false if not found
+    $order   = array();
+    $conds   = array(array('slice_id',$slice_id, 'l'));
+    if ($field) {
+        $conds[] = array('id', $field);
+    } else {
+        $conds[] = array('id', 'category%', 'LIKE');
+        $order   = array('id');
+    }
+    $arr = explode( ":", DB_AA::select1("SELECT input_show_func FROM field", 'input_show_func', $conds, $order));  // false if not found
     return $arr[1];
 }
 
@@ -1109,7 +1124,7 @@ function url2bin($data) {
  * @param $lang
  */
 function HtmlPageBegin($js_lib=false, $lang=null) {
-    AA::$encoding = AA_Langs::getCharset($lang);
+    AA::setEncoding(AA_Langs::getCharset($lang));
     $headers = AA::getHeaders();
     // fix for Chrome 57 which do not allow to send HTML in POST request sometimes (ERR_BLOCKED_BY_XSS_AUDITOR) - HM 2017-04-24
     $headers['x-xss-protection'] = 'X-XSS-Protection: 0';
@@ -1134,7 +1149,7 @@ function HtmlPageBegin($js_lib=false, $lang=null) {
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
-    AA::$debug && AA::$dbg->info('time: '. timestartdiff());
+    AA::$debug&2 && AA::$dbg->info('time: '. timestartdiff());
     if (AA::$debug&16) {
         echo '<br>Page generation time: '. timestartdiff();
         echo '<br>Dababase instances: '. DB_AA::$_instances_no;
@@ -1755,10 +1770,10 @@ class CookieManager {
     /** set function
      * @param $name
      * @param $value
-     * @param $time
+     * @param $time int seconds - like 60*60*24*2
      */
-    function set($name, $value, $time=null) {
-        setcookie('AA_'.$name, $value, $time ? time() + $time : 0, '/', $_SERVER['HTTP_HOST']);
+    function set($name, $value, $time=0, $path='/') {
+        setcookie('AA_'.$name, $value, $time ? time() + $time : 0, $path, $_SERVER['HTTP_HOST']);
     }
 
     /** get function
@@ -1881,17 +1896,22 @@ function RestoreVariables(array $r_state_vars) {
 
 /** susbstr with utf in mind */
 function aa_substr($text, $start, $len=null) {
-    return mb_substr($text, $start, $len, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
+    return mb_substr($text, $start, $len);
 }
 
 /** strlen with utf in mind */
 function aa_strlen($text) {
-    return mb_strlen($text, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
+    return mb_strlen($text);
+}
+
+/** strpos with utf in mind */
+function aa_strpos($haystack , $needle , $offset = 0) {
+    return mb_strpos($haystack , $needle , $offset);
 }
 
 /** strrpos with utf in mind */
 function aa_strrpos($haystack , $needle , $offset = 0) {
-    return mb_strrpos($haystack , $needle , $offset, AA::$encoding == 'utf-8' ? 'utf-8' : '8bit');
+    return mb_strrpos($haystack , $needle , $offset);
 }
 
 

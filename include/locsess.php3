@@ -186,7 +186,7 @@ class AA_Debug {
     }
 
     // we return true, just to be able to write:
-    //   AA::$debug && AA::$dbg->info("OK") && exit;
+    //   AA::$debug&2 && AA::$dbg->info("OK") && exit;
     function log()      {$v=func_get_args(); $this->_do('log',     $v); return true;}
     function info()     {$v=func_get_args(); $this->_do('info',    $v); return true;}
     function warn()     {$v=func_get_args(); $this->tracepoint('warn',    $v[0]); $this->_do('warn',    $v); return true;}
@@ -368,6 +368,15 @@ class AA {
     /** @usage AA::Stringexpander()->unalias();
      *  @return  AA_Stringexpander
      */
+    static function setEncoding($encoding) {
+        AA::$encoding = $encoding;
+        mb_internal_encoding( (stripos($encoding, 'utf-8') === 0) ? 'UTF-8' : '8bit');
+    }
+
+
+    /** @usage AA::Stringexpander()->unalias();
+     *  @return  AA_Stringexpander
+     */
     static function Stringexpander() {
         return AA::$stringexpander ?: (AA::$stringexpander = new AA_Stringexpander());
     }
@@ -399,7 +408,7 @@ class AA {
     }
 }
 
-AA::$debug = $_GET['debug'];
+AA::$debug = ($_GET['debug'] OR $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
 
 class DB_AA extends DB_Sql {
@@ -426,7 +435,7 @@ class DB_AA extends DB_Sql {
         $query .= is_array($where) ? ' '.DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' '.DB_AA::makeOrder($order) : '';
 
-        AA::$debug && AA::$dbg->log("$query LIMIT 1");
+        AA::$debug&8 && AA::$dbg->log("$query LIMIT 1");
 
         $db->query("$query LIMIT 1");
         $ret = false;
@@ -457,13 +466,18 @@ class DB_AA extends DB_Sql {
      *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
      *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
      *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
-     **/
+     * @param        $column
+     * @param        $query
+     * @param array? $where
+     * @param array? $order -  array of order fields - ['id','time-']
+     * @return array
+     */
     static function select($column, $query, $where=null, $order=null) {
         $db = getDB();
         $query .= is_array($where) ? ' '.DB_AA::makeWhere($where) : '';
         $query .= is_array($order) ? ' '.DB_AA::makeOrder($order) : '';
 
-        AA::$debug && AA::$dbg->log("$query");
+        AA::$debug&2 && AA::$dbg->log("$query");
 
         $db->query($query);
 
@@ -541,7 +555,7 @@ class DB_AA extends DB_Sql {
 
     /** static
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
-     *  @return number of affected rows (useful for INSERT/UPDATE/DELETE) of false on problem
+     *  @return number of affected rows (useful for INSERT/UPDATE/DELETE) or false on problem
      **/
     static function sql($query, $where=null) {
         $db = getDB();
@@ -609,6 +623,7 @@ class DB_AA extends DB_Sql {
      *     i        - integer           =                single or array    array('id', $task_id, 'i')
      *     l        - longid            =                single or array    array('item_id', $ids_arr, 'l')
      *     set      - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set') - good for bitfields
+     *     unset    - flag is not set   fld & val = 0    single             array('flag', 64, 'unset') - good for bitfields
      *     j        - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join  (SELECT ... FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), a..
      *     >        - integer           >                single             array('date', 1478547854, '>')
      *     <        - integer           <                single             array('date', 1478547854, '<')
@@ -658,11 +673,13 @@ class DB_AA extends DB_Sql {
 
             if (!is_array($value)) {
                 switch ( $type ) {
-                    case "i":   $where[]  = "$name $operator ". (int)$value; break;
-                    case "l":   $where[]  = "$name = ".         xpack_id($value); break;
-                    case "j":   $where[]  = "$name = ".         quote($value); break;
-                    case "set": $value  = (int)$value;
-                                $where[]  = "(($name & $value) = $value)"; break;
+                    case "i":     $where[]  = "$name $operator ". (int)$value; break;
+                    case "l":     $where[]  = "$name = ".         xpack_id($value); break;
+                    case "j":     $where[]  = "$name = ".         quote($value); break;
+                    case "set":   $value  = (int)$value;
+                        $where[]  = "(($name & $value) = $value)"; break;
+                    case "unset":   $value  = (int)$value;
+                        $where[]  = "(($name & $value) = 0)"; break;
                     //default:  $part = DB_AA::quote($value);
                     default:    $where[]  = "$name = ". qquote($value);
                 }
@@ -682,6 +699,10 @@ class DB_AA extends DB_Sql {
         return count($where) ? "WHERE ".join(' AND ',$where) : '';
     }
 
+    /** generate order phrase
+     * @param $orderarr  array of order fields - ['id','time-']
+     * @return string
+     */
     static protected function makeOrder($orderarr) {
         $order = array();
         foreach ($orderarr as $sort) {
@@ -706,7 +727,7 @@ class DB_AA extends DB_Sql {
         return $ret;
     }
 
-    /** query_nohalt function
+    /** query_nohalt function - do not halt on database error
      * @param $SQL
      * @return int
      */

@@ -191,7 +191,7 @@ class AA_View_Commands {
      */
     function parseCommand($cmd, $als=false) {
 
-        AA::$debug && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
+        AA::$debug&2 && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
 
         // cmd could be array - in this case more commands are passed to view
         // Ussage: cmd[89][]=c-1-On&cmd[89][]=c-2-Cars&cmd[89][]=x-89-2233-5244
@@ -292,13 +292,13 @@ function ParseViewParameters($query_string="") {
         $new_params['als'] = $GLOBALS['als'];
     }
 
-    AA::$debug && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string ), "cmd:", $new_params['cmd'], "set:", $new_params['set'], "als:", $new_params['als']);
+    AA::$debug&2 && AA::$dbg->log("ParseViewParameters: vid=$vid, query_string=".str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string ), "cmd:", $new_params['cmd'], "set:", $new_params['set'], "als:", $new_params['als']);
 
     // Splits on "-" and subsitutes aliases
     $commands = new AA_View_Commands($new_params['cmd'][$vid], $new_params['als']);
     $v_conds  = new AA_Set;
 
-    AA::$debug && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
+    AA::$debug&2 && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
 
     $commands->reset();
     while($command = $commands->current()) {
@@ -411,7 +411,7 @@ function ParseViewParameters($query_string="") {
     //  $arr['item_ids'] = $item_ids;
     $arr['zids']        = $zids;
 
-    AA::$debug && AA::$dbg->log($arr);
+    AA::$debug&2 && AA::$dbg->log($arr);
     return $arr;
 }
 
@@ -444,7 +444,7 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
 function GetViewConds($view_info, $param_conds) {
     // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
-    AA::$debug && AA::$dbg->log("(GetViewConds) param_conds=",$param_conds);
+    AA::$debug&2 && AA::$dbg->log("(GetViewConds) param_conds=",$param_conds);
     $conds = array();
 
     ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'], $view_info['cond1cond'],  $param_conds[1]);
@@ -453,7 +453,7 @@ function GetViewConds($view_info, $param_conds) {
     if ($param_conds[0]) {
         $conds['valuejoin'] = $param_conds[0];
     }
-    AA::$debug && AA::$dbg->log("(GetViewConds) conds=",$conds);
+    AA::$debug&2 && AA::$dbg->log("(GetViewConds) conds=",$conds);
 
     return $conds;
 }
@@ -616,7 +616,7 @@ class AA_Showview {
         }
         $view_info = $view->getViewInfo();
 
-        AA::$debug && AA::$dbg->group("view_$vid" . '_' . ($dbgtime));
+        AA::$debug&2 && AA::$dbg->group("view_$vid" . '_' . ($dbgtime));
 
         if ( isset($this->_view_param["page"]) ) {
             $list_page = (int)$this->_view_param["page"];
@@ -627,7 +627,7 @@ class AA_Showview {
         }
 
         if (!$view->isValid()) {
-            AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+            AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
             return false;
         }
 
@@ -668,7 +668,7 @@ class AA_Showview {
         }
 
         // ---- display content in according to view type ----
-        AA::$debug && AA::$dbg->log("getViewOutput:view_info=",$view_info);
+        AA::$debug&2 && AA::$dbg->log("getViewOutput:view_info=",$view_info);
 
         switch( $view_info['type'] ) {
             case 'discus':
@@ -825,7 +825,7 @@ class AA_Showview {
 
                 $sort  = GetViewSort($view_info, $param_sort);
 
-                AA::$debug && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
+                AA::$debug&2 && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
 
                 if ($mlxslice = MLXSlice($slice)) {
                     $mlx = $this->_view_param["mlx"] ?: $this->_view_param["MLX"];
@@ -841,13 +841,13 @@ class AA_Showview {
                 }
                 //end mlx stuff
                 // Note this zids2 is always packed ids, so lost tag information
-                AA::$debug && AA::$dbg->log("getViewOutput retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
+                AA::$debug&2 && AA::$dbg->log("getViewOutput retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
 
                 if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
                     $zids2 = $zids2->retag($zids);
                 }
 
-                AA::$debug && AA::$dbg->log("getViewOutput: Filtered ids=",$zids2);
+                AA::$debug&2 && AA::$dbg->log("getViewOutput: Filtered ids=",$zids2);
 
                 $format = $view->getViewFormat($selected_item);
                 $format['calendar_month'] = $month;
@@ -880,7 +880,7 @@ class AA_Showview {
                 break;
         }
 
-        AA::$debug && AA::$dbg->log("getViewOutput: ret=",$ret);
+        AA::$debug&2 && AA::$dbg->log("getViewOutput: ret=",$ret);
 
         // user could make the view to display view ID before and after the view output
         // which is usefull mainly for debugging. See view setting in admin interface
@@ -898,7 +898,7 @@ class AA_Showview {
                 AA::$headers['encoding'] = $this->_view_param['convertto'];
             }
         }
-        AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
+        AA::$debug&2 && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
         return $ret;
     }
 

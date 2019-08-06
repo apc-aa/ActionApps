@@ -91,13 +91,13 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 // we tried to remove all global $db, so let's try to comment out following global object
 // honza 2017-04-19
-//AA::$debug && AA::$dbg->group("/jsview.php3", "Start");
+//AA::$debug&2 && AA::$dbg->group("/jsview.php3", "Start");
 
 if (ctype_digit((string)$time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
-AA::$debug && AA::$dbg->group("/jsview.php3", "Start");
+AA::$debug&2 && AA::$dbg->group("/jsview.php3", "Start");
 
 $view_param = ParseViewParameters();
 
@@ -131,7 +131,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     }
 }
 
-AA::$debug && AA::$dbg->groupend("/jsview.php3", "Completed view");
+AA::$debug&2 && AA::$dbg->groupend("/jsview.php3", "Completed view");
 
 if (AA::$debug) {
     AA::$dbg->duration_stat();

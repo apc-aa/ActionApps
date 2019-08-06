@@ -1196,7 +1196,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
 
-    AA::$debug && AA::$dbg->log("<br>Conds after ParseEasyConds():", $conds, "<br>--");
+    AA::$debug&2 && AA::$dbg->log("<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
     if ( isset($conds) AND is_array($conds)) {
         foreach ($conds as $cond) {
@@ -1297,7 +1297,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
     $extended_attr = array();       // extended attributes stored in zids for grouping on multivalue fields
     if (!$empty_result_condition) {
         $db->query($SQL);
-        AA::$debug && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
+        AA::$debug&2 && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
 
         if (!$group_limit) {
             $arr = $db->fetch_column($col);
@@ -1310,7 +1310,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
             $gfield   =  $group_limit['field'];  // shortcut - just for possible speedup
             while ($db->next_record()) {
 
-                AA::$debug && AA::$dbg->log("result", $db->Record);
+                AA::$debug&2 && AA::$dbg->log("result", $db->Record);
 
                 if (++$groups[$db->f($gfield)] <= $glimit) {
                     $arr[]      = $db->f($col);
@@ -1400,7 +1400,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $slices = empty($slices) ? array() : (array)$slices;
     }
 
-    AA::$debug && AA::$dbg->log("QueryZids - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
+    AA::$debug&2 && AA::$dbg->log("QueryZids - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
 
     if (is_object($restrict_zids) AND ($restrict_zids->count() == 0)) {
         return new zids(); // restrict_zids defined but empty - no result
@@ -1435,7 +1435,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
     }
 
-    AA::$debug && AA::$dbg->log("QueryZids: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
+    AA::$debug&2 && AA::$dbg->log("QueryZids: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
 
     // parse conditions ----------------------------------
     if ( is_array($conds)) {
@@ -1761,7 +1761,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // .. removed 2/27/2005 Honza (was never used)
     // ---
 
-    AA::$debug && AA::$dbg->log("QueryZids:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
+    AA::$debug&2 && AA::$dbg->log("QueryZids:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
 
     // construct query --------------------------
     $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
@@ -1815,7 +1815,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
     }
 
-    AA::$debug && AA::$dbg->log("QueryZids: SQL: $SQL");
+    AA::$debug&2 && AA::$dbg->log("QueryZids: SQL: $SQL");
 
     // @todo - replace LEFT JOIN with INNER JOIN for conditions where posiible (for speedup)
     // if ($_GET['dd']>70) {
@@ -1825,7 +1825,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // if neverAllItems is set, return empty set if no conds[] are used
     $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems, $select_limit_field);
 
-    AA::$debug && AA::$dbg->log("QueryZids: result:", $ret);
+    AA::$debug&2 && AA::$dbg->log("QueryZids: result:", $ret);
 
     return $ret;
 }

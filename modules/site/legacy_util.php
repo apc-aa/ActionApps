@@ -50,7 +50,7 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
     for ($i=0, $ino=min(strlen($varnames),count($vars)-1); $i<$ino; ++$i) {
         $varout[substr($varnames,$i,1)] = $vars[$i+1];
     }
-    AA::$debug && AA::$dbg->info('State=',$varout);
+    AA::$debug&2 && AA::$dbg->info('State=',$varout);
     return $varout;
 }
 

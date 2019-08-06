@@ -669,13 +669,13 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
                 $field = $properties[$fid];
                 if ( empty($field) OR ($v=="")) {
-                    AA::$debug && AA::$dbg->log("skipping $fid in conds[]: not known $fid or empty condition");
+                    AA::$debug&2 && AA::$dbg->log("skipping $fid in conds[]: not known $fid or empty condition");
                     continue;
                 }
 
                 $field_store = AA_Property::storageType($field->getType());
                 if ( empty($field_store) ) {
-                    AA::$debug && AA::$dbg->log("skipping $fid in conds[]: no storage table (is it object?)");
+                    AA::$debug&2 && AA::$dbg->log("skipping $fid in conds[]: no storage table (is it object?)");
                     continue;
                 }
                 // will not work with one condition for columns of different types (text/int/...) - which is right, I think.
@@ -727,14 +727,14 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             $field = $properties[$fid];
 
             if ( empty($field)) {
-                AA::$debug && AA::$dbg->log("skipping $fid in sort[]: not known $fid");
+                AA::$debug&2 && AA::$dbg->log("skipping $fid in sort[]: not known $fid");
                 continue;
             }
 
             if ( !$sortable[ $fid ] ) {           // this field is not joined, yet
                 $store = AA_Property::storageType($field->getType());
                 if ( empty($store) ) {
-                    AA::$debug && AA::$dbg->log("skipping $fid in sort[]: no storage table (is it object?)");
+                    AA::$debug&2 && AA::$dbg->log("skipping $fid in sort[]: no storage table (is it object?)");
                     continue;
                 }
 

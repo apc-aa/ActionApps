@@ -137,15 +137,15 @@ class PageCache  {
      * @return bool
      */
     function get($key, $action='get') {
-        AA::$debug && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
+        AA::$debug&2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
 
         if ( ENABLE_PAGE_CACHE ) {
             if ( $action == 'invalidate' ) {
                 $this->invalidateById( $key );
-                AA::$debug && AA::$dbg->log("Pagecache: return false - invlaidating");
+                AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
                 return false;
             } elseif (ctype_digit((string)$action) ) {  // nocache=1
-                AA::$debug && AA::$dbg->log("Pagecache: return false - nocache");
+                AA::$debug&2 && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }
             return $this->getById( $key );
@@ -233,11 +233,11 @@ class PageCache  {
     function store($key, $content, $str2find, $force=false) {
         global $cache_nostore;
 
-        AA::$debug && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.$str2find->getStr2find(), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
+        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.$str2find->getStr2find(), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
 
         if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
-            AA::$debug && AA::$dbg->log("Pagecache->store(): - storing");
+            AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");
             $varset = new Cvarset( array( array('content', $content), array('stored', time())));
             $varset->addkey('id', 'text', $key);
             $str2find->store($key);

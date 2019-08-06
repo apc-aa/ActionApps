@@ -603,7 +603,7 @@ class itemview {
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
         $ingroup_index = 0;
         $group_index   = 0;
-        AA::$debug && AA::$dbg->log("itemlist - number_of_ids: $number_of_ids");
+        AA::$debug&2 && AA::$dbg->log("itemlist - number_of_ids: $number_of_ids");
 
         $zidscount = $this->zids->count();
         for ( $i=0; $i<$number_of_ids; ++$i ) {
@@ -640,7 +640,7 @@ class itemview {
 
             if ($this->group_fld) {
 
-                //AA::$debug && AA::$dbg->info("group_fld", $iid, $this->zids->getAttr($zidx, 'group_by')) && exit;
+                //AA::$debug&2 && AA::$dbg->info("group_fld", $iid, $this->zids->getAttr($zidx, 'group_by')) && exit;
 
                 if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {
                     $catname = $CurItem->getval($this->group_fld);
@@ -817,15 +817,15 @@ class itemview {
             $start_date = $this->_content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
             $end_date   = $this->_content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
 
-            AA::$debug && AA::$dbg->info("------ $start_date - $end_date");
+            AA::$debug&2 && AA::$dbg->info("------ $start_date - $end_date");
 
             if ($start_date > $max_cell_date) {
-                AA::$debug && AA::$dbg->warn("Some error in calendar view! $start_date &gt; $max_cell_date");
+                warn("Some error in calendar view! $start_date &gt; $max_cell_date");
                 continue;
             }
 
             if ($end_date < $min_cell_date) {
-                AA::$debug && AA::$dbg->warn("Some error in calendar view! $end_date &lt; $min_cell_date");
+                warn("Some error in calendar view! $end_date &lt; $min_cell_date");
                 continue;
             }
 
@@ -848,7 +848,7 @@ class itemview {
 
             $max_events = max($max_events, $ievent+1);
 
-            AA::$debug && AA::$dbg->info("------ $start_date - $end_date: $start_cell - $end_cell : min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1)");
+            AA::$debug&2 && AA::$dbg->info("------ $start_date - $end_date: $start_cell - $end_cell : min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1)");
 
             $calendar[$start_cell][$ievent] = array("iid"=>$iid,"span"=>min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1),"start"=>1);
             for ($date = $start_cell+1; $date <= $end_cell; ++$date) {
@@ -856,7 +856,7 @@ class itemview {
             }
         }
 
-        AA::$debug && AA::$dbg->info('----------calendar------------', $calendar);
+        AA::$debug&2 && AA::$dbg->info('----------calendar------------', $calendar);
 
         $out = $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_top']), $CurItem);
 

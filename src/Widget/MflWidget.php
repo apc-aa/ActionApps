@@ -63,7 +63,7 @@ class MflWidget extends \AA\Widget\Widget
         $attrs = array('type' => 'text');
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
-        AA::$debug && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
+        AA::$debug&2 && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
 
         $attrs['size'] = get_if($this->getProperty('width'), $attrs['size'], 60);
         $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
@@ -79,7 +79,7 @@ class MflWidget extends \AA\Widget\Widget
         }
 
 
-        AA::$debug && AA::$dbg->log($attrs, $attr_string, $rows);
+        AA::$debug&2 && AA::$dbg->log($attrs, $attr_string, $rows);
 
         $widget = '';
         // display at least one option
