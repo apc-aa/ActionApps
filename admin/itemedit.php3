@@ -101,18 +101,7 @@ if ($encap) {
 
 QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
-AA::$encoding = AA_Langs::getCharset();
-
-// TODO: GetHidden is not so correct in current AA code
-// Now we can have multiple itemedits open, so one set of r_hidden isn't correct
-// We should move r_hiddens functionality to inputform class
-// Later we have also rewrite this code to use filler script for filling (in
-// order we have only one - good - filling code and not two
-//   GetHidden($itemform_id);  // unpacks variables from $r_hidden session var.
-//   unset($r_hidden[$itemform_id]);
-//$r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $_SERVER['PHP_SELF']);
-//     only this script accepts r_hidden variable
-//     - if it don't match - unset($r_hidden) (see init_page.pgp3)
+AA::setEncoding(AA_Langs::getCharset());
 
 if ( $ins_preview ) {
     $insert = true; $preview=true;
@@ -156,6 +145,7 @@ if ($add) {
 //   $js_proove_fields - JavaScript code for form validation
 //   $oldcontent4id
 
+
 // link from public pages sometimes do not contain slice_id
 if ( $id ) {
     if ((strlen($id)==33) AND strpos(' xyz', $id{0})) {
@@ -166,10 +156,30 @@ if ( $id ) {
     $content4id = new ItemContent($id);
     $slice_id   = $content4id->getSliceID();
     // we need just slice_id of current item - we can unset the content4id
-    unset($content4id);
+
+} else {
+    $content4id = new ItemContent();
 }
 
+// --- Process all AJAX commandes and possibly EXIT ---------------------
+
+$content_function = function () use (&$content4id, $slice_id, $edit) {
+    return with(new inputform(array()))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
+};
+
+$page_changer = new \AA\IO\OnPageChanger($content_function);
+$page_changer->checkAndProcessCall();
+
+
+unset($content4id);
+
+// --- if not EXITEed above, continue
+
+
+
 $slice = AA_Slice::getModule($slice_id);
+
+
 ValidateContent4Id($err, $slice, $action, $id);
 list($fields, $prifields) = $slice->fields();
 
@@ -177,7 +187,7 @@ list($fields, $prifields) = $slice->fields();
 $lang_control = MLXSlice($slice);
 
 //  update database
-if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
+if ( ($insert || $update) AND (!count($err)) AND is_array($prifields) ) {
 
     // prepare content4id array before call StoreItem function
     $content4id = new ItemContent;
@@ -206,7 +216,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     // removed $oldcontent4id (see ItemContent::storeItem)
     $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
 
-    if (count($err) <= 1) {
+    if (!count($err)) {
         page_close();
         if ($preview) {
             $preview_url = get_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
@@ -307,8 +317,6 @@ $inputform_settings['hidden']              = array(
 if ( $inputform_settings['form4update'] ) {
     $inputform_settings['hidden']['id']    = $id;
 }
-
-
 
 if ( $vid ) {
     $inputform_settings['template'] = $vid;
