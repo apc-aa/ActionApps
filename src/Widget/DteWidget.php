@@ -106,7 +106,7 @@ class DteWidget extends \AA\Widget\Widget
 
         for ($i = 0; $i < $max; ++$i) {
             // no date
-            if (strlen($years[$i]) AND !(int)$years[$i]) {
+            if (isset($years[$i]) AND !(int)$years[$i]) {
                 $values[] = 0;
                 continue;
             }
@@ -121,7 +121,6 @@ class DteWidget extends \AA\Widget\Widget
 
             $values[] = mktime($time[0], $time[1], $time[2], (int)$month, (int)$day, (int)$year);
         }
-
         return new AA_Value($values);
     }
 }
