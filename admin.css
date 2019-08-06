@@ -10,7 +10,13 @@ body { margin-left: 4px;
        background: #213F21;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 8pt;
-             color: #FFFFFF;
+       color: #FFFFFF;
+}
+
+table.mgr_table th {
+    font-size:   10px;
+    text-align:  left;
+    font-weight: bold;
 }
 
 .login {
@@ -314,10 +320,37 @@ TD.leftmenuy {
   font-size: 8pt;
 }
 
+td.navbar a, input[type="submit"], input[type="button"], input[type=search]  {
+    display: inline-block;
+    background-color: #DAE8E1;
+    text-decoration: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 1px #000;
+    border: none;
+}
+
+.navbar form {
+    display: inline-block;
+}
+
+input[type=search] {
+    width: 100px;
+    transition: width 0.1s ease-in-out;
+}
+
+input[type=search]:focus {
+    width: 260px;
+}
+
+td.navbar a:hover, input[type="submit"]:hover, input[type="button"]:hover {
+    background-color: #B8DAC2;
+}
+
 .difftext {
     font-size: small;
     font-family: monospace;
-}
+}                                                                                                                                                           
 .difftext ins {
     background-color: #0F02;
     text-decoration: none;
@@ -613,6 +646,29 @@ input.cancel-button {
 .aa-langswitch input[type=button].aa-langall:hover {
     box-shadow: 0 0 6px #000;
 }
+
+
+.dis-avatar {
+    width: 48px;
+    height: 48px;
+    float: left;
+    margin-right: 12px;
+}
+.dis-avatar div {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.2em;
+    text-align: center;
+}
+.dis-color1 { background-color: #afb478; }
+.dis-color2 { background-color: #a48a72; }
+.dis-color3 { background-color: #a1988f; }
+.dis-color4 { background-color: #c5c5c5; }
+.dis-color5 { background-color: #eae5e0; }
+.dis-color6 { background-color: #e1bfc5; }
+.dis-color7 { background-color: #bb94c6; }
+.dis-color8 { background-color: #c46f87; }
 
 @media print {
   .noprint, .aa_manager_actions {

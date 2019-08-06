@@ -195,17 +195,9 @@ function GetHistoryContent($zids) {
 
 
 /** Links_QueryCatZIDs - Finds category IDs according to given conditions
- * @param string $cat_path - path to category (like '1,4,78' for category 78)
+ * @param        $slice_id
  * @param array  $conds - search conditions (see FAQ)
- * @param array  $sort - sort fields (see FAQ)
- * @param bool   $subcat - search in the specified category only, or search
- *                            also in all subcategories
- * @param string $type - type is something like bins as known from items
- *                            type is one of the following:
- *                            'app'       - approved (normal shown categories)
- *                            'all'       - all categories in any folder
- * @global int   $QueryIDsCount - set to the count of IDs returned
- * @global bool  $debug =1       - many debug messages
+ * @param string $sort - sort fields (see FAQ)
  * @return zids
  */
 function QueryHistoryZIDs($slice_id, $conds, $sort="") {

@@ -56,7 +56,7 @@ class Cvariable {
      *
      */
     function getValue() {
-        return $this->value;
+        return ($this->type == 'quoted') ? stripslashes($this->value) : $this->value;
     }
 
     /** getSQLValue function
@@ -170,12 +170,13 @@ class Cvarset {
 
     /** add function
      *  add variable to varset
-     * @param $varname
-     * @param $type
-     * @param $value
+     * @param        $varname
+     * @param string $type
+     * @param string $value
+     * @param bool   $iskey
      */
-    function add($varname, $type="text", $value="") {
-        $this->vars[$varname]= new Cvariable($varname, $type, $value);
+    function add($varname, $type="text", $value="", $iskey=false) {
+        $this->vars[$varname]= new Cvariable($varname, $type, $value, $iskey);
     }
 
     /** addglobals function
@@ -299,13 +300,13 @@ class Cvarset {
     /** _doQuery function
      *  Private function: executes qiven query)
      * @param $SQL
-     * @param $nohalt
-     * @return int|void
+     * @param $nohalt     'nohalt' - do not halt on database error
+     * @return bool|int   0|false on error
      */
     function _doQuery($SQL, $nohalt=null) {
         if ($this->just_print) {
             huhl($SQL);
-            return;
+            return true;
         }
         $this->last_used_db = getDB();
         if ( $nohalt=='nohalt' ) {
@@ -368,10 +369,10 @@ class Cvarset {
 
     /** doInsert function
      * @param $tablename
-     * @param $nohalt
-     * @return int|void
+     * @param $nohalt     'nohalt' - do not halt on database error
+     * @return bool|int   0|false on error
      */
-    function doINSERT($tablename, $nohalt=null) {
+    function doInsert($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
     }
 
@@ -405,6 +406,7 @@ class Cvarset {
             // Error: there are several rows with the same key variables
             return "Error using doUpdate: " . $this->last_used_db->num_rows(). " rows match the query";
         }
+        $this->last_used_db->next_record();
         $data = $this->last_used_db->Record;
         $packed = AA_Metabase::getPacked($tablename);
         foreach ($packed as $col) {
@@ -414,11 +416,15 @@ class Cvarset {
     }
 
     /** doUpdate function
-     * @param $tablename
-     * @param $nohalt
+     * @param        $tablename
+     * @param        $nohalt
+     * @param string $history_key 16 character long resource id - if presented, history is written to database
      * @return int|void
      */
-    function doUpdate($tablename, $nohalt=null) {
+    function doUpdate($tablename, $nohalt=null, $history_key='') {
+        if ($history_key) {
+            $this->saveHistory($tablename, substr($history_key,0,32));
+        }
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
     }
 

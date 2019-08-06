@@ -41,7 +41,10 @@ function con_url($url, $params='') {
     return htmlspecialchars(get_url($url, $params), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
-/** makes url parameters to use with GET request from given parameters */
+/** makes url parameters to use with GET request from given parameters
+ * @param array|string $parameters
+ * @return string
+ */
 function HttpGetParameters($parameters) {
     $param_string = '';
     if (!is_array($parameters)) {
@@ -69,17 +72,28 @@ function HttpGetParameters($parameters) {
     return $param_string;
 }
 
+/**
+ * @param string $url
+ * @return string
+ */
 function StateUrl($url='') {
     return ((strpos($url, 'module_id=')===false) AND is_long_id(AA::$module_id)) ? get_url($url, array('module_id'=>AA::$module_id)) : $url;
 }
 
+/**
+ * @return string
+ */
 function StateHidden() {
     return is_long_id(AA::$module_id) ? '<input type=hidden name=module_id value="'.AA::$module_id.'">' : '';
 }
 
 
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
- *  using apropriate ? or &. */
+ *  using apropriate ? or &.
+ * @param string $url
+ * @param array|string $params
+ * @return string
+ */
 function get_url($url, $params='') {
     if (empty($params)) {
         return $url;
@@ -97,9 +111,10 @@ function get_url($url, $params='') {
 
 
 /** get_aa_url function
- * @param $href
- * @param $session
- * @return mixed|string
+ * @param              $href
+ * @param array|string $params
+ * @param bool         $state
+ * @return string
  */
 function get_aa_url($href, $params='', $state=true) {
     $url = get_url(AA_INSTAL_PATH.$href, $params);
@@ -107,9 +122,10 @@ function get_aa_url($href, $params='', $state=true) {
 }
 
 /** get_admin_url function
- * @param $href
- * @param $session
- * @return mixed|string
+ * @param              $href
+ * @param array|string $params
+ * @param bool         $state
+ * @return string
  */
 function get_admin_url($href, $params='', $state=true) {
     return get_aa_url("admin/$href", $params, $state);

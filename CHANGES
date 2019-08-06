@@ -1,3 +1,31 @@
+19-08-06 - new Manager input widget - it allows manage Items from remote slice, when the remote
+(honzam)   item points to editted item. It the same as we can achieve with {manager}. It works
+           also in AA admin interface, where was problem with Add Item operation (the ID of new
+           item is not knows). Solved by artificial "connector ID". Best for galeries and other
+           tabular data which is multivalue and different for each item.
+         - New search field in AA user interface - right top - which searches the AA the same
+           way as you do in AA -> Find. It is shown just to Superadmins.
+         - The information about Item deletion is written to the log, now.
+         - fixed logout - the logout on admin pages works now
+           (there was cases when the logout page was cached and so the logout failed)
+         - Links to history records for items/views/... now contain count of history records.
+           The link is displayed only if there are some history records.
+         - New permission for "Anonymous item update" - "Only by Planned task (cron-toexecute)".
+           Allows update items by Planned tasks.
+         - Better debug messages. Debug output could be started in AA Admin interface
+           in Item Manager left menu, again.
+         - Database structure updated - The enumeration/constant fields in all tables converted
+           to varbinary instead of encodig-specific varchar/char (and other small improvements)
+         - fix site module administration code - the unused spots are correctly removed from database
+         - removed unused configuration options and css
+         - fixed AA_Message box in AA admin interface
+         - fixed Date widget when used in {ajax} - setting empty date now works
+         - improved metabases Insert functions which validates values automaticaly
+         - better working with utf strings - mainly substrings, ...
+         - improved AA internal character encoding setting - encoding set also for utf mb_* functions
+         - database operations rewritten to more safe form
+         - better handling of Err messages inside AA code
+19-07-25 - fixed Invalid SQL: INSERT INTO `hit_long_id` problem with too long data record
 19-07-24 - diff of database structure in "Update database structure" optimize task is nicer
 (honzam) - better AA Finder - now is possible to - replace text with empty or shorter string
                                                  - search for shorter strings
