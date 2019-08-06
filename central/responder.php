@@ -187,7 +187,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
         AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
-        AA::$encoding = AA_Langs::getCharset($lang);
+        AA::setEncoding(AA_Langs::getCharset($lang));
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
