@@ -170,12 +170,13 @@ class Cvarset {
 
     /** add function
      *  add variable to varset
-     * @param $varname
-     * @param $type
-     * @param $value
+     * @param        $varname
+     * @param string $type
+     * @param string $value
+     * @param bool   $iskey
      */
-    function add($varname, $type="text", $value="") {
-        $this->vars[$varname]= new Cvariable($varname, $type, $value);
+    function add($varname, $type="text", $value="", $iskey=false) {
+        $this->vars[$varname]= new Cvariable($varname, $type, $value, $iskey);
     }
 
     /** addglobals function
@@ -299,13 +300,13 @@ class Cvarset {
     /** _doQuery function
      *  Private function: executes qiven query)
      * @param $SQL
-     * @param $nohalt
-     * @return int|void
+     * @param $nohalt     'nohalt' - do not halt on database error
+     * @return bool|int   0|false on error
      */
     function _doQuery($SQL, $nohalt=null) {
         if ($this->just_print) {
             huhl($SQL);
-            return;
+            return true;
         }
         $this->last_used_db = getDB();
         if ( $nohalt=='nohalt' ) {
@@ -368,8 +369,8 @@ class Cvarset {
 
     /** doInsert function
      * @param $tablename
-     * @param $nohalt
-     * @return int|void
+     * @param $nohalt     'nohalt' - do not halt on database error
+     * @return bool|int   0|false on error
      */
     function doInsert($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);

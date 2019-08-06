@@ -395,7 +395,8 @@ class AA_Module_Definition_Chunk {
                 $msgs['err'][$table] = array();
                 $keys[$table] = $metabase->getKeys($table);
             }
-            $metabase->packIds($table, $records);    // pack ids ...
+            // now we packing the data in the AA_Metabase::do*() functions
+            // $metabase->packIds($table, $records);    // pack ids ...
             foreach ($records as $data) {
                 $ident = array();
                 foreach ($keys[$table] as $col) {
