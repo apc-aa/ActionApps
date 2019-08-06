@@ -148,7 +148,7 @@ class AA_Adminpageutil {
 
     public function printHead($err, $Msg)
     {
-        AA::$encoding = AA_Langs::getCharset();
+        AA::setEncoding(AA_Langs::getCharset());
         $this->sendHeaders();
 
         $html_start = $this->getPageBegin();
@@ -160,6 +160,12 @@ class AA_Adminpageutil {
         }
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS);
+
+        if ($errtext = trim(join('<br>',(array)$err))) {
+            //$errtext = 'some text';
+            AA::Stringexpander()->addRequire('aa-jslib');
+            AA::Stringexpander()->addRequire("AA_Message('".escape4js($errtext)."', 'err')", 'AA_Req_Load');
+        };
 
         // this also fills AA::Stringexpander required libs, so we can continue with postprocess
         // $out        = $form->getObjectEditHtml();
@@ -181,9 +187,6 @@ class AA_Adminpageutil {
             echo "<div>" . $this->subtitle . "</div>";
         }
 
-        if ($errtext = GetPrintArray($err)) {
-            echo "<div class=\"err\">$errtext</div>";
-        };
         echo $Msg;
 
         // PrintArray($r_err);
@@ -207,7 +210,7 @@ class AA_Adminpageutil {
     public function printHelpbox() {
         $html = '';
         foreach ($this->helpboxes as $helpbox) {
-            $html .= GetHtmlTable( array(array($helpbox['html'])), 'td', $helpbox['name'] );
+            $html .= GetHtmlTable( array(array($helpbox['html'])), 'td', $helpbox['name'], true );  // clasic aa table
         }
         if ($html) {
             $html = '<br>'. $html;
@@ -266,7 +269,7 @@ class AA_Adminpage implements AA_iEditable {
             MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page').': '.$this->getName(), 'admin');
         }
         if ($_POST['update'] AND !empty($_POST['aa'])) {
-            $err = array('Init' => "");          // error array (Init - just for initializing variable
+            $err = array();          // error array (Init - just for initializing variable
             // update or insert
             $this->setFromForm();
             if ($this->validateData()) {
