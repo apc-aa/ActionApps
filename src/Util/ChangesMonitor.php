@@ -55,13 +55,21 @@ class ChangesMonitor {
     }
 
     /** url to history table in AA Admin interface
-     * @param      $id
+     * @param      $resource_id
      * @return string url to history table in AA Admin interface
      */
-    static function getHistoryUrl($id) {
-        return get_admin_url('aafinder.php3', array('showhistory' => $id));
+    static function getHistoryUrl($resource_id) {
+        return get_admin_url('aafinder.php3', array('showhistory' => $resource_id));
     }
 
+    /** link to history table in AA Admin interface
+     * @param      $resource_id
+     * @return string url to history table in AA Admin interface
+     */
+    static function getHistoryLink($resource_id) {
+        $history_entries = self::getChangeList($resource_id);
+        return $history_entries ? a_href(self::getHistoryUrl($resource_id), _m('history (%1)', array(count($history_entries)))) : '';
+    }
 
     /** _add function
      * @param $change_proposals
@@ -137,7 +145,7 @@ class ChangesMonitor {
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChanged($resource_id) {
 
-        $chid = \DB_AA::select1("SELECT id FROM `change` WHERE `change`.resource_id = \"" . quote($resource_id) . "\" AND type = 'h' ORDER BY time DESC", 'id');  // false if not found
+        $chid = \DB_AA::select1("SELECT id FROM `change`", 'id', array(array('resource_id', $resource_id), array('type', 'h')), array('time-'));  // false if not found
         $ret = '';
         if ($chid) {
             $changes_arr = $this->getProposalByID($chid);
@@ -148,9 +156,17 @@ class ChangesMonitor {
         return $ret;
     }
 
-    /** list of fields changed during last edit - dash ('-') separated */
+    /** get array of chnge ids with time and user - [id=>[time,user]]
+     * @param $resource_id
+     * @return array
+     */
+    static function getChangeList($resource_id) {
+        return \DB_AA::select(array('id'=>array('time', 'user')), 'SELECT `id`, `time`, `user` from `change`', array(array('resource_id',$resource_id), array('type','h')), array('time-'));
+    }
+
+    /** timestamp of last change */
     function lastChangeDate($resource_id, $selector) {
-        $time = \DB_AA::select1("SELECT time FROM `change_record` INNER JOIN `change` ON `change`.id = `change_record`.change_id WHERE `change`.resource_id = \"" . quote($resource_id) . "\" AND `change`.type = 'h' AND `change_record`.selector = \"" . quote($selector) . "\" ORDER BY `change`.time DESC", 'time');
+        $time = \DB_AA::select1("SELECT time FROM `change`, `change_record`", 'time', array( array('change.id', 'change_record.change_id' , 'j'), array('change.resource_id', $resource_id), array('change.type', 'h'), array('change_record.selector',$selector)), array('time-'));
         return $time ? $time : 0;
     }
 
@@ -222,18 +238,12 @@ class ChangesMonitor {
 
     /** experimental display function - prints the table with all changes  */
     function display($resource_ids, $type = 'h') {
-        $garr = new \AA_GeneralizedArray();
         if (!is_array($resource_ids) OR (count($resource_ids) < 1)) {
             return array();
         }
 
-        $ids4sql = sqlin("`change`.resource_id", $resource_ids);
-
         if ($arr = \DB_AA::select(array(), "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
-                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                WHERE $ids4sql
-                                AND `change`.type='$type'
-                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority")) {
+                                FROM `change`, `change_record`", array( array('change.id', 'change_record.change_id' , 'j'), array("`change`.resource_id", $resource_ids), array('change.type',$type)), array( 'change.resource_id', 'change.time', 'change_record.change_id', 'change_record.selector', 'change_record.priority'))) {
             echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';
             foreach ($arr as $change) {

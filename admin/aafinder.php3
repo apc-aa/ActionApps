@@ -75,20 +75,20 @@ function AafinderItemLink($item_id, $slice_id='') {
     } else {
         return '';
     }
-    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")"). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl($item_id), _m('history'));
+    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")"). ' &nbsp; '. ChangesMonitor::getHistoryLink($item_id);
 }
 
 function AafinderSliceLink($slice_id) {
-    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Module::getModuleName($slice_id) .")"). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl($slice_id), _m('history'));
+    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Module::getModuleName($slice_id) .")"). ' &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
 }
 
 function AafinderSiteLink($spot_id, $slice_id) {
-    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")"). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl($slice_id), _m('history')). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl("S.$spot_id"), _m('history'));
+    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")"). ' &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
 function AafinderViewLink($view_id, $slice_name='') {
     $view = AA_Views::getView($view_id);
-    return $view->jumpLink($view_id." -  ".$view->f("name"). ($slice_name ? " ($slice_name) ":'')). ' &nbsp; '. a_href(ChangesMonitor::getHistoryUrl("V.$view_id"), _m('history'));
+    return $view->jumpLink($view_id." -  ".$view->f("name"). ($slice_name ? " ($slice_name) ":'')). ' &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
 function query_search($where) {
@@ -119,7 +119,7 @@ function PrintItemInfo($item_id) {
     if ($item) {
         $long_id = $item->getItemID();
         $sid     = $item->getSliceID();
-        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>". ' | '. a_href(ChangesMonitor::getHistoryUrl($item_id), _m('History'));;
+        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"".StateUrl("itemedit.php3?id=$long_id&edit=1&encap=false&change_id=$sid")."\" target=\"_blank\">"._m('Edit')."</a>". ' | '. ChangesMonitor::getHistoryLink($item_id);;
         echo "<br>Item slice: $sid (". AA_Slice::getModuleName($sid). ')';
         $format = '_#HEADLINE';
         echo "<br>_#HEADLINE: ". $item->unalias($format);
@@ -133,15 +133,20 @@ function PrintItemInfo($item_id) {
     $long_id = $zid->longids(0);
     if ($long_id) {
         if ($res = DB_AA::select(array(), 'SELECT * FROM `item`', array(array('id',$long_id, 'l')))) {
-            echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
+            echo '<h3>'. _m('Item table record for the item') .'</h3><pre>';
             print_r($res);
             echo "</pre>";
         }
 
         if ($res = DB_AA::select(array(), 'SELECT * FROM `content`', array(array('item_id',$long_id, 'l')))) {
-            echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
+            echo '<h3>'. _m('Content table records for the item') .'</h3><pre>';
             print_r($res);
             echo "</pre>";
+        }
+
+        if ($res = DB_AA::select(array(), 'SELECT * FROM `log`', array(array('selector',$long_id)))) {
+            echo '<h3>'. _m('Log') .'</h3>';
+            echo GetHtmlTable($res, 'key');
         }
 
         if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
@@ -164,7 +169,7 @@ function PrintItemInfo($item_id) {
 
         echo '<h3>'. _m('History') .'</h3>';
 
-        echo 'show '. a_href(ChangesMonitor::getHistoryUrl($item_id), _m('history'));
+        echo 'show '. ChangesMonitor::getHistoryLink($item_id);
 
         //echo "<pre>";
         //print_r($changes->getHistory(array($long_id)));
@@ -192,7 +197,7 @@ $apage->printHead($err, $Msg);
 
 is_object( $db ) || ($db = getDB());
 
-if (strlen($_GET['findtext'])) {
+if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     if ($_GET['findinview']) {
         $fields = array (
             'id',
@@ -222,7 +227,7 @@ if (strlen($_GET['findtext'])) {
 
         $SQL = "SELECT view.id, view.type, view.slice_id, slice.name FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "view.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%')."%\" OR ";
+            $SQL .= "view.$field LIKE \"%". addcslashes(quote($_REQUEST['findtext']),'_%')."%\" OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -258,7 +263,7 @@ if (strlen($_GET['findtext'])) {
 
         $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
+            $SQL .= "$field LIKE \"%". addcslashes(quote($_REQUEST['findtext']),'_%') ."%\" OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -302,7 +307,7 @@ if (strlen($_GET['findtext'])) {
 
         $SQL = "SELECT slice_id, id, name FROM field WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
+            $SQL .= "$field LIKE \"%". addcslashes(quote($_REQUEST['findtext']),'_%') ."%\" OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -313,8 +318,22 @@ if (strlen($_GET['findtext'])) {
         echo '<br><br>';
     }
 
+    if ($_GET['findinseo']) {
+        if ( in_array(guesstype(trim($_REQUEST['findtext'])), array('s','l')) ) {
+            PrintItemInfo(trim($_REQUEST['findtext']));
+        } elseif (preg_match_all("/([0-9a-f]{32})/", $_REQUEST['findtext'], $ids)) {
+            $ids = array_unique($ids[0]);
+            foreach ($ids as $id) {
+                PrintItemInfo($id);
+                echo '<hr>';
+            }
+        } else {
+            print query_search("content.text = '". quote($_REQUEST['findtext'])."' AND content.field_id = 'seo.............'");
+        }
+    }
+
     if ($_GET['findinspot']) {
-        $like_text = addcslashes(quote($_GET['findtext']),'_%');
+        $like_text = addcslashes(quote($_REQUEST['findtext']),'_%');
 
         $fields = array (
             'content'
@@ -333,11 +352,11 @@ if (strlen($_GET['findtext'])) {
         echo '<br><br>';
 
         // ------
-        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('alias',   'CONTAIN', $_GET['findtext'])));
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('code',    'CONTAIN', $_GET['findtext']))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('desc',    'CONTAIN', $_GET['findtext']))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('ussage',  'CONTAIN', $_GET['findtext']))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('aa_name', 'CONTAIN', $_GET['findtext']))) );
+        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('alias',   'CONTAIN', $_REQUEST['findtext'])));
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('code',    'CONTAIN', $_REQUEST['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('desc',    'CONTAIN', $_REQUEST['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('ussage',  'CONTAIN', $_REQUEST['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('aa_name', 'CONTAIN', $_REQUEST['findtext']))) );
 
         if (!$zids->is_empty()) {
             $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('admin/aafinder.php3'));
@@ -345,20 +364,6 @@ if (strlen($_GET['findtext'])) {
             $manager = new AA_Manager('aafindaliases'.$module_id, $manager_settings);
             $manager->performActions();
             $manager->display($zids);
-        }
-    }
-
-    if ($_GET['findinseo']) {
-        if ( in_array(guesstype(trim($_GET['findtext'])), array('s','l')) ) {
-            PrintItemInfo(trim($_GET['findtext']));
-        } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['findtext'], $ids)) {
-            $ids = array_unique($ids[0]);
-            foreach ($ids as $id) {
-                PrintItemInfo($id);
-                echo '<hr>';
-            }
-        } else {
-            print query_search("content.text = '". quote($_GET['findtext'])."' AND content.field_id = 'seo.............'");
         }
     }
 
@@ -377,7 +382,7 @@ if (strlen($_GET['findtext'])) {
 
         $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {
-            $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_GET['findtext']),'_%') ."%\" OR ";
+            $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_REQUEST['findtext']),'_%') ."%\" OR ";
         }
         $SQL .= "0) ORDER BY date";
         $db->query($SQL);
@@ -533,14 +538,14 @@ FrmTabSeparator(_m("Search"));
 echo '<tr><td>';
 echo '<form name="f_findtext" action="">';
 echo '<b>'._m('Find in').'</b>
-      <label><input type="checkbox" name="findinseo"    value="1" '. ((!$_GET['findtext'] OR $_GET['findinseo'   ])? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinview"   value="1" '. ((!$_GET['findtext'] OR $_GET['findinview'  ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinslice"  value="1" '. ((!$_GET['findtext'] OR $_GET['findinslice' ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinfield"  value="1" '. ((!$_GET['findtext'] OR $_GET['findinfield' ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinspot"   value="1" '. ((!$_GET['findtext'] OR $_GET['findinspot'  ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinseo"    value="1" '. ((!$_REQUEST['findtext'] OR $_GET['findinseo'   ])? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinview"   value="1" '. ((!$_REQUEST['findtext'] OR $_GET['findinview'  ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinslice"  value="1" '. ((!$_REQUEST['findtext'] OR $_GET['findinslice' ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinfield"  value="1" '. ((!$_REQUEST['findtext'] OR $_GET['findinfield' ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinspot"   value="1" '. ((!$_REQUEST['findtext'] OR $_GET['findinspot'  ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findindiscus" value="1" '. ((                      $_GET['findindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
-    <input type="text" name="findtext" value="'.safe($_GET['findtext']).'" size=120>&nbsp;&nbsp;
+    <input type="text" name="findtext" value="'.safe($_REQUEST['findtext']).'" size=120>&nbsp;&nbsp;
       <input type="submit" name="go_findtext" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
