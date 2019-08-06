@@ -68,6 +68,9 @@ $toexecute->later($mail,array(array('rrrrrrrrrrrx@ecn.cz')));
 */
 
 
+// notify functions based on ANONYMOUS_EDIT_CRON permission
+AA::$perm->setPermMode('cron');
+
 $toexecute->execute();
 
 

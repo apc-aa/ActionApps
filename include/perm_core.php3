@@ -439,6 +439,9 @@ class AA_Perm {
     /** @var array AA_Permsystem */
     private $perm_systems;
 
+    /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
+    private $perm_mode;
+
     function __construct($systems) {
         $this->perm_systems = array();
         foreach ($systems as $system_name) {
@@ -804,6 +807,20 @@ class AA_Perm {
             $perms = str_replace($arr['id'], $arr['perm'], $perms);
         }
         return $perms;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermMode() {
+        return $this->perm_mode;
+    }
+
+    /**
+     * @param mixed $perm_mode
+     */
+    public function setPermMode($perm_mode) {
+        $this->perm_mode = $perm_mode;
     }
 }
 

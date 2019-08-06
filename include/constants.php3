@@ -300,6 +300,7 @@ define("ANONYMOUS_EDIT_ONLY_ANONYMOUS", 2);
 define("ANONYMOUS_EDIT_NOT_EDITED_IN_AA", 3);
 define("ANONYMOUS_EDIT_PASSWORD", 4);
 define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
+define("ANONYMOUS_EDIT_CRON", 6);
 
 // MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
 // specifies how many items from the begining we have to search
