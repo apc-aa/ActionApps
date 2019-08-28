@@ -4,11 +4,13 @@
             - items with invalid values are not stored in the database
             - password field now works correctly even if validation (for password length) is not set in field setting
             - password field in the form now should not be autofilled
+         - new link "Log" in Planned task manager to see results of the task in the log
          - new _#PWD_URLP - Password change url parameter - alias for URL parameter used for password change link
            in _#PWD_LINK (you can use it, if you want to use your own url for it)
          - fixed {jwtdecode} for some Apache instalations
          - fixed onSuccess function call in AA_Ajax()
          - fixed return values of {changepwdsendmail}
+         - fixed ANONYMOUS_EDIT_CRON - "Only by Planned tasks (cron-toexecute)" permissions for cron task
 19-08-06 - new Manager input widget - it allows manage Items from remote slice, when the remote
 (honzam)   item points to editted item. It the same as we can achieve with {manager}. It works
            also in AA admin interface, where was problem with Add Item operation (the ID of new
