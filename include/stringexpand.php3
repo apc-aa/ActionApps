@@ -4492,8 +4492,12 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
         if (!count($slices))                 { warn(_m('No current slice(s)')); return ''; }
         if (!in_array($item_slice, $slices)) { warn(_m('Item slice is not in list of allowed slices')); return ''; }
 
-        $perm = (AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit')==ANONYMOUS_EDIT_ALL) OR (AA::$perm->getPermMode()=='cron');
-        if (!$perm) { warn(_m('No permit_anonymous_edit permission for the slice')); return ''; }
+        $slice_perm = AA_Slice::getModuleProperty($item_slice,'permit_anonymous_edit');
+        $perm = (($slice_perm==ANONYMOUS_EDIT_ALL) OR (($slice_perm==ANONYMOUS_EDIT_CRON) AND (AA::$perm->getPermMode()=='cron')));
+        if (!$perm) {
+            warn(_m('No permit_anonymous_edit permission for the slice'));
+            return '';
+        }
 
         $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), $zid, $restrict_fields);
         $saver   = new AA\IO\Saver($grabber, $transformations, $item_slice, 'update');
