@@ -7539,7 +7539,7 @@ class AA_Stringexpand_Changepwdsendmail  extends AA_Stringexpand_Nevercache {
             return '';
         }
         $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
-        return AA_Password_Manager_Reader::is_ok(AA_Password_Manager_Reader::askForMail($username, $reader_slice_id, $from_email) ? '1' : 'err');
+        return AA_Password_Manager_Reader::is_ok(AA_Password_Manager_Reader::askForMail($username, $reader_slice_id, $from_email)) ? '1' : 'err';
     }
 }
 
