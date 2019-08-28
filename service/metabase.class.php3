@@ -385,6 +385,13 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $this->c;
     }
 
+    /** get Column objects
+     *  @return AA_MbC
+     */
+    function getColumn($columnname) {
+        return $this->c[$columnname];
+    }
+
     function getKeys() {
         return array_keys($this->k);
     }
@@ -630,6 +637,11 @@ class AA_Metabase {
     /** static method */
     function isPacked($tablename, $column) {
         return in_array($column, AA_Metabase::getPacked($tablename));
+    }
+
+    /** get type of the column in the table */
+    function getFieldType($tablename, $column) {
+        return $this->tables[$tablename]->getColumn($column)->getFieldType();
     }
 
     /** static method */

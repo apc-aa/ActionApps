@@ -458,6 +458,7 @@ define('ITEMCONTENT_ERROR_DUPLICATE',   201);
 define('ITEMCONTENT_ERROR_NO_ID',       202);
 define('ITEMCONTENT_ERROR_NO_SLICE_ID', 203);
 define('ITEMCONTENT_ERROR_NO_PERM',     204);
+define('ITEMCONTENT_ERROR_INVALID',     205);
 
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing
@@ -831,7 +832,13 @@ class ItemContent extends AA_Content {
 
         foreach ($fields as $field_id => $field) {
             $property = $field->getAaProperty();
-            $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
+
+            $fld_val =  $this->getAaValue($field_id);
+            if ( count($err_arr = $property->validate($fld_val, true) ) ) {
+                ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, $field_id.': '.$err_arr[1]);
+                return false;
+            }
+            $new_content->setAaValue($field_id, $property->complete4Insert($fld_val, $profile));
         }
 
         // normalize - set id and well as unpacked_id

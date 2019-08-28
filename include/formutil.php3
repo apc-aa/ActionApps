@@ -2126,14 +2126,14 @@ class AA_Inputfield {
         $this->field_name('secrow',1,$change_pwd_label);
         $ch_name = $name."a";
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name, "") : '';
-        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>", 'change' );
+        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"new-password\" value=\"\" $triggers>", 'change' );
         $this->helps('plus',$change_pwd_help );
 
         // retype pwd
         $this->field_name('secrow',1,$retype_pwd_label);
         $ch_name = $name."b";
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $ch_name, "") : '';
-        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\" $triggers>", 'retype' );
+        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"new-password\" value=\"\" $triggers>", 'retype' );
         $this->helps('plus',$retype_pwd_help );
     }
 

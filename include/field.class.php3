@@ -280,7 +280,7 @@ class AA_Field {
         // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
         return new AA_Property( $this->getId(),
                                 $name ?: $this->getName(),
-                                $this->getProperty('text_stored') ? 'text' : 'int',
+                                $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
                                 $multiple,
                                 false,                   // persistent @todo
                                 AA_Validate::factoryByString($this->data['input_validate']), // null,              // $validator - @todo create validator

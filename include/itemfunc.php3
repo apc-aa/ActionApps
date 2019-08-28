@@ -130,7 +130,7 @@ class AA_Generator_Txt extends AA_Generator {
             );
     }
 
-    /** generate() velue of currrent timestamp */
+    /** generate() - main function for generating the value */
     function generate() {
         return strlen($this->text) ? new AA_Value($this->text) : new AA_Value();
     }
@@ -156,7 +156,7 @@ class AA_Generator_Rnd extends AA_Generator {
             );
     }
 
-    /** generate() velue of currrent timestamp */
+    /** generate() - main function for generating the value */
     function generate() {
         global $slice_id;
 
@@ -895,7 +895,8 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 || $profile->getProperty('hide',$pri_field_id)
                 || ($action == "insert" && $notshown [$varname]);
 
-        list($validate) = explode(":", $f["input_validate"], 2);
+        list($validate_type) = explode(":", $f["input_validate"], 2);
+        list($insert_type)   = explode(":", $f["input_insert_func"], 2);
 
         if ($setdefault) {
             $default = $field->getDefault();
@@ -903,7 +904,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             // slashed variables (this will be changed in future) - TODO
             $$varname     = ($default->count() > 1) ? array_map('addslashes',$default->getValues()) : addslashes($default->getValue());
             $$htmlvarname = $default->getFlag();
-        } elseif ($validate=='date') {
+        } elseif ($validate_type=='date') {
             $default = $field->getDefault();
             // we do not know at this moment, if we have to use default
             $default_val  = addslashes($default->getValue());
@@ -913,37 +914,33 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
         // Run the "validation" which changes field values
         if ($editable && ($action == "insert" || $action == "update")) {
-            switch( $validate ) {
-                case 'date':
-                    $foo_datectrl_name = new datectrl($varname);
+            if ( $validate_type == 'date' ) {
+                $foo_datectrl_name = new datectrl($varname);
 
-                    if ($$varname != "") {                  // loaded from defaults
-                        $foo_datectrl_name->setdate_int($$varname);
-                    }
-                    $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
-                    $$varname = $foo_datectrl_name->get_date();  // write to var
-                    break;
-                case 'bool':
-                    $$varname = ($$varname ? 1 : 0);
-                    break;
-                case 'pwd':
-                    $change_varname   = $varname.'a';
-                    $retype_varname   = $varname.'b';
-                    $delete_varname   = $varname.'d';
+                if ($$varname != "") {                  // loaded from defaults
+                    $foo_datectrl_name->setdate_int($$varname);
+                }
+                $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
+                $$varname = $foo_datectrl_name->get_date();  // write to var
+            } elseif ($insert_type == 'boo') {
+                $$varname = ($$varname ? 1 : 0);
+            } elseif ($insert_type == 'pwd') {
+                $change_varname   = $varname.'a';
+                $retype_varname   = $varname.'b';
+                $delete_varname   = $varname.'d';
 
-                    global $$change_varname, $$retype_varname, $$delete_varname;
+                global $$change_varname, $$retype_varname, $$delete_varname;
 
-                    if ($$change_varname && ($$change_varname == $$retype_varname)) {
-                        $$varname = ParamImplode(array('AA_PASSWD',$$change_varname));
-                    } elseif ($$delete_varname) {
-                        $$varname = '';
-                    } elseif ($action == "update") {
-                        // store the original password to use it in
-                        // insert_fnc_pwd when it is not changed
-                        // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
-                        $$varname = ParamImplode(array('AA_PASSWD_CRYPTED',$oldcontent4id[$pri_field_id][0]['value']));
-                    }
-                    break;
+                if ($$change_varname && ($$change_varname == $$retype_varname)) {
+                    $$varname = ParamImplode(array('AA_PASSWD',$$change_varname));
+                } elseif ($$delete_varname) {
+                    $$varname = '';
+                } elseif ($action == "update") {
+                    // store the original password to use it in
+                    // insert_fnc_pwd when it is not changed
+                    // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
+                    $$varname = ParamImplode(array('AA_PASSWD_CRYPTED',$oldcontent4id[$pri_field_id][0]['value']));
+                }
             }
         }
 
@@ -956,8 +953,8 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 continue;
             }
 
-            switch( $validate ) {
-                    case 'e-unique':
+            switch( $validate_type ) {
+                case 'e-unique':
                 case 'unique':
 
                     // fill field with curent field, if not filled and
