@@ -1,3 +1,10 @@
+19-08-28 - {qs} is now able to access the variables sent as application/json request body (used by JS APIs)
+(jirkar)   (we count with the request body in caching system in this case)
+(honzam) - improved input validation
+            - items with invalid values are not stored in the database
+            - password field now works correctly even if validation (for password length) is not set in field setting
+            - password field in the form now should not be autofilled
+         - fixed {jwtdecode} for some Apache instalations
 19-08-06 - new Manager input widget - it allows manage Items from remote slice, when the remote
 (honzam)   item points to editted item. It the same as we can achieve with {manager}. It works
            also in AA admin interface, where was problem with Add Item operation (the ID of new

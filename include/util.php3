@@ -449,8 +449,10 @@ function debug() {
  * @param string $msg
  */
 function warn($msg) {
-    $trace = debug_backtrace();
-    AA::$debug && AA::$dbg->warn( join('->',array($trace[1]['class'],$trace[1]['function'])).': '.$msg );
+    if (AA::$debug) {
+        $trace = debug_backtrace();
+        AA::$dbg->warn( join('->',array($trace[1]['class'],$trace[1]['function'])).': '.$msg );
+    }
 }
 
 /** huhe function
@@ -1927,7 +1929,8 @@ function get_authorization_header() {
     } elseif ( function_exists('apache_request_headers')) {
         $apache_auth_tmp = apache_request_headers();
         if ( strlen($apache_auth_tmp['Authorization']) ) {
-             $ret = 'Bearer '.$apache_auth_tmp['Authorization'];
+            // $ret = 'Bearer '.$apache_auth_tmp['Authorization'];  // no need to add Bearer - already included
+            $ret = $apache_auth_tmp['Authorization'];
         }
     }
     return trim($ret);
