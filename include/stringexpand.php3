@@ -3139,39 +3139,6 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** returns long ids of subitems items based on the relations between items
- *  {tree:<item_id>[:<relation_field>]}
- *  {tree:2a4352366262227383484784635362ab:relation.......1}
- *  @return string - dash separated long ids of items which belongs to the tree under
- *          specifield item based on the relation field
- */
-class AA_Stringexpand_Tree extends AA_Stringexpand {
-    /** expand function
-     * @param $item_id - item id of the tree root (short or long)
-     * @param $relation_field - tree relation field (default relation........)
-     * @return string
-     */
-    function expand($item_id='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
-        return join('-', AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices));
-    }
-}
-
-/** returns long ids of subitems items based on the relations between items
- *  {path:<item_id>[:<relation_field>]}
- *  {path:2a4352366262227383484784635362ab:relation.......1}
- *  @return string - dash separated long ids of items from root to the item
- */
-class AA_Stringexpand_Path extends AA_Stringexpand {
-    /** expand function
-     * @param $item_id - item id of the tree root (short or long)
-     * @param $relation_field - tree relation field (default relation........)
-     * @return string
-     */
-    function expand($item_id='', $relation_field=null) {
-        return join('-', array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field)));
-    }
-}
-
 /** returns string usefull for sorting the tree of items.
  *  The string is based on the short_ids by default, which is quickest and works well with discussions, ...
  *  If the branch of current item 35897 is 2458-15878-35897,
@@ -3266,6 +3233,39 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
         $s_arr = explode_ids($slices);
 
         return AA_Trees::$func($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort, $s_arr);
+    }
+}
+
+/** returns long ids of subitems items based on the relations between items
+ *  {tree:<item_id>[:<relation_field>]}
+ *  {tree:2a4352366262227383484784635362ab:relation.......1}
+ *  @return string - dash separated long ids of items which belongs to the tree under
+ *          specifield item based on the relation field
+ */
+class AA_Stringexpand_Tree extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id - item id of the tree root (short or long)
+     * @param $relation_field - tree relation field (default relation........)
+     * @return string
+     */
+    function expand($item_id='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
+        return join('-', AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices));
+    }
+}
+
+/** returns long ids of subitems items based on the relations between items
+ *  {path:<item_id>[:<relation_field>]}
+ *  {path:2a4352366262227383484784635362ab:relation.......1}
+ *  @return string - dash separated long ids of items from root to the item
+ */
+class AA_Stringexpand_Path extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id - item id of the tree root (short or long)
+     * @param $relation_field - tree relation field (default relation........)
+     * @return string
+     */
+    function expand($item_id='', $relation_field=null) {
+        return join('-', array_reverse(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field)));
     }
 }
 
@@ -6776,6 +6776,9 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
             }
         } elseif (isset($_REQUEST[$variable_name])) {
             $ret = $_REQUEST[$variable_name];
+        } elseif ( $_SERVER['CONTENT_TYPE'] == 'application/json' ) {
+            $req_body = json_decode(file_get_contents('php://input'), true);
+            $ret      = $req_body[$variable_name];
         } else {
             $shtml_get = add_vars('', 'return');
             $ret = $shtml_get[$variable_name];

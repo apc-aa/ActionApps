@@ -123,6 +123,11 @@ class PageCache  {
             }
         }
 
+        // for JSON request the parameters are in body, but is not parsed into $_POST variable
+        if ($_SERVER['CONTENT_TYPE'] == 'application/json') {
+           $ks["php-input"] = file_get_contents('php://input');
+        }
+
         // for the websites using {detect} in the site
         $detect = new Mobile_Detect;
         $ks['detect'] = $detect->isMobile() . ','. $detect->isTablet();
