@@ -7374,16 +7374,22 @@ class AA_Password_Manager_Reader {
         $user_info = GetAuthData($user_id);
 
         // generate MD5 hash
-        $email    = $user_info->getValue(FIELDID_EMAIL);
-        $pwdkey   = md5($user_id.$email.AA_ID.round(now()/60));
+        $email     = $user_info->getValue(FIELDID_EMAIL);
+        $pwdkey    = md5($user_id.$email.AA_ID.round(now()/60));
+        $pwd_param = "aapwd2=$pwdkey-$user_id";
 
         // send it via email
-        $url      = shtml_url()."?aapwd2=$pwdkey-$user_id";
+        $url      = shtml_url()."?$pwd_param";
         $pwd_link = "<a href=\"$url\">$url</a>";
+
+        $add_alias = array(
+            "_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link",  "", _m('Password link')),
+            "_#PWD_URLP" => GetAliasDef( "f_t:$pwd_param", "", _m('Password change url parameter')),
+            );
 
         if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', array(array('owner_module_id',$slice_id, 'l'), array('type','password change')))) {
             $slice     = AA_Slice::getModule($slice_id);
-            $user_item = new AA_Item($user_info, $slice->aliases( array("_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link", "", _m('Password link')))));
+            $user_item = new AA_Item($user_info, $slice->aliases( $add_alias ));
             AA_Mail::sendTemplate($template_id, array($email), $user_item, false);
         } else {
             $mail     = new AA_Mail;

@@ -97,7 +97,8 @@ function ShowEmailAliases() {
     $ali[] = array (
         "group" => _m("Aliases for Password Change email (you can use also all aliases of the user)"),
         "aliases" => array (
-            "_#PWD_LINK" => _m("HTML link to the password change page for current user")
+            "_#PWD_LINK" => _m("HTML link to the password change page for current user"),
+            "_#PWD_URLP" => _m('URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)')
          ));
 
 
