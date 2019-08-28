@@ -227,10 +227,14 @@ function DisplayInputBack(input_id) {
 
 function AA_Ajax(div, url, param, onload) {
     $(div).update(AA_Config.loader);
-    new Ajax.Updater(div, url, param);
     if( onload && typeof onload === "function" ) {
-        onload();
+        if (param && typeof param === 'object' ) {
+            param['onSuccess'] = onload;
+        } else {
+            param = {onSuccess: onload};
+        }
     }
+    new Ajax.Updater(div, url, param);
 }
 
 function AA_AjaxCss(selector, url, param) {
