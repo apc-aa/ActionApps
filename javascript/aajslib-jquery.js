@@ -104,19 +104,27 @@ function AA_InsertHtml(into_id, code) {
 /** selector_update is optional and is good for updating table rows, where we want to show/hide tr, but update td */
 function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, url, selector_update) {
     var link = jqid(link_id);
-    if ( $(link).hasClass('is-on')) {
-        $(selector_hide).hide('fast');
-        $(link).html(link_text_1);
-        $(link).toggleClass('is-on');
-    } else {
+    var selector_update = selector_update ? selector_update : selector_hide;
+    var swap;
+    if ( !$(link).hasClass('is-on')) {
         $(selector_hide).show('fast');
         $(link).toggleClass('is-on');
         // not loaded from remote url, yet?
         if ( !$(link).hasClass('aa-loaded')) {
             $(link).addClass('aa-loaded');
-            AA_AjaxCss(selector_update ? selector_update : selector_hide, url);
+            $(link).attr("data-aa-oldval", $(selector_update).html());
+            AA_AjaxCss(selector_update, url);
+        } else {
+            swap = $(selector_update).html(); $(selector_update).html($(link).attr("data-aa-oldval")); $(link).attr("data-aa-oldval", swap);
         }
         $(link).html(link_text_2);
+    } else {
+        swap = $(selector_update).html(); $(selector_update).html($(link).attr("data-aa-oldval")); $(link).attr("data-aa-oldval", swap);
+        if (!$(link).attr("data-aa-oldval").trim().length) {
+            $(selector_hide).hide('fast');
+        }
+        $(link).html(link_text_1);
+        $(link).toggleClass('is-on');
     }
 }
 
