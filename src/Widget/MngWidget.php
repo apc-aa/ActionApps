@@ -32,17 +32,18 @@ class MngWidget extends \AA\Widget\Widget {
 
     function _getRawHtml($aa_property, $content, $type = 'normal') {
         $property_id = $aa_property->getId();
+        $item_id     = $content->getId();
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
         $base_id     = FormArray::formName2Id($base_name);
         $input_name  = $base_name . "[0]";
-        $value = $content->getAaValue($aa_property->getId());
+        $value = $content->getAaValue($property_id);
         $input_value = myspecialchars($value->getValue(0));
 
         // we store the connector id to cookie in order we have it during AJAX call - Parts renewal
         $cookie = new \CookieManager();
         $cookie_name = 'mng_'.get_short_hash($base_id);
 
-        // We are using artificial ID - say connector - and not real item ID of current slice
+        // We are using artificial ID - say connector - and not real item ID of current item
         // This allows us to use manager even for nonstored items and maybe other features (shared constants) in future
         if (!strlen($input_value)) {
             if (IsAjaxCall()) {
@@ -51,6 +52,10 @@ class MngWidget extends \AA\Widget\Widget {
                 }
             } else {
                 $input_value = new_id();
+                if (($type == 'ajax') OR ($type == 'live')) {
+                    // we have to store the connectorID to the database immediately
+                   UpdateField($item_id, $property_id, new \AA_Value($input_value, FLAG_HTML));
+                }
             }
         }
         // @todo - delete the cookie upon form store

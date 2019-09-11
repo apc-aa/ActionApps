@@ -1,3 +1,13 @@
+19-09-11 - Widget is possible to use with {ajax} and {live} - not only in AA interface
+(honzam) - {htmlajaxtoggle} now allows switch between two content - the primary and the one generated
+           by the ajax call. In previous version expects the initial content is empty.
+           The change is backward compatible.
+         - fixed {protectmail} - the script for generate protectmail is removed after execution, because when
+           the content is redisplayed again (by {htmlajaxtoggle} for example, the script is executed again,
+           which leads to wrong content
+         - fixed {text2html} and {field2html} - now correctly works with UTF strings
+         - jQuery updated from v 3.3.1 to 3.4.1
+         - select2 is now preferred in version 4.x over 3.x
 19-08-28 - {qs} is now able to access the variables sent as application/json request body (used by JS APIs)
 (jirkar)   (we count with the request body in caching system in this case)
 (honzam) - improved input validation
