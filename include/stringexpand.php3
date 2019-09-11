@@ -773,8 +773,9 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
         $linkpart    = explode('@', $email);
         $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
         $linktext    = ($text=='') ? $mailprotect : "'".escape4js($text)."'";
-        $ret = "<a href=\"\" id=\"$ahrefid\"></a>";
-        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);var cs=currentScript; if (cs) {}</script>";
+        $ret = "<a href=\"\" id=\"$ahrefid\"></a><!--AA script generated, AA script removed-->";
+        // we delete the script because when the content is redisplayed again (by {htmlajaxtoggle} for example, the script is executed again, which leads to wrong content)
+        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);var cs=document.currentScript; if (cs) {el.parentNode.removeChild(cs);}</script>";
         return $ret;
     }
     // another option - no need the ID
