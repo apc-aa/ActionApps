@@ -774,7 +774,7 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
         $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
         $linktext    = ($text=='') ? $mailprotect : "'".escape4js($text)."'";
         $ret = "<a href=\"\" id=\"$ahrefid\"></a>";
-        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);</script>";
+        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);var cs=currentScript; if (cs) {}</script>";
         return $ret;
     }
     // another option - no need the ID
@@ -2258,9 +2258,9 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
 
             // Add the text leading up to the URL.
             if ($escape) {
-                $html .= myspecialchars(aa_substr($text, $position, $urlPosition - $position));
+                $html .= myspecialchars(substr($text, $position, $urlPosition - $position));     // no use aa_substr! - the  $urlPosition is in BYTES, not characters
             } else {
-                $html .= aa_substr($text, $position, $urlPosition - $position);
+                $html .= substr($text, $position, $urlPosition - $position);
             }
 
             $scheme      = $match[1][0];
@@ -2273,14 +2273,14 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
 
             // Check that the TLD is valid or that $domain is an IP address.
             $tld = strtolower(strrchr($domain, '.'));
-            if (preg_match('{^\.[0-9]{1,3}$}', $tld) || isset($validTlds[$tld])) {
+            if (preg_match('{^\.[0-9]{1,3}$}', $tld) || isset($validTlds[$tld])) {    // works with BYTES, not characters!
                 // Do not permit implicit scheme if a password is specified, as
                 // this causes too many errors (e.g. "my email:foo@example.org").
                 if (!$scheme && $password) {
                     $html .= myspecialchars($username);
 
                     // Continue text parsing at the ':' following the "username".
-                    $position = $urlPosition + aa_strlen($username);
+                    $position = $urlPosition + strlen($username);        // no use aa_substr! - the  $urlPosition is in BYTES, not characters
                     continue;
                 }
 
@@ -2301,11 +2301,11 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
             }
 
             // Continue text parsing from after the URL.
-            $position = $urlPosition + strlen($url);
+            $position = $urlPosition + strlen($url);            // no use aa_substr! - the  $urlPosition is in BYTES, not characters
         }
 
         // Add the remainder of the text.
-        $html .= myspecialchars(aa_substr($text, $position));
+        $html .= myspecialchars(substr($text, $position));      // no use aa_substr! - the  $urlPosition is in BYTES, not characters
         return $html;
     }
 }
@@ -3148,13 +3148,13 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
  *  {sortstring:2a4352366262227383484784635362ab:relation.......1}
  *  {sortstring:2a4352366262227383484784635362ab:relation.......1:_#ORDER___}
  *    - use _#ORDER___ alias instead of short ID. _#ORDER___ could be number or any other string
- *  @return string - dash separated long ids of items from root to the item
+ *  @return string usefull for sorting the tree of items
  */
 class AA_Stringexpand_Sortstring extends AA_Stringexpand {
     /** expand function
      * @param      $item_id         string - item id of the tree root (short or long)
      * @param      $relation_field  string - tree relation field (default relation........)
-     * @param      $expression      string - expression to use for ordering. The default is short item id
+     * @param      $expression      string - expression to use for ordering (on the same tree level). The default is short item id
      * @return string
      */
     function expand($item_id='', $relation_field=null, $expression=null) {
@@ -6034,8 +6034,8 @@ class AA_Requires {
             'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
             'dropzone@5'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
             //'select2@4'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
-            'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
             'select2@4'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.full.min.js', 'sha256-FcVIknBiVRk5KLQeIBb9VQdtFRMqwffXyZ+D8q0gQro=', array('jquery@3','_css-select2@4')),
+            'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
             'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
             'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
             'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
@@ -6045,15 +6045,15 @@ class AA_Requires {
             'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
             'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION,'',false)),
             'jquery-ui@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', array('jquery@3', '_css-jquery-ui@1')),
-            'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js', 'sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8='),
+            'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js', 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo='),
             'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js', 'sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc='),
             'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js', 'sha256-3kjowa0CUPPK4W+yaGpNP1exjs8gbX2SSsToEMd06K8='),
             '_css-jquery-ui@1'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
             '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
             '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
             '_css-dropzone@5'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.css', 'sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g='),
-            '_css-select2@3'             => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.css', 'sha256-ijlUKKj3hJCiiT2HWo1kqkI79NTEYpzOsw5Rs3k42dI='),
             '_css-select2@4'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/css/select2.min.css', 'sha256-xJOZHfpxLR/uhh1BwYFS5fhmOAdIRQaiOul5F/b7v3s='),
+            '_css-select2@3'             => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.css', 'sha256-ijlUKKj3hJCiiT2HWo1kqkI79NTEYpzOsw5Rs3k42dI='),
             '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
             '_css-leaflet@1'             => new AA_Req_Css('https://unpkg.com/leaflet@1.3.3/dist/leaflet.css', 'sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=='),
             'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
