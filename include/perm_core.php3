@@ -451,14 +451,9 @@ class AA_Perm {
     }
 
     /**
-     * perm_mode 1 - first Reader Management slice listed in Uses slices
-     *           2 - all Reader Management slices listed in Uses slices
-     *           3 - AA + all Reader Management slices in AA (old behavior)
-     *           First Reader Management slice is encouraged option - only the
-     *           people from this slice is allowed to login to public pages.
-     *           If not selected, "AA + all Reader Management slices" option is used.
+     * @param string[] $rm_slices Reader slices array
      */
-    function restrictPermsTo($rm_slices) {
+    function restrictPermsTo(array $rm_slices) {
         $ps_rm = $this->perm_systems['AA_Permsystem_Reader'];
         // restrict to slices
         $ps_rm->restrictSlices($rm_slices);
@@ -896,8 +891,10 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         return (guesstype($uid) == 'l');
     }
 
-    /** restrict user search just to specific RM slice(s) */
-    function restrictSlices($rmslices) {
+    /** restrict user search just to specific RM slice(s)
+     * @param string[] $rmslices
+     */
+    function restrictSlices(array $rmslices) {
         $this->rm_slices = $rmslices;
     }
 
@@ -1144,6 +1141,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
 /** getReaderSlices function
  *  Returns array of all - not deleted - Reader slices
+ * @return string[]
  */
 function getReaderSlices() {
     $SQL = "SELECT module.id FROM slice, module
@@ -1198,21 +1196,22 @@ class AA_Reader {
     /** name2Id function
      *  Tries to find item id for the username in the Reader slices
      *  You can search all users or just the active (default)
-     * @param $username
-     * @param $bin
+     * @param               $username
+     * @param null|string[] $slices
+     * @param               $bin
      * @return mixed
      */
-    static function name2Id($username, $slices=null, $bin=null ) {
+    static function name2Id($username, array $slices=null, $bin=null ) {
         return AA_Reader::_find(FIELDID_USERNAME, $username, $slices, $bin );
     }
 
     /**
      * @param $email
-     * @param null $slices
+     * @param null|string[] $slices
      * @param null $bin
      * @return mixed
      */
-    static function email2Id($email, $slices=null, $bin=null) {
+    static function email2Id($email, array $slices=null, $bin=null) {
         return AA_Reader::_find(FIELDID_EMAIL, $email, $slices, $bin);
     }
 }

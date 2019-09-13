@@ -7371,8 +7371,8 @@ class AA_Password_Manager_Reader {
         if ( !trim($user) ) {
             return self::_bad(_m("Unable to find user - please check if it has been misspelled."));
         }
-        if (!($user_id = AA_Reader::name2Id($user, $slice_id))) {
-            if (!($user_id = AA_Reader::email2Id($user, $slice_id))) {
+        if (!($user_id = AA_Reader::name2Id($user, array($slice_id)))) {
+            if (!($user_id = AA_Reader::email2Id($user, array($slice_id)))) {
                 return self::_bad(_m("Unable to find user - please check if it has been misspelled."));
             }
         }
