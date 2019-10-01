@@ -1,3 +1,8 @@
+19-10-01 - new possibility to redefine just selected variables in the query string by {go:xqs_<variable>=<value>}
+(honzam)   like:
+            {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
+19-09-13 - fixed problem with "Reset Password" - the recovery e-mail was written to wrong address
+(honzam)
 19-09-11 - Widget is possible to use with {ajax} and {live} - not only in AA interface
 (honzam) - {htmlajaxtoggle} now allows switch between two content - the primary and the one generated
            by the ajax call. In previous version expects the initial content is empty.

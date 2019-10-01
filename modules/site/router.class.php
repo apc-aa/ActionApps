@@ -470,6 +470,18 @@ class AA_Router_Seo extends AA_Router {
         if (isset($new_arr['xqs'])) { //change xqs  (we can use also {go:xqs=} for current url without query string
             $apc_state['xqs'] = $new_arr['xqs'];
         }
+        // {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
+        $xqs_subst = array();
+        foreach ($new_arr as $var => $v) {
+            if (strpos($var,'xqs_')===0 AND (strlen($var)>4)) { // begins with 'xqs_'
+               $xqs_subst[substr($var,4)] = $v;
+            }
+        }
+        if ($xqs_subst) {
+            parse_str($apc_state['xqs'], $current_xqs);
+            $apc_state['xqs'] = http_build_query(array_merge($current_xqs, $xqs_subst));
+
+        }
         $x_max = self::_maxKey($apc_state, 'xseo');
         // we clear all unused {xseoX} in order {xseoX} is allaways SEO string or empty string and not something like {xseo4}
         for ($i=$x_max+1; $i<10; ++$i) {
