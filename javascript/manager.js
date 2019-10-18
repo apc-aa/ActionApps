@@ -23,19 +23,20 @@ function MarkedActionGo() {
 }
 
 //  Fills 'akce' hidden field and submits the form or opens popup window
+// @todo get rid of prototype.js in this function, so manager.js do not need it
 function MarkedActionSelect() {
     if( $F('markedaction_select') && ($F('markedaction_select') != 'nothing') ) {
         // markedactionsetting is global variable defined in manager.class.php3
         // which contain serialized state of the AA object, which should be
         // instatnionated in AA and asked for displaying htmlSetting of the action
         if( markedactionsetting[$('markedaction_select').selectedIndex] != null ) {
-            $('makrekactionparams').update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
-            new Ajax.Updater('makrekactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?display_params='+markedactionsetting[$('markedaction_select').selectedIndex]);
+            $('markedactionparams').update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+            new Ajax.Updater('markedactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?display_params='+markedactionsetting[$('markedaction_select').selectedIndex]);
         } else {
-            $('makrekactionparams').update('');
+            $('markedactionparams').update('');
         }
     } else {
-        $('makrekactionparams').update('');
+        $('markedactionparams').update('');
     }
 }
 

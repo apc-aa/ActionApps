@@ -45,7 +45,6 @@ class AA_Manager extends AA_Storable {
     var $searchbar_funct; // searchbar aditional function
     var $scroller;        // scroller object
     var $actions;
-    var $actions_perm_function;
     var $actions_hint;
     var $actions_hint_url;
     var $switches;
@@ -86,14 +85,8 @@ class AA_Manager extends AA_Storable {
         $this->module_id   = $settings['module_id'];
         $this->_manager_id = $manager_id;
 
-        if ($manager_id =='email') {
-            //huhl('ooo1', $settings);
-            //huhl('ooo2', $this->module_id);
-        }
-
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
-            $this->actions_perm_function = $settings['actions_perm_function'];
             $this->actions_hint = $settings['actions_hint'];
             $this->actions_hint_url = $settings['actions_hint_url'];
         }
@@ -101,7 +94,6 @@ class AA_Manager extends AA_Storable {
         if ( $settings['switches'] ) {      // define switches, if we have to
             $this->switches = $settings['switches'];
         }
-            //huhl('ooo3', $this->module_id);
 
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
@@ -124,7 +116,6 @@ class AA_Manager extends AA_Storable {
 
         $this->bin           = isset($settings['bin']) ? $settings['bin'] : 'app';
         $this->managed_class = isset($settings['managed_class']) ? $settings['managed_class'] : '';
-            //huhl('ooo4', $this->module_id);
 
         // create page scroller -----------------------------------------------
         // could be redefined by view (see ['itemview']['manager_vid'])
@@ -137,7 +128,6 @@ class AA_Manager extends AA_Storable {
             // could be redefined by view (see ['itemview']['manager_vid'])
             $this->messages['noitem_msg'] = get_if( $settings['itemview']['format']['noitem_msg'], _m('No item found'));
         }
-            //huhl('ooo5', $this->module_id);
 
         // create itemview ----------------------------------------------------
 
@@ -157,7 +147,6 @@ class AA_Manager extends AA_Storable {
                                         '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
                                         '',      // no discussion settings
                                         $settings['itemview']['get_content_funct']);
-            //huhl('ooo6', $this->module_id);
 
         // r_state array holds all configuration of Manager
         // the configuration then could be Bookmarked
@@ -176,8 +165,6 @@ class AA_Manager extends AA_Storable {
         } elseif ($r_state['manager']) {        // do not set state for the first time calling
             $this->setFromState($r_state['manager']);
         }
-            //huhl('ooo7', $this->module_id);
-
     }
 
     /** setDesing function
@@ -248,10 +235,21 @@ class AA_Manager extends AA_Storable {
     /** @return AA_Set object - should be used instead of getConds and getSort
      */
     function getSet() {
-        if ( $this->searchbar ) {
-            return $this->searchbar->getSet();
+        $set = $this->searchbar ? $this->searchbar->getSet() :  new AA_Set;
+        if ($this->module_id) {
+            $set->setModules(array($this->module_id));
         }
-        return new AA_Set;  // empty set
+        $BIN_CONDS   = array(
+            'app'    => AA_BIN_ACTIVE,
+            'appb'   => AA_BIN_PENDING,
+            'appc'   => AA_BIN_EXPIRED,
+            'hold'   => AA_BIN_HOLDING,
+            'trash'  => AA_BIN_TRASH
+        );
+        if ($BIN_CONDS[$this->bin]) {
+            $set->setBins($BIN_CONDS[$this->bin]);
+        }
+        return $set;
     }
 
     /** getConds function
@@ -346,6 +344,17 @@ class AA_Manager extends AA_Storable {
         return $actions->getAction($akce);
     }
 
+    /** getZidsFromPostedItems function
+     * Grabs long or short ids from array as posted from manager.class checkboxes
+     *  $items[x767ab56353544242552637389a853673]=1 or $items[45]=1  or $items[x45]=1
+     * @param $item_arr
+     * @return zids
+     */
+    protected function getZidsFromPostedItems($item_arr) {
+        return new zids(array_map(function($k) {return ltrim($k, 'x');}, array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
+    }
+
+
     /** performActions function
      *
      */
@@ -379,33 +388,14 @@ class AA_Manager extends AA_Storable {
             $this->searchbar->update();
         }
 
+        $item_zids = $this->getZidsFromPostedItems($chb);
+
         // new approach uses AA_Manageractions
         if (is_object($this->actions)) {
             $actions   = $this->actions;
             $action2do = $actions->getAction($akce);
-            if ( $akce AND $action2do AND $action2do->isPerm($this)) {
-                $this->msg[] = $action2do->perform($this, $GLOBALS['r_state'], $chb, $_REQUEST['akce_param']);
-            }
-        // older approach - @todo should be removed after we rewrite all managers
-        //                - now only in /modules/links/index.php3index.php3 - HM 2017
-        } else {
-            $action2do = $this->actions[$akce];
-            $actions_perm_function = $this->actions_perm_function;
-
-            if ( $akce AND $action2do AND $actions_perm_function($akce) ) {
-                $function   = $action2do['function'];   // programmer defined action to do
-                $func_param = $action2do['func_param']; // aditional parameter for the 'function'
-                if ( $function AND isset($chb) AND is_array($chb) ) {
-                    if ( $action2do['type'] == 'one_by_one' ) {
-                        // call action-function for each checked item
-                        foreach ( $chb as $item_id => $foo ) {
-                            $this->msg[] = $function($func_param, $item_id, $_REQUEST['akce_param']);
-                        }
-                    } else {
-                        // call action-function for whole list of checked items
-                        $this->msg[] = $function($func_param, $chb, $_REQUEST['akce_param']);
-                    }
-                }
+            if ( $akce AND $action2do AND $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
+                $this->msg[] = $action2do->perform($this, $item_zids, $_REQUEST['akce_param']);
             }
         }
 
@@ -414,25 +404,8 @@ class AA_Manager extends AA_Storable {
             $switches     = $this->switches;
             $switches_arr = $switches->getArray();
             foreach ( $switches_arr as $sw => $switch ) {
-                if ( isset($_GET[$sw]) AND $switch->isPerm($this)) {
-                    $this->msg[] = $switch->perform($this, $GLOBALS['r_state'], $chb, $_GET[$sw]);
-                }
-            }
-
-        // older approach - @todo should be removed after we rewrite all managers
-        } else {
-
-            // now perform switches (url parameteres - not in 'akce' field
-            // (like listlen=100, Tab=app, ...)
-            if ( isset($this->switches) AND is_array($this->switches) ) {
-                foreach ( $this->switches as $sw => $val ) {
-                    $actions_perm_function = $this->actions_perm_function;
-                    if ( isset($_GET[$sw]) AND $actions_perm_function($sw) ) {
-                        if ( $val['function'] ) {
-                            $function = $val['function'];
-                            $this->msg[] = $function($_GET[$sw], $val['func_param'], "");
-                        }
-                    }
+                if ( isset($_GET[$sw]) AND $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
+                    $this->msg[] = $switch->perform($this, $item_zids, $_GET[$sw]);
                 }
             }
         }
@@ -571,15 +544,17 @@ class AA_Manager extends AA_Storable {
             echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
             echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
+            $javascr = '';
+            $options = '';
+
             // new approach uses AA_Manageractions
             if (is_object($this->actions)) {
                 $actions    = $this->actions;
                 $action_arr = $actions->getArray();
                 $i       = 1;  // we start on 1 because first option is "Select action:"
-                $options = '';
 
                 foreach( $action_arr as $action_id => $action ) {
-                    if ( $action->isPerm($this)) {
+                    if ( $action->isPerm4Action($this)) {
                         $options .= '<option value="'. myspecialchars($action->getId()).'"> '.
                                                        myspecialchars($action->getName() . ($action->getOpenUrl() ? '...' : ''));
                         // we have to open window?
@@ -595,27 +570,6 @@ class AA_Manager extends AA_Storable {
                             $javascr .= "\n markedactionsetting[$i] = '". $action->getId() ."';";
                         }
                         $i++;
-                    }
-                }
-
-            // older approach - @todo should be removed after we rewrite all managers
-            } else {
-
-                if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
-                    $i=1;  // we start on 1 because first option is "Select action:"
-                    foreach ($this->actions as $action => $param ) {
-                        $actions_perm_function = $this->actions_perm_function;
-                        if ( $actions_perm_function( $action ) ) {
-                            $options .= '<option value="'. myspecialchars($action).'"> '.
-                                                           myspecialchars($param['name'] . ($param['open_url'] ? '...' : ''));
-                            if ( $param['open_url'] )  { // we have to open window
-                                $javascr .= "\n markedactionurl[$i] = '". $param['open_url'] ."';";
-                                if ( $param['open_url_add'] )  { // we have to open window
-                                    $javascr .= "\n markedactionurladd[$i] = '". $param['open_url_add'] ."';";
-                                }
-                            }
-                            $i++;
-                        }
                     }
                 }
             }
@@ -644,11 +598,10 @@ class AA_Manager extends AA_Storable {
                             '. $javascr .'
                       </script>';
             }
-            echo "</td>\n</tr>\n<tr><td id=\"makrekactionparams\"></td></tr>\n<tr><td>";
-
+            echo "</td>\n</tr>\n<tr><td id=\"markedactionparams\"></td></tr>\n<tr><td>";
         }
 
-        if (($this->scroller->pageCount() > 1) AND ($action_selected != "0")) {
+        if ($this->scroller->pageCount() > 1) {  //  AND ($action_selected != "0")) {
             echo '<b>'. _m('Items Page') .":&nbsp;&nbsp;";
             $this->scroller->pnavbar();
             echo "</b>";
@@ -722,17 +675,28 @@ class AA_Manageraction extends AA_Storable {
     }
 
     /** main executive function
-    * @param AA_Manager $manager    - back link to the manager
-    * @param $state      - state array
-    * @param $param
-    * @param $item_arr
-    * @param string $akce_param
-    */
-    function perform($manager, &$state, $item_arr, $akce_param) {
+     * @param AA_Manager $manager - back link to the manager
+     * @param            $item_zids
+     * @param string     $action_param
+     */
+    function perform($manager, $item_zids, $action_param) {
     }
 
-    /** Checks if the user have enough permission to perform the action */
-    function isPerm($manager) {
+    /** Checks if the user have enough permission to PERFORM the action on items
+     * @param $manager
+     * @param $item_zids
+     * @param $action_param
+     * @return bool
+     */
+    function isPerm4Perform($manager, $item_zids, $action_param) {
+        return $this->isPerm4Action($manager);  // in most cases it is enough
+    }
+
+    /** Checks if the user have enough permission to allow him/her to SELECT the action
+     * @param $manager
+     * @return bool
+     */
+    function isPerm4Action($manager) {
         return true;
     }
 
@@ -742,10 +706,7 @@ class AA_Manageraction extends AA_Storable {
     }
 
     /** static */
-    function getZidsSanitized(&$item_arr, $slice_id=null) {
-        $zids = new zids;
-        $zids->setFromItemArr($item_arr);
-
+    function getZidsSanitized($zids, $slice_id=null) {
         if (($zids->count() < 1) OR !$slice_id) {
             return $zids;
         }

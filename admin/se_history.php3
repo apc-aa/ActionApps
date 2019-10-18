@@ -42,13 +42,6 @@ if (!IfSlPerm(PS_HISTORY)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to view history"), "admin");
     exit;
 }
-/** IsHistoryActionPerm function
- * @param $action
- * @return false
- */
-function IsHistoryActionPerm($action) {
-    return false;
-}
 
 //------------------ Actions for History Manager --------------------------------
 
@@ -63,29 +56,26 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
     }
 
     /** main executive function
-     *  @param $param       'selected' if we have to delete only items specified
-     *                      in $item_arr - otherwise delete all items in Trash
-     *  @param $item_arr    Items to delete (if 'selected' is $param)
-     *  @param string $akce_param  Not used
-     *  @return false or error message
+     * @param        $manager
+     * @param        $item_zids    Items to delete (if 'selected' is $param)
+     * @param string $action_param Not used
+     * @return false or error message
      */
-    function perform($manager, &$state, $item_arr, $akce_param) {
+    function perform($manager, $item_zids, $action_param) {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
             return _m("You have not permissions to change items");
         }
 
-        // restrict the action just to items in the slice
-        $zids = new zids;
-        if ($zids->setFromItemArr($item_arr)->count()< 1) {
+        if ($item_zids->count()< 1) {
             return false;     // OK
         }
 
         // AA::$debug = 255;
 
         $sid = $manager->getModuleId();
-        $changes_to_apply = DB_AA::select('id', 'SELECT change.id FROM `change`, `item`', array(array('item.id', 'UNHEX(change.resource_id)', 'j'), array('change.id', $zids->longids()), array('slice_id', $sid, 'l')));
+        $changes_to_apply = DB_AA::select('id', 'SELECT change.id FROM `change`, `item`', array(array('item.id', 'UNHEX(change.resource_id)', 'j'), array('change.id', $item_zids->longids()), array('slice_id', $sid, 'l')));
 
         $changes = GetHistoryContent(new zids($changes_to_apply,'l'));
 
@@ -107,22 +97,20 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
                 $updated_items = 1;
             }
         }
-        AA::Pagecache()->invalidateFor("slice_id=". $sid);   // invalidate old cached values
+        AA::Pagecache()->invalidatefor($sid);   // invalidate old cached values
 
         return false;     // OK
     }
 
-    /** Checks if the user have enough permission to perform the action */
-    function isPerm($manager) {
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool|string
+     */
+    function isPerm4Action($manager) {
         /** @todo Should be changed to different permission */
         return IfSlPerm(PS_EDIT);
     }
 }
-
-
-
-
-
 
 /** GetHistoryFields function
  * List of fields, which will be listed in searchbar in Links Manager (search)
@@ -233,7 +221,7 @@ $actions->addAction(new AA_Manageraction_History_Apply('ApplyHistory'));
 
 $manager_settings = array(
      'module_id' => $slice_id,
-     'show'      =>  MGR_ALL, //  & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'show'      =>  MGR_ALL, //  & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
      'searchbar' => array(
          'fields'               => GetHistoryFields(),
          'search_row_count_min' => 1,
@@ -266,7 +254,6 @@ $manager_settings = array(
          'aliases'              => GetHistoryAliases(),
          'get_content_funct'    => 'GetHistoryContent'
                          ),
-     'actions_perm_function' => 'IsHistoryActionPerm',
      'actions'   => $actions,
      'switches'  => array(),
      'messages'  => array(
