@@ -210,6 +210,18 @@ function ConditionFrm($name, $txt, $val) {
     echo "</td></tr>\n";
 }
 
+$view_id = (int) $_REQUEST['view_id'];  // sanitize
+if ($view_id) {
+    $view      = AA_Views::getView($view_id);
+    $view_type = $view->f('type');
+} else {
+    // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
+    // adds wrong $view_type variable to $_SERVER array, which then redefine
+    // the $view_type from $_POST array
+    $view_type = $_POST['view_type'] ? $_POST['view_type'] : $_GET['view_type'];
+}
+
+
 $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
                 get_aa_url('modules/links/modedit.php3') :
                 get_admin_url('se_views.php3') );
@@ -220,7 +232,6 @@ if ($cancel) {
 
 // If you try to edit a view in different slice, you should jump there
 if ($view_id) {
-    $view = AA_Views::getView($view_id);
     if (unpack_id($view->f('slice_id')) != $slice_id) {
         go_url($view->jumpUrl());
     }
@@ -235,10 +246,6 @@ $err = array();          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-// fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
-// adds wrong $view_type variable to $_SERVER array, which then redefine
-// the $view_type from $_POST array
-$view_type = $_POST['view_type'] ? $_POST['view_type'] : $_GET['view_type'];
 
 $VIEW_FIELDS     = getViewFields();
 $VIEW_TYPES      = getViewTypes();
@@ -285,7 +292,7 @@ if ( $update ) {
             }
             $view_id = $varset->last_insert_id();
         }
-        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
 
         foreach ($VIEW_TYPES[$view_type] as $k => $v) {
             if (substr ($k,0,strlen("function:")) == "function:") {
@@ -461,6 +468,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 
     switch( $input ) {
         case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
+        case "field50": FrmInputText(  $k, $label, $value, 50, 50, true, $help); break;   // for name
         case "vid":     FrmInputText(  $k, $label. " - <a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", $value,  15, 15, false, $help, '', false, 'text', '', '[a-z][a-z_0-9]+'); break;
         case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help, '', 1); break;
         case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help, '', 1); break;
@@ -494,18 +502,15 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
                         break;
     case 'none':        break;
 }
-
-if ( $view_id ) {
-    FrmTabSeparator(_m("To include view in your sitemodule webpage use"));
-    echo "<tr><td colspan='2'>
-     <pre>
-       {view:$view_id}
-       {view.php3?vid=$view_id}
-     </pre>
-     <a href=\"https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views\">"._m('See documentation')."</a> 
-     </td></tr>";
-}
-
 FrmTabEnd();
+
+$view_id2show = $view_id ?: '&lt;vid&gt;';
+
+$apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
+       &lcub;view:'.$view_id2show.'&rcub;
+       &lcub;view.php3?vid='.$view_id2show.'&rcub;
+     </pre>
+     <a href="https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views">'._m('See documentation').'</a>');
+$apage->printHelpbox();
 
 $apage->printFoot();

@@ -395,7 +395,7 @@ function getViewFields() {
     // se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
                                                  // $validate, $insert,  $type,   $input,  $value
-    $VIEW_FIELDS["name"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
+    $VIEW_FIELDS["name"]            = GetViewFieldDef("text",  "quoted", "text",  "field50");
     $VIEW_FIELDS["before"]          = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["even"]            = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("",      "quoted", "bool",  "chbox"  );
