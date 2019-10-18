@@ -334,9 +334,9 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     }
 
     /**
-     * @param $aa_property AA_Property
-     * @param $content AA_Item
-     * @param string $type
+     * @param AA_Property $aa_property
+     * @param AA_Item     $content
+     * @param string      $type  normal|live|ajax
      * @return array
      * @throws Exception
      */
@@ -353,8 +353,8 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $input_value = myspecialchars($val);
         $link = ((substr($input_value, 0, 7) === 'http://') OR (substr($input_value, 0, 8) === 'https://')) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type == 'live'); //, 'right', $link ? 16 : 0);
-        if ($lang = AA_Content::getLangId($i)) {
-            $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
+        if ($lang = AA_Content::getLangNum2Name($i)) {
+            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret</span>";
         }
         return $ret;
     }
@@ -378,17 +378,9 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
      *                         new objects
      * @throws Exception
      */
-    function getEditHtml($aa_property, $content, $function = null)
+    function getOnlyHtml($aa_property, $content, $function = null)
     {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
-    }
-
-    /** @return string - just widget HTML for using in form - without label...
-     * @throws Exception
-     */
-    function getEditfullHtml($aa_property, $content, $function = null)
-    {
-        return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
     /**
@@ -446,6 +438,9 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"" . _m('EXIT WITHOUT CHANGE') . "\" onclick=\"DisplayInputBack('$base_id');\">";
         $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
+
+        $this->registerRequires($aa_property, $winfo);
+
         return $widget_html;
     }
 

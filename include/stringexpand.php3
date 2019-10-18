@@ -2560,7 +2560,8 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     }
 
     /** expand function
-     * @param $text
+     * @param string $text
+     * @param bool   $no_url_encode
      * @return string
      */
     function expand($text='', $no_url_encode=false) {
@@ -4099,6 +4100,10 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
      * @return string
      */
     function expand($slice_id='', $field_id='', $required=null, $widget_type=null, $widget_properties=null, $preset_value=null, $item_index=null) {
+        return $this->inputCommon($slice_id, $field_id, $required, $widget_type, $widget_properties, $preset_value, $item_index, false);
+    }
+
+    function inputCommon($slice_id, $field_id, $required, $widget_type, $widget_properties, $preset_value, $item_index, $widget_only=false) {
         if ( !($field = $this->_getField($slice_id, $field_id))) {
             if ( AA_Slice::getModuleProperty($slice_id,'autofields') AND ($field = $this->_getField($slice_id, 'text............'))) {
                 $field = $field->cloneWithId($field_id);
@@ -4109,9 +4114,19 @@ class AA_Stringexpand_Input extends AA_Stringexpand_Field {
         // const_arr in widget_properties could be specified as (1) JSON object, or as (2) string with JSON object - see examples(1) and (2) above
         $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
 
-        return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index);
+        return $field->getWidgetNewHtml($required==1, null, $widget_type, $widget_prop, $preset_value, $item_index, $widget_only);
     }
 }
+
+/** the same as {input} but prints widget without labels and help
+ * @see  AA_Stringexpand_Input
+ */
+class AA_Stringexpand_Inputonly extends AA_Stringexpand_Input {
+    function expand($slice_id='', $field_id='', $required=null, $widget_type=null, $widget_properties=null, $preset_value=null, $item_index=null) {
+        return $this->inputCommon($slice_id, $field_id, $required, $widget_type, $widget_properties, $preset_value, $item_index, true);
+    }
+}
+
 
 /** Allows on-line editing of field content
  *    {edit:{_#ITEM_ID_}:headline........}
@@ -4143,7 +4158,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
      * @return string|void
      */
     function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
-        return $this->_getWidget('getEditHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
+        return $this->_getWidget('getOnlyHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
     }
 
 
@@ -4200,7 +4215,7 @@ class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
      * @return string|void
      */
     function expand($item_id='', $field_id='', $required=null, $function=null, $widget_type=null, $widget_properties=null) {
-        return $this->_getWidget('getEditfullHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
+        return $this->_getWidget('getHtml',$item_id, $field_id, $required, $function, $widget_type, $widget_properties);
     }
 }
 
@@ -5575,18 +5590,25 @@ class AA_Stringexpander {
         $this->requires->addRequire($require, $type);
     }
 
-    /**
+    /** generates tags for <HEAD> in <!--AA-Generated-HEAD.... >
      * @return string
      */
     function getRequireHead() {
         return $this->requires->getHead();
     }
 
-    /**
+    /** generates tags for html page footer in <!--AA-Generated-FOOT.... >
      * @return string
      */
     function getRequireFoot() {
         return $this->requires->getFoot();
+    }
+
+    /** getRequireScript are conterparts to getRequireHead and getRequireFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
+     * @return string
+     */
+    function getRequireScript() {
+        return $this->requires->getAsScript();
     }
 
     /**
@@ -5691,7 +5713,17 @@ class AA_Req {
     /**
      * @return string
      */
+    function getScript()        { return ''; }
+
+    /**
+     * @return string
+     */
     function getIntegrity()     { return ($this->integrity ? " integrity=\"{$this->integrity}\" crossorigin=anonymous" : ''); }
+
+    /**
+     * @return string
+     */
+    function getUrl()           { return ''; }
 }
 
 /**
@@ -5710,7 +5742,7 @@ class AA_Req_Lib extends AA_Req {
 
     /**
      * AA_Req_Lib constructor.
-     * @param $url
+     * @param $url - just url, or <url> defer, <url> async, <url> module (module for type=module)
      * @param string $integrity
      * @param array $depend
      */
@@ -5730,9 +5762,32 @@ class AA_Req_Lib extends AA_Req {
      * @return string
      */
     function getCode() {
-        return "<script" .($this->loadtype ? " {$this->loadtype}" : '') ." src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
+        $defer = '';
+        $type  = '';
+        if ($this->loadtype) {
+            if ($this->loadtype == 'module') {
+                $type = ' type=module';
+            } else {
+                $defer = ' '.$this->loadtype;
+            }
+        }
+        return "<script".$defer.$type ." src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
     }
 
+
+    /**
+     * @return string
+     */
+    function getScript() {
+        return "AA_LoadJs(false,'','{$this->url}');";
+    }
+
+    /**
+     * @return string
+     */
+    function getUrl() {
+        return $this->url;
+    }
 }
 /** {require:/css/myprintstyle.css print} */
 class AA_Req_Css extends AA_Req {
@@ -5772,6 +5827,13 @@ class AA_Req_Css extends AA_Req {
      */
     function getCode() {
         return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->media ? " media=\"{$this->media}\">" : '>');
+    }
+
+    /**
+     * @return string
+     */
+    function getScript() {
+        return ($this->media=='print') ? '' : "AA_LoadCss('{$this->url}');";
     }
 }
 
@@ -5838,6 +5900,13 @@ class AA_Req_Run extends AA_Req {
     function getCode() {
         return "<script> {$this->script} </script>";
     }
+
+    /**
+     * @return string
+     */
+    function getScript() {
+        return $this->script;
+    }
 }
 
 /**
@@ -5888,6 +5957,13 @@ class AA_Req_Load extends AA_Req_Run {
      */
     function getCode() {
         return "<script> document.addEventListener('DOMContentLoaded', function() { {$this->script} }); </script>";
+    }
+
+    /**
+     * @return string
+     */
+    function getScript() {
+        return "document.addEventListener('DOMContentLoaded', function() { {$this->script} });";
     }
 }
 
@@ -5948,9 +6024,9 @@ class AA_Requires {
 
     /**
      * @param $position
-     * @return string
+     * @return array AA_Req[]
      */
-    protected function compute($position) {
+    protected function computeRequires($position) {
         if (is_null($this->_outputs)) { // precomputed?
             $this->_outputs = array();
             $already_in     = array();
@@ -5974,7 +6050,7 @@ class AA_Requires {
                         continue;
                     }
                     $already_in[$base_code_id] = true;
-                    $this->_outputs[$req->getCodePosition()][] = $req->getCode();
+                    $this->_outputs[$req->getCodePosition()][] = $req;
                     // mark requires for this library
                     // the requires are ordered from particular script to global libraries in $requires_arr, so we can add depending libraries here without problem
                     $dep = $req->getDependencies();
@@ -5993,21 +6069,43 @@ class AA_Requires {
                 }
             }
         }
-        return $this->_outputs[$position] ? (join("\n", array_reverse($this->_outputs[$position]))."\n") : '';  // reverse - first should goes the libraries, then particular depending scripts
+        return $this->_outputs[$position] ? array_reverse($this->_outputs[$position]) : array();    // reverse - first should goes the libraries, then particular depending scripts
     }
 
     /**
      * @return string
      */
     function getHead() {
-        return $this->compute('HEAD-A'). $this->compute('HEAD-B');
+        $req_arr = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'));
+        return join("\n", array_map( function($req) {return $req->getCode();}, $req_arr));
     }
 
     /**
      * @return string
      */
     function getFoot() {
-        return $this->compute('FOOT-A'). $this->compute('FOOT-B');  // reverse - first should goes the libraries, then particular depending scripts
+        $req_arr = array_merge($this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
+        return join("\n", array_map( function($req) {return $req->getCode();}, $req_arr));
+    }
+
+    /**
+     * @return string
+     */
+    function getAsScript() {
+        $req_arr = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'),$this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
+        return join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
+    }
+
+    /**
+     * @param $string
+     * @return string
+     */
+    static function getUrl4Lib($string) {
+        $def = self::systemDefinitions();
+        if ($req = $def[$string]) {
+            return $req->getUrl();
+        }
+        return '';
     }
 
     /**
@@ -8085,7 +8183,7 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
      */
     function expand($field_id='', $index=0, $item_id='', $lang='') {
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
-        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? AA_Content::getLangNumber($lang) : 0)) : '';
+        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? AA_Content::getLangName2Num($lang) : 0)) : '';
     }
 }
 
@@ -8170,7 +8268,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
 
-        $hash       = get_short_hash('manager', $slices, $conds, $sort, $code, $edit_code);
+        $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $slices_arr = explode_ids($slices);
 
         $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
@@ -8360,7 +8458,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     $translations = AA_Slice::getModuleProperty($translate_slice,'translations');
 
                     $ic = new ItemContent();
-                    $ic->setValue('headline........', $text, AA_Content::getLangNumber($translations[0]));
+                    $ic->setValue('headline........', $text, AA_Content::getLangName2Num($translations[0]));
                     $ic->setSliceID($translate_slice);
                     //$ic->complete4Insert();
 
@@ -8406,7 +8504,7 @@ class AA_Stringexpand_Validate extends AA_Stringexpand {
         if (!($item = ($this ? $this->item : null))) {
             return '';
         }
-        $valid = $item->getItemContent()->validateReport();
+        $valid = $item->getItemContent()->validateReport('all');
         return json_encode($valid);
     }
 }
