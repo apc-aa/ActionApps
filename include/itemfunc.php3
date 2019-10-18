@@ -103,6 +103,8 @@ class AA_Generator_Log extends AA_Generator {
 /** AA_Generator_Dte - Date + 'Parameter' days */
 class AA_Generator_Dte extends AA_Generator {
 
+    protected $plusdays;         // see getClassProperties
+
     /** Name of the component for selection */
     static function name() {  return _m("Date + 'Parameter' days");  }
 
@@ -119,6 +121,8 @@ class AA_Generator_Dte extends AA_Generator {
 
 /** AA_Generator_Txt - Text from 'Parameter' */
 class AA_Generator_Txt extends AA_Generator {
+
+    protected $text;         // see getClassProperties
 
     /** Name of the component for selection */
     static function name() {  return _m("Text from 'Parameter'");  }
@@ -141,6 +145,10 @@ class AA_Generator_Qte extends AA_Generator_Txt {}
 
 /** AA_Generator_Rnd - Random string */
 class AA_Generator_Rnd extends AA_Generator {
+
+    protected $length;         // see getClassProperties
+    protected $checkfield;     // see getClassProperties
+    protected $wheretocheck;   // see getClassProperties
 
     /** Name of the component for selection */
     static function name()        {  return _m("Random string");  }
@@ -184,6 +192,8 @@ class AA_Generator_Rnd extends AA_Generator {
 /** AA_Generator_Variable - AA Expression */
 class AA_Generator_Variable extends AA_Generator {
 
+    protected $text;         // see getClassProperties
+
     /** Name of the component for selection */
     static function name()        {  return _m("AA Expression");  }
     /** Decription  of the component for selection */
@@ -205,8 +215,8 @@ class AA_Generator_Variable extends AA_Generator {
 /** AA_Generator_Mul - Multivalues */
 class AA_Generator_Mul extends AA_Generator {
 
-    protected $text;
-    protected $delimiter;
+    protected $text;               // see getClassProperties
+    protected $delimiter;          // see getClassProperties
 
     /** Name of the component for selection */
     static function name()        {  return _m("Multivalue");  }
@@ -226,415 +236,74 @@ class AA_Generator_Mul extends AA_Generator {
 }
 
 // ----------------------- insert functions ------------------------------------
+/** classes for insert data to the database field
+ *  derived from  AA_Serializable in order to be able to factory from string
+ *
+ *  Ussage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
+ *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
+ */
+abstract class AA_Inserter extends AA_Serializable {
 
+    /** @var AA_Field */
+    protected $field;         // additional variable common to all AA_Inserters - not filled by standard factoryByString
 
-class AA_Field_Writer {
+    // static function name()        { return _m('');  }      // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
 
-    protected $item_varset;
-    protected $slice_id;
+    // __construct()  // we use AA_Serializable::factoryByString + post initiation for $field
+
+    /** preffered way of construction
+     * @param AA_Field $field
+     * @return AA_Inserter
+     */
+    public static function factoryByField($field) {
+        $definition = $field->getProperty('input_insert_func');
+        $inserter = AA_Inserter::factoryByString($definition);
+        if (!$inserter) {
+            AA::$dbg->warn("Can't create AA_Inserter from <b>$definition</b>");
+            $inserter = AA_Inserter::factoryByString('nul');
+        }
+        $inserter->setField($field);
+        return $inserter;
+    }
 
     /**
-     * AA_Field_Writer constructor.
-     * @param string $slice_id - long slice id - it is optional for backward compatibility, but should be provided
-     *                           in order fileupload and uniques works...
+     * @param AA_Field $field
+     * @return AA_Inserter
      */
-    function __construct($slice_id=null) {
-        $this->slice_id    = $slice_id;
-        $this->item_varset = new Cvarset;
+    public function setField($field) {
+        $this->field = $field;
+        return $this;
     }
 
-    /** The content fields are already written, but the fields in item table still probably waits - get them for update */
-    public function getItemVarset() {
-        return $this->item_varset;
-    }
-
-    /** insert_fnc_qte function
-     *  What are the parameters to this function - $field must be an array with values [input_show_func] etc
+    /** deletes content for field in database
      * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
+     * @param $field_id
      */
-    function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-
-    /** insert_fnc_dte function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_dte($item_id, $field, $value, $param, $additional='') {
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-
-    /** insert_fnc_cns function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_cns($item_id, $field, $value, $param, $additional='') {
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-    /** insert_fnc_num function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_num($item_id, $field, $value, $param, $additional='') {
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-    /** insert_fnc_boo function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_boo($item_id, $field, $value, $param, $additional='') {
-        $value['value'] = ( $value['value'] ? 1 : 0 );
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-    /** insert_fnc_ids function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
-
-        $add_mode = substr($value['value'],0,1);          // x=add, y=add mutual, z=add backward
-        if (strpos('txyz', $add_mode) !== false) {
-            $value['value'] = substr($value['value'],1);  // remove x, y or z
-        }
-        switch( $add_mode ) {
-            case 't':  // t for tags - it could be normal item ID or new Tag
-                $v = $value['value'];
-                if ( !is_long_id($v)) {
-                    $fnc = ParseFnc($field["input_show_func"]);   // input show function
-                    if ($fnc AND ($fnc['fnc']=='tag')) {
-                        // get add2constant and constgroup (other parameters are irrelevant in here)
-                        list($constgroup, $others) = explode(':', $fnc['param']);
-                        // add2constant is used in $this->_store - adds new value to constant table
-                        if ((substr($constgroup,0,7) == "#sLiCe-") AND strlen(trim($v))) {
-                            $sid = substr($constgroup,7);
-                            $content4id = new ItemContent();
-                            $content4id->setItemID($new_id=new_id());
-                            $content4id->setSliceID($sid);
-                            $content4id->setAaValue('headline........', new AA_Value($v));
-                            $content4id->complete4Insert();
-                            $content4id->storeItem('insert');
-                            $value['value'] = $new_id;
-                        }
-                    }
-                }
-                $this->_store($item_id, $field, $value, $param, $additional);
-                break;
-            case 'y':   // y means 2way related item id - we have to store it for both
-                $this->_store($item_id, $field, $value, $param, $additional);
-                // !!!!! there is no break or return - CONTINUE with 'z' case !!!!!
-
-            case 'z':   // z means backward related item id - store it only backward
-                // add reverse related
-                $reverse_id     = $value['value'];
-                $value['value'] = $item_id;
-
-                // mimo added
-                // get rid of empty dummy relations (text='')
-                // this is only a problem for text content
-                $db = getDB();
-                if($field["text_stored"]) {
-                  $SQL = "DELETE FROM content
-                           WHERE item_id = '". q_pack_id($reverse_id) ."'
-                             AND field_id = '". $field["id"] ."'
-                             AND `text`=''";
-                  $db->query( $SQL );
-                }
-                // is reverse relation already set?
-                $SQL = "SELECT * FROM content
-                         WHERE item_id = '". q_pack_id($reverse_id) ."'
-                           AND field_id = '". $field["id"] ."'
-                           AND ". ($field["text_stored"] ? "text" : "number") ."= '". $value['value'] ."'";
-                $db->query( $SQL );
-                if (!$db->next_record()) { // not found
-                    $this->_store($reverse_id, $field, $value, $param);
-                }
-                freeDB($db);
-                break;
-
-            case 'x':   // just filling character - remove it
-            default:
-                $this->_store($item_id, $field, $value, $param, $additional);
-        }
-        return;
-    }
-    /** insert_fnc_uid function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_uid($item_id, $field, $value, $param, $additional='') {
-        global $auth;
-
-        if ( $value['value'] AND IsSuperadmin() ) {
-            $val = $value['value'];
-        } else {
-            // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-            $val = (isset($auth) ?  $auth->auth["uid"] : ((strlen($value['value'])>0) ?
-                                                      $value['value'] : "9999999999"));
-        }
-        $this->_store($item_id, $field, array('value' => $val), $param, $additional);
-    }
-    /** insert_fnc_log function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_log($item_id, $field, $value, $param, $additional='') {
-        global $auth;
-        // if not $auth, it is from anonymous posting
-        $val = (isset($auth) ?  $auth->auth["uname"] : ((strlen($value['value'])>0) ?
-                                                        $value['value'] : 'anonymous'));
-        $this->_store($item_id, $field, array('value' => $val), $param, $additional);
-    }
-    /** insert_fnc_now function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
-        $this->_store($item_id, $field, array("value"=>time()), $param, $additional);
-    }
-
-    /** insert_fnc_co2 function - Computed field for INSERT/UPDATE
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_co2($item_id, $field, $value, $param, $additional='') {
-        // we store it to the database at this time, even if it is probably
-        // not final value for this field - we probably recompute this value later
-        // in storeItem method, but we should compute with this new value there,
-        // so we need to store it, right now
-        // (this is the only case for computed field SHOWN IN INPUTFORM)
-        $this->_store($item_id, $field, $value, $param, $additional);
-        return;
-    }
-
-    /** insert_fnc_com function - Computed field */
-    function insert_fnc_com($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
-
-    /** insert_fnc_seo function - SEO Name
-     *  the value computed in updateComputedFields
-     */
-    function insert_fnc_seo($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
-
-    /** insert_fnc_seo function - Unique number for this field (from 1,..)    */
-    function insert_fnc_seq($item_id, $field, $value, $param, $additional='') { $this->insert_fnc_co2($item_id, $field, $value, $param, $additional); return; }
-
-    // -----------------------------------------------------------------------------
-    /** insert_fnc_fil function
-     *  Insert function for File Upload.
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     * @return Array of fields stored inside this function as thumbnails.
-     */
-    // There are three cases here
-    // 1: uploaded - overwrites any existing value, does resampling etc
-    // 2: file name left over from existing record, just stores the value
-    // 3: newly entered URL, this is not distinguishable from case //2 so
-    //    its just stored, and no thumbnails etc generated, this could be
-    //    fixed later (mtira)
-    // in $additional are fields
-    function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
-        global $err;
-
-        if (is_array($additional)) {
-            $fields  = $additional["fields"];
-            $order   = $additional["order"];
-            $context = $additional["context"];
-        }
-
-        if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
-            // newer - widget approach - the uploaded file is encoded into the value
-            // and prefixed with "AA_UPLOAD:" constant
-            $up_file = array_combine(array('aa_const', 'name', 'type', 'tmp_name', 'error', 'size'), ParamExplode($value['value']));
-            if ($up_file['name']=='') {
-               $value['value'] = '';
-            }
-        } else {
-            // old vedsion of input form
-            $up_file = $_FILES["v".unpack_id($field["id"])."x"];
-        }
-
-        // look if the uploaded picture exists
-        if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
-            $sid = $this->slice_id;       // GLOBALS["slice_id"];
-            if (!$sid AND $item_id) {
-                $item  = AA_Items::getItem(new zids($item_id));
-                if ($item) {
-                    $sid = $item->getSliceID();
-                }
-            }
-            $slice = AA_Slice::getModule($sid);
-            if (!is_object($slice) OR !$slice->isValid()) {
-                $err[$field["id"]] = _m("Slice with id '%1' is not valid.", array($sid));
-                return;
-            }
-
-            // $pdestination and $purl is not used, yet - it should be used to allow
-            // slice administrators to store files to another directory
-            // list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
-            list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pexact) = ParamExplode($param);
-
-            $dest_file = Files::uploadFile($up_file, Files::destinationDir($slice), $ptype, $preplacemethod);
-
-            if ($dest_file === false) {   // error
-                $err[$field["id"]] = Files::lastErrMsg();
-                return;
-            }
-
-            // ---------------------------------------------------------------------
-            // Create thumbnails (image miniature) into fields identified in this
-            // field's parameters if file type is supported by GD library.
-
-            // This has been considerable simplified, by making ResampleImage
-            // return true for unsupported types IF they are already small enough
-            // and also making ResampleImage copy the files if small enough
-
-            if ($e = ResampleImage($dest_file, $dest_file, $pwidth, $pheight, $pexact)) {
-                $err[$field["id"]] = $e;
-                return;
-            }
-            if ($potherfield != "") {
-                // get ids of field store thumbnails
-                $thumb_arr=explode("##",$potherfield);
-
-                foreach ($thumb_arr as $thumb) {
-                    //copy thumbnail
-                    $f              = $fields[$thumb];       // Array from fields
-                    $fncpar         = ParseFnc($f["input_insert_func"]);
-                    $thumb_params   = explode(":",$fncpar['param']);  // (type, width, height)
-
-                    $dest_file_tmb  = Files::generateUnusedFilename($dest_file, '_thumb');  // xxx_thumb1.jpg
-
-                    if ($e = ResampleImage($dest_file,$dest_file_tmb, $thumb_params[1],$thumb_params[2],$thumb_params[5])) {
-                        $err[$field["id"]] = $e;
-                        return;
-                    }
-
-                    // store link to thumbnail
-                    $val['value'] = $slice->getUrlFromPath($dest_file_tmb);
-                    $this->_clear_field($item_id, $f['id']);
-                    $this->_store( $item_id, $f, $val, "", $additional);
-                }
-            } // params[3]
-
-            $value['value'] = $slice->getUrlFromPath($dest_file);
-        } // File uploaded
-
-        // store link to uploaded file or specified file URL if nothing was uploaded
-        $this->_store( $item_id, $field, $value, "", $additional);
-
-        // return array with fields that were filled with thumbnails  (why?)
-        return $thumb_arr;
-    } // end of insert_fnc_fil
-
-    // -----------------------------------------------------------------------------
-    /** insert_fnc_pwd function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
-        list ($aa_const, $password) = ParamExplode($value['value']);
-        if ($aa_const == 'AA_PASSWD') {
-            list($pfield, $pcrypt) = ParamExplode($param);
-
-            if ($pfield AND ($f = $field[$pfield])) {  // wrong - $field[$pfield] is nonsence - the if is never executed, Honza 9.12.2012
-                // $password is_a decrypted here
-                $backup = $pcrypt ? AA_Stringexpand_Encrypt::explode($password, $pcrypt) : $password;
-                // store backup value to specified field
-                $this->_clear_field($item_id, $f['id']);
-                $this->_store( $item_id, $f, array('value'=> $backup), "", $additional);
-            }
-            $value['value'] = AA_Perm::cryptPwd($password);
-        } elseif ($aa_const == 'AA_PASSWD_CRYPTED') {
-            // this is the only case if you are updating the item and you want to left the password the same
-            $value['value'] = $password;
-        } else {
-            $value['value'] = AA_Perm::cryptPwd($value['value']);
-        }
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-
-    // -----------------------------------------------------------------------------
-    /** insert_fnc_unq function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_unq($item_id, $field, $value, $param, $additional='') {
-        $value['value'] = StrExpand('AA_Stringexpand_Finduniq', array($value['value'], $field["id"], empty($unique_slices) ? $this->slice_id : $unique_slices, $item_id));
-        $this->_store($item_id, $field, $value, $param, $additional);
-    }
-
-    // -----------------------------------------------------------------------------
-    /** insert_fnc_nul function
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_nul($item_id, $field, $value, $param, $additional='') {
-    }
-
-    /** insert_fnc_ function
-     *  not defined insert func in field table (it is better to use insert_fnc_nul)
-     * @param $item_id
-     * @param $field
-     * @param $value
-     * @param $param
-     * @param $additional
-     */
-    function insert_fnc_($item_id, $field, $value, $param, $additional='') {
-    }
-
     protected function _clear_field($item_id, $field_id) {
         // delete content just for displayed fields
         DB_AA::delete('content', array(array('item_id', $item_id, 'l'), array('field_id', $field_id)));
     }
 
-    protected function _store($item_id, $field, $value, $param, $additional='') {
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return false;
+    }
+
+    /**
+     * @param AA_Field_Writer $fieldwriter
+     * @param string          $item_id
+     * @param array           $value
+     * @param array          $additional
+     */
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
 
         $varset = new Cvarset();
         // if input function is 'selectbox with presets' and add2connstant flag is set,
         // store filled value to constants
-        $fnc = ParseFnc($field["input_show_func"]);   // input show function
+        $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
         if ($fnc AND ($fnc['fnc']=='pre')) {
             // get add2constant and constgroup (other parameters are irrelevant in here)
             list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant) = explode(':', $fnc['param']);
@@ -667,7 +336,7 @@ class AA_Field_Writer {
             }
         }
 
-        if ($fid = $field["in_item_tbl"]) {
+        if ($fid = $this->field->getProperty("in_item_tbl")) {
             // Mitra thinks that this might want to be 'expiry_date.....' ...
             // ... which is not correct because in 'in_item_tbl' database field
             // we store REAL database field names from aadb.item table (honzam)
@@ -680,15 +349,492 @@ class AA_Field_Writer {
 
             // field in item table  - check, if numeric...
             if (in_array($fid, array('short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'))) {
-                $this->item_varset->add($fid, "number", (int)$value['value']);
+                $fieldwriter->getItemVarset()->add($fid, "number", (int)$value['value']);
             } else {
-                $this->item_varset->add($fid, "text", $value['value']);
+                $fieldwriter->getItemVarset()->add($fid, "text", $value['value']);
             }
             return;
         }
 
         // field in content table (function defined in util.php since we need it for display count
-        StoreToContent($item_id, $field['id'], $field["text_stored"], $value, $additional);
+        StoreToContent($item_id, $this->field->getId(), $this->field->getProperty("text_stored"), $value, $additional);
+    }
+}
+
+/** AA_Inserter_Qte - Just insert string (so quote it before storing to the DB) */
+class AA_Inserter_Qte extends AA_Inserter {
+    // static function name()        { return _m("Text = don't modify");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m("Does not modify the value.");  }      // see NamedInterface;  not used yet
+}
+
+/** AA_Inserter_Dte - Just insert string (so quote it before storing to the DB) */
+class AA_Inserter_Dte extends AA_Inserter {
+    // static function name()        { return _m("Date = don't modify");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m("Does not modify the value (just like Text), but it is better to separate it for future ussage.");  }      // see NamedInterface;  not used yet
+}
+
+// not used. eventualy the same as Qte
+// class AA_Inserter_Cns extends AA_Inserter {}
+
+/** AA_Inserter_Num - Just insert string (so quote it before storing to the DB) */
+class AA_Inserter_Num extends AA_Inserter {
+    // static function name()        { return _m("Number = don't modify");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m("Does not modify the value (just like Text), but it is better to separate it for future ussage.");  }      // see NamedInterface;  not used yet
+}
+
+/** AA_Inserter_Boo - 0 | 1 */
+class AA_Inserter_Boo extends AA_Inserter {
+    // static function name()        { return _m("Boolean = store 0 or 1");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        $value['value'] = ( $value['value'] ? 1 : 0 );
+        parent::execute($fieldwriter, $item_id, $value, $additional);
+    }
+}
+
+/** AA_Inserter_Ids - Just insert string (so quote it before storing to the DB) */
+class AA_Inserter_Ids extends AA_Inserter {
+    // static function name()        { return _m("Item IDs");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+
+        $fid         = $this->field->getId();
+        $text_stored = $this->field->getProperty("text_stored");
+
+        $add_mode = substr($value['value'],0,1);          // x=add, y=add mutual, z=add backward
+        if (strpos('txyz', $add_mode) !== false) {
+            $value['value'] = substr($value['value'],1);  // remove x, y or z
+        }
+        switch( $add_mode ) {
+            case 't':  // t for tags - it could be normal item ID or new Tag
+                $v = $value['value'];
+                if ( !is_long_id($v)) {
+                    $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
+                    if ($fnc AND ($fnc['fnc']=='tag')) {
+                        // get add2constant and constgroup (other parameters are irrelevant in here)
+                        list($constgroup, $others) = explode(':', $fnc['param']);
+                        // add2constant is used in $this->_store - adds new value to constant table
+                        if ((substr($constgroup,0,7) == "#sLiCe-") AND strlen(trim($v))) {
+                            $sid = substr($constgroup,7);
+                            $content4id = new ItemContent();
+                            $content4id->setItemID($new_id=new_id());
+                            $content4id->setSliceID($sid);
+                            $content4id->setAaValue('headline........', new AA_Value($v));
+                            $content4id->complete4Insert();
+                            $content4id->storeItem('insert');
+                            $value['value'] = $new_id;
+                        }
+                    }
+                }
+                parent::execute($fieldwriter, $item_id, $value, $additional);
+                break;
+            case 'y':   // y means 2way related item id - we have to store it for both
+                parent::execute($fieldwriter, $item_id, $value, $additional);
+            // !!!!! there is no break or return - CONTINUE with 'z' case !!!!!
+
+            case 'z':   // z means backward related item id - store it only backward
+                // add reverse related
+                $reverse_id     = $value['value'];
+                $value['value'] = $item_id;
+
+                // mimo added
+                // get rid of empty dummy relations (text='')
+                // this is only a problem for text content
+                if ($text_stored) {
+                    DB_AA::delete('content', array(array('item_id', $reverse_id, 'l'), array('field_id', $fid), array('text', '')));
+                }
+                // is reverse relation already set?
+                if (!DB_AA::test('content', array(array('item_id',$reverse_id, 'l'), array('field_id', $fid), array(($text_stored ? "text" : "number"), $value['value'])))) { // not found
+                    parent::execute($fieldwriter, $reverse_id, $value, $additional);
+                }
+                break;
+
+            case 'x':   // just filling character - remove it
+            default:
+                parent::execute($fieldwriter, $item_id, $value, $additional);
+        }
+    }
+}
+
+
+/** AA_Inserter_Uid - User ID = always store current user ID */
+class AA_Inserter_Uid extends AA_Inserter {
+    // static function name()        { return _m("User ID = always store current user ID");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        global $auth;
+
+        if ( $value['value'] AND IsSuperadmin() ) {
+            $val = $value['value'];
+        } else {
+            // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
+            $val = (isset($auth) ?  $auth->auth["uid"] : ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
+        }
+        parent::execute($fieldwriter, $item_id, array('value' => $val), $additional);
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;
+    }
+}
+
+/** AA_Inserter_Log - Login name */
+class AA_Inserter_Log extends AA_Inserter {
+    // static function name()        { return _m("Login name");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        global $auth;
+        // if not $auth, it is from anonymous posting
+        $val = (isset($auth) ?  $auth->auth["uname"] : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
+
+        parent::execute($fieldwriter, $item_id, array('value' => $val), $additional);
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;
+    }
+}
+
+/** AA_Inserter_Now - Now = always store current time */
+class AA_Inserter_Now extends AA_Inserter {
+    // static function name()        { return _m("Now = always store current time");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('Inserts the current time, no matter what the user sets.');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        parent::execute($fieldwriter, $item_id, array("value"=>time()), $additional);
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;
+    }
+}
+
+
+/** AA_Inserter_Co2 - Computed field for INSERT/UPDATE */
+class AA_Inserter_Co2 extends AA_Inserter {
+    // we store it to the database at this time, even if it is probably
+    // not final value for this field - we probably recompute this value later
+    // in storeItem method, but we should compute with this new value there,
+    // so we need to store it, right now
+    // (this is the only case for computed field SHOWN IN INPUTFORM)
+
+    protected $code;                   // see getClassProperties
+    protected $code_update;            // see getClassProperties
+    protected $delimiter;              // see getClassProperties
+    protected $recompute;              // see getClassProperties
+
+    // static function name()        { return _m("");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+            'code'       => new AA_Property( 'code',        _m("Code for unaliasing (INSERT)"),'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
+            'code_update'=> new AA_Property( 'code_update', _m("Code for unaliasing (UPDATE)"),'text', false, true, 'text', false, _m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"), '', ''),
+            'delimiter'  => new AA_Property( 'delimiter',   _m("Multivalue delimiter"),        'text', false, true, 'text', false, _m("Character or string, which will split the computed string into multiple values (the same field)"), '', '|'),
+            'recompute'  => new AA_Property( 'recompute',   _m("Recompute every"),             'text', false, true, 'text', false, "minute|hour|day|week|month "._m("The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item."), '', '')
+        );
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;  // @todo - maybe better check - it could be generated, but who knows
+    }
+}
+
+/** AA_Inserter_Com - Computed field*/
+class AA_Inserter_Com extends AA_Inserter {
+
+    protected $code;                   // see getClassProperties
+
+    // static function name()        { return _m("Computed field");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface;  not used yet
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+            'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}')
+        );
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;  // @todo - maybe better check - it could be generated, but who knows
+    }
+}
+
+/** AA_Inserter_Seo - SEO Name -  */
+class AA_Inserter_Seo extends AA_Inserter {
+
+    // the value computed in updateComputedFields
+
+    protected $code;                   // see getClassProperties
+
+    // static function name()        { return _m("SEO Name");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in 'Uses slices' settings. Basically the SEO Name alias is shortcut for comuted field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}');  }      // see NamedInterface;  not used yet
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+            'code'   => new AA_Property( 'code', _m("Alias to compute from"), 'text', false, true, 'text', false, _m("if not specified, the _#HEADLINE is used"), '', '_#HEADLINE')
+        );
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;
+    }
+}
+
+/** AA_Inserter_Seq */
+class AA_Inserter_Seq extends AA_Inserter {
+    // static function name()        { return _m("Unique number for this field (from 1,..)");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('Unique number in sequence 1,2,3,...');  }      // see NamedInterface;  not used yet
+}
+
+/** AA_Inserter_Fil  - File = uploaded file
+ */
+// There are three cases here
+// 1: uploaded - overwrites any existing value, does resampling etc
+// 2: file name left over from existing record, just stores the value
+// 3: newly entered URL, this is not distinguishable from case //2 so
+//    its just stored, and no thumbnails etc generated, this could be
+//    fixed later (mtira)
+// in $additional are fields
+class AA_Inserter_Fil extends AA_Inserter {
+
+   protected $type;                   // see getClassProperties
+   protected $width;                  // see getClassProperties
+   protected $height;                 // see getClassProperties
+   protected $otherfield;             // see getClassProperties
+   protected $replacemethod;          // see getClassProperties
+   protected $exact;                  // see getClassProperties
+
+    // static function name()        { return _m("File = uploaded file");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');  }      // see NamedInterface;  not used yet
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+            'type'          => new AA_Property( 'type',         _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
+            'width'         => new AA_Property( 'width',        _m("Maximum image width"), 'int',  false, true, 'int',  false, '', '', '800'),
+            'height'        => new AA_Property( 'height',       _m("Maximum image height"),'int',  false, true, 'int',  false, _m("The image will be resampled to be within these limits, while retaining aspect ratio."), '', '600'),
+            'otherfield'    => new AA_Property( 'otherfield',   _m("Other fields"),        'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##"), '', 'image..........2'),
+            'replacemethod' => new AA_Property( 'replacemethod',_m("Upload policy"),       'text', false, true, 'text', false, _m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."), '', 'new'),
+            'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and croped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1')
+        );
+    }
+
+    /**  @return array - fields stored inside this function as thumbnails.  */
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        global $err;
+
+        $fid         = $this->field->getId();
+
+        if (is_array($additional)) {
+            $fields  = $additional["fields"];
+            $order   = $additional["order"];
+            $context = $additional["context"];
+        }
+
+        if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
+            // newer - widget approach - the uploaded file is encoded into the value
+            // and prefixed with "AA_UPLOAD:" constant
+            $up_file = array_combine(array('aa_const', 'name', 'type', 'tmp_name', 'error', 'size'), ParamExplode($value['value']));
+            if ($up_file['name']=='') {
+                $value['value'] = '';
+            }
+        } else {
+            // old vedsion of input form
+            $up_file = $_FILES["v".unpack_id($fid)."x"];
+        }
+
+        // look if the uploaded picture exists
+        if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
+            $sid = $fieldwriter->getSliceId();       // GLOBALS["slice_id"];
+            if (!$sid AND $item_id) {
+                $item  = AA_Items::getItem(new zids($item_id));
+                if ($item) {
+                    $sid = $item->getSliceID();
+                }
+            }
+            $slice = AA_Slice::getModule($sid);
+            if (!is_object($slice) OR !$slice->isValid()) {
+                $err[$fid] = _m("Slice with id '%1' is not valid.", array($sid));
+                return;
+            }
+
+            $dest_file = Files::uploadFile($up_file, Files::destinationDir($slice), $this->type, $this->replacemethod);
+
+            if ($dest_file === false) {   // error
+                $err[$fid] = Files::lastErrMsg();
+                return;
+            }
+
+            // ---------------------------------------------------------------------
+            // Create thumbnails (image miniature) into fields identified in this
+            // field's parameters if file type is supported by GD library.
+
+            // This has been considerable simplified, by making ResampleImage
+            // return true for unsupported types IF they are already small enough
+            // and also making ResampleImage copy the files if small enough
+
+            if ($e = ResampleImage($dest_file, $dest_file, $this->width, $this->height, $this->exact)) {
+                $err[$fid] = $e;
+                return;
+            }
+            if ($this->otherfield != "") {
+                // get ids of field store thumbnails
+                $thumb_arr=explode("##",$this->otherfield);
+
+                foreach ($thumb_arr as $thumb) {
+                    //copy thumbnail
+                    $f              = $fields[$thumb];       // Array from fields
+                    $fncpar         = ParseFnc($f["input_insert_func"]);
+                    $thumb_params   = explode(":",$fncpar['param']);  // (type, width, height)
+
+                    $dest_file_tmb  = Files::generateUnusedFilename($dest_file, '_thumb');  // xxx_thumb1.jpg
+
+                    if ($e = ResampleImage($dest_file,$dest_file_tmb, $thumb_params[1],$thumb_params[2],$thumb_params[5])) {
+                        $err[$fid] = $e;
+                        return;
+                    }
+
+                    // store link to thumbnail
+                    $val['value'] = $slice->getUrlFromPath($dest_file_tmb);
+                    $this->_clear_field($item_id, $fid);
+                    parent::execute($fieldwriter, $item_id, $val, $additional);
+                }
+            } // params[3]
+
+            $value['value'] = $slice->getUrlFromPath($dest_file);
+        } // File uploaded
+
+        // store link to uploaded file or specified file URL if nothing was uploaded
+        parent::execute($fieldwriter, $item_id, $value, $additional);
+
+        // return array with fields that were filled with thumbnails  (why?)
+        return $thumb_arr;
+    }
+}
+
+
+/** AA_Inserter_Pwd - Password and Change Password */
+class AA_Inserter_Pwd extends AA_Inserter {
+
+    protected $bck_field;                   // see getClassProperties
+    protected $crypt_phrase;            // see getClassProperties
+
+    // static function name()        { return _m("Password and Change Password");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('Stores value from a 'Password and Change Password' field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface;  not used yet
+
+    /** getClassProperties function of AA_Serializable  */
+    static function getClassProperties()  {
+        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+            'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m('Field_id, where you want to store the copy of the password. Some times usefull if you want to allow people to get hir/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter.'), '', 'password.......1'),
+            'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m('If you specify the \'Copy of password\' field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}'), '', 'Some Phrase')
+        );
+    }
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        list ($aa_const, $password) = ParamExplode($value['value']);
+        if ($aa_const == 'AA_PASSWD') {
+
+            if ($this->bck_field AND ($slice = AA_Slice::getModule($fieldwriter->getSliceId())) AND $slice->isField($this->field)) {
+                // $password is_a decrypted here
+                $backup = $this->crypt_phrase ? AA_Stringexpand_Encrypt::explode($password, $this->crypt_phrase) : $password;
+                // store backup value to specified field
+                $this->_clear_field($item_id, $this->bck_field);
+                AA_Inserter::factoryByField($slice->getField($this->bck_field))->execute($fieldwriter, $item_id, array('value'=> $backup));
+            }
+            $value['value'] = AA_Perm::cryptPwd($this->assword);
+        } elseif ($aa_const == 'AA_PASSWD_CRYPTED') {
+            // this is the only case if you are updating the item and you want to left the password the same
+            $value['value'] = $password;
+        } else {
+            $value['value'] = AA_Perm::cryptPwd($value['value']);
+        }
+        parent::execute($fieldwriter, $item_id, $value, $additional);
+    }
+}
+
+
+/** AA_Inserter_Unq - not tested, not used, yet*/
+class AA_Inserter_Unq extends AA_Inserter {
+    // static function name()        { return _m("");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+        parent::execute($fieldwriter, $item_id, array("value"=>StrExpand('AA_Stringexpand_Finduniq', array($value['value'], $this->field->getId(), empty($unique_slices) ? $fieldwriter->getSliceId() : $unique_slices, $item_id))), $additional);
+    }
+}
+
+/** AA_Inserter_Null - insert nothing - not used */
+class AA_Inserter_Nul extends AA_Inserter {
+    // static function name()        { return _m("");  }             // see NamedInterface;  not used yet
+    // static function description() { return _m('');  }      // see NamedInterface;  not used yet
+
+    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    }
+
+    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+     * @return bool
+     */
+    public function isContentSelfGenerated() {
+        return true;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+
+class AA_Field_Writer {
+
+    /** @var Cvarset  */
+    protected $item_varset;
+    protected $slice_id;
+
+    /**
+     * AA_Field_Writer constructor.
+     * @param string $slice_id - long slice id - it is optional for backward compatibility, but should be provided
+     *                           in order fileupload and uniques works...
+     */
+    function __construct($slice_id=null) {
+        $this->slice_id    = $slice_id;
+        $this->item_varset = new Cvarset;
+    }
+
+    /** The content fields are already written, but the fields in item table still probably waits - get them for update
+      * @return Cvarset
+      */
+    public function getItemVarset() {
+        return $this->item_varset;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getSliceId() {
+        return $this->slice_id;
     }
 }
 
@@ -738,89 +884,6 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
     return $content4id->storeItem( $insert ? 'insert' : 'update', array($invalidatecache, $feed), $context);     // invalidatecache, feed
 } // end of StoreItem
 
-// -----------------------------------------------------------------------------
-/** ShowForm function
- *  Shows the Add / Edit item form fields
- * @param $content4id
- * @param $fields
- * @param $prifields
- * @param $edit
- * @param $show is used by the Anonymous Form Wizard, it is an array
- *                (packed field id => 1) of fields to show
- * @return string
- */
-function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
-    global $slice_id, $auth;
-
-    if ( !isset($prifields) OR !is_array($prifields) ) {
-        return MsgErr(_m("No fields defined for this slice"));
-    }
-
-    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
-
-    foreach ($prifields as $pri_field_id) {
-        $f   = $fields[$pri_field_id];
-        $fnc = ParseFnc($f["input_show_func"]);   // input show function
-
-        if (is_array($show)) {
-            $showme = $show [$f['id']];
-        } else {
-            $showme = $f["input_show"] AND !$profile->getProperty('hide',$f['id']) AND !$profile->getProperty('hide&fill',$f['id']);
-        }
-
-        if (!$fnc OR !$showme) {
-            continue;
-        }
-
-        // get varname - name of field in inputform
-        $varname     = 'v'. unpack_id($pri_field_id); // "v" prefix - database field var
-        $htmlvarname = $varname."html";
-
-        if (!IsEditable($content4id[$pri_field_id], $f, $profile)) {
-            // if fed as unchangeable
-            $show_fnc_prefix = 'show_fnc_freeze_';          // display it only
-        } else {
-            $show_fnc_prefix = 'show_fnc_';
-        }
-
-        $fncname = $show_fnc_prefix . $fnc["fnc"];
-
-        // look for alternative function for Anonym Wizard (used for passwords)
-        if (is_array($show) && function_exists($fncname."_anonym")) {
-            $fncname .= "_anonym";
-        }
-
-        if ($edit) {
-            $fncname($varname, $f, $content4id[$pri_field_id],
-                     $fnc["param"], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
-        } else {
-            // insert or new reload of form after error in inserting
-            // first get values from profile, if there are some predefined value
-            $foo = $profile->getProperty('predefine',$f['id']);
-            if ($foo AND !$GLOBALS[$varname]) {
-                $x = $profile->parseContentProperty($foo);
-                 // it is not quoted, so OK
-                $GLOBALS[$varname]     = $x->getValue();
-                $GLOBALS[$htmlvarname] = $x->getFlag();
-            }
-
-            // get values from form (values are filled when error on form ocures
-            if ($f["multiple"] AND is_array($GLOBALS[$varname])) {
-                // get the multivalues
-                $i=0;
-                foreach ($GLOBALS[$varname] as $v) {
-                    $arr[$i++]['value'] = $v;
-                }
-            } else {
-                $arr[0]['value'] = $GLOBALS[$varname];
-            }
-
-            $fncname($varname, $f, $arr, $fnc["param"],
-                     ((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
-        }
-    }
-}
-
 // ----------------------------------------------------------------------------
 
 /** Validates new content, sets defaults, reads dates from the 3-selectbox-AA-format,
@@ -852,7 +915,7 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
 function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown="") {
     global $oldcontent4id, $auth;
 
-    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {
