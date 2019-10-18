@@ -391,7 +391,7 @@ if (count($err_valid) > 1) {
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
 $c4id = new ItemContent();
 $c4id->setItemID($my_item_id);
-$c4id->setFromForm( $slice, $oldcontent4id, $insert );
+$c4id->setFromForm( $slice, $my_item_id, $oldcontent4id, $insert );
 
 $content4id = $c4id->getContent();
 

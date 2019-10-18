@@ -174,6 +174,19 @@ class AA_Profile {
         return is_array($prop) ? $prop[0] : false;
     }
 
+    /** returns value which should be filled to $field_id
+     * @param $field_id
+     * @return AA_Value|null
+     */
+    function getFormFieldValue($field_id) {
+        if (!($profile_value = $this->getProperty('hide&fill',$field_id))) {
+            if (!($profile_value = $this->getProperty('fill',$field_id))) {
+                return null;
+            }
+        }
+        return $this->parseContentProperty($profile_value);
+    }
+
     /** parseContentProperty function
      *  Many properties (the one we use for filling field content - 'predefine',
      *  'fill', 'hide&fill') have the same format:

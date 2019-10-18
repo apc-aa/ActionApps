@@ -58,6 +58,8 @@ define('VALIDATE_ERROR_TOO_SHORT',        407);
 define('VALIDATE_ERROR_WRONG_CHARACTERS', 408);
 define('VALIDATE_ERROR_NOT_IN_LIST',      409);
 
+define('VALIDATE_ERROR_NOT_FILLED',       410);
+
 /** AA user input validation class
  *  Ussage (for standard validators):
  *      if ( AA_Validate::validate($variable, 'int') ) {...};
@@ -143,8 +145,8 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** checks if the variable is empty */
-    function varempty(&$variable) {
-        return  ($variable=="" OR trim($variable)=="");
+    function varempty($var) {
+        return  ($var=="" OR trim($var)=="");
     }
 
     /** lastErr function

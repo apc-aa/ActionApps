@@ -274,23 +274,35 @@ class AA_Property extends AA_Storable {
         return $widget;
     }
 
-    function validateReport($value_arr) {
-        return $this->validate($value_arr, true);
+    /**
+     * @param $value_arr
+     * @return bool
+     */
+    function validate($value_arr) {
+        return !$this->validateDetailed($value_arr);
     }
 
-    function validate($value_arr, $detail=null) {
+    /**
+     * @param $value_arr
+     * @return array  - empty array means OK - valid
+     */
+    function validateDetailed($value_arr) {
+        $valid     = true;
         $validator = $this->getValidator();
-        $valid  = true;
-        foreach ( $value_arr as $v) {
-            $valid = $validator->validate($v);
-            if ( !$valid ) {
+        $empty     = true;
+        foreach ($value_arr as $v) {
+            if ($validator->varempty($v)) {
+                continue;
+            }
+            $empty = false;
+            if (!($valid = $validator->validate($v))) {
                 break;
             }
         }
-        if ($detail) {
-            return $valid ? array() : array($validator->lastErr(), $validator->lastErrMsg());
+        if ($empty AND $this->isRequired()) {
+            return array(VALIDATE_ERROR_NOT_FILLED, _m("Not filled"));
         }
-        return $valid;
+        return $valid ? array() : array($validator->lastErr(), $validator->lastErrMsg());
     }
 
     /** isObject function */
@@ -318,7 +330,7 @@ class AA_Property extends AA_Storable {
 
     /** isRequired function */
     function isRequired() {
-        return $this->required;
+        return $this->required AND !in_array(trim($this->id,'.'), array('short_id','status_code','post_date','last_edit','display_count','disc_count','disc_app','moved2active'));
     }
 
     /** isPersistent function */

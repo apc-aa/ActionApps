@@ -300,7 +300,7 @@ class inputform {
 
     /** getForm function
      *   Shows the Add / Edit item form fields
-     * @param ItemContent $content4id
+     * @param ItemContent $content4id - current item content in db
      * @param AA_Slice    $slice
      * @param bool        $edit
      * @param array       $show is used by the Anonymous Form Wizard, it is an array
@@ -313,9 +313,9 @@ class inputform {
 
         $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
-        list($fields, $prifields) = $slice->fields(null, $slice_fields);
+        $fields = $slice->getFields($slice_fields);
 
-        if ( !isset($prifields) OR !is_array($prifields) ) {
+        if ( !$fields->count() ) {
             return MsgErr(_m("No fields defined for this slice"));
         }
 
@@ -326,56 +326,48 @@ class inputform {
         $shown_fields = array();
 
         $item = $edit ? GetItemFromContent($content4id) : null;
+
+        $content_from_form = new ItemContent();
+        // just read the data from posted form, if it was already posted (on error, ...)
+        $content_from_form->setFieldsFromForm($content4id->getContent(), !$edit, $fields, $profile);
         $ret = '';
 
-        foreach ($prifields as $pri_field_id) {
-            $f           = $fields[$pri_field_id];
-            $varname     = 'v'. unpack_id($pri_field_id);
-            $htmlvarname = $varname."html";
+        foreach ($fields as $fid => $field) {
 
-            if ( ($form4anonymous_wizard  AND !$show[$f['id']]) OR
-                 (!$form4anonymous_wizard AND (!$f["input_show"] OR
-                                         $profile->getProperty('hide',$f['id']) OR
-                                         $profile->getProperty('hide&fill',$f['id'])))) {
+            if ( ($form4anonymous_wizard  AND !$show[$fid]) OR
+                 (!$form4anonymous_wizard AND (!$field->getProperty('input_show') OR
+                                         $profile->getProperty('hide',$fid) OR
+                                         $profile->getProperty('hide&fill',$fid)))) {
                 // do not show this field
                 continue;
             }
 
-            $shown_fields[$pri_field_id] = true;  // used => generate js for it
+            $shown_fields[$fid] = true;  // used => generate js for it
 
             // ----- collect all field_* parameters in order we can call display function
 
             // field_mode - how to display the field
-            $field_mode  = !IsEditable($content4id->getValues($pri_field_id), $f, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
-            $field_value = array();
+            $field_mode  = !IsEditable($content4id->getValues($fid), $field->getRecord(), $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
+            $fval = new AA_Value;
 
             if ( $edit ) {
-                $field_value     = $content4id->getValues($pri_field_id);
-                $field_html_flag = $content4id->getFlag($pri_field_id) & FLAG_HTML;
+                $fval = $content4id->getAaValue($fid);
             } else {     // insert or new reload of form after error in inserting
                 // first get values from profile, if there are some predefined value
-                $foo = $profile->getProperty('predefine',$f['id']);
-                if ( $foo AND !$GLOBALS[$varname]) {
-                    $x = $profile->parseContentProperty($foo);
-                     // it is not quoted, so OK
-                    $GLOBALS[$varname]     = $x->getValue();
-                    $GLOBALS[$htmlvarname] = $x->getFlag();
+                if ( $foo = $profile->getProperty('predefine',$fid) ) {
+                    $fval = $profile->parseContentProperty($foo);
                 }
                 // get values from form (values are filled when error on form occurs
-                if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {  // multiple - 1=multiple, 2=translate
-                      // get the multivalues
-                    foreach ( $GLOBALS[$varname] as $key => $value ) {
-                        $field_value[$key] = array('value' => stripslashes($value)); // it is quoted!!!
-                    }
-                } else {
-                    $field_value[0]['value'] = stripslashes($GLOBALS[$varname]);  // it is quoted!!!
+                if ($content_from_form->is_set($fid)) {
+                    $fval = $content_from_form->getAaValue($fid);
                 }
-                $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
             }            // Display the field
-            $aainput = new AA_Inputfield($field_value, $field_html_flag, $field_mode);
+            $aainput = new AA_Inputfield('', true, $field_mode); // set empty AA_Inputfield
+            $aainput->setAaValue($fval);
+
             //fix -- otherwise $field_value keeps array
-            unset($field_value);
-            $aainput->setFromField($f);
+            unset($fval);
+            $aainput->setFromField($field);
 
             // do not return template for anonymous form wizard
             $ret .= $aainput->get($item, $slice->getId());
@@ -534,6 +526,18 @@ class AA_Inputfield {
         $this->value = array( 0=>array('value'=>$value));
     }
 
+    /**
+     * @param AA_Value $val
+     */
+    function setAaValue($val) {
+        $arr         = $val->getValues();
+        $this->value = array();
+        foreach ($arr as $k => $v) {
+             $this->value[$k] = array('value'=>$v);
+        }
+        $this->html_flag = $val->getFlag() & FLAG_HTML;
+    }
+
     /** getDefaults function
      * private function - Returns list of class variables and its defaults
      */
@@ -576,34 +580,34 @@ class AA_Inputfield {
 
     /** setFromField function
      *  Sets object variables according to field setting
-     * @param $field
+     * @param AA_Field $field_arr
      */
     function setFromField($field) {
-        if (isset($field) AND is_array($field)) {
-            $this->id            = $field['id'];
-            $this->varname       = varname4form($this->id);
-            $this->name          = $field['name'];
-            $this->input_before  = $field['input_before'];
-            $this->required      = $field['required'];
-            $this->input_help    = $field['input_help'];
-            $this->input_morehlp = $field['input_morehlp'];
+        $field_arr = $field->getRecord();
 
-            //$funct = ParamExplode($field["input_show_func"]);
-            //$this->input_type    = AA::Stringexpander()->unalias($funct[0]);
-            $funct = array_values(Widget::parseClassProperties($field["input_show_func"]));
-            $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
-            $this->param         = array_slice( $funct, 1 );
-            $this->html_rb_show  = $field["html_show"];
-            $this->valid         = $field["input_validate"];
+        $this->id            = $field_arr['id'];
+        $this->varname       = varname4form($this->id);
+        $this->name          = $field_arr['name'];
+        $this->input_before  = $field_arr['input_before'];
+        $this->required      = $field_arr['required'];
+        $this->input_help    = $field_arr['input_help'];
+        $this->input_morehlp = $field_arr['input_morehlp'];
 
-            if ($field["multiple"] & 2) {   // translation
-                $this->translations = AA_Slice::getModule(unpack_id($field["slice_id"]))->getTranslations();
-            }
-            // removed - const_arr should be in input_show_func param
-            // if ( isset($field["const_arr"]) ) {
-            //     $this->const_arr  = $field["const_arr"];
-            // }
+        //$funct = ParamExplode($field["input_show_func"]);
+        //$this->input_type    = AA::Stringexpander()->unalias($funct[0]);
+        $funct = array_values(Widget::parseClassProperties($field_arr["input_show_func"]));
+        $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
+        $this->param         = array_slice( $funct, 1 );
+        $this->html_rb_show  = $field_arr["html_show"];
+        $this->valid         = $field_arr["input_validate"];
+
+        if ($field_arr["multiple"] & 2) {   // translation
+            $this->translations = AA_Slice::getModule(unpack_id($field_arr["slice_id"]))->getTranslations();
         }
+        // removed - const_arr should be in input_show_func param
+        // if ( isset($field["const_arr"]) ) {
+        //     $this->const_arr  = $field["const_arr"];
+        // }
     }
 
     /** validate function
@@ -1296,7 +1300,7 @@ class AA_Inputfield {
             $parts = array();
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
-                $lang_id           = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id           = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = myspecialchars($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
@@ -1311,7 +1315,7 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = array($lang, $classes);
 
-                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
+                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
 
                 $link  = ((substr($value,0,7)==='http://') OR (substr($value,0,8)==='https://')) ? '&nbsp;'.a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
@@ -1417,7 +1421,7 @@ class AA_Inputfield {
             $parts = array();
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
-                $lang_id           = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id           = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = myspecialchars($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
@@ -1434,7 +1438,7 @@ class AA_Inputfield {
                 }
                 $parts["part$id2"] = array($lang, $classes);
 
-                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong>$lang</strong>";
+                $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
                 if (!$showhtmlarea AND $showrich_href ) {
@@ -1451,7 +1455,7 @@ class AA_Inputfield {
             $rows     = max($rows, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
-            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
+            $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
         }
         $this->echovar($widg);
         $this->helps('plus');
@@ -1630,7 +1634,7 @@ class AA_Inputfield {
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
         $this->field_name('plus');
-        $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
+        $ret       = "<select name=\"$name\" size=\"$rows\" multiple $triggers". ($this->required ? " required": '') .">";
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
         // $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
@@ -1911,7 +1915,7 @@ class AA_Inputfield {
     function inputWidget($item, $slice_id) {
         $this->field_name('plus');
         if (is_null($item)) {
-            $this->echovar(AA::Stringexpander()->unalias('{input:'.$slice_id.':'.$this->id.'}'));
+            $this->echovar(AA::Stringexpander()->unalias('{inputonly:'.$slice_id.':'.$this->id.'}'));
         } else {
             $this->echovar(AA::Stringexpander()->unalias('{edit:'.$item->getId().':'.$this->id.'}'));
         }
@@ -3009,7 +3013,8 @@ function FrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor = CO
  * @return string
  */
 function getFrmTabRow( $row, $mode='td') {
-   if ( isset($row) AND is_array($row) ) {
+    $ret = '';
+    if ( isset($row) AND is_array($row) ) {
         $ret .= "\n <tr>";
         foreach ( $row as $col ) {
             $ret .= ( !is_array($col) ? "<$mode>$col</$mode>" : "<$mode " .$col['attr']. '>'. $col['text'] ."</$mode>");
@@ -3103,18 +3108,19 @@ function getFrmJavascript( $jscode ) {
  *  The idea of this is: External js files are cached by the browser so it is
  *  better to store the js code in the database, assign an ID to this record
  *  (=keystr) and then call it as external file with this ID as parameter
- * @param $jscode
- * @param $name
+ * @param        $jscode
+ * @param        $name
+ * @param string $loadtype
  * @return string
  */
-function getFrmJavascriptCached( $jscode, $name ) {
+function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
     $key  = get_hash('jscache', $jscode);
 
     if (!AA::Pagecache()->getById($key)) {     // not in cache, yet
         $str2find = new CacheStr2find($name, 'js');
         AA::Pagecache()->store($key, $jscode, $str2find, true);
     }
-    return getFrmJavascriptFile( 'cached.php3?keystr='.$key, 'async defer' );
+    return getFrmJavascriptFile( 'cached.php3?keystr='.$key, $loadtype );
 }
 
 /** getFrmCSS function

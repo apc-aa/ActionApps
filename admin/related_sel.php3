@@ -117,7 +117,7 @@ $conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
 $manager_settings = array(
      'module_id' => $module_id,
-     'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
      'searchbar'  => array(
          'fields'               => $slice->getSearchfields(),
          'search_row_count_min' => 1,

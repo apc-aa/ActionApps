@@ -197,6 +197,61 @@ class AA_Field {
         return $val->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
     }
 
+    /**
+     * @param $oldcontent4id
+     * @param  bool $insert
+     * @return AA_Value|null
+     */
+    function readValueFromOldtypeForm($oldcontent4id, $insert) {
+
+        $fid = $this->getId();
+        // "v" prefix - database field var
+        $varname     = 'v'. unpack_id($fid);
+        $htmlvarname = $varname."html";
+        $var = $_REQUEST[$varname];
+        $ret = null;
+
+        list($validate_type) = explode(":", $this->getProperty('input_validate'), 2);
+        list($insert_type)   = explode(":", $this->getProperty('input_insert_func'), 2);
+
+        if ( $validate_type == 'date' ) {
+
+            $datectrl  = new datectrl($varname);
+            if ($datectrl->isUpdatable()) {
+                $datectrl->update();                   // updates datectrl
+                $ret = new AA_Value($datectrl->get_date(), FLAG_HTML);
+            }
+        } elseif ($insert_type == 'boo') {
+            $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);
+        } elseif ($insert_type == 'pwd') {
+            $change_var   = $_REQUEST[$varname.'a'];
+            $retype_var   = $_REQUEST[$varname.'b'];
+            $delete_var   = $_REQUEST[$varname.'d'];
+
+            if ($change_var && ($change_var == $retype_var)) {
+                $var = ParamImplode(array('AA_PASSWD',$change_var));
+            } elseif ($delete_var) {
+                $var = '';
+            } elseif (!$insert) {
+                // store the original password to use it in
+                // insert_fnc_pwd when it is not changed
+                // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
+                $var = ParamImplode(array('AA_PASSWD_CRYPTED',$oldcontent4id[$fid][0]['value']));
+            } else {
+                return null;
+            }
+            $ret = new AA_Value($var, FLAG_HTML);
+        } else {
+            if (!is_array($var)) {
+                $var = array(0 => $var);
+            }
+            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
+            $ret = new AA_Value($var, $flag);
+        }
+        return $ret;
+    }
+
+
     /** getAliases function
      *
      */
@@ -268,7 +323,6 @@ class AA_Field {
     /** getAaProperty function
      * @param $multiple
      * @param $required - not usual, but sometimes we want to redefine it required for ajax...
-     * @todo create validator on input_validate
      * @return AA_Property
      */
     function getAaProperty($multiple=null, $required=null, $name=null, $input_help=null) {
@@ -283,7 +337,7 @@ class AA_Field {
                                 $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
                                 $multiple,
                                 false,                   // persistent @todo
-                                AA_Validate::factoryByString($this->data['input_validate']), // null,              // $validator - @todo create validator
+                                AA_Validate::factoryByString($this->data['input_validate']), // null,
                                 $required ? true : $this->required(),
                                 $input_help ?: $this->getProperty('input_help'),
                                 $this->getProperty('input_morehlp'),
@@ -317,18 +371,21 @@ class AA_Field {
     }
 
     /** getWidgetNewHtml function
-     * @param $item_id
-     * @param $required // redefine default settings of required
-     * @param $widget_type - wi2|sel|...
+     * @param       $required // redefine default settings of required
+     * @param null  $function
+     * @param       $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
-     * @param $widget_properties - array of properties to redefine for $widget_type
-     * @param $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
+     * @param array $widget_properties - array of properties to redefine for $widget_type
+     * @param null  $preset_value
+     * @param       $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
+     * @param bool  $widget_only
      *
      * Ussage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
      * @return string
+     * @throws Exception
      */
-    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null, $item_index=null) {
+    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null, $item_index=null, $widget_only=false) {
         $widget  = $this->getWidget($widget_type, $widget_properties);
         if ($item_index) {
             $widget->setIndex($item_index);
@@ -346,7 +403,7 @@ class AA_Field {
 
         $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
 
-        return $widget->getHtml($aa_property, $content, $function);
+        return $widget_only ? $widget->getOnlyHtml($aa_property, $content, $function) : $widget->getHtml($aa_property, $content, $function);
     }
 
     /** getRelation function
@@ -374,7 +431,7 @@ class AA_Field {
     }
 }
 
-class AA_Fields implements Iterator {
+class AA_Fields implements Iterator, Countable {
 
     /**  @var AA_Field[] - array of object of AA_Field type */
     var $fields;
@@ -389,9 +446,6 @@ class AA_Fields implements Iterator {
      */
     var $collection;
 
-    /** Array of field ids sorted by priority */
-    var $prifields;
-
     /** Array of aliases - for caching purposes */
     var $aliases;
     /** AA_Fields function
@@ -402,19 +456,9 @@ class AA_Fields implements Iterator {
         $this->master_id  = $master_id;
         $this->fields     = null;
         $this->collection = $collection;
-        $this->prifields  = null;
         $this->aliases    = null;
     }
 
-    /** Returns list of fields which belongs to the slice
-     *  The result is in two arrays - $fields    (key is field_id)
-     *                              - $prifields (just field_id sorted by priority)
-     *  @param $slice_id       - id of slice for which you want to get fields array
-     *  @param $slice_fields   - if true, the result contains only "slice fields"
-     *                           which are not used for items, but rather for slice
-     *                           setting
-     *  @see sliceobj:slice->fields()
-     */
      /** load function
       * @param $force
       */
@@ -438,7 +482,6 @@ class AA_Fields implements Iterator {
                 $this->fields[$field->getId()] = $field;
             }
         }
-        $this->prifields = array_keys($this->fields);
     }
 
     /** getField function
@@ -565,7 +608,7 @@ class AA_Fields implements Iterator {
      */
     function getPriorityArray() {
         $this->load();
-        return $this->prifields;
+        return array_keys($this->fields);
     }
 
     /** getSearchArray function
@@ -744,9 +787,11 @@ class AA_Fields implements Iterator {
     }
 
     /** Iterator interface */
-    public function rewind()  { if (is_null($this->fields)) {$this->load();} reset($this->prifields);                         }
-    public function current() { if (is_null($this->fields)) {$this->load();} return $this->fields[current($this->prifields)]; }
-    public function key()     { if (is_null($this->fields)) {$this->load();} return current($this->prifields);                }
-    public function next()    { if (is_null($this->fields)) {$this->load();} next($this->prifields);                          }
-    public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->prifields) !== false);    }
+    public function rewind()  { if (is_null($this->fields)) {$this->load();} reset($this->fields);                         }
+    public function current() { if (is_null($this->fields)) {$this->load();} return current($this->fields); }
+    public function key()     { if (is_null($this->fields)) {$this->load();} return key($this->fields);                }
+    public function next()    { if (is_null($this->fields)) {$this->load();} next($this->fields);                          }
+    public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->fields) !== false);    }
+    /** Countable interface */
+    public function count()   { if (is_null($this->fields)) {$this->load();} return count($this->fields);                     }
 }

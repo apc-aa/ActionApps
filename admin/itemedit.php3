@@ -116,7 +116,6 @@ if ( $upd_preview ) {
     $update = true; $preview=true;
 }
 
-
 $add = !( $update OR $cancel OR $insert OR $edit );
 
 if ($cancel) {
@@ -145,6 +144,7 @@ if ($add) {
 //   $js_proove_fields - JavaScript code for form validation
 //   $oldcontent4id
 
+$id = $_REQUEST['id'];
 
 // link from public pages sometimes do not contain slice_id
 if ( $id ) {
@@ -175,48 +175,73 @@ unset($content4id);
 
 // --- if not EXITEed above, continue
 
-
-
 $slice = AA_Slice::getModule($slice_id);
 
 
-ValidateContent4Id($err, $slice, $action, $id);
-list($fields, $prifields) = $slice->fields();
+//ValidateContent4Id($err, $slice, $action, $id);
+
+// Are we editing dynamic slice setting fields?
+$slice_fields = ($id == $slice->getId());
+
+// get slice fields and its priorities in inputform
+$fields = $slice->getFields($slice_fields);
 
 //mimo changes
 $lang_control = MLXSlice($slice);
 
+
 //  update database
-if ( ($insert || $update) AND (!count($err)) AND is_array($prifields) ) {
+if ( ($insert || $update) AND count($fields) ) {
 
     // prepare content4id array before call StoreItem function
     $content4id = new ItemContent;
-    $content4id->setFromForm( $slice, $oldcontent4id, $insert ); // sets also [slice_id] as well as [id]
+
+    // it is needed to call IsEditable() function and GetContentFromForm()
+    if ( $action == "update" ) {
+        // if we are editing dynamic slice setting fields (stored in content
+        // table), we need to get values from slice's fields
+        if ($slice_fields) {
+            $oldcontent    = $slice->get_dynamic_setting_content(true);
+            $oldcontent4id = $oldcontent->getContent();   // shortcut
+        } else {
+            $oldcontent = GetItemContent($id);
+            $oldcontent4id = $oldcontent[$id];   // shortcut
+        }
+    }
+
+    $content4id->setFromForm($slice, $id, $oldcontent4id, $insert, $slice_fields); // sets also [slice_id] as well as [id]
 
     if ($slice->getProperty('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA) {
         // unset ITEM_FLAG_ANONYMOUS_EDITABLE bit in flag
         $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);
     }
 
-    // we need to know the new id before mlx->update, since it is written
-    // to the MLX control slice
-    if ($insert) {
-        $id = new_id();
-        $content4id->setItemID($id);
+    if ( $validate_report = $content4id->validateReport('visible')) {
+        foreach ($validate_report as $vr_fid => $vr_err) {
+            $err[$vr_fid] =  MsgErr(_m("Error in").' <b>'.$fields->getProperty($vr_fid,'name')."</b> - ".$vr_err[1]);
+        }
     }
-
-    // mimo change
-    if ($lang_control) {
-        $mlx = new MLX($slice);
-        $mlx->update($content4id, $id, $action, $mlxl, $mlxid);
-    }
-    // end
-
-    // added_to_db contains id
-    // removed $oldcontent4id (see ItemContent::storeItem)
-    $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
 
     if (!count($err)) {
+
+        // we need to know the new id before mlx->update, since it is written
+        // to the MLX control slice
+        if ($insert) {
+            $id = new_id();
+            $content4id->setItemID($id);
+        }
+
+        // mimo change
+        if ($lang_control) {
+            $mlx = new MLX($slice);
+            $mlx->update($content4id, $id, $action, $mlxl, $mlxid);
+        }
+        // end
+
+        // added_to_db contains id
+        // removed $oldcontent4id (see ItemContent::storeItem)
+        $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
+
         page_close();
         if ($preview) {
             $preview_url = get_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
@@ -247,7 +272,7 @@ unset( $content );       // used in another context for storing item to db
 unset( $content4id );
 
 if ($edit) {
-    if ( !is_array($fields) ) {
+    if ( !count($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
         exit;

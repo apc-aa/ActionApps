@@ -69,14 +69,15 @@ class datectrl {
         $this->required      = $required;
         $this->update();
     }
+
     /** update function
      * process form data
      */
     function update() {
-        $timevar  = chop($GLOBALS["tdctr_" . $this->name . "_time"]);
-        $dayvar   = chop($GLOBALS["tdctr_" . $this->name . "_day"]);
-        $monthvar = chop($GLOBALS["tdctr_" . $this->name . "_month"]);
-        $yearvar  = chop($GLOBALS["tdctr_" . $this->name . "_year"]);
+        $timevar  = trim($_REQUEST["tdctr_" . $this->name . "_time"]);
+        $dayvar   = trim($_REQUEST["tdctr_" . $this->name . "_day"]);
+        $monthvar = trim($_REQUEST["tdctr_" . $this->name . "_month"]);
+        $yearvar  = trim($_REQUEST["tdctr_" . $this->name . "_year"]);
 
         // no date
         if ( strlen($yearvar) AND !(int)$yearvar) {
@@ -99,6 +100,14 @@ class datectrl {
         if ( $yearvar ) {
             $this->year = $yearvar;
         }
+    }
+
+    /** if the form sent containd this widget
+     * @return bool
+     */
+    function isUpdatable() {
+        $n = $this->name;
+        return (isset($_REQUEST["tdctr_{$n}_time"]) OR isset($_REQUEST["tdctr_{$n}_day"]) OR isset($_REQUEST["tdctr_{$n}_month"]) OR isset($_REQUEST["tdctr_{$n}_year"]));
     }
 
     /** setdate function
@@ -215,6 +224,7 @@ class datectrl {
         $months  = monthNames();
         $at      = getdate(time());
         $sel     = ($this->month != 0 ? $this->month : $at["mon"]);
+        $ret     = '';
         for ($i = 1; $i <= 12; $i++) {
             $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">". $months[$i] ."</option>";
         }
@@ -302,22 +312,6 @@ class datectrl {
             return "";
         }
         return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"". AA_Jstriggers::get("input", $this->name, "") .">";
-    }
-
-    /** getselect function
-     * print complete date control
-     * @return string
-     */
-    function getselect () {
-        return $this->get_datestring().$this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
-    }
-
-    /** pselect function
-     * print complete date control
-     * @return string
-     */
-    function pselect () {
-        echo $this->getselect();
     }
 }
 

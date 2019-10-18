@@ -52,7 +52,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** AA_Value function
      * @param $value
-     * @param $flag
+     * @param $flag  FLAG_HTML | FLAG_FEED | FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE | FLAG_TEXT_STORED
      */
     function __construct($value=null, $flag=null) {
         $this->clear();
@@ -198,7 +198,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             $first  = true;
             $newval = array();
             foreach($translations as $lang) {
-                $lang_id = AA_Content::getLangNumber($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i=0; $i<=$maxindex; $i++) {
                     $value = isset($this->val[$lang_id + $i]) ? $this->val[$lang_id + $i] : '';
                     if ( !strlen($value) AND $first AND isset($this->val[$i])) {
@@ -380,7 +380,7 @@ class AA_Content {
         } else {
             $def_lang = AA_Module::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
-        return ($def_lang_num = AA_Content::getLangNumber($def_lang)); // array of prefered languages in priority order.
+        return ($def_lang_num = AA_Content::getLangName2Num($def_lang)); // array of prefered languages in priority order.
     }
 
     function getFlag($field_id) {
@@ -429,14 +429,14 @@ class AA_Content {
      *  cz -> 78000000, en -> 118000000, ...
      *  you can use any two (smallcaps) letter for language
      */
-    static function getLangNumber($lang) {
+    static function getLangName2Num($lang) {
         return strlen($lang) ? AA_Value::MAX_INDEX*((ord($lang{0})-97)*26+(ord($lang{1})-97+1)) : 0;
     }
 
     /** reverse function to getLangNumber
      *  78000000 -> cz, 78000001 -> cz, 118000000 -> en...
      */
-    static function getLangId($langnumber) {
+    static function getLangNum2Name($langnumber) {
         if ($langnumber<AA_Value::MAX_INDEX) {
             return '';
         }
@@ -444,6 +444,19 @@ class AA_Content {
         return chr(intval($num / 26) + 97) . chr(($num % 26)+97);
     }
 
+    /** translate displayed lang name to standardized language code - cz -> cs
+     */
+    static function getLangName2Code($lang) {
+        $LANGS = array('cz'=>'cs');
+        return $LANGS[$lang] ?: $lang;
+    }
+
+    /** translate displayed lang name to standardized language code - cz -> cs
+     */
+    static function getLangCode2Name($code) {
+        $LANGS = array('cs'=>'cz');
+        return $LANGS[$code] ?: $code;
+    }
 
     /** @return Abstract Data Structure of current object
      *  @deprecated - for backward compatibility (used in AA_Object getContent)
@@ -557,21 +570,13 @@ class ItemContent extends AA_Content {
      *  Functions tries to fill all the fields from the form. It do not add any
      *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
-     * @param $slice
-     * @param $content4id
-     * @param $insert
-     * @param $slice_fields
+     * @param string     $oldcontent4id
+     * @param bool       $insert
+     * @param AA_Fields  $fields
+     * @param AA_Profile $profile
      * @return bool
      */
-    function setFieldsFromForm($slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
-        global $auth;
-
-        list($fields, $prifields) = $slice->fields(null, $slice_fields);
-        if (!isset($prifields) OR !is_array($prifields)) {
-            return false;
-        }
-
-        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+    function setFieldsFromForm($oldcontent4id, $insert, $fields, $profile) {
 
         $aacontent4id = null; // modern input format - introduced with [rim]
         if ($_POST['aa']) {
@@ -581,66 +586,61 @@ class ItemContent extends AA_Content {
             $aacontent4id = $grabber->getItem();
             $grabber->finish();
         }
-        foreach ($prifields as $pri_field_id) {
-            $f = $fields[$pri_field_id];
+        foreach ($fields as $pri_field_id => $field) {
 
             // to content array add just displayed fields (see ShowForm())
-            if (!IsEditable($oldcontent4id[$pri_field_id], $f, $profile) AND !$insert) {
+            if (!IsEditable($oldcontent4id[$pri_field_id], $field->getRecord(), $profile) AND !$insert) {
                 continue;
             }
 
-            // "v" prefix - database field var
-            $varname     = 'v'. unpack_id($pri_field_id);
-            $htmlvarname = $varname."html";
-
-            // if there are predefined values in user profile, fill it.
-            // Fill it only if $insert (new item). Otherwise left there filled value
-
-            $profile_value = $profile->getProperty('hide&fill',$f['id']);
-            if (!$profile_value) {
-                $profile_value = $profile->getProperty('fill',$f['id']);
-            }
-
-            if ( $profile_value ) {
-                $x = $profile->parseContentProperty($profile_value);
-                // modify the value to be compatible with $_GET[] array
-                $GLOBALS[$varname]     = addslashes($x->getValue());
-                $GLOBALS[$htmlvarname] = $x->getFlag();
-            } elseif ($aacontent4id AND $aacontent4id->is_set($pri_field_id) AND (!in_array($pri_field_id, array('id..............','slice_id........')))) {
+            if ($aacontent4id AND $aacontent4id->is_set($pri_field_id) AND (!in_array($pri_field_id, array('id..............','slice_id........')))) {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
 
-            $var = $GLOBALS[$varname];
-            if (!is_array($var)) {
-                $var = array(0 => $var);
-            }
-
-            // fill the multivalues
-            foreach ($var as $key => $v) {
-                $flag = $f["html_show"] ? ($GLOBALS[$htmlvarname]=="h" ? FLAG_HTML : 0)
-                                        : ($f["html_default"] > 0      ? FLAG_HTML : 0);
-                // content uses NOT quoted values => stripslashes
-                $this->content[$pri_field_id][(int)$key]   = array('value'=> stripslashes($v), 'flag'=>$flag);
+            if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert)) {
+                $this->content[$pri_field_id] = $field_value->getArray();
             }
         }
         return true;
     }
 
-
     /** setFromForm function
      *  Fills content4id - values in content4id are NOT quoted (addslashes)
      *  (new version of previous GetContentFromForm() function)
      * @param $slice
+     * @param $id  - item/slice id or empty if item insert
      * @param $oldcontent4id
      * @param $insert
      * @return bool
      */
-    function setFromForm( $slice, $oldcontent4id="", $insert=true) {
-        global $id;
+    function setFromForm($slice, $id, $oldcontent4id="", $insert=true, $slice_fields=false) {
+        global $auth;
 
-        if (!$this->setFieldsFromForm($slice, $oldcontent4id, $insert)) {
+        $fields  = $slice->getFields($slice_fields);
+        $profile = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+
+        if (!$this->setFieldsFromForm($oldcontent4id, $insert, $fields, $profile)) {
             return false;
+        }
+
+        // if there are predefined values in user profile, fill it.
+        // Fill it only if $insert (new item). Otherwise left there filled value
+        if ($insert) {
+            // apply Profile To Content
+            foreach ($fields as $pri_field_id => $field) {
+                // set default in case of insert & no value
+                if (!$this->content[$pri_field_id]) {
+                    $default_val = $field->getDefault();
+                    if (! $default_val->isEmpty()) {
+                        $this->content[$pri_field_id] = $default_val->getArray();
+                    }
+                }
+                // fill from profile - it is stronger, than default values
+                if ($profile_value = $profile->getFormFieldValue($pri_field_id)) {
+                    $this->content[$pri_field_id] = $profile_value->getArray();
+                }
+            }
         }
 
         // the status_code must be set in order we can use email_notify()
@@ -661,10 +661,10 @@ class ItemContent extends AA_Content {
         $this->setSliceID($slice->getId());
     }
 
-    /** is_empty function
+    /** isEmpty function
      *
      */
-    function is_empty() {
+    function isEmpty() {
         return !is_array($this->content);
     }
 
@@ -801,14 +801,26 @@ class ItemContent extends AA_Content {
         }
     }
 
-    function validateReport() {
-        $slice  = AA_Slice::getModule($this->getSliceID());
-        $fields = $slice->getFields();
-        $ret    = array();
+    /**
+     * @param string $type  present|visible|all   validate just PRESENT fields in ItemContent (for update), The fiels VISIBLE (dislayed on inputform), ALL fields in the slice
+     * @return array of non valid fields like: ['text............'=>[410,'Not filled']]
+     */
+    function validateReport($type='present') {
+        $slice      = AA_Slice::getModule($this->getSliceID());
+        $fields     = $slice->getFields();
+        $ret        = array();
+        //$cur_fields = $this->getFields();
 
         foreach ($fields as $field_id => $field) {
+            if ( ($type=='visible' AND !$field->getProperty('input_show')) OR ($type=='present' AND !$this->is_set($field_id))) {
+                continue;
+            }
             $property    = $field->getAaProperty();
-            if ($validreport = $property->validateReport($this->getValuesArray($field_id))) {
+            if ($validreport = $property->validateDetailed($this->getValuesArray($field_id))) {
+                // if the inserter generates the content itself, it is not necessary to have it filled
+                if (($validreport[0] == VALIDATE_ERROR_NOT_FILLED) AND AA_Inserter::factoryByField($field)->isContentSelfGenerated()) {
+                    continue;
+                }
                 $ret[$field_id] = $validreport;
             }
         }
@@ -825,6 +837,12 @@ class ItemContent extends AA_Content {
             return false;
         }
 
+        $invalid = $this->validateReport('all');
+        if ($invalid) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(function ($err) { return $err[0].": ".$err[1]; }, $invalid)));
+            return false;
+        }
+
         // start from scretch with new content
         $new_content = new ItemContent;
         $fields      = $slice->getFields();
@@ -832,13 +850,7 @@ class ItemContent extends AA_Content {
 
         foreach ($fields as $field_id => $field) {
             $property = $field->getAaProperty();
-
-            $fld_val =  $this->getAaValue($field_id);
-            if ( count($err_arr = $property->validate($fld_val, true) ) ) {
-                ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, $field_id.': '.$err_arr[1]);
-                return false;
-            }
-            $new_content->setAaValue($field_id, $property->complete4Insert($fld_val, $profile));
+            $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
         }
 
         // normalize - set id and well as unpacked_id
@@ -964,7 +976,7 @@ class ItemContent extends AA_Content {
 
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
         if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
-        if (! ($fields       = $slice->fields('record')))       {return false;}
+        if (! count($fields  = $slice->getFields()))            {return false;}
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
         if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'))) {
@@ -1017,7 +1029,7 @@ class ItemContent extends AA_Content {
         $feed            = isset($flags[1]) ? $flags[1] : !$silent;
         $throw_events    = isset($flags[2]) ? $flags[2] : !$silent;
 
-        if (!($id AND is_array($fields))) {
+        if (!$id) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", array($slice->name(),$id)));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
             return false;
@@ -1050,7 +1062,7 @@ class ItemContent extends AA_Content {
             break;
         case 'insert':
             // reset hit counter fields for new items
-            foreach ((array)$fields as $fid => $foo) {
+            foreach ($fields as $fid => $foo) {
                 if (substr($fid, 0, 4) == 'hit_' ) {
                     $this->setValue($fid, 0);
                 }
@@ -1113,7 +1125,7 @@ class ItemContent extends AA_Content {
         }
         if ($invalidatecache) {
             // invalidate old cached values
-            AA::Pagecache()->invalidateFor("slice_id=$slice_id");
+            AA::Pagecache()->invalidatefor($slice_id);
         }
 
 
@@ -1163,14 +1175,14 @@ class ItemContent extends AA_Content {
     } // end of storeItem()
 
     /** updateComputedFields function
-     * @param $fields
+     * @param AA_Fields $fields
      * @param $mode
      * @param $restict_fields
      * @return bool
      */
     function updateComputedFields($fields=null, $mode='update', $restict_fields=null) {
 
-        if (!($id = $this->getItemID()) OR $this->is_empty()) {  // the recomputed item is already deleted, probably
+        if (!($id = $this->getItemID()) OR $this->isEmpty()) {  // the recomputed item is already deleted, probably
             return false;
         }
 
@@ -1185,10 +1197,11 @@ class ItemContent extends AA_Content {
         $computed_field_exist = false;
 
         if (!$fields) {
-            $fields   = $slice->fields('record');
+            $fields = $slice->getFields();
         }
 
-        foreach ($fields as $fid => $f) {
+        foreach ($fields as $fid => $field) {
+            $f = $field->getRecord();
 
             if (is_array($restict_fields) AND count($restict_fields) AND !in_array($fid, $restict_fields)) {
                 // we can restrict the recomputed fields in {recompute}
@@ -1245,11 +1258,6 @@ class ItemContent extends AA_Content {
             $item->setAaValue($fid, $aa_val);
             $values = $item->getValues($fid);
 
-            //if ($GLOBALS['debug']) {
-            //    huhl($id, $fid, $new_computed_value, $aa_val, $values, '-----');
-            //}
-            //AA_Log::write('DEBUG', "$id - $fid:".serialize($values), 'debug');
-
             // delete content just for this computed field
             // $this->_clean_updated_fields($id, $fields);
             if ($id AND $fid) {
@@ -1258,7 +1266,7 @@ class ItemContent extends AA_Content {
 
             foreach($values as $varr) {
                 //  store the computed value for this field to database
-                $field_writer->insert_fnc_qte($id, $f, $varr, '');
+                AA_Inserter::factoryByString('qte')->setField($field)->execute($field_writer, $id, $varr);
             }
         }
 
@@ -1274,9 +1282,9 @@ class ItemContent extends AA_Content {
     /** storeSliceFields function
      *  Stores the fields into content table for dynamic "slice setting fields"
      * @param $slice_id
-     * @param $fields
+     * @param AA_Fields $fields
      */
-    function storeSliceFields($slice_id, &$fields) {
+    function storeSliceFields($slice_id, $fields) {
         // delete content of all fields, which are in new content array
         // (this means - all not redefined fields are unchanged)
         $this->_clean_updated_fields($slice_id, $fields);
@@ -1284,7 +1292,7 @@ class ItemContent extends AA_Content {
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
 
-        AA::Pagecache()->invalidateFor("slice_id=$slice_id");
+        AA::Pagecache()->invalidatefor($slice_id);
     }
 
     /** unalias the text using content of this itemcontent and aliases of the slice */
@@ -1313,10 +1321,14 @@ class ItemContent extends AA_Content {
     //    }
     //}
 
-    function _clean_updated_fields($id, &$fields) {
+    /**
+     * @param $id
+     * @param AA_Fields $fields
+     */
+    function _clean_updated_fields($id, $fields) {
         $in  = array();
         foreach ($this->content as $fid => $cont) {
-            if (!$fields[$fid]['in_item_tbl']) {
+            if (!$fields->getProperty($fid, 'in_item_tbl')) {
                 // deal with translations. if only translated values are present, then delete just the specific translation
                 // however - if also basic 0-1000000 indexes are present, clear all the field content
                 $keys = (is_array($cont) AND $cont) ? array_keys($cont) : array(0); // sometimes we want delete field so no AA_Value is_a passed (delete file...)
@@ -1353,37 +1365,35 @@ class ItemContent extends AA_Content {
      *  on each field in content array. The content is stored in the database
      *  or in returned item_varset
      * @param $id
-     * @param $fields
+     * @param AA_Fields $aa_fields
      * @param $context
      * @return Cvarset
      */
-    function _store_fields($id, &$fields, $context='direct') {
+    function _store_fields($id, $aa_fields, $context='direct') {
         $field_writer = new AA_Field_Writer($this->getSliceID());
-        $parameters   = array();
-        $thumbnails   = array();
+        $stop         = false;
 
         foreach ($this->content as $fid => $cont) {
-            $f = $fields[$fid];
+            if (!is_array($cont) OR !($fld = $aa_fields->getField($fid))) {
+                continue;
+            }
 
-            // input insert function parameters of field
-            $fnc = ParseFnc($f["input_insert_func"]);
-            if ($fnc) {
-                $fncname = 'insert_fnc_' . $fnc["fnc"];
+            $inserter = AA_Inserter::factoryByField($fld);
+
+            if ( !is_a($inserter,'AA_Inserter_Nul')) {
                 // update content table or fill item_varset
-                if (!is_array($cont)) {
-                    continue;
-                }
-                unset($parameters);
-                unset($thumbnails);
+                $parameters = array();
+                $thumbnails = array();
+
                 foreach ($cont as $numkey => $v) {
 
                     $numkey = (int)$numkey;
                     // file upload needs the $fields array, because it stores
                     // some other fields as thumbnails
 
-                    if ($fnc["fnc"]=="fil") {
+                    if ( is_a($inserter,'AA_Inserter_Fil')) {
                         //Note $thumbnails is undefined the first time in this loop
-                        if (is_array($thumbnails)) {
+                        if ($thumbnails) {
                             foreach ($thumbnails as $v_stop) {
                                 if ($v_stop == $fid) {
                                     $stop = true;
@@ -1393,12 +1403,12 @@ class ItemContent extends AA_Content {
 
                         if (!$stop) {
                             $parameters["order"]   = $numkey;
-                            $parameters["fields"]  = $fields;
+                            $parameters["fields"]  = $aa_fields->getRecordArray();
                             $parameters["context"] = $context;
-                            $thumbnails = $field_writer->$fncname($id, $f, $v, $fnc["param"], $parameters);
+                            $thumbnails = $inserter->execute($field_writer, $id, $v, $parameters);
                         }
                     } else {
-                        $field_writer->$fncname($id, $f, $v, $fnc["param"], array('order'=>$numkey));
+                        $inserter->execute($field_writer, $id, $v, array('order'=>$numkey));
                     }
                     // do not store multiple values if field is not marked as multiple
                     // ERRORNOUS

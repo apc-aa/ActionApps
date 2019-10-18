@@ -90,19 +90,22 @@ if ($update) {
 
 $slice = AA_Slice::getModule($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
-list($fields, $prifields) = $slice->fields(null, true);
+$fields = $slice->getFields(true);
 
 
 //  update database
-if ( $update AND (!count($err)) AND is_array($prifields) ) {
+if ( $update AND !count($err) AND $fields->count() ) {
+
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+
 
     // prepare content4id array before call StoreItem function
     $content4id = new ItemContent;
-    $content4id->setFieldsFromForm( $slice, $oldcontent4id, false, true );
+    $content4id->setFieldsFromForm($oldcontent4id, false, $fields, $profile );
 
     // added_to_db contains id
     // removed $oldcontent4id (see ItemContent::storeItem)
-    $added_to_db = $content4id->storeSliceFields( $slice_id, $fields);
+    $added_to_db = $content4id->storeSliceFields( $slice_id, $fields );
 
     if (!count($err)) {
         page_close();
