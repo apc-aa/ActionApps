@@ -40,14 +40,13 @@ class MngWidget extends \AA\Widget\Widget {
         $input_value = myspecialchars($value->getValue(0));
 
         // we store the connector id to cookie in order we have it during AJAX call - Parts renewal
-        $cookie = new \CookieManager();
-        $cookie_name = 'mng_'.get_short_hash($base_id);
+        $sess_var = 'm'.get_short_hash($base_id);
 
         // We are using artificial ID - say connector - and not real item ID of current item
         // This allows us to use manager even for nonstored items and maybe other features (shared constants) in future
         if (!strlen($input_value)) {
             if (IsAjaxCall()) {
-                if (!($input_value = $cookie->get($cookie_name))) {
+                if (!($_SESSION['AA_4ajax'] AND $_SESSION['AA_4ajax']['w_mng'] AND ($input_value = $_SESSION['AA_4ajax']['w_mng'][$sess_var]))) {
                     warn("No cookie value for connector");
                 }
             } else {
@@ -58,8 +57,9 @@ class MngWidget extends \AA\Widget\Widget {
                 }
             }
         }
-        // @todo - delete the cookie upon form store
-        $cookie->set($cookie_name, $input_value, 60*60*24*2, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));   // 2 days, only this path
+        // @todo - delete whole $_SESSION['AA_4ajax'] on any - non ajax page call (or just this hash upon form store)
+        $_SESSION['AA_4ajax']['w_mng'][$sess_var] = $input_value;
+        // $cookie->set($cookie_name, $input_value, 60*60*24*2, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));   // 2 days, only this path
 
         $widget = "<input type=\"hidden\" name=\"$input_name\" id=\"$base_id\" value=\"$input_value\">";
 
