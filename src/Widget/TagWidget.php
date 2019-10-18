@@ -32,6 +32,7 @@ class TagWidget extends \AA\Widget\Widget
         return true;
     }
 
+    /** array of libs needed for the widget - automaticaly inserted to the inputform */
     function requireLibs($aa_property, $winfo)
     {
         return array('select2@4','aa-jslib@3');
@@ -123,9 +124,12 @@ class TagWidget extends \AA\Widget\Widget
 
         $widget .=  "
             <script>
-              //AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
+              // AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
               // AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '');
-              AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values);}, '');
+
+              // when called by Ajax, the requireLibs() in called in responder is not enough for some reason
+              // maybe we can chenge it to async / await / Promises 
+              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values);}, '".\AA_Requires::getUrl4Lib('select2@4')."');
             </script>";
 
 

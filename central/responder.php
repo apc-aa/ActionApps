@@ -186,11 +186,17 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $lang         = $slice->getLang();
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum  = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+        AA::$langnum  = array(AA_Content::getLangName2Num(AA::$lang));   // array of prefered languages in priority order.
         AA::setEncoding(AA_Langs::getCharset($lang));
 
         $field = $slice->getField($this->field_id);
         $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
+
+        // @todo for WidgetTag the CSS is loaded this way, but the select2.js do not work by this way. Check it.
+        if ($widget_script = AA::Stringexpander()->getRequireScript()) {
+            $widget_html = "<script>$widget_script</script>$widget_html";
+        }
+
         return new AA_Response(ConvertCharset::singleton()->Convert($widget_html, $slice->getCharset(), 'utf-8'));
     }
 }
