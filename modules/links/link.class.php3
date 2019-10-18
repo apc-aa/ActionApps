@@ -939,7 +939,7 @@ class linkobj {
 
             $varset->doINSERT('links_links');
             // get inserted link id
-            if (!($this->lid = $db->last_insert_id())) {
+            if (!($this->lid = $varset->last_insert_id())) {
                 huhl("Error - Last inserted ID is lost");
                 exit;
             }

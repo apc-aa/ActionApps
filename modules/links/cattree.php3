@@ -362,7 +362,7 @@ class cattree {
         $js .=  '
         downcat = new Array()
         downcat[level] = treeStart // stores path form root to current category';
-        FrmJavascriptCached( $js, 'cattree' );
+        echo getFrmJavascriptCached( $js, 'cattree', '');  // no async, no deffer - we need it imediately on the page, otherways there will be "undefined" in the tree
     }
 
 

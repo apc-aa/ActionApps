@@ -29,70 +29,446 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/**
- * Finds and returns asociation number (id of row in links_link_cat table)
- * for given link and category
+
+
+/** Marks given link as checked (means visited and content checked)
+ *  - used also as AA_Manageraction_Links_* superclass
  */
-function Links_GetAsociationId($lid, $cid) {
-    if ( !$lid OR !$cid ) {
+class AA_Manageraction_Links_Check extends AA_Manageraction {
+
+    protected $perm;
+
+    /** Constructor - fills the information about the target bin */
+    function __construct($id) {
+        parent::__construct($id);
+        $this->perm = PS_LINKS_CHECK_LINK;
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Check Link');
+    }
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        global $auth;
+        DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". $auth->auth['uid'] ."' WHERE ". $item_zids->sqlin('id', true));
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool|if|mixed
+     */
+    function isPerm4Action($manager) {
+        return IsCatPerm( $this->perm, $GLOBALS['r_state']['cat_path'] );
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @param $item_zids
+     * @param $action_param
+     * @return bool|if|mixed
+     */
+    function isPerm4Perform($manager, $item_zids, $action_param) {
+        return $this->isPerm4Action($manager) AND self::permCheck($item_zids, $this->perm);       // _m('No permission to change state of the link');  // error
+    }
+
+    /** function, which checks permissions in for many Links action classes */
+    static public function permCheck($item_zids, $perm, $allow_nobase4super=false) {
+
+        $base_categs = array();
+        $check_super = false;
+        foreach ($item_zids as $lid) {
+            // get link's base category
+            if ($base_categsory_path = GetBaseCategoryPath( $lid )) {
+                $base_categs[$base_categsory_path] = true;
+            } elseif ($allow_nobase4super) {
+                $check_super = true;
+            } else {
+                return false;  // _m('Can\'t get link data');  // error
+            }
+        }
+
+        foreach ($base_categs as $cat_path => $foo) {
+            if (!IsCatPerm( $perm, $cat_path)) {
+                return false;  //  _m('No permission to move link');  // error
+            }
+        }
+
+        if  ($check_super) {
+            return IsSuperadmin();
+        }
+        return true;
+    }
+}
+
+/**  */
+class AA_Manageraction_Links_Move extends AA_Manageraction_Links_Check {
+
+    /** specifies, to which bin the move should be performed */
+    var $to_bin;
+
+    /** Constructor - fills the information about the target bin */
+    function __construct($id, $to_bin) {
+        parent::__construct($id);
+        $this->to_bin = $to_bin;
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        switch($this->to_bin) {
+            case 1: return _m('Move to Active');
+            case 2: return _m('Move to Holding bin');
+            case 3: return _m('Move to Trash');
+        }
+        return "";
+    }
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        $SQL = "UPDATE links_links SET folder = '".$this->to_bin."' WHERE ". $item_zids->sqlin('id', true);
+        DB_AA::sql($SQL);
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool
+     */
+    function isPerm4Action($manager) {
+       $cid = $GLOBALS['r_state']['cat_path'];
+       $subtree = $GLOBALS['r_state']['show_subtree'];
+       $current_bin = $GLOBALS['r_state']['bin'];
+
+        switch ($this->to_bin) {
+            case 1: return !$subtree && IsCatPerm( PS_LINKS_ADD_LINK, $cid );
+            case 2: return ($current_bin != 'folder2') && IsCatPerm( PS_LINKS_LINK2FOLDER, $cid );
+            case 3: return ($current_bin != 'folder3') && IsCatPerm( PS_LINKS_LINK2FOLDER, $cid );
+        }
         return false;
     }
-    return DB_AA::select1('SELECT a_id FROM links_link_cat', 'a_id', array(array('category_id',$cid, 'i'),array('what_id',$lid, 'i')));
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @param $item_zids
+     * @param $action_param
+     * @return bool
+     */
+    function isPerm4Perform($manager, $item_zids, $action_param) {
+        $perm_needed = ($manager->getBin()==1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER);
+        return $this->isPerm4Action($manager) AND AA_Manageraction_Links_Check::permCheck($item_zids, $perm_needed, true);
+    }
 }
 
-/**
- * Marks given link as checked (means visited and content checked)
- */
-function Links_CheckLink($param, $lid, $akce_param) {
-    global $auth;
+/** Marks given link as checked (means visited and content checked) */
+class AA_Manageraction_Links_Highlight extends AA_Manageraction {
 
-    // get link's base category
-    $base_category_path = GetBaseCategoryPath( $lid );
-    if ( !isset($base_category_path) ) {
-        return _m('Can\'t get link data');  // error
+    protected $highlight;
+
+    /** Constructor - fills the information about the target bin */
+    function __construct($id, $highlight) {
+        parent::__construct($id);
+        $this->highlight = $highlight ? 'highlight' : 'visible';
     }
 
-    if (!IsCatPerm( PS_LINKS_CHECK_LINK, $base_category_path)) {// have I perm to check?
-        return _m('No permission to change state of the link');  // error
+    /** Name of this Manager's action */
+    function getName() {
+        return ($this->highlight=='highlight') ? _m('Highlight Link') :  _m('Dehighlight Link');
     }
 
-    DB_AA::sql("UPDATE links_links SET checked = '". time() ."', checked_by = '". $auth->auth['uid'] ."' WHERE id = $lid");
-    return false;                                         // OK - no error
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        global $r_state;
+        foreach ($item_zids as $lid) {
+            if ( !($aid = Links_GetAsociationId($lid, $r_state['cat_id']))) {
+                continue;    // return _m('Can\'t find link in given category');  // error
+            }
+            DB_AA::sql("UPDATE links_link_cat SET state = '".$this->highlight."' WHERE a_id = $aid");
+        }
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool
+     */
+    function isPerm4Action($manager) {
+        return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm( PS_LINKS_HIGHLIGHT_LINK, $GLOBALS['r_state']['cat_path'] );
+    }
 }
 
-/**
- * Marks the link in given category as Highlighted (or Normal - based
- * on $highlight parameter
- */
-function Links_HighlightLink($param, $lid, $akce_param, $highlight=true) {
-    global $r_state;
+/**  */
+class AA_Manageraction_Links_Delete extends AA_Manageraction {
 
-    $aid = Links_GetAsociationId($lid, $r_state['cat_id']);
-    if ( !$aid ) {
-        return _m('Can\'t find link in given category');  // error
+    /** Constructor - fills the information about the target bin */
+    function __construct($id) {
+        parent::__construct($id);
     }
 
-    $state = ( $highlight ? 'highlight' : 'visible');
-    if ( !IsCatPerm( PS_LINKS_HIGHLIGHT_LINK, $r_state['cat_path'] )) {           // Perm to highlight?
-        return _m('No permission to change state of the link');
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Remove from category');
     }
 
-    DB_AA::sql("UPDATE links_link_cat SET state = '$state' WHERE a_id = $aid");
-    return false;                                         // OK - no error
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        foreach ($item_zids as $lid) {
+            Links_DeleteLink($lid);
+        }
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool
+     */
+    function isPerm4Action($manager) {
+        return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm( PS_LINKS_DELETE_LINK, $GLOBALS['r_state']['cat_path'] );
+    }
 }
 
-/**
- * Marks the link in given category as Normal
- */
-function Links_DeHighlightLink($param, $lid, $akce_param) {
-    return Links_HighlightLink($param, $lid, $akce_param, false);
+/**  */
+class AA_Manageraction_Links_Add2Cat extends AA_Manageraction {
+
+    /** Constructor - fills the information about the target bin */
+    function __construct($id, $url) {
+        parent::__construct($id);
+        $this->setOpenUrl($url);
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Add to category');
+    }
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        if ( ctype_digit((string)$action_param) ) {
+            foreach ($item_zids as $lid) {
+                Links_Assign2Category($lid, $action_param);
+            }
+        }
+        return false;                                     // OK - no error
+    }
 }
+
+
+/**  */
+class AA_Manageraction_Links_Move2Cat extends AA_Manageraction {
+
+    /** Constructor - fills the information about the target bin */
+    function __construct($id, $url) {
+        parent::__construct($id);
+        $this->setOpenUrl($url);
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Move to category');
+    }
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        if ( ctype_digit((string)$action_param) ) {
+            foreach ($item_zids as $lid) {
+                Links_DeleteLink($lid);
+                Links_Assign2Category($lid, $action_param);
+            }
+        }
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool
+     */
+    function isPerm4Action($manager) {
+        return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm( PS_LINKS_DELETE_LINK, $GLOBALS['r_state']['cat_path'] );
+    }
+}
+
+
+/** ---switches ---- */
+
+
+
+/**  */
+class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        $db = getDB();
+
+        // first delete the trashed links
+        $SQL = 'DELETE links_links FROM links_links WHERE links_links.folder=3';
+        $db->query($SQL);
+
+        // now we fix all incionsistences in the database (most of them caused by previous deletion)
+
+        // delete all proposals which do not have its counterpart in list of links
+        $SQL = 'DELETE p FROM links_links AS p INNER JOIN links_changes ON p.id = links_changes.proposal_link_id LEFT JOIN links_links AS s ON s.id = links_changes.changed_link_id WHERE s.id IS NULL';
+        $db->query($SQL);
+
+        // delete propasal - link relation
+        $SQL = 'DELETE links_changes FROM links_changes LEFT JOIN links_links ON links_changes.changed_link_id = links_links.id WHERE links_links.id IS NULL';
+        $db->query($SQL);
+
+        // delete all unmatched language relations
+        $SQL = 'DELETE links_link_lang FROM links_link_lang LEFT JOIN links_links ON links_link_lang.link_id = links_links.id WHERE links_links.id IS NULL';
+        $db->query($SQL);
+
+        // delete all unmatched region relations
+        $SQL = 'DELETE links_link_reg FROM links_link_reg LEFT JOIN links_links ON links_link_reg.link_id = links_links.id WHERE links_links.id IS NULL';
+        $db->query($SQL);
+
+        // and now remove all category assignments for deleted links
+        $SQL = 'DELETE links_link_cat FROM links_link_cat LEFT JOIN links_links ON links_link_cat.what_id = links_links.id WHERE links_links.id IS NULL';
+        $db->query($SQL);
+
+        freeDB($db);
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     * @param $manager
+     * @return bool
+     */
+    function isPerm4Action($manager) {
+        return IsSuperadmin();
+    }
+}
+
+/**  */
+class AA_Manageraction_Links_GoCateg extends AA_Manageraction {
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        global $r_state;
+        // TODO - refresh permission for new category!!!
+        $cpath = GetCategoryPath( $action_param );
+        if ( IsCatPerm( PS_LINKS_EDIT_LINKS, $cpath ) ) {
+            $r_state["show_subtree"] = false;
+            $r_state['cat_id']       = $action_param;
+            $r_state['cat_path']     = $cpath;
+        }
+    }
+}
+
+
+/**  */
+class AA_Manageraction_Links_Tab extends AA_Manageraction {
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        $GLOBALS['r_state']['bin'] = $action_param;
+        $manager->go2page(1);
+    }
+}
+
+/**  */
+class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
+
+    /** main executive function
+     * @param $manager
+     * @param $item_zids - array of id of AA records to check
+     * @param $action_param - not used
+     * @return bool
+     */
+    function perform($manager, $item_zids, $action_param) {
+        global $manager, $links_info;
+
+        $start_id   = $links_info['start_id'];
+        $start_path = GetCategoryPath( $start_id );
+
+        switch( (string)$action_param ) {
+            case '1':             // all links
+                $GLOBALS['r_state']['show_subtree']    = 1;
+                $GLOBALS['r_state']['cat_id']          = $start_id;
+                $GLOBALS['r_state']['cat_path']        = $start_path;
+                $GLOBALS['r_state']['start_path']      = $start_path;
+                $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
+                $GLOBALS['r_state']['bin'] = 'app';
+                $manager->resetSearchBar();
+                $manager->addOrderBar(  array(0=>array('name'=>'a')) );
+                $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
+                break;
+            case '2':             // links to check
+                $GLOBALS['r_state']['show_subtree']    = 1;
+                $GLOBALS['r_state']['cat_id']          = $start_id;
+                $GLOBALS['r_state']['cat_path']        = $start_path;
+                $GLOBALS['r_state']['start_path']      = $start_path;
+                $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
+                $GLOBALS['r_state']['bin'] = 'app';
+                $manager->resetSearchBar();
+                $manager->addOrderBar(  array(0=>array('checked'=>'a')) );
+                $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
+                break;
+            case '3':             // last edited links
+                $GLOBALS['r_state']['show_subtree']    = 1;
+                $GLOBALS['r_state']['cat_id']          = $start_id;
+                $GLOBALS['r_state']['cat_path']        = $start_path;
+                $GLOBALS['r_state']['start_path']      = $start_path;
+                $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
+                $GLOBALS['r_state']['bin'] = 'app';
+                $manager->resetSearchBar();
+                $manager->addOrderBar(  array(0=>array('last_edit'=>'d')) );
+                $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
+                break;
+        }
+    }
+}
+
 
 
 /**
  * Removes link from given category
  */
-function Links_DeleteLink($param, $lid, $akce_param) {
+function Links_DeleteLink($lid) {
     global $r_state;
     $aid = Links_GetAsociationId($lid, $r_state['cat_id']);
     if ( !$aid ) {
@@ -221,40 +597,14 @@ function Links_Move2Folder($lid, $folder) {
     return false;                                         // OK - no error
 }
 
-/**
- * Move link from folder to Active
- */
-function Links_ActivateLink($param, $lid, $akce_param) {
-    return Links_Move2Folder($lid, 1);
-}
 
 /**
- * Move link from folder to Folder2
+ * Finds and returns asociation number (id of row in links_link_cat table)
+ * for given link and category
  */
-function Links_FolderLink($param, $lid, $akce_param) {
-    return Links_Move2Folder($lid, $param);
-}
-
-/**
- * Assign link to the category specified in param
- */
-function Links_Add2CatLink($param, $lid, $akce_param) {
-    if ( ctype_digit((string)$akce_param) ) {
-        return Links_Assign2Category($lid, $akce_param);
+function Links_GetAsociationId($lid, $cid) {
+    if ( !$lid OR !$cid ) {
+        return false;
     }
-    return false;
+    return DB_AA::select1('SELECT a_id FROM links_link_cat', 'a_id', array(array('category_id',$cid, 'i'),array('what_id',$lid, 'i')));
 }
-
-/**
- * Move link from current category to the destination category
- */
-function Links_Move2CatLink($param, $lid, $akce_param) {
-    if ( ctype_digit((string)$akce_param) ) {
-        // remove link from current category
-        Links_DeleteLink($param, $lid, $akce_param);
-        // add link to destination category
-        return Links_Assign2Category($lid, $akce_param);
-    }
-    return false;
-}
-

@@ -49,7 +49,7 @@ function MarkChanged($txt) {
 $module_id    = get_if($slice_id,$sid);
 $p_module_id  = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info   = GetModuleInfo($module_id,'Links');
-$select_start = get_if( $_GET['select_start'], $links_info['select_start'], 2);   // used for anonymous forms
+$select_start = get_if( (int)$_GET['select_start'], (int)$links_info['select_start'], 2);   // used for anonymous forms
 $select_depth = substr_count(Links_GetCategoryColumn( $select_start, 'path' ), ',');  // count tree start category depth
 
 // load right langfile, if it is not loaded

@@ -53,134 +53,6 @@ function Links_UpdateStateFromFilter() {
     $r_state['cat_path']     = GetCategoryPath( $r_state['cat_id'] );
 }
 
-/** Handler for GoCateg switch - switch to another category */
-function Links_GoCateg($value, $param) {
-    global $r_state;
-    // TODO - refresh permission for new category!!!
-    $cpath = GetCategoryPath( $value );
-    if ( IsCatPerm( PS_LINKS_EDIT_LINKS, $cpath ) ) {
-        $r_state["show_subtree"] = false;
-        $r_state['cat_id']       = $value;
-        $r_state['cat_path']     = $cpath;
-    }
-}
-
-/** Handler for Tab switch - switch between bins */
-function Links_Tab($value, $param) {
-    global $manager;
-    $GLOBALS['r_state']['bin']       = $value;
-    $manager->go2page(1);
-}
-
-/** Handler for GoBookmark switch - set the state from bookmark */
-function Links_GoBookmark($value, $param) {
-    global $manager, $links_info;
-
-    $start_id   = $links_info['start_id'];
-    $start_path = GetCategoryPath( $start_id );
-
-    switch( (string)$value ) {
-        case '1':             // all links
-            $GLOBALS['r_state']['show_subtree']    = 1;
-            $GLOBALS['r_state']['cat_id']          = $start_id;
-            $GLOBALS['r_state']['cat_path']        = $start_path;
-            $GLOBALS['r_state']['start_path']      = $start_path;
-            $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
-            $GLOBALS['r_state']['bin'] = 'app';
-            $manager->resetSearchBar();
-            $manager->addOrderBar(  array(0=>array('name'=>'a')) );
-            $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
-            break;
-        case '2':             // links to check
-            $GLOBALS['r_state']['show_subtree']    = 1;
-            $GLOBALS['r_state']['cat_id']          = $start_id;
-            $GLOBALS['r_state']['cat_path']        = $start_path;
-            $GLOBALS['r_state']['start_path']      = $start_path;
-            $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
-            $GLOBALS['r_state']['bin'] = 'app';
-            $manager->resetSearchBar();
-            $manager->addOrderBar(  array(0=>array('checked'=>'a')) );
-            $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
-            break;
-        case '3':             // last edited links
-            $GLOBALS['r_state']['show_subtree']    = 1;
-            $GLOBALS['r_state']['cat_id']          = $start_id;
-            $GLOBALS['r_state']['cat_path']        = $start_path;
-            $GLOBALS['r_state']['start_path']      = $start_path;
-            $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
-            $GLOBALS['r_state']['bin'] = 'app';
-            $manager->resetSearchBar();
-            $manager->addOrderBar(  array(0=>array('last_edit'=>'d')) );
-            $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
-            break;
-    }
-}
-
-/** Handler for DeleteTrash switch - removes links from trash */
-function Links_DeleteTrash($value, $param) {
-    $db = getDB();
-
-    // first delete the trashed links
-    $SQL = 'DELETE links_links FROM links_links WHERE links_links.folder=3';
-    $db->query($SQL);
-
-    // now we fix all incionsistences in the database (most of them caused by previous deletion)
-
-    // delete all proposals which do not have its counterpart in list of links
-    $SQL = 'DELETE p FROM links_links AS p INNER JOIN links_changes ON p.id = links_changes.proposal_link_id LEFT JOIN links_links AS s ON s.id = links_changes.changed_link_id WHERE s.id IS NULL';
-    $db->query($SQL);
-
-    // delete propasal - link relation
-    $SQL = 'DELETE links_changes FROM links_changes LEFT JOIN links_links ON links_changes.changed_link_id = links_links.id WHERE links_links.id IS NULL';
-    $db->query($SQL);
-
-    // delete all unmatched language relations
-    $SQL = 'DELETE links_link_lang FROM links_link_lang LEFT JOIN links_links ON links_link_lang.link_id = links_links.id WHERE links_links.id IS NULL';
-    $db->query($SQL);
-
-    // delete all unmatched region relations
-    $SQL = 'DELETE links_link_reg FROM links_link_reg LEFT JOIN links_links ON links_link_reg.link_id = links_links.id WHERE links_links.id IS NULL';
-    $db->query($SQL);
-
-    // and now remove all category assignments for deleted links
-    $SQL = 'DELETE links_link_cat FROM links_link_cat LEFT JOIN links_links ON links_link_cat.what_id = links_links.id WHERE links_links.id IS NULL';
-    $db->query($SQL);
-
-    freeDB($db);
-}
-
-/** Function corresponding with 'actions' (see below) - returns true if user
- *  has the permission for the action. (The function must be called right
- *  before we perform/display action in order we have all variables set (r_state)
- *
- * @param string $action action to be displayed (in selectbox) / performed
- * @return bool true if user has the permission
- */
-function Links_IsActionPerm($action) {
-    $cid = $GLOBALS['r_state']['cat_path'];
-    $subtree = $GLOBALS['r_state']['show_subtree'];
-    $current_bin = $GLOBALS['r_state']['bin'];
-
-    switch($action) {
-        case 'Check':       return  IsCatPerm( PS_LINKS_CHECK_LINK, $cid );
-        case 'Highlight':   return  !$subtree && IsCatPerm( PS_LINKS_HIGHLIGHT_LINK, $cid );
-        case 'DeHighlight': return  !$subtree && IsCatPerm( PS_LINKS_HIGHLIGHT_LINK, $cid );
-        case 'Delete':      return  !$subtree && IsCatPerm( PS_LINKS_DELETE_LINK, $cid );
-        case 'Refuse':      return  !$subtree && IsCatPerm( PS_LINKS_DELETE_LINK, $cid );
-        case 'Approve':     return  !$subtree && IsCatPerm( PS_LINKS_ADD_LINK, $cid );
-        case 'Folder2':     return  ($current_bin != 'folder2') && IsCatPerm( PS_LINKS_LINK2FOLDER, $cid );
-        case 'Folder3':     return  ($current_bin != 'folder3') && IsCatPerm( PS_LINKS_LINK2FOLDER, $cid );
-        case 'Activate':    return  (substr($current_bin,0,6) == 'folder') && IsCatPerm( PS_LINKS_LINK2ACT, $cid );
-        case 'Add2Cat':     return  true;
-        case 'Move2Cat':    return !$subtree && IsCatPerm( PS_LINKS_DELETE_LINK, $cid );
-        case 'DeleteTrash': return  IsSuperadmin();
-        case 'GoCateg':     return  true;
-        case 'Tab':         return  true;
-        case 'GoBookmark':  return  true;
-    }
-    return false;
-}
-
 function Links_CountLinkInBins($cat_path) {
     $db = getDB();
     // unasigned
@@ -263,6 +135,25 @@ $module_id   = $slice_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info  = GetModuleInfo($module_id,'Links');
 
+$actions   = new AA_Manageractions;
+$actions->addAction(new AA_Manageraction_Links_Move('Activate', 1));
+$actions->addAction(new AA_Manageraction_Links_Move('Folder2',  2));
+$actions->addAction(new AA_Manageraction_Links_Move('Folder3',  3));
+$actions->addAction(new AA_Manageraction_Links_Check('Check'));
+$actions->addAction(new AA_Manageraction_Links_Highlight('Highlight',true));
+$actions->addAction(new AA_Manageraction_Links_Highlight('DeHighlight', false));
+$actions->addAction(new AA_Manageraction_Links_Delete('Delete'));
+$actions->addAction(new AA_Manageraction_Links_Add2Cat('Add2Cat',   StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start']))));
+$actions->addAction(new AA_Manageraction_Links_Move2Cat('Move2Cat', StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start']))));
+
+
+$switches  = new AA_Manageractions;
+$switches->addAction(new AA_Manageraction_Links_DeleteTrash('DeleteTrash'));
+$switches->addAction(new AA_Manageraction_Links_GoCateg('GoCateg'));
+$switches->addAction(new AA_Manageraction_Links_Tab('Tab'));
+$switches->addAction(new AA_Manageraction_Links_GoBookmark('GoBookmark'));
+
+
 $manager_settings = array(
      'searchbar' => array(
          'fields'               => GetLinkFields(),
@@ -297,66 +188,10 @@ $manager_settings = array(
          'aliases'              => GetLinkAliases(),
          'get_content_funct'    => 'Links_GetLinkContent'
                          ),
-     'actions_perm_function' => 'Links_IsActionPerm',
      'actions_hint' => _m("Perform action on selected items"),
      'actions_hint_url' => get_help_url(AA_LINKS_HELP_MAIN,"co-udelat-sodkazy"),
-     'actions'   => array(
-         'Check'       => array('function'   => 'Links_CheckLink',
-                                'name'       => _m('Check Link'),
-                                'type'       => 'one_by_one' ),
-         'Highlight'   => array('function'   => 'Links_HighlightLink',
-                                'name'       => _m('Highlight Link'),
-                                'type'       => 'one_by_one' ),
-         'DeHighlight' => array('function'   => 'Links_DeHighlightLink',
-                                'name'       => _m('Dehighlight Link'),
-                                'type'       => 'one_by_one' ),
-         'Delete'      => array('function'   => 'Links_DeleteLink',
-                                'name'       => _m('Remove from category'),
-                                'type'       => 'one_by_one' ),
-         'Activate'    => array('function'   => 'Links_ActivateLink',
-                                'name'       => _m('Move to Active'),
-                                'type'       => 'one_by_one' ),
-         'Folder2'     => array('function'   => 'Links_FolderLink',
-                                'func_param' => 2,
-                                'name'       => _m('Move to Holding bin'),
-                                'type'       => 'one_by_one' ),
-         'Folder3'     => array('function'   => 'Links_FolderLink',
-                                'func_param' => 3,
-                                'name'       => _m('Move to Trash'),
-                                'type'       => 'one_by_one' ),
-         'Add2Cat'     => array('function'   => 'Links_Add2CatLink',
-                                'name'       => _m('Add to category'),
-                                'open_url'   => StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
-                                'type'       => 'one_by_one' ),
-         'Move2Cat'    => array('function'   => 'Links_Move2CatLink',
-                                'name'       => _m('Move to category'),
-                                'open_url'   => StateUrl("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
-                                'type'       => 'one_by_one' ),
-/*       'Refuse'      => array('function'   => 'Links_RefuseLink',
-                                'name'       => _m('Refuse Link'),
-                                'type'       => 'one_by_one' ),
-         'Approve'     => array('function'   => 'Links_ApproveLink',
-                                'name'       => _m('Approve Link'),
-                                'type'       => 'one_by_one' ),
-         'app'         => array('function'   => 'MoveItems',
-                                'name'       => _m('app'),
-                                'func_param' => 1,
-                                'perm'       => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_POLLS2ACT)),
-         'hold'        => array('function'   => 'MoveItems',
-                                'name'       => _m('hold'),
-                                'func_param' => 2,
-                                'perm'       => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_POLLS2HOLD)),
-         'trash'       => array('function'   => 'MoveItems',
-                                'name'       => _m('trash'),
-                                'func_param' => 3,
-                                'perm'       => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_POLLS2TRASH))  */
-                         ),
-     'switches'  => array(
-         'DeleteTrash' => array('function'   => 'Links_DeleteTrash'),
-         'GoCateg'     => array('function'   => 'Links_GoCateg'),
-         'Tab'         => array('function'   => 'Links_Tab'),
-         'GoBookmark'  => array('function'   => 'Links_GoBookmark')
-                         ),
+     'actions'   => $actions,
+     'switches'  => $switches,
      'messages'  => array(
          'title'            => _m('ActionApps - Links Manager'))
                          );

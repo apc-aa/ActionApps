@@ -87,11 +87,7 @@ function Links_GetBaseCategoryColumn( $lid, $col ) {
 
 
 function Links_GetCategoryColumn( $cid, $col ) {
-    $db = getDB();
-    $db->query("SELECT $col as retcol FROM links_categories WHERE id='$cid'");
-    $ret = ( $db->next_record() ? $db->f('retcol') : "");
-    freeDB($db);
-    return $ret;
+    return DB_AA::select1("SELECT $col as retcol FROM links_categories", 'retcol', array(array('id',$cid,'i')));
 }
 
 // Get base path from link id
@@ -107,7 +103,9 @@ function GetBaseCategoryPath( $lid ) {
 
 function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=false, $target="") {
     $target_atrib = $target != "" ? " target=\"$target\" " : "";
-    $ids = explode(",",$path);
+    $ids       = explode(",",$path);
+    $name      = '';
+    $delimiter = '';
     if ( isset($ids) AND is_array($ids)) {
         $last=end($ids);
         if ( $url ) {
@@ -205,7 +203,10 @@ function Links_Category2SliceID($cid) {
     return unpack_id(substr( $cid.'Links'.pack_id(AA_ID), 0, 16 ));
 }
 
-/** Get base category from slice id (reverse to Links_Category2SliceID())  */
+/** Get base category from slice id (reverse to Links_Category2SliceID())
+ * @param $sl_id
+ * @return int
+ */
 function Links_SliceID2Category($sl_id) {
     $psl_id = q_pack_id($sl_id);
     return (int) substr( $psl_id, 0, strspn($psl_id, "1234567890"));
