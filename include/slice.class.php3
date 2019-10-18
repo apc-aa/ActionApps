@@ -534,6 +534,7 @@ class AA_Slice extends AA_Module {
      * @param $slice_fields
      * @return array with two elements [0] is array in form
      * wanted by Storeitem etc, [1] is array of fields in priority order
+     * @deprecated - use getFields() and getField() instead
      */
     function fields( $return_type = null, $slice_fields = false ) {
 
@@ -874,6 +875,10 @@ class AA_Module_Site extends AA_Module {
         return null;
     }
 
+    /**
+     * @param string $type
+     * @return array
+     */
     function getRelatedSlices($type='') {
         if (is_null($this->_related_slices)) {
             // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');

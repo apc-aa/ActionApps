@@ -245,7 +245,7 @@ class AA_Views {
     /** getView function
      *  main factory static method
      * @param $vid
-     * @return mixed
+     * @return AA_View
      */
     static function getView($vid) {
         $views = AA_Views::singleton();
@@ -254,7 +254,7 @@ class AA_Views {
 
     /** getViewField function
      *  static function
-     * @param $vid
+     * @param int $vid
      * @param $field
      * @return null
      */
@@ -265,10 +265,10 @@ class AA_Views {
     }
 
     /** _getView function
-     * @param $vid
-     * @return mixed
+     * @param int $vid
+     * @return AA_View
      */
-    function & _getView($vid) {
+    function _getView($vid) {
         if (!isset($this->a[$vid])) {
             $this->a[$vid] = new AA_View($vid);
         }

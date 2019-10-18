@@ -124,7 +124,7 @@ array ("name" => _m("Password and Change Password"),
                               "example"=>"password.......1"
                              ),
                         array("name"=>_m("Encrypt phrase"),
-                              "desc"=>_m("If you specify the 'Copy of password' field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you cen decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}"),
+                              "desc"=>_m("If you specify the 'Copy of password' field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}"),
                               "type"=>"STR",
                               "example"=>"Some Phrase"
                              )

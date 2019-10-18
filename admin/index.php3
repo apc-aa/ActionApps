@@ -169,15 +169,8 @@ if (!$perm_edit_all AND !$perm_set_id) {
     $aa_set->addCondition(new AA_Condition('posted_by.......', '=', $auth->auth['uid']));
 }
 
-$BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
-                      'appb'   => AA_BIN_PENDING,
-                      'appc'   => AA_BIN_EXPIRED,
-                      'hold'   => AA_BIN_HOLDING,
-                      'trash'  => AA_BIN_TRASH
-                    );
 
-$zids = QueryZids( array($slice_id), $aa_set->getConds(), $aa_set->getSort(), $BIN_CONDS[$manager->getBin()]);
-
+$zids = $aa_set->query();
 $manager->displayPage($zids, 'itemmanager', $manager->getBin(), $profile->getProperty('ui_manager', 'css_add'));
 
 page_close();

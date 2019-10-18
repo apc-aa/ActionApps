@@ -51,15 +51,17 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-foreach ($MODULES as $type => $module) {
-    if ($create[$type]) {
-        $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
-        if ( $template[$type] ) {
-            $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
-        }
-        go_url( $url );
-    }
-}
+
+/* do not know, where  $create comes from - Trying to disable this code - Honza 11.9.2019  */
+// foreach ($MODULES as $type => $module) {
+//     if ($create[$type]) {
+//         $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
+//         if ( $template[$type] ) {
+//             $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
+//         }
+//         go_url( $url );
+//     }
+// }
 
 $err = array();          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();

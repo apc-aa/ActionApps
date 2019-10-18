@@ -904,34 +904,6 @@ class AA_Dbcondition {
             return array('NONE', '', '1=0');
         }
 
-        // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
-        if ( ($this->type == 'number') ) {
-            $querystring = trim($querystring);
-            if (strlen($querystring) != strspn($querystring,"0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
-                return array('NONE', '', '1=0');
-            } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
-                return array('NONE', '', '1=0');
-            }
-        }
-
-        // new operators - no SQL parsing, no stripslashes
-        switch ($operator) {
-            case '==':      return array('INNER', '', "($field = '".     addcslashes($querystring,"'")   ."')");  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
-            case 'BEGIN':   return array('INNER', '', "($field LIKE '".  addcslashes(quote($querystring),"_%") ."%')");
-            case 'CONTAIN': return array('INNER', '', "($field LIKE '%". addcslashes(quote($querystring),"_%") ."%')");
-            case 'BITSET':  return array('INNER', '', "($field & ". (int)$querystring ." = ". (int)$querystring .")");
-        }
-
-        // query string could be slashed - sometimes :-(
-        // However - if the string starts with ", then it is never
-        // slashed, for sure
-        // @todo remove stripslashes for AA3.0 - Honza
-        //    if ( substr($querystring,0,1) != '"') {
-        //        $querystring = stripslashes( $querystring );
-        //    }
-
-        $querystring = stripslashes( $querystring );
-
         // search operator for functions (some operators can be in function:operator
         // fomat - the function is called to $querystring (good for date transform ...)
         if ( in_array($operator[0],array('d','e','m')) ) {
@@ -965,6 +937,35 @@ class AA_Dbcondition {
                     break;
             }
         }
+
+        // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
+        if ( ($this->type == 'number') ) {
+            $querystring = trim($querystring);
+            if (strlen($querystring) != strspn($querystring,"0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
+                return array('NONE', '', '1=0');
+            } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
+                return array('NONE', '', '1=0');
+            }
+        }
+
+        // new operators - no SQL parsing, no stripslashes
+        switch ($operator) {
+            case '==':      return array('INNER', '', "($field = '".     addcslashes($querystring,"'")   ."')");  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
+            case 'BEGIN':   return array('INNER', '', "($field LIKE '".  addcslashes(quote($querystring),"_%") ."%')");
+            case 'CONTAIN': return array('INNER', '', "($field LIKE '%". addcslashes(quote($querystring),"_%") ."%')");
+            case 'BITSET':  return array('INNER', '', "($field & ". (int)$querystring ." = ". (int)$querystring .")");
+        }
+
+        // query string could be slashed - sometimes :-(
+        // However - if the string starts with ", then it is never
+        // slashed, for sure
+        // @todo remove stripslashes for AA3.0 - Honza
+        //    if ( substr($querystring,0,1) != '"') {
+        //        $querystring = stripslashes( $querystring );
+        //    }
+
+        $querystring = stripslashes( $querystring );
+
 
         $querystring =  (string)$querystring;   // to be able to do string operations
         $cleanstr    = quote( (($querystring[0] == '"') OR ($querystring[0] == "'")) ? substr( $querystring, 1, -1 ) : $querystring);
@@ -1230,7 +1231,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
 /** MakeSQLOrderBy function
  *  Creates array of SQL ORDER BY expresions based on $sort and fields array
  * @param          $fields_arr
- * @param          $sort
+ * @param array    $sort
  * @param function $join_tables - if some table is needed to join,
  *                                           this function adds it to the array
  * @param function $additional_field_cond - aditional condition function
@@ -1872,9 +1873,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
         $sort[0] = array('const_description'    => $sort[0]['const_descriptio']);
     }
 
-    if ( $debug ) {
-        huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
-    }
+    AA::$debug&2 && AA::$dbg->log("<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
     // parse conditions and sort order ----------------------------------
     $where_sql    = MakeSQLConditions( GetConstantFields(), $conds, $defaultCondsOperator, $foo);
@@ -1917,15 +1916,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
 
     $fields = array ("date","subject","author","e_mail","body","state","flag","url_address", "url_description", "remote_addr", "free1", "free2");
 
-    global $debug;          // displays debug messages
-    if ( $debug ) {
-      echo "<br>Conds:<br>";
-      huhl($conds);
-      echo "<br><br>Sort:<br>";
-      huhl($sort);
-      echo "<br><br>Slices:<br>";
-      huhl($slices);
-    }
+    AA::$debug&2 && AA::$dbg->log("QueryDiscIDs - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
 
     // parse conditions ----------------------------------
     if (is_array($conds)) {

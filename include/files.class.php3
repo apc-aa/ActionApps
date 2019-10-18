@@ -73,7 +73,7 @@ class Files {
      * @param $slice
      * @return bool
      */
-    function destinationDir($slice) {
+    static function destinationDir($slice) {
         $upload = $slice->getUploadBase();
         return Files::_destinationDirCreate($upload['path'], $upload['perms']);
     }
@@ -110,7 +110,7 @@ class Files {
      * @param $modificator
      * @return string
      */
-    function generateUnusedFilename($file_name, $modificator='') {
+    static function generateUnusedFilename($file_name, $modificator='') {
         $path_parts = pathinfo($file_name);
 
         // we have to process dot (extension do not contain it)
@@ -172,7 +172,7 @@ class Files {
      *                        do not want to use original name)
      * @return bool|string
      */
-    function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
+    static function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
         $dest_file = Files::makeFile($dest_dir, Files::escape($filename ? $filename : basename($up_file['name'])));
@@ -429,7 +429,7 @@ class Files {
      * @param string $path the path
      * @return string path with trailing /
      */
-    function fixPath($path) {
+    static function fixPath($path) {
         //append a slash to the path if it doesn't exists.
         if (!(substr($path,-1) == '/')) {
             $path .= '/';
@@ -458,7 +458,7 @@ class Files {
      * @param string $pathB the ending path with file
      * @return string combined file path.
      */
-    function makeFile($pathA, $pathB) {
+    static function makeFile($pathA, $pathB) {
         $pathA = Files::fixPath($pathA);
         if (substr($pathB,0,1)=='/') {
             $pathB = substr($pathB,1);

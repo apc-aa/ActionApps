@@ -199,7 +199,7 @@ $form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
 
     FrmTabCaption(_m("Email Notifications of Events"), '', '', $form_buttons, $slice_id);
 
-$help = _m('E-mail is sent only if body is not empty.<br>You can use this for selestive e-mails. For example: {ifset:{category........}:e-mail text}');
+$help = _m('E-mail is sent only if body is not empty.<br>You can use this for selective e-mails. For example: {ifset:{category........}:e-mail text}');
 
 echo "<tr><td colspan=\"2\">". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
   FrmTextarea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3);

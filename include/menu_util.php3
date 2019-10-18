@@ -287,6 +287,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
 
         $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3'));
 
+        // @todo change it to method=get (+ hiden fields or so) in ordef the Backe button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aaserchform method=post action=".get_admin_url('aafinder.php3?findinseo=1&findinview=1&findinslice=1&findinfield=1&findinspot=1&go_findtext=1')."><input type=search name=findtext value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"></form>"  : '';
 
         echo '

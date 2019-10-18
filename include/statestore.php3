@@ -926,7 +926,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
 
         $manager_settings = array(
-             'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+             'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
              'searchbar' => array(
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,

@@ -913,7 +913,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $user_id   = AA_Reader::name2Id($username, $this->rm_slices);
         $user_info = GetAuthData( $user_id );
 
-        if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
+        if ( !$user_info->isEmpty() AND AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
             if ($this->needsRehashPassword($pwdhash)) {
                 $this->rehashPassword($user_id, $password);
             }
@@ -1053,7 +1053,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      */
     private function _readerIDsInfo($user_id) {
         $user_info = GetAuthData($user_id);
-        if ($user_info->is_empty()) {
+        if ($user_info->isEmpty()) {
             return false;
         }
         $res              = array();
@@ -1112,7 +1112,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         }
         $user_info = GetAuthData( $user_id );
 
-        if ($user_info->is_empty()) {
+        if ($user_info->isEmpty()) {
             return array();
         }
 

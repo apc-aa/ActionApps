@@ -1,3 +1,24 @@
+19-10-18 - New possibility to call Google Translate and directly translate
+(honzam)   the Textarea Widgets which uses different languages
+         - new {inputonly} command - the same as {input}, but do not contain Labels and hints
+           Used also for Itemedit in AA
+         - AA form validation was rewritten in order we can better use new XxxWidget
+           widgets in the AA inputform
+         - Views in Slice Admin now uses more universal Manager approach
+         - new possibility to move views between slice
+         - Manager Widget fixed, when displayed in many instances on the same page
+           (used sessions, more complete hashes)
+         - fixed Tags widget - now could be used in {ajax} displayed widgets
+           (the required scripts and CSS are loaded authomaticaly)
+         - better requires control - now we are able to control the requires during AJAX calls
+           (so {ajax} widgets are able to load its JS and CSS)
+         - quicker PageCache - better values for DB keys, quicker invaliadation (grouped for more slices)
+         - The functions for inserting Item Fields to the DB was rewritten to classes
+           (which also allows better validation functions)
+         - Links Module converted to ManagerActions and secured
+           (better parametrer checks, better SQL calls)
+         - better zids filtering - better zids consistence
+         - optimalizded manageractions code
 19-10-01 - new possibility to redefine just selected variables in the query string by {go:xqs_<variable>=<value>}
 (honzam)   like:
             {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
@@ -1207,7 +1228,7 @@
            automaticaly
          - new AA_Toolbar(text) js function - similar to AA_Message() but
            displayed on the bottom
-         - new AA_LoadCss(), AA_LoadJs() fro dynamic CSS and JS loading from
+         - new AA_LoadCss(), AA_LoadJs() for dynamic CSS and JS loading from
            javascript
          - improved a bit look of Admin interface for admin-ecn style
          - the output of view.php3 and site.php3 is automaticaly converted

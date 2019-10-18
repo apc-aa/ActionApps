@@ -590,11 +590,11 @@ class DB_AA extends DB_Sql {
             switch ( $type ) {
                 case "i": $part = (int)$value; break;
                 case "l": $part = xpack_id($value); break;
-                case "q": $part = $value; break;
+                case "q": $part = "'$value'"; break;
                 //default:  $part = DB_AA::quote($value);
-                default:  $part = addslashes($value);
+                default:  $part = "'".addslashes($value)."'";
             }
-            $cols .= "$delim $name = '$part'";
+            $cols .= "$delim $name = $part";
             $delim = " ,";
         }
         $wh = DB_AA::makeWhere($where);
@@ -610,6 +610,7 @@ class DB_AA extends DB_Sql {
 
     /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i')));
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
+     * @return bool - true if the record exist
      */
     static function test($table, $where) {
         $tbl = is_array($table) ? '`'.join('`,`',$table).'`' : "`$table`";
@@ -630,6 +631,8 @@ class DB_AA extends DB_Sql {
      *     >=       - integer           >=               single             array('date', 1478547854, '>=')
      *     <=       - integer           <=               single             array('date', 1478547854, '<=')
      *     <>       - integer           <>               single             array('date', 1478547854, '<>')
+     *     s<>      - string            <>               single             array('name', $name, 's<>')
+     *     l<>      - longid            <>               single             array('id', $slice_id, 'l<>')
      *     !=       - integer           <>               single             array('date', 1478547854, '!=')   // the same as above - "<>"
      *     ISNULL   -                   IS NULL                             array('number', 'ISNULL')
      *     NOTNULL  -                   IS NOT NULL                         array('number', 'NOTNULL')

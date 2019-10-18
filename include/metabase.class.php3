@@ -777,9 +777,9 @@ class AA_Metabase {
         return false;
     }
 
-    /** The best (most safe) low-level approach to store date in the AA table - the data are checked before storing against database schema
+    /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
-     *  ussage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
+     * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param      $tablename table, where to store data
      * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
      * @param  string $nohalt  'nohalt' - do not halt on database error
@@ -792,9 +792,9 @@ class AA_Metabase {
         return false;
     }
 
-    /** The same as doInsert, but for mulThe best (most safe) low-level approach to store date in the AA table - the data are checked before storing against database schema
-     *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
-     *  ussage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
+    /** The same as doInsert, but for multiple similar inserts
+     * @usage AA::Metabase()->doInsert('log', [['time'=>time(),'user'=>$uid1, 'type'=>$event, 'selector'=>$selector, 'params'=>$params],
+     *                                         ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
      * @see AA_Metabase::doInsert()
      * @param      $tablename table, where to store data
      * @param      $data[][]  data rows - all data unpacked. The values are converted to correct ones
@@ -824,7 +824,7 @@ class AA_Metabase {
         return false;
     }
 
-    /** Prepare Cvarset for gived data array (set right types/values/...)
+    /** Prepare Cvarset for given data array (set right types/values/...)
      *
      * @param      $tablename table to work with
      * @param      $data[]    data array - all data unpacked. The values are converted to correct ones

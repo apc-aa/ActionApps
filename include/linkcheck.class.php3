@@ -126,7 +126,7 @@ class AA_Linkcheck {
             if (!$sock) {
                 $return["code"] = "999";
             } else {
-               $dump .= "HEAD ".$urlArray["path"]." HTTP/1.1\r\n";
+               $dump  = "HEAD ".$urlArray["path"]." HTTP/1.1\r\n";
                $dump .= "User-Agent: APC-AA Link Checker (http://www.ecn.cz/)\r\n";
                $dump .= "Host: ".$urlArray["host"]."\r\nConnection: close\r\n";
                $dump .= "Connection: close\r\n\r\n";
