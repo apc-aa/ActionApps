@@ -102,20 +102,34 @@ class zids implements Iterator, ArrayAccess, Countable {
             $this->a[] = $initial;
         }
         unset( $initial );
-        if ($this->type == "z") {
-            $this->type = guesstype($this->a[0]);
-        }
-        $this->clean();
+        $this->clean(); // this also sets ->type
     }
 
     /** remove non valid ids */
     function clean() {
+        if ($this->type == "z") {
+            // find and set current
+            if ( $this->guesstype() == 'z' ) {
+                $this->clear();
+            }
+        }
         switch ($this->type) {
         case 's': $this->a = array_values(array_filter($this->a, 'is_short_id'));  break;
         case 'l': $this->a = array_values(array_filter($this->a, 'is_long_id'));   break;
         case 'p': $this->a = array_values(array_filter($this->a, 'is_packed_id')); break;
         }
     }
+
+    /** fills $this->>type with current zids type */
+    function guesstype() {
+        foreach ($this->a as $val) {
+            if ( ($this->type = guesstype($val)) != 'z' ) {
+                break;
+            }
+        }
+        return $this->type;
+    }
+
 
     /** setFromItemArr function
      * Grabs long ids from array as posted from manager.class checkboxes
@@ -124,15 +138,15 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param $type - type of ids, mostly 'l', but TaskManager f.e. uses short ones
      * @return zids
      */
-    function setFromItemArr($item_arr, $type='l') {
-        $this->clear($type);
-        if ( isset($item_arr) AND is_array($item_arr) ) {
-            foreach ( $item_arr as $it_id => $foo ) {
-                $this->a[] = substr($it_id,1);      // remove initial 'x'
-            }
-        }
-        return $this;
-    }
+//    function setFromItemArr($item_arr, $type='l') {
+//        $this->clear($type);
+//        if ( isset($item_arr) AND is_array($item_arr) ) {
+//            foreach ( $item_arr as $it_id => $foo ) {
+//                $this->a[] = substr($it_id,1);      // remove initial 'x'
+//            }
+//        }
+//        return $this;
+//    }
 
     /** clear function
      *  removes all zids and resets
