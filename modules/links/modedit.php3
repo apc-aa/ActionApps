@@ -140,7 +140,7 @@ if ( ($insert AND $superadmin) OR $update ) {
                 break;
             }
         }
-        AA::Pagecache()->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
+        AA::Pagecache()->invalidatefor($module_id);  // invalidate old cached values for this slice
     } while (false);
 
     if ( !count($err) ) {

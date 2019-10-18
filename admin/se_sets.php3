@@ -76,7 +76,7 @@ if ( $update ) {
             }
         }
 
-        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
 
     } while (false);
 

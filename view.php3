@@ -139,7 +139,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     $cacheentry->processPage(0);
 
     if (!$nocache AND $cache_sid) {
-        $str2find = new CacheStr2find($cache_sid, 'slice_id');
+        $str2find = new CacheStr2find($cache_sid);
         AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
     }
 }

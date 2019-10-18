@@ -919,9 +919,7 @@ class AA_Transformator {
             $slices2invalidate[$sli_id] = $sli_id;
         }
         if (is_array($slices2invalidate)) {
-            foreach($slices2invalidate as $sli_id) {
-                AA::Pagecache()->invalidateFor("slice_id=$sli_id");
-            }
+            AA::Pagecache()->invalidatefor($slices2invalidate);
 
             // we disabled events, so at the end we should update auth data
             // for Reader Management slice

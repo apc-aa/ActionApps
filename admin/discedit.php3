@@ -89,7 +89,7 @@ if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deletesh
     }
     updateDiscussionCount($item_id);        // update a count of the comments belong to the item
 
-    AA::Pagecache()->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
+    AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
 
     // refresh the content and the tree because of delete node
     $zids     = QueryDiscussionZIDs($item_id);

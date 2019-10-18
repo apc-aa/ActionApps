@@ -125,8 +125,7 @@ if ($insert  || $update ) {
         $varset->doINSERT('polls_answer');
     }
     // clear cache
-    AA::Pagecache()->invalidateFor("slice_id=$poll_id");    // invalidate this concrete poll
-    AA::Pagecache()->invalidateFor("slice_id=$module_id");  // and also the list of polls in this module, if used
+    AA::Pagecache()->invalidatefor(array($poll_id,$module_id));    // invalidate this concrete poll and also the list of polls in this module, if used
 
     go_url(StateUrl(self_base(). "./index.php3"));  // back to poll manager
 }

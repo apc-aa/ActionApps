@@ -151,7 +151,7 @@ if ($add || $update) {
 
             AA_Module_Site::processModuleObject($module_id);
         }
-        AA::Pagecache()->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
+        AA::Pagecache()->invalidatefor($module_id);  // invalidate old cached values for this slice
     } while(false);
 
     if ( !count($err) ) {

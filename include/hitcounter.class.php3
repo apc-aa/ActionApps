@@ -398,7 +398,7 @@ class AA_ComputedfieldsItem_Updater implements \AA\Util\LaterInterface {
             $item = new ItemContent($item_id);
             $item->updateComputedFields();
         }
-        AA::Pagecache()->invalidateFor("slice_id=$sid");
+        AA::Pagecache()->invalidatefor($sid);
     }
 }
 

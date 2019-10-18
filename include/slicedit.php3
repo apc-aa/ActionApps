@@ -110,8 +110,6 @@ if ($slice_id) {  // edit slice
     }
 }
 
-is_object( $db  ) || ($db  = getDB());
-
 $varset     = new CVarset();
 $superadmin = IsSuperadmin();
 
@@ -191,9 +189,8 @@ if ( $add || $update ) {
         ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
         ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
-        if ($fileman_dir) {
-            $db->query("SELECT id FROM slice WHERE fileman_dir='$fileman_dir' AND id <> '".q_pack_id($slice_id)."'");
-            if ($db->num_rows()) $err[] = _m("This File Manager Directory is already used by another slice.");
+        if ($fileman_dir AND DB_AA::test('slice', array(array('fileman_dir',$fileman_dir), array('id', $slice_id, 'l<>')))) {
+            $err[] = _m("This File Manager Directory is already used by another slice.");
         }
 
         if ( count($err)) {
@@ -272,17 +269,17 @@ if ( $add || $update ) {
                 break;
             }
 
+            AA::$module_id = $slice_id;
+
             $varset->clear();
 
             // get template data
             $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
-            $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($set_template_id) ."'";
-            $db->query($SQL);
-            if ( !$db->next_record() ) {
+            if (! ($record = DB_AA::select1('SELECT * FROM slice', '', array(array('id', $set_template_id, 'l'))))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($db->Record);
+            $varset->setFromArray($record);
             $varset->set("id", $slice_id, "unpacked");
             $varset->set("created_by", $auth->auth["uid"], "text");
             $varset->set("created_at", now(), "text");
@@ -327,8 +324,6 @@ if ( $add || $update ) {
                 }
             }
 
-            $sess->register('slice_id');
-
             AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 
             /* Added by Jakub on June 2002 to support Add slice Wizard */
@@ -360,7 +355,7 @@ if ( $add || $update ) {
         }
 //        $slice->setSliceField('_upload_url.....', $upload_url);
 
-        AA::Pagecache()->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice
+        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values for this slice
     } while(false);
 
     if ( !count($err) ) {

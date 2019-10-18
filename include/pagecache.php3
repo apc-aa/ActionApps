@@ -228,7 +228,7 @@ class PageCache  {
      *  Returns database identifier of the cache value (MD5 of keystring)
      * @param $keyString
      * @param $content
-     * @param $str2find
+     * @param CacheStr2find $str2find
      * @param $force - if true, the content is stored into cache even
      *                 if ENABLE_PAGE_CACHE is false (we use cache for cached
      *                 javascript in admin interface (modules selectbox
@@ -238,7 +238,7 @@ class PageCache  {
     function store($key, $content, $str2find, $force=false) {
         global $cache_nostore;
 
-        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.$str2find->getStr2find(), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
+        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.join(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$cache_nostore );
 
         if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
@@ -306,9 +306,10 @@ class PageCache  {
 
     /** invalidateFor function
      *  Remove cached informations for all rows which have the $cond in str2find
-     * @param $cond
+     * @param string | array $strings
+     * @param string         $type
      */
-    function invalidateFor($cond) {
+    function invalidateFor($strings, $type='M') {
         // We do not want to report errors here. Sometimes this SQL leads to:
         //   "MySQL Error: 1213 (Deadlock found when trying to get lock; Try
         //    restarting transaction)" error.
@@ -317,9 +318,11 @@ class PageCache  {
 
         // AA_Log::write('PAGECACHE', $cond, 'invalidate'); // for debug
 
-        $keys = GetTable2Array("SELECT pagecache_id FROM pagecache_str2find WHERE str2find = '".quote($cond)."'", '', 'pagecache_id');
+        $str2find = new CacheStr2find($strings, $type);
 
-        // invalidateById() is quite slow - mainly if we have to delete mor rows
+        $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", array(array('str2find',$str2find->getStrings())));
+
+        // invalidateById() is quite slow - mainly if we have to delete more rows
         // I do not know, how to make it quicker. I tried to refine the SQL
         // command, but following SQL do not help either:
         //
@@ -369,14 +372,15 @@ class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
  *  to identify records to be deleted (invalidated) from cache
  */
 class CacheStr2find {
-    protected $ids = array();
+    protected $strings = array();
 
     /** CacheStr2find function
      * @param $ids
      * @param $type
      */
-    function __construct( $ids=null, $type='slice_id') {
-        $this->add($ids, $type);
+    function __construct( $strings=null, $type='M') {   // it was $type=slice_id, but for cache it is better to use shorter - M
+        $this->strings = array();
+        $this->add($strings, $type);
     }
 
     /** add function
@@ -384,51 +388,50 @@ class CacheStr2find {
      * @param $ids
      * @param $type
      */
-    function add($ids, $type='slice_id') {
-        if ( !$ids ) {
+    function add($strings, $type='M') {    // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
+        if ( !$strings ) {
             return;
         }
-        foreach ((array)$ids as $id) {
-            $this->ids["$type=$id"] = true;   // match type-id pair
+        $strings = array_filter((array)$strings, 'trim');
+        foreach ($strings as $str) {
+            $this->strings["$type=$str"] = true;   // match type-id pair
         }
     }
+
+    /**
+     * @return array
+     */
+    function getStrings() {
+        return array_keys($this->strings);
+    }
+
     /** add_str2find function
-     * @param $str2find
+     * @param CacheStr2find $str2find
      */
     function add_str2find($str2find) {
-        if ((strtolower(get_class($str2find)) == 'cachestr2find') AND is_array($str2find->ids)) {
-            foreach ($str2find->ids as $k => $v) {
-                $this->ids[$k] = true;   // copy all the $str2find ids to this
+        if ( is_a($str2find,'CacheStr2find') ) {
+            foreach ($str2find->strings as $k => $v) {
+                $this->strings[$k] = true;   // copy all the $str2find ids to this
             }
         }
     }
+
     /** clear function
-     *
      */
     function clear() {
-        unset($this->ids);
-        $this->ids = array();
+        $this->strings = array();
     }
+
     /** store function
      * @param $keyid
      */
     function store($keyid) {
         $varset = new Cvarset( array( array('pagecache_id', $keyid), array('str2find','')));
         $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
-        foreach ((array)$this->ids as $id => $v) {
-            $varset->set('str2find', $id);
+        foreach ((array)$this->strings as $str => $v) {
+            $varset->set('str2find', $str);
             $varset->doInsert('pagecache_str2find');
         }
-    }
-    /** getStr2find function
-     *
-     */
-    function getStr2find() {
-        $out = '';
-        foreach ((array)$this->ids as $id => $v) {
-            $out .= ",$id";
-        }
-        return $out;
     }
 }
 
