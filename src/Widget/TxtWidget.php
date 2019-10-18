@@ -72,12 +72,17 @@ class TxtWidget extends \AA\Widget\Widget
             $value->addValue('');   // display empty textarea at least
         }
         $value->fixTranslations($aa_property->getTranslations());
+        $base = array();
         foreach ($value as $i => $val) {
             $attrs['rows'] = (($my_rows = substr_count($val, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
             // $rows         = max( $def_rows, min($my_rows>$def_rowssubstr_count($val,"\n")+4, 30));
 
             $input_name = $base_name . "[$i]";
-            $widget .= $delim. $this->_getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'));
+            if ( !$base ) {
+                $base['id']       = FormArray::formName2Id($input_name);
+                $base['langcode'] =  AA_Content::getLangName2Code( AA_Content::getLangNum2Name($i));
+            }
+            $widget .= $delim. $this->getOneInput2($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
             $delim = "\n<br />";
             $required = ''; // only one is required
         }
@@ -90,8 +95,9 @@ class TxtWidget extends \AA\Widget\Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
+     *  (used different name to Widget::_getOneInput which uses different parameters)
      */
-    protected function _getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor)
+    protected function getOneInput2($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor, $base)
     {
 
         $showhtmlarea = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
@@ -127,8 +133,10 @@ class TxtWidget extends \AA\Widget\Widget
         }, array_keys($attrs), $attrs));
 
         $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
-        if ($lang = AA_Content::getLangId($i)) {
-            $ret = "<span class=\"aa-langtrans $lang\"><strong>$lang</strong>$ret</span>";
+        if ($lang = AA_Content::getLangNum2Name($i)) {
+            $langcode  =  AA_Content::getLangName2Code( $lang );
+            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '.AA_Content::getLangCode2Name($base['langcode']). "</span>";
+            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</span>";
         }
         return $ret;
     }

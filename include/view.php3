@@ -640,7 +640,7 @@ class AA_Showview {
         }
         if (!AA::$langnum) { // for multilingual content (not defined when called from view.php3, or cron.php3 mail, ...)
             AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
-            AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+            AA::$langnum = array(AA_Content::getLangName2Num(AA::$lang));   // array of prefered languages in priority order.
         }
 
         $noitem_msg = (isset($this->_view_param["noitem"]) ? $this->_view_param["noitem"] :

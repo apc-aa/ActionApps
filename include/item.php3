@@ -410,7 +410,7 @@ class AA_Item {
         return $this->content4id->getAaValue($field_id);
     }
 
-    function is_empty() { return $this->content4id->is_empty(); }
+    function is_empty() { return $this->content4id->isEmpty(); }
 
     /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
@@ -728,10 +728,10 @@ class AA_Item {
      */
     function f_2($col, $param="") {
         // first_child try translation to right language
-        if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber(AA::$lang)))) {
+        if (!strlen($txt = $this->getval($col, AA_Content::getLangName2Num(AA::$lang)))) {
             // if not present - translate to default language of the slice
             $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
-            if (!strlen($txt = $this->getval($col, AA_Content::getLangNumber($translations[0])))) {
+            if (!strlen($txt = $this->getval($col, AA_Content::getLangName2Num($translations[0])))) {
                 // last try the 0 index (if the field was not set to translation)
                 $txt = $this->getval($col);
             }

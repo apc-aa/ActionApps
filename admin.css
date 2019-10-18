@@ -560,8 +560,8 @@ input.cancel-button {
 }
 
 /* translate in inputform */
-.aa-langtrans strong {
-    padding: 0 2px 1px 2px;
+.aa-langtrans-label {
+    padding: 6px 5px 7px 5px;
     line-height: 1;
     display: inline-block;
     border-radius: 7px 7px 0 0;
@@ -571,10 +571,22 @@ input.cancel-button {
     border: 1px solid #91856E;
     border-bottom: none;
     margin-top: 4px;
+    margin-right: 5px;
     text-shadow: 0 0 1px #464545;
     font-size: 8pt;
 }
-
+.aa-langtrans-tbtn {
+    display: inline-block;
+    background-color: #d5c2a4;
+    font-size: 11px;
+    border: solid 1px #a8977a;
+    border-radius: 7px;
+    padding: 2px 5px;
+}
+.aa-langtrans-tbtn:hover {
+    background-color: #B8DAC2;
+    cursor:pointer;
+}
 .aa-langdiv input[type=text], .aa-langdiv textarea  {
     display: block;
 }

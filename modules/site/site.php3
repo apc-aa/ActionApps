@@ -233,7 +233,7 @@ require_once AA_INC_PATH."item.php3";
 if ($lang_file) {
     mgettext_bind(AA_Langs::getLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
-    AA::$langnum = array(AA_Content::getLangNumber(AA::$lang));   // array of prefered languages in priority order.
+    AA::$langnum = array(AA_Content::getLangName2Num(AA::$lang));   // array of prefered languages in priority order.
 }
 
 
@@ -276,7 +276,7 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 
 // do not cache for logged users
 if (!$site_nocache AND empty($apc_state['xuser'])) {
-    $str2find = new CacheStr2find($slices4cache, 'slice_id');
+    $str2find = new CacheStr2find($slices4cache);
     $GLOBALS['pagecache']->storePage($cache_key, $cacheentry, $str2find);
 }
 

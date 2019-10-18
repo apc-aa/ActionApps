@@ -6,7 +6,7 @@ td.scroller {background: #a0a0a0;}
   color: #4A4A4A;
 }
 
-body { margin-left: 4px;
+body { margin: 0px;
        background: #F5F0E7;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 10px;
@@ -150,7 +150,7 @@ td.leftmenu {
   font-weight: bold;
   border: rgba(0, 0, 0, 0.5) solid 0px;
   border-width: 1px 0;
-  padding: 3px 1px;
+  padding: 3px;
 }
 
 .leftmenuy, .leftmenua, .leftmenun  {
@@ -255,6 +255,7 @@ td.leftmenu {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #999999;
+  padding: 6px;
 }
 
 .sel_on {
@@ -380,7 +381,7 @@ td.slicehead {
 }
 
 td.navbar {
-     padding-bottom: 7px;
+    padding: 0px 4px 6px 0px;
 }
 
 input[type="text"], select {
@@ -633,8 +634,8 @@ input.cancel-button {
 }
 
 /* translate in inputform */
-.aa-langtrans strong {
-    padding: 0 2px 1px 2px;
+.aa-langtrans-label {
+    padding: 6px 5px 7px 5px;
     line-height: 1;
     display: inline-block;
     border-radius: 7px 7px 0 0;
@@ -644,9 +645,23 @@ input.cancel-button {
     border: 1px solid #91856E;
     border-bottom: none;
     margin-top: 4px;
+    margin-right: 5px;
     text-shadow: 0 0 1px #464545;
     font-size: 8pt;
 }
+.aa-langtrans-tbtn {
+    display: inline-block;
+    background-color: #d5c2a4;
+    font-size: 11px;
+    border: solid 1px #a8977a;
+    border-radius: 7px;
+    padding: 2px 5px;
+}
+.aa-langtrans-tbtn:hover {
+    background-color: #B39E7D;
+    cursor:pointer;
+}
+
 .aa-langdiv input[type=text], .aa-langdiv textarea  {
     display: block;
 }

@@ -519,6 +519,7 @@ function AA_StateChange(id, state) {
     $('img.'+id+'ico').attr('src', AA_GetConf('path')+icoimg);
 }
 
+/** If condition, call callback directly. Otherwise - load js script from url and execute callcack after the script is loaded */
 function AA_LoadJs(condition, callback, url) {
     if (condition) {
         if (callback) {
@@ -759,4 +760,20 @@ function aa_maketags(id, slice_id, field_id, max_values ) {
         conf.maximumSelectionLength =  max_values;
     }
     $('#'+id).select2( conf );
+}
+
+function AA_Translate(input_id, text, from, to) {
+    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl="+from+"&tl="+to+"&dt=t&q="+ encodeURIComponent(text);
+    $.ajax({
+            url: url,
+            method: "GET",
+            success: function(data) {
+                var ret='';
+                var textarr = data[0];
+                for ( var i=0; i < textarr.length; i++ ) {
+                    ret += textarr[i][0];
+                }
+                $(jqid(input_id)).val(ret);  
+            }
+        });
 }
