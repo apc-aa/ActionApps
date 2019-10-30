@@ -1,7 +1,7 @@
 <?php
 /** AA Javascripts library usable on the public pages, just like:
- *  <script src="http://actionapps.org/apc-aa/javascript/aajslib.php"></script>
- *  (replace "http://actionapps.org/apc-aa" with your server and aa path
+ *  <script src="https://actionapps.org/apc-aa/javascript/aajslib.php"></script>
+ *  (replace "https://actionapps.org/apc-aa" with your server and aa path
  *
  *  It includes the scripts, which are based on great prototype.js library
  *  (see http://prototype.conio.net/)
@@ -14,7 +14,7 @@
  */
 /*
 Copyright (C) 2002 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -188,8 +188,8 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     // already editing ?
     switch ($(valdivid).readAttribute('data-aa-edited')) {
        case '1': return;
-       case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-                 return;
+       //case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+       //          return;
     }
 
     // store current content
@@ -222,7 +222,8 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
 function DisplayInputBack(input_id) {
     var valdivid = 'ajaxv_'+input_id
     $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
-    $(valdivid).setAttribute('data-aa-edited', '2');
+    //$(valdivid).setAttribute('data-aa-edited', '2');     // no longer needed  state 2 - we use stopPropagation() in widget Ajax
+    $(valdivid).setAttribute('data-aa-edited', '0');
 }
 
 function AA_Ajax(div, url, param, onload) {
@@ -297,7 +298,7 @@ function AA_SendForm(id, refresh, ok_func) {
 }
 
 /** Sends the form and replaces the form with the response
- *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+ *  Polls ussage - @see: https://actionapps.org/en/Polls_Module#AJAX_Polls_Design
  */
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls

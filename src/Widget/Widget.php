@@ -435,7 +435,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
         $widget_html .= "\n<div class=ajax_buttons>";
         $widget_html .= "\n<input class=\"save-button\" type=\"submit\" value=\"" . _m('SAVE CHANGE') . "\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
-        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"" . _m('EXIT WITHOUT CHANGE') . "\" onclick=\"DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"" . _m('EXIT WITHOUT CHANGE') . "\" onclick=\"(arguments[0] || window.event).stopPropagation();DisplayInputBack('$base_id');\">";
         $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
 

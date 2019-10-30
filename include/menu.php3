@@ -23,7 +23,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -203,7 +203,7 @@ function get_aamenus() {
                 INNER JOIN module ON AC.module_id = module.id', array(array('slice_id', $slice_id, 'l')));
             AddAlertsModules($items, $modules2link, _m("Alerts"), _m("List of Alerts modules using this slice as Reader Management."));
 
-            $items["header4"] = _m("Bulk Emails") ."&nbsp;&nbsp;&nbsp;".GetAAImage("help50.gif", _m("Send bulk email to selected users or to users in Stored searches"));
+            $items["header4"] = _m("Bulk Emails") ."&nbsp;&nbsp;&nbsp;".GetAAImage("help50.gif", _m("Send bulk email to selected users or to users in Stored searches"), 16, 12);
             $items["item1"]   = array("cond" => 1,
                                     "exact_href" => "javascript:WriteEmailGo()",
                                     "label" => _m("Send emails"),
@@ -230,7 +230,7 @@ function get_aamenus() {
 function AddAlertsModules(&$submenu, $collections, $header, $help) {
     global $auth;
     if (count($collections)) {
-        $submenu["header3"] = $header."&nbsp;&nbsp;&nbsp;". GetAAImage('help50.gif', $help);
+        $submenu["header3"] = $header."&nbsp;&nbsp;&nbsp;". GetAAImage('help50.gif', $help, 16, 12);
         $i = 100;
         foreach ($collections as $col) {
             $submenu["item".$i] = array(

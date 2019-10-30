@@ -21,7 +21,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>, Mitra Ardron <mitra@mitra.biz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  */
 
 
@@ -889,8 +889,11 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
             $switch_state_2 = '[-]';
         }
 
+        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
+        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -952,8 +955,11 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         $class    = ($is_on == 1) ? ' is-on' : '';
         $selected = ($is_on == 1) ? 1 : 0;
 
+        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
+        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -1006,8 +1012,11 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
             $switch_state_2 = '[-]';
         }
 
+        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
+        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php3 calls
@@ -1195,8 +1204,11 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
             }
         }
 
+        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
+        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
@@ -1245,8 +1257,11 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
             $switch_state_2 = '[-]';
         }
 
+        $plusimg  = '<span class="aa-img-plus">'.  GetAAImage('plus.gif',  _m('show'), 15, 9) .'</span>';
+        $minusimg = '<span class="aa-img-minus">'. GetAAImage('minus.gif', _m('show'), 15, 9) .'</span>';
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 15, 9), GetAAImage('minus.gif', _m('hide'), 15, 9)), array($switch_state_1, $switch_state_2));
+        $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php3 calls
@@ -2448,7 +2463,7 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
 
 /**
  * Converts the string to anoteher encoding. Wrong characters are transliterated.
- * Ussage:  {convert:{include:http://example.org/page.html}:windows-1250:utf-8}
+ * Ussage:  {convert:{include:https://example.org/page.html}:windows-1250:utf-8}
  *          {convert:{full_text.......}:windows-1250:us-ascii}
  *
  */
@@ -3198,7 +3213,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
      * @param $relation_field - tree relation field (default relation........)
      * @param $reverse - 1 for reverse trees (= child->parent relations)
      * @param $sort_string - order of tree leaves (currently works only for reverse trees. @todo)
-     * @param $slices - traverse only listed slices (some times usefull if your tree contain more than one slice and you want to count only with a subtree)
+     * @param $slices - traverse only listed slices (sometimes usefull if your tree contain more than one slice and you want to count only with a subtree)
      * @return string
      */
     function expand($item_ids='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
@@ -4291,7 +4306,17 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $iid         = $item->getItemID();
                     $input_name  = FormArray::getName4Form($field_id, $item);
                     $input_id    = FormArray::formName2Id($input_name);
-                    $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
+
+                    // the whole content works as button by default. You can redefine it using _#AA_AJAX_ alias like:   The text which works with value <button _#AA_AJAX_>Change it</button>
+                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\"";
+                    if (strpos($repre_value, '_#AA_AJAX_')!==false) {
+                        $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
+                        $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\">";
+                    } else {
+                        $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\" $ajax_on>";
+                    }
+
+                    //$ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
                     $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.myspecialchars($onsuccess).'"' : '';
                     $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".myspecialchars(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                     $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
@@ -4819,7 +4844,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         $dictionaries = explode_ids($dictionaries);
 
         $delimiters = AA_Stringexpand_Dictionary::defineDelimiters();
-        // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
+        // get pairs (like APC - <a href="https://apc.org">APC</a>' from dict. slice
         // (we call it through the pagecache in order it is called only once for
         // the same parameters)
         $replace_pairs = AA::Pagecache()->cacheMemDb(array('AA_Stringexpand_Dictionary','getDictReplacePairs'), array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
@@ -6843,7 +6868,7 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
 
 /** @return string - url GET parameter - {qs[:<varname>[:delimiter]]}
  *  Ussage:
- *   {qs:surname}    - returns Havel for http://example.org/cz/page?surname=Havel
+ *   {qs:surname}    - returns Havel for https://example.org/cz/page?surname=Havel
  *   {qs}            - returns whole querystring (including GET and POST variables)
  *   {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
  *                   - returns the value of the variable - exactly as posted
@@ -6895,7 +6920,7 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
  *  equivalent to {qss:} {safe:{qs:...}}
  *  use it all the time you are printing user input (url parameters) to HTML page - it prevents XSS attacks
  *  Ussage:
- *   {qss:surname}    - returns &lt;Havel&gt; for http://example.org/cz/page?surname=<Havel>
+ *   {qss:surname}    - returns &lt;Havel&gt; for https://example.org/cz/page?surname=<Havel>
  *   {qss}            - returns whole querystring (including GET and POST variables) html encoded
  *   {qss:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
  *                   - returns the value of the variable - exactly as posted - html encoded

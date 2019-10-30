@@ -214,7 +214,7 @@ class FilWidget extends \AA\Widget\Widget
         $widget_html = '<div class=ajax_widget>';
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
         $widget_html .= "\n<div class=ajax_buttons>";
-        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"" . _m('EXIT WITHOUT CHANGE') . "\" onclick=\"DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"" . _m('EXIT WITHOUT CHANGE') . "\" onclick=\"(arguments[0] || window.event).stopPropagation();DisplayInputBack('$base_id');\">";
         $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
         return $widget_html;

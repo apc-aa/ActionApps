@@ -21,7 +21,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 //
@@ -1399,25 +1399,26 @@ function getSelectBoxFromParamWizard($var) {
 }
 
 /** GetAAImage function
- * @param $filename
- * @param $alt
- * @param $width
- * @param $height
- * @param $add
- * @param $add_path
+ * @param        $filename
+ * @param string $alt
+ * @param int    $width
+ * @param int    $height
+ * @param string $add
+ * @param string $add_path
  * @return string
  */
-function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path='') {
+function GetAAImage($filename, $alt, $width, $height, $add='', $add_path='') {
     $image_path = AA_BASE_PATH.   $add_path. "images/$filename";
     $image_url  = AA_INSTAL_PATH. $add_path. "images/$filename";
     $title      = ($alt ? "title=\"$alt\"" : '');
     if ( $width ) {
         $size = "width=\"$width\" height=\"$height\"";
     } else {
+        // this should not be used - the width should be allways provided
         $im_size = @getimagesize($image_path);
         $size = $im_size[3];
     }
-    return "<img border=\"0\" src=\"$image_url\" alt=\"$alt\" $title $size $add>";
+    return "<img border=0 src=\"$image_url\" alt=\"$alt\" $title $size $add>";
 }
 
 /** GetModuleImage function
@@ -1843,7 +1844,7 @@ class AA_GeneralizedArray {
  */
 function IsSpamText($text, $tolerance=4) {
     // we do not accept any text using something like:
-    //     [url=http://example.net]Example.net[/url]
+    //     [url=https://example.net]Example.net[/url]
     if (substr_count(strtolower($text), '[/url]')) {
         return true;
     }

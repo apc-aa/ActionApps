@@ -1,7 +1,7 @@
 /** AA Javascripts library usable on the public pages, just like:
  *  <script src="https://actionapps.org/apc-aa/javascript/jquery.min.js"></script>
  *  <script src="https://actionapps.org/apc-aa/javascript/aajslib-jquery.php3"></script>
- *  (replace "http://actionapps.org/apc-aa" with your server and aa path
+ *  (replace "https://actionapps.org/apc-aa" with your server and aa path
  *
  *  @package UserOutput
  *  @version $Id$
@@ -10,7 +10,7 @@
  */
 /*
 Copyright (C) 2002 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -204,7 +204,7 @@ function AA_SendForm(id, refresh, ok_func) {
 }
 
 /** Sends the form and replaces the form with the response
- *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+ *  Polls ussage - @see: https://actionapps.org/en/Polls_Module#AJAX_Polls_Design
  */
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
@@ -236,8 +236,8 @@ function displayInput(valdivid, item_id, fid) {
     // already editing ?
     switch ($(valdiv).attr('data-aa-edited')) {
        case '1': return;
-       case '2': $(valdiv).attr("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-                 return;
+       //case '2': $(valdiv).attr("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+       //          return;
     }
     $(valdiv).attr("data-aa-oldval", $(valdiv).html());
 
@@ -282,7 +282,8 @@ function displayInput(valdivid, item_id, fid) {
 function DisplayInputBack(input_id) {
     var valdiv   = jqid('ajaxv_'+input_id);
     $(valdiv).html( $(valdiv).attr('data-aa-oldval') );
-    $(valdiv).attr('data-aa-edited', '2');
+    // $(valdiv).attr('data-aa-edited', '2');      // no longer needed  state 2- we use stopPropagation() in widget Ajax
+    $(valdiv).attr('data-aa-edited', '0');
 }
 
 function jqescape(s) {

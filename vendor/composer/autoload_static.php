@@ -31,6 +31,10 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     public static $prefixesPsr0 = array (
         'D' => 
         array (
+            'DocBlockReader' => 
+            array (
+                0 => __DIR__ . '/..' . '/jan-swiecki/simple-annotations/src',
+            ),
             'Detection' => 
             array (
                 0 => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced',
