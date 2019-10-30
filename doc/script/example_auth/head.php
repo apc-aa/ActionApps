@@ -3,7 +3,7 @@
 require_once __DIR__. "/request.class.php";
 
 $options = array(
-    'aa_url'          => 'http://example.org/apc-aa/',
+    'aa_url'          => 'https://example.org/apc-aa/',
     'cookie_lifetime' => 60*60*24*365  // one year
                 );
 $a = new AA_ClientAuth($options);

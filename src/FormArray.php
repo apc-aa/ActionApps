@@ -56,7 +56,7 @@ class FormArray
      */
     static public function getName4Form($property_id, $content, $item_index = 1)
     {
-        $form_field_id = self::getVarFromFieldId($property_id);
+        $form_field_id = self::getVarFromFieldId($property_id);   // post_date......1  ==>  post_date______1
 
         $oid = $content->getId();
         if ($oid) {

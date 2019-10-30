@@ -22,7 +22,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -269,7 +269,6 @@ if ( ($insert || $update) AND count($fields) ) {
 
 
 unset( $content );       // used in another context for storing item to db
-unset( $content4id );
 
 if ($edit) {
     if ( !count($fields) ) {
@@ -297,7 +296,8 @@ if ($edit) {
         MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
         exit;
     }
-
+} elseif($update) {  // foerm is submitted
+    // do nothing - the $content is filled
 } else {
     // we need the $content4id to be object (for getForm, at least)
     $content4id = new ItemContent;

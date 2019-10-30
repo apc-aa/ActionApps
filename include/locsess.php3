@@ -22,7 +22,7 @@
 * @author    Jiri Hejsek, Honza Malik <honza.malik@ecn.cz>
 * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
 * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-* @link      http://www.apc.org/ APC
+* @link      https://www.apc.org/ APC
 *
 */
 /** This file is included to all scripts, so let's set there the main environment */

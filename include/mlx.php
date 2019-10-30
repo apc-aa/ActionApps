@@ -24,7 +24,7 @@
  * @author    mimo/at/gn.apc.org for GreenNet
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  * @brief     MLX MultiLingual eXtension for ActionApps http://mimo.gn.apc.org/mlx
  *
 */

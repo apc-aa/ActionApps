@@ -13,7 +13,7 @@ use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\Ical - iCal  calendar format grabber
  *  could be called like
- *     $a = new AA\IO\AbstractGrabber\AbstractGrabber\Ical('http://example.org/calendar.ics');
+ *     $a = new AA\IO\AbstractGrabber\AbstractGrabber\Ical('https://example.org/calendar.ics');
  */
 class Ical extends \AA\IO\Grabber\AbstractGrabber {
 

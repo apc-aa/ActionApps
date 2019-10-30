@@ -2502,7 +2502,7 @@ $_m["Remote ActionApps URL"]
  = "";
 
 // admin/aa_synchronize.php3, row 76
-$_m["like http://example.org/apc-aa/"]
+$_m["like https://example.org/apc-aa/"]
  = "";
 
 // admin/aa_synchronize.php3, row 77
@@ -3231,8 +3231,8 @@ $_m["URL of the feed"]
  = "URL del canal RSS";
 
 // admin/se_rssfeeds.php3, row 198
-$_m["e.g. http://www.someplace.com/rss/index.xml"]
- = "p.e.  http://www.someplace.com/rss/index.xml";
+$_m["e.g. https://www.someplace.com/rss/index.xml"]
+ = "p.e.  https://www.someplace.com/rss/index.xml";
 
 // admin/slicedel2.php3, row 63
 $_m["Slice successfully deleted, tables are optimized"]
@@ -5629,8 +5629,8 @@ $_m["logout"]
  = "Salir";
 
 // include/menu_util.php3, row 371
-$_m["Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>"]
- = "(C) Todos los derechos reservados <a href=\"http://www.apc.org\">Asociación para el Progreso de las Comunicaciones - APC</a> ";
+$_m["Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>"]
+ = "(C) Todos los derechos reservados <a href=\"https://www.apc.org\">Asociación para el Progreso de las Comunicaciones - APC</a> ";
 
 // include/date.php3, row 161
 // include/validate.php3, row 450, 505

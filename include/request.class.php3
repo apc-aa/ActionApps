@@ -23,7 +23,7 @@
 */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -276,7 +276,7 @@ class AA_Request {
 
 /** @todo - should be updated for new php5 sessions - Honza 2016-09-29 */
 class AA_ClientAuth {
-    /** path to AA auth script - like: http://example.org/apc-aa/auth.php */
+    /** path to AA auth script - like: https://example.org/apc-aa/auth.php */
     var $_aa_responder_script;
 
     /** time in seconds of session validity. If not set, then the session

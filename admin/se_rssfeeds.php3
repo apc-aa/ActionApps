@@ -29,7 +29,7 @@
  * @author    Mitra
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -136,7 +136,7 @@ $apage->printHead($err, $Msg);
     <tr><td><?php echo _m("RSS Feed name") ?></td>
         <td><input type="text" name="rssfeed_name" size="40" value="<?php echo safe($rssfeed_name)?>" ><br><?php echo _m("New rssfeed name")?></tr>
     <tr><td><?php echo _m("URL of the feed") ?></td>
-         <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" ><br><?php echo _m("e.g. http://www.someplace.com/rss/index.xml")?>"
+         <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" ><br><?php echo _m("e.g. https://www.someplace.com/rss/index.xml")?>"
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
     <input type="hidden" name="old_rssfeed_name" value="<?php echo safe($old_rssfeed_name) ?>">
     <input type="hidden" name="sel_rssfeed_name">

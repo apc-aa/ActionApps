@@ -16,7 +16,7 @@
  */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ http://www.apc.org/
  *    prepare new $apc_state and togetger with $slices4cache and $site_id pass
  *    it by GET method. Just like this:
  *
- *    $url  = 'http://example.org/apc-aa/modules/site/site.php3?';
+ *    $url  = 'https://example.org/apc-aa/modules/site/site.php3?';
  *    $url .= http_build_query( array( 'apc_state'    => $apc_state,
  *                                     'slices4cache' => $slices4cache,
  *                                     'site_id'      => 'ac55f66e9d8f3f72345e16da7891f6ee'
@@ -151,7 +151,7 @@ new_state($apc_state, $x, $p, $d, $t, $scrl);
 // more variables for site module
 // such variables then could be used like {state} in your site code
 $apc_state['state'] = ApcArr2Str($apc_varnames, $apc_state);
-$apc_state['root'] = 'http://example.org/test';
+$apc_state['root'] = 'https://example.org/test';
 
 $slices4cache = array(
     "c76cf3e44aa9da1d240c8b4cb37fba47", // Example slice - items'
@@ -159,7 +159,7 @@ $slices4cache = array(
     "1c82a8e092b826208abcf4676dd737f8", // Example slice - links
 );
 
-$url  =  'http://example.org/apc-aa/modules/site/site.php3?';
+$url  =  'https://example.org/apc-aa/modules/site/site.php3?';
 $url .= http_build_query( array( 'apc_state'    => $apc_state,
                                  'slices4cache' => $slices4cache,
                                  'site_id'      => '9d87891f6eff3f7406cf55f66e1e16da'

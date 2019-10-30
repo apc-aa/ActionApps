@@ -22,7 +22,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -34,8 +34,8 @@
  *
  *  You can also store the export and then allow people to export items by public link /apc-aa/export.php
  *
- *  @example http://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77
- *  @example http://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77&name=Jane
+ *  @example https://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77
+ *  @example https://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77&name=Jane
  */
 
 require_once "../include/init_page.php3";

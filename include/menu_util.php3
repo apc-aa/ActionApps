@@ -24,7 +24,7 @@
  * @author    Jakub Adamek
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -457,7 +457,7 @@ function showSubmenu($aamenu, $active) {
 
     echo '<tr><td>&nbsp;</td></tr>
           <tr><td height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
-          <tr><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
+          <tr><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
 }
 

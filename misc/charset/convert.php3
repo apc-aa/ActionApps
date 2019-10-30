@@ -7,7 +7,7 @@
  * @param from   - source encoding      (default is iso-8859-1)
  * @param to     - destination encoding (default is utf-8)
  * @param source - file (url) to be converted. In examle above we convert
- *                 http://www.apc.org/page.htm  (url encoded)
+ *                 https://www.apc.org/page.htm  (url encoded)
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
@@ -15,7 +15,7 @@
 */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

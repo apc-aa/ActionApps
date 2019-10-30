@@ -2,7 +2,7 @@
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ http://www.apc.org/
 //    <!--#include virtual="/apps/aa/view.php3?&vid=2&cmd[2]=c-1-Database" -->
 //
 // Exapmle of calling jsview.php3:
-//    <script src="http://www.apc.org/apps/aa/jsview.php3?&vid=2&cmd[2]=c-1-Database"></script>
+//    <script src="https://www.apc.org/apps/aa/jsview.php3?&vid=2&cmd[2]=c-1-Database"></script>
 
 //expected  vid      // id of view
 //optionaly cmd[]    // command to modify the view

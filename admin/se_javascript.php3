@@ -20,7 +20,7 @@
  * @author    Jakub Adamek, June 2002
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -76,7 +76,7 @@ echo '</table>
 </td>
 <td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">
 <tr><td class="tabtit">'._m("Triggers").':</td></tr>
-<tr><td class="tabtxt">'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
+<tr><td class="tabtxt">'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
 <tr><td class="tabtxt"><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">';
 echo '<tr><td class="tabtit"><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
 AA_Jstriggers::printSummary();

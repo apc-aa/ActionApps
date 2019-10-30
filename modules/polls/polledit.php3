@@ -22,7 +22,7 @@
 * @author    Pavel Jisl <pavel@cetoraz.info>, Honza Malik <honza.malik@ecn.cz>
 * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
 * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-* @link      http://www.apc.org/ APC
+* @link      https://www.apc.org/ APC
 *
 */
 /* Based on phpPolls 1.0.3 from http://phpwizards.net

@@ -28,7 +28,7 @@ To upgrade or just check database use /service/sql_update.php3 script.
 
 Contact
 =======
-See http://actionapps.org/ for more info about ActionApps
+See https://actionapps.org/ for more info about ActionApps
 
 See http://sourceforge.net/projects/apc-aa/ for
 
@@ -39,4 +39,4 @@ See http://sourceforge.net/projects/apc-aa/ for
   patches
   support manager for help with installation
 
-See http://actionapps.org/ for recent documentation, or look in the doc/ subdirectory.
+See https://actionapps.org/ for recent documentation, or look in the doc/ subdirectory.

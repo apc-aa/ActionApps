@@ -11,7 +11,7 @@
 */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ class AA_Actionapps {
         return $aas[$aa_id];
     }
 
-    /** url of remote AAs - like "http://example.org/apc-aa/"  */
+    /** url of remote AAs - like "https://example.org/apc-aa/"  */
     function getComunicatorUrl() {
         return Files::makeFile($this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'), 'central/responder.php');
     }

@@ -30,7 +30,7 @@
  * @version   $Id$
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -100,7 +100,7 @@ define("DB_TYPE",    "db_mysql");      // you can (in theory) use also another
  *  If you do not specify this page, then some default error messages are
  *  displayed. It is good for debuging, but it is better to not show this
  *  messages to user on production server for security reasons */
-//    define("DB_ERROR_PAGE", "http://example.org/out-of-service.php");
+//    define("DB_ERROR_PAGE", "https://example.org/out-of-service.php");
 
 
 /** MySQL 4.1 is able to use different character sets for the communication.
@@ -232,7 +232,7 @@ define( "ENABLE_PAGE_CACHE", true );
 *  flushing on page change (but then there will be problem with item
 *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
 *  makes for faster serving
-*  See: http://actionapps.org/en/Troubleshooting_and_Optimization#Caching
+*  See: https://actionapps.org/en/Troubleshooting_and_Optimization#Caching
 */
 define("CACHE_TTL", 10800 ); // 3 hours
 
@@ -276,7 +276,7 @@ if ( !defined('AA_BASE_PATH') OR (strlen(AA_BASE_PATH) < 1)) {
 define("AA_INSTAL_URL", AA_HTTP_DOMAIN. substr(AA_INSTAL_PATH,1));    // do not change
 
 /** URL of index of help files for AA */
-define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
+define("DOCUMENTATION_URL", "https://actionapps.org/aa/doc");
 
 /** developer SITE_CONFIG
  *  Note: developers can put their site-specific config in SITE_CONFIG

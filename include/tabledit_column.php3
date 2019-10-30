@@ -27,7 +27,7 @@
  * @author    Jakub Adamek, Econnect
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (c) 2002-3 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
 */
 
 

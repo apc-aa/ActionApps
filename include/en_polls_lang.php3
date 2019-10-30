@@ -21,7 +21,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -50,7 +50,7 @@ define("L_EDITOR_TITLE", "Polls administration");
 define("L_ADMIN_POLLS_SETTINGS","Polls settings");
 define("L_ADMIN_POLLS_Design","Polls design");
 
-$L_MONTH = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
-                'Èervenec', 'Srpen', 'Záøí', 'Øíjen', 'Listopad', 'Prosinec');
+$L_MONTH = array( 1 => 'Leden', 'ï¿½nor', 'Bï¿½ezen', 'Duben', 'Kvï¿½ten', 'ï¿½erven',
+                'ï¿½ervenec', 'Srpen', 'Zï¿½ï¿½ï¿½', 'ï¿½ï¿½jen', 'Listopad', 'Prosinec');
 
 ?>

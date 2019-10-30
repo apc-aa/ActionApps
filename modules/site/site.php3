@@ -2,7 +2,7 @@
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
+https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ AA::setEncoding($module->getCharset());
 // script from their own file, where the new $apc_state, $slices4cache and
 // $site_id will be defined and passed by GET method. Just like this:
 //
-//    $url  = 'http://example.org/apc-aa/modules/site/site.php3?';
+//    $url  = 'https://example.org/apc-aa/modules/site/site.php3?';
 //    $url .= http_build_query( array( 'apc_state'    => $apc_state,
 //                                     'slices4cache' => $slices4cache,
 //                                     'site_id'      => 'ae54378beac7c7e8a998e7de8a998e7a'

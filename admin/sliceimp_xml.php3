@@ -45,7 +45,7 @@
  * @author    Mitra (based on earlier versions by Jakub Ad�mek, Pavel Jisl)
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 

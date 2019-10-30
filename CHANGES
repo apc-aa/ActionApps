@@ -1857,7 +1857,7 @@
            {ajax} and {live}. You can hide it by css - div.aa-help if you do not
            want to be shown
          - new filename parameter to view.php3 to allow download the view as file
-             http://example.org/apc-aa/view.php3?vid=30&filename=test.xls
+             https://example.org/apc-aa/view.php3?vid=30&filename=test.xls
            You can combine with paramater contenttype, if necessary.
          - The Input function and Validate function is set automaticaly
            (and correctly) if you use slice relation in Admin - Fields - Edit
@@ -2363,7 +2363,7 @@
          - speedup of several functions md5, ...
 10-11-03 - Polls module improved a bit - allows longer questions...
 (honzam)   Polls support AJAX submitting - see
-             http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+             https://actionapps.org/en/Polls_Module#AJAX_Polls_Design
          - new parameter <param> for polls {polls[:<pid>[:<param>]]}
            which allows you to display the poll on the page with specific
            parameters - just like:
@@ -2663,7 +2663,7 @@
            This way you are able to pass {..} any aa_expressions to any function
            instead of using just aliases there.
          - new {qs:<varname>} which return url GET parameter:
-             returns Havel for http://example.org/cz/page?surname=Havel
+             returns Havel for https://example.org/cz/page?surname=Havel
          - new {ifeq:<var1>:<var2>:<text>:<else_text>}
              {ifeq:{xseo1}:about: class="active"}
            If <var1> is equal to <var2>, then print <text>, else prints
@@ -2699,7 +2699,7 @@
            <delimiter>, but also through new <nested_top> and <nested_bottom>:
              {item:<ids>:<aa_expression>[:<delimiter>[:<nested_top>[:<nested_bottom>]]]}
            Used just like: {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
-           See wiki (http://actionapps.org/documentation/?title=Syntax#.7Bitem.7D_Display_field.2Falias_of_given_item)
+           See wiki (https://actionapps.org/documentation/?title=Syntax#.7Bitem.7D_Display_field.2Falias_of_given_item)
            Update 09-08-22: use rather {itree} syntax, which has more logical
            parameter order (due to backward compatibility of {item})
 09-08-11 - new {filelink:<url>:<text>} syntax - get link to file for download
@@ -2844,8 +2844,8 @@
 (honzam)
 09-02-11 - export.php script now supports also EXCEL and HTML export format:
 (honzam)   Example:
-             http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
-             http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=excel&filename=export.xls
+             https://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
+             https://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=excel&filename=export.xls
            The Excel and HTML Exports works correctly for utf-8 character
            encoding only (so for iso-8859-1 probably as well). The Excel export
            is quite hackish - exported through HTML, but works.
@@ -2900,7 +2900,7 @@
            (not finished, yet)
 08-11-25 - improvement in the polls module - fixed aliases, UI works also with
 (honzam)   green AA design.
-           see new polls documentation on http://actionapps.org/en/Polls_Module
+           see new polls documentation on https://actionapps.org/en/Polls_Module
            (Thanks to Radek Svitil/Ekolist)
          - IP lock in Polls when enabled and limeout set to 0 never expires
          - new {polls:<pid>} syntax for including the Polls module in the site
@@ -2999,7 +2999,7 @@
            is remembered in pager
          - fix in filler.php - item_id could be set as parameter for OK page
            using _#N1_ID___ aias:
-               ok_url = http://example.org/ok.php?item_id=_#N1_ID___
+               ok_url = https://example.org/ok.php?item_id=_#N1_ID___
          - fix for firefox 3.0 ajax editing: storno now works (quite dirty hack)
          - new XML and iCal grabber (Iekis) - which is able to import more XML
            files from one directory. Grabs only specific XML file, so it is
@@ -3149,7 +3149,7 @@
                 <input id="inline" name="inline" value="1" type="hidden">
                 <input name="slice_id" value="5e4576289e988c756b5525bacc78987b" type="hidden">
                 <!-- text displayed insted of the form after the submittion (inserted item in our case) -->
-                <input id="ok_url" name="ok_url" value="http://example.org/apc-aa/view_php3?vid=12&amp;cmd[12]=x-12-_#N1_ID___&amp;convertfrom=windows-1250" type="hidden">
+                <input id="ok_url" name="ok_url" value="https://example.org/apc-aa/view_php3?vid=12&amp;cmd[12]=x-12-_#N1_ID___&amp;convertfrom=windows-1250" type="hidden">
                 <!-- convertto is optional (you need it if you are not using utf-8 encoding) -->
                 <input id="convertto" name="convertto" value="windows-1250" type="hidden">
 
@@ -3546,7 +3546,7 @@
 (honzam)    - added comments for functions, classes, ...
             - cleaner code used, indentation of 4 spaces used in every script...
             - the sources should be compliant to ActionApps coding standards
-              (http://actionapps.org/aa/doc/coding.html)
+              (https://actionapps.org/aa/doc/coding.html)
            Thanks to Lukas Panek.
 07-04-15 - new version of filling items from form - through aa[] array allowing
 (honzam)   multiple items to store at once. The format of the data is followiing
@@ -3637,7 +3637,7 @@
            but it is very easy to adapt it also for SQL permissions.
          - image manipulation library phpThumb integrated into AA. You can use
            it by calling /img.php script:
-           <img src="/aaa/img.php?src=http://example.com/img/flower.gif&w=150">
+           <img src="/aaa/img.php?src=https://example.com/img/flower.gif&w=150">
            (w=150 means that image will be converted to width=150).
            All the parameters you can see on
            http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
@@ -3656,7 +3656,7 @@
               call this script from their own file, where the new $apc_state,
               $slices4cache and $site_id will be defined and passed by GET
               method. Just like this:
-                 $url  = 'http://example.org/apc-aa/modules/site/site.php3?';
+                 $url  = 'https://example.org/apc-aa/modules/site/site.php3?';
                  $url .= http_build_query( array(
                            'apc_state'    => $apc_state,
                            'slices4cache' => $slices4cache,
@@ -4058,7 +4058,7 @@
                as is.
              - Authors of the article as well as authors of the comment could
                be notified about new posted comment by email
-               see: http://actionapps.org/en/Interacting_With_Your_Audience#Tip_2:_New_comment_notification
+               see: https://actionapps.org/en/Interacting_With_Your_Audience#Tip_2:_New_comment_notification
          - {item:<ids>:<aa_expression>[:<delimiter>]} code now allows to specify
            more than one ID in <ids>. <ids> should be dash "-" separated
            and could be in short as well as long form. You can specify also
