@@ -9,7 +9,14 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "sk-utf8";
-define("DB_COLLATION", "utf8_slovak_ci");
+define("DB_COLLATION", "utf8mb4_slovak_ci");
+setlocale(LC_ALL, 'sk_SK.utf8', 'sk_SK');  // sort, date, uppercase, ..
+setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is problem, when
+                                           // used Czech numeric comma for example in AA_Stringexpand_If:
+                                           //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
+                                           // float!! value $etalon is then with comma which leads to syntax error
+
+
 
 # Unused messages
 $_m["Add&nbsp;mutual"]

@@ -9,6 +9,8 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "en-utf8";
+define("DB_COLLATION", "utf8mb4_general_ci");
+setlocale(LC_ALL, 'en_US.utf8', 'en_US');  // sort, date, uppercase, ..
 
 // modules/polls/index.php3, row 41
 $_m["You do not have permission to manage Polls"]

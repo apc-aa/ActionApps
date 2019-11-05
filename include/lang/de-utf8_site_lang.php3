@@ -9,6 +9,12 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "de-utf8";
+define("DB_COLLATION", "utf8mb4_german2_ci");
+setlocale(LC_ALL, 'de_DE.utf8', 'de_DE', 'de', 'ge');  // sort, date, uppercase, ..
+setlocale(LC_NUMERIC, 'en_US');            // use numeric with dot - there is problem, when
+                                           // used Czech numeric comma for example in AA_Stringexpand_If:
+                                           //   $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
+                                           // float!! value $etalon is then with comma which leads to syntax error
 
 # Unused messages
 # End of unused messages
