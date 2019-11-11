@@ -134,9 +134,12 @@ $apage->printHead($err, $Msg);
   FrmTabSeparator($new_mode == "insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
 ?>
     <tr><td><?php echo _m("RSS Feed name") ?></td>
-        <td><input type="text" name="rssfeed_name" size="40" value="<?php echo safe($rssfeed_name)?>" ><br><?php echo _m("New rssfeed name")?></tr>
+        <td><input type="text" name="rssfeed_name" size="40" value="<?php echo safe($rssfeed_name)?>" >
+            <br><?php echo _m("New rssfeed name")?></tr>
     <tr><td><?php echo _m("URL of the feed") ?></td>
-         <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" ><br><?php echo _m("e.g. https://www.someplace.com/rss/index.xml")?>"
+         <td><input type="text" name="server_url" size="40" value="<?php echo safe($server_url)?>" >
+             <br><?php echo _m("e.g. https://www.someplace.com/rss/index.xml")?>
+             <br><?php echo _m("Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!")?>
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
     <input type="hidden" name="old_rssfeed_name" value="<?php echo safe($old_rssfeed_name) ?>">
     <input type="hidden" name="sel_rssfeed_name">

@@ -21,7 +21,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -377,8 +377,8 @@ class AA_Field {
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
      * @param array $widget_properties - array of properties to redefine for $widget_type
-     * @param null  $preset_value
-     * @param       $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
+     * @param AA_Value $preset_value
+     * @param int         $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
      * @param bool  $widget_only
      *
      * Ussage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));

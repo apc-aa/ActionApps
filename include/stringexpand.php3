@@ -4011,7 +4011,7 @@ class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Get field property (currently only 'name' and 'help' is supported
+/** Get field property (currently only name | help |  alias1 | alias2 | alias3 | widget_new is supported)
  *  {field:<field_id>:<property>:<slice_id>}
  *  {field:headline........:name:ebfbc0082a26365ef6cefd7c4a4ec253}
  *    - displayes the Name of the headline field in specified slice as defined by administrator of the slice ion the Fieds Admin page
@@ -8594,7 +8594,16 @@ class AA_Stringexpand_Require extends AA_Stringexpand {
 /**
  * Class AA_Stringexpand_Postreplace
  */
-class AA_Stringexpand_Postreplace extends AA_Stringexpand {
+//class AA_Stringexpand_Post_Replace extends AA_Stringexpand_Nevercache {      // regexp - like {replace}
+class AA_Stringexpand_Post_Str_Replace extends AA_Stringexpand_Nevercache {  // stringreplace - like {str_replace}
+//class AA_Stringexpand_Post_Insert extends AA_Stringexpand_Nevercache {  // {post_insert:needle in output:code to insert if needle is found in the output}
+//class AA_Stringexpand_Post_Insert extends AA_Stringexpand_Nevercache {  // {post_insert:/needle in output/:code to insert if REGEXP needle is found in the output}
+
+    // no reason to cache it - it is quick processing function
+
+    /** Do not trim all parameters ($search and $replace could be spaces) */
+    function doTrimParams() { return false; }
+
     /** expand function
      * @param $search
      * @param $replace

@@ -190,7 +190,7 @@ if ($update) {
             if (!$db->next_record()) {
                 $db->query("
                 INSERT INTO constant_slice (slice_id,group_id,propagate)
-                VALUES ( xpack_id($slice_id),'$group_id',".($propagate_changes ? 1 : 0).");");
+                VALUES ( ".xpack_id($slice_id) .",'$group_id',".($propagate_changes ? 1 : 0).");");
             } else {
                 $db->query("
                 UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."

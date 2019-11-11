@@ -1,3 +1,11 @@
+19-11-05 - fixed language setting - setlocale() added to all utf8 languages in order {order:...:locale} works well
+(honzam) - the default DB_COLLATION is preset to correct utf8mb4_***_ci version of utf
+19-10-30 - [+] and [-] images in {toggle...} are surrounded by span.aa-img-plus or span.aa-img-minus so we can
+(honzam)   redefine then using CSS bofre/after
+         - in {ajax} the whole content works as button by default. Now you can redefine it using _#AA_AJAX_
+           alias like:
+              The text which works with value <button _#AA_AJAX_>Change it</button>
+         - http:// replaced by https:// in comments and help texts
 19-10-18 - New possibility to call Google Translate and directly translate
 (honzam)   the Textarea Widgets which uses different languages
          - new {inputonly} command - the same as {input}, but do not contain Labels and hints

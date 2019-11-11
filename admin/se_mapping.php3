@@ -70,7 +70,7 @@ $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds
        WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while ($db->next_record()) {
-    $u_remote_slice_id = attr2id($db->f('server_url'));
+    $u_remote_slice_id = attr2id($db->f('server_url'));         // @todo - remove the mapping dependence on URL
     $impslices[$u_remote_slice_id] = "RSS - ".$db->f('name');
     $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
 }
