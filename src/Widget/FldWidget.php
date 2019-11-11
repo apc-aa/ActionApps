@@ -51,6 +51,7 @@ class FldWidget extends \AA\Widget\Widget
 
         $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
         if (!$attrs['size']) {
+            unset($attrs['size']);
             $attrs['style'] = 'width:95%';
         }
 
