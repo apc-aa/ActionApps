@@ -27,7 +27,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
 */
 
 use AA\IO\Grabber\ObjectForm;
@@ -345,6 +345,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      */
     function setOwnerId($owner_id) {
         $this->aa_owner = $owner_id;
+        return $this;
     }
 
     /** setName function
@@ -352,6 +353,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      */
     function setName($name) {
         $this->aa_name = $name;
+        return $this;
     }
 
     /** setId function
@@ -359,6 +361,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      */
     function setId($id) {
         $this->aa_id = $id;
+        return $this;
     }
 
     /** getId function  */
@@ -391,6 +394,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
     function setProperty($property_id, $value) {
         return $this->$property_id = $value;
+        return $this;
     }
 
     /** AA_iEditable method - save the object to the database */

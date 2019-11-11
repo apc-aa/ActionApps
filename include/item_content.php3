@@ -23,7 +23,7 @@
  * @author    Jakub Adamek, Econnect
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (c) 2002-3 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -288,21 +288,25 @@ class AA_Content {
             // we expect AA_Value object here
             $this->content[$field_id] = $value->getArray();
         }
+        return $this;
     }
 
     /** set object id based on id_field setting for this content */
     function setId($id) {
         $this->setAaValue($this->id_field, new AA_Value( $id ));
+        return $this;
     }
 
     /** set object id based on id_field setting for this content */
     function setOwnerId($id) {
         $this->setAaValue($this->owner_field, new AA_Value( $id ));
+        return $this;
     }
 
     /** set object id based on id_field setting for this content */
     function addValue($field_id, $value) {
         $this->content[$field_id][] = array('value'=>$value, 'flag'=>0);
+        return $this;
     }
 
     /** get object id based on id_field setting for this content */
@@ -586,6 +590,7 @@ class ItemContent extends AA_Content {
             $aacontent4id = $grabber->getItem();
             $grabber->finish();
         }
+
         foreach ($fields as $pri_field_id => $field) {
 
             // to content array add just displayed fields (see ShowForm())
