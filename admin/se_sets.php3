@@ -99,7 +99,7 @@ FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<b
 $set_ids = AA_Object::querySet('AA_Set', new AA_Set(array($slice_id)));
 $k = 0;
 foreach( $set_ids as $i => $set_id ) {
-    $set = AA_Object::load($set_id, 'AA_Set');
+    $set = AA_Object::load($set_id, 'AA_Set');    /** @var AA_Set $set */
     if ( is_null($set)) {
         continue;
     }

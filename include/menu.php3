@@ -50,8 +50,7 @@ require_once AA_INC_PATH."mgettext.php3";
  *
  */
 function get_aamenus() {
-    global $r_slice_view_url,
-           $auth,
+    global $auth,
            $slice_id,
            $r_state,
            $bookmarks;
@@ -61,7 +60,7 @@ function get_aamenus() {
 
     $aamenus["view"] = array (
         "label"       => GetLabel($profile,'ui_manager','top_view', _m("View site")),
-        "exact_href"  => $r_slice_view_url,
+        "exact_href"  => AA_Slice::getModuleProperty($slice_id,'slice_url'),
         "cond"        => ($profile->getProperty('ui_manager', 'top_view') !== ''),
         "level"       => "main");
 

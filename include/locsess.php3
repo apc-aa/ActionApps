@@ -408,7 +408,7 @@ class AA {
     }
 }
 
-AA::$debug = ($_GET['debug'] OR $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
+AA::$debug = ($_GET['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
 
 class DB_AA extends DB_Sql {

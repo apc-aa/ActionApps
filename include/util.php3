@@ -1555,7 +1555,13 @@ class AA_Contentcache {
     //}
 
 
-    /** sometimes it is quicker to not count the key automaticaly (in case of object call) */
+    /** sometimes it is quicker to not count the key automaticaly (in case of object call)
+     * @param $key
+     * @param $function
+     * @param $params
+     * @param $ident
+     * @return mixed
+     */
     function _get_result($key, $function, $params, $ident) {
         if ( isset( $this->content[$key]) ) {
             $this->content[$key][2]++;
@@ -1568,7 +1574,13 @@ class AA_Contentcache {
     }
 
 
-    /** sometimes it is quicker to not count the key automaticaly (in case of object call) */
+    /** sometimes it is quicker to not count the key automaticaly (in case of object call)
+     * @param $function
+     * @param $params
+     * @param $classname_hint
+     * @param $add
+     * @return mixed
+     */
     function get_result_4_object($function, $params, $classname_hint, $add) {
         return $this->_get_result(get_hash($classname_hint, $params, $add), $function, $params, $classname_hint);
     }

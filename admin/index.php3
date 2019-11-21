@@ -152,7 +152,7 @@ $perm_set_id = $profile->getProperty('admin_perm');
 
 // permissions could be diffined in user profiles through Item Set conditions
 if ($perm_set_id) {
-    $profile_set = AA_Object::load($perm_set_id, 'AA_Set');
+    $profile_set = AA_Object::load($perm_set_id, 'AA_Set');     /** @var AA_Set $profile_set */
     if ( is_null($profile_set)) {
         // we want to proceed next $perm_edit_all condition
         $perm_set_id = 0;

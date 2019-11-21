@@ -204,7 +204,7 @@ class Saver implements AA\Util\LaterInterface {
             } else { // @todo do validation for updates
                 if (!$content4id->validate4Update()) {
                     $err_count++;
-                    $this->message("AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
+                    $this->message("AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg());
                     continue;
                 }
             }
