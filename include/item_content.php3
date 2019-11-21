@@ -853,7 +853,7 @@ class ItemContent extends AA_Content {
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
-                        AA_Log::write('M_FLDI_VLD', ParamImplode(array($msg,shtml_url())), ParamImplode(array($slice_id,$fld)));
+                        AA_Log::write('M_FLDI_VLD', ParamImplode(array($msg[0].' - '.$msg[1],document_uri(), $_SERVER['HTTP_REFERER'])), ParamImplode(array($slice_id,$fld)));
                     }
                     // drop to next case 'QUIET'
                 case 'QUIET':
