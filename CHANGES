@@ -1,3 +1,18 @@
+19-11-21 - Admin -> View Edit now shows the hint for {view... command including the d-... conditions.
+(honzam) - Admin -> Item Set now uses short d-.. conditions as default (instead of long conds[value]=... format)
+         - page scroller in AA user interface now displays the number of found items even if there is only one page
+         - code editor now added to Admin -> Javascript for field
+         - validation of new item now switched to LOG by default (as it was month ago)
+         - better constant group name check - only alphanum characters allowed
+         - the items from Slice marked as deleted is not shown in Site Module
+         - fixed problem with {var} used in {item:...:{(...some text {var:x}...)}}
+           - now the {var:x} is actualized when changed, even if we display the same item
+         - some zids methods are with fluent API, now (returns $this, so you can change it $zid->clear()->add(..))
+19-11-11 - fixed constant setting
+(honzam) - added note to RSS feeds, that the mapping is URL dependent, so it is not good idea
+           to change the url of the feed
+         - a bit improved html code for input field and textarea
+         - usage of fluent programming interface for AA_Content and AA_Object
 19-11-05 - fixed language setting - setlocale() added to all utf8 languages in order {order:...:locale} works well
 (honzam) - the default DB_COLLATION is preset to correct utf8mb4_***_ci version of utf
 19-10-30 - [+] and [-] images in {toggle...} are surrounded by span.aa-img-plus or span.aa-img-minus so we can

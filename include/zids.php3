@@ -135,9 +135,13 @@ class zids implements Iterator, ArrayAccess, Countable {
      * Grabs long ids from array as posted from manager.class checkboxes
      *  $items[x767ab56353544242552637389a853673]=1
      * @param $item_arr
-     * @param $type - type of ids, mostly 'l', but TaskManager f.e. uses short ones
      * @return zids
      */
+    public function setFromItemArr($item_arr) {
+        return $this->clear()->add(array_map(function ($k) {
+            return ltrim($k, 'x');
+        }, array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
+    }
 //    function setFromItemArr($item_arr, $type='l') {
 //        $this->clear($type);
 //        if ( isset($item_arr) AND is_array($item_arr) ) {
@@ -148,19 +152,21 @@ class zids implements Iterator, ArrayAccess, Countable {
 //        return $this;
 //    }
 
-    /** clear function
-     *  removes all zids and resets
+    /** clear function - removes all zids and resets
      * @param $inittype
+     * @return zids
      */
     function clear($inittype = 'z') {
         $this->a    = array();
         $this->type = $inittype;
         $this->_ext = array();
+        return $this;
     }
 
 
     /** adds ids from $ids array and checks if the valueas are short or long
      *  wrong valuas are not added
+     * @return zids this
      */
     function addDirty($ids) {
         if (substr(reset($ids),0,1)=='[') {
@@ -184,13 +190,14 @@ class zids implements Iterator, ArrayAccess, Countable {
             }
         }
         $this->clean();
+        return $this;
     }
 
     /** add function
      *  Adds new id or array of ids or zids object.
      *   The type must be already set (from init).
      * @param zids|array|string $ids
-     * @return bool
+     * @return zids this
      */
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
@@ -199,18 +206,14 @@ class zids implements Iterator, ArrayAccess, Countable {
                 $this->type = $ids->onetype();
             } elseif ($ids->onetype() == $this->onetype()) {
                 $this->a = array_merge($this->a, (array)$ids->a);
-            } else {
-                return false;
             }
         } elseif ( isset($ids) AND is_array($ids) ) {      // array of ids
             $this->a = array_merge($this->a, $ids);
         } elseif ( $ids ) {                                // id
             $this->a[] = $ids;
-        } else {
-            return false;
         }
         $this->clean();
-        return true;
+        return $this;
     }
 
     /** union function
