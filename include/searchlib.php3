@@ -191,9 +191,17 @@ class AA_Condition extends AA_Object {
 
     /** getAsString function
      * @param $condition_number
-     * @return string
+     * @return string conditions in short form  headline........-RLIKE-Action...
      */
     function getAsString($condition_number=0) {
+        return join(',',$this->fields) .'-'. $this->operator .'-'. $this->value; // StrExpand('AA_Stringexpand_Conds', array($this->value, '1'));  - does not work for B OR C, ...
+    }
+
+    /** getAsLongString function
+     * @param $condition_number
+     * @return string conditions in long form  conds[0][operator]=RLIKE&conds[0][headline........]=1&conds[0][value]=Action...
+     */
+    function getAsLongString($condition_number=0) {
         $ret = array();
         foreach ($this->fields as $cond_field) {
             $ret[] = "conds[$condition_number][$cond_field]=1";
@@ -202,6 +210,7 @@ class AA_Condition extends AA_Object {
         $ret[] = "conds[$condition_number][value]=".    $this->value;
         return join('&', $ret);
     }
+
 
     /** create whole phrase from the text
      *  Puts the expression in the quotes, so it becames phrase
@@ -333,13 +342,13 @@ class AA_Sortorder extends AA_Object {
 }
 
 class AA_Set extends AA_Object {
-    /** array of slice_ids (unpacked_ids) */
+    /** @var string[] slice_ids (unpacked_ids) */
     var $slices;
 
-    /** array of AA_Condition */
+    /** @var AA_Condition[] */
     var $conds;
 
-    /** array of AA_Sortorder objects */
+    /** @var AA_Sortorder[] objects */
     var $sort;
 
     /** bitfield representing the bins - like Holding Bin, Approved, Trash, ...
@@ -771,7 +780,7 @@ class AA_Set extends AA_Object {
         return $this->slices;
     }
 
-    /** @return bins bitfield - AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH */
+    /** @return int bins bitfield - AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH */
     function getBins() {
         return $this->bins;
     }
@@ -780,11 +789,11 @@ class AA_Set extends AA_Object {
      *  @return $conds[] array - mainly for backward compatibility
      */
     function getCondsAsString() {
-        $ret   = '';
+        $ret   = 'd-';
         $delim = '';
         foreach ( $this->conds as $k => $condition ) {
             $ret  .= $delim . $condition->getAsString($k);
-            $delim = '&';
+            $delim = '-';
         }
         return $ret;
     }
@@ -1161,7 +1170,7 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
 /** String2Conds function
  *  Returns $conds[] array, which is created from conds[] 'url' string
  *  like conds[0][category........]=first&conds[1][switch.........1]=1
- * @param $conds_string
+ * @param string $conds_string
  * @return array
  */
 function String2Conds( $conds_string ) {
@@ -1172,7 +1181,7 @@ function String2Conds( $conds_string ) {
 /** String2Sort function
  *  Returns $sort[] array, which is created from sort[] 'url' string
  *  like sort[0][headline........]=a&sort[2][publish_date....]=d
- * @param $sort_string
+ * @param string $sort_string
  * @return array
  */
 function String2Sort( $sort_string ) {

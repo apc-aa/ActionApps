@@ -218,7 +218,7 @@ if ($view_id) {
     // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
     // adds wrong $view_type variable to $_SERVER array, which then redefine
     // the $view_type from $_POST array
-    $view_type = $_POST['view_type'] ? $_POST['view_type'] : $_GET['view_type'];
+    $view_type = $_POST['view_type'] ?: $_GET['view_type'];
 }
 
 
@@ -506,9 +506,12 @@ FrmTabEnd();
 
 $view_id2show = $view_id ?: '&lt;vid&gt;';
 
+$view_recipe = $view ? ('&lcub;view.php3?vid='.$view_id.'&'.with(new AA_Set(null, $view->getConds()))->getCondsAsString().'&rcub;') : 'wr';
+
 $apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
        &lcub;view:'.$view_id2show.'&rcub;
        &lcub;view.php3?vid='.$view_id2show.'&rcub;
+       '.$view_recipe.'
      </pre>
      <a href="https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views">'._m('See documentation').'</a>');
 $apage->printHelpbox();

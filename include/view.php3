@@ -323,7 +323,7 @@ function ParseViewParameters($query_string="") {
 
             case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
                        // Note param_conds[0] is not otherwise used
-                       // It is converted into conds in GetViewConds
+                       // It is converted into conds in AA_View->getConds
                        // which is consumed in ParseMultiSelectConds
                        if ($command->getParameter(0) == 'OR') {
                            $param_conds[0] = 'OR';
@@ -415,93 +415,6 @@ function ParseViewParameters($query_string="") {
     return $arr;
 }
 
-
-/** ResolveCondsConflict function
- * Helper function for GetViewConds() - resolves database x url conds conflict
- * @param $conds
- * @param $fld
- * @param $op
- * @param $val
- * @param $param
- */
-function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
-    if ($fld AND $op) {
-        $conds[] = array( 'operator' => $op,
-                          'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
-                          $fld       => 1 );
-    }
-}
-
-/** GetViewConds function
- * Fills array with conditions defined through
- * 'Slice Admin' -> 'Design View - Edit' -> 'Conditions' setting
- * @param array $view_info view definition from database in asociative array
- * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
- * @return array conditions array
- */
-// If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
-// used by ParseMultiSelectConds
-function GetViewConds($view_info, $param_conds) {
-    // param_conds - redefines default condition values by url parameter (cmd[]=c)
-
-    AA::$debug&2 && AA::$dbg->log("(GetViewConds) param_conds=",$param_conds);
-    $conds = array();
-
-    ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'], $view_info['cond1cond'],  $param_conds[1]);
-    ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'], $view_info['cond2cond'],  $param_conds[2]);
-    ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'], $view_info['cond3cond'],  $param_conds[3]);
-    if ($param_conds[0]) {
-        $conds['valuejoin'] = $param_conds[0];
-    }
-    AA::$debug&2 && AA::$dbg->log("(GetViewConds) conds=",$conds);
-
-    return $conds;
-}
-
-/** GetViewSort function
- * @param $view_info
- * @param $param_sort
- * @return array|bool
- */
-function GetViewSort(&$view_info, $param_sort=null) {
-    global $VIEW_SORT_DIRECTIONS;
-    // translate sort codes (we use numbers in views from historical reason)
-    // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
-
-    $sort = false;
-    // grouping
-
-    if ($param_sort['group_by']) {
-       // $sort = String2Sort($param_sort['group_by']);
-        $sort = String2Sort('100000'.$param_sort['group_by']);
-    } else {
-        if ($view_info['group_by1']) {
-            $sort[] = array($view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
-        }
-    }
-
-    //sorting
-    if ($param_sort['sort']) {
-        if ( $param_sort['sort'] != 'AAnoSORT' ) {
-            $set    = new AA_Set;
-            $set->addSortFromString($param_sort['sort']);
-            $sort = $set->getSort();
-        }
-    } else {
-        if ($view_info['order1']) {
-            $sort[] = array($view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
-        }
-        if ($view_info['order2']) {
-            $sort[] = array($view_info['order2'] => $VIEW_SORT_DIRECTIONS[$view_info['o2_direction']]);
-        }
-    }
-
-    if ($param_sort['group_limit'] AND count($sort)>0) {
-        reset($sort);   // go to first record
-        $sort[key($sort)]['limit'] = $param_sort['group_limit'];
-    }
-    return $sort;
-}
 
 /** ParseBannerParam function
  *  Parses banner url parameter (for view.php3 as well as for slice.php3
@@ -720,9 +633,9 @@ class AA_Showview {
                 $format    = $view->getViewFormat($selected_item);
                 $aliases   = GetAliases4Type($view_info['type'],$als);
                 if (!$conds) {          // conds could be defined via cmd[]=d command
-                    $conds = GetViewConds($view_info, $param_conds);
+                    $conds = $view->getConds($param_conds);
                 }
-                $sort      = GetViewSort($view_info, $param_sort);
+                $sort      = $view->getSort($param_sort);
                 if ( $view_info['type'] == 'const' ) {
                     $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
                     $content_function = 'GetConstantContent';
@@ -803,7 +716,7 @@ class AA_Showview {
                 }
 
                 if ( !$conds ) {        // conds could be defined via cmd[]=d command
-                    $conds = GetViewConds($view_info, $param_conds);
+                    $conds = $view->getConds($param_conds);
                 }
                 // merge $conds with $calendar_conds
                 if (is_array($calendar_conds)) {
@@ -823,7 +736,7 @@ class AA_Showview {
                     }
                 }
 
-                $sort  = GetViewSort($view_info, $param_sort);
+                $sort  = $view->getSort($param_sort);
 
                 AA::$debug&2 && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
 

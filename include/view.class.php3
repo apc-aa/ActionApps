@@ -129,6 +129,94 @@ class AA_View {
         $this->fields = array_merge( (array)$this->fields, $banner_param);
     }
 
+    /** old GetViewConds function
+     * Fills array with conditions defined through
+     * 'Slice Admin' -> 'Design View - Edit' -> 'Conditions' setting
+     * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
+     * @return array conditions array
+     */
+    public function getConds($param_conds=array()) {
+        // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
+        // used by ParseMultiSelectConds
+
+        // param_conds - redefines default condition values by url parameter (cmd[]=c)
+
+        AA::$debug&2 && AA::$dbg->log("(AA_View->getConds) param_conds=",$param_conds);
+        $conds = array();
+
+        $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'),  $param_conds[1]);
+        $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'),  $param_conds[2]);
+        $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'),  $param_conds[3]);
+        if ($param_conds[0]) {
+            $conds['valuejoin'] = $param_conds[0];
+        }
+        AA::$debug&2 && AA::$dbg->log("(AA_View->getConds) conds=",$conds);
+
+        return $conds;
+    }
+
+
+    /** ResolveCondsConflict function
+     * Helper function for AA_View->getConds() - resolves database x url conds conflict
+     * @param $conds
+     * @param $fld
+     * @param $op
+     * @param $val
+     * @param $param
+     */
+    protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param) {
+        if ($fld AND $op) {
+            $conds[] = array( 'operator' => $op,
+                'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
+                $fld       => 1 );
+        }
+    }
+
+
+    /** old GetViewSort function
+     * @param $param_sort
+     * @return array|bool
+     */
+    public function getSort($param_sort=null) {
+        global $VIEW_SORT_DIRECTIONS;
+        // translate sort codes (we use numbers in views from historical reason)
+        // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
+
+        $sort = false;
+        // grouping
+
+        if ($param_sort['group_by']) {
+            // $sort = String2Sort($param_sort['group_by']);
+            $sort = String2Sort('100000'.$param_sort['group_by']);
+        } else {
+            if ($this->f('group_by1')) {
+                $sort[] = array($this->f('group_by1') => $VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]);
+            }
+        }
+
+        //sorting
+        if ($param_sort['sort']) {
+            if ( $param_sort['sort'] != 'AAnoSORT' ) {
+                $set    = new AA_Set;
+                $set->addSortFromString($param_sort['sort']);
+                $sort = $set->getSort();
+            }
+        } else {
+            if ($this->f('order1')) {
+                $sort[] = array($this->f('order1') => $VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]);
+            }
+            if ($this->f('order2')) {
+                $sort[] = array($this->f('order2') => $VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]);
+            }
+        }
+
+        if ($param_sort['group_limit'] AND count($sort)>0) {
+            reset($sort);   // go to first record
+            $sort[key($sort)]['limit'] = $param_sort['group_limit'];
+        }
+        return $sort;
+    }
+
     /** getViewFormat function
      * @param $selected_item
      * @return array
