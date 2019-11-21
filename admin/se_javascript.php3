@@ -51,15 +51,25 @@ if ($slice_id && $update) {
     $javascript = DB_AA::select1('SELECT javascript FROM `slice`', 'javascript', array(array('id', $slice_id, 'l')));
 }
 
+
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
+   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("javascriptarea"), opts);
+   ';
+
 $apage = new AA_Adminpageutil('sliceadmin','javascript');
 $apage->setTitle(_m("Field Triggers"));
+$apage->addRequire('codemirror@5');
+$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->printHead($err, $Msg);
+
+
 
 FrmTabCaption(_m("JavaScript for fields"));
 ?>
 <tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."), ""); ?></td></tr>
 <tr><td class="tabtxt"><hr></td></tr>
-<tr><td class="tabtxt"><textarea name="javascript" cols="100" rows="20">
+<tr><td class="tabtxt"><textarea name="javascript" id="javascriptarea" cols="100" rows="20">
 <?php
 echo $javascript.'</textarea></td></tr>';
 FrmTabSeparator(_m("Available fields and triggers"), array("update", "update" => array("type" => "hidden", "value" => "1"), "cancel" => array("url" => "se_fields.php3")), $slice_id);
