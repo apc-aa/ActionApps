@@ -25,7 +25,7 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
  *
 */
 
@@ -325,7 +325,8 @@ class inputform {
         // to count with them for javascript and show_func_used
         $shown_fields = array();
 
-        $item = $edit ? GetItemFromContent($content4id) : null;
+        // $item = $edit ? GetItemFromContent($content4id) : null;
+        $item = $content4id ? GetItemFromContent($content4id) : null;
 
         $content_from_form = new ItemContent();
         // just read the data from posted form, if it was already posted (on error, ...)
@@ -368,6 +369,8 @@ class inputform {
             //fix -- otherwise $field_value keeps array
             unset($fval);
             $aainput->setFromField($field);
+
+            // huhl($fid, $aainput);
 
             // do not return template for anonymous form wizard
             $ret .= $aainput->get($item, $slice->getId());
@@ -536,6 +539,13 @@ class AA_Inputfield {
              $this->value[$k] = array('value'=>$v);
         }
         $this->html_flag = $val->getFlag() & FLAG_HTML;
+    }
+
+    /**
+     * @return AA_Value
+     */
+    function getAaValue() {
+        return new AA_Value($this->value, $this->html_flag);
     }
 
     /** getDefaults function
@@ -1913,12 +1923,24 @@ class AA_Inputfield {
      * @param string $slice_id
      */
     function inputWidget($item, $slice_id) {
+        if ( !($field = AA_Slice::getModule($slice_id)->getField($this->id)) ) {
+            return '';
+        }
         $this->field_name('plus');
         if (is_null($item)) {
-            $this->echovar(AA::Stringexpander()->unalias('{inputonly:'.$slice_id.':'.$this->id.'}'));
+            $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
         } else {
-            $this->echovar(AA::Stringexpander()->unalias('{edit:'.$item->getId().':'.$this->id.'}'));
+            $widget = $field->getWidget();
+            $aa_property = $field->getAaProperty($widget->multiple());
+            $content = with( new AA_Content() )->setOwnerId($slice_id)->setAaValue($this->id, $this->getAaValue())  ;
+            //huhl($aa_property,$content);
+            $this->echovar($widget->getOnlyHtml($aa_property, $content));
         }
+//        if (is_null($item)) {
+//            $this->echovar(AA::Stringexpander()->unalias('{inputonly:'.$slice_id.':'.$this->id.'}'));
+//        } else {
+//            $this->echovar(AA::Stringexpander()->unalias('{edit:'.$item->getId().':'.$this->id.'}','',$item));
+//        }
         $this->helps('plus');
     }
 
@@ -3193,38 +3215,28 @@ function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $sa
     <tr>
       <td align=\"center\"><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
 
-    $out .= ((string)$value == (string)"testuser") ? "<td colspan=\"7\">" : "<td>";
+    $out .= ((string)$value == (string)"testuser") ? "<td colspan=\"8\">" : "<td>";
 
     $out .= "$name</td><td align=\"right\">$count</td>";
     // get data about bookmark (who created, last used, ...)
     if (!is_null($bookmark_id)) {
-        $event    = getLogEvents("BM_%", "",   "", false, false, $bookmark_id);
-        $lastused = getLogEvents("EMAIL_SENT", "", "",    false, false, (string)$value);
-        if (is_array($event)) {
-            $createdby = '';
-            $created   = 0;
-            foreach ($event as $evkey => $evval) {
-                if ($evval["type"] == "BM_CREATE") {
-                    $created   = $evval["time"];
-                    $createdby = $evval["user"];
-                }
-            }
-            rsort($event);
-            $last_edited = $event[key($event)]["time"];
-            $out .= "<td>". perm_username($createdby) . "</td><td>". date("j.n.Y G:i:s",$created). "</td>";
-            $out .= "<td>". date("j.n.Y G:i:s",$last_edited). "</td>";
-            if (is_array($lastused)) {
-                rsort($lastused);
-                $last_used = $lastused[key($lastused)]["time"];
-                $out .= "<td>". date("j.n.Y G:i:s",$last_used). "</td>";
-            } else {
-                $out .= "<td>". _m('Not used, yet'). "</td>";
-            }
+        if ($event = AA_Log::getLastLogEvents("BM_CREATE", $bookmark_id)) {
+            $out .= "<td>". date("j.n.Y G:i:s",$event['time']). "</td><td>". perm_username($event['user']) . "</td>";
         } else {
-            $out .= "<td colspan=\"4\"></td>";
+            $out .= "<td></td><td></td>";
+        }
+        if ($event  = AA_Log::getLastLogEvents("BM_UPDATE", $bookmark_id)) {
+            $out .= "<td>". date("j.n.Y G:i:s",$event['time']). "</td><td>". perm_username($event['user']) . "</td>";
+        } else {
+            $out .= "<td></td><td></td>";
+        }
+        if ($event  = AA_Log::getLastLogEvents("EMAIL_SENT", (string)$value)) {
+            $out .= "<td>". date("j.n.Y G:i:s",$event['time']). "</td>";
+        } else {
+            $out .= "<td>". _m('Not used, yet'). "</td>";
         }
     } else {
-        $out .= "<td colspan=\"4\"></td>";
+        $out .= "<td colspan=\"5\"></td>";
     }
     $out .= "<td>";
     if ((string)$value != (string)"testuser") {
@@ -3258,9 +3270,10 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
                        <th>&nbsp;</th>
                        <th>". _m("Group Name"). "</th>
                        <th>". _m("Count").      "</th>
-                       <th>". _m("Created by"). "</th>
                        <th>". _m("Created on"). "</th>
+                       <th>". _m("Created by"). "</th>
                        <th>". _m("Last updated") ."</th>
+                       <th>". _m("Updated by") ."</th>
                        <th>". _m("Last used"). "</th>
                      </tr>";
             foreach ( $book_arr as $k => $v ) {
@@ -3294,8 +3307,7 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
 function getZidsFromGroupSelect($group, &$items, &$searchbar) {
     global $slice_id;
     if ( (string)$group == 'sel_item' ) {  // user specified users
-        $zids = new zids(null, 'l');
-        $zids->setFromItemArr($items);
+        $zids = with(new zids())->setFromItemArr($items);
     } else {                   // user defined by bookmark
         $conds = false;
         $sort  = false;

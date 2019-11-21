@@ -681,7 +681,7 @@ class ItemContent extends AA_Content {
         return is_array($this->content[$field_id]);
     }
 
-    /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
+    /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)
      */
     function isActive($bin=AA_BIN_ACTIVE) {
@@ -832,11 +832,14 @@ class ItemContent extends AA_Content {
         return $ret;
     }
 
-    /** validates and fills content with default and hidden fields in order it could be stored into database */
-    function complete4Insert() {
+    /** validates and fills content with default and hidden fields in order it could be stored into database
+     * @param string $validate   LOG | STRICT | QUIET
+     * @return bool
+     */
+    function complete4Insert($validate='LOG') {
         global $auth;
-
-        $slice = AA_Slice::getModule($this->getSliceID());
+        $slice_id = $this->getSliceID();
+        $slice = AA_Slice::getModule($slice_id);
         if (!$slice) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
             return false;
@@ -844,8 +847,18 @@ class ItemContent extends AA_Content {
 
         $invalid = $this->validateReport('all');
         if ($invalid) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(function ($err) { return $err[0].": ".$err[1]; }, $invalid)));
-            return false;
+            switch ($validate) {
+                case 'STRICT':
+                    ItemContent::lastErr(ITEMCONTENT_ERROR_INVALID, join("\n", array_map(function ($err) { return $err[0].": ".$err[1]; }, $invalid)));
+                    return false;
+                case 'LOG':
+                    foreach ($invalid as $fld => $msg) {
+                        AA_Log::write('M_FLDI_VLD', ParamImplode($slice_id,$fld), ParamImplode($msg,shtml_url));
+                    }
+                    // drop to next case 'QUIET'
+                case 'QUIET':
+                    // nothing - continue
+            }
         }
 
         // start from scretch with new content

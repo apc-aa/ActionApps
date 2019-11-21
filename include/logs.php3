@@ -43,6 +43,7 @@ TOEXECUTE       object's class                  return code
 ALERTS          howoften                        Start/email sent
 HITCOUNT        type
 ITEM_DEL        item_id
+M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
 */
 
 class AA_Log {
@@ -129,9 +130,25 @@ class AA_Log {
            // 'HITCOUNT'
            // 'AA_WARN'
            // 'ITEM_DEL'
+           // 'M_FLDI_VLD'
         );
         return !in_array($event_type, $DO_NOT_LOG);
     }
+
+    /** getLastLogEvents function
+     *  Get events from log
+     * @param        $event - type of event
+     * @param string $selector
+     * @return array
+     */
+    static public function getLastLogEvents($event, $selector = "") {
+        $conds = array(array('type',$event, (strpos($event, '%') === false) ? '=' : 'LIKE'));
+        if ($selector != "") {
+            $conds[] = array('selector',$selector);
+        }
+        return DB_AA::select1('SELECT * FROM log','', $conds, array('id-'));
+    }
+
 }
 
 class AA_Log_Clenup implements \AA\Util\LaterInterface {
@@ -165,79 +182,6 @@ class AA_Log_Clenup implements \AA\Util\LaterInterface {
     }
 }
 
-/** getLogEvents function
- *  Get events from log
- * @param $event - type of event
- * @param $from - events from date
- * @param $to - events to date
- * @param $group_by_params - if true, returns events grouped by params and their count
- *                            as count
- * @param $delete_old_logs -
- * @param $selector
- * @return array|bool|string
- */
-function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false, $selector="") {
-
-    $time = time();
-
-    $like = (strpos($event, '%') !== false);
-
-    // if "to" isn't set, we use time of query, because of saving log entries
-    // written in (and after) query
-    if ($to == "") {
-        $to = $time;
-    }
-
-    if ($selector != "") {
-        $slctr = " AND selector = '$selector'";
-    }
-
-    if ($group_by_param) {
-        $SQL = "SELECT params,COUNT(*) AS count FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
-        if ($from) {
-            $SQL .= " AND time >= '$from'";
-        }
-        if ($to) {
-            $SQL .= " AND time <= '$to'";
-        }
-        if ($slctr) {
-            $SQL .= $slctr;
-        }
-        $SQL .= " GROUP BY params";
-        $return = GetTable2Array($SQL, 'NoCoLuMn');
-    } else {
-        $SQL = "SELECT * FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
-        if ($from) {
-            $SQL .= " AND time >= '$from'";
-        }
-        if ($to) {
-            $SQL .= " AND time <= '$to'";
-        }
-        if ($slctr) {
-            $SQL .= $slctr;
-        }
-        // $SQL .= "ORDER BY TIME";
-        $return = GetTable2Array($SQL, 'id');
-    }
-
-    // remove old log entries from table
-    if ($delete_old_logs) {
-        $SQL = "DELETE FROM log WHERE type='$event'";
-        if ($from) {
-            $SQL .= " AND time >= '$from'";
-        }
-        if ($to) {
-            $SQL .= " AND time <= '$to'";
-        }
-        if ($slctr) {
-            $SQL .= $slctr;
-        }
-        DB_AA::sql($SQL);
-    }
-
-    return $return;
-
-}
 
 
 
