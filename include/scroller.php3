@@ -37,7 +37,6 @@ class AA_Scroller extends AA_Storable {
     var $visible          = 1;
     var $sortdir          = 1;
     var $sortcol          = "";
-    var $filters;
     var $itmcnt;                    // total item count
     var $metapage         = 10;	    // "metapage" size
     var $urldefault;		        // cache self url
@@ -53,7 +52,6 @@ class AA_Scroller extends AA_Storable {
             'visible'    => new AA_Property( 'visible'   , _m('Visible'   ), 'bool', false, true),
             'sortdir'    => new AA_Property( 'sortdir'   , _m('Sortdir'   ), 'int',  false, true),
             'sortcol'    => new AA_Property( 'sortcol'   , _m('Sortcol'   ), 'text', false, true),
-            'filters'    => new AA_Property( 'filters'   , _m('Filters'   ), 'text', true,  true),  // @todo - should be better specified, since it is in fact array of arrays
             'itmcnt'     => new AA_Property( 'itmcnt'    , _m('Itmcnt'    ), 'int',  false, true),
             'metapage'   => new AA_Property( 'metapage'  , _m('Metapage'  ), 'int',  false, true),
             'urldefault' => new AA_Property( 'urldefault', _m('Urldefault'), 'text', false, true)
@@ -71,7 +69,6 @@ class AA_Scroller extends AA_Storable {
         $this->urldefault = $url;
         $this->metapage   = $listlen;
         $this->pgcnt      = 0;
-        $this->filters    = array();
         $this->current    = 1;
         $this->visible    = 1;
     }
@@ -143,7 +140,6 @@ class AA_Scroller extends AA_Storable {
      */
     function updateScr($url = "") {
 
-        $this->updateFilters();
         if ($url) {
             $this->urldefault = $url;
         }
@@ -171,7 +167,7 @@ class AA_Scroller extends AA_Storable {
         $from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to   = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
         if ($this->current > 1) {
-            $arr["<<"]  = $this->relative(-1);
+            $arr["&laquo;"]  = $this->relative(-1);
         }
         if ($from > 1) {
             $arr["1"]   = $this->absolute(1);
@@ -189,7 +185,7 @@ class AA_Scroller extends AA_Storable {
             $arr[(string) $this->pgcnt] = $this->absolute($this->pgcnt);
         }
         if ($this->current < $this->pgcnt) {
-            $arr[">>"] = $this->relative(1);
+            $arr["&raquo;"] = $this->relative(1);
         }
         return $arr;
     }
@@ -203,44 +199,24 @@ class AA_Scroller extends AA_Storable {
             return;
         }
         $delimiter = '';
-        $arr       = $this->navarray();
-        $url       = $this->urldefault;
+        $arr = $this->navarray();
+        $url = $this->urldefault;
 
-        foreach ($arr as $k => $v) {
-            echo $delimiter;
-            $delimiter = " | ";
-            if ($v) {
-                echo "<a href=\"".get_url($url,array($v))."\" class=\"scroller\">$k</a>\n";
-            } else {
-                echo "<span class=\"scroller_actual\">$k</span>\n";
+        $ret = '';
+
+        if (count($arr) > 1) {
+            foreach ($arr as $k => $v) {
+                $ret .= $delimiter;
+                $delimiter = " | ";
+                if ($v) {
+                    $ret .= "<a href=\"" . get_url($url, array($v)) . "\">$k</a>\n";
+                } else {
+                    $ret .= "<span class=\"active\">$k</span>\n";
+                }
             }
+            $ret .= "| <a href=\"" . get_url($url, array("listlen=99999")) . "\">" . _m("All") . "</a> &nbsp; ";
         }
-        echo "| <a href=\"" . get_url($url,array("listlen=99999")) ."\" class=\"scroller\">" . _m("All") . "</a>";
-        echo " &nbsp; (". $this->itmcnt .")";
-    }
-
-    /** addFilter function
-     *  add filter
-     * @param $name
-     * @param $type: "char", "date", "int","md5" (other can be added)
-     * @param $value
-     * @param $truename
-     */
-    function addFilter($name, $type, $value = "", $truename = "") {
-        $this->filters[$name]['value']    = $value;
-        $this->filters[$name]['type']     = $type;
-        $this->filters[$name]['truename'] = $truename;   // truename is for storing names like "categories.name" which cannot by real names for php variables
-    }
-
-    /** updateFilters function
-     *  process query string, execute commands for filters
-     */
-    function updateFilters() {
-        foreach ($this->filters as $name => $flt) {
-            if (isset($GLOBALS["flt_" . $this->id . "_${name}_val"])){
-                $this->filters[$name]['value'] = $GLOBALS["flt_" . $this->id . "_${name}_val"];
-            }
-        }
+        echo "<div class=pager>$ret (". _m('found').' '. $this->itmcnt .")</div>";
     }
 }
 

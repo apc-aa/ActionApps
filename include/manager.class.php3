@@ -344,19 +344,7 @@ class AA_Manager extends AA_Storable {
         return $actions->getAction($akce);
     }
 
-    /** getZidsFromPostedItems function
-     * Grabs long or short ids from array as posted from manager.class checkboxes
-     *  $items[x767ab56353544242552637389a853673]=1 or $items[45]=1  or $items[x45]=1
-     * @param $item_arr
-     * @return zids
-     */
-    protected function getZidsFromPostedItems($item_arr) {
-        return new zids(array_map(function($k) {return ltrim($k, 'x');}, array_keys($item_arr)));   // in some managers we use 'x' before the item id - remove it
-    }
-
-
     /** performActions function
-     *
      */
     function performActions() {
 
@@ -388,7 +376,7 @@ class AA_Manager extends AA_Storable {
             $this->searchbar->update();
         }
 
-        $item_zids = $this->getZidsFromPostedItems($chb);
+        $item_zids = with(new zids())->setFromItemArr($chb); // in some managers we use 'x' before the item id - remove it
 
         // new approach uses AA_Manageractions
         if (is_object($this->actions)) {
@@ -601,11 +589,8 @@ class AA_Manager extends AA_Storable {
             echo "</td>\n</tr>\n<tr><td id=\"markedactionparams\"></td></tr>\n<tr><td>";
         }
 
-        if ($this->scroller->pageCount() > 1) {  //  AND ($action_selected != "0")) {
-            echo '<b>'. _m('Items Page') .":&nbsp;&nbsp;";
-            $this->scroller->pnavbar();
-            echo "</b>";
-        }
+        $this->scroller->pnavbar();
+        
         echo '</td></tr></table>';
 
         echo '</form><br>';
