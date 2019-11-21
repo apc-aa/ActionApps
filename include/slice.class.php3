@@ -308,6 +308,18 @@ class AA_Module {
 
         return $ret;
     }
+
+    /**
+     * @param array $module_ids
+     * @return array - clean list of active (not deleted) modules
+     */
+    public static function filterActive( array $module_ids) {
+        static $active_modules = null;
+        if ( is_null($active_modules)) {
+            $active_modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', array(array('deleted', 0, 'i')));
+        }
+        return array_intersect($module_ids, $active_modules);
+    }
 }
 
 class AA_Slice extends AA_Module {
@@ -882,7 +894,7 @@ class AA_Module_Site extends AA_Module {
     function getRelatedSlices($type='') {
         if (is_null($this->_related_slices)) {
             // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
-            $this->_related_slices = DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i')));
+            $this->_related_slices = AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i'))));
         }
         if ($type) {
             // we need to preserve order!
