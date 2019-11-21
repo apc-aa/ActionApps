@@ -280,8 +280,10 @@ class AA_Stringexpand_User extends AA_Stringexpand {
     private static $auth_user_info = array();
 
     /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         return serialize(array(AA_Stringexpand_User::$auth_user_info, $GLOBALS['auth']));
     }
 
@@ -360,10 +362,11 @@ class AA_Stringexpand_Xuser extends AA_Stringexpand {
 class AA_Stringexpand_Internal extends AA_Stringexpand_Nevercache {
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -475,6 +478,7 @@ class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
         // replace inputform field
         $expression = AA::Contentcache()->get("define:$name");
         // @todo - replace parameters
+
         return $expression;
     }
 }
@@ -484,10 +488,12 @@ class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
  *  @param $part_name - name of the part (like 'Related Articles').
  */
 class AA_Stringexpand_Formbreak extends AA_Stringexpand {
+
     /** additionalCacheParam function
-     *
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         return serialize(array($GLOBALS['g_formpart'], $GLOBALS['g_formpart_names'], $GLOBALS['g_formpart_pos']));
     }
     /** expand function
@@ -2152,10 +2158,11 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -2198,10 +2205,11 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
 
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -2566,10 +2574,11 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -2627,6 +2636,15 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
 
     /** Do not trim all parameters (at least the $delimiter parameter could contain space) */
     function doTrimParams() { return false; }
+
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
+     */
+    function additionalCacheParam(array $params=array()) {
+        // if we use {var} in the code, we can't cache the result based on the parameters only
+        return (strpos($params[1],'{var:')!== false) ? mt_rand() : '';
+    }
 
     /** expand function
      * @param $ids_string string - ids (long or short (or mixed) separated by dash '-')
@@ -3426,7 +3444,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
      * @return array
      */
     static function _getSeoSlices($slices) {
-        return array_map('unpack_id', DB_AA::select('slice_id', 'SELECT slice_id FROM field', array(array('slice_id', $slices, 'l'), array('id', 'seo.............'))));
+        return DB_AA::select('unpackid', 'SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM field', array(array('slice_id', $slices, 'l'), array('id', 'seo.............')));
     }
 }
 
@@ -4024,10 +4042,11 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
      */
     private static $ALLOWED_PROPERTIES = Array ('name'=>'name','help'=>'input_help', 'alias1'=>'alias1', 'alias2'=>'alias2', 'alias3'=>'alias3', 'widget_new'=>'widget_new' );
 
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getSliceID();
     }
@@ -4155,10 +4174,11 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     // It works with database, so it shoud always look in the database
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getID();
     }
@@ -4272,10 +4292,11 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // It works with database, so it shoud always look in the database
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getID();
     }
@@ -4337,10 +4358,11 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
     // It works with database, so it shoud always look in the database
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getID();
     }
@@ -4632,8 +4654,11 @@ class AA_Stringexpand_Sitespot extends AA_Stringexpand {
  */
 class AA_Stringexpand_Slice extends AA_Stringexpand_Nevercache {
 
-    /** additionalCacheParam function */
-    function additionalCacheParam() {
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
+     */
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different slices - place item id into cache search */
         return is_object($this->item) ? $this->item->getSliceID() : $GLOBALS['slice_id'];
     }
@@ -4663,8 +4688,11 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
     /** Do not trim all parameters ($add could contain space) */
     function doTrimParams() { return false; }
 
-    /** additionalCacheParam function */
-    function additionalCacheParam() {
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
+     */
+    function additionalCacheParam(array $params=array()) {
         $itemview = $this->itemview;
         return !is_object($itemview) ? '' : $itemview->slice_info['vid'].':'.$itemview->clean_url.':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
     }
@@ -4699,10 +4727,11 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
 class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         global $apc_state;
         $itemview = $this->itemview;
         return !is_object($itemview) ? '' : serialize($apc_state['router']).':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
@@ -4759,10 +4788,11 @@ class AA_Stringexpand_Pagermore extends AA_Stringexpand_Nevercache {
 
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         global $apc_state;
         $itemview = $this->itemview;
         return !is_object($itemview) ? '' : serialize($apc_state['router']).':'.$itemview->num_records.':'.$itemview->idcount().':'.$itemview->from_record;
@@ -5362,7 +5392,7 @@ function StrExpand($class_name, $params=array(), $context_arr=array(), $allow_qu
     /** @var AA_Stringexpand $stringexpand */
     $stringexpand = new $class_name($context_arr);
     if ( $stringexpand->doCache() AND !$ignore_cache) {
-        $res = AA::Contentcache()->get_result_4_object(array($stringexpand, 'expand'), $params, $class_name, $stringexpand->additionalCacheParam());
+        $res = AA::Contentcache()->get_result_4_object(array($stringexpand, 'expand'), $params, $class_name, $stringexpand->additionalCacheParam($params));
     } else {
         $res = call_user_func_array( array($stringexpand,'expand'), $params);
     }
@@ -6281,8 +6311,10 @@ class AA_Stringexpand {
      *  to use cache for results based just on expand() parameters. We need to
      *  add following parameters. In most cases you do not need to override this
      *  function
+     *  @param array $params parameters passed to expand (caching could be parameter sensitive).
+     *  @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         return '';
     }
 
@@ -6336,10 +6368,11 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
     /** Do not trim all parameters (maybe we can?) */
     function doTrimParams() { return false; }
 
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -6986,9 +7019,10 @@ class AA_Stringexpand__ extends AA_Stringexpand {
     function doTrimParams() { return false; }
 
     /** additionalCacheParam function
-     *
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         // is it necessary to have $this->item here?
         return serialize(array(!is_object($this->item) ? '' : $this->item->getId()));
     }
@@ -7750,10 +7784,11 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
 
     // not needed right now for Nevercached functions, but who knows in the future
 
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -8194,10 +8229,11 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
 
     // not needed right now for Nevercached functions, but who knows in the future
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
@@ -8512,10 +8548,11 @@ class AA_Stringexpand_Aalang extends AA_Stringexpand_Nevercache {
 /** Validate */
 class AA_Stringexpand_Validate extends AA_Stringexpand {
 
-    /**
-     * @return string
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
      */
-    function additionalCacheParam() {
+    function additionalCacheParam(array $params=array()) {
         /** output is different for different items - place item id into cache search */
         return !is_object($this->item) ? '' : $this->item->getId();
     }
