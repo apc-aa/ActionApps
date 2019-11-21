@@ -50,7 +50,7 @@ require_once AA_INC_PATH . "util.php3";
 
 /* use stored values from session, if we call related window
    for secnd time (eg. after search or filtering data) */
-if ( isset($r_state) && !$sid)  {
+if ( isset($r_state) && !$_GET['sid'])  {
 //  $sid         = $r_state['related']['sid'];
     $mode        = $r_state['related']['mode'];
     $var_id      = $r_state['related']['var_id'];
@@ -62,14 +62,25 @@ if ( isset($r_state) && !$sid)  {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = get_if( $sid, $r_state['related']['sid'] );
+$related_sid = get_if( $_GET['sid'], $r_state['related']['sid'] );
+$slice       = AA_Slice::getModule($related_sid);
 
-// module_id is the same as slice_id (slice_id was used before AA introduced
-// modules. Now it is better to use module_id, because in other modules
-// (like Links, ...) it is not so confusing
-
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice       = AA_Slice::getModule($module_id);
+if (!$slice) {
+    echo "Error - no slice found<br>";
+    echo "<hr>sid<br>";
+    pritnt_r($sid);
+    echo "<hr>r_state<br>";
+    pritnt_r($r_state);
+    echo "<hr><br>";
+    pritnt_r($_GET);
+    echo "<hr>GET<br>";
+    pritnt_r($_GET);
+    echo "<hr>SESSION<br>";
+    pritnt_r($_SESSION);
+    echo "<hr>POST<br>";
+    pritnt_r($_POST);
+    exit;
+}
 
 /* prepare view format for manager class */
 if (!$mode )        { $mode        ='AMB'; }
@@ -116,7 +127,7 @@ $conds_ro = String2Conds( rawurldecode($showcondsro) );
 $conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
 $manager_settings = array(
-     'module_id' => $module_id,
+     'module_id' => $related_sid,
      'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
      'searchbar'  => array(
          'fields'               => $slice->getSearchfields(),
@@ -140,7 +151,7 @@ $manager_settings = array(
                          )
          );
 
-$manager = new AA_Manager('related'. $module_id, $manager_settings);
+$manager = new AA_Manager('related'. $related_sid, $manager_settings);
 if ((isset($conds_ro)) && (isset($showcondsro))) {
     $manager->searchbar->addSearch($conds_ro, true);
 }
@@ -150,15 +161,15 @@ if ((isset($conds_rw)) && (isset($showcondsrw))) {
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked
-if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['sid'] != $module_id)) {
-//    huhl(" 1:", $r_state['related'], " sid:",$sid , " m:",$r_state['related']['module_id'], " mi:",$module_id);
+if ( !isset($r_state['related']) OR $_GET['sid'] OR ($r_state['related']['sid'] != $related_sid)) {
+//    huhl(" 1:", $r_state['related'], " sid:",$_GET['sid'] , " m:",$r_state['related']['module_id'], " mi:",$module_id);
     // we are here for the first time or we are switching to another slice
     unset($r_state['related']);
     // set default admin interface settings from user's profile
-    // $r_state["module_id"]         = $module_id;
+    // $r_state["module_id"]         = $related_sid;
     // $r_state['bin']               = 'app';
     $frombins = get_if( $frombins, AA_BIN_ACTIVE | AA_BIN_PENDING ) ;
-    $r_state['related']['sid']       = $module_id;
+    $r_state['related']['sid']       = $related_sid;
     $r_state['related']['mode']      = $mode;
     $r_state['related']['var_id']    = $var_id;
     $r_state['related']['design']    = $design;
@@ -181,7 +192,7 @@ FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);  // for Selec
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-$zids = QueryZids(array($module_id), $conds, $sort, $frombins);
+$zids = QueryZids(array($related_sid), $conds, $sort, $frombins);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

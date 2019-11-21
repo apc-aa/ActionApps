@@ -7,6 +7,8 @@
          - the items from Slice marked as deleted is not shown in Site Module
          - fixed problem with {var} used in {item:...:{(...some text {var:x}...)}}
            - now the {var:x} is actualized when changed, even if we display the same item
+         - img.php now works with https
+         - fixed upload in CKEditor
          - some zids methods are with fluent API, now (returns $this, so you can change it $zid->clear()->add(..))
 19-11-11 - fixed constant setting
 (honzam) - added note to RSS feeds, that the mapping is URL dependent, so it is not good idea

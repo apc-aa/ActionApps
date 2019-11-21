@@ -1693,7 +1693,7 @@ class phpthumb {
                         // explicitly exclude PNG from "-flatten" to make sure transparency is preserved
                         // https://github.com/JamesHeinrich/phpThumb/issues/65
                     } else {
-                        $commandline .= ' -flatten';
+#                        $commandline .= ' -flatten';
                         $commandline .= ' -density '.phpthumb_functions::escapeshellarg_replacement($this->dpi);
                     }
                 }

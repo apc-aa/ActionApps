@@ -20,10 +20,12 @@
 //debug_print_backtrace();
 //print_r(get_included_files());
 //
-//echo 'AA_ID ' ;
-//echo AA_ID;
-//echo IMG_UPLOAD_PATH;
-//echo AA::$module_id;
+// echo '*' ;
+// echo 'AA_ID ' ;
+// echo AA_ID;
+// echo IMG_UPLOAD_PATH;
+// echo AA::$module_id;
+// echo '*' ;
 
 
 return array(
@@ -121,6 +123,8 @@ return array(
 
     '_sessionVar' => "KCFINDER",
     '_check4htaccess' => true,
+// je to potreba? - jirka 6.6.2019
+//    '_check4htaccess' => false,
     '_normalizeFilenames' => true,
     '_dropUploadMaxFilesize' => 10485760,
     //'_tinyMCEPath' => "/tiny_mce",

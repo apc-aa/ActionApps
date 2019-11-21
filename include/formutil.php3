@@ -985,6 +985,7 @@ class AA_Inputfield {
                 case 'edt':
                 case 'mch':
                 case 'mng': // Manager
+                //case 'pwd':
                 //case 'txt':
                 //case 'fld':
                 default:    $this->inputWidget($item, $slice_id);

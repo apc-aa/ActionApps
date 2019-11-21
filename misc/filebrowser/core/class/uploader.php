@@ -253,7 +253,7 @@ class uploader {
                     if (false === ($data = @file_get_contents($htaccess)))
                         $this->backMsg("Cannot read .htaccess");
                     if (($data != $original) && !@file_put_contents($htaccess, $original))
-                        $this->backMsg("Incorrect .htaccess file. Cannot rewrite it!");
+                        $this->backMsg("Incorrect .htaccess file. Cannot rewrite it!".$htaccess);
                 }
             }
 

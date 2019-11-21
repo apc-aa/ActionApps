@@ -22,8 +22,17 @@ function CheckAuthentication() {
     //pageOpen();
     pageOpen('noauth');
 
-    $_SESSION['KCFINDER']['uploadURL'] = IMG_UPLOAD_URL. $_SESSION['r_last_module_id'];
-    $_SESSION['KCFINDER']['uploadDir'] = IMG_UPLOAD_PATH. $_SESSION['r_last_module_id'];
+    $r_last_module_id = '';
+    if ( $_SESSION['r_last_module_id'] == '' ) {
+        $r_last_module_id = $_SESSION['r_state']['module_id'];
+    } else {
+        $r_last_module_id = $_SESSION['r_last_module_id'];
+    }
+    $_SESSION['KCFINDER']['uploadURL'] = IMG_UPLOAD_URL. $r_last_module_id;
+    $_SESSION['KCFINDER']['uploadDir'] = IMG_UPLOAD_PATH. $r_last_module_id;
+// stary kod
+//    $_SESSION['KCFINDER']['uploadURL'] = IMG_UPLOAD_URL. $_SESSION['r_last_module_id'];
+//    $_SESSION['KCFINDER']['uploadDir'] = IMG_UPLOAD_PATH. $_SESSION['r_last_module_id'];
     return true;
 }
 

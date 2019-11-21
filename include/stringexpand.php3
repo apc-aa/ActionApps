@@ -5317,9 +5317,8 @@ class AA_Unalias_Callback {
                 $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), aa_substr($out,10));
                 // do not store in the pagecache, but store into contentcache
 
-
-
                 $showview   = new AA_Showview(ParseViewParameters(DeQuoteColons($param)));
+
                 return QuoteColons(AA::Contentcache()->get_result(array($showview,'getViewOutput')));
             }
             // This is a little hack to enable a field to contain expandable { ... } functions
@@ -7479,6 +7478,7 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
             case 'svg':       AA::$headers['type']        = 'image/svg+xml';                         break;
             case 'json':      AA::$headers['type']        = 'application/json';                      break;
             case 'csv':       AA::$headers['type']        = 'text/csv';                              break;
+            case 'ical':      AA::$headers['type']        = 'text/calendar';                         break;
             case 'filename':  AA::$headers['disposition'] = 'attachment; filename="'.$parameter.'"'; break;  // $parameter is OK not escaped
             case 'utf-8':     AA::$headers['encoding']    = 'utf-8';                                 break;
             case 'CSP':       AA::$headers['CSP']         = 'Content-Security-Policy: '.$parameter;  break;

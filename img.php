@@ -244,7 +244,7 @@ if (!empty($_GET['src']) && isset($_GET['md5s']) && empty($_GET['md5s'])) {
     }
 }
 
-if (!empty($_GET['src']) && empty($phpThumb->config_allow_local_http_src) && preg_match('#^http://'.@$_SERVER['HTTP_HOST'].'(.+)#i', $_GET['src'], $matches)) {
+if (!empty($_GET['src']) && empty($phpThumb->config_allow_local_http_src) && preg_match('#^https?://'.@$_SERVER['HTTP_HOST'].'(.+)#i', $_GET['src'], $matches)) {
     $phpThumb->ErrorImage('It is MUCH better to specify the "src" parameter as "'.$matches[1].'" instead of "'.$matches[0].'".'."\n\n".'If you really must do it this way, enable "allow_local_http_src" in phpThumb.config.php');
 }
 
@@ -410,7 +410,7 @@ if (isset($_GET['phpThumbDebug']) && ($_GET['phpThumbDebug'] == '3')) {
 $CanPassThroughDirectly = true;
 if ($phpThumb->rawImageData) {
     // data from SQL, should be fine
-} elseif (preg_match('#^http\://[^\\?&]+\\.(jpe?g|gif|png)$#i', $phpThumb->src)) {
+} elseif (preg_match('#^https?\://[^\\?&]+\\.(jpe?g|gif|png)$#i', $phpThumb->src)) {
     // assume is ok to passthru if no other parameters specified
 } elseif (preg_match('#^(f|ht)tp\://#i', $phpThumb->src)) {
     $phpThumb->DebugMessage('$CanPassThroughDirectly=false because preg_match("#^(f|ht)tp\://#i", '.$phpThumb->src.')', __FILE__, __LINE__);
@@ -431,7 +431,7 @@ foreach ($_GET as $key => $value) {
         case 'w':
         case 'h':
             // might be OK if exactly matches original
-            if (preg_match('#^http\://[^\\?&]+\\.(jpe?g|gif|png)$#i', $phpThumb->src)) {
+            if (preg_match('#^https?\://[^\\?&]+\\.(jpe?g|gif|png)$#i', $phpThumb->src)) {
                 // assume it is not ok for direct-passthru of remote image
                 $CanPassThroughDirectly = false;
             }
@@ -465,7 +465,7 @@ $phpThumb->DebugMessage('$CanPassThroughDirectly="'.intval($CanPassThroughDirect
 while ($CanPassThroughDirectly && $phpThumb->src) {
     // no parameters set, passthru
 
-    if (preg_match('#^http\://[^\\?&]+\.(jpe?g|gif|png)$#i', $phpThumb->src)) {
+    if (preg_match('#^https?\://[^\\?&]+\.(jpe?g|gif|png)$#i', $phpThumb->src)) {
         $phpThumb->DebugMessage('Passing HTTP source through directly as Location: redirect ('.$phpThumb->src.')', __FILE__, __LINE__);
         header('Location: '.$phpThumb->src);
         exit;
