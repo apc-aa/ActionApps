@@ -1495,7 +1495,7 @@ function itemIsDuplicate($item_id) {
  * @param string $item_id long item id
  * @param string $field_id field id
  * @param string|AA_Value $field_content
- * @param bool $invalidate
+ * @param bool $invalidate   =  // invalidate cache, not feed, throw events
  * @return int
  */
 function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
@@ -1516,7 +1516,7 @@ function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
 
-    if ($newcontent4id->storeItem( 'update', array($invalidate, false, true))) {    // invalidatecache, not feed
+    if ($newcontent4id->storeItem( 'update', $invalidate ? array(true, false, true) : array(false, false, false) )) {    // invalidatecache, not feed, throw_events
         $updated_items = 1;
     }
     return $updated_items;
