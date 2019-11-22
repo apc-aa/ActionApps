@@ -32,6 +32,14 @@ class SelWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw'));
     }
 
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     *  @param \AA_Property $aa_property
+     *  @param \AA_Content  $content
+     *  @param string       $type  normal|live|ajax
+     *  @return array
+     *  @throws \Exception
+     */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);

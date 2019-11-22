@@ -111,6 +111,11 @@ class FilWidget extends \AA\Widget\Widget
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
+     *  @param AA_Property $aa_property
+     *  @param \AA_Content  $content
+     *  @param string      $type  normal|live|ajax
+     *  @return array
+     *  @throws \Exception
      */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
@@ -186,9 +191,12 @@ class FilWidget extends \AA\Widget\Widget
         return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
     }
 
-    /** @return string widget HTML for using as Live component (in place editing)
-     * @param  $aa_property AA_Property - the variable
-     * @param  $content  AA_Item        - contain the value of propertyu to display
+    /** Get Live HTML widget (in place editing)
+     * @param \AA_Property $aa_property  - the variable
+     * @param \AA_Content  $content      - contain the value of property to display
+     * @param null $function
+     * @return string - widget HTML for using as Live component (in place editing)
+     * @throws \Exception
      */
     function getLiveHtml($aa_property, $content, $function = null)
     {

@@ -32,6 +32,14 @@ class HidWidget extends \AA\Widget\Widget
         return array();
     }
 
+    /** Get widget HTML for using in form
+     * @param \AA_Property $aa_property  - the variable
+     * @param \AA_Content  $content      - contain the value of property to display
+     *                                   - never empty - it contain at least aa_owner for new objects
+     * @param null $function
+     * @return string - widget HTML for using in form
+     * @throws \Exception
+     */
     function getHtml($aa_property, $content, $function = null)
     {
         $property_id = $aa_property->getId();

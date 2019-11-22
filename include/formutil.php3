@@ -1927,14 +1927,16 @@ class AA_Inputfield {
         if ( !($field = AA_Slice::getModule($slice_id)->getField($this->id)) ) {
             return '';
         }
+
         $this->field_name('plus');
         if (is_null($item)) {
             $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
         } else {
             $widget = $field->getWidget();
             $aa_property = $field->getAaProperty($widget->multiple());
-            $content = with( new AA_Content() )->setOwnerId($slice_id)->setAaValue($this->id, $this->getAaValue())  ;
-            //huhl($aa_property,$content);
+            $content = with( new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
+            // another approach would be $content = $item->getItemContent();
+
             $this->echovar($widget->getOnlyHtml($aa_property, $content));
         }
 //        if (is_null($item)) {

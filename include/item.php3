@@ -286,7 +286,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
 
 /** GetItemFromContent function
  * Creates item object just from item_content
- * @param $content  ItemContent object
+ * @param $content  ItemContent|AA_Content object
  * @return AA_Item
  */
 function GetItemFromContent($content) {
@@ -295,7 +295,7 @@ function GetItemFromContent($content) {
     }
     // reuse slice, if possible
     $slice = AA_Slice::getModule($content->getSliceID());
-    return new AA_Item($content->getContent(), $slice ? $slice->aliases() : '');
+    return new AA_Item($content, $slice ? $slice->aliases() : '');
 }
 
 class AA_Item {
@@ -308,7 +308,7 @@ class AA_Item {
 
     /** item function
      *  Constructor
-     *  @param $content4id could be ItemContent as well as zids as well as old
+     *  @param $content4id ItemContent|AA_Content|zids|array - could be ItemContent as well as zids as well as old
      *                     contentent array
      *  @param $aliases
      *  @param $format
@@ -319,8 +319,6 @@ class AA_Item {
      *  AA_Items::getItem() (caching), if you want to create item from id
      */
     function __construct($content4id='', $aliases='', $format='', $remove='', $param=false){
-        // there was three other options, but now it was never used so I it was
-        // removed: $item_content, $top and $bottom (honzam 2003-08-19)
         $this->set_data($content4id);
         $this->aliases      = $aliases;
         $this->format       = $format;
@@ -434,12 +432,17 @@ class AA_Item {
         return $this->content4id->isField($text);
     }
 
-    /** getContent function */
+    /** getContent function
+     *  @deprecated - for backward compatibility (used in AA_Object getContent)
+     *  @return array
+     */
     function getContent() {
         return $this->content4id->getContent();
     }
 
-    /** getItemContent function */
+    /** getItemContent function
+     * @return ItemContent
+     */
     function getItemContent() {
         return $this->content4id;
     }
@@ -1686,7 +1689,7 @@ class AA_Items {
 
     /** Item caching function
      *
-     *  This function is used for cahcing all the items which we need during
+     *  This function is used for caching all the items which we need during
      *  page rendering. The main reason is, that we want to grab the item from
      *  database just once during the page creation.
      *

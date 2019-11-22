@@ -29,7 +29,14 @@ class MngWidget extends \AA\Widget\Widget {
         return \AA\Widget\Widget::propertiesShop(array('const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by'));
     }
 
-
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     *  @param \AA_Property $aa_property
+     *  @param \AA_Content  $content
+     *  @param string       $type  normal|live|ajax
+     *  @return array
+     *  @throws \Exception
+     */
     function _getRawHtml($aa_property, $content, $type = 'normal') {
         $property_id = $aa_property->getId();
         $item_id     = $content->getId();

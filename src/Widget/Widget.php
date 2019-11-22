@@ -101,11 +101,11 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
     /** returns array(ids => formated text) for the current widget based on
      *  the widget settings
-     * @param $content AA_Item
+     * @param $content AA_Content
      * @param $restrict_zids zids[]
      * @param $searchterm
      * @param $ignore_filters bool
-     * @return array|null
+     * @return array
      */
     public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm = '', $ignore_filters = false)
     {
@@ -133,13 +133,16 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
 
         // AA::$debug&2 && AA::$dbg->log($filter_conds);
-
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
         if (is_object($content)) {
-            $filter_conds = $content->unalias($filter_conds);
-            $filter_conds_rw = $content->unalias($filter_conds_rw);
-            $sort_by = $content->unalias($sort_by);
+            // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
+            $check = " $filter_conds $filter_conds_rw $sort_by";
+            if ( (strpos($check,'{') OR strpos($check,'_#')) AND ($item = \AA_Items::getItem(new zids($content->getId())))) {
+                $filter_conds    = $item->unalias($filter_conds);
+                $filter_conds_rw = $item->unalias($filter_conds_rw);
+                $sort_by         = $item->unalias($sort_by);
+            }
         }
 
         // "#sLiCe-" prefix indicates select from items
@@ -175,19 +178,6 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
     }
 
-    /** Fills array used for list selection. Fill it from constant group or
-     * slice.
-     * It never refills the array (and we relly on this fact in the code)
-     * This function is rewritten fill_const_arr().
-     */
-    protected function _fillConstArr($content)
-    {
-        if (!is_array($this->_const_arr)) {  // already filled
-            // not filled, yet - so fill it
-            $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
-        }
-    }
-
     /** returns $ret_val if given $option is selected for current field
      *  This method is rewritten if_selected() method form formutil.php3
      */
@@ -217,6 +207,12 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
     /** returns options array with marked selected options, missing options,...
      *  This method is rewritten get_options() method form formutil.php3
+     * @param AA_Value $selected
+     * @param AA_Content $content
+     * @param bool $use_name
+     * @param bool $testval
+     * @param int  $add_empty
+     * @return array
      */
     function getOptions($selected = null, $content = null, $use_name = false, $testval = false, $add_empty = 0)
     {
@@ -224,48 +220,52 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
         $already_selected = array();     // array where we mark selected values
         $pair_used = array();     // array where we mark used pairs
-        $this->_fillSelected($selected); // fill selected array by all aa_values in order we can print invalid values later
+        $this->_fillSelected($selected); // fill this->_selected array by all aa_values in order we can print invalid values later
 
         $ret = array();
-        $this->_fillConstArr($content);
-        if (is_array($this->_const_arr)) {
-            foreach ($this->_const_arr as $k => $v) {
-                if ($use_name) {
-                    // special parameter to use values instead of keys
-                    $k = $v;
-                }
 
-                // ignore pairs (key=>value) we already used
-                if ($pair_used[$k . "aa~$v"]) {
-                    continue;
-                }
-                $pair_used[$k . "aa~$v"] = true;   // mark this pair - do not use it again
+        // It never refills the array (and we relly on this fact in the code)
+        if (!is_array($this->_const_arr)) {  // already filled
+            // not filled, yet - so fill it
+            // Fills array used for list selection. Fill it from constant group or slice.
+            // function is rewritten fill_const_arr().
+            $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
+        }
 
-                $select_val = $testval ? $v : $k;
-                $selected = $this->ifSelected($select_val, true);
-                if ($selected) {
-                    $selectedused = true;
-                    $already_selected[(string)$select_val] = true;  // flag
-                }
-                $ret[] = array('k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false);
+        foreach ($this->_const_arr as $k => $v) {
+            if ($use_name) {
+                // special parameter to use values instead of keys
+                $k = $v;
             }
+
+            // ignore pairs (key=>value) we already used
+            if ($pair_used[$k . "aa~$v"]) {
+                continue;
+            }
+            $pair_used[$k . "aa~$v"] = true;   // mark this pair - do not use it again
+
+            $select_val = $testval ? $v : $k;
+            $selected = $this->ifSelected($select_val, true);
+            if ($selected) {
+                $selectedused = true;
+                $already_selected[(string)$select_val] = true;  // flag
+            }
+            $ret[] = array('k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false);
         }
 
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
-        if (isset($this->_selected) AND is_array($this->_selected)) {
-            foreach ($this->_selected as $k => $foo) {
-                if (!$already_selected[$k]) {
-                    $val_txt = $k;
-                    if ($this->getProperty('const') AND (guesstype($k) == 'l')) {
-                        $opt = $this->getFormattedOptions(null, new zids($k, 'l'), '', true);
-                        if (!strlen($val_txt = $opt[$k])) {
-                            $val_txt = $k;
-                        }
+        foreach ($this->_selected as $k => $foo) {
+            if (!$already_selected[$k]) {
+                $val_txt = $k;
+                if ($this->getProperty('const') AND (guesstype($k) == 'l')) {
+                    $opt = $this->getFormattedOptions(null, new zids($k, 'l'), '', true);
+                    if (!strlen($val_txt = $opt[$k])) {
+                        $val_txt = $k;
                     }
-                    $ret[] = array('k' => $k, 'v' => $val_txt, 'selected' => true, 'mis' => true);
-                    $selectedused = true;
                 }
+                $ret[] = array('k' => $k, 'v' => $val_txt, 'selected' => true, 'mis' => true);
+                $selectedused = true;
             }
         }
 
@@ -333,12 +333,13 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         return !$cond ? '' : '<img width=16 height=16 border=0 title="' . _m('To save changes click here or outside the field.') . '" alt="' . _m('Save') . '" class="' . $base_id . 'ico" src="' . AA_INSTAL_PATH . "images/px.gif\" style=\"position:absolute; $pos:$offset" . "px; top:-3px;\">";
     }
 
-    /**
-     * @param AA_Property $aa_property
-     * @param AA_Item     $content
-     * @param string      $type  normal|live|ajax
-     * @return array
-     * @throws Exception
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     *  @param AA_Property $aa_property
+     *  @param AA_Content  $content
+     *  @param string      $type  normal|live|ajax
+     *  @return array
+     *  @throws Exception
      */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
@@ -346,6 +347,16 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
+     * @param $input_name
+     * @param $i
+     * @param $val
+     * @param $attr_string
+     * @param $autofocus
+     * @param $base_id
+     * @param $type
+     * @param $widget_add
+     * @param $required
+     * @return string
      */
     protected function _getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required)
     {
@@ -359,11 +370,12 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         return $ret;
     }
 
-    /** @return string widget HTML for using in form
-     * @param  $aa_property - the variable
-     * @param  $content - contain the value of property to display
-     *                       - never empty - it contain at least aa_owner for
-     *                         new objects
+    /** Get widget HTML for using in form
+     * @param \AA_Property $aa_property  - the variable
+     * @param \AA_Content  $content      - contain the value of property to display
+     *                                   - never empty - it contain at least aa_owner for new objects
+     * @param null $function
+     * @return string - widget HTML for using in form
      * @throws Exception
      */
     function getHtml($aa_property, $content, $function = null)
@@ -371,11 +383,12 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
-    /** @return string - just widget HTML for using in form - without label...
-     * @param  $aa_property - the variable
-     * @param  $content - contain the value of property to display
-     *                       - never empty - it contain at least aa_owner for
-     *                         new objects
+    /** Get just widget HTML for using in form - without label...
+     * @param \AA_Property $aa_property  - the variable
+     * @param \AA_Content  $content      - contain the value of property to display
+     *                                   - never empty - it contain at least aa_owner for new objects
+     * @param null $function
+     * @return string - just widget HTML for using in form - without label...
      * @throws Exception
      */
     function getOnlyHtml($aa_property, $content, $function = null)
@@ -410,9 +423,11 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     }
 
 
-    /** @return string - widget HTML for using as AJAX component
-     * @param  $aa_property - the variable
-     * @param  $content - contain the value of propertyu to display
+    /** Get widget HTML for using as AJAX component
+     * @param \AA_Property $aa_property  - the variable
+     * @param \AA_Content  $content      - contain the value of property to display
+     * @param null $function
+     * @return string - widget HTML for using as AJAX component (in place editing)
      * @throws Exception
      */
     function getAjaxHtml($aa_property, $content, $function = null)
@@ -444,9 +459,11 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         return $widget_html;
     }
 
-    /** @return string - widget HTML for using as Live component (in place editing)
-     * @param  $aa_property AA_Property - the variable
-     * @param  $content - contain the value of propertyu to display
+    /** Get Live HTML widget (in place editing)
+     * @param \AA_Property $aa_property  - the variable
+     * @param \AA_Content  $content      - contain the value of property to display
+     * @param null $function
+     * @return string - widget HTML for using as Live component (in place editing)
      * @throws Exception
      */
     function getLiveHtml($aa_property, $content, $function = null)

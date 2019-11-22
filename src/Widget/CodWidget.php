@@ -43,6 +43,14 @@ class CodWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('rows'));
     }
 
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     *  @param \AA_Property $aa_property
+     *  @param \AA_Content  $content
+     *  @param string       $type  normal|live|ajax
+     *  @return array
+     *  @throws \Exception
+     */
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
         $property_id = $aa_property->getId();
@@ -116,6 +124,14 @@ class CodWidget extends \AA\Widget\Widget
 //        return AA\Widget\Widget::propertiesShop(array('rows'));
 //    }
 
+//    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+//     *  or normal decorations (added by _finalize*Html)
+//     *  @param \AA_Property $aa_property
+//     *  @param \AA_Content  $content
+//     *  @param string       $type  normal|live|ajax
+//     *  @return array
+//     *  @throws \Exception
+//     */
 //    function _getRawHtml($aa_property, $content, $type='normal') {
 //        $property_id  = $aa_property->getId();
 //        $base_name    = AA\FormArray::getName4Form($property_id, $content, $this->item_index);

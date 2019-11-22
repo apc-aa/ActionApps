@@ -44,6 +44,12 @@ class AA_Formrow extends AA_Storable {
      */
     function getWidget()      {}
 
+    /**
+     * @param AA_Content $content
+     * @param string     $type
+     * @return string
+     * @throws Exception
+     */
     function getRowHtml($content, $type='') {
         $widget = $this->getWidget();
         // $widget->registerRequires(); // now in _finalizeHtml
@@ -171,6 +177,11 @@ class FormrowWidget extends Widget {
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
+     *  @param AA_Property $aa_property
+     *  @param AA_Content  $content
+     *  @param string      $type  normal|live|ajax
+     *  @return array
+     *  @throws Exception
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
         // $property_id  = $aa_property->getId();
@@ -276,6 +287,10 @@ class AA_Form extends AA_Object {
         return AA_Form::PREPARED;
     }
 
+    /**
+     * @return string
+     * @throws Exception
+     */
     function getObjectEditHtml() {
         $content = $this->_getContent();
 
@@ -290,7 +305,12 @@ class AA_Form extends AA_Object {
         return $html;
     }
 
-    /** Add item form */
+    /** Add item form
+     * @param string $ret_code
+     * @param string $type
+     * @return string
+     * @throws Exception
+     */
     function getAjaxHtml($ret_code, $type='add') {
         if (!isset($this->object_type)) { $this->object_type = 'AA_Item'; } // older forms stored in database do not have this field set
         $this->object_owner = $this->getOwnerId();                          // slice_id is the same as the slice_id of the form (where it is defined)
@@ -317,8 +337,9 @@ class AA_Form extends AA_Object {
     }
 
     /** Edit item form
-     * @param $type  ajax|live
+     * @param string $type ajax|live
      * @return string
+     * @throws Exception
      */
     function getEditFormHtml($type='live') {
         if (!$this->object_id) {
@@ -335,8 +356,10 @@ class AA_Form extends AA_Object {
 
     /** @todo write permission function, which modifies the form based on the
      *        actual user's permissions and profile
-     * @param $type  normal|ajax|live
+     * @param AA_Content $content
+     * @param string     $type normal|ajax|live
      * @return string
+     * @throws Exception
      */
     public function getRowsHtml($content, $type='') {
         $ret = '';
@@ -346,6 +369,10 @@ class AA_Form extends AA_Object {
         return $ret;
     }
 
+    /**
+     * @return AA_Content
+     * @throws Exception
+     */
     private function _getContent() {
 
         if (empty($this->object_id)) {

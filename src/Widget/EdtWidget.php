@@ -35,18 +35,4 @@ class EdtWidget extends \AA\Widget\TxtWidget
     {
         return array('ckeditor');
     }
-
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
-     *  or normal decorations (added by _finalize*Html)
-     * @param $aa_property AA_Property
-     * @param $content AA_Item
-     * @param string $type
-     * @return array
-     * @throws Exception
-     */
-//    function _getRawHtml($aa_property, $content, $type = 'normal') {
-//        huhl(__FUNCTION__);
-//        parent::_getRawHtml($aa_property, $content, $type);
-//    }
-
 }

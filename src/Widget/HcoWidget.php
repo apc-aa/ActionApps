@@ -32,6 +32,14 @@ class HcoWidget extends \AA\Widget\Widget
     }
 
 
+    ///** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    // *  or normal decorations (added by _finalize*Html)
+    // *  @param \AA_Property $aa_property
+    // *  @param \AA_Content  $content
+    // *  @param string       $type  normal|live|ajax
+    // *  @return array
+    // *  @throws \Exception
+    // */
     //function _getRawHtml($aa_property, $content, $type='normal') {
     //    $base_name   = AA\FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
     //    $base_id     = AA\FormArray::formName2Id($base_name);
