@@ -701,7 +701,7 @@ class AA_Perm {
 
         // now we have tested the "current" password hash on this system - the result is in $ret
 
-        // we allow check for sha1 hash in Reader slice (in order we can import users to Reader sklice from legacy system with sha1 passwords)
+        // we allow check for sha1 hash in Reader slice (in order we can import users to Reader slice from legacy system with sha1 passwords)
         // such hashes are then converted to standard hashes in slice using rehashPassword()
         if (!$ret AND $try_old) {
             $ret = ($hash === sha1($password));
@@ -931,6 +931,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** updates user password - should be called after succesfull authentication and if we needsRehashPassword() */
     protected function rehashPassword($user_id, $password) {
         if ($user_id AND $password) {
+            AA_Log::write('PWD_REHASH', ParamImplode(array($_SERVER['REMOTE_ADDR'], 'http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}")), $user_id);
             UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(array('AA_PASSWD',$password))), false); // we do not need to invalidate cache - from the outside it is the same
         }
     }
