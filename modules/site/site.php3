@@ -28,7 +28,7 @@ require_once AA_INC_PATH."locauth.php3";
 
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
-    pageOpen('nobody');
+    pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
     $auth4cache = is_object($auth) ? $auth->auth['uname'] : '';
 }
 
@@ -177,8 +177,9 @@ if ($ga_id = (string)$module->getProperty('ga_id')) {
 
 
 if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
+
     if (!is_object($sess)) {  // could be already opened above
-        pageOpen('nobody');
+        pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
     }
 
     $router = $module->getRouter();

@@ -130,7 +130,6 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $this->type;
     }
 
-
     /** setFromItemArr function
      * Grabs long ids from array as posted from manager.class checkboxes
      *  $items[x767ab56353544242552637389a853673]=1

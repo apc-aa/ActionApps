@@ -757,16 +757,16 @@ class AA_Inserter_Pwd extends AA_Inserter {
 
     public function execute($fieldwriter, $item_id, $value, $additional=array()) {
         list ($aa_const, $password) = ParamExplode($value['value']);
-        if ($aa_const == 'AA_PASSWD') {
 
-            if ($this->bck_field AND ($slice = AA_Slice::getModule($fieldwriter->getSliceId())) AND $slice->isField($this->field)) {
+        if ($aa_const == 'AA_PASSWD') {
+            if ($this->bck_field AND ($slice = AA_Slice::getModule($fieldwriter->getSliceId())) AND $slice->isField($this->bck_field)) {
                 // $password is_a decrypted here
-                $backup = $this->crypt_phrase ? AA_Stringexpand_Encrypt::explode($password, $this->crypt_phrase) : $password;
+                $backup = $this->crypt_phrase ? StrExpand('AA_Stringexpand_Encrypt', array($password, $this->crypt_phrase)) : $password;
                 // store backup value to specified field
                 $this->_clear_field($item_id, $this->bck_field);
                 AA_Inserter::factoryByField($slice->getField($this->bck_field))->execute($fieldwriter, $item_id, array('value'=> $backup));
             }
-            $value['value'] = AA_Perm::cryptPwd($this->assword);
+            $value['value'] = AA_Perm::cryptPwd($password);
         } elseif ($aa_const == 'AA_PASSWD_CRYPTED') {
             // this is the only case if you are updating the item and you want to left the password the same
             $value['value'] = $password;
