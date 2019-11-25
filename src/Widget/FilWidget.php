@@ -202,7 +202,7 @@ class FilWidget extends \AA\Widget\Widget
     {
         //return $this->getAjaxHtml($aa_property, $content);
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
-        $url = $content->getval($aa_property->getId());
+        $url = $content->getValue($aa_property->getId());
 
         if ($url AND AA_Validate::validate($url, 'url')) {
             $link = '&nbsp;' . a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));

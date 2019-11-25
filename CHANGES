@@ -1,3 +1,6 @@
+19-11-25 - fixed bug in File Widget
+19-11-22 - fixed new widgets on AA Item Edit - mainly multiple checkboxes, ...
+(honzam) - better type checks in the code
 19-11-21 - Admin -> View Edit now shows the hint for {view... command including the d-... conditions.
 (honzam) - Admin -> Item Set now uses short d-.. conditions as default (instead of long conds[value]=... format)
          - page scroller in AA user interface now displays the number of found items even if there is only one page
