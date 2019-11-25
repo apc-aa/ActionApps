@@ -862,7 +862,7 @@ class AA_Session extends Session {
     }
 }
 
-    function pageOpen($type = '') {
+function pageOpen($type = '') {
     global $sess, $auth;
 
     $sess = new AA_Session;

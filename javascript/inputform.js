@@ -47,14 +47,11 @@ function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, slice
 }
 
 function sb_RemoveItem(selectbox) {
-    if ( selectbox.selectedIndex == null ) {
-        return;
-    }
-    s=selectbox.selectedIndex;
-    for (i=s; i<selectbox.length; i++) {
-        if (selectbox.options[i].value != "wIdThTor") {
-            selectbox.options[i].value = selectbox.options[i+1].value;
-            selectbox.options[i].text  = selectbox.options[i+1].text;
+    var si = selectbox.selectedIndex;
+    if ( si > -1 ) {
+        selectbox.removeChild(selectbox.options[si]);
+        if (selectbox.options.length) {
+            selectbox.selectedIndex = Math.max(si-1, 0);
         }
     }
 }
@@ -127,25 +124,12 @@ function UpdateRelations(var_id, tag, prefix, taggedid, headline) {
 }
 
 function moveItem(selectbox, type) {
-    len = selectbox.length;
-    s = selectbox.selectedIndex;
-    if (type == "up") {
-        s2 = s-1;
-        if (s2 < 0) { s2 = 0;}
-    } else {
-        s2 = s+1;
-        if (selectbox.options[s2].value == "wIdThTor") {
-            s2 = s;
-        }
-        if (s2 >= len-1) { s2 = len-1; }
+    var si = selectbox.selectedIndex;
+    if ( (type=='up') && (si > 0)) {
+        selectbox.insertBefore(selectbox.options[si], selectbox.options[si - 1]);
+    } else if ((type=='down') && ((si+1) < selectbox.length)) {
+        selectbox.insertBefore(selectbox.options[si], selectbox.options[si+1].nextSibling);
     }
-    dummy_val = selectbox.options[s2].value;
-    dummy_txt = selectbox.options[s2].text;
-    selectbox.options[s2].value = selectbox.options[s].value;
-    selectbox.options[s2].text = selectbox.options[s].text;
-    selectbox.options[s].value = dummy_val;
-    selectbox.options[s].text  = dummy_txt;
-    selectbox.selectedIndex = s2;
 }
 
 //moves selected rows of left listbox to the right one

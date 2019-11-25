@@ -327,8 +327,8 @@ if ( !$add_submit AND !$usr_new) {
 //          <tr><td align="center" valign="top">';
 //                SelectGU_ID("all_groups_sel", array_diff_key($all_groups, $sel_groups), $all_groups_sel, "multi");
 //    echo '    </td>
-//              <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(document.fx.all_groups_sel, document.fx.sel_groups_sel\')" align=center><br><br>
-//                  <input type="button" VALUE="  <<  " onClick = "MoveSelected(document.fx.sel_groups_sel, document.fx.all_groups_sel\')" align=center></td>
+//              <td><input type="button" VALUE="  &#9654;  " onClick = "MoveSelected(document.fx.all_groups_sel, document.fx.sel_groups_sel\')" align=center><br><br>
+//                  <input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.fx.sel_groups_sel, document.fx.all_groups_sel\')" align=center></td>
 //                    <td align="center" valign="TOP">';
 //                SelectGU_ID("sel_groups_sel", $sel_groups, $sel_groups_sel, "multi");
 //    echo '    </td>

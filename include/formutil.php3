@@ -45,6 +45,7 @@ require_once AA_INC_PATH."validate.php3";
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 
 define('AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
+define('AA_WIDTHTOR_SHORT', '<option value="wIdThTor">&nbsp;</option>');
 define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
 
 // Deprecated GYR tagged ids - it adds letter before item id in related item, which is not practical for joined tables, ...
@@ -58,9 +59,9 @@ define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
     // Retaining backward compatibility with "[AMB]+" recognition
 $TPS = array (
   'AMB' => array (
-    'A' => array ( 'prefix' => '>> ',   'tag' => '',  'str' => 'Add'),             // _m("Add") ),             - we call the translation later - here it is not translated
-    'M' => array ( 'prefix' => '<> ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'), // _m("Add&nbsp;Mutual") ),
-    'B' => array ( 'prefix' => '<< ',   'tag' => 'z', 'str' => 'Backward') ),      // _m("Backward") ) ),
+    'A' => array ( 'prefix' => '&rarr; ',   'tag' => '',  'str' => 'Add'),             // _m("Add") ),             - we call the translation later - here it is not translated
+    'M' => array ( 'prefix' => '&harr; ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'), // _m("Add&nbsp;Mutual") ),
+    'B' => array ( 'prefix' => '&larr; ',   'tag' => 'z', 'str' => 'Backward') ),      // _m("Backward") ) ),
   'GYR' => array (
     'G' => array ( 'prefix' => 'Good:', 'tag' => 'x', 'str' => 'Good'),
     'Y' => array ( 'prefix' => 'OK  :', 'tag' => 'y', 'str' => 'OK'),
@@ -916,8 +917,12 @@ class AA_Inputfield {
                 case 'dte': if ( strstr($this->param[0], "'")) {     // old format
                                 $this->param = explode("'",$this->param[0]);
                             }
-                            list($y_range_minus, $y_range_plus, $from_now, $display_time) = $this->param;
-                            $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_time);
+                            list($y_range_minus, $y_range_plus, $from_now, $display_type) = $this->param;
+                            if ($display_type == 2) {
+                                $this->inputWidget($item, $slice_id);  // new form of input type
+                            } else {
+                                $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_type);
+                            }
                             break;
                 case 'pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
                             // add2constant is used in insert_fnc_qte - adds new value to constant table
@@ -1682,7 +1687,6 @@ class AA_Inputfield {
      */
     function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='') {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $rows                 = get_if($rows, 6);
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(array('0','1'), array('DR','MDR'),(string)$actions);
@@ -1694,13 +1698,13 @@ class AA_Inputfield {
         }
 
         $this->field_name('plus');
+        $option_no = count($this->const_arr) + ($this->required ? 0:1);
+        $rows      = get_if($rows, 6);
+        if ($rows < $option_no) {   // we can make the select bigger, if it contain more options, not more than 3 times bigger, however
+            $rows = min($option_no, 3*$rows);
+        }
         $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', false, true);
-        $option_no = count($this->const_arr) + ($this->required ? 0:1);
-        // add blank rows if asked for
-        while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
-            $ret .= AA_WIDTHTOR;
-        }
         $ret .= "</select>";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
@@ -2069,7 +2073,7 @@ class AA_Inputfield {
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
         $offername = str_replace("[]", "", $name). '_1';
         $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers>";  // do not put newlines here in order select:epty css selector works
-        $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
+        $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), '' );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
 
@@ -2093,7 +2097,7 @@ class AA_Inputfield {
             }
         }
 
-        $out .= get_if( $this->get_options( $selected_values, false, false, 'selected', false, true), AA_WIDTHTOR );
+        $out .= get_if( $this->get_options( $selected_values, false, false, 'selected', false, true), '' );
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 

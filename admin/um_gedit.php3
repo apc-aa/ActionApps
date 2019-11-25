@@ -280,8 +280,8 @@ if ( !$add_submit AND !$grp_new ) {
             <tr><td align="center" valign="TOP">';
         SelectGU_ID("all_users_sel", array_diff_key($all_users,$sel_users), $all_users_sel, "multi");
         echo '    </td>
-                <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(document.f.all_users_sel, document.f.sel_users_sel)" align="center"><br><br>
-                    <input type="button" VALUE="  <<  " onClick = "MoveSelected(document.f.sel_users_sel, document.f.all_users_sel)" align="center"></td>
+                <td><input type="button" VALUE="  &#9654;  " onClick = "MoveSelected(document.f.all_users_sel, document.f.sel_users_sel)" align="center"><br><br>
+                    <input type="button" VALUE="  &#9664;  " onClick = "MoveSelected(document.f.sel_users_sel, document.f.all_users_sel)" align="center"></td>
                       <td align="CENTER" valign="TOP">';
         SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "multi");
         echo '    </td>

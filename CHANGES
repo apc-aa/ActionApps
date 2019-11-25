@@ -1,4 +1,13 @@
-19-11-25 - fixed bug in File Widget
+19-11-25 - new possibility to display Date Widget as HTML5 input type=date - just
+(honzam)   place 2 in "Date-time input type" Parameter in Date widget setting
+             - min and max widget parameters in this case could be used
+               as year (2019), month (2019-03) or day (2019-03-16)
+         - ugly arrows (>>) used in AA interface replaced by real html arrows
+         - improved Two Boxes Widget - better js
+         - improved Related Item Window - the size could grow a bit if the widget is already filled
+         - the password Rehashing to stronger password is logged to the AA Log
+         - fixed password store function
+         - fixed bug in File Widget
 19-11-22 - fixed new widgets on AA Item Edit - mainly multiple checkboxes, ...
 (honzam) - better type checks in the code
 19-11-21 - Admin -> View Edit now shows the hint for {view... command including the d-... conditions.

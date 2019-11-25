@@ -608,7 +608,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Relative"), 'bool', false, true, 'bool', false, _m("If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."), '', "1");
                     break;
                 case 'show_time':
-                    $ret[$pid] = new AA_Property($pid, _m("Show time"), 'bool', false, true, 'bool', false, _m("show the time box? (1 means Yes, undefined means No)"), '', "1");
+                    $ret[$pid] = new AA_Property($pid, _m("Date-time input type"), 'int', false, true, 'int', false, _m("0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>"), '', "2");
                     break;
                 case 'height':
                     $ret[$pid] = new AA_Property($pid, _m("Height"), 'int', false, true, 'int', false, _m("Max height of the widget in pixels"));
