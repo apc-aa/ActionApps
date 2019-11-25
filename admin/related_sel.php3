@@ -68,17 +68,17 @@ $slice       = AA_Slice::getModule($related_sid);
 if (!$slice) {
     echo "Error - no slice found<br>";
     echo "<hr>sid<br>";
-    pritnt_r($sid);
+    print_r($sid);
     echo "<hr>r_state<br>";
-    pritnt_r($r_state);
+    print_r($r_state);
     echo "<hr><br>";
-    pritnt_r($_GET);
+    print_r($_GET);
     echo "<hr>GET<br>";
-    pritnt_r($_GET);
+    print_r($_GET);
     echo "<hr>SESSION<br>";
-    pritnt_r($_SESSION);
+    print_r($_SESSION);
     echo "<hr>POST<br>";
-    pritnt_r($_POST);
+    print_r($_POST);
     exit;
 }
 

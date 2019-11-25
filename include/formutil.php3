@@ -370,8 +370,6 @@ class inputform {
             unset($fval);
             $aainput->setFromField($field);
 
-            // huhl($fid, $aainput);
-
             // do not return template for anonymous form wizard
             $ret .= $aainput->get($item, $slice->getId());
             unset($aainput);
@@ -662,7 +660,7 @@ class AA_Inputfield {
      * @return string - unpacked slice_id if array is filled from slice
      * (not so important value, isn't?)
      */
-    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null) {
+    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=null, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null) {
         $constgroup = $this->param[0];
         $sid        = (substr($constgroup,0,7) == "#sLiCe-") ? substr($constgroup, 7) : '';
 
@@ -690,7 +688,7 @@ class AA_Inputfield {
                 $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
             }
             $format          = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
-            $zids            = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
+            $zids            = is_null($ids_arr) ? false : new zids($ids_arr);  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormatedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
@@ -887,7 +885,7 @@ class AA_Inputfield {
                                 $conds_str = $item->unalias($conds_str);
                             }
                             if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
                             $this->inputSelect($usevalue);
                             break;
 //                case 'rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
@@ -909,7 +907,7 @@ class AA_Inputfield {
                             }
                             $rows = ($rows < 1) ? 5 : $rows;
                             $this->varname_modify('[]');         // use slightly modified varname
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                             $this->inputMultiSelect($rows);
                             break;
                 case 'fil': list($accepts, $text, $hlp) = $this->param;
@@ -924,7 +922,7 @@ class AA_Inputfield {
                 case 'pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
                             // add2constant is used in insert_fnc_qte - adds new value to constant table
                             if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
+                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                             $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
                             break;
                 case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
@@ -939,7 +937,9 @@ class AA_Inputfield {
                                 $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
                             }
                             $this->varname_modify('[]');         // use slightly modified varname
+                            // read related items for selected items
                             $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
+                            //$sid = (substr($this->param[0],0,7) == "#sLiCe-") ? substr($this->param[0], 7) : '';
                             $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field);
                             break;
                 case 'hco': list($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
@@ -1509,7 +1509,7 @@ class AA_Inputfield {
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $this->_fillSelected();         // fill selected array by all values in order we can print invlaid values later
         $records = array();
         foreach ( $this->const_arr as $k => $v ) {
@@ -2048,7 +2048,7 @@ class AA_Inputfield {
     function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
+        $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
