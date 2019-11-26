@@ -358,7 +358,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
         $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('ussage',  'CONTAIN', $_REQUEST['findtext']))) );
         $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('aa_name', 'CONTAIN', $_REQUEST['findtext']))) );
 
-        if (!$zids->is_empty()) {
+        if (!$zids->isEmpty()) {
             $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('admin/aafinder.php3'));
             $manager_settings['show'] = MGR_ITEMS;
             $manager = new AA_Manager('aafindaliases'.$module_id, $manager_settings);

@@ -674,6 +674,7 @@ class ItemContent extends AA_Content {
     }
 
     /** is_set function
+     * @todo  rename to more standard isSet after switch to PHP vesion 7
      * @param $field_id
      * @return bool
      */

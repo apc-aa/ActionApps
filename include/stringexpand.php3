@@ -4210,7 +4210,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
         $ret = '';
         if ( $field_id) {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-            if (!empty($item) AND !$item->is_empty() AND ($slice = AA_Slice::getModule($item->getSliceId()))) {
+            if (!empty($item) AND !$item->isEmpty() AND ($slice = AA_Slice::getModule($item->getSliceId()))) {
 
                 // Use right language (from slice settings) - languages are used for button texts, ...
                 mgettext_bind($slice->getLang(), 'output');
@@ -8074,7 +8074,7 @@ class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
             if (!($iid = trim($iid))) {
                 continue;
             }
-            if (!with($item = new ItemContent($iid))->is_empty()) {
+            if (!with($item = new ItemContent($iid))->isEmpty()) {
                 $item->updateComputedFields(null, 'update', $field_arr);
             }
         }

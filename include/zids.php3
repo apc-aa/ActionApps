@@ -200,7 +200,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
-            if ($this->is_empty()) {
+            if ($this->isEmpty()) {
                 $this->a    = $ids->a;
                 $this->type = $ids->onetype();
             } elseif ($ids->onetype() == $this->onetype()) {
@@ -255,7 +255,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     }
 
     /** Is zids empty? */
-    function is_empty() {
+    function isEmpty() {
         return (count($this->a) < 1);
     }
 

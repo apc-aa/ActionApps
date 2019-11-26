@@ -408,7 +408,7 @@ class AA_Item {
         return $this->content4id->getAaValue($field_id);
     }
 
-    function is_empty() { return $this->content4id->isEmpty(); }
+    function isEmpty() { return $this->content4id->isEmpty(); }
 
     /** Without $bin returns true if the item is viseble - not expired/trashed/pending/...
      *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supprted, now)

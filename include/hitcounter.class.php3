@@ -70,9 +70,11 @@ class AA_Hitcounter {
      *
      *  We use two temporary tables - hit_short_id (for short item ids) and
      *  hit_long_id (for long item ids).
+     * @param zids   $zids
+     * @param string $cached
      */
     static function hit($zids, $cached='-') {
-        if (!is_object($zids) OR $zids->is_empty()) {
+        if (!is_object($zids) OR $zids->isEmpty()) {
             return;
         }
 

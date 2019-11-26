@@ -1,3 +1,5 @@
+19-11-26 - fixed php bug in {recompute}
+(honzam) - version bump of js files to be reloaded from server
 19-11-25 - new possibility to display Date Widget as HTML5 input type=date - just
 (honzam)   place 2 in "Date-time input type" Parameter in Date widget setting
              - min and max widget parameters in this case could be used
