@@ -818,14 +818,23 @@ class ItemContent extends AA_Content {
         //$cur_fields = $this->getFields();
 
         foreach ($fields as $field_id => $field) {
-            if ( ($type=='visible' AND !$field->getProperty('input_show')) OR ($type=='present' AND !$this->is_set($field_id))) {
+            if (($type=='visible' AND !$field->getProperty('input_show'))) {
+                continue;
+            }
+            if (($type=='present' AND !$this->is_set($field_id))) {
                 continue;
             }
             $property    = $field->getAaProperty();
             if ($validreport = $property->validateDetailed($this->getValuesArray($field_id))) {
                 // if the inserter generates the content itself, it is not necessary to have it filled
-                if (($validreport[0] == VALIDATE_ERROR_NOT_FILLED) AND AA_Inserter::factoryByField($field)->isContentSelfGenerated()) {
-                    continue;
+                if ($validreport[0] == VALIDATE_ERROR_NOT_FILLED) {
+                    if (AA_Inserter::factoryByField($field)->isContentSelfGenerated()) {
+                        continue;
+                    }
+                    // item table fields like publish date should be OK if not displayed on standard inputform
+                    if (($field->storageTable()=='item') AND !$field->getProperty('input_show')) {
+                        continue;
+                    }
                 }
                 $ret[$field_id] = $validreport;
             }
