@@ -1,5 +1,9 @@
-19-11-26 - fixed php bug in {recompute}
-(honzam) - version bump of js files to be reloaded from server
+19-11-26 - better AA logging in log table (AA -> Log)
+(honzam)    - more login entries (ITEM_NEW, ITEM_UPD, all events with item is logged, now)
+            - more information about context of the operation (IP, script)
+         - moving items between bins uses standard storeItem function (with logging, ...) and not special code
+         - fixed php bug in {recompute}
+         - version bump of js files to be reloaded from server
 19-11-25 - new possibility to display Date Widget as HTML5 input type=date - just
 (honzam)   place 2 in "Date-time input type" Parameter in Date widget setting
              - min and max widget parameters in this case could be used

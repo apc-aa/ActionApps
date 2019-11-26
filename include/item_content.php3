@@ -854,7 +854,7 @@ class ItemContent extends AA_Content {
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
-                        AA_Log::write('M_FLDI_VLD', ParamImplode(array($msg[0].' - '.$msg[1],document_uri(), $_SERVER['HTTP_REFERER'])), ParamImplode(array($slice_id,$fld)));
+                        AA_Log::write('M_FLDI_VLD', ParamImplode(array($slice_id,$fld)), ParamImplode(array($msg[0] . ' - ' . $msg[1], document_uri(), $_SERVER['HTTP_REFERER'])));
                     }
                     // drop to next case 'QUIET'
                 case 'QUIET':
@@ -997,6 +997,8 @@ class ItemContent extends AA_Content {
         if (! ($slice        = AA_Slice::getModule($slice_id))) {return false;}
         if (! count($fields  = $slice->getFields()))            {return false;}
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
+
+        $function_params = array($mode, join('-',(array)$flags), $context);  // just for AA_Log
 
         if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'))) {
             $mode = 'update';
@@ -1182,14 +1184,15 @@ class ItemContent extends AA_Content {
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
-                $diff = $itemContent->diff($oldItemContent);
-                if (count($diff)) {
-                    ChangesMonitor::singleton()->addHistory($diff);
-                }
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_UPDATED', $id);
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
+        if (($mode != 'insert') AND count($diff = $itemContent->diff($oldItemContent))) {
+            ChangesMonitor::singleton()->addHistory($diff);
+        }
+        AA_Log::write( ($mode=='insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
+
         return $id;
     } // end of storeItem()
 
@@ -1496,10 +1499,13 @@ function itemIsDuplicate($item_id) {
  * @param string $item_id long item id
  * @param string $field_id field id
  * @param string|AA_Value $field_content
- * @param bool $invalidate   =  // invalidate cache, not feed, throw events
+ * @param array $flags   =  // invalidate cache, feed, throw events
  * @return int
  */
-function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
+function UpdateField($item_id, $field_id, $field_content, $flags = array()) {
+    if (!$flags) {
+        $flags = array(true, false, true);   // invalidate cache, not feed, throw events
+    }
     $content4id = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password
     // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
@@ -1517,7 +1523,7 @@ function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
 
-    if ($newcontent4id->storeItem( 'update', $invalidate ? array(true, false, true) : array(false, false, false) )) {    // invalidatecache, not feed, throw_events
+    if ($newcontent4id->storeItem( 'update', $flags )) {    // invalidatecache, not feed, throw_events
         $updated_items = 1;
     }
     return $updated_items;
