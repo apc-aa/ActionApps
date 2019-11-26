@@ -132,7 +132,7 @@ class AA_Collection {
 
             // get all confirmed users for this collection and frequency
             $zids = is_null($reader_id) ? $this->getReaders($ho) : new zids($reader_id, 'l');
-            AA_Log::write("ALERTS", "Users for collection ".$this->id.": ". ((int)$zids->count()), $ho);
+            AA_Log::write("ALERTS", $ho, "Users for collection " . $this->id . ": " . ((int)$zids->count()));
 
             $readerContent = new ItemContent();
 
@@ -156,7 +156,7 @@ class AA_Collection {
                     $item         = new AA_Item($readerContent, $aliases);
 
                     if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
-                        AA_Log::write("ALERTS", $this->id.": ". $readerContent->getValue(FIELDID_EMAIL), $ho);
+                        AA_Log::write("ALERTS", $ho, $this->id . ": " . $readerContent->getValue(FIELDID_EMAIL));
                         $email_count++;
                     }
                 }
@@ -164,7 +164,7 @@ class AA_Collection {
 
         // Use the emails sent as param
         } else {
-            AA_Log::write("ALERTS", "Emails for collection ".$this->id.": ". ((int)count($emails)), $ho);
+            AA_Log::write("ALERTS", $ho, "Emails for collection " . $this->id . ": " . ((int)count($emails)));
             $als = new AA_Aliases();
 //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
             $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
@@ -181,8 +181,13 @@ class AA_Collection {
                 }
             }
         }
-        AA_Log::write("ALERTS", "Sent for collection ".$this->id.": ". ((int)$email_count), $ho);
-        AA_Log::write("ALERTS", join('; ', array("Debug collection ".$this->id, $this->_get('email_id_alert'), join(',',(array)$emails), join(',',$aliases))), $ho);
+        AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " . ((int)$email_count));
+        AA_Log::write("ALERTS", $ho, join('; ', array(
+            "Debug collection " . $this->id,
+            $this->_get('email_id_alert'),
+            join(',', (array)$emails),
+            join(',', $aliases)
+        )));
         return $email_count;
     }
 

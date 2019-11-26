@@ -223,7 +223,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
         }
 
         if (!$xml_data) {
-            AA_Log::write("CSN", "No data returned for $feed_debug_name");
+            AA_Log::write("CSN", '', "No data returned for $feed_debug_name");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name: no data returned");
             }
@@ -235,7 +235,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
 
         // if an error occured, write it to the LOG
         if (($first_char = substr($xml_data, 0, 1)) != "<") {
-            AA_Log::write("CSN", "Feeding mode ($feed_debug_name): $xml_data");
+            AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): $xml_data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:bad data returned (first character &quot;$first_char&quot; (ord=" . ord($first_char) . ") is not &quot;&lt;&quot;):$xml_data");
             }
@@ -246,7 +246,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
         $GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
         if (!($this->aa_rss = aa_rss_parse($xml_data))) {
-            AA_Log::write("CSN", "Feeding mode ($feed_debug_name): Unable to parse XML data");
+            AA_Log::write("CSN", '', "Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . myspecialchars($xml_data) . "<hr>");
             }

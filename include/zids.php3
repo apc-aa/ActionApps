@@ -362,6 +362,32 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $this->a[$idx];
     }
 
+    /**
+     * @return array used for where condition for item table in DB_AA::select*
+     */
+    public function getDbWhereArray() {
+        switch ($this->type) {
+            case 'p': return array('id', $this->a);
+            case 'l': return array('id', $this->a, 'l');
+            case 't': return array('id', $this->longids(), 'l');
+            case 's': return array('short_id', $this->a, 'i');
+        }
+        warn("ERROR - zids::getDbWhereArray(): can't handle type $this->type");
+        return array('id', array());  // never satisfy condition... (1=2)
+    }
+
+    /** sanitize ids  - restrict (filter) item ids from specified slice
+     * @param  string $slice_id
+     * @return zids
+     */
+    public function itemFilter($slice_id) {
+        if (($this->count() < 1) OR !is_long_id($slice_id)) {
+            return $this->clear('l');
+        }
+        $where = array(array('slice_id',$slice_id,'l'),$this->getDbWhereArray());
+        return $this->clear('l')->add(DB_AA::select('', "SELECT LOWER(HEX(id)) FROM item", $where));
+    }
+
     /** slice function
      * Create a new zids, from a subset of the data,  with the same type
      * Parameters are same as for "array_slice"

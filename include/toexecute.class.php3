@@ -195,7 +195,7 @@ class AA_Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', "finished $count/$started in ".(microtime(true) - $execute_start)."/$allowed_time", 'AA_Toexecute');
+        AA_Log::write('TOEXECUTE', 'AA_Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
     }
 
     /** Executes as many tasks from the $tasks array as time allows
@@ -227,7 +227,7 @@ class AA_Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', "finished $count/$started in ".(microtime(true) - $execute_start)."/$allowed_time", 'AA_Toexecute');
+        AA_Log::write('TOEXECUTE', 'AA_Toexecute', "finished $count/$started in " . (microtime(true) - $execute_start) . "/$allowed_time");
     }
 
     function _exeOne($task, &$execute_times, $execute_start, $allowed_time) {
@@ -257,7 +257,7 @@ class AA_Toexecute {
         // Task is done - remove it from queue
         $varset->doDelete('toexecute');
         $execute_times[$task_type] = microtime(true) - $task_start;
-        AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:".$task['params'], get_class($object) .(method_exists($object,'getId') ? ":".$object->getId() : ''));
+        AA_Log::write('TOEXECUTE', get_class($object) . (method_exists($object, 'getId') ? ":" . $object->getId() : ''), $execute_times[$task_type] . ":$retcode:" . $task['params']);
         return 1;
     }
 

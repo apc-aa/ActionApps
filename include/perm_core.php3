@@ -931,8 +931,8 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** updates user password - should be called after succesfull authentication and if we needsRehashPassword() */
     protected function rehashPassword($user_id, $password) {
         if ($user_id AND $password) {
-            AA_Log::write('PWD_REHASH', ParamImplode(array($_SERVER['REMOTE_ADDR'], 'http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}")), $user_id);
-            UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(array('AA_PASSWD',$password))), false); // we do not need to invalidate cache - from the outside it is the same
+            AA_Log::write('PWD_REHASH', AA_Log::context($user_id));
+            UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(array('AA_PASSWD',$password))), array(false,false,false)); // we do not need to invalidate cache - from the outside it is the same
         }
     }
 

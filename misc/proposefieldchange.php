@@ -51,11 +51,11 @@ class AA_V {
 }
 
 /** field_content is AA_Value object */
-function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = true) {
+function UpdateFieldContent($item_id, $field_id, $field_content, $flags = array()) {
     $changes       = new ChangesMonitor();
     $changes->addHistory(new ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
 
-    UpdateField($item_id, $field_id, $field_content, $invalidate);
+    UpdateField($item_id, $field_id, $field_content, $flags);
 }
 
 function GetRepreValue($item_id, $field_id, $alias_name='') {
@@ -143,10 +143,9 @@ if ( AA_V::P('bsc') == 1 ) {
                     $field_content->addValue($related_id);
                 }
             }
-            //UpdateFieldContent($item_id, 'relation.......3', $field_content, false);
             // we do not use special field now - we just assign the SA and
             // Aktivity as normal (but form foreign plan)
-            UpdateFieldContent($item_id, 'relation........', $field_content, false);
+            UpdateFieldContent($item_id, 'relation........', $field_content, array(false,false,false));
             ++$updated;
         }
     }

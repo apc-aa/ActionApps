@@ -316,8 +316,6 @@ class PageCache  {
         // It is not so big problem if we do not invalidate cache - much less than
         // halting the operation.
 
-        // AA_Log::write('PAGECACHE', $cond, 'invalidate'); // for debug
-
         $str2find = new CacheStr2find($strings, $type);
 
         $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", array(array('str2find',$str2find->getStrings())));

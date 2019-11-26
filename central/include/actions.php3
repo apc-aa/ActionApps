@@ -49,7 +49,7 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool|string
@@ -74,7 +74,7 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -102,7 +102,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool|string
@@ -132,7 +132,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -165,7 +165,7 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -181,7 +181,7 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -228,7 +228,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids    Items to delete (if 'selected' is $param)
      * @param $action_param  Not used
      * @return bool|if|mixed|void
@@ -272,7 +272,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -295,7 +295,7 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
     }
 
     /** main executive function - Handler for Tab switch - switch between bins
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids
      * @param $action_param
      */
@@ -305,7 +305,7 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -340,7 +340,7 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return string
@@ -356,7 +356,7 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {

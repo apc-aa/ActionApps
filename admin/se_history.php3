@@ -103,7 +103,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool|string
      */
     function isPerm4Action($manager) {

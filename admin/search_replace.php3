@@ -69,7 +69,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
         } else {
             $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
         }
-        AA_Log::write("ITEM_FIELD_FILLED", array($zids->count(), $updated_items),$sel);
+        AA_Log::write("ITEM_FIELD_FILLED", $sel, array($zids->count(), $updated_items));
     }
 }
 

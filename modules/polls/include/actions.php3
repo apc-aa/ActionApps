@@ -62,7 +62,7 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -74,7 +74,7 @@ class AA_Manageraction_Polls_MoveItem extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -119,7 +119,7 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids    Items to delete (if 'selected' is $param)
      * @param $action_param  Not used
      * @return if|mixed|void
@@ -153,7 +153,7 @@ class AA_Manageraction_Polls_DeleteTrash extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {

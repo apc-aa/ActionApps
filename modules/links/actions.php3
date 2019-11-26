@@ -50,7 +50,7 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -62,7 +62,7 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool|if|mixed
      */
     function isPerm4Action($manager) {
@@ -70,7 +70,7 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids
      * @param $action_param
      * @return bool|if|mixed
@@ -131,7 +131,7 @@ class AA_Manageraction_Links_Move extends AA_Manageraction_Links_Check {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -143,7 +143,7 @@ class AA_Manageraction_Links_Move extends AA_Manageraction_Links_Check {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -160,7 +160,7 @@ class AA_Manageraction_Links_Move extends AA_Manageraction_Links_Check {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids
      * @param $action_param
      * @return bool
@@ -188,7 +188,7 @@ class AA_Manageraction_Links_Highlight extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -205,7 +205,7 @@ class AA_Manageraction_Links_Highlight extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -227,7 +227,7 @@ class AA_Manageraction_Links_Delete extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -240,7 +240,7 @@ class AA_Manageraction_Links_Delete extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -263,7 +263,7 @@ class AA_Manageraction_Links_Add2Cat extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -294,7 +294,7 @@ class AA_Manageraction_Links_Move2Cat extends AA_Manageraction {
     }
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -310,7 +310,7 @@ class AA_Manageraction_Links_Move2Cat extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -327,7 +327,7 @@ class AA_Manageraction_Links_Move2Cat extends AA_Manageraction {
 class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -365,7 +365,7 @@ class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
     }
 
     /** Checks if the user have enough permission to perform the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -377,7 +377,7 @@ class AA_Manageraction_Links_DeleteTrash extends AA_Manageraction {
 class AA_Manageraction_Links_GoCateg extends AA_Manageraction {
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -399,7 +399,7 @@ class AA_Manageraction_Links_GoCateg extends AA_Manageraction {
 class AA_Manageraction_Links_Tab extends AA_Manageraction {
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool
@@ -414,7 +414,7 @@ class AA_Manageraction_Links_Tab extends AA_Manageraction {
 class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
 
     /** main executive function
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids - array of id of AA records to check
      * @param $action_param - not used
      * @return bool

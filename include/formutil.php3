@@ -3272,7 +3272,7 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
         $out = getRadioBookmarkRow( $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
     } elseif ( isset($searchbar) AND is_object($searchbar) ) {
         $book_arr = $searchbar->getBookmarkNames();
-        if ( isset($book_arr) AND is_array($book_arr) ) {
+        if ( count($book_arr) ) {
             $out .= "<tr>
                        <th>&nbsp;</th>
                        <th>". _m("Group Name"). "</th>

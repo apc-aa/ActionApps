@@ -41,13 +41,24 @@ require_once AA_INC_PATH."menu_util.php3";  // for showMenu()
  * It takes care about searchber, scroller, actions, ...
  */
 class AA_Manager extends AA_Storable {
-    var $searchbar;       // AA_Searchbar object
-    var $searchbar_funct; // searchbar aditional function
-    var $scroller;        // scroller object
+    /** @var AA_Searchbar  */
+    var $searchbar;
+
+    /** @var string searchbar aditional function name */
+    var $searchbar_funct;
+
+    /** @var AA_Scroller */
+    var $scroller;
+
+    /** @var AA_Manageractions  */
     var $actions;
+
     var $actions_hint;
     var $actions_hint_url;
+
+    /** @var AA_Manageractions  */
     var $switches;
+
     var $messages;        // various language messages (title, noitem_msg, about)
     var $itemview;        // itemview object
     var $show;            // what controls show (scroller, searchbar, ...)
@@ -76,7 +87,8 @@ class AA_Manager extends AA_Storable {
      * constructor - initializes manager - creates scroller, searchbar, ...
      * based on $settings structure
      *
-     * @param array $settings - main manager settings
+     * @param string $manager_id
+     * @param array  $settings - main manager settings
      */
     function __construct($manager_id, $settings) {
         global $r_state, $sess, $auth;
@@ -201,7 +213,9 @@ class AA_Manager extends AA_Storable {
         }
     }
 
-    /** get module id of the module, which is managed by the manager */
+    /** get module id of the module, which is managed by the manager
+     * @return string
+     */
     function getModuleId() {
         return $this->module_id;
     }
@@ -218,7 +232,7 @@ class AA_Manager extends AA_Storable {
 
     /** setFromProfile function
      *  initial manager setting from user's profile
-     * @param $profile
+     * @param AA_Profile $profile
      */
     function setFromProfile(&$profile) {
 
@@ -270,6 +284,9 @@ class AA_Manager extends AA_Storable {
         return $set->getSort();
     }
 
+    /**
+     * @return array 'id'=>'name'
+     */
     function getBookmarkNames() {
         if ( $this->searchbar ) {
             return $this->searchbar->getBookmarkNames();
@@ -336,12 +353,15 @@ class AA_Manager extends AA_Storable {
             $this->scroller->go2page($page);
     }
 
+    /**
+     * @param string $akce
+     * @return AA_Manageraction
+     */
     function getAction($akce) {
         if (!is_object($this->actions)) {
-            return false;
+            return null;
         }
-        $actions = $this->actions;
-        return $actions->getAction($akce);
+        return $this->actions->getAction($akce);
     }
 
     /** performActions function
@@ -615,9 +635,9 @@ class AA_Manager extends AA_Storable {
  */
 class AA_Manageraction extends AA_Storable {
 
-    var $id;
-    var $open_url;
-    var $open_url_add;
+    var $id;             /** @var string */
+    var $open_url;       /** @var string */
+    var $open_url_add;   /** @var string */
 
     /** constructor - assigns identifier of action */
     function __construct($id, $open_url=null, $open_url_add=null) {
@@ -642,18 +662,30 @@ class AA_Manageraction extends AA_Storable {
             );
     }
 
-    /** Name of this Manager's action */
+    /** Name of this Manager's action
+     *  @return string
+     */
     function getName() {}
 
-    /** Name of this Manager's action */
+    /** ID of this Manager's action
+     *  @return string
+     */
     function getId()         { return $this->id; }
 
-    /** Should this action open new window? And if so, which one? */
+    /** Should this action open new window? And if so, which one?
+     *  @return string
+     */
     function getOpenUrl()    { return $this->open_url; }
 
-    /** Any addition to url */
+    /** Any addition to url
+     *  @return string
+     */
     function getOpenUrlAdd() { return $this->open_url_add; }
 
+    /**
+     * @param string      $url
+     * @param string|null $add
+     */
     function setOpenUrl($url, $add=null) {
         $this->open_url     = $url;
         $this->open_url_add = $add;
@@ -668,7 +700,7 @@ class AA_Manageraction extends AA_Storable {
     }
 
     /** Checks if the user have enough permission to PERFORM the action on items
-     * @param $manager
+     * @param AA_Manager $manager
      * @param $item_zids
      * @param $action_param
      * @return bool
@@ -678,7 +710,7 @@ class AA_Manageraction extends AA_Storable {
     }
 
     /** Checks if the user have enough permission to allow him/her to SELECT the action
-     * @param $manager
+     * @param AA_Manager $manager
      * @return bool
      */
     function isPerm4Action($manager) {
@@ -689,29 +721,22 @@ class AA_Manageraction extends AA_Storable {
     function isSetting() {
         return is_callable(array($this, 'htmlSettings'));
     }
-
-    /** static */
-    function getZidsSanitized($zids, $slice_id=null) {
-        if (($zids->count() < 1) OR !$slice_id) {
-            return $zids;
-        }
-
-        // check if there are no ids from bad slice (attack???)
-        $SQL = "SELECT id FROM item WHERE slice_id = '". q_pack_id($slice_id) ."' AND ". $zids->sqlin('id');
-        return new zids(GetTable2Array($SQL, '', 'id'), 'p');
-    }
 }
 
 class AA_Manageractions {
-    /** set of AA_Manageraction s */
+    /** @var AA_Manageraction[] */
     var $actions;
 
     function __construct() {
         $this->actions = array();
     }
 
+    /**
+     * @param $id
+     * @return AA_Manageraction|null
+     */
     function getAction($id) {
-        return isset($this->actions[$id]) ? $this->actions[$id] : false;
+        return $this->actions[$id] ?: null;
     }
 
     /** We unfortunately need this function, because in manager.class.php3
@@ -722,6 +747,10 @@ class AA_Manageractions {
         return $this->actions;
     }
 
+    /**
+     * @param AA_Manageraction $action
+     * @return AA_Manageraction
+     */
     function addAction($action) {
         return $this->actions[$action->getId()] = $action;
     }

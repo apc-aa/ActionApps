@@ -1200,9 +1200,9 @@ class AA_Metabase {
     }
 
     /** generate manager from database structure
-     * @param      $tablename
-     * @param null $actions
-     * @param null $switches
+     * @param string                 $tablename
+     * @param AA_Manageractions? $actions
+     * @param AA_Manageractions? $switches
      * @return array
      */
     function getManagerConf($tablename, $actions=null, $switches=null) {

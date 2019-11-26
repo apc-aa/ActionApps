@@ -429,7 +429,7 @@ class AA_Searchbar extends AA_Storable {
     }
 
     /** setFromProfile function
-     * @param $profile
+     * @param AA_Profile $profile
      */
     function setFromProfile(&$profile) {
         // admin_order is in 'publish_date....+' format
@@ -481,7 +481,7 @@ class AA_Searchbar extends AA_Storable {
       *  @return array of bookmark names <key> => <name>
       */
     function getBookmarkNames() {
-        return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : false;
+        return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : array();
     }
 
     /** getBookmarkParams function
@@ -701,6 +701,7 @@ class AA_Bookmarks {
 
     /** getKeeyName function
      *  Get array of bookmark (<key> => <name>)
+     * @return array 'id'=>'name'
      */
     function getKeyName() {
         $ret = array();
@@ -788,7 +789,7 @@ class AA_Bookmarks {
         }
           // store to database
         $last_id = $this->profile->insertProperty('bookmark', $name, serialize($state), $to_global);
-        AA_Log::write("BM_CREATE", $name, $last_id );
+        AA_Log::write("BM_CREATE", $last_id, $name);
 
         $this->profile->loadprofile(true);    // reread profile from database
         $this->setFromProfile();              // get bookmarks again
@@ -854,7 +855,7 @@ class AA_Bookmarks {
         }
           // store to database
         $this->profile->deleteProperty('bookmark', $this->bookmarks[$key]['name'], $global);
-        AA_Log::write("BM_DELETE", $this->bookmarks[$key]['name'], $this->bookmarks[$key]['id'] );
+        AA_Log::write("BM_DELETE", $this->bookmarks[$key]['id'], $this->bookmarks[$key]['name']);
         $this->profile->loadprofile(true);    // reread profile from database
         $this->setFromProfile();              // get bookmarks again
         return true;
@@ -869,7 +870,7 @@ class AA_Bookmarks {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $old['name'], $state, $old['type']=='*', $old['id']);
         if ($ret) {
-            AA_Log::write("BM_UPDATE", $old['name'], $old['id'] );
+            AA_Log::write("BM_UPDATE", $old['id'], $old['name']);
         } else {
             return false;
         }
@@ -884,7 +885,7 @@ class AA_Bookmarks {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $newname, $old['state'], $old['type']=='*', $old['id']);
         if ($ret) {
-            AA_Log::write("BM_RENAME", array($newname,$old['name']), $old['id'] );
+            AA_Log::write("BM_RENAME", $old['id'], array($newname, $old['name']));
         } else {
             return false;
         }

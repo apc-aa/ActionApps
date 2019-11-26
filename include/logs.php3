@@ -44,6 +44,8 @@ ALERTS          howoften                        Start/email sent
 HITCOUNT        type
 ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
+LOGIN           module_id:field_id              msg:url                        // insert form field validation
+AA_WARN
 */
 
 class AA_Log {
@@ -51,12 +53,12 @@ class AA_Log {
     /** AA_Log::write function - Write log entry
      *  Static function
      *
-     * @param $event
-     * @param string|array $params   - if array, joined
+     * @param              $event
      * @param string|array $selector - if array, stored as separate enties (for ITEM_DEL, ...)
+     * @param string|array $params - if array, joined
      * @return bool
      */
-    static function write($event, $params="", $selector="" ) {
+    static function write($event, $selector = "", $params = "") {
         global $auth;
 
         if ( !AA_Log::isLogable($event) ) {
@@ -91,7 +93,7 @@ class AA_Log {
     }
 
     static function warn($selector) {
-        AA_Log::write('AA_WARN', AA_Log::backtrack(), $selector);
+        AA_Log::write('AA_WARN', $selector, AA_Log::backtrack());
     }
 
     static function backtrack() {
@@ -99,6 +101,10 @@ class AA_Log {
         array_shift($ret);
         array_shift($ret);
         return join("\n", $ret);
+    }
+
+    static function context($selector='') {
+        return ParamImplode(array($selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"));
     }
 
     /** Is the event logable?
@@ -130,7 +136,12 @@ class AA_Log {
            // 'HITCOUNT'
            // 'AA_WARN'
            // 'ITEM_DEL'
+           // 'ITEM_NEW'
+           // 'ITEM_UPD'
            // 'M_FLDI_VLD'
+           // AA_WARN
+           // LOGIN
+           // PWD_REHASH
         );
         return !in_array($event_type, $DO_NOT_LOG);
     }
@@ -162,23 +173,26 @@ class AA_Log_Clenup implements \AA\Util\LaterInterface {
     }
 
     /** just plan item updates in chunks
-     *  special function called from AA_Toexecute class - used for queued tasks (ran form cron)
+     *  special function called from AA_Toexecute class - used for queued tasks (run form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
     public function toexecutelater($params=array()) {
-        $type_where = ( $this->type ) ? " AND type = '".quote($this->type)."' " : '';
-        $db_time    = quote($this->time);
-        DB_AA::sql("DELETE FROM log WHERE time < '$db_time' $type_where");
+        $where = array(array('time', $this->time, '<'));
 
         // delete also old records post2shtml table
-        DB_AA::sql("DELETE FROM post2shtml WHERE time < '$db_time'");
+        DB_AA::delete('post2shtml', $where);
+
+        if ( $this->type ) {
+            $where[] = array('type',$this->type);
+        }
+        DB_AA::delete('log', $where);
 
         // delete task with priority = 0 - considered as undoable (note the priority is decreased on each try of task execution.)
         $undoable_tasks = GetTable2Array('SELECT * FROM toexecute WHERE priority=0', 'NoCoLuMn');
-        AA_Log::write('TOEXECUTE', serialize($undoable_tasks), 'cleanup');
-        DB_AA::sql("DELETE FROM toexecute WHERE priority = 0");
+        AA_Log::write('TOEXECUTE', 'cleanup', $undoable_tasks);
+        DB_AA::delete('toexecute', array(array('priority',0,'i')));
     }
 }
 
