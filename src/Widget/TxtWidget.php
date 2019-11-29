@@ -37,6 +37,12 @@ class TxtWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('rows', 'max_characters', 'ajaxtype'));
     }
 
+    /** libs to run after the page DOM is loaded */
+    function requireLibs($aa_property, $winfo)
+    {
+        return array('aa-jslib@3');
+    }
+
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      * @param $aa_property AA_Property
