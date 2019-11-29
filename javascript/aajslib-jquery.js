@@ -771,8 +771,10 @@ function AA_Translate(input_id, text, from, to) {
             success: function(data) {
                 var ret='';
                 var textarr = data[0];
-                for ( var i=0; i < textarr.length; i++ ) {
-                    ret += textarr[i][0];
+                if (textarr) {
+                    for ( var i=0; i < textarr.length; i++ ) {
+                        ret += textarr[i][0];
+                    }
                 }
                 $(jqid(input_id)).val(ret);  
             }

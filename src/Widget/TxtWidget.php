@@ -40,7 +40,7 @@ class TxtWidget extends \AA\Widget\Widget
     /** libs to run after the page DOM is loaded */
     function requireLibs($aa_property, $winfo)
     {
-        return array('aa-jslib@3');
+        return ( count($aa_property->getTranslations())>1 ) ? array('aa-jslib@3') : array();
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax

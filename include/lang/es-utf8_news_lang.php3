@@ -5089,6 +5089,9 @@ $_m["All items in holding bin"]
 $_m["All items in trash bin"]
  = "";
 
+$_m["translate from"]
+    = "";
+
 // include/stringexpand.php3, row 417
 $_m["Jabber Online Status Indicator"]
  = "";
