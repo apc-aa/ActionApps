@@ -4981,6 +4981,10 @@ $_m["Previous"]
 $_m["All"]
  = "Sve";
 
+// include/scroller.php3, row 314
+$_m["found"]
+    = "";
+
 // include/files.class.php3, row 97
 $_m["Can't create directory for image uploads"]
  = "Ne mogu kreirati mapu za unos datoteka";

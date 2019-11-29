@@ -163,6 +163,7 @@ class AA_Scroller extends AA_Storable {
         if (!$this->pgcnt) {
             return array();
         }
+        $arr  = array();
         $mp   = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
         $from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to   = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
@@ -173,13 +174,13 @@ class AA_Scroller extends AA_Storable {
             $arr["1"]   = $this->absolute(1);
         }
         if ($from > 2) {
-            $arr[".. "] = "";
+            $arr[".."] = "";
         }
         for ($i = $from; $i <= $to; $i++) {
             $arr[(string)$i] = ($i == $this->current ? "" : $this->absolute($i));
         }
         if ($to < $this->pgcnt - 1) {
-            $arr[" .."] = "";
+            $arr[" .. "] = "";
         }
         if ($to < $this->pgcnt) {
             $arr[(string) $this->pgcnt] = $this->absolute($this->pgcnt);
@@ -211,12 +212,12 @@ class AA_Scroller extends AA_Storable {
                 if ($v) {
                     $ret .= "<a href=\"" . get_url($url, array($v)) . "\">$k</a>\n";
                 } else {
-                    $ret .= "<span class=\"active\">$k</span>\n";
+                    $ret .= ($k == $this->current) ? "<span class=active>$k</span>\n" : "<span class=dots>..</span>\n";
                 }
             }
             $ret .= "| <a href=\"" . get_url($url, array("listlen=99999")) . "\">" . _m("All") . "</a> &nbsp; ";
         }
-        echo "<div class=pager>$ret (". _m('found').' '. $this->itmcnt .")</div>";
+        echo "<div class=pager>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></div>";
     }
 }
 
@@ -382,6 +383,7 @@ class AA_Scroller_Easy {
 }
 
 
+// Used  just for {scroller} which should not be used in sitemodules (the {pager} is used there which use AA_Scroller_view of $router->scroller)*/
 class AA_Scroller_Sitemodule {
     protected $current = 1;	  /** current page     */
     protected $id;			  /** scroller id - identifies scroller on a web page */
@@ -502,7 +504,7 @@ class AA_Scroller_Sitemodule {
             }
 
             if (!$v) {
-                $out .= "<a class=\"nolink\" href=\"#\">$k</a>";
+                $out .= "<a class=\"nolink". (($k == $this->current) ? " active" : 'dots') . "\" href=\"#\">$k</a>";
             } else {
                 if ($target) {
                     $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";

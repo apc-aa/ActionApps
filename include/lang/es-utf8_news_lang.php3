@@ -4294,6 +4294,10 @@ $_m["Previous"]
 $_m["All"]
  = "Todos";
 
+// include/scroller.php3, row 314
+$_m["found"]
+    = "encontrado";
+
 // include/files.class.php3, row 97
 $_m["Can't create directory for image uploads"]
  = "No se puede crear el directorio para copiado de imágenes";

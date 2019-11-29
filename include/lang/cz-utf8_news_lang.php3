@@ -4308,6 +4308,10 @@ $_m["Previous"]
 $_m["All"]
  = "Vše";
 
+// include/scroller.php3, row 314
+$_m["found"]
+    = "nalezeno";
+
 // include/files.class.php3, row 97
 $_m["Can't create directory for image uploads"]
  = "Nelze vytvořit adresář pro obrázky";

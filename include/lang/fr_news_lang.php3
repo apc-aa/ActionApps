@@ -4198,6 +4198,10 @@ $_m["Previous"]
 $_m["All"]
  = "Tout";
 
+// include/scroller.php3, row 314
+$_m["found"]
+    = "";
+
 // include/files.class.php3, row 97
 $_m["Can't create directory for image uploads"]
  = "impossible de créer le répertoire de téléchargement d'images";
