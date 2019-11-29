@@ -412,7 +412,7 @@ tr.leftmenuy a:hover {
 }
 
 
-#aa_content a:visited {
+.mgr_table a:visited {
      color: #81658C;
 }
 
@@ -437,7 +437,7 @@ a {
 .pager {
     clear: both;
     padding: 30px 0 30px 0;
-    color: #0000;
+    color: transparent;
     letter-spacing: -4px;
 }
 .pager a, .pager .active {
