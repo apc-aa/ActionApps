@@ -193,7 +193,6 @@ class AA_Field {
 
         // all default should have fnc:param format
         $val = ($generator = AA_Generator::factoryByString($this->data['input_default'])) ? $generator->generate() : new AA_Value();
-
         return $val->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
     }
 
@@ -211,11 +210,15 @@ class AA_Field {
         $var = $_REQUEST[$varname];
         $ret = null;
 
+        // is posted?  (text, pwd nor date)
+        if ( !isset($_REQUEST[$varname]) AND !isset($_REQUEST[$varname.'a']) AND !isset($_REQUEST["tdctr_" . $varname . "_day"])) {
+            return null;
+        }
+
         list($validate_type) = explode(":", $this->getProperty('input_validate'), 2);
         list($insert_type)   = explode(":", $this->getProperty('input_insert_func'), 2);
 
         if ( $validate_type == 'date' ) {
-
             $datectrl  = new datectrl($varname);
             if ($datectrl->isUpdatable()) {
                 $datectrl->update();                   // updates datectrl
@@ -786,12 +789,46 @@ class AA_Fields implements Iterator, Countable {
         return $lookup_fields;
     }
 
-    /** Iterator interface */
-    public function rewind()  { if (is_null($this->fields)) {$this->load();} reset($this->fields);                         }
+
+    // ----- Iterator interface --------------
+
+    /**
+     * Rewind the Iterator to the first element
+     * @link https://php.net/manual/en/iterator.rewind.php
+     * @return void Any returned value is ignored.
+     */
+    public function rewind()  { if (is_null($this->fields)) {$this->load();} return reset($this->fields);                         }
+
+    /** Return the current element
+     *  @link https://php.net/manual/en/iterator.current.php
+     *  @return AA_Field
+     */
     public function current() { if (is_null($this->fields)) {$this->load();} return current($this->fields); }
+
+    /**
+     * Return the key of the current element
+     * @link https://php.net/manual/en/iterator.key.php
+     * @return string|null scalar on success, or null on failure.
+     */
     public function key()     { if (is_null($this->fields)) {$this->load();} return key($this->fields);                }
-    public function next()    { if (is_null($this->fields)) {$this->load();} next($this->fields);                          }
+
+    /** Move forward to next element
+     *  @link https://php.net/manual/en/iterator.next.php
+     *  @return void Any returned value is ignored.
+     */
+    public function next()    { if (is_null($this->fields)) {$this->load();} return next($this->fields);                   }
+
+    /** Checks if current position is valid
+     *  @link https://php.net/manual/en/iterator.valid.php
+     *  @return bool The return value will be casted to boolean and then evaluated. Returns true on success or false on failure.
+     */
     public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->fields) !== false);    }
-    /** Countable interface */
+
+    // ----- Countable interface --------------
+
+    /** Count elements of an object (Countable interface)
+     *  @link https://php.net/manual/en/countable.count.php
+     *  @return int The custom count as an integer. The return value is cast to an integer.
+     */
     public function count()   { if (is_null($this->fields)) {$this->load();} return count($this->fields);                     }
 }

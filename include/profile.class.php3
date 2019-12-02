@@ -163,11 +163,11 @@ class AA_Profile {
 
     /** getProperty function
      *  Get specific property setting for current user and slice
-     * @param $property
-     *  @param $selector - for properties with only one value (like listlen) it
+     * @param string $property
+     * @param int $selector - for properties with only one value (like listlen) it
      *                    is always 0 (you can ommit it)
-     * @param $no_load
-     *  @return array property value (directly - not in array as get() does)
+     * @param bool $no_load
+     * @return string|bool property value (directly - not in array as get() does)
      */
     function getProperty( $property, $selector=0, $no_load=false ) {
         $prop = $this->get($property, $selector, $no_load);

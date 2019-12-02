@@ -329,9 +329,10 @@ class inputform {
         // $item = $edit ? GetItemFromContent($content4id) : null;
         $item = $content4id ? GetItemFromContent($content4id) : null;
 
-        $content_from_form = new ItemContent();
         // just read the data from posted form, if it was already posted (on error, ...)
+        $content_from_form = new ItemContent();
         $content_from_form->setFieldsFromForm($content4id->getContent(), !$edit, $fields, $profile);
+
         $ret = '';
 
         foreach ($fields as $fid => $field) {
@@ -350,15 +351,13 @@ class inputform {
 
             // field_mode - how to display the field
             $field_mode  = !IsEditable($content4id->getValues($fid), $field->getRecord(), $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
-            $fval = new AA_Value;
 
             if ( $edit ) {
                 $fval = $content4id->getAaValue($fid);
             } else {     // insert or new reload of form after error in inserting
-                // first get values from profile, if there are some predefined value
-                if ( $foo = $profile->getProperty('predefine',$fid) ) {
-                    $fval = $profile->parseContentProperty($foo);
-                }
+                // first get values from profile or field setting, if there are some predefined value
+                $fval = $field->getDefault(true);   // cont with profile
+
                 // get values from form (values are filled when error on form occurs
                 if ($content_from_form->is_set($fid)) {
                     $fval = $content_from_form->getAaValue($fid);
@@ -375,8 +374,9 @@ class inputform {
             $ret .= $aainput->get($item, $slice->getId());
             unset($aainput);
         }
-        $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
-        $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        // no longer used - we use standard HTML5 validation, now;
+        // $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        // $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
         return $ret;
     }
 
@@ -864,7 +864,7 @@ class AA_Inputfield {
                 case 'chb': $this->inputChBox();       break;
                 case 'hid': $this->hidden();           break;
                 case 'fld': $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
-                                   break;
+                            break;
                 //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
                 //            $this->varname_modify('[]');         // use slightly modified varname

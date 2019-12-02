@@ -146,7 +146,7 @@ class AA_Validate extends AA_Serializable {
 
     /** checks if the variable is empty */
     function varempty($var) {
-        return  ($var=="" OR trim($var)=="");
+        return strlen(trim($var))==0;
     }
 
     /** lastErr function

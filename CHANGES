@@ -1,5 +1,8 @@
+19-12-02 - fixed bug with pre-fill fields
+(honzam) - fixed bug with validation empty fields
+         - old type of JS validation removed form inputform - HTML5 validation should be enough
 19-11-29 - better page scroller in AA Item Manager (Thanks to Sarka Vasku)
-(honzam)
+(honzam) - fixed translation button of multilanguage textarea
 19-11-26 - better AA logging in log table (AA -> Log)
 (honzam)    - more login entries (ITEM_NEW, ITEM_UPD, all events with item is logged, now)
             - more information about context of the operation (IP, script)

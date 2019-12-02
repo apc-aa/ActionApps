@@ -603,11 +603,35 @@ class ItemContent extends AA_Content {
                 continue;
             }
 
-            if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert)) {
+            if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert) AND !$field_value->isEmpty()) {
                 $this->content[$pri_field_id] = $field_value->getArray();
             }
         }
         return true;
+    }
+
+    /** setFieldsFromForm function
+     *  Functions tries to fill all the fields from the form. It do not add any
+     *  item specific fields (like status_code), so it could be used also for
+     *  dynamic "slice setting fields"
+     * @param AA_Fields  $fields
+     * @param AA_Profile $profile
+     */
+    function setFieldsFromProfile($fields, $profile) {
+
+        foreach ($fields as $pri_field_id => $field) {
+            // set default in case of insert & no value
+            if (!$this->content[$pri_field_id]) {
+                $default_val = $field->getDefault();
+                if (! $default_val->isEmpty()) {
+                    $this->content[$pri_field_id] = $default_val->getArray();
+                }
+            }
+            // fill from profile - it is stronger, than default values
+            if ($profile_value = $profile->getFormFieldValue($pri_field_id)) {
+                $this->content[$pri_field_id] = $profile_value->getArray();
+            }
+        }
     }
 
     /** setFromForm function
@@ -633,19 +657,7 @@ class ItemContent extends AA_Content {
         // Fill it only if $insert (new item). Otherwise left there filled value
         if ($insert) {
             // apply Profile To Content
-            foreach ($fields as $pri_field_id => $field) {
-                // set default in case of insert & no value
-                if (!$this->content[$pri_field_id]) {
-                    $default_val = $field->getDefault();
-                    if (! $default_val->isEmpty()) {
-                        $this->content[$pri_field_id] = $default_val->getArray();
-                    }
-                }
-                // fill from profile - it is stronger, than default values
-                if ($profile_value = $profile->getFormFieldValue($pri_field_id)) {
-                    $this->content[$pri_field_id] = $profile_value->getArray();
-                }
-            }
+            $this->setFieldsFromProfile($fields, $profile);
         }
 
         // the status_code must be set in order we can use email_notify()

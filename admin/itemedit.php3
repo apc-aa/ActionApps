@@ -177,7 +177,6 @@ unset($content4id);
 
 $slice = AA_Slice::getModule($slice_id);
 
-
 //ValidateContent4Id($err, $slice, $action, $id);
 
 // Are we editing dynamic slice setting fields?
@@ -269,7 +268,6 @@ if ( ($insert || $update) AND count($fields) ) {
 
 
 unset( $content );       // used in another context for storing item to db
-
 if ($edit) {
     if ( !count($fields) ) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
@@ -296,11 +294,12 @@ if ($edit) {
         MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
         exit;
     }
-} elseif($update) {  // foerm is submitted
-    // do nothing - the $content is filled
-} else {
+} elseif(!is_object($content4id)) {  // form is submitted
     // we need the $content4id to be object (for getForm, at least)
     $content4id = new ItemContent;
+
+    // not necessary - filled later
+    // $content4id->setFieldsFromProfile($fields, AA_Profile::getProfile($auth->auth["uid"], $slice->getId()));
 }
 
 // mimo changes
