@@ -376,7 +376,8 @@ class inputform {
         }
         // no longer used - we use standard HTML5 validation, now;
         // $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
-        // $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        // we need to know, if the file upload is used to use multipart form encoding
+        $this->show_func_used = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
         return $ret;
     }
 
@@ -1177,26 +1178,6 @@ class AA_Inputfield {
         return $ret;
     }
 
-    /** getOneChBoxTag function
-     * Returns one checkbox tag - Used in inputMultiChBox
-     * @param        $k
-     * @param        $v
-     * @param string $add
-     * @param string $id
-     * @param string $labeladd
-     * @return string
-     */
-    function getOneChBoxTag(&$k, &$v, $add='', $id='', $labeladd='') {
-        $id_attr = empty($id) ? '' : " id='$id'";
-        $name    = $this->varname();
-        $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
-        $ret = "\n<label $labeladd><input type=checkbox name='$name'$id_attr value='". myspecialchars($k) ."' $add $triggers";
-        $ret .= $this->if_selected($k, " checked");
-        $ret .= '>'.myspecialchars($v).'</label>';
-        return $ret;
-    }
-
-    // $parts["part$id2"] = array($lang, $classes);
     /**
      * @param array $parts
      * @return string
@@ -1496,45 +1477,9 @@ class AA_Inputfield {
         $this->printInMatrix_Frm($records, $ncols, $move_right);
     }
 
-
-    /** inputMultiChBox function
-     * Prints html tag <input type="radio" .. to 2-column table
-     * for use within <form> and <table> tag
-     * @param int $ncols
-     * @param bool $move_right
-     * @param string $slice_field
-     * @param int $whichitems
-     * @param bool $conds_str
-     * @param bool $sort_str
-     * @param bool $add_slice_pwd
-     * @param null $height
-     */
-    function inputMultiChBox($ncols = 0, $move_right = true, $slice_field = '', $whichitems = AA_BIN_ACT_PEND, $conds_str = false, $sort_str = false, $add_slice_pwd = false, $height = null) {
-        list($name,$val,$add) = $this->prepareVars('multi');
-        if ( $whichitems < 1 ) {
-            $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
-        $this->_fillSelected();         // fill selected array by all values in order we can print invlaid values later
-        $records = array();
-        foreach ( $this->const_arr as $k => $v ) {
-            $records[] = $this->getOneChBoxTag($k, $v, $add);
-        }
-        // now add all values, which is not in the array, but field has this value
-        // (this is slice inconsistence, which could go from feeding, ...)
-        if ( isset( $this->selected ) AND is_array( $this->selected )) {
-            foreach ( $this->selected as $k => $v ) {
-                if ( !isset($this->const_arr[$k]) ) {
-                    $records[] = $this->getOneChBoxTag($k, $k, $add, '', 'class=sel_missing');
-                }
-            }
-        }
-        $this->printInMatrix_Frm($records, $ncols, $move_right, $height);
-    }
-
     /** printInMatrix_Frm function
      * Prints html tag <input type="radio" or ceckboxes .. to 2-column table
-     * - for use internal use of FrmInputMultiChBox and FrmInputRadio
+     * - for use internal use of removed inputMultiChBox and FrmInputRadio
      * @param      $records
      * @param      $ncols
      * @param      $move_right
@@ -2346,27 +2291,6 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
     $input->print_result();
 }
 
-/** FrmRichEditTextarea function
- *  On browsers which do support it, loads a special rich text editor with many
- *  advanced features based on triedit.dll
- *  On the other browsers, loads a normal text area
- * @param        $name
- * @param        $txt
- * @param        $val
- * @param int    $rows
- * @param int    $cols
- * @param bool   $needed
- * @param string $hlp
- * @param string $morehlp
- * @param bool   $html
- */
-function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $needed=false, $hlp="", $morehlp="", $html=false) {
-    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->textarea($rows, $cols, false, false, true);
-    $input->print_result();
-}
-
 /** FrmDate function
  * @param $name
  * @param $txt
@@ -2459,30 +2383,6 @@ function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=fal
     $input->print_result();
 }
 
-/** FrmHierarchicalConstant function
- *  Print boxes allowing to choose constant in a hiearchical way
- * @param $name
- * @param $txt
- * @param $value
- * @param $group_id
- * @param $levelCount
- * @param $boxWidth
- * @param $rows
- * @param $horizontal
- * @param $firstSelect
- * @param $needed
- * @param $hlp
- * @param $morehlp
- * @param $levelNames
- */
-function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
-    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
-    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    $input = new AA_Inputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal, $firstSelect, $levelNames);
-    $input->print_result();
-}
-
 /** FrmInputSelect function
  * Prints html tag <select .. to 2-column table
  * for use within <form> and <table> tag
@@ -2500,36 +2400,6 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="",
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputSelect($usevalue);
-    $input->print_result();
-}
-
-/** FrmInputMultiChBox function
- *  Prints html tag <input type="radio" .. to 2-column table
- *  for use within <form> and <table> tag
- * @param $name
- * @param $txt
- * @param $arr
- * @param $selected
- * @param $needed
- * @param $hlp
- * @param $morehlp
- * @param $ncols
- * @param $move_right
- */
-function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true) {
-    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
-    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    // selected array we need to be in form array( 0 => array('value'=>val))
-    // so we need to prepare it
-    $sel = array();
-    if (is_array($selected)) {
-        foreach($selected as $val) {
-            $sel[] = array('value'=>$val);
-        }
-    }
-
-    $input = new AA_Inputfield($sel, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputMultiChBox($ncols, $move_right);
     $input->print_result();
 }
 
@@ -2575,43 +2445,6 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $nee
     $input->inputPreSelect($maxsize,$size,$adding,$secondfield,$usevalue);
     $input->print_result();
 }
-/** FrmTextareaPreSelect function
- * @param $name
- * @param $txt
- * @param $arr
- * @param $val
- * @param $needed
- * @param $hlp
- * @param $morehlp
- * @param $rows
- * @param $cols
- */
-function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehlp="",  $rows=4, $cols=60) {
-    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
-    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->textareaPreSelect($rows,$cols);
-    $input->print_result();
-}
-/** FrmRelated function
- * @param $name
- * @param $txt
- * @param $arr
- * @param $rows
- * @param $sid
- * @param $mode
- * @param $design
- * @param $needed
- * @param $hlp
- * @param $morehlp
- */
-function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
-    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
-    $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    $input = new AA_Inputfield('', $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design);
-    $input->print_result();
-}
 
 /** FrmTwoBox function
  *  Prints two boxes for multiple selection for use within <form> and <table>
@@ -2641,16 +2474,6 @@ function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offe
     $input->print_result();
 }
 
-/** Needed function
- * if $condition, shows star
- * @param $condition
- */
-function Needed( $condition=true ) {
-    if ( $condition ) {
-        echo "&nbsp;*";
-    }
-}
-
 /** PrintHelp function
  * if $txt, shows help message
  * @param $txt string
@@ -2658,16 +2481,6 @@ function Needed( $condition=true ) {
 function PrintHelp( $txt ) {
     if ( $txt ) {
         echo "<div class=\"tabhlp\">$txt</div>";
-    }
-}
-
-/** PrintMoreHelp function
- * if $txt, shows link to more help
- * @param $txt
- */
-function PrintMoreHelp( $txt ) {
-    if ( $txt ) {
-        echo "&nbsp;<a href=\"$txt\" target=\"_blank\">?</a>";
     }
 }
 
@@ -2757,33 +2570,6 @@ function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) 
 
     $retval .= "</select>\n";
     return $retval;
-}
-
-/** FrmRadioEasy function
- * @param $name
- * @param $arr
- * @param $selected
- * @param $new_line
- */
-function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
-    $name   = safe($name); // safe($add) - NO! - do not safe it
-    $retval = '';
-
-    foreach ($arr as $k => $v) {
-        $retval .= "<input type=\"radio\" name=\"$name\" value=\"". myspecialchars($k)."\"";
-        if (!$selected) {
-            $selected = $k;
-        }
-        if ((string)$selected == (string)$k) {
-            $retval .= " selected";
-        }
-        $retval .= "> ". myspecialchars( is_array($v) ? $v['name'] : $v );
-        if ($new_line) {
-            $retval .= "<br>";
-        }
-        $retval .= "\n";
-    }
-    echo $retval;
 }
 
 /**
@@ -3179,12 +2965,6 @@ function FrmJavascriptFile( $src, $add='' ) {
  */
 function FrmJavascriptCached( $jscode, $name ) {
     echo getFrmJavascriptCached( $jscode, $name );
-}
-/** FrmCSS function
- * @param $stylecode
- */
-function FrmCSS( $stylecode ) {
-    echo getFrmCSS( $stylecode );
 }
 
 /** IncludeManagerJavascript function
