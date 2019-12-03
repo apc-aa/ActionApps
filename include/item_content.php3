@@ -581,6 +581,11 @@ class ItemContent extends AA_Content {
      * @return bool
      */
     function setFieldsFromForm($oldcontent4id, $insert, $fields, $profile) {
+        
+        // check, if any data was send to the server (GET is not possible there, I think)
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            return false;
+        }
 
         $aacontent4id = null; // modern input format - introduced with [rim]
         if ($_POST['aa']) {
@@ -592,7 +597,6 @@ class ItemContent extends AA_Content {
         }
 
         foreach ($fields as $pri_field_id => $field) {
-
             // to content array add just displayed fields (see ShowForm())
             if (!IsEditable($oldcontent4id[$pri_field_id], $field->getRecord(), $profile) AND !$insert) {
                 continue;
@@ -602,8 +606,7 @@ class ItemContent extends AA_Content {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
-
-            if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert) AND !$field_value->isEmpty()) {
+            if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert)) {
                 $this->content[$pri_field_id] = $field_value->getArray();
             }
         }
@@ -648,6 +651,8 @@ class ItemContent extends AA_Content {
 
         $fields  = $slice->getFields($slice_fields);
         $profile = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
+
+        huhl('setFromForm');
 
         if (!$this->setFieldsFromForm($oldcontent4id, $insert, $fields, $profile)) {
             return false;

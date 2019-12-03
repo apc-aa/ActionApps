@@ -151,7 +151,7 @@ class inputform {
     /** generateForm - generates the form html for printing
      * @param $content4id
      * @param AA_Slice $slice
-     * @param $edit
+     * @param bool $edit    - edit form or input form (form for new item or existing one)
      * @param $slice_fields - true, if we want to edit "slice setting fields"
      *                         which are stored in content table
      */
@@ -303,7 +303,7 @@ class inputform {
      *   Shows the Add / Edit item form fields
      * @param ItemContent $content4id - current item content in db
      * @param AA_Slice    $slice
-     * @param bool        $edit
+     * @param bool        $edit  - edit form or input form (form for new item or existing one)
      * @param array       $show is used by the Anonymous Form Wizard, it is an array
      *                (packed field id => 1) of fields to show
      * @param             $slice_fields

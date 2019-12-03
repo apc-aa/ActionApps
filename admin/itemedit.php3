@@ -348,7 +348,7 @@ if ( $vid ) {
 
 //AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 $form = new inputform($inputform_settings);
-$form->printForm($content4id, $slice, $edit);
+$form->printForm($content4id, $slice, ($edit OR $update));
 
 page_close();
 

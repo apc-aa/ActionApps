@@ -210,15 +210,14 @@ class AA_Field {
         $var = $_REQUEST[$varname];
         $ret = null;
 
-        // is posted?  (text, pwd nor date)
-        if ( !isset($_REQUEST[$varname]) AND !isset($_REQUEST[$varname.'a']) AND !isset($_REQUEST["tdctr_" . $varname . "_day"])) {
-            return null;
-        }
-
         list($validate_type) = explode(":", $this->getProperty('input_validate'), 2);
         list($insert_type)   = explode(":", $this->getProperty('input_insert_func'), 2);
 
         if ( $validate_type == 'date' ) {
+            // is posted?  (text, pwd nor date)
+            if ( !isset($_REQUEST["tdctr_" . $varname . "_day"])) {
+                return null;
+            }
             $datectrl  = new datectrl($varname);
             if ($datectrl->isUpdatable()) {
                 $datectrl->update();                   // updates datectrl
@@ -227,6 +226,10 @@ class AA_Field {
         } elseif ($insert_type == 'boo') {
             $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);
         } elseif ($insert_type == 'pwd') {
+            // is posted?  (text, pwd nor date)
+            if ( !isset($_REQUEST[$varname.'a'])) {
+                return null;
+            }
             $change_var   = $_REQUEST[$varname.'a'];
             $retype_var   = $_REQUEST[$varname.'b'];
             $delete_var   = $_REQUEST[$varname.'d'];
@@ -245,6 +248,10 @@ class AA_Field {
             }
             $ret = new AA_Value($var, FLAG_HTML);
         } else {
+            // is posted?  (text, pwd nor date)
+            if ( !isset($_REQUEST[$varname])) {
+                return null;
+            }
             if (!is_array($var)) {
                 $var = array(0 => $var);
             }
@@ -253,7 +260,6 @@ class AA_Field {
         }
         return $ret;
     }
-
 
     /** getAliases function
      *
