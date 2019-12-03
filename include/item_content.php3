@@ -853,7 +853,9 @@ class ItemContent extends AA_Content {
                     if (substr($field->getProperty('input_show_func'), 0,3) === 'fil') {
                         // special setting for file upload - there we solve the problem
                         // of required fileupload field, but which is empty at this moment
-                        if ( isset($_FILES['v'. unpack_id($field_id).'x'] ) ) {  // old form of file upload
+                        $varname = 'v'. unpack_id($field_id).'x';
+                        // @todo check is_uploaded_file(). Use Files:: for it. Could be array() of files.
+                        if ( isset($_FILES[$varname]) AND $_FILES[$varname]['tmp_name'] ) {  // old form of file upload
                             continue;
                         }
                     }

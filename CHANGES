@@ -1,3 +1,9 @@
+19-12-02 - fixed new view in Admin Views
+(honzam) - fixed file upload - form multipart - on inputform
+         - removed unused functions
+         - fixed checkbox in the inputform
+         - fixed bug with empty multi-selectbox in inputform
+         - fixed file upload validation when the file upload field is required
 19-12-02 - fixed bug with pre-fill fields
 (honzam) - fixed bug with validation empty fields
          - old type of JS validation removed form inputform - HTML5 validation should be enough
