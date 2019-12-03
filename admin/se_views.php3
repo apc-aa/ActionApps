@@ -161,6 +161,7 @@ foreach ( $views as $vw ) {
 }
 
 echo '<form action="se_view.php3" name="fvtype">';
+echo StateHidden();
 
 echo '<div class="aa-table"><table><tbody>
       <tr><th colspan="3">'._m("Create new view").'</th> </tr>
