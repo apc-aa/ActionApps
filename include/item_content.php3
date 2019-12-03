@@ -652,8 +652,6 @@ class ItemContent extends AA_Content {
         $fields  = $slice->getFields($slice_fields);
         $profile = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
-        huhl('setFromForm');
-
         if (!$this->setFieldsFromForm($oldcontent4id, $insert, $fields, $profile)) {
             return false;
         }
