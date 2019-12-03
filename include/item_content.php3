@@ -850,6 +850,13 @@ class ItemContent extends AA_Content {
                     if (($field->storageTable()=='item') AND !$field->getProperty('input_show')) {
                         continue;
                     }
+                    if (substr($field->getProperty('input_show_func'), 0,3) === 'fil') {
+                        // special setting for file upload - there we solve the problem
+                        // of required fileupload field, but which is empty at this moment
+                        if ( isset($_FILES['v'. unpack_id($field_id).'x'] ) ) {  // old form of file upload
+                            continue;
+                        }
+                    }
                 }
                 $ret[$field_id] = $validreport;
             }
