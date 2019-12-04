@@ -1277,7 +1277,7 @@ class ItemContent extends AA_Content {
                     $seo_alias        = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
                     $slice_charset    = $slice->getCharset();
                     $seo_charset      = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
-                    $expand_string    = '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
+                    $expand_string    = ($mode=='insert') ? '{seoname:{ifset:{@'.$fid.':| /}:_#1:{'.$seo_alias.'}}:all'.$seo_charset.'}' : '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
                     $expand_delimiter = '| /';     // just some unprobabale string from the line above
                     unset($expand_insert,$expand_update,$recompute);
                     break;
@@ -1292,6 +1292,7 @@ class ItemContent extends AA_Content {
                 default:
                     continue 2;  // next field
             }
+
             if (strlen($expand_string)<=0) {
                 continue;
             }
@@ -1331,6 +1332,7 @@ class ItemContent extends AA_Content {
             $item_varset->addkey('id', 'unpacked', $id);
             $item_varset->doUpdate('item');
         }
+
         return $computed_field_exist;
     }
 

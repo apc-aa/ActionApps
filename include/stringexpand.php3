@@ -3476,11 +3476,9 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
                 $base = aa_substr($base, 0, aa_strrpos($base, '-'));
             }
         }
-
         $add = '';
-
         if (($unique_slices == 'all') AND is_object($this->item)) {
-            $unique_slices = AA::Stringexpander()->unalias("{site:{modulefield:{slice_id........}:site_ids}:modules}", '', $this->item);
+            $unique_slices = AA::Stringexpander()->unalias("{unique:{slice_id........}-{site:{modulefield:{slice_id........}:site_ids}:modules}}", '', $this->item);
         }
         if ( !empty($unique_slices) ) {
             // we do not want to create infinitive loop for wrong parameters
@@ -4502,7 +4500,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
 /** Updates item fields
  *    {updateitem:<long_item_id>[:<field_1>:<new_value_1>:<field_2>:<new_value_2>:...]}
  *
- *  It works only on slices where "Allow anonymous editing of items" is set to "All items", right now.
+ *  It works only on slices where "Allow anonymous editing of items" is set to "All items" or "Only by Planned tasks - cron|toexecute", right now.
  *  The plan is to work with field permissions in future
  *
  *    {updateitem:c239cb267837a25b4efb5892ca4f4324:headline........:test item:category........:["enviro","social"]}

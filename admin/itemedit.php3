@@ -31,6 +31,18 @@
 // optionaly encap="false" if this form is not encapsulated into *.shtml file
 // optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
+
+// buttons
+//   update      - submit - "Update"
+//   upd_edit    - submit - "Update & Edit"
+//   upd_preview - submit - "Update & View"
+//   insert      - submit - "Insert as new"
+//   insert      - submit - "Insert"
+//   ins_edit    - submit - "Insert & Edit"
+//   ins_preview - submit - "Insert & View"
+//   reset       - reset  - "Reset form"
+//   cancel      - button - "Cancel"
+
 $encap = ( ($encap=="false") ? false : true );
 
 if ($edit OR $add) {         // parameter for init_page - we edited new item so
@@ -103,18 +115,14 @@ QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote var
                                         // but skip (already edited) encap variable
 AA::setEncoding(AA_Langs::getCharset());
 
-if ( $ins_preview ) {
-    $insert = true; $preview=true;
-}
-if ( $ins_edit ) {
-    $insert = true; $go_edit=true;
-}
-if ( $upd_edit ) {
-    $update = true; $go_edit=true;
-}
-if ( $upd_preview ) {
-    $update = true; $preview=true;
-}
+if ($_POST['insert'])      { $insert = true;                                               }
+if ($_POST['ins_preview']) { $insert = true;                 $preview=true;                }
+if ($_POST['ins_edit'])    { $insert = true;                                $go_edit=true; }
+if ($_POST['update'])      {                 $update = true;                               }
+if ($_POST['upd_preview']) {                 $update = true; $preview=true;                }
+if ($_POST['upd_edit'])    {                 $update = true;                $go_edit=true; }
+
+$cancel = $_GET['cancel'];
 
 $add = !( $update OR $cancel OR $insert OR $edit );
 
