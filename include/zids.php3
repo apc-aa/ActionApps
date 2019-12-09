@@ -625,10 +625,12 @@ function get_hash() {
     return hash('md5', serialize($arg_list));  // quicker than md5()
 }
 
-/** shortest possible base64url encoded hash */
+/** shortest possible hash which uses only url, DOM and JS identifier safe characters */
 function get_short_hash() {
     $arg_list = func_get_args();   // must be asssigned to the variable
-    return bin2url(hash('crc32b', serialize($arg_list), true));
+    // return bin2url(hash('crc32b', serialize($arg_list), true));
+    // we do not need '-' - it is bad for DOM identifiers, '+' is bad for urls
+    return rtrim(str_replace(array('+','/'), array('QQ','_'), base64_encode(hash('crc32b', serialize($arg_list), true))), '=');
 }
 
 /** pack_id function
