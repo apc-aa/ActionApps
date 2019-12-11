@@ -851,15 +851,15 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
 class AA_Session extends Session {
 
     function __construct() {
-        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 200;   // 200 minutes
+        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
         parent::__construct();
     }
 
     // add module_id=... to url. It is better to use StateUrl() directly, but we already use StateUrl() from older versions of $session management
     // @deprecated - no longer used in the code
-    function url($url) {
-        return StateUrl($url);
-    }
+    //    function url($url) {
+    //        return StateUrl($url);
+    //    }
 }
 
 function pageOpen($type = '') {

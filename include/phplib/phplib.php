@@ -279,7 +279,7 @@ class Session {
         if ($this->lifetime > 0) {
             $lifetime = max($this->lifetime*60, 24*3600);               // day or more - the day added, because we experienced some relogin requests, so we are trying to check, if this doesn't help
             if (ini_get('session.gc_maxlifetime') < $lifetime) {
-                // default value is 1440, so session would expire after 40 mins
+                // default value is 1440, so session would expire after 24 mins
                 ini_set('session.gc_maxlifetime', $lifetime);
             }
         } else {

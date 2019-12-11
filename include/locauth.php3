@@ -36,7 +36,7 @@ require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 class AA_Auth extends Auth {
 
     function __construct() {
-        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1200;   // 20 hours
+        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
         $this->nobody    = false;
     }
 
