@@ -1,11 +1,21 @@
-19-12-02 - fixed new view in Admin Views
+19-12-13 - improved "Insert as new" - the seo is now regenerated form alias is the seo is duplicated
+(honzam)
+19-12-11 - session lifetime and auth lifetime set to 1 day by default
+(honzam)   (we are also trying to set session.gc_maxlifetime to 86400 in php.ini to make us sure
+           the garbage collector of PHP do not delete it)
+19-12-09 - fixed {manager} when sometimes the wrong generated hash lead to JS error
+19-12-04 - the Seo field (with SEO Name insert function) is filled with unique value, when user
+(honzam)   hits "Insert as new" in inputform
+         - {seoname:name:all} counts at least with current slice if the slice is not part of any site module
+19-12-03 - fixed new view in Admin Views
 (honzam) - fixed file upload - form multipart - on inputform
          - removed unused functions
          - fixed checkbox in the inputform
          - fixed bug with empty multi-selectbox in inputform
          - fixed file upload validation when the file upload field is required
-19-12-02 - fixed bug with pre-fill fields
-(honzam) - fixed bug with validation empty fields
+19-12-02 - fixed new view in Admin Views
+(honzam) - fixed bug with pre-fill fields
+         - fixed bug with validation empty fields
          - old type of JS validation removed form inputform - HTML5 validation should be enough
 19-11-29 - better page scroller in AA Item Manager (Thanks to Sarka Vasku)
 (honzam) - fixed translation button of multilanguage textarea

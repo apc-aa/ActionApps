@@ -2200,31 +2200,6 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Converts the content of the field to html better than standard {text............} comand would do
- *  (makes html links from urls...)Checks the text for urls and make it clickable
- */
-class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
-
-    /** additionalCacheParam function
-     * @param array $params parameters passed to expand (caching could be parameter sensitive).
-     * @return string - for not cache, return random value
-     */
-    function additionalCacheParam(array $params=array()) {
-        /** output is different for different items - place item id into cache search */
-        return !is_object($this->item) ? '' : $this->item->getId();
-    }
-
-    /** expand function
-     * @param $field_id string
-     * @return string
-     */
-    function expand($field_id='') {
-        return ($this AND is_object($item = $this->item) AND $item->isField($field_id)) ? $item->col2Html($field_id) : '';
-    }
-}
-
-
-
 /** Used for sending text e-mails by {mail...} function */
 class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2331,6 +2306,29 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
         // Add the remainder of the text.
         $html .= myspecialchars(substr($text, $position));      // no use aa_substr! - the  $urlPosition is in BYTES, not characters
         return $html;
+    }
+}
+
+/** Converts the content of the field to html better than standard {text............} comand would do
+ *  (makes html links from urls...)Checks the text for urls and make it clickable
+ */
+class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
+
+    /** additionalCacheParam function
+     * @param array $params parameters passed to expand (caching could be parameter sensitive).
+     * @return string - for not cache, return random value
+     */
+    function additionalCacheParam(array $params=array()) {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getId();
+    }
+
+    /** expand function
+     * @param $field_id string
+     * @return string
+     */
+    function expand($field_id='') {
+        return ($this AND is_object($item = $this->item) AND $item->isField($field_id)) ? $item->col2Html($field_id) : '';
     }
 }
 
@@ -3390,7 +3388,7 @@ class AA_Stringexpand_Siteitem extends AA_Stringexpand
 
 
 
-/** returns ids of items based on conds d-...
+/** returns ids of items based on seo............. field
  *  {seo2ids:<slices>:<seo-string>}
  *  {seo2ids:6a435236626262738348478463536272:about-us}
  *  returns long id of item in selected slice (or dash separated slices) with
@@ -3414,14 +3412,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
 
         $dirty_slices = array();
         if ( !is_array($sarr = $_seoslices[$hash = hash('md5', 'h'.$slices)])) {
-            if (strpos($slices, '-') !== false) {
-                $dirty_slices = explode_ids($slices);
-            } elseif (is_long_id($slices)) {
-                $dirty_slices = array($slices);
-            } elseif (!strlen($slices) AND AA::$site_id) {
-                $dirty_slices = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
-            }
-
+            $dirty_slices = $this->getRelatedModules($slices);
             $sarr = $dirty_slices ? self::_getSeoSlices($dirty_slices) : array();
             $_seoslices[$hash] = $sarr;
         }
@@ -3477,9 +3468,7 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
             }
         }
         $add = '';
-        if (($unique_slices == 'all') AND is_object($this->item)) {
-            $unique_slices = AA::Stringexpander()->unalias("{unique:{slice_id........}-{site:{modulefield:{slice_id........}:site_ids}:modules}}", '', $this->item);
-        }
+        $unique_slices = join('-',$this->getRelatedModules($unique_slices));
         if ( !empty($unique_slices) ) {
             // we do not want to create infinitive loop for wrong parameters
             for ($i=2; $i < 100000; $i++) {
@@ -6347,6 +6336,27 @@ class AA_Stringexpand {
         }
         return $text;
     }
+
+    /** get all related slices (provided or counted from current item, site od slice)
+     * @param string $slices_str  '' | 'all' | '<slice_id>-<slice_id>-...'
+     * @return string[]
+     */
+    protected function getRelatedModules($slices_str) {
+        $slices = array();
+        if (!strlen($slices_str) OR ($slices_str='all')) {
+            if (is_object($this->item)) {
+                $slices = explode_ids(AA::Stringexpander()->unalias("{unique:{slice_id........}-{site:{modulefield:{slice_id........}:site_ids}:modules}}", '', $this->item));
+            } elseif (AA::$site_id) {
+                $slices = AA_Module_Site::getModule(AA::$site_id)->getRelatedSlices();
+            } elseif (AA::$slice_id) {
+                $slices = explode_ids(AA::Stringexpander()->unalias("{unique:".AA::$slice_id."-{site:{modulefield:".AA::$slice_id.":site_ids}:modules}}"));
+            }
+        } else {
+            $zids = new zids(explode_ids($slices_str), 'l');
+            $slices = $zids->longids();
+        }
+        return $slices;
+    }
 }
 
 /** Special parent class for all stringexpand functions, where no cache
@@ -8328,7 +8338,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
 
-        $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
+        $hash       = 'h'.get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $slices_arr = explode_ids($slices);
 
         $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
@@ -8401,7 +8411,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             // @todo check $slices to be from current site module
             $set = new AA_Set($slices_arr, $conds, $sort);
             $zids = $set->query();
-
+                
             // load all mentioned items in one step
             AA_Items::preload($zids);
 

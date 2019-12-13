@@ -338,11 +338,20 @@ class AA_Content {
         return AA_Value::factoryFromContent( $this->content[$field_id] );
     }
 
+    /** is the field marked as Multilingual_
+     * @param string $field_id ISD of the field
+     * @return bool
+     */
     function isMultilingual($field_id) {
         return is_array($a = $this->content[$field_id]) && (key($a) >= AA_Value::MAX_INDEX);
     }
 
-    function getIndex($field_id, $idx=0) {
+    /** count internal index for n-th value taking into account the mulilingual fields
+     * @param string $field_id
+     * @param int $idx
+     * @return bool|int
+     */
+    protected function getIndex($field_id, $idx=0) {
         if ( !is_array($a = $this->content[$field_id]) ) {
             return false;
         }
@@ -1230,12 +1239,12 @@ class ItemContent extends AA_Content {
     } // end of storeItem()
 
     /** updateComputedFields function
-     * @param AA_Fields $fields
-     * @param $mode
-     * @param $restict_fields
+     * @param AA_Fields  $fields
+     * @param string     $mode
+     * @param array|null $restict_fields
      * @return bool
      */
-    function updateComputedFields($fields=null, $mode='update', $restict_fields=null) {
+    function updateComputedFields($fields = null, $mode = 'update', $restict_fields = null) {
 
         if (!($id = $this->getItemID()) OR $this->isEmpty()) {  // the recomputed item is already deleted, probably
             return false;
@@ -1277,7 +1286,15 @@ class ItemContent extends AA_Content {
                     $seo_alias        = strlen(trim($fnc["param"])) ? $fnc["param"] : '_#HEADLINE';
                     $slice_charset    = $slice->getCharset();
                     $seo_charset      = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
-                    $expand_string    = ($mode=='insert') ? '{seoname:{ifset:{@'.$fid.':| /}:_#1:{'.$seo_alias.'}}:all'.$seo_charset.'}' : '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
+
+                    // seo field is not filled or we "Insert as new" and teh seo is already used (probably we forgot to delete the value)
+                    if (!strlen($this->getValue($fid)) OR (($mode=='insert') AND strlen(str_replace(array($this->getItemID(), '-'), array('',''), StrExpand('AA_Stringexpand_Seo2ids', array('all', $this->getValue($fid)), array('item'=>GetItemFromContent($this))))))) {
+                        $expand_string = '{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}';
+                    } else {
+                        continue 2;  // next field
+                    }
+                 // $expand_string    = ($mode=='insert') ? '{seoname:{ifset:{@'.$fid.':| /}:_#1:{'.$seo_alias.'}}:all'.$seo_charset.'}' : '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
+                 // $expand_string    = '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
                     $expand_delimiter = '| /';     // just some unprobabale string from the line above
                     unset($expand_insert,$expand_update,$recompute);
                     break;
