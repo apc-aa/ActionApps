@@ -625,12 +625,14 @@ function get_hash() {
     return hash('md5', serialize($arg_list));  // quicker than md5()
 }
 
-/** shortest possible hash which uses only url, DOM and JS identifier safe characters */
+/** shortest possible hash which uses only url, DOM and JS identifier safe characters. Contains only a-zA-Z0-9, starts with character. */
 function get_short_hash() {
     $arg_list = func_get_args();   // must be asssigned to the variable
-    // return bin2url(hash('crc32b', serialize($arg_list), true));
-    // we do not need '-' - it is bad for DOM identifiers, '+' is bad for urls
-    return rtrim(str_replace(array('+','/'), array('QQ','_'), base64_encode(hash('crc32b', serialize($arg_list), true))), '=');
+    // we do not need '-' - it is bad for DOM identifiers, '+' is bad for urls, '/' and even '_' has some problems in Dropzone, so we remove it as well.
+    // We use Q as escape, so we replace Q as well to be able to convert back, if needed
+    $hash = str_replace(array('Q','+','/'), array('QA','QB','QC'), rtrim(base64_encode(hash('crc32b', serialize($arg_list), true)), '='));
+    // we want to start with character so we change 1 to Q1, 2 to Q2, ... at the begin of the hash
+    return is_numeric($hash{0}) ? 'Q'.$hash : $hash;
 }
 
 /** pack_id function
