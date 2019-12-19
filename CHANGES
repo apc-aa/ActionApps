@@ -1,3 +1,16 @@
+19-12-19 - improved {foreach} - it can use named variables as well as multidimensional loops:
+(honzam)     named variables (alias _#x reflects the key name "x" in JSON:
+               {foreach:{"x":["val1","val2","val3"]}: * _#x :json:<br>}
+             multilevel foreach is easier with named variables:
+               {foreach:{"x":["X1","X2","X3"]}:{(
+                  {foreach:{"y":["Y1","Y2"]}: * _#x, _#y :json:<br>}
+                )}:json:}
+             even easier way to write multilevel foreach
+             (_#loop0 _#loop1, ... as default aliases, or _#x, _y, ... if you use named variables):
+               {foreach:[["X1","X2","X3"],["Y1","Y2"]]: * _#loop0, _#loop1:json:<br>}
+               {foreach:{"x":["X1","X2","X3"],"y":["Y1","Y2"],"zet":["ZET1","ZET2"]}: _#x - _#y - _#zet:json:, }
+19-12-17 - fixed hash generator for identifiers - now we use only safe a-zA-Z0-9 characers
+(honzam)
 19-12-13 - improved "Insert as new" - the seo is now regenerated form alias is the seo is duplicated
 (honzam)
 19-12-11 - session lifetime and auth lifetime set to 1 day by default

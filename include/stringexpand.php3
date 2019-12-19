@@ -115,42 +115,45 @@ if (ini_get('pcre.jit') == 1) {
 function json2arr($string, $do_not_filter=false) {
     if ($string{0} != '[') {
         $values = array($string);
-    } elseif (AA::$encoding AND (AA::$encoding != 'utf-8')) {
-        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding))) == null) {
-            return array();
-        }
-        $values = ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
     } else {
-        $values = json_decode($string) ?: array();
+        $values = aa_json_decode($string);
     }
     return $do_not_filter ? $values : array_filter($values, 'strlen');  // strlen in order we do not remove "0"
 }
-
 
 /** creates array form JSON array or returns single value array if not valid json
  * @param $string
  * @return array
  */
 function json2asoc($string) {
-    if ( !strlen($string) ) {
+    if (!strlen($string)) {
         return array();
     }
-    if ($string{0} != '{') {
-        if ($string{0} == '[') {
-            // returns "one" => "one", "two" => "two" for ["one","two"]
-            $values = json2arr($string, true);
-            return array_combine($values,$values);
-        }
-        return array();
+    if ($string{0} == '{') {
+        return aa_json_decode($string, true);
     }
 
+    if ($string{0} == '[') {
+        // returns "one" => "one", "two" => "two" for ["one","two"]
+        $values = json2arr($string, true);
+        return array_combine($values, $values);
+    }
+    return array();
+}
+
+/** JSON decode for UTF as well as non UTF strings
+ * @param string $string to decode
+ * @param bool $asoc
+ * @return array|mixed
+ */
+function aa_json_decode($string, $asoc=false) {
     if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
-        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),true)) == null) {
+        if ( ($arr = json_decode(ConvertEncoding($string, AA::$encoding),$asoc)) == null) {
             return array();
         }
         $values = ConvertEncodingDeep($arr,'utf-8', AA::$encoding);
     } else {
-        $values = json_decode($string,true) ?: array();
+        $values = json_decode($string,$asoc) ?: array();
     }
     return $values;
 }
@@ -7785,6 +7788,16 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  *    {foreach:2011-2012:{(<li><a href="?year=_#loop" {ifeq:_#loop:{qs:year}:class="active"}>_#1</a></li>)}}
  *    {foreach:{sequence:num:1999:2017:1:-}:<th>_#1</th>}
  *    {foreach:{ids:478598ab745a65f1478598ab745a65f1}:{({_:Editor_document:_#1:{id..............}})}}
+ *   you can use named variables if you use json:
+ *    {foreach:{"x":["val1","val2","val3"]}: * _#x :json:<br>}  // the alias _#x then reflects the key name "x" in the JSON
+ *   the multilevel foreach is easier with named variables
+ *    {foreach:{"x":["X1","X2","X3"]}:{(
+ *      {foreach:{"y":["Y1","Y2"]}: * _#x, _#y :json:<br>}
+ *    )}:json:}
+ *   there is even easier way to write multilevel foreach - all arrays are in one JSON:
+ *    {foreach:[["X1","X2","X3"],["Y1","Y2"]]: * _#loop0, _#loop1:json:<br>}   // _#loop0 _#loop1, ... is used as aliases if named variables are not used
+ *   or with named variables
+ *    {foreach:{"x":["X1","X2","X3"],"y":["Y1","Y2"],"zet":["ZET1","ZET2"]}: _#x - _#y - _#zet:json:, }
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand {
 
@@ -7820,12 +7833,22 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
         if (!strlen($valdelimiter)) {
             $valdelimiter = '-';
         }
-        $arr = ($valdelimiter == 'json') ? json2arr(trim($values)) : explode($valdelimiter, $values);
-        $arr = array_filter(array_map('trim', $arr), 'strlen');
+        $arr = ($valdelimiter == 'json') ? aa_json_decode(trim($values), true) : explode($valdelimiter, $values);
         $ret= array();
-
-        foreach($arr as $str) {
-            $ret[] = AA::Stringexpander()->unalias(str_replace(array('_#1','_#loop'),$str,$text),'',$item);
+        // multidimensional array
+        if (is_array($arr) AND is_array(current($arr))) {
+            $combinations = $this->combine_arrays($arr);
+            $aliases = array_map( function($v) {return '_#'.(is_numeric($v) ? "loop$v" : $v);}, array_keys($arr));
+            foreach ($combinations as $addr) {
+                $ret[] = AA::Stringexpander()->unalias(str_replace($aliases,$addr,$text),'',$item);
+            }
+        } else {
+            // single array
+            $arr = array_filter(array_map('trim', $arr), 'strlen');
+            $aliases = is_numeric(key($arr)) ? array('_#1', '_#loop') : array('_#'.key($arr));
+            foreach ($arr as $str) {
+                $ret[] = AA::Stringexpander()->unalias(str_replace($aliases, $str, $text), '', $item);
+            }
         }
         return join($outputdelimiter, $ret);
 
@@ -7834,6 +7857,27 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
         //    $value = AA::Stringexpander()->unalias(str_replace('_#1',$value,$param[1]),'',$param[0]);
         //}, array($item, $text));
         //return join($outputdelimiter, $arr);
+    }
+
+    /** Creates from [[a1,a2,a3],[b1,b2],...] list of all combinations -> [[a1,b1],[a1,b2],[a2,b1],[a2,b2],[a3,b1],[a3,b2]]
+     * @param $arr
+     * @return array
+     */
+    function combine_arrays($arr) {
+        $addr =  array_filter(array_map('trim', array_shift($arr)), 'strlen');
+        array_walk($addr, function(&$val) { $val = array($val); });
+
+        foreach ($arr as $values) {
+            $values = array_filter(array_map('trim', $values), 'strlen');
+            $newaddr = array();
+            foreach ($addr as $a) {
+                foreach ( $values as $v ) {
+                    $newaddr[] = array_merge($a,[$v]);
+                }
+            }
+            $addr = $newaddr;
+        }
+        return $addr;
     }
 }
 
@@ -8338,7 +8382,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
 
-        $hash       = 'h'.get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
+        $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $slices_arr = explode_ids($slices);
 
         $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
