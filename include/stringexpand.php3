@@ -3072,7 +3072,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         } else {
             $zids = $set->query($restrict_zids);
         }
-        return join($zids->longids(), $delimiter ?: '-');
+        return AA_Stringexpand::joinWithDelimiter($zids->longids(), ($delimiter ?: '-'));
     }
 }
 
@@ -3659,7 +3659,10 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
                 }
                 break;
         }
-        return empty($arr) ? '' : (strlen($delimiter) ? join($delimiter, $arr) : json_encode($arr));
+        if (!strlen($delimiter)) {
+             $delimiter = 'json';
+        }
+        return empty($arr) ? '' : (($delimiter=='json') ? json_encode($arr) : join($delimiter, $arr));
     }
 }
 
@@ -6359,6 +6362,15 @@ class AA_Stringexpand {
             $slices = $zids->longids();
         }
         return $slices;
+    }
+
+    /**
+     * @param string[] $arr
+     * @param string $delimiter
+     * @return string
+     */
+    protected static function joinWithDelimiter($arr, $delimiter) {
+        return empty($arr) ? '' : (($delimiter=='json') ? json_encode($arr) : join($delimiter, $arr));
     }
 }
 
