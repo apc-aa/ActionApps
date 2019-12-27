@@ -761,8 +761,8 @@ class AA_Set extends AA_Object {
         return $ret;
     }
 
-    /** getSortAsString function
-     *  @return $conds[] array - mainly for backward compatibility
+    /**
+     *  @return string
      */
     function getSortAsString() {
         $ret = array();
@@ -785,12 +785,11 @@ class AA_Set extends AA_Object {
         return $this->bins;
     }
 
-    /** getCondsAsString function
-     *  @return $conds[] array - mainly for backward compatibility
+    /** @return string representing teh codition (for {ids} or {view}, ...)
      */
     function getCondsAsString() {
-        $ret   = 'd-';
-        $delim = '';
+        $ret   = '';
+        $delim = 'd-';
         foreach ( $this->conds as $k => $condition ) {
             $ret  .= $delim . $condition->getAsString($k);
             $delim = '-';

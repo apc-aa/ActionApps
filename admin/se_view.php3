@@ -506,12 +506,22 @@ FrmTabEnd();
 
 $view_id2show = $view_id ?: '&lt;vid&gt;';
 
-$view_recipe = $view ? ('&lcub;view.php3?vid='.$view_id.'&'.with(new AA_Set(null, $view->getConds()))->getCondsAsString().'&rcub;') : 'wr';
+$view_recipe1 = '';
+$view_recipe2 = '';
+if ($view) {
+    $set = $view->getSet();
+    if ($view_conds   = $set->getCondsAsString()) {
+        $view_sort    = $set->getSortAsString();
+        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId(). $view_id . ':'. $view_conds . ($view_sort ? ':'.$view_sort: '') . '&rcub;&rcub;';
+        $view_recipe2 = '&lcub;view.php3?vid=' . $view_id . '&cmd[' . $view_id . ']=' . with(new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
+    }
+}
 
 $apage->addHelpbox(_m('To include view in your sitemodule webpage use'), '<pre>
        &lcub;view:'.$view_id2show.'&rcub;
        &lcub;view.php3?vid='.$view_id2show.'&rcub;
-       '.$view_recipe.'
+       '.$view_recipe1.'
+       '.$view_recipe2.'
      </pre>
      <a href="https://documentation.actionapps.org/en/Syntax#.7Bview.7D_-_Including_Views">'._m('See documentation').'</a>');
 $apage->printHelpbox();
