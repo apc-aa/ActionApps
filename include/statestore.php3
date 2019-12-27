@@ -888,7 +888,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')), $fields->getFieldnamesArray(), array( _m('ID'), _m('Owner')))).'</th>
+              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')), $fields->getFieldnamesArray(), array( _m('ID'), _m('Owner ID'), _m('Owner')))).'</th>
             </tr>
             ';
     }
@@ -922,12 +922,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
         $aliases       = AA_Object::_generateAliases($properties);
 
+
         $search_fields = AA_Object::getSearchfields($properties);
         $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
-
-
-// huhl($aliases,$search_fields,static::getManagerTopHtml($search_fields));
-
 
         $manager_settings = array(
              'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
@@ -953,7 +950,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
 //                   'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
-                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
+                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
@@ -1051,9 +1048,6 @@ class AA_Components {
             $classfilter = substr($mask,$pos+1);
             $classdir    = substr($mask,3,$pos-3);
 
-            //huhl($pos, $mask, $classfilter, $classdir);
-
-
             $dirname = AA_BASE_PATH.'src/'.$classdir;
             $files = AA_Directory_Wrapper::wrapper($dirname)->getFileNames();
             foreach ($files as $file) {
@@ -1075,6 +1069,17 @@ class AA_Components {
                 return substr($classname, 0, $mask_length) == $mask;
             });
         }
+    }
+
+    /** returns sorted array for selectbox (class => name)
+     * @param  string $mask
+     * @return array of class => name
+     */
+    static function getClassArray($mask) {
+        $classes = self::getClassNames($mask);
+        $arr = array_map(function($v) {return $v::name();}, $classes);
+        asort($arr);
+        return $arr;
     }
 
     /** getSelectionCode function

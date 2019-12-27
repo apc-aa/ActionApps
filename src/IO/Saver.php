@@ -232,6 +232,7 @@ class Saver implements AA\Util\LaterInterface {
                     }
                 }
             } else {
+                $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg());
                 $this->message($new_item_id);
                 $this->message($content4id);
             }

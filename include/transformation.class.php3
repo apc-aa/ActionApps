@@ -291,12 +291,12 @@ class AA_Transformation_Recompute extends AA_Transformation {
 
     /** transform function
      * @param string $field_id
-     * @param ItemContent
+     * @param ItemContent $itemcontent
      * @param bool $silent
      * @return AA_Value|bool
      */
     function transform($field_id, $itemcontent, $silent=true) {
-        $itemcontent->updateComputedFields(null, 'update', $silent ? array($field_id) : array());
+        $itemcontent->updateComputedFields(null, 'update', $silent ? array($field_id) : null);
         return true; // this means: Success - no other operations are needed
     }
 

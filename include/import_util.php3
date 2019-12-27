@@ -26,7 +26,6 @@
 */
 
 define("SHOW_FILE_SIZE",         65536);
-define("CSVFILE_LINE_MAXSIZE",   65536);
 define("IMPORTFILE_PREVIEW_ROWS",5);
 define("IMPORTFILE_TIME_LIMIT",  6000);
 
@@ -43,11 +42,11 @@ define("UPDATE", 2);
  * @param $enclosure
  * @return array|false|null
  */
-function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
+function getCSV($handle,$delimiter = ";",$enclosure = '"') {
     if ($delimiter == '\t') {
         $delimiter = chr(9);  // tabulator ascii
     }
-    return fgetcsv($handle,$maxsize,$delimiter, $enclosure);
+    return fgetcsv($handle,0,$delimiter, $enclosure);
 }
 
 /** createFieldNames function
@@ -61,7 +60,7 @@ function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
  */
 function createFieldNames($fileName,&$addParams) {
     $handle = fopen($fileName,"r");
-    $fn = getCSV($handle,CSVFILE_LINE_MAXSIZE,$addParams['delimiter'],$addParams['enclosure']);
+    $fn = getCSV($handle,$addParams['delimiter'],$addParams['enclosure']);
     fclose($handle);
     if (!is_array($fn)) {
         return $addParams['caption'] ? array($fn=>$fn) : array("Field 1"=>"Field 1");

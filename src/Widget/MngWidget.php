@@ -47,7 +47,7 @@ class MngWidget extends \AA\Widget\Widget {
         $input_value = myspecialchars($value->getValue(0));
 
         // we store the connector id to cookie in order we have it during AJAX call - Parts renewal
-        $sess_var = 'm'.get_short_hash($base_id);
+        $sess_var = get_short_hash($base_id);
 
         // We are using artificial ID - say connector - and not real item ID of current item
         // This allows us to use manager even for nonstored items and maybe other features (shared constants) in future

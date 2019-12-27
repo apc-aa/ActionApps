@@ -179,7 +179,7 @@ class AA_Linkcheck {
                     WHERE id = '".$l_id."'";
             $db->query($SQL);
         }
-        freeDB();
+        freeDB($db);
     }
 
     /** add_check function

@@ -582,9 +582,9 @@ class AA_Searchbar extends AA_Storable {
         $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">". GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
         echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>". str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
         FrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld);
-        echo '</td><td colspan="2" class="leftmenuy">';
+        echo '</td><td colspan="2" class="leftmenuy"><label>';
         FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
-        echo _m('Descending'). "</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
+        echo _m('Descending'). "</label></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
     }
     /** print_bar_bookmarks function
      *

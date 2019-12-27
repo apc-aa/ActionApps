@@ -637,6 +637,7 @@ class DB_AA extends DB_Sql {
      *     ISNULL   -                   IS NULL                             array('number', 'ISNULL')
      *     NOTNULL  -                   IS NOT NULL                         array('number', 'NOTNULL')
      *     LIKE     -                   LIKE             single             array('id', '\_%', 'LIKE')
+     *     RLIKE    -                   LIKE             single             array('selector', $item_id, 'RLIKE')
      *     NOT LIKE -                   NOT LIKE         single             array('id', '\_%', 'NOT LIKE')
      *     FILLED   -                   > ''             single             array('field3', 'FILLED')         // not null, not empty, not any whitespace character(s)
      *
@@ -654,6 +655,9 @@ class DB_AA extends DB_Sql {
                 $type     = 'i';
             } elseif ( ($type == 'LIKE') OR ($type == 'NOT LIKE') ) {
                 $where[]  = "$name $type ". qquote($value);
+                continue;
+            } elseif ( ($type == 'RLIKE') ) {
+                $where[]  = "$name LIKE ". qquote($value.'%');
                 continue;
             } elseif ( ($type == 's<>') OR ($type == 's!=') ) {
                 $where[]  = "$name <> ". qquote($value);

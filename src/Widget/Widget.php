@@ -304,7 +304,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
     /**
      * Prints html tag <input type="radio" or ceckboxes .. to 2-column table
-     * - for use internal use of FrmInputMultiChBox and FrmInputRadio
+     * - for use internal use of removed inputMultiChBox and FrmInputRadio
      */
     function getInMatrix($records, $ncols, $move_right, $class = '')
     {
@@ -711,6 +711,9 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                     break;
                 case 'mng_buttons':
                     $ret[$pid] = new AA_Property($pid, _m("Buttons to Show"), 'string', false, true, 'string', false, _m("N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_source.....x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"\D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}"), '', 'ND');
+                    break;
+                case 'class_type':
+                    $ret[$pid] = new AA_Property($pid, _m("Class prefix"), 'string', false, true, 'string', false, _m("Component idetifier to select from"), '', 'Widget');
                     break;
             }
         }

@@ -91,6 +91,13 @@ class AA_View {
         return $this->fields;
     }
 
+    /**
+     * @return string - long id of the slice of this view
+     */
+    function getSliceId() {
+        return unpack_id($this->f('slice_id'));
+    }
+
     /** getLang function
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
@@ -155,6 +162,12 @@ class AA_View {
         return $conds;
     }
 
+    /**
+     * @return AA_Set of the view
+     */
+    public function getSet() {
+        return new AA_Set(array($this->getSliceId()), $this->getConds(), $this->getSort());
+    }
 
     /** ResolveCondsConflict function
      * Helper function for AA_View->getConds() - resolves database x url conds conflict
