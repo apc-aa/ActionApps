@@ -125,28 +125,20 @@ function PrintItemInfo($item_id) {
         echo "<br>_#HEADLINE: ". $item->unalias($format);
         echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
         echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
-        echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
-        print_r($item->content4id);
-        echo "</pre>";
     }
 
     $long_id = $zid->longids(0);
     if ($long_id) {
         if ($res = DB_AA::select(array(), 'SELECT * FROM `item`', array(array('id',$long_id, 'l')))) {
-            echo '<h3>'. _m('Item table record for the item') .'</h3><pre>';
-            print_r($res);
-            echo "</pre>";
+            echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
         }
 
         if ($res = DB_AA::select(array(), 'SELECT * FROM `content`', array(array('item_id',$long_id, 'l')))) {
-            echo '<h3>'. _m('Content table records for the item') .'</h3><pre>';
-            print_r($res);
-            echo "</pre>";
+            echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
         }
 
-        if ($res = DB_AA::select(array(), 'SELECT * FROM `log`', array(array('selector',$long_id)))) {
-            echo '<h3>'. _m('Log') .'</h3>';
-            echo GetHtmlTable($res, 'key');
+        if ($res = DB_AA::select(array(), 'SELECT * FROM `log`', array(array('selector',$long_id,'RLIKE')))) {
+            echo GetHtmlTable($res, 'key', _m('Log'));
         }
 
         if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
@@ -180,6 +172,11 @@ function PrintItemInfo($item_id) {
       //  print_r($changes->getProposals(array($long_id)));
       //  echo "</pre>";
     }
+
+    echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
+    print_r($item->content4id);
+    echo "</pre>";
+
     echo '<br><br>';
 }
 
@@ -351,12 +348,13 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
         }
         echo '<br><br>';
 
+
         // ------
-        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('alias',   'CONTAIN', $_REQUEST['findtext'])));
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('code',    'CONTAIN', $_REQUEST['findtext']))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('desc',    'CONTAIN', $_REQUEST['findtext']))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('ussage',  'CONTAIN', $_REQUEST['findtext']))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set($smodules, new AA_Condition('aa_name', 'CONTAIN', $_REQUEST['findtext']))) );
+        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('alias',   'CONTAIN', $_REQUEST['findtext'])));
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('code',    'CONTAIN', $_REQUEST['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('desc',    'CONTAIN', $_REQUEST['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('ussage',  'CONTAIN', $_REQUEST['findtext']))) );
+        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('aa_name', 'CONTAIN', $_REQUEST['findtext']))) );
 
         if (!$zids->isEmpty()) {
             $manager_settings = AA_Aliasfunc::getManagerConf(get_aa_url('admin/aafinder.php3'));
