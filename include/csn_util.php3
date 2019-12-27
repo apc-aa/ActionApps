@@ -228,20 +228,6 @@ function iso8601_to_unixstamp($t) {
     return strtotime($t);
 }
 
-// TODO: remove this renamed function
-/** iso8601_to_unixstamp_old function
- * @param $t
- * @return float|int
- */
-function iso8601_to_unixstamp_old($t) {
-    preg_match("~([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})~", $t, $r);
-    $tz = (int)$r[8]*3600+$r[9]*60;
-    if ($r[7] == "+") {
-        $tz =-$tz;
-    }
-    return gmmktime($r[4],$r[5],$r[6],$r[2],$r[3],$r[1])+$tz;
-}
-
 $DEFAULT_RSS_MAP = array (
     // Note this matches code in xml_rssparse.php3 for parsing DC fields
     // Can change the names without affecting anything

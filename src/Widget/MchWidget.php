@@ -39,7 +39,7 @@ class MchWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height'));
     }
 
-    /** Returns one checkbox tag - Used in inputMultiChBox */
+    /** Returns one checkbox tag - Used in removed inputMultiChBox */
     function getOneChBoxTag($option, $input_name, $input_id, $add = '')
     {
         $ret = "\n<label class=\"aa-chb\"><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . myspecialchars($option['k']) . "\" $add";

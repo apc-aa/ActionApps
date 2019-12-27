@@ -383,8 +383,8 @@ if (count($err_valid) > 1) {
     $zids = new zids(null, 'l');
     foreach ( $err_valid as $field_zid => $msg) {
         $zids->add(substr($field_zid,1));  // remove first 'v' in the name
-        if ($debugfill) huhl("Debugfill $zids=",$zids, '-', $zids->packedids(0));
-        $result["validate"][$zids->packedids(0)] = $msg;
+        if ($debugfill) huhl("Debugfill $zids=",$zids, '-', $zids->longids(0));
+        $result["validate"][pack_id($zids->longids(0))] = $msg;    // do we need to have it packed?  Honza 2019-12-12
     }
 }
 
@@ -412,9 +412,10 @@ if (! $insert && is_array($notshown)) {
         $field_ids[] = substr($vfield_id,1);  // remove first 'v'
     }
     $zids = new zids($field_ids,'l');
-    for ($i=0, $ino=$zids->count(); $i<$ino; $i++ ) {
-        $field_id = $zids->packedids($i);
-        $content4id[$field_id] = $oldcontent4id[$field_id];
+    $long_zids = $zids->longids();
+    foreach ($long_zids as $field_id) {
+        $pfield_id = pack_id($field_id);
+        $content4id[$pfield_id] = $oldcontent4id[$pfield_id];          // do we need to have it packed?  Honza 2019-12-12
     }
 }
 

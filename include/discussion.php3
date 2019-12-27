@@ -202,24 +202,6 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
     $content[$d_id]["d_treeimages...."][0]['value'] = $imgs;
 }
 
-/** GetButtons function
- * @param $empty
- * @param $script_loc
- * @return string
- */
-function GetButtons($empty, $script_loc) {
-    if (!$empty) {
-        //$out.= "<input type=\"button\" name=\"sel_ids\" value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
-        //        <input type=\"button\" name=\"all_ids\" value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&all_ids=1")."\" class=\"discbuttons\">";
-        // removed nocache=invalidate - testing - Honza 2011-01-19
-        $out.= "<input type=\"button\" name=\"sel_ids\" value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
-                <input type=\"button\" name=\"all_ids\" value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"all_ids=1")."\" class=\"discbuttons\">";
-    }
-    // $out.= " <input type=\"button\" name=\"add_disc\" value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&add_disc=1")."\" class=\"discbuttons\">";
-    $out.= " <input type=\"button\" name=\"add_disc\" value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"add_disc=1")."\" class=\"discbuttons\">";       // removed nocache=invalidate - testing - Honza 2011-01-19
-    return $out;
-}
-
 function GetDiscussionAliases() {
     //  Standard aliases
     $aliases["_#SUBJECT_"] = GetAliasDef("f_h",          "d_subject.......", _m("Alias for subject of the discussion comment"));

@@ -110,25 +110,6 @@ class datectrl {
         return (isset($_REQUEST["tdctr_{$n}_time"]) OR isset($_REQUEST["tdctr_{$n}_day"]) OR isset($_REQUEST["tdctr_{$n}_month"]) OR isset($_REQUEST["tdctr_{$n}_year"]));
     }
 
-    /** setdate function
-     *  set date, format form db
-     * @param $date
-     * @return string
-     */
-    function setdate($date) {
-        $regs = array();
-        if (preg_match("/([0-9]{4}) *- *([0-9]{1,2}) *- *([0-9]{1,2}) *(.*$)/", $date, $regs)) {
-            $this->year  = $regs[1];
-            $this->month = $regs[2];
-            $this->day   = $regs[3];
-            $this->time  = $regs[4];
-        }
-        if (checkdate($this->month, $this->day, $this->year)) {
-            return "$this->year-$this->month-$this->day";
-        }
-        return "";
-    }
-
     /** setdate_int function
      *  set date, format form integer
      * @param $date

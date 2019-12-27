@@ -274,7 +274,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Return an array of long ids
      *  TODO: look at where used, typically used in interface to pre-zid code
      * @param $i
-     * @return array|bool|mixed|null|string
+     * @return array|int|string|null
      */
     function longids($i=null) {
         if ($this->warnid($i,"longids")) {
@@ -291,34 +291,13 @@ class zids implements Iterator, ArrayAccess, Countable {
                        return (isset($i) ? $trans[$i] : $trans );
             default:
                        warn("ERROR - zids:longids(): can't handle type $this->type conversion to longids - $this");
-                       return false;  //TODO - handle other types
-        }
-    }
-
-    /** packedids function
-     * @param $i
-     * @return array|bool|null|string
-     */
-    function packedids($i=null) {
-        if ($this->warnid($i,"packedids")) {
-            return null;
-        }
-        switch ($this->type) {
-            case 'p': return (isset($i) ? $this->a[$i] : $this->a);
-            case 'l': return (isset($i) ? pack_id($this->a[$i]) : array_map("pack_id",$this->a));
-            case 't': return (isset($i) ? pack_id(id_t2l($this->a[$i]))
-                                        : array_map("pack_id", $this->longids()));
-            case 's': $trans = $this->translate('l');
-                      return ( isset($i) ? pack_id($trans[$i]) : array_map("pack_id", $trans));
-            default:
-                      warn("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");
-                      return false;
+                       return null;  //TODO - handle other types
         }
     }
 
     /** shortids function
      * @param $i
-     * @return array|mixed|null
+     * @return int[]|int|null
      */
     function shortids($i=null) {
         if ($this->warnid($i,"shortids")) {
@@ -336,7 +315,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  Return either short id, or a long id, depending on use_short_ids()
      *  These are ids suitable for indexing return from GetItemContent
      * @param $i
-     * @return array|bool|mixed|null|string
+     * @return int[]|int|string[]|string|null
      */
     function short_or_longids($i=null) {
         if ($this->warnid($i,"short_or_longids")) {

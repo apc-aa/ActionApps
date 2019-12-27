@@ -349,9 +349,7 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
 
 FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), '', '', $form_buttons, $slice_id);
 
-$input_show_classes = AA_Components::getClassNames('AA\\Widget\\Widget');
-$isc_arr = array_map(function($v) {return $v::name();}, $input_show_classes);
-asort($isc_arr);
+$isc_arr = AA_Components::getClassArray('AA\\Widget\\Widget');
 
 $tab_separator = "\n<tr><td colspan=2><hr></td></tr>\n";
 

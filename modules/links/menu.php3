@@ -184,7 +184,9 @@ function get_aamenus() {
     return array_merge($aamenus, GetCommonMenu($profile));
 }
 
-/** Create view menu for current slice */
+/** Create view menu for current slice
+ * @noinspection PhpUnused
+ */
 function CreateMenu4Views( $foo ) {
     global $slice_id;
 

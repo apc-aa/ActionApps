@@ -32,7 +32,7 @@ class RioWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr'));
     }
 
-    /** Returns one checkbox tag - Used in inputMultiChBox */
+    /** Returns one checkbox tag - Used in removed inputMultiChBox */
     function getRadioButtonTag($option, $input_name, $input_id, $add = '')
     {
         $missing = $option['mis'] ? ' class=aa-missing-option' : '';

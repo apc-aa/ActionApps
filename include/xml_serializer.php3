@@ -83,6 +83,14 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
 }
 
 // A class to unserialize from XML to a PHP structure,
+/** xml_unserialize function
+ * @param $xml_data
+ * @return null|string
+ */
+function xml_unserialize($xml_data) {
+    $x = new xml_unserializer();
+    return $x->parse($xml_data);
+}
 // Note this matches the xml_serializer above,
 class xml_unserializer {
     var $stack;          // stack of items above oen being worked on
@@ -231,22 +239,14 @@ class xml_unserializer {
     }
 }
 
-/** xml_unserialize function
- * @param $xml_data
- * @return null|string
- */
-function xml_unserialize($xml_data) {
-    $x = new xml_unserializer();
-    return $x->parse($xml_data);
-}
+
 /** test_xmlserializer function
  * Testing
  */
-function test_xmlserializer() {
+/*function test_xmlserializer() {
     require_once "config.php3";
     require_once "AA_INC_PATH"."zids.php3";
     $aa = new zids("12345678901234567890123456789012");
-    $a = $aa->packedids();
     print_r($a);
     //$a = array(" one");
     $serial_a = xml_serialize("OVERALL",$a,"\n","    ");
@@ -254,7 +254,7 @@ function test_xmlserializer() {
     $x = new xml_unserializer();
     $y = $x->parse($serial_a);
     print "RESULT="; print_r($y);
-}
+}*/
 
 //test_xmlserializer();
 

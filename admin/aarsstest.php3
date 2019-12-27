@@ -41,6 +41,7 @@ function tv_field_value($feed_id,$param,$var) {
 /** showFeedActions function
  * @param $feed_id
  * @return string - set of links
+ * @noinspection PhpUnused
  */
 function showFeedActions($feed_id) {
     $url = "'".AA_INSTAL_URL ."admin/xmlclient.php3?feed_id=$feed_id'".
