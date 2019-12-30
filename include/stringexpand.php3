@@ -6075,7 +6075,7 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Footcode');
         } elseif ($type == 'AA_Req_Htm') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
-        } elseif ((aa_substr($require,-4)=='.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ')) {
+        } elseif ((aa_substr($require,-4)=='.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ') OR aa_strpos($require,'/css?')) {  //  /css? for google fonts
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
         } elseif (aa_substr($require,-3)=='.js' OR (aa_strpos($require,'/')!==false)) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
