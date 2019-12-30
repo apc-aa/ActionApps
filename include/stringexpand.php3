@@ -905,7 +905,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
-        $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $uniqid = gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $link   = '';
         $script = '';
 
@@ -971,7 +971,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
-        $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $uniqid = gensalt(6);  // mt_rand is quicker than uniqid()
 
         $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule');return false;\">{$switches[$selected]}</a>\n";
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_HtmlToggleCss
@@ -1034,7 +1034,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
         //    $url_of_text = get_url($url_of_text,array('convertto' => 'utf-8'));
         //}
 
-        $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $uniqid = gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $ret   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule_hide', '$url_of_text', '$css_rule_update');return false;\">{$switches[0]}</a>\n";
         return $ret;
     }
@@ -1070,7 +1070,7 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
     function expand($view_param='', $placeholder='', $default='') {
         $placeholder = safe($placeholder);
         $default     = safe($default);
-        $id = 'aa-ls'.mt_rand(100000000,999999999);
+        $id = 'aa-ls'.gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);
         $view_param  = is_numeric($view_param) ? "$view_param&cmd[$view_param]=c-1-%22AA_LS_QUERY%22" : $view_param;
         $ret = "
             <article class=aa-widget id=$id>
@@ -1084,6 +1084,33 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
         $ret .= "      </section>
             </article>";
         return $ret;
+    }
+}
+
+
+/** Creates <div> with clickable options corresponding previously filled form values by the user
+ *   - max 5 saved searches are stored (using localStore)
+ *   - must be inside the form
+ *  {formsaver[:<container>]}
+ *       {formsaver}              - whole form is saved (the one in which is the {formsaver})
+ *       {formsaver:.my_subform}  - only the subform is saved
+ *  @param  string $container     - css rule matching the element containing the inputs, textareas, selects
+ */
+class AA_Stringexpand_Formsaver extends AA_Stringexpand_Nevercache {
+
+    /**
+     * @param string $container
+     * @return string
+     */
+    function expand($container='') {
+
+        $uniqid = get_short_hash(shtml_url(), $container);
+
+        AA::Stringexpander()->addRequire('form-saver');  // for form-saver.js, jquery, deserialize
+        $script2run = "FormSaver('$uniqid','$container'); \n";
+        AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
+
+        return "<div class=aa-form-saver id=aa-fs-$uniqid></div>";
     }
 }
 
@@ -1220,7 +1247,7 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
         $switches    = str_replace(array('[+]','[-]'), array($plusimg, $minusimg), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
-        $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $uniqid = gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
         if (strlen(strip_tags($text))<=$length) {
             $ret = "<div class=\"expandableclass\" id=\"expandable_1_$uniqid\">$text</div>\n";
@@ -1279,7 +1306,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         //    $url = get_url($url,array('convertto' => 'utf-8'));
         //}
 
-        $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $uniqid = gensalt(6); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $link   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '{$switches_js[0]}', 'toggle_1_$uniqid', '{$switches_js[1]}', 'toggle_2_$uniqid', '$url');return false;\">{$switches[0]}</a>\n";
         $ret    = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
@@ -1303,7 +1330,9 @@ function calculate($exp) {
     try {
         $ret = @eval("return $exp;");
     } catch (ParseError $e) {
-        return "Math Err: $exp";
+        return "Math Parse Err: $exp";
+    } catch (DivisionByZeroError $e) {
+        return "Math Division by zero Err: $exp";
     }
     return ($ret===false) ? "Math Err: $exp" : $ret;
 }
@@ -6182,6 +6211,8 @@ class AA_Requires {
             //'select2@4'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
             'select2@4'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.full.min.js', 'sha256-FcVIknBiVRk5KLQeIBb9VQdtFRMqwffXyZ+D8q0gQro=', array('jquery@3','_css-select2@4')),
             'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
+            'form-saver@1'               => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false),'',array('deserialize@2')),
+            'deserialize@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0-rc1/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', array('jquery@3')),
             'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
             'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
             //'jspdf@1'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jspdf@1.5.3/dist/jspdf.min.js', 'sha256-gJWdmuCRBovJMD9D/TVdo4TIK8u5Sti11764sZT1DhI=', array('jquery@3')),

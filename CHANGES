@@ -1,3 +1,12 @@
+19-12-30 - new {formsaver[:<container>]} - creates <div> with clickable options corresponding to previously
+(honzam)   filled form values by the user. Max 5 saved searches are stored (using localStore)
+             {formsaver}              - whole form is saved (the one in which is the {formsaver})
+             {formsaver:.my_subform}  - only the subform is saved
+         - fix - {math..} now handles Division by zero Err
+19-12-27 - {ids} now can be returned as JSON, if "json" is specified as delimiter
+(honzam) - nicer output of AA Finder
+         - better view help text and example on Admin -> View
+         - removed unused functions
 19-12-19 - improved {foreach} - it can use named variables as well as multidimensional loops:
 (honzam)     named variables (alias _#x reflects the key name "x" in JSON:
                {foreach:{"x":["val1","val2","val3"]}: * _#x :json:<br>}
