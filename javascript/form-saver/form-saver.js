@@ -60,10 +60,6 @@ function FormSaver(search_id, container) {
     buildSearchesList(searches, searchesList, form, container);
 
     form.submit(function (event) {
-        // The demo doesn't have a server page to which sending the request,
-        // so this statement avoid the request
-        event.preventDefault();
-
         // The last performed search is at the top of the list.
         // Besides, the demo avoid storing the same
         // search multiple times, so the code searches for duplicates and
