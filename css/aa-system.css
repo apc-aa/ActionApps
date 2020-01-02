@@ -581,7 +581,8 @@ i.ico.aa-tool-edit:hover {
 }
 .aa-form-saver__btn:hover {
     border: solid 1px #666;
-    box-shadow: 0 0 5px #666;
+    box-shadow: 0 0 3px #666;
+    cursor: pointer;
 }
 .aa-form-saver__lbl {
     display: inline-block;
