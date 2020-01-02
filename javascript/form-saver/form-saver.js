@@ -1,5 +1,9 @@
-function buildSearchesList(searches, searchesList, form, container) {
+function buildSearchesList(searches, searchesList, form, container, text) {
     searchesList.empty();
+
+    if (searches.length) {
+        searchesList.append( $('<div class=aa-form-saver__lbl>'+text+'</div>') );
+    }
 
     // Loops over each previous search to create a list shown to the user.
     // Each item of the list shown will display as a mnemonic name the
@@ -31,9 +35,15 @@ function buildSearchesList(searches, searchesList, form, container) {
         // Adds the sublist to the main list and add the event handler
         // for the click and the keypress events
         (function(searchData) {
+            var btn_text = params[firstinput];
+            if (btn_text.length == 0) {
+                btn_text = '-'+(i+1)+'-';
+            } else if (btn_text.length > 16) {
+                btn_text = btn_text.substring(0,16)+'…';
+            }
             searchesList.append(
-                $('<span tabindex="0">')
-                    .text(params[firstinput])
+                $('<span tabindex=0 class=aa-form-saver__btn>')
+                    .text(btn_text)
                     .on('click keypress', function(event) {
                         if ( event.type !== 'keypress' || event.keyCode === 13 || event.keyCode === 32 ) {
                             if (container == '') {
@@ -51,13 +61,13 @@ function buildSearchesList(searches, searchesList, form, container) {
     }
 }
 
-function FormSaver(search_id, container) {
+function FormSaver(search_id, container, text) {
     var searchesList = $('#aa-fs-' + search_id);
     var form = $((container == '') ? ('#aa-fs-' + search_id) : container).closest('form');
     var searches = window.localStorage.getItem('aafs_' + search_id);
 
     searches = (searches === null) ? [] : JSON.parse(searches);
-    buildSearchesList(searches, searchesList, form, container);
+    buildSearchesList(searches, searchesList, form, container, text);
 
     form.submit(function (event) {
         // The last performed search is at the top of the list.
@@ -85,6 +95,6 @@ function FormSaver(search_id, container) {
         // Stores the new list into the local storage
         window.localStorage.setItem('aafs_' + search_id, JSON.stringify(searches));
 
-        buildSearchesList(searches, searchesList, form, container);
+        buildSearchesList(searches, searchesList, form, container, text);
     });
 }

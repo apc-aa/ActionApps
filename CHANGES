@@ -1,8 +1,13 @@
+20-01-02 - new possibility to specify label for {formsaver::Fill&nbsp;by} - prefixes the searches
+(honzam)   buttons with the label (HTML could be used)
+         - new '410 Gone' status code for {header} - {header:410}
 19-12-30 - new {formsaver[:<container>]} - creates <div> with clickable options corresponding to previously
 (honzam)   filled form values by the user. Max 5 saved searches are stored (using localStore)
              {formsaver}              - whole form is saved (the one in which is the {formsaver})
              {formsaver:.my_subform}  - only the subform is saved
          - fix - {math..} now handles Division by zero Err
+         - allow require ggogle fonts:
+             {require:["//fonts.googleapis.com/css?family=Open+Sans#:400,600&amp;subset=latin-ext"]}
 19-12-27 - {ids} now can be returned as JSON, if "json" is specified as delimiter
 (honzam) - nicer output of AA Finder
          - better view help text and example on Admin -> View

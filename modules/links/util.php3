@@ -288,10 +288,11 @@ function Links_GetLinkContent($zids) {
  * Loads data from database for given category ids (called in itemview class)
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *
- * @see GetItemContent(), itemview class, item class
  * @param array $zids array if ids to get from database
  * @return array - Abstract Data Structure containing the links data
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ * @noinspection PhpUnused
+ * @see GetItemContent(), itemview class, item class
  */
 function Links_GetCategoryContent($zids) {
     if ( !$zids )          return false;

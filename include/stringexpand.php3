@@ -1092,24 +1092,27 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
  *   - max 5 saved searches are stored (using localStore)
  *   - must be inside the form
  *  {formsaver[:<container>]}
- *       {formsaver}              - whole form is saved (the one in which is the {formsaver})
- *       {formsaver:.my_subform}  - only the subform is saved
- *  @param  string $container     - css rule matching the element containing the inputs, textareas, selects
+ *       {formsaver}               - whole form is saved (the one in which is the {formsaver})
+ *       {formsaver:.my_subform}   - only the subform is saved
+ *       {formsaver::Fill&nbsp;by} - prefix the searches buttons with the label (HTML could be used)
+ *  @param  string $container      - css rule matching the element containing the inputs, textareas, selects
+ *  @param  string $label          - the label to show, when there are some stored form
  */
 class AA_Stringexpand_Formsaver extends AA_Stringexpand_Nevercache {
 
     /**
      * @param string $container
+     * @param string $label
      * @return string
      */
-    function expand($container='') {
+    function expand($container='', $label='') {
 
         $uniqid = get_short_hash(shtml_url(), $container);
 
         AA::Stringexpander()->addRequire('form-saver');  // for form-saver.js, jquery, deserialize
-        $script2run = "FormSaver('$uniqid','$container'); \n";
+        AA::Stringexpander()->addRequire('css-aa-system');
+        $script2run = "FormSaver('$uniqid','$container','".escape4js($label)."'); \n";
         AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
-
         return "<div class=aa-form-saver id=aa-fs-$uniqid></div>";
     }
 }

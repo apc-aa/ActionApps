@@ -573,6 +573,22 @@ i.ico.aa-tool-edit:hover {
     margin-top: 10px;
 }
 
+.aa-form-saver__btn {
+    border: solid 1px #cccccc;
+    margin: 2px;
+    padding: 1px  7px;
+    display: inline-block;
+}
+.aa-form-saver__btn:hover {
+    border: solid 1px #666;
+    box-shadow: 0 0 5px #666;
+}
+.aa-form-saver__lbl {
+    display: inline-block;
+    font-weight: normal;
+    padding-right: 5px;
+}
+
 /* ---chovani policek--- */
 .aa-field label span {
     text-transform: uppercase;
