@@ -5,6 +5,8 @@ function buildSearchesList(searches, searchesList, form, container, text) {
         searchesList.append( $('<div class=aa-form-saver__lbl>'+text+'</div>') );
     }
 
+    var btn_counter=0;
+
     // Loops over each previous search to create a list shown to the user.
     // Each item of the list shown will display as a mnemonic name the
     // value of the main field, and a sublist containing all the fields
@@ -37,7 +39,7 @@ function buildSearchesList(searches, searchesList, form, container, text) {
         (function(searchData) {
             var btn_text = params[firstinput];
             if (btn_text.length == 0) {
-                btn_text = '-'+(i+1)+'-';
+                btn_text = '-'+(++btn_counter)+'-';
             } else if (btn_text.length > 16) {
                 btn_text = btn_text.substring(0,16)+'…';
             }
