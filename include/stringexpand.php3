@@ -7520,6 +7520,7 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
             case '401':       AA::$headers['status']      = 'HTTP/1.1 401 Unauthorized';             break;
             case '404':       AA::$headers['status']      = 'HTTP/1.0 404 Not Found';                break;
             case '409':       AA::$headers['status']      = 'HTTP/1.1 409 Conflict';                 break;
+            case '410':       AA::$headers['status']      = 'HTTP/1.1 410 Gone';                     break;
             case 'plain':     AA::$headers['type']        = 'text/plain';                            break;  // default header text content
             case 'css':       AA::$headers['type']        = 'text/css';                              break;
             case 'html':      AA::$headers['type']        = 'text/html';                             break;
