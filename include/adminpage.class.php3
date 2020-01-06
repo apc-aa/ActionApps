@@ -274,7 +274,7 @@ class AA_Adminpage implements AA_iEditable {
             $this->setFromForm();
             if ($this->validateData()) {
                 if ($this->save()) {
-                    AA::Pagecache()->invalidatefor($this->module_id);  // invalidate old cached values
+                    AA::Pagecache()->invalidateFor($this->module_id);  // invalidate old cached values
                     // @todo msg ok
                     $Msg = MsgOk(_m("Fulltext format update successful"));
                 } else {

@@ -251,7 +251,7 @@ if ($update) {
                 }
             }
         }
-        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
         if (!count($err)) {
             $from_form = false;

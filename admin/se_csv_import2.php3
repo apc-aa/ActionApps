@@ -236,7 +236,7 @@ class AA_Csv_Importer {
         AA_Log::write("CSV_IMPORT", AA_Log::context(), $logMsg);
 
         // invalidate cache;
-        AA::Pagecache()->invalidatefor($this->slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor($this->slice_id);  // invalidate old cached values
 
         fclose($handle);
 

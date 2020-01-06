@@ -292,7 +292,7 @@ if ( $update ) {
             }
             $view_id = $varset->last_insert_id();
         }
-        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
         foreach ($VIEW_TYPES[$view_type] as $k => $v) {
             if (substr ($k,0,strlen("function:")) == "function:") {

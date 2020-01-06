@@ -299,7 +299,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
 
         DB_AA::sql("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
 
-        AA::Pagecache()->invalidatefor( array($this->slice_id, $dest_slice_id) );  // invalidate old cached values
+        AA::Pagecache()->invalidateFor( array($this->slice_id, $dest_slice_id) );  // invalidate old cached values
 
         return false;                                  // OK - no error
     }
@@ -357,7 +357,7 @@ class AA_Manageraction_View_Move2slice extends AA_Manageraction_Item_Move2slice 
 
         DB_AA::update('view', array(array('slice_id', $dest_slice_id, 'l')), array(array('id',$ids,'i')));
 
-        AA::Pagecache()->invalidatefor( array($this->slice_id, $dest_slice_id));  // invalidate old cached values
+        AA::Pagecache()->invalidateFor( array($this->slice_id, $dest_slice_id));  // invalidate old cached values
 
         return false;                                  // OK - no error
     }
@@ -430,7 +430,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         // delete content of all fields
         AA_Items::deleteItems($items_to_delete);
 
-        AA::Pagecache()->invalidatefor($slice_id);
+        AA::Pagecache()->invalidateFor($slice_id);
         return false;     // OK
     }
 

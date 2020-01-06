@@ -304,6 +304,18 @@ class PageCache  {
         }
     }
 
+    /** invalidateById function
+     *  Remove specified ids from cache
+     * @param $keys
+     */
+    static function invalidateOlder( $time ) {
+        $highest_old_id = DB_AA::select1('SELECT id FROM pagecache','id',array(array('stored',$time,'<')), array('id-'));
+        if ($highest_old_id) {
+            DB_AA::delete_low_priority('pagecache_str2find',array(array('id',$highest_old_id,'<=')));
+            DB_AA::delete_low_priority('pagecache',array(array('stored',$time,'<')));
+        }
+    }
+
     /** invalidateFor function
      *  Remove cached informations for all rows which have the $cond in str2find
      * @param string | array $strings
@@ -334,12 +346,8 @@ class PageCache  {
      *  Remove cached informations for all rows
      */
     function invalidate() {
-        $db  = getDB();
-        $SQL = "DELETE FROM pagecache";
-        $db->query_nohalt($SQL);
-        $SQL = "DELETE FROM pagecache_str2find";
-        $db->query_nohalt($SQL);
-        freeDB($db);
+        DB_AA::delete('pagecache_str2find');
+        DB_AA::delete('pagecache');
     }
 }
 
@@ -360,8 +368,7 @@ class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
         //  WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache.stored<'1200478499'
         // (supported in MySQL >= 4.0), but it takes ages
 
-        $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".(time() - $cache_time)."'", '', 'id');
-        PageCache::invalidateById( $keys );
+        PageCache::invalidateOlder( time() - $cache_time );
     }
 }
 

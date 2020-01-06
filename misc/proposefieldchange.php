@@ -174,7 +174,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         $saver        = new AA\IO\Saver($grabber, null, 'de6a767322ed6040d4b745f5c16a7683', 'insert_if_new', 'new');
         $saver->run();
 
-        AA::Pagecache()->invalidatefor("de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values
+        AA::Pagecache()->invalidateFor("de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values
         echo "Uo�eno";
     } else {
         echo "Nic neulozeno";

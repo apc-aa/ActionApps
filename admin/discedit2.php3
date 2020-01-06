@@ -80,7 +80,7 @@ if ($update) {
         $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
         $db->query($SQL);
 
-        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
         go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
     }

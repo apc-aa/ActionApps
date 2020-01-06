@@ -189,7 +189,7 @@ class AA_Poll {
 
         if (!$vote_invalid) {
             DB_AA::sql("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
-            AA::Pagecache()->invalidatefor( $this->getModuleId());
+            AA::Pagecache()->invalidateFor( $this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
                 $varset->resetFromRecord( array('answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time) );

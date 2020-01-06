@@ -132,7 +132,7 @@ if ($_REQUEST['del']) {
         $err["DB"] = MsgErr("Can't change field");
         exit;
     }
-    AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+    AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
     $Msg = MsgOk(_m("Field delete OK"));
 }
@@ -214,7 +214,7 @@ if ($update) {
             }
         }
         freeDB($db);
-        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
         if (!count($err)) {
             $Msg = MsgOk(_m("Fields update successful"));

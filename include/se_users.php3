@@ -54,7 +54,7 @@ function ChangeRole() {
     if ( $UsrAdd ) {
         if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, $perms_roles[$role]['perm']) ) {
             AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
-            AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+            AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
         }
     } elseif( $UsrDel ) {
         if ( CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, $perms_roles["AUTHOR"]['perm']) ) { // smallest permission
@@ -63,7 +63,7 @@ function ChangeRole() {
 
         $profile = AA_Profile::getProfile($UsrDel, $slice_id);  // user settings
         $profile->delUserProfile();
-        AA::Pagecache()->invalidatefor($slice_id);  // invalidate old cached values
+        AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
     }
 }
 

@@ -141,7 +141,7 @@ if ($sitefix) {
 }
 
 if ($addcond OR $delcond OR $content OR $name OR $akce) {
-    AA::Pagecache()->invalidatefor($module_id);  // invalidate old cached values
+    AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values
 }
 
 if ($addcond OR $delcond OR $content OR $name OR $akce OR $sitefix OR $addvar OR $delvar) {

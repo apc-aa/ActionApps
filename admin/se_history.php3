@@ -97,7 +97,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
                 $updated_items = 1;
             }
         }
-        AA::Pagecache()->invalidatefor($sid);   // invalidate old cached values
+        AA::Pagecache()->invalidateFor($sid);   // invalidate old cached values
 
         return false;     // OK
     }
