@@ -309,11 +309,13 @@ class PageCache  {
      * @param $keys
      */
     static function invalidateOlder( $time ) {
-        $highest_old_id = DB_AA::select1('SELECT id FROM pagecache','id',array(array('stored',$time,'<')), array('id-'));
+        $highest_old_pid = DB_AA::select1('SELECT id FROM pagecache','id',array(array('stored',$time,'<')), array('id-'));
+        $highest_old_id  = DB_AA::select1('SELECT id FROM pagecache_str2find','id',array(array('pagecache_id',$highest_old_pid)));
         if ($highest_old_id) {
             DB_AA::delete_low_priority('pagecache_str2find',array(array('id',$highest_old_id,'<=')));
             DB_AA::delete_low_priority('pagecache',array(array('stored',$time,'<')));
         }
+        return "time<$time, id<=$highest_old_id";
     }
 
     /** invalidateFor function
@@ -368,7 +370,7 @@ class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
         //  WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache.stored<'1200478499'
         // (supported in MySQL >= 4.0), but it takes ages
 
-        PageCache::invalidateOlder( time() - $cache_time );
+        return PageCache::invalidateOlder( time() - $cache_time );
     }
 }
 
