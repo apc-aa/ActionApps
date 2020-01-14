@@ -1,3 +1,10 @@
+20-01-14 - new {sortable}, {sortable:#mytable}, {sortable:table.sortable} (default)
+(honzam)   makes the specified table sortable. Good to add also short
+           css rules - see cdn.jsdelivr.net/gh/honzito/plain.sortable/sortable.css
+         - new experimental {datatable:<selector>:<options>} - creates Datatable form tables
+           matching the <selector> (.datatable) by default (see datatables.net)
+              {datatable}, {datatable:#mytable}, {datatable:.datatable:{ paging:false, info:false }}
+20-01-06 - better pagacache cron cleanup process - no old records remain, now
 20-01-02 - new possibility to specify label for {formsaver::Fill&nbsp;by} - prefixes the searches
 (honzam)   buttons with the label (HTML could be used)
          - new '410 Gone' status code for {header} - {header:410}

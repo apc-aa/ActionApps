@@ -6076,6 +6076,8 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Headcode');
         } elseif ($type == 'AA_Req_Footcode') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Footcode');
+        } elseif ($type == 'AA_Req_Footlib') {
+            $hash = $this->addUsrRequire($require, 'AA_Req_Footlib');
         } elseif ($type == 'AA_Req_Htm') {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
         } elseif ((aa_substr($require,-4)=='.css') OR aa_strpos($require,'.css?') OR aa_strpos($require,'.css ') OR aa_strpos($require,'/css?')) {  //  /css? for google fonts
@@ -6214,6 +6216,8 @@ class AA_Requires {
             //'select2@4'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
             'select2@4'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.full.min.js', 'sha256-FcVIknBiVRk5KLQeIBb9VQdtFRMqwffXyZ+D8q0gQro=', array('jquery@3','_css-select2@4')),
             'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
+            'sortable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@latest/sortable.min.js','sha384-0DvwQn9ZOScsvM5P3Lhg3Z3W5YIXxZmjv1yYMJ8ObRCKFnshLbiSIsQ3m+ThLJLE'),
+            'datatable@1'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.10.20/js/jquery.dataTables.min.js','sha256-LXQzPhL1IRyKkA7HpCOBi8I+OC8HqzHUYkjK8S+LKTs=',array('jquery@3')),
             'form-saver@1'               => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false),'',array('deserialize@2')),
             'deserialize@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0-rc1/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', array('jquery@3')),
             'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
@@ -8712,14 +8716,16 @@ class AA_Stringexpand_Generate extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Require extends AA_Stringexpand {
     /** expand function
-     * @param $lib
-     * @param $script
+     * @param string $libs
+     * @param string $script
+     * @param string $position   '' | 'FOOT'  - require as foot library
      * @return string
      */
-    function expand($libs='', $script='') {
+    function expand($libs='', $script='', $position='') {
         $l = json2arr($libs);
+        $pos = ($position=="FOOT") ? 'AA_Req_Footlib' : '';
         foreach($l as $lib) {
-            AA::Stringexpander()->addRequire($lib);
+            AA::Stringexpander()->addRequire($lib, $pos);
         }
         if ($script) {
             AA::Stringexpander()->addRequire($script, 'AA_Req_Load');
@@ -8774,6 +8780,52 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
             $script2run = "TableExport(document.querySelectorAll('$selector'),{ formats: ['xlsx'], position: 'bottom'}); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         }
+        return '';
+    }
+}
+
+/** Creates Datatable form tables matching the $selector (.datatable) by default
+ *    {datatable:<selector>:<options>}
+ *    {datatable}, {datatable:#mytable}, {datatable:.datatable:{ paging:false, info:false }}
+ *  All the JS libraries are automaticaly loaded
+ *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
+ *  Experimental - not able to sort czech and other characters by default (v 1.10.20)
+ */
+class AA_Stringexpand_Datatable extends AA_Stringexpand {
+    /** expand function
+     * @param $selector
+     * @param $options string JSON - see  
+     * @return string
+     */
+    function expand($selector='', $options='') {
+        if (!strlen($selector)) {
+            $selector = '.datatable';
+        }
+        AA::Stringexpander()->addRequire('datatable');
+        $script2run = "$('$selector').DataTable($options);\n";
+        AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
+        return '';
+    }
+}
+
+/** Creates Sortable table matching the $selector (table.sortable by default)
+ *    {sortable}, {sortable:#mytable}, {sortable:table.sortable} (default)
+ *  All the JS libraries are automaticaly loaded
+ *  You must using {generate:HEAD} and {generate:FOOT} in your site module
+ */
+class AA_Stringexpand_Sortable extends AA_Stringexpand {
+    /** expand function
+     * @param $selector
+     * @param $options string JSON - see
+     * @return string
+     */
+    function expand($selector='', $options='') {
+        if (!strlen($selector)) {
+            $selector = 'table.sortable';
+        }
+        AA::Stringexpander()->addRequire('sortable');
+        $script2run = "SortableTable.find('$selector');\n";
+        AA::Stringexpander()->addRequire($script2run, 'AA_Req_Load');
         return '';
     }
 }
