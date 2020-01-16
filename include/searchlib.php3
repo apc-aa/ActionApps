@@ -1475,10 +1475,17 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 // It is possible to write conditions also using fields from
                 // remote slice (which is related to this one)
                 // Syntax is:
-                //   <remote_field>@<remote_slice_id>/<relation_field>@<this_slice_id>
-                //   headline........@2a652342562728238937365353322372/relation.......1@eba428a3736353783289287499a99c8e
-                //   - search in headline field of all related items
-                //     (relation.......1 field pointed to related items)
+                // 1) the current slice is pointing to another one
+                //    <remote_field_id>@<local_relation_field_id>
+                //      headline........@relation.......1
+                //        - search in headline field of all related items (relation.......1 field pointed to related items)
+                // 2) the remote slice is pointing to current one
+                //    <remote_field_id>@<remote_slice_id>/<remote_relation_field_id>
+                //      headline........@7735375488a65e7735375488a65eab2ab2/relation.......1
+                //      headline........@7735375488a65e7735375488a65eab2ab2+/relation.......1
+                //        - search in headline field of all related items
+                //          (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2ab2 pointed to current item)
+                //        - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2ab2+ means we want also non ACTIVE items take in the account
 
                 if ( strpos($fid, '@') !== false ) {
                     if (strpos($fid, '/') === false ) {
@@ -1539,12 +1546,17 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         // Syntax is:
                         //   <remote_field_id>@<remote_slice_id>/<remote_relation_field_id>
                         //   headline........@7735375488a65e7735375488a65eab2ab2/relation.......1
+                        //   headline........@7735375488a65e7735375488a65eab2ab2+/relation.......1
                         //   - search in headline field of all related items
                         //     (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2ab2 pointed to current item)
+                        //   - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2ab2+ means we want also non ACTIVE items take in the account
                         list($cond_fld_id, $rel_combi) = explode('@',$fid);
                         list($rel_slice_id, $rel_fld_id)   = explode('/',$rel_combi);
-
-
+                        $rel_bins = AA_BIN_ACTIVE;
+                        if (substr($rel_slice_id, -1) == '+')  {
+                             $rel_bins = AA_BIN_ALL;
+                             $rel_slice_id = trim($rel_slice_id,'+');
+                        }
                         $rel_slice   = AA_Slice::getModule($rel_slice_id);
                         if (!is_object($rel_slice)) {
                             if (AA::$debug) echo "Skipping $fid in conds[]: $rel_slice_id is not slice.<br>";
@@ -1568,9 +1580,10 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         $tbl       = 'c'.$tbl_count++;
                         $tbl2      = 'c'.$tbl_count++;
                         if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                            $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? CreateBinCondition($rel_bins, $tbl2) : '';
                             // Long ID in conds should be specified as unpacked, but in db it is packed
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=".xpack_id($rel_slice_id).")";
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=".xpack_id($rel_slice_id)." $rel_bins_cond)";
                         } else {
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
