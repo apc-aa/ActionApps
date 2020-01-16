@@ -1570,7 +1570,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
                             // Long ID in conds should be specified as unpacked, but in db it is packed
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id)";
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=".xpack_id($rel_slice_id).")";
                         } else {
                             $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
