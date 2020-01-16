@@ -1,3 +1,6 @@
+20-01-16 - optimized SQL query for remote items search like in query
+(honzam)     {ids:{_#SLICE_ID}:d-status_code.....@27803bcb3e04af9fe56a4420aa3a8b35/relation........-=-1}
+         - better js detection in {require:myscript.js?v=5} - .js with ?parameters is detected well
 20-01-14 - new {sortable}, {sortable:#mytable}, {sortable:table.sortable} (default)
 (honzam)   makes the specified table sortable. Good to add also short
            css rules - see cdn.jsdelivr.net/gh/honzito/plain.sortable/sortable.css
