@@ -27,6 +27,11 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// polyfills - will be removed when the incompatible browsers will not be supported by its creator
+if (window.NodeList && !NodeList.prototype.forEach) {
+  NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
 if (typeof window.AA_GetConf === 'undefined') {
     window.AA_GetConf = function(prop) {
         if (typeof AA_GetConf.aa_install_path == 'undefined') {
@@ -91,9 +96,11 @@ function AA_Ajax(div_id, url, param, onload) {
 }
 
 function AA_AjaxCss(selector, url, param, onload) {
+    var di = $(selector).css('display');
     $(selector).hide('fast');
     $(selector).html(AA_GetConf('loader'));
     $(selector).show('fast');
+    $(selector).css(di);
     $(selector).load(url, param, onload);
 }
 

@@ -86,6 +86,11 @@ readfile($dir. 'prototip.js'     ); echo "\n";      // make sure there is new li
 readfile($dir. 'control.tabs.js' );
 ?>
 
+// polyfills - will be removed when the incompatible browsers will not be supported by its creator
+if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
     $(photo_div).show();
@@ -228,10 +233,14 @@ function DisplayInputBack(input_id) {
 
 function AA_Ajax(div, url, param, onload) {
     $(div).update(AA_Config.loader);
-    new Ajax.Updater(div, url, param);
     if( onload && typeof onload === "function" ) {
-        onload();
+        if (param && typeof param === 'object' ) {
+            param['onSuccess'] = onload;
+        } else {
+            param = {onSuccess: onload};
+        }
     }
+    new Ajax.Updater(div, url, param);
 }
 
 function AA_AjaxCss(selector, url, param) {

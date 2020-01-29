@@ -86,6 +86,11 @@ readfile($dir. 'prototip.js'     ); echo "\n";      // make sure there is new li
 readfile($dir. 'control.tabs.js' );
 ?>
 
+// polyfills - will be removed when the incompatible browsers will not be supported by its creator
+if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
 // switch current item in gallery
 function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
     $(photo_div).show();
