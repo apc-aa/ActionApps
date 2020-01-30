@@ -6830,7 +6830,14 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
 
     /**
      * @param string $url
-     * @param string $info
+     * @param string $info = type     - like TXT, ...
+     *                       name     filename
+     *                       size     - like 12.1 kB
+     *                       bytesize - like 12145
+     *                       link
+     *                       typesize
+     *                       crc
+     *                       time
      * @return int|string|void
      */
     function expand($url='', $info='') {
@@ -6842,10 +6849,14 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                 return ($part>0) ? $url2array[$part] : 'TXT';
             case 'name':
                 return basename(parse_url($url, PHP_URL_PATH));
+            case 'bytesize':
             case 'size':
                 $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
                 if (is_file($filename)) {
                     $size    = @filesize($filename);
+                    if ($info=='bytesize') {
+                        return $size;
+                    }
                     $size_kb = round($size/1024, 1);
                     $size_mb = round($size/1048576, 1);
                     $size    = ($size <= 1048576) ? $size_kb." kB" : $size_mb." MB";
