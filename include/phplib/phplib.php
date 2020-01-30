@@ -261,6 +261,14 @@ class Session {
         }
     }
 
+    /** lifetime in seconds
+     * @return int
+     */
+    function get_sec_lifetime() {
+        // day or more - the day added, because we experienced some relogin requests, so we are trying to check, if this doesn't help
+        return ($this->lifetime > 0) ? max($this->lifetime*60, 24*3600) :  0;
+    }
+
     /**
     * ?
     *
@@ -276,16 +284,11 @@ class Session {
             $this->cookie_path = get_cfg_var('session.cookie_path') ?: '/';
         }
 
-        if ($this->lifetime > 0) {
-            $lifetime = max($this->lifetime*60, 24*3600);               // day or more - the day added, because we experienced some relogin requests, so we are trying to check, if this doesn't help
-            if (ini_get('session.gc_maxlifetime') < $lifetime) {
-                // default value is 1440, so session would expire after 24 mins
-                ini_set('session.gc_maxlifetime', $lifetime);
-            }
-        } else {
-            $lifetime = 0;
+        $lifetime = $this->get_sec_lifetime();
+        if (($lifetime > 0) AND (ini_get('session.gc_maxlifetime') < $lifetime)) {
+            // default value is 1440, so session would expire after 24 mins
+            ini_set('session.gc_maxlifetime', $lifetime);
         }
-
         session_set_cookie_params($lifetime, $this->cookie_path, $this->cookie_domain);
     } // end func set_tokenname
 
@@ -305,22 +308,39 @@ class Session {
     } // end func put_headers
 
 
-    protected function session_setup() {
-        $ret = array();
+    /** get configuration array for session or cookies
+     * @param string $type  session|cookie
+     * @return array
+     */
+    protected function session_setup($type='session') {
+        $cook = array();
+        $ret  = array();
+
+        $cook['httponly']  = 1;
+        $cook['secure'] = $_SERVER['HTTPS'] ? 1 : 0;
+        if (version_compare(phpversion(), '7.3.0', '>=')) {
+            $cook['samesite'] = 'Strict';   // maybe we will use 'Lax' if we found Strict too restrictive
+        }
+
         if (version_compare(phpversion(), '7.0.0', '<')) {
             ini_set("session.use_only_cookies", "1");
         } else {
             $ret['use_only_cookies'] = 1;
             $ret['use_trans_sid']    = 0;
-            $ret['cookie_httponly']  = 1;
             $ret['use_strict_mode']  = 1;
-            if (isset($_SERVER['HTTPS'])) {
-                $ret['cookie_secure'] = 1;
-            }
-            if (version_compare(phpversion(), '7.3.0', '>=')) {
-                $ret['samesite'] = 'Strict';   // maybe we will use 'Lax' if we found Strict too restrictive
+            $ret['cookie_httponly']  = $cook['httponly'];
+            $ret['cookie_secure']    = $cook['secure'];
+            if ($cook['samesite']) {
+                $ret['cookie_samesite'] = $cook['samesite'];
             }
             // $ret['read_and_close'] = true;  // no locking - @todo - use it when we do not store to the session - just we read
+        }
+        if ($type=='cookie') {
+            return $cook;
+        }
+        if (version_compare(phpversion(), '7.0.0', '<')) {
+            ini_set("session.use_only_cookies", "1");
+            return array();
         }
         return $ret;
     }
@@ -339,6 +359,10 @@ class Session {
 
         if ($start_array) {  // defined for PHP >= 7.0
             $ok = session_start($start_array);
+            $cookie_setup = $this->session_setup('cookie');
+            $cookie_setup['expires'] = time()+$this->get_sec_lifetime();
+            $cookie_setup['path']    = '/';
+            setcookie(session_name(), session_id(), $cookie_setup);
         } else {
             $ok = session_start();
         }
