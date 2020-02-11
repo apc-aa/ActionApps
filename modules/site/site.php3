@@ -90,7 +90,7 @@ function Die404($page=null) {
     function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
     if (!is_null($page)) {
         header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: AA_Langs::getCharset()));
-        echo AA::Stringexpander()->unalias($page);
+        echo AA::Stringexpander()->postprocess(AA::Stringexpander()->unalias($page));
     }
     //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
     exit;
