@@ -545,7 +545,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      * @param $id - aa_id - object id
      * @param $type - object class - like 'AA_Form'
      * @static
-     * @return null
+     * @return AA_Object | null
      */
     static function load($id, $type=null) {
         // @todo optimize the load

@@ -784,6 +784,13 @@ class AA_Module_Site extends AA_Module {
     const SETTING_CLASS = 'AA_Modulesettings_Site';
     const SETTING_TABLE = 'site';
 
+
+    const FLAG_DISABLE   = 1;   // deactivated spot
+    const FLAG_JUST_TEXT = 2;   // not used - planed for site speedup
+    // (= flag means "don't stringexpand text)"
+    const FLAG_COLLAPSE  = 4;   // (visualy) Collapsed spot
+
+
     protected $_related_slices = null;
     protected $_related_views  = null;
 
@@ -795,10 +802,25 @@ class AA_Module_Site extends AA_Module {
         return $this->getLang();
     }
 
+    /** joins output of expanded sitespots
+     * @param string      $module_id
+     * @param int[]       $spot_ids - array of spots to
+     * @param string|null $item - item for whit we evaluate
+     * @return string
+     */
+    static function spotsOutput($module_id, $spot_ids, $item = null) {
+        $out = '';
+        $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $module_id, 'l'), array('spot_id', $spot_ids, 'i')));
+
+        foreach ( $spot_ids as $v ) {
+            $out .= ($spots[$v]['flag'] & AA_Module_Site::FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Stringexpander()->unalias($spots[$v]['content'], '', $item);
+        }
+        return $out;
+    }
+
     function getSite($apc_state) {
         $tree        = $this->getTree();   // new sitetree();
         $show_ids    = array();
-        $out         = '';
 
         // it fills $show_ids array
         $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; }, 'cond');
@@ -807,11 +829,8 @@ class AA_Module_Site extends AA_Module {
             exit;
         }
 
-        $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $this->module_id, 'l'), array('spot_id', $show_ids, 'i')));
+        $out = AA_Module_Site::spotsOutput($this->module_id, $show_ids, $apc_state['item']);
 
-        foreach ( $show_ids as $v ) {
-            $out .= ( ($spots[$v]['flag'] & MODW_FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Stringexpander()->unalias($spots[$v]['content'], '', $apc_state['item']));
-        }
         // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
         return trim(AA::Stringexpander()->postprocess($out));
     }

@@ -21,12 +21,6 @@ https://www.apc.org/
 
 // Miscellaneous utility functions for "site" module
 
-define ('MODW_FLAG_DISABLE',   1);   // deactivated spot
-define ('MODW_FLAG_JUST_TEXT', 2);   // not used - planed for site speedup
-                                     // (= flag means "don't stringexpand text)"
-define ('MODW_FLAG_COLLAPSE',  4);   // (visualy) Collapsed spot
-
-
 function SiteAdminPage($spot_id, $add = null) {
     global $slice_id;
     $url = get_url($_SERVER['PHP_SELF'], array('spot_id'=>$spot_id, 'slice_id'=>$slice_id));   // Always used this way
@@ -63,10 +57,10 @@ function ModW_PrintSpotName_Start($spot_id, $depth) {
     global $r_spot_id, $tree;
 
     // print the spot itself
-    ModW_SpotHtml($spot_id, $tree->getName($spot_id), $spot_id == $r_spot_id, ($tree->get('flag', $spot_id) & MODW_FLAG_DISABLE));
+    ModW_SpotHtml($spot_id, $tree->getName($spot_id), $spot_id == $r_spot_id, ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
 
     // variables defined? - print it
-    if (!$tree->isFlag($spot_id, MODW_FLAG_COLLAPSE) AND ($vars = $tree->get('variables', $spot_id))) {
+    if (!$tree->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) AND ($vars = $tree->get('variables', $spot_id))) {
         echo "\n  <div class=\"variables\">(". implode($vars, ',') .')</div>';
     }
 }
@@ -81,7 +75,7 @@ function ModW_PrintChoice_Start($spot_id, $depth, $choices_index, $choices_count
 
     if ($tree->isLeaf($spot_id)) {
         $colaps = GetModuleImage('site', $last ? 'l.gif' : 't.gif', '', 21, 13);
-    } elseif ($tree->get('flag', $spot_id) & MODW_FLAG_COLLAPSE) {
+    } elseif ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_COLLAPSE) {
         $colaps = '<a href="'. SiteAdminPage($spot_id, "akce=m").'">'. GetModuleImage('site', 'plus.gif', '', 21, 13) .'</a> ';
     } else {
         $colaps = '<a href="'. SiteAdminPage($spot_id, "akce=p").'">'. GetModuleImage('site', 'minus.gif', '', 21, 13) .'</a> ';

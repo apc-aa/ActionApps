@@ -91,11 +91,11 @@ switch( $akce ) {
     case 'l': $tree->moveLeftRight( $r_spot_id, 'moveLeft' );  break;  // Left
     case 'a': $tree->moveLeftRight( $r_spot_id, 'moveRight' ); break;  // Right
 
-    case 'h': $tree->setFlag($r_spot_id, MODW_FLAG_DISABLE);   break;  // Hide
-    case 'e': $tree->clearFlag($r_spot_id, MODW_FLAG_DISABLE); break;  // Disable
+    case 'h': $tree->setFlag($r_spot_id, AA_Module_Site::FLAG_DISABLE);   break;  // Hide
+    case 'e': $tree->clearFlag($r_spot_id, AA_Module_Site::FLAG_DISABLE); break;  // Disable
 
-    case 'p': $tree->setFlag($r_spot_id, MODW_FLAG_COLLAPSE);   break;  // Collapse
-    case 'm': $tree->clearFlag($r_spot_id, MODW_FLAG_COLLAPSE); break;  // Expand
+    case 'p': $tree->setFlag($r_spot_id, AA_Module_Site::FLAG_COLLAPSE);   break;  // Collapse
+    case 'm': $tree->clearFlag($r_spot_id, AA_Module_Site::FLAG_COLLAPSE); break;  // Expand
 }
 
 
@@ -193,7 +193,7 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
           <td>'. Links_PrintActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. SiteAdminPage($r_spot_id, "akce=r").'\', \''.
                                             _m("Are you sure you want to delete the spot?") .'\')') .'</td>
           <td>&nbsp;'.
-          (($tree->get('flag', $r_spot_id) & MODW_FLAG_DISABLE) ?
+          (($tree->get('flag', $r_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
               Links_PrintActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
               Links_PrintActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
               .'</td>

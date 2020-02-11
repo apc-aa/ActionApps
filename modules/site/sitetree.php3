@@ -626,13 +626,13 @@ class sitetree {
             if ($pos) {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
-                if (($method=='all') OR ($method=='collapsed') OR (($method=='cond') AND !$this->isFlag($pos, MODW_FLAG_DISABLE))) {
+                if (($method=='all') OR ($method=='collapsed') OR (($method=='cond') AND !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
                     $function_spot($pos, $depth);
                 }
 
                 // if this position is collapsed, then print only first position
                 // and skip the others as well as all the choices
-                if (($method == 'collapsed') AND $this->isFlag($pos, MODW_FLAG_COLLAPSE)) {  // MODW_FLAG_COLLAPSE - collapsed branches.
+                if (($method == 'collapsed') AND $this->isFlag($pos, AA_Module_Site::FLAG_COLLAPSE)) {  // AA_Module_Site::COLLAPSE - collapsed branches.
                     break;
                 }
 
@@ -648,7 +648,7 @@ class sitetree {
                     $choices_index = 0;
                     foreach ($choices as $k => $cho) {
                         if ($cho) { // skip buggy empty choices
-                            if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, MODW_FLAG_DISABLE))) {
+                            if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
 
                                 // sometimes it is usefull to call a function before the choice
                                 if ($functions['before_choice']) {
