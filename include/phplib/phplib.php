@@ -309,38 +309,36 @@ class Session {
 
 
     /** get configuration array for session or cookies
-     * @param string $type  session|cookie
      * @return array
      */
-    protected function session_setup($type='session') {
-        $cook = array();
-        $ret  = array();
-
-        $cook['httponly']  = 1;
-        $cook['secure'] = $_SERVER['HTTPS'] ? 1 : 0;
-        if (version_compare(phpversion(), '7.3.0', '>=')) {
-            $cook['samesite'] = 'Strict';   // maybe we will use 'Lax' if we found Strict too restrictive
-        }
-
+    protected function session_setup() {
+        $ret = array();
         if (version_compare(phpversion(), '7.0.0', '<')) {
             ini_set("session.use_only_cookies", "1");
         } else {
             $ret['use_only_cookies'] = 1;
             $ret['use_trans_sid']    = 0;
+            $ret['cookie_httponly']  = 1;
             $ret['use_strict_mode']  = 1;
-            $ret['cookie_httponly']  = $cook['httponly'];
-            $ret['cookie_secure']    = $cook['secure'];
-            if ($cook['samesite']) {
-                $ret['cookie_samesite'] = $cook['samesite'];
+            if (isset($_SERVER['HTTPS'])) {
+                $ret['cookie_secure'] = 1;
+            }
+            if (version_compare(phpversion(), '7.3.0', '>=')) {
+                $ret['cookie_samesite'] = 'Strict';   // maybe we will use 'Lax' if we found Strict too restrictive
             }
             // $ret['read_and_close'] = true;  // no locking - @todo - use it when we do not store to the session - just we read
         }
-        if ($type=='cookie') {
-            return $cook;
+        return $ret;
+    }
+
+    protected function cookie_setup() {
+        $ret = array();
+        $ret['httponly']  = 1;
+        if (isset($_SERVER['HTTPS'])) {
+            $ret['secure'] = 1;
         }
-        if (version_compare(phpversion(), '7.0.0', '<')) {
-            ini_set("session.use_only_cookies", "1");
-            return array();
+        if (version_compare(phpversion(), '7.3.0', '>=')) {
+            $ret['samesite'] = 'Strict';   // maybe we will use 'Lax' if we found Strict too restrictive
         }
         return $ret;
     }
@@ -359,7 +357,8 @@ class Session {
 
         if ($start_array) {  // defined for PHP >= 7.0
             $ok = session_start($start_array);
-            $cookie_setup = $this->session_setup('cookie');
+            // this way we renew lifetime of the cookie on each reload
+            $cookie_setup = $this->cookie_setup();
             $cookie_setup['expires'] = time()+$this->get_sec_lifetime();
             $cookie_setup['path']    = '/';
             setcookie(session_name(), session_id(), $cookie_setup);
