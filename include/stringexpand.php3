@@ -4657,17 +4657,9 @@ class AA_Stringexpand_Sitespot extends AA_Stringexpand {
      */
     function expand($spot_id='')
     {
-        $ret = '';
-        if (AA::$site_id AND ctype_digit((string)$spot_id)) {
-            if ($spot = DB_AA::select1('SELECT flag, content FROM site_spot', '', array(array('site_id', AA::$site_id, 'l'), array('spot_id', $spot_id, 'i')))) {
-                $ret = ($spot['flag'] & MODW_FLAG_JUST_TEXT) ? $spot['content'] : AA::Stringexpander()->unalias($spot['content']);
-            }
-        }
-        return $ret;
+        return (AA::$site_id AND ctype_digit((string)$spot_id)) ? AA_Module_Site::spotsOutput(AA::$site_id, array($spot_id)) : '';
     }
 }
-
-
 
 
 /** @deprecated - use AA_Stringexpand_Modulefield instead
