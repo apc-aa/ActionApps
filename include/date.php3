@@ -133,7 +133,7 @@ class datectrl {
      */
     function isTimestamp($timestamp) {
         // return ctype_digit((string)$timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);  // wrong - ctype_digit is not work with negative values
-        return IsSigInt($timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);
+        return IsSigInt($timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 100000000000);
     }
 
     /** get_date function
@@ -184,6 +184,7 @@ class datectrl {
 
 
     function getDayOptions() {
+        $ret = '';
         $at  = getdate(time());
         $sel = ($this->day != 0 ? $this->day : $at["mday"]);
         for ($i = 1; $i <= 31; $i++) {
