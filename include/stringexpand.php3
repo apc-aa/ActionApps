@@ -1890,6 +1890,31 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Distance between two Latitude/Longitude coordinates on Earth in meters
+ *   {distance:<lat1>:<lon1>:<lat2>:<lon2>}
+ *   {distance:50.0898689:14.4000936:48.8940964:13.8241719}
+ *   @param $lat1 - Latitude of first coordinate
+ *   @param $lon1 - Longitude of first coordinate
+ *   @param $lat2 - Latitude of second coordinate
+ *   @param $lon2 - Longitude of second coordinate
+ */
+class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($lat1='', $lon1='', $lat2='', $lon2='') {
+        $EARTHRADIUS = 6371000;
+        // convert from degrees to radians
+        $latFrom = deg2rad(calculate($lat1));
+        $lonFrom = deg2rad(calculate($lon1));
+        $latTo   = deg2rad(calculate($lat2));
+        $lonTo   = deg2rad(calculate($lon2));
+        //huhl($lat1, $latFrom, $lon1, $lonFrom, $lat2, $latTo, $lon2, $lonTo);
+        return (int)($EARTHRADIUS * 2 * asin(sqrt(pow(sin(($latTo - $latFrom) / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin(($lonTo - $lonFrom) / 2), 2))));
+    }
+}
+
 /**
  * Class AA_Stringexpand_Substr
  */
