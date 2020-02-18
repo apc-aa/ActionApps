@@ -218,6 +218,9 @@ class AA_Field {
             if ($datectrl->isUpdatable()) {
                 $datectrl->update();                   // updates datectrl
                 $ret = new AA_Value($datectrl->get_date(), FLAG_HTML);
+            } else {
+                // hiden date field ('hid' widget)
+                $ret = new AA_Value($var, FLAG_HTML);
             }
         } elseif ($insert_type == 'boo') {
             $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);
