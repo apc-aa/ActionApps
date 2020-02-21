@@ -241,12 +241,16 @@ class AA_Hitcounter_Stats implements \AA\Util\LaterInterface {
      * @see \AA\Util\LaterInterface
      */
     public function toexecutelater($params=array()) {
+        $dbgtime = array(microtime(true));
+
         $days        = $this->getDays();
         $time        = time() - ($days * 86400);
         $qp_slice_id = q_pack_id($this->slice_id);
         $hits        = GetTable2Array("SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
                                         WHERE hit_archive.time > $time AND item.slice_id = '$qp_slice_id' GROUP BY hit_archive.id", 'id', 'count');
+        $dbgtime[] = microtime(true);
         $item_ids    = DB_AA::select('','SELECT id FROM item', array(array('slice_id', $this->slice_id, 'l')));
+        $dbgtime[] = microtime(true);
 
         if ( is_array($item_ids) ) {
             // shuffle - if there are a lot of items, so we reach timelimit, it is better to
@@ -260,10 +264,18 @@ class AA_Hitcounter_Stats implements \AA\Util\LaterInterface {
                 StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], array('value'=>$value, 'flag'=>0), array(), true);
             }
         }
+        $dbgtime[] = microtime(true);
+        // for AA_Log
+        return count($item_ids).'-'.number_format($dbgtime[1]-$dbgtime[0],2).'-'.number_format($dbgtime[2]-$dbgtime[1],2).'-'.number_format($dbgtime[3]-$dbgtime[2],2);
     }
 
     function getDays() {
         return (int) substr($this->field_id, 4);
+    }
+
+    /** used as identifier for AA_Log when run from toexecute */
+    function getId() {
+        return $this->slice_id."/".$this->field_id;
     }
 }
 
