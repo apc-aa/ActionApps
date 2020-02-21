@@ -94,15 +94,15 @@ class AA_Toexecute {
      *  Such task is called from cron (the order depends on priority)
      *  selector is used for identifying class of task - used for deletion
      *  of duplicated task
-     * @param $object
-     * @param $params
-     * @param $seletor
-     * @param $priority
-     * @param $time
+     * @param        $object
+     * @param array  $params
+     * @param string $selector
+     * @param int    $priority
+     * @param        $time
+     * @return bool|mixed|string
      * @example: we need to recount all links in allcategories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
      *           be dubled in the queue (we call cancel_all() method for it)
-     * @return bool|mixed|string
      */
     function later( &$object, $params=array(), $selector='', $priority=100, $time=null ) {
         global $auth;

@@ -177,8 +177,6 @@ define('TOEXECUTE_ALLOWED_TIME', 59.0);
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileupload )
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1118 )
  */
-/**  max size of file in file/picture uploading */
-define("IMG_UPLOAD_MAX_SIZE", "400000");
 /** url to image/file directory */
 define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
 /** path from server root to image/file directory */
@@ -191,9 +189,6 @@ define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
 *  is after the upload (based on configuration of your server
 *  Default is: commented out */
 // define('IMG_UPLOAD_FILE_MODE', octdec('0664'));
-
-/** Maximum size of files included by {include(file)} inline alias */
-define("INCLUDE_FILE_MAX_SIZE", "400000");
 
 //-----------------------------------------------------------------------------
 // Folloving section contains not so important config options and you will

@@ -150,7 +150,7 @@ if ($preview) { // file preview
         FrmTabCaption(_m("File preview"));
 
         $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
-        $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
+        $csvRec = getCSV($handle,$delimiter,$enclosure);
         if (!$caption) {
             for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
                 $caption[] = "Field ".($i+1);
@@ -162,7 +162,7 @@ if ($preview) { // file preview
             FrmTabRow($csvRec);
         }
         while ($numRows-- > 0) {
-            $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
+            $csvRec = getCSV($handle,$delimiter,$enclosure);
             if (!$csvRec) {
                 break;
             }
@@ -217,7 +217,7 @@ if ($preview) { // file preview
         <tr>
         <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "file") echo "CHECKED"; ?> NAME="dataType" value="file"></td>
         <td class="tabtxt" >file</td>
-        <td class="tabtxt" ><input type="file" NAME="upfile" value="<?php echo $upfile_name ?>"> Max upload size: <?php echo IMG_UPLOAD_MAX_SIZE; ?> B </td>
+        <td class="tabtxt" ><input type="file" NAME="upfile" value="<?php echo $upfile_name ?>"></td>
     </tr>
     <tr>
         <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "url") echo "CHECKED"; ?> NAME="dataType" value="url"></td>

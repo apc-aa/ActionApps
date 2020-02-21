@@ -36,10 +36,9 @@ define("INSERT", 1);
 define("UPDATE", 2);
 
 /** getCSV function
- * @param $handle
- * @param $maxsize
- * @param $delimeter
- * @param $enclosure
+ * @param        $handle
+ * @param string $delimiter
+ * @param string $enclosure
  * @return array|false|null
  */
 function getCSV($handle,$delimiter = ";",$enclosure = '"') {

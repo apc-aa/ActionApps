@@ -177,7 +177,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Replaces the strings in all values  */
-     function replaceInValues($search, $replace) {
+    function replaceInValues($search, $replace) {
          foreach ($this->val as $k => $v) {
              $this->val[$k] = str_replace($search, $replace, $v);
          }
@@ -477,6 +477,19 @@ class AA_Content {
     function getContent() {
         return $this->content;
     }
+
+    /** Special function for specific usseag in storeItem with update_filled
+     *  Removes all fields, which do not have value
+     */
+    function removeEmptyFields() {
+        $new_content = array();
+        foreach ($this->content as $fid => $a) {
+            if ( array_filter(array_map('trim',$this->getValuesArray($fid)), 'strlen') ) {
+                $new_content[$fid] = $a;
+            }
+        }
+        $this->content = $new_content;
+    }
 }
 
 define('ITEMCONTENT_ERROR_BAD_PARAM',   200);
@@ -606,6 +619,7 @@ class ItemContent extends AA_Content {
         }
 
         foreach ($fields as $pri_field_id => $field) {
+
             // to content array add just displayed fields (see ShowForm())
             if (!IsEditable($oldcontent4id[$pri_field_id], $field->getRecord(), $profile) AND !$insert) {
                 continue;
@@ -615,6 +629,7 @@ class ItemContent extends AA_Content {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
+
             if ($field_value = $field->readValueFromOldtypeForm($oldcontent4id, $insert)) {
                 $this->content[$pri_field_id] = $field_value->getArray();
             }
@@ -996,6 +1011,8 @@ class ItemContent extends AA_Content {
      *                      fields).
      *                      The id of the item must be set before calling this
      *                      function ($this->setItemID($id))
+     *      update_filled - the same as update, but the text fields with value = ""
+     *                      is not updated (old value is not overwritten in this case)
      *      update_silent - the same as update, but no additional operations are
      *                      performed (the computed fields are not computed,
      *                      last_edit and edited_by is not changed, events are
@@ -1041,6 +1058,11 @@ class ItemContent extends AA_Content {
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
         $function_params = array($mode, join('-',(array)$flags), $context);  // just for AA_Log
+
+        if ($mode == 'update_filled') {
+            $this->removeEmptyFields();
+            // and from this point no difference from normal 'update'
+        }
 
         if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'))) {
             $mode = 'update';

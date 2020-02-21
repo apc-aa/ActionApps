@@ -208,10 +208,10 @@ class AA_Csv_Importer {
 
         // if first row is used for field names, skip it
         if ($this->addParams['caption']) {
-            getCSV($handle,CSVFILE_LINE_MAXSIZE,$this->addParams['delimiter'],$this->addParams['enclosure']);
+            getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure']);
         }
 
-        while ($csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$this->addParams['delimiter'],$this->addParams['enclosure'])) {
+        while ($csvRec = getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure'])) {
             $err = convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice->fields('record'), $itemContent);
             $numProcessed++;
             $msg .= _m("Item:").$numProcessed .":";
@@ -278,12 +278,12 @@ class AA_Csv_Importer {
 
         // if the first row is used for field names, skip it
         if ($this->addParams['caption']) {
-            getCSV($handle,CSVFILE_LINE_MAXSIZE,$this->addParams['delimiter'],$this->addParams['enclosure']);
+            getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure']);
         }
 
         $numRows=5;		// number of showed items(rows) in the table
         while ($numRows-- > 0) {
-            $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$this->addParams['delimiter'],$this->addParams['enclosure']);
+            $csvRec = getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure']);
             if (!$csvRec) {  // end of file
                 break;
             }
@@ -397,8 +397,10 @@ class AA_Csv_Importer {
                               'overwrite'     => _m('Update the item (overwrite)'),
                               'add'           => _m('Add the values in paralel to current values (the multivalues are stored, where possible)'),
                               'update'        => _m('Rewrite only the fields, for which the action is defined and compute all computed fileds, ...'),
-                              'update_silent' => _m('Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)')
+                              'update_silent' => _m('Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)'),
+                              'update_filled' => _m('Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)')
                               );
+
         FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, !$set_default ? $this->actionIfItemExists : "insert_if_new", true, '', '', 1);
         FrmTabSeparator(_m("Data source"));
         FrmInputText('fileName', _m('Source'), $this->fileName, 254, 100);

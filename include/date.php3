@@ -102,7 +102,7 @@ class datectrl {
         }
     }
 
-    /** if the form sent containd this widget
+    /** if the form sent contain this widget
      * @return bool
      */
     function isUpdatable() {
