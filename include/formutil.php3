@@ -2017,7 +2017,7 @@ class AA_Inputfield {
 
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
         $offername = str_replace("[]", "", $name). '_1';
-        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers>";  // do not put newlines here in order select:epty css selector works
+        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" $triggers ondblclick=\"MoveSelected(this,this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;))\">";  // do not put newlines here in order select:empty css selector works
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), '' );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
@@ -2028,7 +2028,7 @@ class AA_Inputfield {
             <td align=\"center\" valign=\"top\" rowspan=\"2\">");
 
         // varname - name without []
-        $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\" $triggers>";
+        $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\" $triggers ondblclick=\"MoveSelected(this,this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">";
 
         // we need values in second box sorted just like in values
         $selected_values = array();
