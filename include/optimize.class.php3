@@ -1343,7 +1343,7 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
 }
 
 
-/**
+/** List Checkbox fields marked as required
  *
  */
 class AA_Optimize_Required_Checboxes extends AA_Optimize {
@@ -1383,6 +1383,114 @@ class AA_Optimize_Required_Checboxes extends AA_Optimize {
     }
 }
 
+/** List Checkbox fields marked as required
+ *
+ */
+class AA_Optimize_Fix_Datewidget extends AA_Optimize {
 
+    /** Name function
+     * @return a message
+     */
+    function name() {
+        return _m("Fix older format of date widget parameters");
+    }
+
+    /** Description function
+     * @return a message
+     */
+    function description() {
+        return _m("AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionaly it is equal.");
+    }
+
+    /** Test function
+     * @return bool
+     */
+    function test()
+    {
+        $metabase = AA::Metabase();
+        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show_func` FROM `field`', array(array('input_show_func', "dte:%'%", 'LIKE')))) {
+            $this->message(_m('We found %1 old delimiters:', array(count($fields))));
+            foreach ($fields as $field) {
+                $this->message(_m('%1 - %2 (%3) Params: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show_func'])));
+            }
+        } else {
+            $this->message(_m('OK - There is no old delimiters'));
+        }
+        return true;
+    }
+
+    /** Repair function
+     * @return bool
+     */
+    function repair()
+    {
+        $metabase = AA::Metabase();
+        $changed = DB_AA::sql("UPDATE field SET input_show_func=REPLACE(input_show_func, \"'\", ':')", array(array('input_show_func', "dte:%'%", 'LIKE')));
+        $this->message(_m('Fixed %1 fields', array($changed)));
+        return true;
+    }
+    
+}
+
+/** List Checkbox fields marked as required
+ *
+ */
+class AA_Optimize_Remove_Undefine_Alias extends AA_Optimize {
+
+    /** Name function
+     * @return a message
+     */
+    function name() {
+        return _m("Remove _#UNDEFINE alias and default help.html for more help text in field");
+    }
+
+    /** Description function
+     * @return a message
+     */
+    function description() {
+        return _m("AA used to use _#UNDEFINE alias and some preset help text for field, which make litle sense for real fields in real project. The help text and alias weill be removed.");
+    }
+
+    /** Test function
+     * @return bool
+     */
+    function test()
+    {
+        $metabase = AA::Metabase();
+        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `alias1` FROM `field`', array(array('alias1', "_#UNDEFINE")))) {
+            $this->message(_m('We found %1 old _#UNDEFINE aliases:', array(count($fields))));
+            foreach ($fields as $field) {
+                $this->message(_m('%1 - %2 (%3) Params: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['alias1'])));
+            }
+        } else {
+            $this->message(_m('OK - There is no _#UNDEFINE alias'));
+        }
+        
+        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_morehlp` FROM `field`', array(array('input_morehlp', "%/help.html", 'LIKE')))) {
+            $this->message(_m('We found %1 old help.html help link:', array(count($fields))));
+            foreach ($fields as $field) {
+                $this->message(_m('%1 - %2 (%3) Params: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_morehlp'])));
+            }
+        } else {
+            $this->message(_m('OK - There is no old help.html help link'));
+        }
+        return true;
+    }
+
+    /** Repair function
+     * @return bool
+     */
+    function repair()
+    {
+        $metabase = AA::Metabase();
+        $changed = DB_AA::sql("UPDATE field SET alias1='', alias1_help=''", array(array('alias1', "_#UNDEFINE")));
+        $this->message(_m('Removed %1 _#UNDEFINE aliases', array($changed)));
+        
+        $changed = DB_AA::sql("UPDATE field SET input_morehlp=''", array(array('input_morehlp', "%/help.html", 'LIKE')));
+        $this->message(_m('Removed %1 old help links', array($changed)));
+        return true;
+    }
+    
+}
 
 
