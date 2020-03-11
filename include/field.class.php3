@@ -160,7 +160,13 @@ class AA_Field {
         if ( !isset($this->widget[$widget_hash]) ) {
 
             // $this->widget = AA\Widget\Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
-            $params       = $this->data['input_show_func'] ? Widget::parseClassProperties($this->data['input_show_func']) : $this->widget_params;
+            $widget_definition_string = $this->data['input_show_func'];
+            // legacy - in dates we used ' as delimiter some time in history of AA
+            if ($widget_definition_string AND (strpos($widget_definition_string,'dte:')===0) AND strpos($widget_definition_string,"'")) {
+                $widget_definition_string = str_replace("'",":",$widget_definition_string);
+            }
+            
+            $params       = $widget_definition_string ? Widget::parseClassProperties($widget_definition_string) : $this->widget_params;
             $widget_class = $widget_type ? Widget::constructClassName($widget_type) : $params['class'];
             if (!class_exists($widget_class)) {
                 if (!class_exists($widget_class = $params['class'])) {
