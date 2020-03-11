@@ -1317,6 +1317,46 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
     }
 }
 
+
+/** Expands {lazy:<url_of_text2>[:<placeholder>]} like:
+ *          {lazy:/apc-aa/view.php3?vid=22}
+ *  displays <placeholder>, but when user scroll the placeholder to the screen, it loads view by ajax
+ *  @param $url            - url, which will be called by AJAX and displayed
+ *                           on demand (click on the link)
+ *  @param $placeholder    - position of the link - top|bottom (top is default)
+ */
+class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache - we use another unique id
+
+    /**
+     * @param string $url
+     * @param string $placeholder
+     * @return string
+     */
+    function expand($url='', $placeholder='') {
+        $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">$placeholder</div>\n";
+
+                $script2run = <<<EOT
+    var observer = new IntersectionObserver( function(entries, observer) {
+        entries.forEach( function(entry) {
+          if (entry.isIntersecting) {
+            AA_Ajax(entry.target.id, entry.target.dataset.aaUrl);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {rootMargin: "200px 0px 0px 0px"});
+    document.querySelectorAll('.aa-lazydiv').forEach(function(e) { observer.observe(e) });
+EOT;
+        //$script2run = 'let observer = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { AA_Ajax(entry.target.id, entry.target.dataset.aaUrl); observer.unobserve(entry.target); } });}, {rootMargin: "0px 0px 0px 0px"}); document.querySelectorAll(\'.aa-lazydiv\').forEach(e => { observer.observe(e) });';
+        AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
+        AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');        
+        return $ret;
+    }
+}
+
+
+
+
 /**
  * @param $exp
  * @return mixed|string
@@ -6245,7 +6285,7 @@ class AA_Requires {
             'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
             'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
             'aa-jslib@2'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
-            'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION,'',false)),
+            'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-legacy.min.js?v='.AA_JS_VERSION,'',false)),
             'jquery-ui@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', array('jquery@3', '_css-jquery-ui@1')),
             'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js', 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo='),
             'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js', 'sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc='),
