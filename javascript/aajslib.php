@@ -72,12 +72,12 @@ if (typeof window.AA_GetConf === 'undefined') {
     }
 }
 
-// for backward compatibility - so you can use AA_Config.loader
+// usage: $(div_id_2).update(AA_Config.loader);
 var AA_Config = {
-   get AA_INSTAL_PATH() {return AA_GetConf('path');},
-   get loader()         {return AA_GetConf('loader');},
-   get icon_new()       {return AA_GetConf('loader').replace('loader.gif','icon_new.gif');},
-   get icon_close()     {return AA_GetConf('loader').replace('loader.gif','icon_close.gif');}
+  AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
+  loader:         '<img src="<?php echo AA_INSTAL_PATH; ?>images/loader.gif" border="0" width="16" height="16">',
+  icon_new:       '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_new.gif" border="0" width="17" height="17">',
+  icon_close:     '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_close.gif" border="0" width="17" height="17">'
 }
 
 <?php
