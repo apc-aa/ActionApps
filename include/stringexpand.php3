@@ -8926,7 +8926,9 @@ class AA_Stringexpand_Eucookies extends AA_Stringexpand {
 
 
 /** Creates
- *    {tooltip:myinfoicon:<b>My tip</b><br>tip text}
+ *    {tooltip:myinfoicon:<b>My tip</b><br>tip text}     // myinfoicon is ID of element
+ *    {tooltip:#myinfoicon:<b>My tip</b><br>tip text}    // the same as above 
+ *    {tooltip:.myelements:<b>My tip</b><br>tip text}    // myelements je any selector
  *  All the JS libraries are automaticaly loaded
  *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
  *  We may replace the JS by another with the same functionality in the future,
@@ -8935,19 +8937,21 @@ class AA_Stringexpand_Eucookies extends AA_Stringexpand {
  */
 class AA_Stringexpand_Tooltip extends AA_Stringexpand {
     /** expand function
-     * @param $selector
+     * @param string $element
+     * @param string $html
      * @return string
      */
     function expand($element='', $html='') {
         if ($element AND $html) {
             AA::Stringexpander()->addRequire('tippy');
-            $script2run = "tippy('#".escape4js($element)."', {html: function() { el = document.createElement('div'); el.innerHTML='".escape4js($html)."'; return el; } }); \n";
+            $selector = (stripos('abcdefghijklmnopqrstuvwxyz', $element[0]) === false ) ? $element : '#'.$element;
+            $script2run = "tippy('".escape4js($selector)."', {html: function() { el = document.createElement('div'); el.innerHTML='".escape4js($html)."'; return el; } }); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
             AA::Stringexpander()->addRequire('AA_Stringexpand_Tooltip::getBottomCode', 'AA_Req_Htm');
         }
         return '';
     }
-
+    
     /**
      * @return string
      */
