@@ -762,8 +762,6 @@ class AA_Stringexpand_Twitter extends AA_Stringexpand_Nevercache {
     }
 }
 
-
-
 /** Expands {protectmail:<email>[:<text>]} - hides mail into javascript
  *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
  *  @param $email    - e-mail to protect
@@ -1344,7 +1342,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
             observer.unobserve(entry.target);
           }
         });
-      }, {rootMargin: "200px 0px 0px 0px"});
+      }, {rootMargin: "0px 0px 200px 0px"});
     document.querySelectorAll('.aa-lazydiv').forEach(function(e) { observer.observe(e) });
 EOT;
         //$script2run = 'let observer = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { AA_Ajax(entry.target.id, entry.target.dataset.aaUrl); observer.unobserve(entry.target); } });}, {rootMargin: "0px 0px 0px 0px"}); document.querySelectorAll(\'.aa-lazydiv\').forEach(e => { observer.observe(e) });';
@@ -1998,7 +1996,7 @@ class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercache {
     /** for offset and length parameters see PHP function array_slice()
      * @param $ids // parts separated by $delimiter
      * @param $offset // start index (first is 0). Could be negative.
-     * @param $length // default is "to the end of the list". Colud be negative
+     * @param $length // default is "to the end of the list". Could be negative
      * @param $delimiter // default is '-'
      * @return string
      */
@@ -3011,7 +3009,7 @@ class AA_Treecache {
 
 /** Aggregate information from specified set of items. The function, which could
  *  be used for aggregated values are:
- * @param $function   string - sum | max | min | avg | concat | count | order | filter
+ * @param $function   string - sum | max | min | avg | concat | count | order | filter | filter_contain
  * @param $ids_string string - list of item ids, which we take into account
  * @param $expression string - the value, we are counting with (like _#NUMBER_E)
  * @param $parameter  string - posible additional parameter for the function (like delimiter for the "concat" function)
@@ -3153,7 +3151,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
     /** expand function
      * @param $slices
      * @param $conds
-     * @param $sort
+     * @param $sort                                                                                                                 
      * @param $delimeter
      * @param $ids
      * @param $limit - could be negative for last $limit ids
@@ -3250,7 +3248,7 @@ class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
  *  {filter:<ids>:<expression>:<equals-to>}
  *  {filter:4785-4478-5789:_#SLICE_ID:879e87a4546abe23879e87a4546abe23}
  *  {filter:4785-4478-5789:{({item:{relation........}:_#APPROVED})}:1}
- *  Usualy it is much better to use filtering by database - like you do in {ids},
+ *  Usually it is much better to use filtering by database - like you do in {ids},
  *  but sometimes it is necessary to filter concrete ids, so we use this
  *  Returns only ids, which <expression> equals to <equals-to>
  */
@@ -3272,7 +3270,7 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** returns string usefull for sorting the tree of items.
+/** returns string useful for sorting the tree of items.
  *  The string is based on the short_ids by default, which is quickest and works well with discussions, ...
  *  If the branch of current item 35897 is 2458-15878-35897,
  *  then the string will be E2458F15878F35897, which works well for ordering
@@ -3281,7 +3279,7 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
  *  {sortstring:2a4352366262227383484784635362ab:relation.......1}
  *  {sortstring:2a4352366262227383484784635362ab:relation.......1:_#ORDER___}
  *    - use _#ORDER___ alias instead of short ID. _#ORDER___ could be number or any other string
- *  @return string usefull for sorting the tree of items
+ *  @return string useful for sorting the tree of items
  */
 class AA_Stringexpand_Sortstring extends AA_Stringexpand {
     /** expand function
@@ -5405,7 +5403,7 @@ class AA_Unalias_Callback {
             }
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
-            elseif ( aa_substr($out, 0, 8) == "dequote:" ) {
+            elseif ( aa_substr($out, 0, 8) == "dequote:" ) {   // like AA_Stringexpand_Dequote
                 return DeQuoteColons(aa_substr($out,8));
             }
         }
@@ -5885,9 +5883,15 @@ class AA_Req_Lib extends AA_Req {
     function __construct($url, $integrity='', $depend=array()) {
         parent::__construct($depend, $integrity);
         if (strpos(trim($url),' ')) {
-            $a = array_filter(explode(' ',$url, 2));
-            $this->url      = $a[0];
-            $this->loadtype = $a[1];
+            $a = array_filter(array_map('trim',explode(' ',$url)));
+            $this->url = array_shift($a);
+            foreach ($a as $param) {
+                if (strpos($param, 'sha') == 0) {  // found on position 0
+                    $this->integrity = $param;
+                } else {
+                    $this->loadtype = $param;
+                }
+            }
         } else {
             $this->url      = $url;
             $this->loadtype = '';
@@ -7991,7 +7995,7 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
             $newaddr = array();
             foreach ($addr as $a) {
                 foreach ( $values as $v ) {
-                    $newaddr[] = array_merge($a,[$v]);
+                    $newaddr[] = array_merge($a, array($v));
                 }
             }
             $addr = $newaddr;
@@ -8780,7 +8784,15 @@ class AA_Stringexpand_Generate extends AA_Stringexpand_Nevercache {
 }
 
 /**
- * Class AA_Stringexpand_Require
+ * usage:
+ * {require:aa-jslib}
+ * {require:aa-jslib@2}
+ * {require:/css/style.css}
+ * {require:/css/style.css print} - media print css
+ * {require:["/css/common.css", "https://www.example.org/flex.css"]}
+ * {require:https#://cdn.jsdelivr.net/npm/@iconfu/svg-inject@1.2.3/dist/svg-inject.min.js sha256-ri1AEoNtgONXOIJ0k7p9HoQHGq6MEDsjPPYZh7NWpu0=} - js with SRI integrity
+ * {require:/js/myscript.js defer} - js with defer
+ * {require:/js/myscript.js defer sha256-ri1AEoNtgONXOIJ0k7p9HoQHGq6MEDsjPPYZh7NWpu0=} - js with defer and SRI integrity
  */
 class AA_Stringexpand_Require extends AA_Stringexpand {
     /** expand function
@@ -8927,7 +8939,7 @@ class AA_Stringexpand_Eucookies extends AA_Stringexpand {
 
 /** Creates
  *    {tooltip:myinfoicon:<b>My tip</b><br>tip text}     // myinfoicon is ID of element
- *    {tooltip:#myinfoicon:<b>My tip</b><br>tip text}    // the same as above 
+ *    {tooltip:#myinfoicon:<b>My tip</b><br>tip text}    // the same as above
  *    {tooltip:.myelements:<b>My tip</b><br>tip text}    // myelements je any selector
  *  All the JS libraries are automaticaly loaded
  *  You must using {generate:HEAD} and {generate:FOOT} in your site module!
@@ -8951,7 +8963,7 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
         }
         return '';
     }
-    
+
     /**
      * @return string
      */
