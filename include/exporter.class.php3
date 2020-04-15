@@ -66,6 +66,7 @@ class AA_Exporter extends AA_Object {
             echo $buffer;
         }
         fclose($temp_file);
+        exit;
     }
 
     /** exporter function
@@ -94,6 +95,7 @@ class AA_Exporter extends AA_Object {
             fwrite($temp_file, $this->_outputItem($item));
             $old_item = $item;
         }
+
         fwrite($temp_file, $this->_outputEnd($old_item));
         return $temp_file;
     }

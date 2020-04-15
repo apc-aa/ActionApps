@@ -332,13 +332,13 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
  *  Replaces binary fields by varbinary and removes trailing zeros
  *  Needed for MySQL > 5.0.17
  */
-class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
+class AA_Optimize_Db_Binary_Trailing_Zeros extends AA_Optimize {
 
     /** Name function
     * @return a message
     */
     function name() {
-        return _m("Fix user login problem, constants editiong problem, ...");
+        return _m("Fix user login problem, constants editing problem, ...");
     }
 
     /** Description function
@@ -610,7 +610,7 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
     * @return a message
     */
     function description() {
-        return _m("We are time to time add new table or collumn to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
+        return _m("We are time to time add new table or column to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
     }
 
     /** Name function

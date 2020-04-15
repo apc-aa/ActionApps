@@ -1993,6 +1993,7 @@ class AA_Inputfield {
      * @param bool   $sort_str
      * @param string $addform
      * @param bool   $add_slice_pwd
+     * @noinspection JSConstantReassignment
      */
     function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
@@ -2536,7 +2537,7 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
 function getFrmSelectEasy($name, $arr, $selected="", $add="", $showempty=false) {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
-    if (!is_array($arr) OR (count($arr)==0) AND !$showempty) {
+    if ((!is_array($arr) OR empty($arr)) AND !$showempty) {
         return '';
     }
     $retval       = "\n<select name=\"$name\" $add>";
