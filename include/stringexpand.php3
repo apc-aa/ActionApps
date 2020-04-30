@@ -4405,7 +4405,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
             if (!empty($item)) {
                 $show_alias  = ($show_alias == '') ? "{alias:$field_id:f_h:, }" : $show_alias;
-                if (strlen($repre_value = $item->subst_alias($show_alias)) < 1) {
+                if (strlen(trim($repre_value = $item->subst_alias($show_alias))) < 1) {
                     $repre_value = '--';
                 }
                 if (StrExpand('AA_Stringexpand_Var', array('AA_FLAG_NOEDIT')) == 1) { // the way, how to disable editing
