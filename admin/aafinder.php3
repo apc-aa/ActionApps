@@ -45,28 +45,40 @@ if (!IsSuperadmin()) {
 }
 // ----------------------------------------------------------------------------------------
 
-function AdminLink($table, $id, $slice_id = '')
+function AdminLink($table, $row)
 {
     switch ($table) {
         case 'item':
-            return AafinderItemLink($id, $slice_id);
+            return AafinderItemLink($row['iid'], $row['sid']);
         case 'content':
-            return AafinderItemLink($id, $slice_id);
+            return AafinderItemLink($row['iid'], $row['sid']);
         case 'discussion':
-            return AafinderItemLink($id, $slice_id);
+            return AafinderItemLink($row['iid'], $row['sid']);
         case 'view':
-            return AafinderViewLink($id);
+            return AafinderViewLink($row['iid'], $row['sid']);
         case 'slice':
-            return AafinderSliceLink($id);
+            return AafinderSliceLink($row['iid']);
         case 'field':
-            return AafinderFieldLink($id, $slice_id);
+            return AafinderFieldLink($row['iid'], $row['sid']);
         case 'site_spot':
-            return AafinderSiteLink($id, $slice_id);
+            return AafinderSiteLink($row['iid'], $row['sid']);
+        case 'object_text':
+        case 'object_integer':
+        case 'object_float':
+            return AafinderObjectLink($row['iid']);
     }
 }
 
 function AafinderFieldLink($field_id, $slice_id) {
     return a_href( get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
+}
+
+function AafinderObjectLink($object_id) {
+    if ($obj = AA_Object::load($object_id)) {
+        print_r($obj)    ;
+        return a_href( get_admin_url('oedit.php3', array('module_id'=>$obj->getOwnerId(), 'oid' => $object_id, 'otype' => $obj->getObjectType(), 'ret_url' => document_uri())), "$object_id");
+    }
+    return '';
 }
 
 function AafinderItemLink($item_id, $slice_id='') {
@@ -75,20 +87,20 @@ function AafinderItemLink($item_id, $slice_id='') {
     } else {
         return '';
     }
-    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id<br>(". AA_Slice::getModuleName($slice_id) .")"). ' &nbsp; '. ChangesMonitor::getHistoryLink($item_id);
+    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id"). ' ('. AA_Slice::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink($item_id);
 }
 
 function AafinderSliceLink($slice_id) {
-    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Module::getModuleName($slice_id) .")"). ' &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
+    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id"). ' ('. AA_Module::getModuleName($slice_id) .')  &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
 }
 
 function AafinderSiteLink($spot_id, $slice_id) {
-    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id (". AA_Module_Site::getModuleName($slice_id) .")"). ' &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
+    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id"). ' ('. AA_Module_Site::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
-function AafinderViewLink($view_id, $slice_name='') {
+function AafinderViewLink($view_id, $slice_id) {
     $view = AA_Views::getView($view_id);
-    return $view->jumpLink($view_id." -  ".$view->f("name"). ($slice_name ? " ($slice_name) ":'')). ' &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
+    return $view->jumpLink($view_id." -  ".$view->f("name")).' ('. AA_Module::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
 function query_search($where) {
@@ -137,7 +149,7 @@ function PrintItemInfo($item_id) {
             echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
         }
 
-        if ($res = DB_AA::select(array(), 'SELECT * FROM `log`', array(array('selector',$long_id,'RLIKE')))) {
+        if ($res = DB_AA::select(array(), 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', array(array('selector',$long_id,'RLIKE')))) {
             echo GetHtmlTable($res, 'key', _m('Log'));
         }
 
@@ -230,7 +242,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
         $db->query($SQL);
         echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
-            echo AafinderViewLink($db->f("id"), $db->f("name")). "<br>\n";
+            echo AafinderViewLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>\n";
         }
         echo '<br><br>';
     }
@@ -447,6 +459,9 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
         }
         if ($_GET['searchindiscus'] == 1) {
             $table2search['discussion'] = array('id' => 'LOWER(HEX(`item_id`))');
+            $table2search['object_text'] = array('id' => 'object_id');
+            $table2search['object_integer'] = array('id' => 'object_id');
+            $table2search['object_float'] = array('id' => 'object_id');
         }
 
         echo '<table>';
@@ -454,7 +469,9 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
             $fields = array_keys(array_filter($metabase->getSearchArray($tbl), function ($col) {
                 return ($col['operators'] == 'text');
             }));
+            huhl($tbl, $fields);
             $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), array(AA_Metabase::getModuleField($tbl))));
+            huhl($fields);
 
             $addfields = $tblinfo['id'] ? (', ' . $tblinfo['id']) . ' as iid' : '';
             $addfields .= $tblinfo['slice_id'] ? (', ' . $tblinfo['slice_id']) . ' as sid' : '';
@@ -470,16 +487,17 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
                     FrmTabRow($row);
                     $row = array();
                     foreach ($txt as $t) {
-                        $code = substr_replace($t['txt'], 'AA_$@MArK%', $t['pos'] - 1, 0);
+                        $code = aa_substr($t['txt'], 0, $t['pos']-1). 'AA_$@MArK%'. aa_substr($t['txt'], $t['pos']-1);
                         if (strlen($code) > 210) {
                             if ($t['pos'] > 40) {
-                                $code = substr($code, 0, 40) . '...' . substr($code, max($t['pos'] - 107, 43), 177) . '...';
+
+                                $code = aa_substr($code, 0, 40) . '...' . aa_substr($code, max($t['pos'] - 107, 43), 177) . '...';
                             } else {
-                                $code = substr($code, 0, 210) . '...';
+                                $code = aa_substr($code, 0, 210) . '...';
                             }
                         }
                         $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)) . '</span>';
-                        $row[0] = "<small>" . ($t['iid'] ? AdminLink($tbl, $t['iid'], $t['sid']) : '') . "</small>";
+                        $row[0] = "<small>" . AdminLink($tbl, $t) . "</small>";
                         $row[1] = "<small> $code</small>";
                         FrmTabRow($row);
                     }
