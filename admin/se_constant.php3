@@ -59,9 +59,9 @@ $varset      = new Cvarset();
 
 // Check permissions
 if ( $group_id ) {
-    $row = DB_AA::select1('SELECT slice_id, name FROM constant_slice INNER JOIN slice ON constant_slice.slice_id = slice.id','', array(array('group_id',$group_id)));
-    if ($row && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($row["slice_id"]), PS_FIELDS)) {
-        MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$row['name'].")", "admin");
+    $constant_info = DB_AA::select1('SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice','', array(array('constant_slice.slice_id', 'slice.id','j'), array('group_id',$group_id)));
+    if ($constant_info && !CheckPerms( $auth->auth["uid"], "slice", $constant_info["owner_id"], PS_FIELDS)) {
+        MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$constant_info['name'].")", "admin");
         exit;
     }
 }
@@ -317,40 +317,31 @@ if ($group_id) {
 
     echo "
       <tr><td><b>"._m("Constants used in slice")."</b></td>
-        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return $arr['sname']." (".$arr['fname'].")";}, $using_slices_arr)) ."</td>
+        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return $arr['sname']." <small>[".unpack_id($arr['psid'])."]</small> (".$arr['fname']." <small>[".$arr['fid']."]</small>)";}, $using_slices_arr)) ."</td>
       </tr>";
 }
-
-// Find the slice owner of this group
-$db->query("
-    SELECT * FROM constant_slice INNER JOIN slice
-    ON constant_slice.slice_id = slice.id
-    WHERE group_id='$group_id'");
-    if ($db->next_record()) {
-        $owner_id = unpack_id($db->f("slice_id"));
-    }
 
 echo "
 <tr><td><b>"._m("Constant group owner - slice")."</b></td>
 <td colspan=\"3\">";
 
-if (!$owner_id || !$group_id) {
+if (!$constant_info["owner_id"] || !$group_id) {
     echo _m("Whoever first updates values becomes owner.");
 }
 elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     // display the select box to change group owner if requested ($chown)
     echo "<select name=\"new_owner_id\">";
     foreach ($g_modules as $k => $v) {
-        echo "<option value='". myspecialchars($k)."'". ($owner_id == $k ? " selected" : ""). "> ". myspecialchars($v["name"]);
+        echo "<option value='". myspecialchars($k)."'". ($constant_info["owner_id"] == $k ? " selected" : ""). "> ". myspecialchars($v["name"]);
     }
     echo "</select>\n";
 }
 else {
-    echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp;
+    echo $constant_info["name"]."&nbsp;&nbsp;&nbsp;&nbsp;
     <input type=\"submit\" name=\"chown\" value=\""._m("Change owner")."\">";
 }
 
-$propagate_ch = ( $group_id ? $db->f("propagate") : 1);   // default is checked for new constant group;
+$propagate_ch = ( $group_id ? $constant_info["propagate"] : 1);   // default is checked for new constant group;
 
 echo "</td></tr>
 <tr><td colspan=\"4\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
