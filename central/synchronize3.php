@@ -93,7 +93,7 @@ if ($_POST['synchronize']) {
 
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"));
-$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->addRequire('aa-jslib@1');
 $apage->printHead($err, $Msg);
 
 // ActionApps to synchronize

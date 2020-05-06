@@ -44,7 +44,7 @@ if ($edit && !$jump_id && count ($jumps)) {
 
 $apage = new AA_Adminpageutil('aaadmin', 'jumpedit');
 $apage->setTitle(!$jump_id ? _m("Create new Jump module") : _m("Edit Jump module"));
-$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->addRequire('aa-jslib@1');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 

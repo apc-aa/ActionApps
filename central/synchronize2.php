@@ -32,7 +32,7 @@ if (!IsSuperadmin()) {
 
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (2/3) - Slices to Compare"));
-$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->addRequire('aa-jslib@1');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 

@@ -87,7 +87,7 @@ $apage->setTitle(_m("Admin - design View"));
 $apage->setSubtitle(_m(""));
 //$apage->setForm(array('action'=>'se_view.php3', 'name'=>'fvtype'));
 //$apage->addRequire('codemirror@5');
-$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));   // just for MarkedActionSelect() in manager.min.js @todo rewrite MarkedActionSelect to not use prototype.js
+$apage->addRequire('aa-jslib');   // just for MarkedActionSelect() in manager.min.js
 $apage->addRequire(get_aa_url('javascript/manager.min.js?v='.AA_JS_VERSION ));
 //$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
 $apage->addRequire($headcode, 'AA_Req_Headcode');

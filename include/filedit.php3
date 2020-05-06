@@ -64,7 +64,7 @@ $filedit_js = "
 
 $apage = new AA_Adminpageutil('sliceadmin', 'fileman');
 $apage->setTitle(_m("File Manager"). " - "._m("File")." ".$fe_filename );
-$apage->addRequire(get_aa_url('javascript/aajslib.php?v='.AA_JS_VERSION ));
+$apage->addRequire('aa-jslib@1');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
