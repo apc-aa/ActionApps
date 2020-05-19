@@ -45,6 +45,7 @@ class AA_Operators {
                                    'LLIKE'     => _m('LLIKE'),
                                    'XLIKE'     => _m('XLIKE'),
                                    'BETWEEN'   => _m('BETWEEN'),
+                                   'BITSET'    => _m('bit is set'),      //  d-highlight.......-BITSET-128
                                    'ISNULL'    => _m('not set'),
                                    'NOTNULL'   => _m('is set'),
                                    'ISMAIL'    => _m('is e-mail'),
@@ -884,6 +885,9 @@ class AA_Dbcondition {
         // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
         // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
         $this->operator    = str_replace(array('#:',':','&gt;','&lt;'),array('','','>','<'), trim($operator)); // #: - fix mistaken escaping of d#:>...
+        if (strlen($this->operator)<4) {
+            $this->operator    = str_replace(array('eq','ne','lt','le','gt','ge'),array('==','<>','<','<=','>','>='), $this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
+        }
 
         $this->querystring = $querystring;
         $this->type   = $type;
