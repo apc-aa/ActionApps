@@ -904,7 +904,7 @@ class AA_Dbcondition {
     function getJoinCond() { return $this->joincond;  }
 
     function _calculate() {
-        AA::$debug&64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring );
+        AA::$debug&64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring, $this->type);
 
         $field       = $this->field;
         $operator    = $this->operator;
@@ -953,10 +953,21 @@ class AA_Dbcondition {
         // check for c0.number = 'honza'  (which would equals to TRUE in MySQL) and we do not want to.
         if ( ($this->type == 'number') ) {
             $querystring = trim($querystring);
-            if (strlen($querystring) != strspn($querystring,"0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
-                return array('NONE', '', '1=0');
-            } elseif ( ($operator == '==') AND !IsSigInt($querystring) ) {
-                return array('NONE', '', '1=0');
+            switch ($operator) {
+                case 'BETWEEN':
+                    if (strlen($querystring) != strspn($querystring, "0123456789+-.,")) {
+                        return array('NONE', '', '1=0');
+                    }
+                    break;
+                case '==':
+                    if (!IsSigInt($querystring)) {
+                        return array('NONE', '', '1=0');
+                    }
+                    break;
+                default:
+                    if (strlen($querystring) != strspn($querystring, "0123456789+-.()[]orandtORANDT '\"")) {   // OR AND NOT
+                        return array('NONE', '', '1=0');
+                    }
             }
         }
 
