@@ -3028,8 +3028,8 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @param $parameter
      * @return float|int|mixed|string
      */
-    function expand($function='', $ids_string='', $expression=null, $parameter=null) {
-        if ( !in_array($function, array('sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_contain')) ) {
+    function expand($function='', $ids_string='', $expression=null, $parameter='') {
+        if ( !in_array($function, array('sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter', 'filter_not', 'filter_contain', 'filter_notcontain')) ) {
             return '';
         }
 
@@ -3054,6 +3054,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         //         }
         //     }
         // }
+        $parameter = (string)$parameter;
         switch ($function) {
             case 'sum':
                 $ret = array_sum(str_replace(',', '.', $results));
@@ -3086,24 +3087,16 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 $ret = join('-', array_keys($results));
                 break;
             case 'filter':
-                $arr       = array();
-                $parameter = (string)$parameter;
-                foreach ($results as $k => $v) {
-                    if ((string)$v == $parameter) {
-                        $arr[] = $k;
-                    }
-                }
-                $ret = join('-',$arr);
+                $ret = join('-', array_keys(array_filter($results, function($v) use ($parameter) { return (string)$v == $parameter; })));
+                break;
+            case 'filter_not':
+                $ret = join('-', array_keys(array_filter($results, function($v) use ($parameter) { return (string)$v !== $parameter; })));  // or != is enough?
                 break;
             case 'filter_contain':
-                $arr       = array();
-                $parameter = (string)$parameter;
-                foreach ($results as $k => $v) {
-                    if (aa_strpos((string)$v, $parameter) !== false) {
-                        $arr[] = $k;
-                    }
-                }
-                $ret = join('-',$arr);
+                $ret = join('-', array_keys(array_filter($results, function($v) use ($parameter) { return aa_strpos((string)$v, $parameter) !== false; })));
+                break;
+            case 'filter_notcontain':
+                $ret = join('-', array_keys(array_filter($results, function($v) use ($parameter) { return aa_strpos((string)$v, $parameter) === false; })));
                 break;
         }
         return $ret;
@@ -3248,6 +3241,7 @@ class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
  *  {filter:<ids>:<expression>:<equals-to>}
  *  {filter:4785-4478-5789:_#SLICE_ID:879e87a4546abe23879e87a4546abe23}
  *  {filter:4785-4478-5789:{({item:{relation........}:_#APPROVED})}:1}
+ *  {filter:{ids:{_#SLICE_ID}}:_#CATEGORY:blue:!contain}
  *  Usually it is much better to use filtering by database - like you do in {ids},
  *  but sometimes it is necessary to filter concrete ids, so we use this
  *  Returns only ids, which <expression> equals to <equals-to>
@@ -3259,14 +3253,13 @@ class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
      * @param $ids - dash separated item ids
      * @param $expression - expression for filtering
      * @param $equals - value to match expression
-     * @param $operator - = | contain
+     * @param $operator - = | != | contain | !contain
      * @return string
      */
     function expand($ids=null, $expression=null, $equals=null, $operator=null) {
-        if ($operator == 'contain' ) {
-            return StrExpand('AA_Stringexpand_Aggregate', array('filter_contain', $ids, $expression, $equals));
-        }
-        return StrExpand('AA_Stringexpand_Aggregate', array('filter', $ids, $expression, $equals));
+        $OPERATORS = array('contain' => 'filter_contain', '!contain' => 'filter_notcontain', '!=' => 'filter_not');
+        $fnc = ($operator AND $OPERATORS[$operator]) ? $OPERATORS[$operator] : 'filter';
+        return StrExpand('AA_Stringexpand_Aggregate', array($fnc, $ids, $expression, $equals));
     }
 }
 
@@ -3876,6 +3869,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
 
             case '<>':
             case '&lt;&gt;':
+            case 'ne':
             case '!=':    $cmp = function( $a,  $b) { return $a <> $b; }; break;
 
             default:      $cmp = function( $a,  $b) { return false; };
@@ -6154,8 +6148,8 @@ class AA_Requires {
     }
 
     /**
-     * @param $require
-     * @param $type
+     * @param string $require
+     * @param string $type
      * @return string
      */
     function addUsrRequire($require, $type) {
