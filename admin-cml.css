@@ -87,6 +87,11 @@ select:empty {
     min-width: 100px;
 }
 
+input:focus, textarea:focus, select:focus {
+    outline: 1px solid rgba(30, 102, 233, 0.7);
+    outline-offset: -1px;
+}
+
 H1 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
