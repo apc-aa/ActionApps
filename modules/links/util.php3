@@ -10,44 +10,28 @@ function Links_CountAllLinks() {
     return $cattree->count_all_links();
 }
 
-/** Counts links in each category (but not in subcategories)
- *  and returns array[category]=link_count
- *  It is just helper function - it do not respect proposals, trash folders, ...
+/** Get all informations about link
+ * @param int $lid
+ * @return string|array
  */
-function CountLinks4Each() {
-     $db = getDB();
-     $SQL= " SELECT category_id, count(*) as links_count FROM links_link_cat
-                 WHERE links_link_cat.proposal = 'n'
-                 GROUP BY category_id";
-     $db->query($SQL);
-
-     while ($db->next_record()) {
-         $links_count[$db->f('category_id')] = $db->f('links_count');
-     }
-     freeDB($db);
-     return  $links_count;
-}
-
-// Get all informations about link
 function GetLinkInfo( $lid ) {
-    $db = getDB();
-    $SQL = "SELECT * FROM links_links WHERE id = '$lid'";
-    $db->query($SQL);
-    $ret = $db->next_record() ? $db->Record : "";
-    freeDB($db);
-    return $ret;
+    $ret = DB_AA::select(array(), 'SELECT * FROM `links_links`', array(array('id', $lid, 'i')));
+    return $ret ?: '';
 }
 
-// Get path from category id
+/** Get path from category id
+ * @param int $cid
+ * @return string
+ */
 function GetCategoryPath( $cid ) {
-    $db = getDB();
-    $db->query("SELECT path FROM links_categories WHERE id=$cid");
-    $ret = ( $db->next_record() ? $db->f('path') : "");
-    freeDB($db);
-    return $ret;
+    $ret = DB_AA::select1('SELECT path FROM `links_categories`','path', array(array('id', $cid, 'i')));
+    return $ret ?: '';
 }
 
-// Get category id from path
+/** Get category id from path
+ * @param string $path
+ * @return string
+ */
 function GetCategoryFromPath( $path ) {
     return strrchr($path, ",") ? substr( strrchr($path, ","), 1) : $path;
 }
@@ -86,11 +70,19 @@ function Links_GetBaseCategoryColumn( $lid, $col ) {
 }
 
 
+/**
+ * @param int $cid
+ * @param string $col
+ * @return string
+ */
 function Links_GetCategoryColumn( $cid, $col ) {
     return DB_AA::select1("SELECT $col as retcol FROM links_categories", 'retcol', array(array('id',$cid,'i')));
 }
 
-// Get base path from link id
+/** Get base path from link id
+ * @param int $lid
+ * @return mixed|string
+ */
 function GetBaseCategoryPath( $lid ) {
     return Links_GetBaseCategoryColumn( $lid, 'path' );
 }
@@ -282,39 +274,29 @@ function Links_GetLinkContent($zids) {
     return $content;
 }
 
-
-
 /**
  * Loads data from database for given category ids (called in itemview class)
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *
- * @param array $zids array if ids to get from database
+ * @param zids $zids ids to get from database
  * @return array - Abstract Data Structure containing the links data
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  * @noinspection PhpUnused
  * @see GetItemContent(), itemview class, item class
  */
 function Links_GetCategoryContent($zids) {
-    if ( !$zids )          return false;
-    $db = getDB();
-
-    // construct WHERE clausule
-    $sel_in = $zids->sqlin( false );
-
-    // get category data (including data of link changes)
-    $SQL = "SELECT * FROM links_categories WHERE id $sel_in";
-    $db->query($SQL);
-    while ( $db->next_record() ) {
-        $foo_id = $db->f('id');
-        foreach ($db->Record as  $key => $val ) {
-            $content[$foo_id][$key][] = array('value' => $val);
+    $content = array();
+    if ($zids AND !$zids->isEmpty()) {
+        $categs = DB_AA::select(array(), 'SELECT * FROM `links_categories`', array(array('id', $zids->getArray(), 'i')));
+        foreach ($categs as $record) {
+            $foo_id = $record['id'];
+            foreach ($record as $key => $val) {
+                $content[$foo_id][$key][] = array('value' => $val);
+            }
         }
     }
-    freeDB($db);
     return $content;
 }
-
-
 
 /**
  * Is current user anonymous (=public) user?

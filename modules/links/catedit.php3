@@ -13,8 +13,7 @@ require_once AA_BASE_PATH."modules/links/constants.php3";
 require_once AA_BASE_PATH."modules/links/util.php3";
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
+$module_id  = $slice_id;
 $links_info = GetModuleInfo($module_id,'Links');
 
 // r_err and r_msg - passes messages between scripts
@@ -26,30 +25,30 @@ if ( !isset($r_err) ) {
 if ($cancel)
     go_url( StateUrl(self_base() . "index.php3"));
 
-if ( !$cid )
-    $cid = $r_state['cat_id'];
+if ( !$cid ) {
+    $cid = (int)$r_state['cat_id'];
+}
 
 $cpath = GetCategoryPath( $cid );
 if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_id']    = $cid;
     $r_state['cat_path']  = $cpath;
-}
-else {
+} else {
     MsgPage(StateUrl(self_base())."index.php3", _m('No permission to edit category'));
     exit;
 }
 
 if ( !$updated ) {
     // get this category info (r_category_id must be set (see init_page.php3))
-    $SQL= " SELECT * FROM links_categories WHERE id=".$r_state['cat_id'];
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $cat_name       = $db->f('name');
-        $cat_path       = $db->f('path');
-        $description    = $db->f('description');
-        $additional     = $db->f('additional');
-        $note           = $db->f('note');
-        $nolinks        = ($db->f('nolinks')==1);
+    $dbarr = DB_AA::select1("SELECT * FROM links_categories", '', array(array('id',$r_state['cat_id'],'i')));
+
+    if ($dbarr) {
+        $cat_name       = $dbarr['name'];
+        $cat_path       = $dbarr['path'];
+        $description    = $dbarr['description'];
+        $additional     = $dbarr['additional'];
+        $note           = $dbarr['note'];
+        $nolinks        = ($dbarr['nolinks']==1);
     }
 }
 $id = $r_state['cat_id'];

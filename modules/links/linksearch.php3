@@ -68,6 +68,11 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
     $order_by_sql = MakeSQLOrderBy(   $LINKS_FIELDS, $sort,  $join_tables, 'IsFieldSupported', $type);
 
+//    AA::$debug&4 && AA::$dbg->log('Links_QueryZIDs', $cat_path, $conds, $sort, $subcat, $type);
+//    AA::$debug&4 && AA::$dbg->log('wheresql', $where_sql);
+//    AA::$debug&4 && AA::$dbg->log('order', $order_by_sql);
+
+
     switch ($type) {
     case 'unasigned':
     case 'unasigned3':  $SQL = 'SELECT DISTINCT links_links.id  FROM links_links LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ';
@@ -149,6 +154,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  */
 function Links_QueryCatZIDs($cid, $conds, $sort=array(), $subcat=false, $type="app") {
     $CATEGORY_FIELDS = GetCategoryFields();
+    $cid = (int)$cid;
 
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $CATEGORY_FIELDS, $foo);
     $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);

@@ -94,17 +94,8 @@ function UnassignBaseCategory($parent, $child) {
         $db->query( $SQL );
 
         // we have to change path to this category
-        $SQL = "SELECT path FROM links_categories WHERE id = $newParent";
-        $db->query( $SQL );
-        if ( $db->next_record() ) {
-            $newPath = $db->f('path');
-        }
-
-        $SQL = "SELECT path FROM links_categories WHERE id = $child";
-        $db->query( $SQL );
-        if ( $db->next_record() ) {
-            $oldPath = $db->f('path');
-        }
+        $newPath = GetCategoryPath($newParent);
+        $oldPath = GetCategoryPath($child);
 
         if ($newPath && $oldPath) {
             $SQL = "UPDATE links_categories

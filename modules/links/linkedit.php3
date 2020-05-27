@@ -101,12 +101,8 @@ if ( $r_state['link_id'] ) {
 // common lookups -------------------------------------------------------------
 
 // lookup - all categories names
-$SQL= " SELECT id, name FROM links_categories WHERE deleted='n'";
-$db->query($SQL);
-while ($db->next_record()) {
-    // just for translation from id to name
-    $tmp_translate[$db->f('id')] = myspecialchars($db->f('name'));
-}
+$tmp_translate = DB_AA::select(array('id'=>'name'), 'SELECT id, name FROM `links_categories`', array(array('deleted', 'n')));
+array_walk($tmp_translate, function(&$val) { return myspecialchars($val); });
 
 // This link specific data -----------------------------------------------------
 
