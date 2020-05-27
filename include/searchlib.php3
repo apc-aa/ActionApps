@@ -195,7 +195,11 @@ class AA_Condition extends AA_Object {
      * @return string conditions in short form  headline........-RLIKE-Action...
      */
     function getAsString($condition_number=0) {
-        return join(',',$this->fields) .'-'. $this->operator .'-'. $this->value; // StrExpand('AA_Stringexpand_Conds', array($this->value, '1'));  - does not work for B OR C, ...
+        $val = str_replace('-','--',$this->value);
+        if ($val[0]=='-') {  // we do not want triple --- like in: expiry_date.....-m:<- --432000
+            $val = " $val";
+        }
+        return join(',',$this->fields) .'-'. $this->operator .'-'. $val; // StrExpand('AA_Stringexpand_Conds', array($this->value, '1'));  - does not work for B OR C, ...
     }
 
     /** getAsLongString function
