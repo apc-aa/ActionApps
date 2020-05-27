@@ -120,7 +120,7 @@ class AA_Formrow_Field extends AA_Formrow {
     function getRowProperty() {
         $field  = $this->_getField();
         $widget = $field->getWidget();
-        return $field->getAaProperty($widget->multiple());
+        return $field->getAaProperty(array('multiple'=>$widget->multiple()));
     }
 
     function getWidget()      {

@@ -276,7 +276,7 @@ class inputform {
         }
 
         // add rest "hidden buttons" to the end of form
-        $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
+        // $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );   // browsers do not use this variable - removed
         $buttons['encap']               = array('value' => "false");
 
         //$buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - @todo
@@ -863,7 +863,7 @@ class AA_Inputfield {
 
                 case 'nul': break;
                 case 'chb': $this->inputChBox();       break;
-                case 'hid': $this->hidden();           break;
+                // case 'hid': $this->hidden();           break;
                 case 'fld': $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
                             break;
                 //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
@@ -991,6 +991,7 @@ class AA_Inputfield {
                 case 'edt':
                 case 'mch':
                 case 'mng': // Manager
+                case 'hid':
                 //case 'pwd':
                 //case 'txt':
                 //case 'fld':
@@ -1882,7 +1883,7 @@ class AA_Inputfield {
             $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
         } else {
             $widget = $field->getWidget();
-            $aa_property = $field->getAaProperty($widget->multiple());
+            $aa_property = $field->getAaProperty();
             $content = with( new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
             // another approach would be $content = $item->getItemContent();
 

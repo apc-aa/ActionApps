@@ -270,6 +270,9 @@ class AA_Langs {
  */
 define('AA_JS_VERSION', 5);
 
+/** API url used for JS libs updates */
+define('JS_UPDATE_API_URL', 'https://data.jsdelivr.com/v1/package/npm/');
+
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
 define ("FIELDID_USERNAME",      "headline........");
 define ("FIELDID_PASSWORD",      "password........");

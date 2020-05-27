@@ -327,31 +327,30 @@ class AA_Field {
     }
 
     /** getAaProperty function
-     * @param $multiple
+     * @param array $widget_properties ['multiple'=> , 'required'=> , 'name'=> , 'input_help'=> , 'html_show' => , 'html_default' => ]
      * @param $required - not usual, but sometimes we want to redefine it required for ajax...
      * @return AA_Property
      */
-    function getAaProperty($multiple=null, $required=null, $name=null, $input_help=null) {
-        if (is_null($multiple)) {
-            $multiple = $this->getWidget()->multiple();
-        }
+    function getAaProperty($widget_properties=array()) {
+
+        // huhl($this->getName(), $widget_properties);
         $translations = $this->getTranslations();
 
         // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
         return new AA_Property( $this->getId(),
-                                $name ?: $this->getName(),
+                                isset($widget_properties['name']) ? $widget_properties['name'] : $this->getName(),
                                 $this->getProperty('in_item_tbl') ? AA::Metabase()->getFieldType('item',$this->getProperty('in_item_tbl')) : ($this->getProperty('text_stored') ? 'text' : 'int'),
-                                $multiple,
+                                isset($widget_properties['multiple']) ? $widget_properties['multiple'] : $this->getWidget()->multiple(),
                                 false,                   // persistent @todo
                                 AA_Validate::factoryByString($this->data['input_validate']), // null,
-                                $required ? true : $this->required(),
-                                $input_help ?: $this->getProperty('input_help'),
-                                $this->getProperty('input_morehlp'),
+                                isset($widget_properties['required']) ? (bool)$widget_properties['required'] : $this->required(),
+                                isset($widget_properties['input_help']) ? $widget_properties['input_help'] : $this->getProperty('input_help'),
+                                isset($widget_properties['input_morehlp']) ? $widget_properties['input_morehlp'] : $this->getProperty('input_morehlp'),
                                 null,               // $example;
-                                $this->getProperty('html_show')    ? AA_Formatters::STANDARD_FORMATTERS : 0,
-                                $this->getProperty('html_default') ? AA_Formatters::RAW : AA_Formatters::TEXT2HTML,
+                                isset($widget_properties['show_formatters']) ? (int)$widget_properties['show_formatters'] : ($this->getProperty('html_show') ? AA_Formatters::STANDARD_FORMATTERS : 0),
+                                isset($widget_properties['default_formatter']) ? (int)$widget_properties['default_formatter'] : ($this->getProperty('html_default') ? AA_Formatters::RAW : AA_Formatters::TEXT2HTML),
                                 null,               // perms
-                                $this->getDefault(),
+                                isset($widget_properties['default']) ? $widget_properties['default'] : $this->getDefault(),
                                 $translations
                                );
     }
@@ -372,7 +371,10 @@ class AA_Field {
     protected function _getWidget($type, $item_id, $required, $function, $widget_type, $widget_properties) {
         $widget      = $this->getWidget($widget_type, $widget_properties);
         $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
+        $widget_properties['multiple'] =  $widget->multiple();
+        $widget_properties['required'] =  $required;
+        //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
+        $aa_property = $this->getAaProperty($widget_properties);
         return $widget->$type($aa_property, $item, $function);
     }
 
@@ -406,8 +408,10 @@ class AA_Field {
                 $content->setAaValue($this->getId(), $def);
             }
         }
-
-        $aa_property = $this->getAaProperty($widget->multiple(), $required, $widget_properties['name'], $widget_properties['input_help']);
+        $widget_properties['multiple'] =  $widget->multiple();
+        $widget_properties['required'] =  $required;
+        //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
+        $aa_property = $this->getAaProperty($widget_properties);
 
         return $widget_only ? $widget->getOnlyHtml($aa_property, $content, $function) : $widget->getHtml($aa_property, $content, $function);
     }

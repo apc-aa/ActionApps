@@ -148,24 +148,24 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ConstantUpdated',         array('type' => 'CONSTANT_UPDATED',      'slice_type' => 'S'));  // all slices
         $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_NEW',              'slice_type' => 'Links'));
         $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_UPDATED',          'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_UPDATED',     'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_NEW',         'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_UPDATED',     'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_NEW',         'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_UPDATED',     'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',   'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_UPDATED',     'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_NEW',         'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_UPDATED',     'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_NEW',         'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_UPDATED',     'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',   'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
 //        $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
 //        $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmPruzkum',array('type' => 'ITEM_NEW',         'slice'        => '63e7f6ee3d20167df1663444a9d828c2'));  // NSZM - pruzkum
-        $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_UPDATED',     'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_UPDATED',     'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
         $this->handlers[] = new aahandler('Event_ItemInserted_Efekt',      array('type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
         $this->handlers[] = new aahandler('Event_ItemUpdated_Efekt',       array('type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Sasov_objed', array('type' => 'ITEM_UPDATED',     'slice'        => '2d81635df9bbff2a7deebd89808f3cfb'));  // Biofarma Sasov - objednavka
+//        $this->handlers[] = new aahandler('Event_ItemUpdated_Sasov_objed', array('type' => 'ITEM_UPDATED',     'slice'        => '2d81635df9bbff2a7deebd89808f3cfb'));  // Biofarma Sasov - objednavka
     }
 
     /** get_handlers_newwwwww function
@@ -657,107 +657,107 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     return true;
 }
 
-/** SendFilledItem function
- *  Send email with answer to Dropin staff with the answer (from item)
- * @param object &$ret_params - ItemContent object with new values
- * @param        $email_template
- * @return bool
- */
-function SendFilledItem(&$ret_params, $email_template) {
-    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
-    $email    = trim($ret_params->getValue('con_email......1'));
-    $otazka   = trim($ret_params->getValue('abstract.......1'));
-    $odpoved  = trim($ret_params->getValue('abstract.......2'));
-    $send     = trim($ret_params->getValue('switch.........2'));
-
-    if ($email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1'))) {
-        $item = AA_Items::getItem(new zids($short_id, 's'));
-        return AA_Mail::sendTemplate($email_template, array($email), $item, false) > 0;
-    }
-    return false;
-}
-
-/** Event_ItemUpdated_DropIn function
- * Send email with answer to Dropin staff with the answer (from item)
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $params
- * @param $params2
- * @return bool
- */
-function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    return SendFilledItem($ret_params, 8);
-}
-
-/** Event_ItemUpdated_Aperio function
- * Send email with answer to Aperio staff with the answer (from item)
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $params
- * @param $params2
- * @return bool
- */
-function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    return SendFilledItem($ret_params, 49);
-}
-
-/** Event_ItemUpdated_Aperio_porod function
- * Send email with answer to Aperio staff with the answer (from item)
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $params
- * @param $params2
- * @return bool
- */
-function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    return SendFilledItem($ret_params, 50);
-}
-
-/** Event_ItemUpdated_Aperio_porad function
- * Send email with answer to Aperio staff with the answer (from item)
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $params
- * @param $params2
- * @return bool
- */
-function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    return SendFilledItem($ret_params, 62);
-}
-
-/** Event_ItemUpdated_Ekoinfocentrum function
- * Send email with answer to Aperio staff with the answer (from item)
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $params
- * @param $params2
- * @return bool
- */
-function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    return SendFilledItem($ret_params, 53);
-}
-/**
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $foo
- * @param $foo2
- */
-/** Send email with answer to Profem user with the answer (from item) */
-function Event_ItemUpdated_Profem( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    return SendFilledItem($ret_params, 64);
-}
+///** SendFilledItem function
+// *  Send email with answer to Dropin staff with the answer (from item)
+// * @param object &$ret_params - ItemContent object with new values
+// * @param        $email_template
+// * @return bool
+// */
+//function SendFilledItem(&$ret_params, $email_template) {
+//    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+//    $email    = trim($ret_params->getValue('con_email......1'));
+//    $otazka   = trim($ret_params->getValue('abstract.......1'));
+//    $odpoved  = trim($ret_params->getValue('abstract.......2'));
+//    $send     = trim($ret_params->getValue('switch.........2'));
+//
+//    if ($email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1'))) {
+//        $item = AA_Items::getItem(new zids($short_id, 's'));
+//        return AA_Mail::sendTemplate($email_template, array($email), $item, false) > 0;
+//    }
+//    return false;
+//}
+//
+///** Event_ItemUpdated_DropIn function
+// * Send email with answer to Dropin staff with the answer (from item)
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $params
+// * @param $params2
+// * @return bool
+// */
+//function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+//    return SendFilledItem($ret_params, 8);
+//}
+//
+///** Event_ItemUpdated_Aperio function
+// * Send email with answer to Aperio staff with the answer (from item)
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $params
+// * @param $params2
+// * @return bool
+// */
+//function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+//    return SendFilledItem($ret_params, 49);
+//}
+//
+///** Event_ItemUpdated_Aperio_porod function
+// * Send email with answer to Aperio staff with the answer (from item)
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $params
+// * @param $params2
+// * @return bool
+// */
+//function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+//    return SendFilledItem($ret_params, 50);
+//}
+//
+///** Event_ItemUpdated_Aperio_porad function
+// * Send email with answer to Aperio staff with the answer (from item)
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $params
+// * @param $params2
+// * @return bool
+// */
+//function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+//    return SendFilledItem($ret_params, 62);
+//}
+//
+///** Event_ItemUpdated_Ekoinfocentrum function
+// * Send email with answer to Aperio staff with the answer (from item)
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $params
+// * @param $params2
+// * @return bool
+// */
+//function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+//    return SendFilledItem($ret_params, 53);
+//}
+///**
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $foo
+// * @param $foo2
+// */
+///** Send email with answer to Profem user with the answer (from item) */
+//function Event_ItemUpdated_Profem( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+//    return SendFilledItem($ret_params, 64);
+//}
 
 /* // now managed by Planed Task feature
 function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
@@ -846,34 +846,34 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, 
 }
 
 
-/**
- * @param $type
- * @param $slice
- * @param $slice_type
- * @param $ret_params
- * @param $foo
- * @param $foo2
- * @return bool
- */
-function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
-    if ($_POST['souhlas'] != 1) {
-        return false;
-    }
-
-    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
-    $emaily   = array('hm@ecn.cz', 'pykalova@biofarma.cz');
-
-    //$email1 = trim($ret_params->getValue('con_email.......'));
-
-    $item     = AA_Items::getItem(new zids($short_id, 's'));
-
-    if ($email1) {
-        $ret = AA_Mail::sendTemplate(7, $emaily, $item, false) > 0;
-        return $ret;
-    }
-
-    return false;
-}
+///**
+// * @param $type
+// * @param $slice
+// * @param $slice_type
+// * @param $ret_params
+// * @param $foo
+// * @param $foo2
+// * @return bool
+// */
+//function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+//    if ($_POST['souhlas'] != 1) {
+//        return false;
+//    }
+//
+//    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+//    $emaily   = array('hm@ecn.cz', 'pykalova@biofarma.cz');
+//
+//    //$email1 = trim($ret_params->getValue('con_email.......'));
+//
+//    $item     = AA_Items::getItem(new zids($short_id, 's'));
+//
+//    if ($email1) {
+//        $ret = AA_Mail::sendTemplate(7, $emaily, $item, false) > 0;
+//        return $ret;
+//    }
+//
+//    return false;
+//}
 
 
 

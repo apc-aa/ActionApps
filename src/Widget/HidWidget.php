@@ -32,20 +32,46 @@ class HidWidget extends \AA\Widget\Widget
         return array();
     }
 
-    /** Get widget HTML for using in form
-     * @param \AA_Property $aa_property  - the variable
-     * @param \AA_Content  $content      - contain the value of property to display
-     *                                   - never empty - it contain at least aa_owner for new objects
-     * @param null $function
-     * @return string - widget HTML for using in form
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     * @param AA_Property $aa_property
+     * @param AA_Content  $content
+     * @param string      $type normal|live|ajax
+     * @return array
      * @throws \Exception
      */
-    function getHtml($aa_property, $content, $function = null)
-    {
+    function _getRawHtml($aa_property, $content, $type='normal') {
         $property_id = $aa_property->getId();
         $input_name = FormArray::getName4Form($property_id, $content, $this->item_index) . "[0]";
         $input_id = FormArray::formName2Id($input_name);
         $input_value = myspecialchars($content->getValue($property_id));
         return "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
+    }
+
+    /**
+     * @param array $winfo
+     * @param AA_Property $aa_property
+     * @param bool $widget_only
+     * @return string
+     */
+    function _finalizeHtml($winfo, $aa_property, $widget_only = false)
+    {
+        return $winfo['html'];
+    }
+
+    /** Creates all common ajax editing buttons to be used by different inputs
+     * @param $winfo array
+     * @param $aa_property AA_Property
+     * @return string
+     */
+    function _finalizeAjaxHtml($winfo, $aa_property)
+    {
+        return $winfo['html'];
+    }
+
+    /* Decorates Live Widget. Prepared for overriding in subclasses */
+    function _finalizeLiveHtml($winfo, $aa_property)
+    {
+        return $winfo['html'];
     }
 }
