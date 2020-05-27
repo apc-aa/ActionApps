@@ -106,35 +106,11 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
         return $this;
     }
 
-    /**
-     * @return bool|string
-     * @throws Exception
-     */
-    protected function loadData() {
-        if (strlen($this->direct_input)) {
-            return $this->direct_input;
-        }
-
-        // wait in order we do not contact the same domain more often than $protect miliseconds
-        if ($domain = parse_url($this->file, PHP_URL_HOST)) {
-            $this->waitForDomain($domain);
-        }
-
-        $context = !($this->post_body) ? null : stream_context_create(array('http' => array('method'=>'POST','header'=>'Content-Type: text/xml','content'=>$this->post_body)));
-        if (false === ($data = file_get_contents($this->file, false, $context))) {
-            throw new Exception('file not loaded: ' . $this->file);
-        }
-        $this->message(__CLASS__.' -> '. __FUNCTION__);
-        $this->message("read ". strlen($data). "Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
-        return $data;
-    }
-
-
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $data = $this->loadData();
+        $data = $this->loadData($this->file, $this->direct_input, $this->post_body);
 
         // remove namespaces (it is pain to work with it in simple XML interface)
         // $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
