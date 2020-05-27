@@ -588,7 +588,7 @@ class AA_Manager extends AA_Storable {
 
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
-                echo '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect()" class="markedaction_select">
+                echo '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect(this)" class="markedaction_select">
                       <option value="nothing">'. _m('Selected items') .':'.
                       $options .'</select>';
                 if ($this->actions_hint_url || $this->actions_hint) {

@@ -24,19 +24,14 @@ function MarkedActionGo() {
 
 //  Fills 'akce' hidden field and submits the form or opens popup window
 // @todo get rid of prototype.js in this function, so manager.js do not need it
-function MarkedActionSelect() {
-    if( $F('markedaction_select') && ($F('markedaction_select') != 'nothing') ) {
-        // markedactionsetting is global variable defined in manager.class.php3
-        // which contain serialized state of the AA object, which should be
-        // instatnionated in AA and asked for displaying htmlSetting of the action
-        if( markedactionsetting[$('markedaction_select').selectedIndex] != null ) {
-            $('markedactionparams').update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
-            new Ajax.Updater('markedactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?display_params='+markedactionsetting[$('markedaction_select').selectedIndex]);
-        } else {
-            $('markedactionparams').update('');
-        }
+function MarkedActionSelect(sb) {
+    // markedactionsetting is global variable defined in manager.class.php3
+    // which contain serialized state of the AA object, which should be
+    // instatnionated in AA and asked for displaying htmlSetting of the action
+    if( sb.value && (sb.value != 'nothing') && (markedactionsetting[sb.selectedIndex] != null) ) {
+        AA_Ajax('markedactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?display_params='+markedactionsetting[sb.selectedIndex]);
     } else {
-        $('markedactionparams').update('');
+        document.getElementById('markedactionparams').innerHTML = '';
     }
 }
 
@@ -133,7 +128,7 @@ function ReturnParam(param) {
 // you can supply question (for user text input) and/or confirmation question
 // result srchbr_akce then have the following format: <akce>[:<text>][:y]
 function SearchBarAction( formname, srchbr_akce, question, yes_no ) {
-    var srchform = eval( "document."+formname );
+    var srchform = document[formname];
     var answer;
     if ( question ) {
         answer = prompt(question);
@@ -149,7 +144,7 @@ function SearchBarAction( formname, srchbr_akce, question, yes_no ) {
 
 // the same as above SearchBarAction(), but only ask if we have to do action
 function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
-    var srchform = eval( "document."+formname );
+    var srchform = document[formname];
     if ( confirm(confirmtxt) ) {
         srchform.elements['srchbr_akce'].value = srchbr_akce;
         srchform.submit();
@@ -157,8 +152,8 @@ function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
     }
 }
 
-function OpenWindowIfRequest(form_name, bar, admin_url) {
-    var doc = eval("document."+form_name);
+function OpenWindowIfRequest(formname, bar, admin_url) {
+    var doc = document[formname];
     var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
     var idx2=doc.elements['srchbr_oper['+bar+']'].selectedIndex;
 
@@ -174,8 +169,8 @@ function OpenWindowIfRequest(form_name, bar, admin_url) {
         }
     }
 }
-function ChangeOperators(form_name, bar, selectedVal ) {
-    var doc = eval("document."+form_name);
+function ChangeOperators(formname, bar, selectedVal ) {
+    var doc = document[formname];
     var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
     var type = field_types.charAt(idx);
 
