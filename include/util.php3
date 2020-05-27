@@ -630,8 +630,9 @@ function GetSliceInfo($slice_id) {
 
 /** CreateBinCondition function
  *  Returns part of SQL command used in where related to bins
- * @param $bin
- * @param $ignore_expiry_date
+ * @param        $bin
+ * @param string $table table name
+ * @param bool   $ignore_expiry_date
  * @return string
  */
 function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
@@ -1774,6 +1775,10 @@ function aa_version($format='full') {
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.phpversion().', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
     switch ($format) {
         case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);
+        case 'svn2':
+            $rev = file_get_contents(AA_BASE_PATH. ".svn/entries", FILE_TEXT, null, 0, 20);
+            $rev = explode("\n", $rev);
+            return $rev[3];
         case 'aa':  return $version;
     }
     return $full;

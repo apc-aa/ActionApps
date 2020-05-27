@@ -3368,8 +3368,11 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
  */
 class AA_Stringexpand_Tree extends AA_Stringexpand {
     /** expand function
-     * @param $item_id - item id of the tree root (short or long)
-     * @param $relation_field - tree relation field (default relation........)
+     * @param string $item_id - item id of the tree root (short or long)
+     * @param        $relation_field - tree relation field (default relation........)
+     * @param null   $reverse
+     * @param null   $sort_string
+     * @param null   $slices
      * @return string
      */
     function expand($item_id='', $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
@@ -4302,7 +4305,13 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 }
                 $widget_prop = AA_Stringexpand_Edit::WidgetPropsString2Arr($widget_properties);
                 $widget      = $field->getWidget($widget_type, $widget_prop);
-                $aa_property = $field->getAaProperty($widget->multiple(), ($required==1) ? true : null, $widget_prop['name'], $widget_prop['input_help']);
+
+                $widget_prop['multiple'] =  $widget->multiple();
+                if ($required==1) {
+                    $widget_prop['required'] =  $required;
+                }
+                //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
+                $aa_property = $field->getAaProperty($widget_prop);
                 $ret         = $widget->$type($aa_property, $item->getItemContent(), $function);
                 // $widget->registerRequires(); // now in _finalizeHtml
                 AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
@@ -5374,7 +5383,7 @@ class AA_Unalias_Callback {
                 // replace math
                 return QuoteColons( parseMath(DeQuoteColons(AA::Stringexpander()->unalias(aa_substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
-            elseif( aa_substr($out, 0, 5) == "list:" ) {
+            elseif( aa_substr($out, 0, 5) == "list:" ) {       // like AA_Stringexpand_List
                 return QuoteColons(parseLoop($out, $this->item));
             }
             elseif( aa_substr($out, 0, 8) == "include(" ) {
@@ -5852,6 +5861,14 @@ class AA_Req {
      * @return string
      */
     function getUrl()           { return ''; }
+
+    /** Generate instance constructor as string - to be used for updates of js libraries in php code
+     * @return string
+     */
+    function getConstructor() {
+        $sri = $this->integrity ? ",'".$this->integrity."'" : '';
+        return get_called_class().'(array('.join(',', array_map($this->depend, function($dep) { return "\"$dep\"";})). ')'. $sri;
+    }
 }
 
 /**
@@ -5866,6 +5883,8 @@ class AA_Req_Lib extends AA_Req {
      * @var
      */
     protected $url      = '';
+
+    /** @var $loadtype string "defer" | "async" | "module"    or "print" for css*/
     protected $loadtype = '';
 
     /**
@@ -5922,52 +5941,72 @@ class AA_Req_Lib extends AA_Req {
     function getUrl() {
         return $this->url;
     }
+
+    function parseUrl() {
+        $ret = array();
+        if (preg_match('|(^.*npm)/([a-zA-Z0-9._-]+)@([^/]+)/(.*)|', $this->url, $matches)) {
+            $ret['path']    = $matches[1];
+            $ret['package'] = $matches[2];
+            $ret['version'] = $matches[3];
+            $ret['major']   = (int)$matches[3];
+            $ret['file']    = $matches[4];
+        }
+        return $ret;
+    }
+
+    function tryUpdate($version) {
+        $reqinfo = $this->parseUrl();
+        $json    = json_decode(file_get_contents(JS_UPDATE_API_URL.$reqinfo['package'].'@'.$version), true);
+        $files   = $json;
+        $dirs = explode('/',$reqinfo['file']);
+        foreach ($dirs as $dir) {
+            $found = false;
+            foreach ($files['files'] as $file) {
+                if ($dir == $file['name']) {
+                    $files = $file;
+                    $found = $file;
+                    break;
+                }
+            }
+        }
+        if ($found) {
+            $this->url       = $reqinfo['path'].'/'. $reqinfo['package'].'@'. $version.'/'. $reqinfo['file'];
+            $this->integrity = 'sha256-'. $found['hash'];
+        }
+    }
+
+    /** Generate instance constructor as string - to be used for updates of js libraries in php code
+     * @return string
+     */
+    function getConstructor() {
+        $param[] = "'". $this->url. ($this->loadtype ? ' '.$this->loadtype : '') ."'";
+        $param[] = $this->integrity ? "'".$this->integrity."'" : "''";
+        if ($this->depend) {
+            $param[] = "array(" . join(',', array_map(function ($dep) { return "'$dep'"; }, $this->depend)) . ')';
+        }
+        return get_called_class()."(". join(', ', $param). ")";
+    }
 }
+
 /** {require:/css/myprintstyle.css print} */
-class AA_Req_Css extends AA_Req {
+class AA_Req_Css extends AA_Req_Lib {
     /**
      *
      */
     const CODE_POSITION = 'HEAD-A';
-    /**
-     * @var
-     */
-    protected $url;
-    /**
-     * @var string
-     */
-    protected $media;
-
-    /**
-     * AA_Req_Css constructor.
-     * @param $url
-     * @param string $integrity
-     * @param array $depend
-     */
-    function __construct($url, $integrity='', $depend=array()) {
-        parent::__construct($depend, $integrity);
-        if (strpos(trim($url),' ')) {
-            $a = array_filter(explode(' ',$url, 2));
-            $this->url   = $a[0];
-            $this->media = $a[1];
-        } else {
-            $this->url   = $url;
-            $this->media = '';
-        }
-    }
 
     /**
      * @return string
      */
     function getCode() {
-        return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->media ? " media=\"{$this->media}\">" : '>');
+        return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->loadtype ? " media=\"{$this->loadtype}\">" : '>');
     }
 
     /**
      * @return string
      */
     function getScript() {
-        return ($this->media=='print') ? '' : "AA_LoadCss('{$this->url}');";
+        return ($this->loadtype=='print') ? '' : "AA_LoadCss('{$this->url}');";
     }
 }
 
@@ -5999,6 +6038,17 @@ class AA_Req_Htm extends AA_Req {
      */
     function getCode() {
         return call_user_func($this->funct);
+    }
+
+    /** Generate instance constructor as string - to be used for updates of js libraries in php code
+     * @return string
+     */
+    function getConstructor() {
+        $param[] = "'". $this->funct ."'";
+        if ($this->depend) {
+            $param[] = "array(" . join(',', array_map(function ($dep) { return "'$dep'"; }, $this->depend)) . ')';
+        }
+        return get_called_class()."(". join(', ', $param). ")";
     }
 }
 
@@ -6251,34 +6301,36 @@ class AA_Requires {
         return array(
             //     <CDN URL>, <SRI hash - see srihash.org>, <requires - all of them must be below the line which do require in this list> example: array('jquery@3')
             // all versions updated 2018-08-07 HM
-            'codemirror@5'               => new AA_Req(array('_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5','css-aa-system@1')),
-            '_codemirror_htmlmixed@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/htmlmixed/htmlmixed.js', 'sha256-YtBvhTDO4A27QPGmzVTybSqjmNNEi8Uc9KPvyytMoTA='),
-            '_codemirror_xml@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/xml/xml.js', 'sha256-Zz+CQg6Vpg4lnsAJtC7AqpIFO+OFRb0m/Zw7l9hx6nA='),
-            '_codemirror_css@5'          => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/css/css.js', 'sha256-A3dmy5MnEwoDZJmeJUoj98Al4uPPcF47typ3TSLhA0g='),
-            '_codemirror_javascript@5'   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/mode/javascript/javascript.js', 'sha256-mEBPfQj3tWr3WUpxoFSsaydJ/OPTvR8H/rW0X/VEcG0='),
-            '_codemirror_matchbrackets@5'=> new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchbrackets.js', 'sha256-1ZBoXf1PnYzxJ7zY5+7ZAJbUh9xXYGUUXHn8r21LHWg='),
-            '_codemirror_matchtags@5'    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/edit/matchtags.js', 'sha256-aKA2BMUxAIY3kNKzmYhxUFMCiNL/s/qF3zIxvROsnm8='),
-            '_codemirror_xml-fold@5'     => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/addon/fold/xml-fold.js', 'sha256-0NR53Omilqa/gGNsbd6g0IjppcgdSabwMu8jOTk6vFE='),
-            '_codemirror_core@5'         => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.js', 'sha256-dlU448ajDtrzPvUfqkvdw6yT52NgWy0UmxUgclvPEAc=', array('css-aa-system@1','_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5', '_css-codemirror@5')),
-            'ace@1'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.0/src-noconflict/ace.js', 'sha256-YpEMJafqo1GM1gdYZ8o7AlzowvKpgjxtm4ALyij/E04=',array('jquery@3')),
-            'tableexport@5'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/js/tableexport.min.js', 'sha256-xqLIIDLeHPe6Mmnksf1sHPC+jxuS4wKCmLrj/4sKDTM=', array('_css-tableexport@5','filesaver@1','js-xlsx@0')),
+            'codemirror@5'               => new AA_Req_Lib('','',array('_codemirror_core@5', '_codemirror_htmlmixed@5', '_codemirror_xml@5', '_codemirror_css@5', '_codemirror_javascript@5', '_codemirror_matchbrackets@5', '_codemirror_matchtags@5', '_codemirror_xml-fold@5','_codemirror_search@5','_codemirror_searchcursor@5', '_css-codemirror@5','css-aa-system@1')),
+            '_codemirror_htmlmixed@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/mode/htmlmixed/htmlmixed.js', 'sha256-f8d4CdOwbOelZ6ITbg0IfZXi5beKJ67Ptpo0INBjcGQ='),
+            '_codemirror_xml@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/mode/xml/xml.js', 'sha256-yhHPVEbMcHCb0TOtv6Leq8f3VEVe3+Ot0oCy83K+jvs='),
+            '_codemirror_css@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/mode/css/css.js', 'sha256-X/teJqHXUccfWWBeziAxGjeC7jl07Gaw/FkzK78UMs0='),
+            '_codemirror_javascript@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/mode/javascript/javascript.js', 'sha256-t/xcBAakTu8GOQ0jZGngpNuNRR5Mf75Y+dIBT9XtcgA='),
+            '_codemirror_matchbrackets@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/addon/edit/matchbrackets.js', 'sha256-UGjEwHiqdVBYUNK3mTvYBajQOWIC3fw3QpuCRwEPmow='),
+            '_codemirror_matchtags@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/addon/edit/matchtags.js', 'sha256-oCAwj6P1/BzATEuHMQxLOWONXkQHh4FLz8JFcIH/+hQ='),
+            '_codemirror_xml-fold@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/addon/fold/xml-fold.js', 'sha256-6qrza98BMjZqcPGsh7xpweWNL52WV7KmoCz6NUkA1qo='),
+            '_codemirror_search@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/addon/search/search.js', 'sha256-iUnNlgkrU5Jj8oKl2zBBCTmESI2xpXwZrTX+arxSEKc='),
+            '_codemirror_searchcursor@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/addon/search/searchcursor.js', 'sha256-B1aSPEmOtZ0K3toDpFwq4H3V3nbtCpIziOHNOG80wkk='),
+            '_codemirror_core@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/lib/codemirror.js', 'sha256-GXSY94ztcTq90gQtkq3xy86HH7CuKOX5W3OW0hKEOow=', array('css-aa-system@1','_codemirror_htmlmixed@5','_codemirror_xml@5','_codemirror_css@5','_codemirror_javascript@5','_codemirror_matchbrackets@5','_codemirror_matchtags@5','_codemirror_xml-fold@5','_codemirror_search@5','_codemirror_searchcursor@5','_css-codemirror@5')),
+            'ace@1' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/ace-builds@1.4.8/src-noconflict/ace.js', 'sha256-kmNdqc9RKBgwWKQJwes1H5/NDrlPDmoCA1xXTpTPLag=', array('jquery@3')),
+            'tableexport@5' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/js/tableexport.min.js', 'sha256-2mlJMabqiyPb1w0ZdzOuuyOWeHkngxrYTowNETowwtI=', array('_css-tableexport@5','filesaver@1','js-xlsx@0')),
             'tableexport@4'              => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/js/tableexport.min.js', 'sha256-3njWp77R/1aA2AeJg4mxgOHejH9S5YodN/b28OzA35c=', array('_css-tableexport@4','filesaver@1','js-xlsx@0')),
-            'js-xlsx@0'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.13.3/dist/xlsx.core.min.js', 'sha256-9y2mRIiL7T2ufFN4OF1Q6kgDNk9Q1rtMRl1WUp/VQEk='),
+            'js-xlsx@0' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/xlsx@0.15.4/dist/xlsx.core.min.js', 'sha256-i0RjTsoXj3Xg13hzNnPvEeMjS04N4gTOF3SnFwl1qnw='),
             'filesaver@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/file-saver@1.3.8/FileSaver.min.js', 'sha256-FPJJt8nA+xL4RU6/gsriA8p8xAeLGatoyTjldvQKGdE='),
             'leaflet@1'                  => new AA_Req_Lib('https://unpkg.com/leaflet@1.3.3/dist/leaflet.js', 'sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==', array('_css-leaflet@1')),
-            'chartjs@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.7.2/dist/Chart.min.js', 'sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo='),
+            'chartjs@2' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js', 'sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI='),
             'dropzone@5'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.js', 'sha256-cs4thShDfjkqFGk5s2Lxj35sgSRr4MRcyccmi0WKqCM=', array('_css-dropzone@5')),
-            //'select2@4'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
-            'select2@4'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.full.min.js', 'sha256-FcVIknBiVRk5KLQeIBb9VQdtFRMqwffXyZ+D8q0gQro=', array('jquery@3','_css-select2@4')),
+            //'select2@4'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/js/select2.min.js', 'sha256-FA14tBI8v+/1BtcH9XtJpcNbComBEpdawUZA6BPXRVw=', array('jquery@3','_css-select2@4')),
+            'select2@4' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.full.min.js', 'sha256-vucLmrjdfi9YwjGY/3CQ7HnccFSS/XRS1M/3k/FDXJw=', array('jquery@3','_css-select2@4')),
             'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
             'sortable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@latest/sortable.min.js','sha384-0DvwQn9ZOScsvM5P3Lhg3Z3W5YIXxZmjv1yYMJ8ObRCKFnshLbiSIsQ3m+ThLJLE'),
             'datatable@1'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.10.20/js/jquery.dataTables.min.js','sha256-LXQzPhL1IRyKkA7HpCOBi8I+OC8HqzHUYkjK8S+LKTs=',array('jquery@3')),
             'form-saver@1'               => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false),'',array('deserialize@2')),
             'deserialize@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0-rc1/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', array('jquery@3')),
             'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
-            'tippy@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.5.4/dist/tippy.all.min.js', 'sha256-HdIQOX+k0mj4UNWUFtyyCW+QecRRwFwr5vMVIMReANU='),
+            'tippy@2' => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
             //'jspdf@1'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jspdf@1.5.3/dist/jspdf.min.js', 'sha256-gJWdmuCRBovJMD9D/TVdo4TIK8u5Sti11764sZT1DhI=', array('jquery@3')),
-            'aa-tools@1'                 => new AA_Req(array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
+            'aa-tools@1'                 => new AA_Req_Lib('','',array('css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1')),
             'ckeditor@4'                 => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js','',false),'',array('css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1')),
             'aa-constedit@1'             => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js?v='.AA_JS_VERSION,'',false)),
             'aa-jslib@3'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js?v='.AA_JS_VERSION,'',false),'',array('jquery@3')),
@@ -6286,21 +6338,21 @@ class AA_Requires {
             'aa-jslib@1'                 => new AA_Req_Lib(get_aa_url('javascript/aajslib-legacy.min.js?v='.AA_JS_VERSION,'',false)),
             'jquery-ui@1'                => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', array('jquery@3', '_css-jquery-ui@1')),
             'jquery@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js', 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo='),
-            'vue@2'                      => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js', 'sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc='),
-            'vue-test@2'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js', 'sha256-3kjowa0CUPPK4W+yaGpNP1exjs8gbX2SSsToEMd06K8='),
+            'vue@2' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js', 'sha256-ngFW3UnAN0Tnm76mDuu7uUtYEcG3G5H1+zioJw3t+68='),
+            'vue-test@2' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js', 'sha256-NSuqgY2hCZJUN6hDMFfdxvkexI7+iLxXQbL540RQ/c4='),
             '_css-jquery-ui@1'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
-            '_css-tableexport@5'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.0.2/dist/css/tableexport.min.css', 'sha256-8Z/QCFUNM+0PNTogk3GFXDxdYOwGvpK4CQffKN4aJk0='),
+            '_css-tableexport@5' => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@5.2.0/dist/css/tableexport.min.css', 'sha256-ljRB06PkvKJLniqOfPxxNfnIGgtF3gSWnLqYuFhWoDY='),
             '_css-tableexport@4'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/tableexport@4.0.11/dist/css/tableexport.min.css', 'sha256-nopPKGGZlhhMl96BF6etnX8zuKX2NPJbPJqZKXLtLMk='),
             '_css-dropzone@5'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.5.1/dist/min/dropzone.min.css', 'sha256-e47xOkXs1JXFbjjpoRr1/LhVcqSzRmGmPqsrUQeVs+g='),
-            '_css-select2@4'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.0.5/dist/css/select2.min.css', 'sha256-xJOZHfpxLR/uhh1BwYFS5fhmOAdIRQaiOul5F/b7v3s='),
+            '_css-select2@4' => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css', 'sha256-FdatTf20PQr/rWg+cAKfl6j4/IY3oohFAJ7gVC3M34E='),
             '_css-select2@3'             => new AA_Req_Css('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.css', 'sha256-ijlUKKj3hJCiiT2HWo1kqkI79NTEYpzOsw5Rs3k42dI='),
             '_css-lightgallery@1'        => new AA_Req_Css('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/css/lightgallery.css', 'sha384-25xBlknDxvI3NBoV1cKi/biQFCWkN5+E3fcRiLLKQIGSMp9IBDfQiwFiFsTYdosz'),
             '_css-leaflet@1'             => new AA_Req_Css('https://unpkg.com/leaflet@1.3.3/dist/leaflet.css', 'sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=='),
             'css-aa-system@1'            => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false))  ,
-            'css-normalize@8'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.css', 'sha256-7GAtDQ79wTEOjhBKf70uBQG7A5yyb+8rigu07atXWDY='),
+            'css-normalize@8' => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css', 'sha256-WAgYcAck1C1/zEl5sBl5cfyhxtLgKGdpI3oKyJffVRI='),
             'css-normalize@7'            => new AA_Req_Css('https://cdn.jsdelivr.net/normalize/7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
             'css-fontawesome@4'          => new AA_Req_Css('https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
-            '_css-codemirror@5'          => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.39.2/lib/codemirror.css', 'sha256-o/v/5fOniPHMAww4EAIfRBFV0SeoqksPrY0Yq5x+wSM='),
+            '_css-codemirror@5' => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.51.0/lib/codemirror.css', 'sha256-PWWDlCsO+b6rKHz9dgBeS5cqTmBbebfAtNXnEqy3Xvc='),
             'htm-aa-system@1'            => new AA_Req_Htm('AA_Tools::getBottomCode')
         );
     }
@@ -8641,12 +8693,14 @@ EOT;
 
 /**
  * Class AA_Stringexpand_Partdiv
+ * usage as:  {partdiv:mysite{id..............}:["aaedit","{_#SLICE_ID}"]:<article> ... </article>}
+ *
  */
 class AA_Stringexpand_Partdiv extends AA_Stringexpand {
     /**
-     * @param string $name
-     * @param string $vars
-     * @param string $content
+     * @param string $name unique name of the part on the page (if not provided, the partdiv feature is not used)
+     * @param string $vars slices and QS variables on which the part depends (we need to repaint the part if the content of the slice or QS variable is changed)
+     * @param string $content printer content
      * @return string|void
      */
     function expand($name='', $vars='', $content='') {
@@ -9020,8 +9074,8 @@ class AA_Stringexpand_Detect extends AA_Stringexpand {
 }
 
 
-/** Detects mobile/tablet/desktop (and print one of the mentioned keywords)
- *    {detect}
+/**
+ *
  */
 class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
 // @todo - experimental - not finished
@@ -9033,15 +9087,36 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
             $comment_string= with(new ReflectionClass($class_name))->getDocComment();
             $explode_string= with(new ReflectionClass($class_name))->getMethod('expand')->getDocComment();
         }
-        $pattern = "#(@[a-zA-Z]+\s*[a-zA-Z0-9, ()_].*)#";
-        //perform the regular expression on the string provided
-        preg_match_all($pattern, $comment_string, $matches1, PREG_PATTERN_ORDER);
-        preg_match_all($pattern, $explode_string, $matches2, PREG_PATTERN_ORDER);
+        $pattern = "#@([a-zA-Z]+)\s*(.*)#";
 
-        $ret  = "<pre>". join("\n<br>", $matches1[0]). join("\n<br>", $matches1[1]). "\n<br>". $comment_string. '</pre>';
-        $ret .= "<pre>". join("\n<br>", $matches2[0]). join("\n<br>", $matches2[1]). "\n<br>". $explode_string. '</pre>';
+        $doc = array_merge(self::parseDoc($comment_string), self::parseDoc($explode_string));
+
+        $xml = new SimpleXMLElement("<cmd name=\"$stringexpand\"></cmd>");
+        foreach  ($doc as $docpart) {
+            $xml->addChild($docpart[0], $docpart[1]);
+        }
+        $xml_with_header = $xml->asXML();
+        return substr($xml_with_header, strpos($xml_with_header, '?'.'>') + 2);
+    }
+
+    static function parseDoc($string) {
+        $ret = array();
+        // remove initial /**, *, */
+        preg_match_all("#\n\s*/?[*]+/?\s*(.*)#", "\n".$string, $matches, PREG_PATTERN_ORDER);
+        $string = join("\n", array_map( function ($s) { return ltrim($s,'* \t');}, $matches[1]));
+        $blocks = explode("\n@", $string);
+        $blocks[0] = 'text '.$blocks[0];
+        foreach ($blocks as $block) {
+            preg_match("#^([a-zA-Z]+)\s*(.*)#sm", $block, $matches);
+            $tag  = trim($matches[1]);
+            $text = trim($matches[2]);
+            if ($tag AND $text) {
+                $ret[] = array($tag, $text);
+            }
+        }
         return $ret;
     }
+
 }
 
 
