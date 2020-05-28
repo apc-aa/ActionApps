@@ -6638,7 +6638,7 @@ class AA_Stringexpand_Max extends AA_Stringexpand {
      * @return mixed|string|void
      */
     function expand() {
-        return self::_get_result('max', func_get_args());
+        return count($arr = self::_get_array(func_get_args()))<2 ? $arr[0]: call_user_func_array('max', $arr);
     }
 
     /**
@@ -6646,13 +6646,13 @@ class AA_Stringexpand_Max extends AA_Stringexpand {
      * @param $arg_list
      * @return mixed|string
      */
-    function _get_result($func, $arg_list) {
+    function _get_array($arg_list) {
         switch (count($arg_list)) {
-            case 0: return '';
-            case 1: $values = json2arr($arg_list[0]); // can't be inside empty()  - Honza, php 5.2
-                return (count($values)<2) ? $values[0] : call_user_func_array($func, $values);
+            case 0:  return array();
+            case 1:  $arr = json2arr($arg_list[0]); break;
+            default: $arr = $arg_list;
         }
-        return call_user_func_array($func, $arg_list);
+        return str_replace(',','.',$arr);
     }
 }
 
@@ -6668,7 +6668,23 @@ class AA_Stringexpand_Min extends AA_Stringexpand_Max {
      * @return mixed|string|void
      */
     function expand() {
-        return self::_get_result('min', func_get_args());
+        return count($arr = self::_get_array(func_get_args()))<2 ? $arr[0]: call_user_func_array('min', $arr);
+    }
+}
+
+/** average value
+ *  Accepts two forms of parameters:
+ *     {avg:12:45:8}
+ *     {avg:[12,45,8]} - JSON form
+ */
+class AA_Stringexpand_Avg extends AA_Stringexpand_Max {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /**
+     * @return mixed|string|void
+     */
+    function expand() {
+        return count($arr = self::_get_array(func_get_args())) ? array_sum($arr)/count($arr) : '';
     }
 }
 
