@@ -5899,7 +5899,7 @@ class AA_Req_Lib extends AA_Req {
             $a = array_filter(array_map('trim',explode(' ',$url)));
             $this->url = array_shift($a);
             foreach ($a as $param) {
-                if (strpos($param, 'sha') == 0) {  // found on position 0
+                if (strpos($param, 'sha') === 0) {  // found on position 0
                     $this->integrity = $param;
                 } else {
                     $this->loadtype = $param;
