@@ -457,6 +457,12 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
         if ($_GET['searchinitems'] == 1) {
             $table2search['content'] = array('id' => 'LOWER(HEX(`item_id`))');
         }
+        if ($_GET['searchinobject'] == 1) {
+            $table2search['object_text'] = array('id' => '`object_id`');
+        }
+        if ($_GET['searchinhistory'] == 1) {
+            $table2search['change_record'] = array('id' => '`change_id`');
+        }
         if ($_GET['searchindiscus'] == 1) {
             $table2search['discussion'] = array('id' => 'LOWER(HEX(`item_id`))');
             $table2search['object_text'] = array('id' => 'object_id');
@@ -568,12 +574,14 @@ echo '</td></tr><tr><td>';
 
 echo '<form name="f_replace" action="">';
 echo '<b>'._m('Search and Replace in').'</b>
-      <label><input type="checkbox" name="searchinview"   value="1" '. ((!$_GET['search'] OR $_GET['searchinview'  ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinslice"  value="1" '. ((!$_GET['search'] OR $_GET['searchinslice' ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinfield"  value="1" '. ((!$_GET['search'] OR $_GET['searchinfield' ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinspot"   value="1" '. ((!$_GET['search'] OR $_GET['searchinspot'  ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinitems"  value="1" '. ((                    $_GET['searchinitems' ])? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchindiscus" value="1" '. ((                    $_GET['searchindiscus'])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinview"    value="1" '. ((!$_GET['search'] OR $_GET['searchinview'   ])? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinslice"   value="1" '. ((!$_GET['search'] OR $_GET['searchinslice'  ])? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinfield"   value="1" '. ((!$_GET['search'] OR $_GET['searchinfield'  ])? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinspot"    value="1" '. ((!$_GET['search'] OR $_GET['searchinspot'   ])? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinobject"  value="1" '. ((!$_GET['search'] OR $_GET['searchinobject' ])? 'checked':'').'>'._m("Objects").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinitems"   value="1" '. ((                    $_GET['searchinitems'  ])? 'checked':'').'>'._m("Items").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinhistory" value="1" '. ((                    $_GET['searchinhistory'])? 'checked':'').'>'._m("History").'</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchindiscus"  value="1" '. ((                    $_GET['searchindiscus' ])? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
     <textarea name="search" placeholder="'._m('minimum 2 chracters for replace function').'" rows=6 style="width:40%">'.safe($_GET['search']).'</textarea>&nbsp;&nbsp;
     <textarea name="replace" placeholder="'._m('minimum 6 chracters for replace function (or use {#AAA} value which will be replaced by empty string)').'" rows=6 style="width:40%">'.safe($_GET['replace']).'</textarea>&nbsp;&nbsp;
