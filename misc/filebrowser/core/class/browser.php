@@ -56,6 +56,9 @@ class browser extends uploader {
         $this->thumbsDir = $thumbsDir;
         $this->thumbsTypeDir = "$thumbsDir/{$this->type}";
 
+/* // We do not want to delete all zip files!!
+   // Jirkar 28.4.2020
+
         // Remove temporary zip downloads if exists
         if (!$this->config['disabled']) {
             $files = dir::content($this->config['uploadDir'], array(
@@ -70,6 +73,7 @@ class browser extends uploader {
                         unlink($file);
             }
         }
+*/
 
         if (isset($_GET['theme']) &&
             $this->checkFilename($_GET['theme']) &&
