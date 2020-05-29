@@ -1,4 +1,4 @@
-    <?php
+<?php
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
 https://www.apc.org/
@@ -18,11 +18,10 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Util\ChangeProposal;
+use AA\Util\ChangesMonitor;
 
-    use AA\Util\ChangeProposal;
-    use AA\Util\ChangesMonitor;
-
-    require_once "../include/config.php3";
+require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 
@@ -175,7 +174,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
         $saver->run();
 
         AA::Pagecache()->invalidateFor("de6a767322ed6040d4b745f5c16a7683");  // invalidate old cached values
-        echo "Uo�eno";
+        echo "Uloženo";
     } else {
         echo "Nic neulozeno";
     }
