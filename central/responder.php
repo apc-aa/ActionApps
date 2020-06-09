@@ -194,7 +194,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
         // @todo for WidgetTag the CSS is loaded this way, but the select2.js do not work by this way. Check it.
         if ($widget_script = AA::Stringexpander()->getRequireScript()) {
-            $widget_html = "<script>$widget_script</script>$widget_html";
+            $widget_html = "$widget_html<script>$widget_script</script>";
         }
 
         return new AA_Response(ConvertCharset::singleton()->Convert($widget_html, $slice->getCharset(), 'utf-8'));

@@ -5847,10 +5847,16 @@ class AA_Req {
      */
     function getCode()          { return ''; }
 
-    /**
+    /** getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+     * @return string
+     */
+    function getExternal()      { return ''; }
+
+    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getScript()        { return ''; }
+
 
     /**
      * @return string
@@ -5928,11 +5934,13 @@ class AA_Req_Lib extends AA_Req {
     }
 
 
-    /**
+    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
-    function getScript() {
-        return "AA_LoadJs(false,'','{$this->url}');";
+    function getExternal() {
+        if (trim($this->url)) {
+            return "AA_LoadJs(false,AA_IsLoaded,'{$this->url}',true);";  // we use script.async=false - codemirror in {ajax} did not load plugins withou it
+        }
     }
 
     /**
@@ -6002,10 +6010,10 @@ class AA_Req_Css extends AA_Req_Lib {
         return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->loadtype ? " media=\"{$this->loadtype}\">" : '>');
     }
 
-    /**
+    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
-    function getScript() {
+    function getExternal() {
         return ($this->loadtype=='print') ? '' : "AA_LoadCss('{$this->url}');";
     }
 }
@@ -6085,7 +6093,7 @@ class AA_Req_Run extends AA_Req {
         return "<script> {$this->script} </script>";
     }
 
-    /**
+    /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getScript() {
@@ -6143,11 +6151,12 @@ class AA_Req_Load extends AA_Req_Run {
         return "<script> document.addEventListener('DOMContentLoaded', function() { {$this->script} }); </script>";
     }
 
-    /**
-     * @return string
+    /** getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
+     *  @return string
      */
     function getScript() {
-        return "document.addEventListener('DOMContentLoaded', function() { {$this->script} });";
+        /** @todo there should be some delay/Promise to wait for all the lib scripts are loaded */
+        return $this->script;
     }
 }
 
@@ -6210,7 +6219,7 @@ class AA_Requires {
 
     /**
      * @param $position
-     * @return array AA_Req[]
+     * @return AA_Req[]
      */
     protected function computeRequires($position) {
         if (is_null($this->_outputs)) { // precomputed?
@@ -6274,12 +6283,17 @@ class AA_Requires {
         return join("\n", array_map( function($req) {return $req->getCode();}, $req_arr));
     }
 
-    /**
+    /** getAsScript is conterparts to getHead and getFoot, but used in AJAX calls, where CSS and JS libs have to be loaded by script
      * @return string
      */
     function getAsScript() {
-        $req_arr = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'),$this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
-        return join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
+        $req_arr  = array_merge($this->computeRequires('HEAD-A'),$this->computeRequires('HEAD-B'),$this->computeRequires('FOOT-A'),$this->computeRequires('FOOT-B'));
+        $external = array_filter(array_map( function($req) {return $req->getExternal();}, $req_arr));
+        $scripts  = join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
+
+        /** @todo could be moved to Promise.all approach */
+        $scripts  = "AA_IsLoaded.callback = function() {\n$scripts\n}";
+        return  join("\n",$external). $scripts;
     }
 
     /**
