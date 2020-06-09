@@ -1,3 +1,9 @@
+The changes could be tracked on:
+    https://sourceforge.net/p/apc-aa/svn/commit_browser
+    https://sourceforge.net/p/apc-aa/svn/HEAD/log/
+    https://sourceforge.net/p/apc-aa/svn/feed
+
+--- Older changes are listed also here: -----
 20-01-16 - optimized SQL query for remote items search like in query
 (honzam)     {ids:{_#SLICE_ID}:d-status_code.....@27803bcb3e04af9fe56a4420aa3a8b35/relation........-=-1}
          - better js detection in {require:myscript.js?v=5} - .js with ?parameters is detected well
