@@ -528,32 +528,47 @@ function AA_StateChange(id, state) {
 }
 
 /** If condition, call callback directly. Otherwise - load js script from url and execute callcack after the script is loaded */
-function AA_LoadJs(condition, callback, url) {
+function AA_LoadJs(condition, callback, url, sync) {
     if (condition) {
         if (callback) {
             callback();
         }
     } else {
+        ++AA_LoadJs.cnt;
         var script = document.createElement("script")
         script.type = "text/javascript";
+        if (sync) {
+            script.async = false;
+        }
 
-        if (callback) {
-            if (script.readyState) { //IE
-                script.onreadystatechange = function () {
-                    if (script.readyState == "loaded" || script.readyState == "complete") {
-                        script.onreadystatechange = null;
+        if (script.readyState) { //IE
+            script.onreadystatechange = function () {
+                if (script.readyState == "loaded" || script.readyState == "complete") {
+                    --AA_LoadJs.cnt;
+                    script.onreadystatechange = null;
+                    if (callback) {
                         callback();
                     }
-                };
-            } else { //Others
-                script.onload = function () {
+                }
+            };
+        } else { //Others
+            script.onload = function () {
+                --AA_LoadJs.cnt;
+                if (callback) {
                     callback();
-                };
-            }
+                }
+            };
         }
 
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
+    }
+}
+
+/** internal AA function for function call after all the scripts are loaded */
+function AA_IsLoaded() {
+    if ((AA_LoadJs.cnt === 0) && AA_IsLoaded.callback) {
+        AA_IsLoaded.callback();
     }
 }
 

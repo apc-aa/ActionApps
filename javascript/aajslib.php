@@ -42,7 +42,7 @@ header('Expires: '       . $exp_gmt);
 header('Last-Modified: ' . $mod_gmt);
 header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
-header('Content-Type: application/x-javascript');
+header('Content-Type: application/javascript');
 
 $dir = __DIR__. '/prototype/';
 
@@ -696,32 +696,49 @@ function AA_Toolbar(text) {
     AA__systemDiv('aa-bottom-toolbar', {'id': 'aa-bottom-toolbar'}, text);
 }
 
-function AA_LoadJs(condition, callback, url) {
+function AA_LoadJs(condition, callback, url, sync) {
     if (condition) {
         if (callback) {
             callback();
         }
     } else {
-        var script = document.createElement("script")
-        script.type = "text/javascript";
+        if(!AA_LoadJs.cnt) { AA_LoadJs.cnt =0; }
+        ++AA_LoadJs.cnt;
+        var script   = document.createElement("script")
+        script.type  = "text/javascript";
+        if (sync) {
+            script.async = false;
+        }
 
-        if (callback) {
-            if (script.readyState) { //IE
-                script.onreadystatechange = function () {
-                    if (script.readyState == "loaded" || script.readyState == "complete") {
-                        script.onreadystatechange = null;
-                        callback();
+        if (script.readyState) { //IE
+            script.onreadystatechange = function () {
+                if (script.readyState == "loaded" || script.readyState == "complete") {
+                    --AA_LoadJs.cnt;
+                    script.onreadystatechange = null;
+                    if (callback) {
+                        callback()
                     }
-                };
-            } else { //Others
-                script.onload = function () {
-                    callback();
-                };
-            }
+                }
+            };
+        } else { //Others
+            script.onload = function () {
+                --AA_LoadJs.cnt;
+                if (callback) {
+                    callback()
+                }
+            };
         }
 
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
+    }
+}
+
+/** internal AA function for function call after all the scripts are loaded */
+function AA_IsLoaded() {
+                                                console.log(AA_LoadJs.cnt);
+    if ((AA_LoadJs.cnt === 0) && AA_IsLoaded.callback) {
+        AA_IsLoaded.callback();
     }
 }
 
