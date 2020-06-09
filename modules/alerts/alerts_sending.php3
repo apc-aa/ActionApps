@@ -485,7 +485,7 @@ function get_view_settings_cached($vid) {
         return "";
     }
     if (!$cached_view_settings[$vid]) {
-        $view         = AA_Views::getView($vid);
+        $view         = AA_Views::getViewNumeric($vid);
         $slice        = AA_Slice::getModule(unpack_id($view->f("slice_id")));
         $cached_view_settings[$vid] = array (
             "lang"    => substr($slice->getProperty('lang_file'),0,2),

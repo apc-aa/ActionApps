@@ -165,7 +165,7 @@ class inputform {
         $remove_string = '';
 
         // design of form could be customized by view
-        if ( $this->template AND ($view = AA_Views::getView($this->template))) {
+        if ( $this->template AND ($view = AA_Views::getViewNumeric($this->template))) {
             // we can use different forms for 'EDIT' and 'ADD' item => (even/odd)
             $form          = ($edit AND $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
             $remove_string = $view->f('remove_string');

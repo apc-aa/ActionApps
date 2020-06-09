@@ -68,7 +68,7 @@ class AA_View {
         return true;
     }
 
-    /** Checks, if the unpackedid is OK and the slice is not deleted */
+    /** Checks, if view exists and the slice is not deleted */
     function isValid() {
         return $this->load() AND !$this->f('deleted');
     }
@@ -277,10 +277,10 @@ class AA_View {
         $matches = array();
         if ($text) {
             $view_ids = array();
-            if (preg_match_all("/view\.php3?\?vid=(\d+)/",$text, $matches) > 0) {
+            if (preg_match_all("/view\.php3?\?vid=(\w+)/",$text, $matches) > 0) {
                 $view_ids = (array)$matches[1];
             }
-            if (preg_match_all("/{view:(\d+)/",$text, $matches) > 0) {
+            if (preg_match_all("/{view:(\w+)/",$text, $matches) > 0) {
                 $view_ids = array_merge($view_ids, (array)$matches[1]);
             }
             if ($view_ids = array_unique($view_ids)) {
@@ -344,13 +344,30 @@ class AA_Views {
     }
 
     /** getView function
-     *  main factory static method
-     * @param $vid
+     *  older factory static method - for numeric views only, do not check, if exist
+     * @param int $vid
      * @return AA_View
      */
-    static function getView($vid) {
+    static function getViewNumeric($vid) {
         $views = AA_Views::singleton();
         return $views->_getView($vid);
+    }
+
+    /** getView function
+     *  main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
+     * @param int|string $vid
+     * @return AA_View|null
+     */
+    static function getView($vid) {
+        if (ctype_digit((string)$vid)) {
+            $vid = (int)$vid;
+        } elseif (AA::$site_id AND ($site = AA_Module_Site::getModule(AA::$site_id))) {
+            $vid = $site->findViewId($vid);
+        } else {
+            return null;
+        }
+        $view = AA_Views::singleton()->_getView($vid);
+        return $view->load() ? $view : null;  // if exists return
     }
 
     /** getViewField function

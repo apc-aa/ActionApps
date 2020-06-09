@@ -189,7 +189,7 @@ class AA_Manager extends AA_Storable {
     function setDesign(&$format_strings, &$aliases, $manager_vid = null) {
 
         if ( $manager_vid ) {
-            $view = AA_Views::getView($manager_vid);
+            $view = AA_Views::getViewNumeric($manager_vid);
             if ( $view AND !($view->f('deleted')>0) ) {
                 $format_strings = $view->getViewFormat();
                 $this->messages['noitem_msg'] = $view->f('noitem_msg');

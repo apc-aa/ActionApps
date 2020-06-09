@@ -279,7 +279,7 @@ if (!$slice_info['even_odd_differ']) {
 // see fview and iview url parameters for this file (slice.php3)
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
-        $fview_info = AA_Views::getView($fview);
+        $fview_info = AA_Views::getViewNumeric($fview);
         if ($fview_info AND ($fview_info->f('deleted')<1)) {
             $slice_info['fulltext_format']        = $fview_info->f('odd');
             $slice_info['fulltext_format_top']    = $fview_info->f('before');
@@ -288,7 +288,7 @@ if ($fview || $iview) {
         }
     }
     if ($iview) {                       // use formating from view for index
-        $iview_info = AA_Views::getView($iview);
+        $iview_info = AA_Views::getViewNumeric($iview);
         if ($iview_info AND ($iview_info->f('deleted')<1)) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
             $slice_info['gb_direction']    = $VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)

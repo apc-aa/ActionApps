@@ -728,7 +728,7 @@ class AA_Set extends AA_Object {
                      $cond_str = rawurldecode($cond_str);
                  }
 
-                 // well stripsplashes if bad - we never want the slashed text
+                 // well stripsplashes is bad - we never want the slashed text
                  // here, but we do not know, if the command is not from url
                  // so we will rather stripslash the string in most cases
                  // However - if the string starts with ", then it is never

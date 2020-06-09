@@ -212,7 +212,7 @@ function ConditionFrm($name, $txt, $val) {
 
 $view_id = (int) $_REQUEST['view_id'];  // sanitize
 if ($view_id) {
-    $view      = AA_Views::getView($view_id);
+    $view      = AA_Views::getViewNumeric($view_id);
     $view_type = $view->f('type');
 } else {
     // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)

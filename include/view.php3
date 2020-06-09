@@ -77,21 +77,23 @@ class ViewCommand {
 
     /** ViewCommand function
      *  constructor
-     *  @param $command the letter indicating the command (x, c, d, v, ...)
-     *  @param $parameters array of command patameters
+     *  @param $command string - the letter indicating the command (x, c, d, v, ...)
+     *  @param $parameters string[] of command parameters
      */
     function __construct($command, $parameters) {
         $this->command    = $command;
         $this->parameters = $parameters;
     }
+
     /** addParameters function
      * @param $parameters
      */
     function addParameters($parameters) {
         $this->parameters = array_merge($this->parameters, $parameters);
     }
+
     /** getCommand function
-     *
+     * @return string
      */
     function getCommand() {
         return $this->command;
@@ -99,7 +101,7 @@ class ViewCommand {
 
     /** getParameter function
      * @param $index
-     * @return mixed
+     * @return string
      */
     function getParameter($index) {
         return $this->parameters[$index];
@@ -107,17 +109,17 @@ class ViewCommand {
 
     /** getParameterArray function
      * @param $offset
-     * @return array
+     * @return string[]
      */
     function getParameterArray($offset=0) {
         return array_slice($this->parameters, $offset);
     }
-
-
 }
 
 /** Class for storing set of url commands for view  */
 class AA_View_Commands {
+
+    /** @var ViewCommand[] */
     var $commands;     /** array of objects of ViewCommand class */
 
     /** AA_View_Commands function
@@ -131,7 +133,7 @@ class AA_View_Commands {
     }
 
     /** get function
-     *  @return command given by command letter (say 'd')
+     *  @return ViewCommand command given by command letter (say 'd')
      * @param $command
      */
     function get($command) {
@@ -139,25 +141,25 @@ class AA_View_Commands {
     }
 
     /** count function
-     *  returns number of commands in the set
+     *  @return int number of commands in the set
      */
     function count() {
         return count($this->commands);
     }
     /** reset function
-     *
+     * @return ViewCommand
      */
     function reset() {
         return reset($this->commands);
     }
     /** next function
-     *
+     * @return ViewCommand
      */
     function next() {
         return next($this->commands);
     }
     /** current function
-     *
+     * @return ViewCommand
      */
     function current() {
         return current($this->commands);
@@ -211,7 +213,7 @@ class AA_View_Commands {
 
                     // you can use also _#CAMPAIGN in url:
                     // {view.php3?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
-                    // (%23 is urlencoded %23)
+                    // (%23 is urlencoded #)
                     if (substr($k,0,2) != '_#') {
                         $cmd_part = str_replace('_#'.$k, $v, $cmd_part);
                     }
@@ -271,9 +273,11 @@ function ParseViewParameters($query_string="") {
     if ($query_string) {
         // Parse parameters
         // if view in cmd[] or set[] is not specified - fill it from vid
-        if ( preg_match("/vid=([0-9a-z_]*)/", $query_string, $parts) ) {
+        if ( preg_match("/vid=(\w+)/", $query_string, $parts) ) {
             $vid = $parts[1];
-            $query_string = str_replace( array('cmd[]','set[]'), array("cmd[$vid]", "set[$vid]"), $query_string );
+
+            // it is possible to write vid=574&cmd[]=c-1-test&cmd[]=c-2-1
+            $query_string = str_replace( array('cmd[][]','cmd[]','set[][]','set[]'), array("cmd[$vid][]","cmd[$vid][]", "set[$vid][]", "set[$vid][]"), $query_string );
 
             // we no not want older calls to ParseViewParameters() will infect this call
             // @todo - make two versions - one for url parameters, second for
@@ -297,6 +301,7 @@ function ParseViewParameters($query_string="") {
     // Splits on "-" and subsitutes aliases
     $commands = new AA_View_Commands($new_params['cmd'][$vid], $new_params['als']);
     $v_conds  = new AA_Set;
+    $c_conds  = new AA_Set;
 
     AA::$debug&2 && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
 
@@ -320,7 +325,6 @@ function ParseViewParameters($query_string="") {
                        }
                        break;
 
-
             case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
                        // Note param_conds[0] is not otherwise used
                        // It is converted into conds in AA_View->getConds
@@ -332,6 +336,9 @@ function ParseViewParameters($query_string="") {
                            $command_params = $command->getParameterArray();
                        }
 
+                       if (ctype_digit((string)$command_params[0])) {
+
+                       }
 
                        if (AA_Set::check($command_params[0], $command_params[1])) {
                            $param_conds[$command_params[0]] = stripslashes($command_params[1]);
@@ -481,27 +488,13 @@ class AA_Showview {
         $this->_view_param = $view_param;
     }
 
-    /** if not numeric, find view id in the site
-     *  do not validate, if the view exists for numeric ids!
-     */
-    protected function findViewId($vid) {
-        if (ctype_digit((string)$vid)) {
-            return (int)$vid;
-        }
-        if (AA::$site_id AND ($site = AA_Module_Site::getModule(AA::$site_id))) {
-            return $site->findViewId($vid);
-        }
-        return false;
-    }
-
     function getViewOutput()
     {
         $dbgtime = microtime(true);
 
-        if (!($vid = $this->findViewId($this->_view_param["vid"]))) {
+        if (!($view = AA_Views::getView($this->_view_param["vid"]))) {
             return false;
         }
-
 
         $als = $this->_view_param["als"];
         $conds = $this->_view_param["conds"];
@@ -520,13 +513,9 @@ class AA_Showview {
 
         $selected_item = $this->_view_param["selected"];      // used for boolean (1|0) _#SELECTED
 
-
         // alias - =1 for selected item
         // gets view data
 
-        if (!($view = AA_Views::getView($vid))) {
-            return false;
-        }
         $view_info = $view->getViewInfo();
 
         AA::$debug&2 && AA::$dbg->group("view_$vid" . '_' . ($dbgtime));

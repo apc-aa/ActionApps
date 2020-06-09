@@ -99,7 +99,7 @@ function AafinderSiteLink($spot_id, $slice_id) {
 }
 
 function AafinderViewLink($view_id, $slice_id) {
-    $view = AA_Views::getView($view_id);
+    $view = AA_Views::getViewNumeric($view_id);
     return $view->jumpLink($view_id." -  ".$view->f("name")).' ('. AA_Module::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
