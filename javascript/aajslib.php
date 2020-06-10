@@ -1,5 +1,9 @@
 <?php
-/** AA Javascripts library usable on the public pages, just like:
+/** @deprecated - use aajslib-legacy.min.js directly or even better aajslib-jquery.min.js with jQuery
+ *  This file is used also to generate aajslib-legacy.js (manualy through http://.../apc-aa/javascript/aajslib.php )
+ *  which is then compressed to aajslib-legacy.min.js by UglifyJS
+ *
+ *  AA Javascripts library usable on the public pages, just like:
  *  <script src="https://actionapps.org/apc-aa/javascript/aajslib.php"></script>
  *  (replace "https://actionapps.org/apc-aa" with your server and aa path
  *
@@ -72,12 +76,11 @@ if (typeof window.AA_GetConf === 'undefined') {
     }
 }
 
-// usage: $(div_id_2).update(AA_Config.loader);
 var AA_Config = {
-  AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
-  loader:         '<img src="<?php echo AA_INSTAL_PATH; ?>images/loader.gif" border="0" width="16" height="16">',
-  icon_new:       '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_new.gif" border="0" width="17" height="17">',
-  icon_close:     '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_close.gif" border="0" width="17" height="17">'
+    get AA_INSTAL_PATH() { return AA_GetConf("path") },
+    get loader()         { return AA_GetConf("loader") },
+    get icon_new()       { return AA_GetConf("loader").replace("loader.gif", "icon_new.gif") },
+    get icon_close()     { return AA_GetConf("loader").replace("loader.gif", "icon_close.gif") }
 }
 
 <?php
@@ -397,6 +400,7 @@ function AA_AjaxSendAddForm(id) {
  */
 function AA_SendWidgetAjax(id) {
     var valdivid   = 'ajaxv_' + id;
+    $(valdivid).querySelectorAll('.CodeMirror').forEach(function(el) { el.CodeMirror.save()});
     var code = Form.serialize(valdivid);
     var alias_name = $(valdivid).readAttribute('data-aa-alias');
     $(valdivid).insert(AA_Config.loader);
@@ -736,7 +740,6 @@ function AA_LoadJs(condition, callback, url, sync) {
 
 /** internal AA function for function call after all the scripts are loaded */
 function AA_IsLoaded() {
-                                                console.log(AA_LoadJs.cnt);
     if ((AA_LoadJs.cnt === 0) && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
     }
