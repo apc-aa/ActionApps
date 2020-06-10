@@ -46,7 +46,7 @@ header('Expires: '       . $exp_gmt);
 header('Last-Modified: ' . $mod_gmt);
 header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
-header('Content-Type: application/x-javascript');
+header('Content-Type: application/javascript');
 if(!$keystr) {
     $keystr = $_REQUEST['keystr'];
 }

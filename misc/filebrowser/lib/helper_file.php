@@ -45,7 +45,7 @@ class file {
         'jpe'   => 'image/jpeg',
         'jpeg'  => 'image/jpeg',
         'jpg'   => 'image/jpeg',
-        'js'    => 'application/x-javascript',
+        'js'    => 'application/javascript',
         'log'   => 'text/plain',
         'mid'   => 'audio/midi',
         'midi'  => 'audio/midi',
