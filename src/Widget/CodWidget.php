@@ -12,6 +12,8 @@ use AA\FormArray;
 /** Code editor */
 class CodWidget extends \AA\Widget\Widget
 {
+    /** @var array  list of textareas for CodeMirror creation */
+    protected $ids_4_editor = array();
 
     /** widget name  */
     function name()
@@ -27,12 +29,15 @@ class CodWidget extends \AA\Widget\Widget
     /** script to run after the page DOM is loaded */
     function requireRun($aa_property, $winfo)
     {
-        return '
-      var tas = document.querySelectorAll("textarea[data-editor]");
-      for(var i = 0; i < tas.length; i++) {
-        CodeMirror.fromTextArea(tas[i], { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });
-      }
-      ';
+        $ret = '';
+        // are there some textareas not converted to CodeMirror?
+        if ($this->ids_4_editor) {
+            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
+
+            // clean the list - all textareas are converted
+            $this->ids_4_editor = array();
+        }
+        return $ret;
     }
 
     /** getClassProperties function of AA_Serializable
@@ -65,6 +70,8 @@ class CodWidget extends \AA\Widget\Widget
 
         //$ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
         $widget = "<textarea id=\"$base_id\" name=\"$input_name\" rows=\"$rows\" data-editor=html>$input_value</textarea>";
+        $this->ids_4_editor[] = '#'.$base_id;
+
         $widget .= "<input type=hidden name=\"$input_flag\" value=\"" . FLAG_HTML . "\">";
 
         return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
