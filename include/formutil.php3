@@ -2972,7 +2972,7 @@ function FrmJavascriptCached( $jscode, $name ) {
 /** IncludeManagerJavascript function
  */
 function IncludeManagerJavascript() {
-    FrmJavascriptFile( 'javascript/aajslib.php' );
+    FrmJavascriptFile( 'javascript/aajslib-legacy.min.js' );
     FrmJavascriptFile( 'javascript/manager.min.js' );
 }
 
