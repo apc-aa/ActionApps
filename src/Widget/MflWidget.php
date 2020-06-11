@@ -127,7 +127,7 @@ class MflWidget extends \AA\Widget\Widget
                     $widget .= '<br>';
                 }
                 $widget .= "<div><textarea name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_add $widget_onchange>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
-                // arr this textarea to the list for CVodeMirror creation
+                // arr this textarea to the list for CodeMirror creation
                 $this->ids_4_editor[] = '#'.$input_id;
             } else {
                 $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $widget_onchange>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then

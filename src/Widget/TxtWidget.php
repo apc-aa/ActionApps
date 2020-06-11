@@ -17,6 +17,8 @@ use Exception;
 /** Textarea widget */
 class TxtWidget extends \AA\Widget\Widget
 {
+    /** @var array  list of textareas for CodeMirror creation */
+    protected $ids_4_editor = array();
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -41,6 +43,20 @@ class TxtWidget extends \AA\Widget\Widget
     function requireLibs($aa_property, $winfo)
     {
         return ( count($aa_property->getTranslations())>1 ) ? array('aa-jslib@3') : array();
+    }
+
+    /** script to run after the page DOM is loaded */
+    function requireRun($aa_property, $winfo)
+    {
+        $ret = '';
+        // are there some textareas not converted to CodeMirror?
+        if ($this->ids_4_editor) {
+            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CKEDITOR.replace( el );} );';
+
+            // clean the list - all textareas are converted
+            $this->ids_4_editor = array();
+        }
+        return $ret;
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -124,7 +140,9 @@ class TxtWidget extends \AA\Widget\Widget
         $htmlareaedit = '';
 
         if ($showhtmlarea) {
-            $attrs['class'] = 'ckeditor';
+            // arr this textarea to the list for CKEditor creation
+            $this->ids_4_editor[] = '#'.$input_id;
+            // $attrs['class'] = 'ckeditor';
         } elseif (!$no_htmleditor) {
             $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
             // conversions menu
