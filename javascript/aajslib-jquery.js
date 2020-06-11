@@ -534,7 +534,6 @@ function AA_LoadJs(condition, callback, url, sync) {
             callback();
         }
     } else {
-        ++AA_LoadJs.cnt;
         var script = document.createElement("script")
         script.type = "text/javascript";
         if (sync) {
@@ -544,7 +543,6 @@ function AA_LoadJs(condition, callback, url, sync) {
         if (script.readyState) { //IE
             script.onreadystatechange = function () {
                 if (script.readyState == "loaded" || script.readyState == "complete") {
-                    --AA_LoadJs.cnt;
                     script.onreadystatechange = null;
                     if (callback) {
                         callback();
@@ -553,7 +551,6 @@ function AA_LoadJs(condition, callback, url, sync) {
             };
         } else { //Others
             script.onload = function () {
-                --AA_LoadJs.cnt;
                 if (callback) {
                     callback();
                 }
@@ -567,6 +564,9 @@ function AA_LoadJs(condition, callback, url, sync) {
 
 /** internal AA function for function call after all the scripts are loaded */
 function AA_IsLoaded() {
+    if (AA_IsLoaded.cnt) {
+        --AA_IsLoaded.cnt; // count to zero
+    }
     if (!AA_LoadJs.cnt && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
         AA_IsLoaded.callback = undefined;       // run it just once

@@ -6292,7 +6292,7 @@ class AA_Requires {
         $scripts  = join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
 
         /** @todo could be moved to Promise.all approach */
-        $scripts  = "\nAA_IsLoaded.callback = function() {\n$scripts\n}\n";
+        $scripts  = "\nAA_IsLoaded.callback = function() {\n$scripts\n}\nAA_IsLoaded.cnt=".count($external)."\n";
         return  $scripts. join("\n",$external);
     }
 
