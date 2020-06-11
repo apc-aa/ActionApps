@@ -701,7 +701,7 @@ function AA_Toolbar(text) {
 }
 
 function AA_LoadJs(condition, callback, url, sync) {
-    if (condition) {
+    if (condition && ((condition!='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
         if (callback) {
             callback();
         }
@@ -740,18 +740,22 @@ function AA_LoadJs(condition, callback, url, sync) {
 
 /** internal AA function for function call after all the scripts are loaded */
 function AA_IsLoaded() {
-    if ((AA_LoadJs.cnt === 0) && AA_IsLoaded.callback) {
+    if ((AA_LoadJs.cnt < 1) && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
+        AA_IsLoaded.callback = undefined;       // run it just once
     }
 }
 
 function AA_LoadCss(url) {
-   var link  = document.createElement('link');
-   link.type = 'text/css';
-   link.rel  = 'stylesheet';
-   link.href = url;
-   document.getElementsByTagName('head')[0].appendChild(link);
-   return link;
+    var link = document.querySelector('link[href="'+url+'"]');
+    if (url && !link) {
+        link  = document.createElement('link');
+        link.type = 'text/css';
+        link.rel  = 'stylesheet';
+        link.href = url;
+        document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    return link;
 }
 
 /* function to check the computed value of a style element */

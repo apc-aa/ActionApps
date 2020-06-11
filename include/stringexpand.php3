@@ -5933,13 +5933,13 @@ class AA_Req_Lib extends AA_Req {
         return "<script".$defer.$type ." src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
     }
 
-
+    
     /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getExternal() {
         if (trim($this->url)) {
-            return "AA_LoadJs(false,AA_IsLoaded,'{$this->url}',true);";  // we use script.async=false - codemirror in {ajax} did not load plugins withou it
+            return "AA_LoadJs('load_once',AA_IsLoaded,'{$this->url}',true);";  // we use script.async=false - codemirror in {ajax} did not load plugins withou it
         }
     }
 
@@ -6292,8 +6292,8 @@ class AA_Requires {
         $scripts  = join("\n", array_map( function($req) {return $req->getScript();}, $req_arr));
 
         /** @todo could be moved to Promise.all approach */
-        $scripts  = "AA_IsLoaded.callback = function() {\n$scripts\n}";
-        return  join("\n",$external). $scripts;
+        $scripts  = "\nAA_IsLoaded.callback = function() {\n$scripts\n}\n";
+        return  $scripts. join("\n",$external);
     }
 
     /**

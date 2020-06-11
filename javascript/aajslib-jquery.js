@@ -529,7 +529,7 @@ function AA_StateChange(id, state) {
 
 /** If condition, call callback directly. Otherwise - load js script from url and execute callcack after the script is loaded */
 function AA_LoadJs(condition, callback, url, sync) {
-    if (condition) {
+    if (condition && ((condition!='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
         if (callback) {
             callback();
         }
@@ -567,8 +567,9 @@ function AA_LoadJs(condition, callback, url, sync) {
 
 /** internal AA function for function call after all the scripts are loaded */
 function AA_IsLoaded() {
-    if ((AA_LoadJs.cnt === 0) && AA_IsLoaded.callback) {
+    if ((AA_LoadJs.cnt < 1) && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
+        AA_IsLoaded.callback = undefined;       // run it just once
     }
 }
 
