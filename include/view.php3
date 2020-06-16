@@ -495,6 +495,7 @@ class AA_Showview {
         if (!($view = AA_Views::getView($this->_view_param["vid"]))) {
             return false;
         }
+        $vid = $view->getId();
 
         $als = $this->_view_param["als"];
         $conds = $this->_view_param["conds"];

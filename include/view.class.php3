@@ -98,6 +98,13 @@ class AA_View {
         return unpack_id($this->f('slice_id'));
     }
 
+    /**
+     * @return string - number or name ID of the view
+     */
+    function getId() {
+        return $this->id;
+    }
+
     /** getLang function
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
