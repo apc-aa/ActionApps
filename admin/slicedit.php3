@@ -72,7 +72,7 @@ require_once AA_INC_PATH."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 
-$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), array('module.id',$foo_source, 'l')));
+$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), array('module.id',$foo_source, 'l')));
 if (!$sarr) {
     $sarr = array();
 }
@@ -98,6 +98,7 @@ if ($slice_id == "") {
 FrmTabCaption(_m("Slice"), '', '', $form_buttons, $slice_id);
 
 FrmStaticText(_m("Id"), $slice_id);
+
 FrmInputText("name", _m("Title"), $sarr['name'], 99, 25, true);
 FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $sarr['slice_url'], 254, 25, false);
 FrmInputText("priority", _m("Priority (order in slice-menu)"), $sarr['priority'], 5, 5, false);
@@ -132,6 +133,8 @@ FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_pass
 if ($slice_id) {
     FrmStaticText(_m("Additional setting"), AA_Slice::getModuleObjectForm($slice_id), '', '', false);
 }
+
+FrmStaticText(_m("Created"), date('Y-m-d H:i', $sarr['created_at']). ' ('. perm_username($sarr['created_by']). ')');
 
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
 FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
