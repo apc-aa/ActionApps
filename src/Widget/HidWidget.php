@@ -32,6 +32,20 @@ class HidWidget extends \AA\Widget\Widget
         return array();
     }
 
+    /** Decorate widget in the standard AA form - start
+     * @param AA_Property $aa_property
+     * @return string
+     */
+    function stdFormStart($aa_property) {
+        $ret  = "\n<tr class=\"formrow{formpart} fieldstart cont-".varname4form($aa_property->getId())."\" style=\"visibility:hidden; position:absolute\">";
+        $ret .= "\n <td class=tabtxt><b>".$aa_property->getName()."</b>";
+        if ( $aa_property->isRequired() ) {
+            $ret .= "&nbsp;*";
+        }
+        $ret .= "</td>\n <td>";
+        return $ret;
+    }
+
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      * @param AA_Property $aa_property
@@ -42,10 +56,14 @@ class HidWidget extends \AA\Widget\Widget
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
         $property_id = $aa_property->getId();
-        $input_name = FormArray::getName4Form($property_id, $content, $this->item_index) . "[0]";
-        $input_id = FormArray::formName2Id($input_name);
+        $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
+        $base_id     = FormArray::formName2Id($base_name);
+        $input_name  = $base_name . "[0]";
+        $input_id    = FormArray::formName2Id($input_name);
         $input_value = myspecialchars($content->getValue($property_id));
-        return "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
+        $widget      = "\n<input type=hidden name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
+        
+        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
     }
 
     /**

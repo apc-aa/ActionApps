@@ -1878,12 +1878,14 @@ class AA_Inputfield {
             return '';
         }
 
-        $this->field_name('plus');
+        $widget      = $field->getWidget();
+        $aa_property = $field->getAaProperty();
+
+        $this->echoo($widget->stdFormStart($aa_property));
+
         if (is_null($item)) {
             $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue()));
         } else {
-            $widget = $field->getWidget();
-            $aa_property = $field->getAaProperty();
             $content = with( new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
             // another approach would be $content = $item->getItemContent();
 
@@ -1894,7 +1896,7 @@ class AA_Inputfield {
 //        } else {
 //            $this->echovar(AA::Stringexpander()->unalias('{edit:'.$item->getId().':'.$this->id.'}','',$item));
 //        }
-        $this->helps('plus');
+        $this->echoo($widget->stdFormEnd($aa_property));
     }
 
     /** inputFile function

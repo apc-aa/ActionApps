@@ -396,6 +396,36 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
     }
 
+    /** Decorate widget in the standard AA form - start
+     * @param AA_Property $aa_property
+     * @return string
+     */
+    function stdFormStart($aa_property) {
+        $ret  = "\n<tr class=\"formrow{formpart} fieldstart cont-".varname4form($aa_property->getId())."\">";
+        $ret .= "\n <td class=tabtxt><b>".$aa_property->getName()."</b>";
+        if ( $aa_property->isRequired() ) {
+            $ret .= "&nbsp;*";
+        }
+        $ret .= "</td>\n <td>";
+        return $ret;
+    }
+
+    /** Decorate widget in the standard AA form - end
+     * @param AA_Property $aa_property
+     * @return string
+     */
+    function stdFormEnd($aa_property) {
+        $ret = '';
+        if ( $hlp = $aa_property->getMorehelp() ) {
+            $ret .= "&nbsp;<a href=".safe($hlp)." target=_blank>?</a>";
+        }
+        if ( $hlp = $aa_property->getHelp() ) {
+            $ret .= "<div class=tabhlp>$hlp</div>";
+        }
+        $ret .= "</td>\n</tr>\n";
+        return $ret;
+    }
+
     /**
      * @param array $winfo
      * @param AA_Property $aa_property
