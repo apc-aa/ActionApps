@@ -73,7 +73,7 @@ abstract class AbstractGrabber {
 
     /** loads data form, url or direct input
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     protected function loadData($url, $direct_input='', $post_body='', $source_encoding='' ) {
         if (strlen($direct_input)) {
@@ -87,7 +87,7 @@ abstract class AbstractGrabber {
 
         $context = !($post_body) ? null : stream_context_create(array('http' => array('method'=>'POST','header'=>'Content-Type: text/xml','content'=>$post_body)));
         if (false === ($data = file_get_contents($url, false, $context))) {
-            throw new Exception('file not loaded: ' . $url);
+            throw new \Exception('file not loaded: ' . $url);
         }
         $this->message(__CLASS__.' -> '. __FUNCTION__);
         $this->message("read ". strlen($data). "Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
