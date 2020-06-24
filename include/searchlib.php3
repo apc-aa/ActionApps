@@ -1845,16 +1845,18 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     }
 
     // add comment to the SQL command (for debug purposes)
-    $SQL .= " -- AA slice: ". join('-', $slices);
+    $SQL_comment = " -- AA slice: ". join('-', $slices);
     if ($GLOBALS['slice_info']) {
-        $SQL .= ", slice_name: ". $GLOBALS['slice_info']['name'];
+        $SQL_comment .= ", slice_name: ". $GLOBALS['slice_info']['name'];
     }
     if ($GLOBALS['vid']) {
-        $SQL .= ", vid: ".        $GLOBALS['vid'];
+        $SQL_comment .= ", vid: ".        $GLOBALS['vid'];
     }
     if ($GLOBALS['view_info']) {
-        $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
+        $SQL_comment .= ", view_name: ".  $GLOBALS['view_info']['name'];
     }
+
+    $SQL .= str_replace(array("\n", "\r"), ' ', $SQL_comment);
 
     AA::$debug&2 && AA::$dbg->log("QueryZids: SQL: $SQL");
 

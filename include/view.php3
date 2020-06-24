@@ -273,7 +273,7 @@ function ParseViewParameters($query_string="") {
     if ($query_string) {
         // Parse parameters
         // if view in cmd[] or set[] is not specified - fill it from vid
-        if ( preg_match("/vid=(\w+)/", $query_string, $parts) ) {
+        if ( preg_match("/vid=\s*(\w+)/", $query_string, $parts) ) {              // a-z, A-Z, 0-9, including the _
             $vid = $parts[1];
 
             // it is possible to write vid=574&cmd[]=c-1-test&cmd[]=c-2-1
@@ -289,6 +289,7 @@ function ParseViewParameters($query_string="") {
         $new_params = add_vars($query_string, 'return');  // adds values from url (it's not automatical in SSIed script)
         if ($use_globals) {
             add_vars($query_string);   // import it also globaly
+            $vid = trim($vid);
         }
     } else {
         $new_params['cmd'] = $GLOBALS['cmd'];

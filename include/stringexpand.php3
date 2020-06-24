@@ -2835,6 +2835,11 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
  *
  * However, you will be able to use it for discussions tree as well.
  *
+ * {itree:{treestring:{id..............}}
+ *   :_#2<div style="margin-left#:20px">
+ *   :{(<div>_#HEADLINE ... </div>)}
+ *   ::</div>}
+ *
  *
  * 1) Generic tree
  *
