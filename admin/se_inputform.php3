@@ -479,7 +479,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_func_f  = $alias_name. "_func_f";
     $alias_func    = $alias_name. "_func";
     $alias_help    = $alias_name. "_help";
-    $alias_value   = $$alias_name ? $$alias_name : '_#';
+    $alias_value   = $$alias_name ?: '_#';
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
     FrmInputText($alias_name, _m("Alias")." $iAlias", $alias_value, 10, 20, false, _m("_# + 8 UPPERCASE letters or _"));
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);

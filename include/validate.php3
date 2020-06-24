@@ -92,7 +92,7 @@ class AA_Validate extends AA_Serializable {
                 case 'id':
                 case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();    break;  // empty = "" or "0"
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(array('min'=>0));           break;
-                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^_#[0-9_#a-zA-Z]{8}$/')); break;
+                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[_X]#[0-9_#a-zA-Z]{8}$/')); break;
                 case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[-.0-9a-zA-Z_]+$/')); break;
                 case 'regexp':   $standard_validators[$sv_key] = new AA_Validate_Regexp($parameters); break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);  break;
