@@ -166,13 +166,14 @@ class AA_Property extends AA_Storable {
 
 
     /** getters */
-    function getId()                  { return $this->id;           }
-    function getName()                { return $this->name;         }
-    function getType()                { return $this->type;         }
-    function getHelp()                { return $this->input_help;   }
-    function getExample()             { return $this->example;      }
-    function getConstants()           { return $this->const_arr;    }
-    function getTranslations()        { return $this->translations; }
+    function getId()                  { return $this->id;            }
+    function getName()                { return $this->name;          }
+    function getType()                { return $this->type;          }
+    function getHelp()                { return $this->input_help;    }
+    function getMorehelp()            { return $this->input_morehlp; }
+    function getExample()             { return $this->example;       }
+    function getConstants()           { return $this->const_arr;     }
+    function getTranslations()        { return $this->translations;  }
     function getContentTypeSwitches() { return $this->show_content_type_switch;    }
     function getContentTypeDefault()  { return $this->content_type_switch_default; }
 
