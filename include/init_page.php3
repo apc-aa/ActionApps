@@ -170,15 +170,15 @@ if (!$no_slice_id) {
 
 
     if ($after_login OR !$g_modules[AA::$module_id]) {
-                        // slice was just deleted, thus is not in $g_modules
-        reset($g_modules);
-        AA::$module_id = key($g_modules);
-        // skip AA Core Field slice, if possible
-        if ((AA::$module_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules)) {
-            AA::$module_id = key($g_modules);
+        // slice was just deleted, thus is not in $g_modules
+        foreach ($g_modules as $mid => $mmodule) {
+            // skip AA Core Field slice, if possible
+            if (($mmodule['type']=='S') AND ($mid <>  "41415f436f72655f4669656c64732e2e")) {
+                AA::$module_id = $mid;
+                break;
+            }
         }
     }
-
 
     $p_slice_id = q_pack_id(AA::$module_id);
     $slice_id   = AA::$module_id;
