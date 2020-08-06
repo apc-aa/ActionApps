@@ -73,7 +73,7 @@ class AA_Mailman {
     private static function _createOneFile($slice_id, $field_id, $listname) {
         global $MAILMAN_SYNCHRO_DIR;
         if ($slice_id AND $field_id AND $listname) {
-            $mails = join("\n",AA_Validate::filter(explode('|',str_replace(array(' ',"\t"),array('',''),AA::Stringexpander()->unalias("{item:{ids:$slice_id:d-$field_id-=-$listname}:".FIELDID_EMAIL.":|}"))), 'email'));
+            $mails = join("\n",AA_Validate::filter(explode('|',str_replace(array(' ',"\t"),array('',''),AA::Stringexpander()->unalias("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
 
             if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
                fwrite ($fd, $mails);
