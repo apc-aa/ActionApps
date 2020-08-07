@@ -347,7 +347,7 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
                       "cancel"   => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
                      );
 
-FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
 
 $isc_arr = AA_Components::getClassArray('AA\\Widget\\Widget');
 

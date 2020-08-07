@@ -329,7 +329,7 @@ class AA_Adminpage implements AA_iEditable {
                                           'value' => _m("Default"),
                                           'add'   => 'onclick="Defaults()"'));
 
-        FrmTabCaption(_m("Object Edit"), '', '', $form_buttons);
+        FrmTabCaption(_m("Object Edit"), $form_buttons);
         // FrmHidden('ret_url', $ret_url);
         // FrmHidden('oid',     $oid);
         // FrmHidden('otype',   $otype);

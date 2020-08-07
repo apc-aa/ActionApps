@@ -82,7 +82,7 @@ FrmTabEnd();
 
 echo '<br><br>'. getTabStart();
 
-FrmInputButtons(array("cancel" => array("url" => "aafinder.php3")), 'middle', true, COLOR_TABTITBG);
+echo getFrmInputButtons(array("cancel" => array("url" => "aafinder.php3")), 'middle', true, COLOR_TABTITBG);
 FrmTabEnd();
 
 $apage->printFoot();

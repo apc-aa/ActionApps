@@ -113,7 +113,7 @@ $form_buttons = array ("update",
                        "cancel" =>array("url"=>$ret_url),
                       );
 
-$html  = getFrmTabCaption(_m("Object Edit"), '', '', $form_buttons);
+$html  = getFrmTabCaption(_m("Object Edit"), $form_buttons);
 $html .= '<tr><td colspan="2">';
 $html .= $form->getObjectEditHtml();
 $html .= '</td></tr>';

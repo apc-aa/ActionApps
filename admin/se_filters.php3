@@ -157,7 +157,7 @@ $form_buttons=array("btn_upd"=>array("type"  =>"button",
                                "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
                     "cancel" =>array("url"   =>"se_fields.php3"));
 
-FrmTabCaption(_m("Content Pooling - Configure Filters"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Content Pooling - Configure Filters"), $form_buttons);
 ?>
 <tr>
   <td colspan class="tabtxt" align="center"><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>

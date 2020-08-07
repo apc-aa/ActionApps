@@ -163,7 +163,7 @@ $form_buttons = array ("update",
                                           'value' => _m("Default"),
                                           'add'   => 'onclick="Defaults()"'));
 
-FrmTabCaption(_m("HTML code for fulltext view"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("HTML code for fulltext view"), $form_buttons);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
              _m("HTML code which appears at the top of slice area")
              .'<br>'.AA_View::getViewJumpLinks($fulltext_format_top), '', 1);

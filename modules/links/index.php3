@@ -271,17 +271,22 @@ echo '<tr>
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
               class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
-FrmInputButtons(array('gocat' => array('type' => 'button',
-    'value' => _m('Show Links'),
-    'add' => 'onclick="document.filterform.submit()"',
-    'help' => get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy")),
-    'editcat' => array('type' => 'button',
+echo getFrmInputButtons(array(
+    'gocat' => array(
+        'type' => 'button',
+        'value' => _m('Show Links'),
+        'add' => 'onclick="document.filterform.submit()"',
+        'help' => get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy")
+    ),
+    'editcat' => array(
+        'type' => 'button',
         'value' => _m('Edit Category'),
         'add' => 'onclick="EditCurrentCat()"',
-        'help' => get_help_url(AA_LINKS_HELP_MAIN, "editujkat"))
+        'help' => get_help_url(AA_LINKS_HELP_MAIN, "editujkat")
+    )
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
-), 'bottom');
+), 'bottom', true, COLOR_TABBG);
 
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);

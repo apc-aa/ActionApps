@@ -398,7 +398,7 @@ echo '
 <form name="f" method=post action="'. StateUrl("linkedit2.php3") .'">';
 $caption = _m('Link').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
                                       array("before"=>"(", "text"=>"?", "after"=>")"));
-FrmTabCaption($caption, '', '', $form_buttons, $slice_id);
+FrmTabCaption($caption, $form_buttons);
 
 $bin_names = get_bin_names();
 if ( $id ) {

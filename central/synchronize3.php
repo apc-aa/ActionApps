@@ -115,7 +115,7 @@ $form_buttons = array("synchronize"  => array( "type"      => "submit",
 FrmTabCaption(_m('Slice Comparison - %1 x %2', array(
     $aas[$_POST['template_aa']]->getName(),
     $aas[$_POST['comparation_aa']]->getName()
-)), '', '', $form_buttons);
+)), $form_buttons);
 if ( isset($differences) ) {
     // and print diffs out
     foreach ($differences as $sid => $diffs) {

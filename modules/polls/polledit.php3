@@ -152,7 +152,7 @@ if ($poll_id) {
 ?>
 <form name="inputform" method="post" onSubmit="BeforeSubmit();" action="<?php echo StateUrl() ?>">
 <?php
-FrmTabCaption(_m("Insert question and answers"), '', '', $form_buttons, $module_id);
+FrmTabCaption(_m("Insert question and answers"), $form_buttons);
 
 $where = $poll_id ? "id='$poll_id'" : "module_id = '$p_module_id' AND status_code = 0";
 $SQL  = "SELECT design_id, aftervote_design_id, params, set_cookies, ip_lock_timeout, locked, ip_locking, logging, expiry_date, publish_date, headline FROM polls WHERE $where";

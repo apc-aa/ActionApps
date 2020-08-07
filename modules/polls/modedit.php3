@@ -185,7 +185,7 @@ $apage->setModuleMenu('modules/polls');
 $apage->setTitle($template['P'] ? _m("Add Polls") : _m("Edit Polls"));
 $apage->printHead($err, $Msg);
 
-    FrmTabCaption(_m("Polls Module general data"), '', '', $form_buttons, $module_id);
+    FrmTabCaption(_m("Polls Module general data"), $form_buttons);
     FrmStaticText(_m("Id"), $module_id);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/polls/poll.php3?pid=$module_id\"--&gt;";

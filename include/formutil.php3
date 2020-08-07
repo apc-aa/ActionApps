@@ -245,7 +245,7 @@ class inputform {
 
         echo $this->getFormStart();
 
-        FrmTabCaption('', 'id="inputtab"', 'id="inputtabrows"', $buttons);
+        echo getFrmTabCaption('', $buttons, 'id="inputtab"', 'id="inputtabrows"');
         $tabs  = array();
         if ( $form_parts ) {
             for ( $idx=0; $idx <= $form_parts; $idx++ ) {
@@ -2593,21 +2593,15 @@ function getTabStart($add='') {
 /** FrmTabCaption function
  * Prints start of form table with caption and possibly additional tags (classes) to tables
  * @param string $caption
+ * @param string $buttons
  * @param string $outer_add
  * @param string $inner_add
- * @param string $buttons
- * @param string $valign
  * @return string
  */
-function getFrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons = '', $valign = 'middle') {
+function getFrmTabCaption($caption = '', $buttons = '', $outer_add = '', $inner_add = '') {
     $ret = getTabStart($outer_add);
     if ($buttons) {
-        $ret .= '
-        <tr><td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">
-          <tr>';
-        $ret .= getFrmInputButtons($buttons, $valign, false, COLOR_TABBG, false, 'top');
-        $ret .= '</tr></table></td></tr>';
+        $ret .= getFrmInputButtons($buttons, 'middle', true, COLOR_TABBG, false, 'top');
     }
     if ($caption != "") {
       $ret .= "\n    <tr><td class=\"tabtit\"><b>&nbsp;$caption</b></td></tr>";
@@ -2619,8 +2613,8 @@ function getFrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $butt
     return $ret;
 }
 
-function FrmTabCaption($caption = '', $outer_add = '', $inner_add = '', $buttons = '', $valign = 'middle') {
-    echo getFrmTabCaption($caption, $outer_add, $inner_add, $buttons, $valign);
+function FrmTabCaption($caption = '', $buttons = '') {
+    echo getFrmTabCaption($caption, $buttons);
 }
 
 
@@ -2636,7 +2630,7 @@ function FrmTabSeparator($subtitle, $buttons = '', $valign = 'middle', $no_hidde
     if ($buttons) {
         echo getTabStart();
         echo '<tr>';
-        FrmInputButtons($buttons, $valign, false, COLOR_TABTITBG, $no_hidden);
+        echo getFrmInputButtons($buttons, $valign, false, COLOR_TABTITBG);
         echo "</tr></table>";
     }
     echo '</td>
@@ -2652,17 +2646,6 @@ function FrmTabSeparator($subtitle, $buttons = '', $valign = 'middle', $no_hidde
         <td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">';
 }
-
-
-/** FrmTabSeparatorNoHidden function
- * Prints middle row with subtitle into form table
- * @param $subtitle
- * @param $buttons
- */
-function FrmTabSeparatorNoHidden( $subtitle , $buttons='' ) {
-    FrmTabSeparator($subtitle, $buttons, 'middle', true);
-}
-
 
 /** getFrmTabEnd function
  * Prints form table end with buttons (@see FrmInputButtons)
@@ -2702,9 +2685,11 @@ function getFrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor =
     $ret = '';
 
     if ($tr) {
-        $ret .= '<tr class="formbuttons">';
+        $ret .= '<tr class=formbuttons>';
     }
-    $ret .= '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
+    $sticky = ($prefix=='top') ? ' style="border:'.COLOR_TABTITBG.' 1px solid; padding: 4px; position: sticky; top: 0; z-index: 1;"' : ''; //z-index - CodeMirror goes over if not provided
+
+    $ret .= "<td align=center valign=\"$valign\" bgcolor=\"$bgcolor\" $sticky>";
     if ( isset($buttons) AND is_array($buttons) ) {
 
         if ($prefix) {
@@ -2816,20 +2801,6 @@ function getFrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor =
     }
     return $ret;
 }
-
-/**
- * @param        $buttons
- * @param string $valign
- * @param bool   $tr
- * @param string $bgcolor
- * @param bool   $no_hidden
- * @param string $prefix
- */
-function FrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor = COLOR_TABBG, $no_hidden = false, $prefix = '')
-{
-    echo getFrmInputButtons($buttons, $valign, $tr, $bgcolor, $no_hidden, $prefix);
-}
-
 
 /** getFrmTabRow function
  * @param        $row

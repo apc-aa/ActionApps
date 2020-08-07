@@ -72,7 +72,7 @@ FrmTabCaption(_m("JavaScript for fields"));
 <tr><td class="tabtxt"><textarea name="javascript" id="javascriptarea" cols="100" rows="20">
 <?php
 echo $javascript.'</textarea></td></tr>';
-FrmTabSeparator(_m("Available fields and triggers"), array("update", "update" => array("type" => "hidden", "value" => "1"), "cancel" => array("url" => "se_fields.php3")), $slice_id);
+FrmTabSeparator(_m("Available fields and triggers"), array("update", "update" => array("type" => "hidden", "value" => "1"), "cancel" => array("url" => "se_fields.php3")));
 
 $fields = AA_Slice::getModule($slice_id)->fields('pri');
 

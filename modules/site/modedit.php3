@@ -224,7 +224,7 @@ $apage->printHead($err, $Msg);
 ?>
 <form name="inputform" method=post action="<?php echo StateUrl() ?>" onSubmit="return ModeditSubmit()">
 <?php
-    FrmTabCaption(_m("Site"), '', '', $form_buttons, $module_id);
+    FrmTabCaption(_m("Site"), $form_buttons);
 
     ModW_HiddenRSpotId();
     FrmStaticText(_m("Id"), $module_id);

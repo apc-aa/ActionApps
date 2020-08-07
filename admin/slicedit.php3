@@ -95,7 +95,7 @@ if ($slice_id == "") {
     $form_buttons = array ("update", "cancel"=>array("url"=>"sliceadd.php3"));
 }
 
-FrmTabCaption(_m("Slice"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Slice"), $form_buttons);
 
 FrmStaticText(_m("Id"), $slice_id);
 

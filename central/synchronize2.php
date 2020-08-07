@@ -61,7 +61,7 @@ $form_buttons = array("compare"      => array( "type"      => "submit",
 <form name=f method=post action="<?php echo StateUrl(self_base() ."synchronize3.php") ?>">
 <?php
 
-FrmTabCaption('', '', '', $form_buttons);
+FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Slice Mapping'));
 FrmStaticText($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());

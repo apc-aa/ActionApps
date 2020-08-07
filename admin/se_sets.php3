@@ -93,7 +93,7 @@ $apage->printHead($err, $Msg);
 $form_buttons = array ("update",
                        "cancel" =>array("url"=>"se_fields.php3"),
                       );
-FrmTabCaption(_m("Sets"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Sets"), $form_buttons);
 FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), '', '', false);
 
 $set_ids = AA_Object::querySet('AA_Set', new AA_Set(array($slice_id)));

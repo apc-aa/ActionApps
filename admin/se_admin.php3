@@ -135,7 +135,7 @@ $form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
                       "update", "cancel"=>array("url"=>"se_fields.php3"),
                       "defaults" => array("type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"'));
 
-FrmTabCaption(_m("Listing of items in Admin interface"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Listing of items in Admin interface"), $form_buttons);
 
 FrmTextarea("admin_format_top", _m("Top HTML"), $admin_format_top, 4, 60,
             false, _m("HTML code which appears at the top of slice area")

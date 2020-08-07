@@ -147,7 +147,7 @@ $form_buttons = array("ext_slice"=>array("type"=>"hidden",
                                        "add"=>'onclick="Submit()"'),
                       "cancel"=>array("url"=>"se_fields.php3"));
 
-FrmTabCaption(_m("Content Pooling - Fields' mapping"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Content Pooling - Fields' mapping"), $form_buttons);
 ?>
         <tr>
           <td align="left" class="tabtxt" align="center"><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>

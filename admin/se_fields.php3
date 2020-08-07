@@ -286,7 +286,7 @@ if ($_REQUEST['analyze'] or $_REQUEST['fix']) {
 }
 
 $form_buttons = array("update", "analyze" => array("type"=>"submit", "value"=>_m("Analyze")), "cancel"=>array("url"=>"se_fields.php3"));
-FrmTabCaption(_m("Fields"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Fields"), $form_buttons);
 ?>
 <tr>
  <td class="tabtxt" align="center"><b><?php echo _m("Field") ?></b></td>

@@ -84,7 +84,7 @@ $apage->printHead($err, $Msg);
 $form_buttons   = array ();
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
-FrmTabCaption(_m('Optimalizations'), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m('Optimalizations'), $form_buttons);
 foreach ( $optimize_names as $i => $name ) {
     FrmStaticText($name, $optimize_descriptions[$i], '', '', false);
 }

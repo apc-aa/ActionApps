@@ -99,7 +99,7 @@ $form_buttons = array("update",
                       "return_url"=> array("value"=>$return_url),
                       "fid"       => array("value"=>$fid));
 
-FrmTabCaption(_m("Constants"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("Constants"), $form_buttons);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);
 $delimiters = array(''   => '-none- (Name is the same as Value)',
                     ';'  => 'semicolon ;',

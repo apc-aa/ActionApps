@@ -186,7 +186,7 @@ $form_buttons = array ("update",
                                           'value' => _m("Default"),
                                           'add' => 'onclick="Defaults()"'));
 
-FrmTabCaption(_m("HTML code for index view"), '', '', $form_buttons, $slice_id);
+FrmTabCaption(_m("HTML code for index view"), $form_buttons);
 
 // lookup slice fields
 $lookup_fields = AA_Fields::getFields4Select($slice_id, false, 'name', true);
