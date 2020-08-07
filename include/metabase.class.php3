@@ -322,15 +322,20 @@ class AA_MbI {
 
 
 class AA_MbT implements Iterator, ArrayAccess, Countable {
-    /** Name of the table */
+
+    /** @var string Name of the table */
     var $t;
-    /** array of PRIMARY KEY columns */
+
+    /** @var string[] of PRIMARY KEY columns */
     var $k;
-    /** array of INDEXES: array(index_name => AA_MbI) */
+
+    /** @var AA_MbI[] array of INDEXES: array(index_name => AA_MbI) */
     var $i;
-    /** array of table columns */
+
+    /** @var AA_MbC[] array of table columns */
     var $c;
-    /** array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
+
+    /** @var string[] array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
     var $f;
 
     // This is temporary solution - we will use some better structure (MDB2?)

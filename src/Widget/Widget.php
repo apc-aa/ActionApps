@@ -345,31 +345,6 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     {
     }
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
-     *  or normal decorations (added by _finalize*Html)
-     * @param $input_name
-     * @param $i
-     * @param $val
-     * @param $attr_string
-     * @param $autofocus
-     * @param $base_id
-     * @param $type
-     * @param $widget_add
-     * @param $required
-     * @return string
-     */
-    protected function _getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required)
-    {
-        $input_id = FormArray::formName2Id($input_name);
-        $input_value = myspecialchars($val);
-        $link = ((substr($input_value, 0, 7) === 'http://') OR (substr($input_value, 0, 8) === 'https://')) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
-        $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type == 'live'); //, 'right', $link ? 16 : 0);
-        if ($lang = AA_Content::getLangNum2Name($i)) {
-            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret</span>";
-        }
-        return $ret;
-    }
-
     /** Get widget HTML for using in form
      * @param \AA_Property $aa_property  - the variable
      * @param \AA_Content  $content      - contain the value of property to display

@@ -1017,7 +1017,7 @@ class AA_Dbcondition {
                 $ret         = $syntax->S();
                 if ( $ret == "_SYNTAX_ERROR" ) {
                     if ( $GLOBALS['debug'] ) {
-                        echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
+                        echo "<br>Query syntax error: ". $GLOBALS['syntax_error']. ','. $field. ','. ','. $querystring;
                     }
                     return array('ALL', '', "1=1");
                 }

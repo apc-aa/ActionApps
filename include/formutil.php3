@@ -864,7 +864,12 @@ class AA_Inputfield {
                 case 'nul': break;
                 case 'chb': $this->inputChBox();       break;
                 // case 'hid': $this->hidden();           break;
-                case 'fld': $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
+                case 'fld': if (!$this->translations) {
+                                // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                                $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
+                            } else {
+                                $this->inputWidget($item, $slice_id);          // standard
+                            }
                             break;
                 //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change

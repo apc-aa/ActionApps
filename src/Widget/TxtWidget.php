@@ -104,7 +104,7 @@ class TxtWidget extends \AA\Widget\Widget
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] =  AA_Content::getLangName2Code( AA_Content::getLangNum2Name($i));
             }
-            $widget .= $delim. $this->getOneInput2($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
+            $widget .= $delim. $this->getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, !$aa_property->getContentTypeSwitches() OR ($type == 'live'), $base);
             $delim = "\n<br />";
             $required = ''; // only one is required
         }
@@ -115,11 +115,19 @@ class TxtWidget extends \AA\Widget\Widget
         return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
     }
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
-     *  or normal decorations (added by _finalize*Html)
-     *  (used different name to Widget::_getOneInput which uses different parameters)
+    /**
+     * @param $input_name
+     * @param $i
+     * @param $val
+     * @param $attrs
+     * @param $widget_add
+     * @param $widget_add2
+     * @param $required
+     * @param $no_htmleditor
+     * @param $base
+     * @return string
      */
-    protected function getOneInput2($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor, $base)
+    protected function getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor, $base)
     {
 
         $showhtmlarea = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;

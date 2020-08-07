@@ -156,7 +156,7 @@ class AA_Collection {
                     $item         = new AA_Item($readerContent, $aliases);
 
                     if (AA_Mail::sendTemplate($this->_get('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
-                        AA_Log::write("ALERTS", $ho, $this->id . ": " . $readerContent->getValue(FIELDID_EMAIL));
+                        AA_Log::write("ALERTS", $ho, $this->id . ": " . $readerContent->getValue(FIELDID_EMAIL). ' queued');
                         $email_count++;
                     }
                 }
