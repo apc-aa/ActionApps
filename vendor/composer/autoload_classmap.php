@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Mobile_Detect' => $vendorDir . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
+    'PHPGangsta_GoogleAuthenticator' => $vendorDir . '/phpgangsta/googleauthenticator/PHPGangsta/GoogleAuthenticator.php',
 );
