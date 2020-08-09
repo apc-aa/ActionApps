@@ -34,7 +34,7 @@
  * @param $new_owner_email
  * @param $err
  * @param $varset
- * @return unpacked owner_id or false (on error)
+ * @return false|string - unpacked owner_id or false (on error)
  */
 function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset) {
     $varset->clear();

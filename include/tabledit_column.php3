@@ -42,7 +42,7 @@ function gfd_error($x) {
 /**  get_formatted_date function
  * @param $datestring
  * @param $format
- *   @return the Unix timestamp counted from the formatted date string.
+ *   @return string - the Unix timestamp counted from the formatted date string.
  *   Does not check the date format, rather returns nonsence values for
  *   wrong date strings.
  *   Uses non-format letters as separators only,
@@ -108,7 +108,7 @@ function get_formatted_date($datestring, $format) {
             case 'S': break;
             case 't': break;
             case 'T': break;
-            case 'U': return $d; break;
+            case 'U': return $d;
             case 'w': break;
             case 'W': gfd_error('W'); break;
             case 'Y': $year = $d; break;
@@ -128,13 +128,13 @@ function get_formatted_date($datestring, $format) {
     if (!isset ($year)) {
         if (!isset ($day)) {
             if (!isset ($month)) {
-                return mktime ( $hour, $minute, $second);
+                return mktime( $hour, $minute, $second);
             }
-            else return mktime ( $hour, $minute, $second, $month);
+            else return mktime( $hour, $minute, $second, $month);
         }
-        else return mktime ( $hour, $minute, $second, $month, $day);
+        else return mktime( $hour, $minute, $second, $month, $day);
     }
-    else return mktime ( $hour, $minute, $second, $month, $day, $year);
+    else return mktime( $hour, $minute, $second, $month, $day, $year);
 }
 
 /** ColumnFunctions function
@@ -146,7 +146,7 @@ function get_formatted_date($datestring, $format) {
  * @param mixed $val     value to be shown ("show") or to be changed ("form")
  * @param $new_record
  * @param array $record  the whole record for the current row, to be used by "calculated" fields
- * @return nothing
+ * @return void
  */
 
 function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record="") {

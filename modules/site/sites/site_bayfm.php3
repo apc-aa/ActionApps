@@ -88,14 +88,3 @@ function myfillform($txt) {
 }
 $GLOBALS['eb_functions']['myfillform'] = "myfillform";
 
-if ($_SERVER['REMOTE_ADDR'] == "203.43.239.48") {
-    print("HI MITRA");
-    $errcheck = 1;
-//    $debugcache = 1;
-    //$debugupload = 1;
-    $nocache=1;
-} else {
-//    $nocache = 1; // Force nocache until caching problems fixed
-}
-
-

@@ -269,7 +269,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     /** main executive function
      * @param  $manager
      * @param  $item_zids - array of id of AA records to check
-     * @param  $action_param - not used
+     * @param  array $action_param
      * @return false or error message
      */
     function perform($manager, $item_zids, $action_param) {
@@ -644,7 +644,7 @@ class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
      * @param AA_Manager $manager
      * @param $item_zids    Items to delete (if 'selected' is $param)
      * @param $action_param  Not used
-     * @return false or error message
+     * @return false|string - false or error message
      */
     function perform($manager, $item_zids, $action_param) {
 

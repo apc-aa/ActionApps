@@ -38,8 +38,8 @@ require_once AA_INC_PATH. "searchlib.php3";
 /** searchfields_cmp function
  *  Helper function to sort search fields
  *
- *  @param $a string first field for comparison
- *  @param $b string second
+ *  @param $a array first field for comparison
+ *  @param $b array second
  *  @return integer  (0 or 1 or -1)
  */
 function searchfields_cmp($a, $b) {

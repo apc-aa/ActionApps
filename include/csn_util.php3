@@ -130,11 +130,11 @@ function UseAllCategoriesOption( &$ext_categs ) {
 
 /** GetBaseFieldId function
  * Returns first field id of specified type
- * @param $fields (by link)
+ * @param $fields[]
  * @param $ftype
  * @return bool|string
  */
-function GetBaseFieldId( &$fields, $ftype ) {
+function GetBaseFieldId( $fields, $ftype ) {
     $no = 10000;
     if ( isset($fields) AND is_array($fields) ) {
         foreach ( $fields as  $k => $val ) {
@@ -252,7 +252,7 @@ $DEFAULT_RSS_MAP = array (
  * this function must: always return the same result; and not contain 00 or 27
  * the tricky part is that APC attribute strings contain a prefix and 32 digits,
  * while non APC strings need the whole string hashed.
- * @return a
+ * @return string id
  */
 function attr2id($str) {
     if (preg_match("~/(items|cat|slices)/([0-9a-f]{32})~",$str,$regs)) { // Looks like an APC id
@@ -263,11 +263,12 @@ function attr2id($str) {
 }
 
 /** name2rssfeed function
- * @param $slice_id
- * @param $name
+ * @param string $slice_id
+ * @param string $name
  * @return array
  */
 function name2rssfeed($slice_id,$name) {
+    $res = array();
     $db = getDB();
     $db->query("SELECT * FROM rssfeeds WHERE name='$name' AND slice_id = '".q_pack_id($slice_id)."'");
     if ($db->next_record()) {

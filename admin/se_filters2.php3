@@ -46,7 +46,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 /** ParseIdA function
  * @param $param
  * @param $app (by link)
- * @return parsed string
+ * @return string parsed
  */
 function ParseIdA($param,&$app) {
    if (preg_match("/([0-9a-f]{1,32}|0)-([01])/i", $param, $parse)) {  // slice_id or 0

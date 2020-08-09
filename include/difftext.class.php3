@@ -28,7 +28,7 @@
 */
 // tested also finediff - https://github.com/gorhill/PHP-FineDiff/blob/master/finediff.php version from 29.1.2013, but it do not work for UTF-8 strings. Honza
 
-// Ussage: AA_Difftext::renderHtml($from_text, $to_text);
+// Usage: AA_Difftext::renderHtml($from_text, $to_text);
 // ------------------------------------------------------
 // $from_text = "děkujeme, že jste otevřeli tuto Stránku s odhodlánim věnovat alespoň 15 minut vyplnění dotazníku. Věřte, že tak významně přispíváte k diskusi o budoucnosti OSB a Prahy 2. Jde o interní podklad k další diskusi v rámci sdružení ke čtyřem tematickým okruhům.
 // U odpovědí, kde je více možností (jsou ote v závěru uvést své jméno a příjmení a e-mailovou adresu, pčípadně členský číslo, cí známku 1 -5. U odpověpokud jej znáte.
@@ -327,7 +327,7 @@ class Text_Diff_Op {
     var $orig;
     var $final;
 
-    function &reverse() {
+    function reverse() {
         trigger_error('Abstract method', E_USER_ERROR);
     }
 

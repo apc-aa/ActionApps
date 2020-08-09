@@ -39,7 +39,7 @@ function tv_field_value($feed_id,$param,$var) {
 }
 /** showRSSFeedActions function
  * @param $feed_id
- * @return set of html links
+ * @return string - set of html links
  */
 function showRSSFeedActions($feed_id) {
     $url = "'".get_admin_url('xmlclient.php3'). "&rssfeed_id=$feed_id'".
@@ -53,7 +53,7 @@ function showRSSFeedActions($feed_id) {
 }
 /** displaySliceName function
  * @param $slice_id
- * @return result of jumpLink() function of the slice class
+ * @return string
  */
 function displaySliceName($slice_id) {
     $slice = AA_Slice::getModule(unpack_id($slice_id));

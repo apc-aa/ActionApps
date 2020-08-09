@@ -44,11 +44,10 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 
 $varset     = new Cvarset();
 
-// Prooves whether this ID already exists in the slices table,
-// changes the ID to a new chosen one
 /** proove_ID function
- * @param $slice
- * @return true
+ *  Prooves whether this ID already exists in the slices table, changes the ID to a new chosen one
+ * @param array $slice
+ * @return bool
  */
 function proove_ID($slice) {
     global $resolve_conflicts, $overwrite, $new_slice_ids;
@@ -87,8 +86,9 @@ function proove_ID($slice) {
             $SQL = "DELETE FROM field WHERE slice_id='$slice_id'";	$db->query($SQL);
             $SQL = "DELETE FROM module WHERE id='$slice_id'"; $db->query($SQL);
             $overwrite = true;
+        } else {
+            return false;
         }
-        else return false;
     } else {
         $overwrite = false;
     }
@@ -97,7 +97,7 @@ function proove_ID($slice) {
 
 /** proove_data_ID function
  * @param $data_id
- * @return true
+ * @return bool
  */
  // same function as above, but for table item and content
 function proove_data_ID($data_id) {
@@ -105,9 +105,9 @@ function proove_data_ID($data_id) {
            $data_overwrite;
     $res = $data_resolve_conflicts[$data_id];
     if ($res && strlen($res) != 16)	{
-        if ((strlen($res) != 16)||(strlen($res) != 32)) {
+//        if ((strlen($res) != 16)||(strlen($res) != 32)) {
 //			echo "Warning: ". _m("Slice_data_ID (".$res.") has wrong length (".strlen($res).", should be 32)<br>\n");
-        }
+//        }
         $res = q_pack_id($res);
     }
     if (strlen($res) == 16) {

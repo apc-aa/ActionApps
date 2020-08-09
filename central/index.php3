@@ -37,14 +37,9 @@ require_once AA_INC_PATH . "item.php3";
 require_once AA_BASE_PATH. "central/include/actionapps.class.php";
 require_once AA_BASE_PATH. "central/include/actions.php3";
 
-/** Function corresponding with 'actions' (see below) - returns true if user
- *  has the permission for the action. (The function must be called right
- *  before we perform/display action in order we have all variables set (r_state)
- *
- * @param  string  $action action to be displayed (in selectbox) / performed
- * @return bool    true if user has the permission
+/**
+ * @return int[]
  */
-
 function CountItemsInBins() {
     $db = getDB();
 

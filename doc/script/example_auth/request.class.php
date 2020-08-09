@@ -117,9 +117,10 @@ class AA_Http {
 
     /** postRequest function
      *  POST data to the url (using POST request and returns resulted data
-     * @param $url
-     * @param $data
-     * @return array $result[]
+     * @param       $url
+     * @param array $data
+     * @param array $headers
+     * @return false|string
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
     function postRequest($url, $data = array(), $headers=array() ) {

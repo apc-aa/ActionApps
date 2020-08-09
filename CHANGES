@@ -317,7 +317,7 @@ The changes could be tracked on:
             - could be used for invalidating of the token. Let's create end_date........ field with _#EXITTIME alias
               passed as $add_validity. Then with user logout we just update the end_date........ field of the user
             - works only for Readermanagement users
-           Ussage: {jwtencode:secret-key:{qss:email}:{qss:password}:3600:_#EXITTIME}
+           usage: {jwtencode:secret-key:{qss:email}:{qss:password}:3600:_#EXITTIME}
          - new {jwtdecode:<secret-key>[:<add-validity>]} - checks the validity of the JWS token in Authorization header
            an if OK, returns user id of authenticated user
            <add-validity> is the additional check which allows invalidate older tokens - see {jwtencode:...}
@@ -578,7 +578,7 @@ The changes could be tracked on:
          - code cleanup
            - more documentation of functions, ...
            - better language handling
-           - safer javascipt ussage - removed some eval()'
+           - safer javascipt usage - removed some eval()'
 18-03-18 - new {html2text:<some HTML code>} function which removes html tags
 (honzam) - pagecache global instance moved to AA::Pagecache()
          - code cleanup
@@ -1051,7 +1051,7 @@ The changes could be tracked on:
 16-10-04 - allow specify "-- any text field --" as condition for view.php3
 (honzam) - new {livesearch:<viev_param>[:<placeholder>[:<dafault_phrase>]]}
            Displays live search (search field and the list of matching articles)
-           on html page. Requires jQuery and aajslib-jquery.php. Ussage:
+           on html page. Requires jQuery and aajslib-jquery.php. Usage:
              {livesearch:3650}
              {livesearch:3650:search...:DoNotDisplayAnythingByDefault}
              {livesearch:3650&cmd[3650]=c-1-%22AA_LS_QUERY%22-2-publications:search for pubs...}
@@ -1108,7 +1108,7 @@ The changes could be tracked on:
             - async + defer cached javascript load
             - removal of document.write() for cached js
          - fixed sitemodule behavior for domain.org/?... links
-16-06-19 - new possibility to extend sitemodule ussage by redirecting all
+16-06-19 - new possibility to extend sitemodule usage by redirecting all
 (honzam)   request to AA (excluding existing files like img, css), so you can
            set the Appache like:
              RewriteEngine on
@@ -1235,7 +1235,7 @@ The changes could be tracked on:
            something too long (Alerts sending) and then tries to use database
            (for logs, ...). AA now tries to reconnect the database once.
          - internal changes in manager searchfield constants names
-         - more ussage of 0x6a46a6a7b9.. hexadecimal notation for MySQL instead
+         - more usage of 0x6a46a6a7b9.. hexadecimal notation for MySQL instead
            of packing ids to binary (no db change, just the SQL notation which
            is easier to read and debug)
          - small changes, speedups and fixes (php7, ...)
@@ -1461,7 +1461,7 @@ The changes could be tracked on:
 (honzam)   aliases usable inside views representing current value of conditon
            1, 2, ...
          - new {avatar:<img_url>:[<person_name>]:[<avatar-size>]} which return
-           avatar img or colored div with initials - ussage:
+           avatar img or colored div with initials - usage:
             <div class=dis-avatar>{avatar:{img_url.........}:{_#HEADLINE}}</div>
          - new {sortstring:<shortitem_id>[:<relation_field>]} - returns string
            usefull for sorting the tree of items. The string is based on
@@ -1793,7 +1793,7 @@ The changes could be tracked on:
            (slice, item, ...)
          - links to views in AA Admin interface under the textareas now
            recognizes also {view:xy} syntax
-         - fixed internal ussage of floating points/commas in AA - we use point
+         - fixed internal usage of floating points/commas in AA - we use point
            inside AA for all internal function, even in Czech lang, where we
            would normaly use comma
          - improved Planed tasks and toexecute functionality - better prevention
@@ -1820,7 +1820,7 @@ The changes could be tracked on:
            All works as standard item relations in AA.
            Used "select2" library, which use jQuery. Just include
            /apc-aa/javascript/aajslib-jquery.php in your pages - all is loaded
-           dynamicaly after the first ussage
+           dynamicaly after the first usage
            Not working inside AA admin interface, yet (there we use normal
            relation field)
          - {tagcloud:<item_ids>[:<count>[:<alias>[:<count_field>]]]} - Creates
@@ -1829,16 +1829,16 @@ The changes could be tracked on:
             <count>       - maximum number of displayed keywords (all by default)
             <alias>       - The AA expression used for each keyword (_#HEADLINK used as default)
             <count_field> - The id of the field, where you already have the number
-                            of ussage precounted. It is very good idea,to have such
+                            of usage precounted. It is very good idea,to have such
                             field - in other case the counts must be countedon every
-                            ussage. The count could be counted automaticaly
+                            usage. The count could be counted automaticaly
                             in the field by using "Computed field for INSERT/UPDATE"
                             with the parameter "_#BACKLINK:_#BACKLINK::day", where
                             alias _#BACKLINK could be definned as
                               {count:{backlinks:{id..............}::-}}
                             or say
                               {count:{ids:1450a615da76cae02493aac79e129da9:d-relation........-=-{id..............}}}
-           Ussage:
+           Usage:
              {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}}
              {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}:20}
              {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a::headline........}::<i>_#HEADLINK</i>}
@@ -2030,7 +2030,7 @@ The changes could be tracked on:
          - removed deprecated (and sometimes not usefull) <nobr> tag from
            checkboxes in AA forms
          - better default widgets for the field (mainly for multivalues field)
-         - new possibility to sort constants by number of their ussage in items
+         - new possibility to sort constants by number of their usage in items
            (on constants administration page)
          - new possibility to use conds=d-switch..........-=-1 form of condition
            with slice.php3
@@ -2210,7 +2210,7 @@ The changes could be tracked on:
          - new {mailform:<to>:<subject>:<html-inputs>:<body>:<ok-text>:<lang>:<from>}
            displays form with your own inputs which is after submition send
            to e-mail (uses AJAX)
-             Ussage:
+             Usage:
              {mailform:honza.malik@ecn.cz:test mail:
                note <input name="note"><input type="submit">:
                You posted<br>_#1<br>Regards<br>ActionApps:
@@ -2218,7 +2218,7 @@ The changes could be tracked on:
          - new {mail:<condition>:<to>:<subject>:<body>:<encoding>:<sender email>}
            which sends the e-mail conditionaly
            be careful - it can send mail on every page load!
-             Ussage:
+             Usage:
              {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
          - {str_replace} now accepts the first two parameters in JSON, so you
            can use:
@@ -2456,7 +2456,7 @@ The changes could be tracked on:
          - new {md5:<text>} hash function
          - no mail is send in e-mail notify when body is empty
            (you can take advantage of this feature for sending e-mails
-           conditionaly - see {changed} for example of ussage)
+           conditionaly - see {changed} for example of usage)
          - fixed input field for password in Reader management slices inputform
              - it is no longer prefilled by your browser (with mostly always
                wrong value)
@@ -2593,7 +2593,7 @@ The changes could be tracked on:
            directly and right in the time it ocures in the code - could be used
            inside site module, when you need to redirect user to another branch
            (say from / to /cz/home)
-           Ussage:
+           Usage:
              {redirect:http#://example.org/en/new-page}
                 - mention the escaped colon in http
              {redirect:{ifset:{xid}::http#://example.org/en/new-page}}
@@ -2680,7 +2680,7 @@ The changes could be tracked on:
                (if provided). Else the URL is switched to err_url (if provided)
                and err=1 is set (acessible by {qs:err}).
                xuser is stored in the cookies
-               Login From Ussage:
+               Login From Usage:
                <form action="{go:xqs=}" method="post">
                  <fieldset><legend>Login, please</legend>
                    <div  style="margin-right:150px; text-align:right;">
@@ -2788,7 +2788,7 @@ The changes could be tracked on:
            posibilities of {item}
          - new {go:<query-string>} - returns url based on current state (apc)
            and query-string paramater (for AA_Router_Seo)
-             ussage:
+             usage:
                {go:xseo1=faq&xseo2=questions}
            (we used {go2url} custom function in previous versions of AA. {go}
            function is however core function, now
@@ -2812,7 +2812,7 @@ The changes could be tracked on:
            parameter order (due to backward compatibility of {item})
 09-08-11 - new {filelink:<url>:<text>} syntax - get link to file for download
 (honzam)   (prints also file size and type) -
-             ussage: {filelink:{file............}:{text............}}
+             usage: {filelink:{file............}:{text............}}
              returns:
                <a href="http://..." title="Document [PDF - 157 kB]">Document</a>
                [PDF - 157 kB]
@@ -3687,7 +3687,7 @@ The changes could be tracked on:
 07-03-29 - increased max size of val field in active_sessions (to mediumtext)
 (brazda)
 07-03-06 - new {formbreaktop:...} and {formbreakbottom:...} commands for
-(honzam)   splitting inputform into parts - the ussage is the same
+(honzam)   splitting inputform into parts - the usage is the same
            as {formbreak:...}, but the tabs are displayed only on top or bottom,
            respectively
          - fixed bug of not working user administration, when all reader slices
@@ -4655,7 +4655,7 @@ The changes could be tracked on:
            of "Related Item Window" input type)
          - prepared for improved pagecache implementation; generalized API
          - code improvements - used OOP more (slice object, zids)
-                             - reduced ussage of global variables
+                             - reduced usage of global variables
          - small javascript files reorganization
          - discussion buttons texts are unaliased now (you can use aliases, ...
            there
@@ -4846,7 +4846,7 @@ The changes could be tracked on:
            correctly also for last spot in the sequence
 04-05-27 - new /misc/charset/convert.php3 script, which allows you to encode
 (honzam)   a text to another character encoding. It is usable outside of AA.
-           The ussage on shtml page:
+           The usage on shtml page:
            <!--#include
              virtual="/apc-aa/misc/charset/convert.php3?from=iso-8859-1&
              to=utf-8&source=http%3A%2F%2Fwww.apc.org%2Fpage.htm" -->
@@ -5040,7 +5040,7 @@ The changes could be tracked on:
          - added link to user names which links to user's setting
          - f_t alias function now supports output modification:
            csv / safe / javascript / urlencode / striptags
-           (ussage: {alias:<field_id........>:f_t:the text - possibly with
+           (usage: {alias:<field_id........>:f_t:the text - possibly with
            {some aliases}:urlencode(or another modifier)})
          - improved log function - added "selector" for easier searching in logs
          - new hint and show (what) feature in manager class
@@ -5157,7 +5157,7 @@ The changes could be tracked on:
 03-09-30 - loop through multivalues in stringexpand:
 (honzam)   {@category.......1},
            {@category.......1(const_name,const_value,_#MY_ALIAS):,:_#1 _#2 _#3}
-           As you see, you can also use aliases here. The Ussage is following:
+           As you see, you can also use aliases here. The Usage is following:
                {@relation........(_#GET_HEAD): ,:_#1}
            where _#GET_HEAD is alias defined somewhere in current slice using
            f_t (for example):

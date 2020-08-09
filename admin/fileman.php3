@@ -114,7 +114,7 @@ echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITB
 
 /** formatAction function
  * @param $value
- * @return prints the value in <strong>
+ * @return string - the value in <strong>
  */
 function formatAction($value) {
     return "<strong>$value</strong>";
@@ -124,30 +124,18 @@ function formatAction($value) {
  * Creates a fileAction user element,
  *   @param string $name - the name of the javascript command
  *   @param string $value - the internationalized string to display
- *   @return an HTML button
+ *   @return string - an HTML button
  */
 function fileAction($name,$value) {
-    // Old style uses a link mostly to left of input field
-    // this is BAD UI design, should be a button to the right.
-    // switch the comments, if you disagree with me!  (mitra)
-// OLD - links
-/*
-    return formatAction("<a href='javascript:command(\"$name\")'>$value</a>")
-    ."&nbsp;&nbsp;";
-*/
-// NEW - buttons
      return "<input type=\"button\" name=\"button$name\" value=\"$value\" onclick=\"command('$name')\">&nbsp;&nbsp;";
 }
 
 /** uilr function
  *   @param string $inp - the HTML for the input element
  *   @param string $act - the HTML for the action element
- *   @return two columns of input and action, can flip and table
+ *   @return string two columns of input and action, can flip and table
  */
 function uilr($inp,$act) {
-// OLD input on right of action
-//   return ("<tr><td class=tabtxt>$act</td><td class=tabtxt>$inp</td></tr>\n");
-// NEW input on left of action
     return ("<tr><td class=\"tabtxt\">$inp</td><td class=\"tabtxt\">$act</td></tr>\n");
 }
 

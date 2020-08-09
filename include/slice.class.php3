@@ -412,7 +412,7 @@ class AA_Slice extends AA_Module {
     }
 
     /** jumpLink function
-     *
+     * @return string
      */
     function jumpLink() {
         return "<a href=\"".get_admin_url("index.php3?change_id=".$this->getId()). "\">".$this->name()."</a>";

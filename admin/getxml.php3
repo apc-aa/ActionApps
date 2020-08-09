@@ -101,7 +101,7 @@ $XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
 /** code function
  * @param $v
  * @param $cdata=false
- * @return converted string
+ * @return string converted
  */
 function code($v, $cdata=false) {
     static $encoder;
@@ -116,14 +116,15 @@ function code($v, $cdata=false) {
 }
 /** GetFlagFormat function
  * @param $flag
- * @return "HTML"/"PLAIN"
+ * @return string - "HTML"/"PLAIN"
  */
 function GetFlagFormat($flag) {
     return ($flag & FLAG_HTML) ? "HTML" : "PLAIN";
 }
-/** Error function
+
+/** Error function - prints $str and exit()s
  * @param $str
- * @return prints $str and exit()s
+ * @return void
  */
 function Error($str) {
     echo "$str";
@@ -161,12 +162,12 @@ function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
 
 /** GetXMLFields function
  * @param $slice_id
- * @param $slice_fields (by link)
+ * @param $slice_fields[]
  * @param $xml_fields_refs (by link)
  * @param $xml_fields (by link)
  * @return modified vars above
  */
-function GetXMLFields( $slice_id, &$slice_fields, &$xml_fields_refs, &$xml_fields) {
+function GetXMLFields( $slice_id, $slice_fields, &$xml_fields_refs, &$xml_fields) {
     $xml_fields_refs.="\t<aa:fields><rdf:Bag>\n";
 
     foreach ( $slice_fields as $k =>$v) {
@@ -182,7 +183,7 @@ function GetXMLFields( $slice_id, &$slice_fields, &$xml_fields_refs, &$xml_field
  * @param $slice_id
  * @param $xml_categories_refs (by link)
  * @param $xml_categories (by link)
- * @return modified vars above
+ * @return void - modified vars above
  */
 function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
     $group_id = GetCategoryGroup($slice_id);
@@ -215,11 +216,11 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
  * @param $xml_categories_refs (by link)
  * @param $xml_items_refs (by link)
  * @param $time
- * @return prints xml <channel>
+ * @return string - xml <channel>
  */
 function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs, $time) {
     $slice = AA_Slice::getModule($slice_id);
-    echo "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
+    return "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
                    "\t\t<title>".code($slice->getProperty('name'))."</title>\n".
                    "\t\t<description>".code($slice->getProperty('description'))."</description>\n".
                    "\t\t<link>".code($slice->getProperty('slice_url'))."</link>\n".
@@ -233,24 +234,24 @@ function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$x
 /** GetBaseFieldContent function
  * @param $slice_fields (by link)
  * @param $ftype
- * @param $content4id (by link)
- * @return content
+ * @param $content4id
+ * @return string - content
  */
-function GetBaseFieldContent(&$slice_fields, $ftype, &$content4id) {
+function GetBaseFieldContent($slice_fields, $ftype, $content4id) {
     if ($ftype=="") {
         return "";
     }
-    $f    = GetBaseFieldId($slice_fields,$ftype);
+    $f    = GetBaseFieldId($slice_fields, $ftype);
     $cont = $content4id[$f][0];
     return ($cont['flag'] & FLAG_HTML) ? strip_tags($cont['value']) : $cont['value'];
 }
 /** GetXMLFieldData function
  * @param $slice_id
  * @param $field_id
- * @param $content4id (by link)
- * @return fielddata xml tags
+ * @param $content4id
+ * @return string - fielddata xml tags
  */
-function GetXMLFieldData($slice_id, $field_id, &$content4id) {
+function GetXMLFieldData($slice_id, $field_id, $content4id) {
     global $FORMATS;
 
     $cont_vals = $content4id[$field_id];
@@ -261,7 +262,7 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
     }
 
     if (!$cont_vals || !is_array($cont_vals)) {
-        return;
+        return '';
     }
     $out = '';
 
@@ -285,7 +286,7 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
  * @param $slice_fields (by link)
  * @return $xml_items
  */
-function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
+function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     global $FORMATS, $MAP_DC2AA;
     static $value2const_id;
     static $slice_url;
@@ -385,14 +386,14 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
  * @return prints a result of the GetXMLItem() function for all items
  *
  */
-function CreateXMLItems($slice_id, &$items_ids, &$content, &$slice_fields) {
+function CreateXMLItems($slice_id, &$items_ids, &$content, $slice_fields) {
     foreach ($items_ids as $id)  {
         echo GetXMLItem($slice_id, $id, $content[$id], $slice_fields);
     }
 }
 /** GetXMLItemsRefs function
  * @param $item_ids (by link)
- * @return prints <items> and <rdf> tags for each item
+ * @return string - prints <items> and <rdf> tags for each item
  */
 function GetXMLItemsRefs(&$items_ids) {
     $out ="\t<items><rdf:Seq>\n";
@@ -406,14 +407,14 @@ function GetXMLItemsRefs(&$items_ids) {
 /** RestrictIdsByCategory function
  * Takes array of item ids and returns only the item ids which belongs to any
  *  of specified categories
- * @param $ids (by link)
- * @param $categories (by link)
+ * @param $ids[]
+ * @param $categories[]
  * @param $slice_id
- * @param $content (by link)
+ * @param $content
  * @param $cat_field
- * @return ids
+ * @return array
  */
-function RestrictIdsByCategory( &$ids, &$categories, $slice_id, &$content, $cat_field ) {
+function RestrictIdsByCategory( $ids, $categories, $slice_id, $content, $cat_field ) {
     $new_ids = array();
     if ( !is_array($ids) OR !is_array($categories) ) {
         return $new_ids;                              // empty array

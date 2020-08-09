@@ -277,7 +277,7 @@ class datectrl {
                         $time_string = '';
                     }
                     break;
-            case 2: $time_string = sprintf("%d:%02d:%02d",$t[0], $t[1]);
+            case 2: $time_string = sprintf("%d:%02d:%02d",$t[0], $t[1], $t[2]);
                     break;
             case 3: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
                     break;

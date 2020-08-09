@@ -81,7 +81,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *  Called as
      *     AA_Value::factoryFromJson($val);
      */
-    function factoryFromJson($json) {
+    static function factoryFromJson($json) {
         $aav = new AA_Value();
         if (($json[0] == '[') AND (!is_null($arr = json_decode($json, true)))) {
             $aav->setValues(array_values($arr));
@@ -224,9 +224,9 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** getArray function
-     *  @return clasic $content value array - [0]['value'] = ..
-     *                                           ['flag']  = ..
-     *                                        [1]['value'] = ..
+     *  @return array - clasic $content value array - [0]['value'] = ..
+     *                                                   ['flag']  = ..
+     *                                                [1]['value'] = ..
      *          the values are not quoted, ...
      *  Mainly for backward compatibility with old - array approach
      */
@@ -471,7 +471,7 @@ class AA_Content {
         return $LANGS[$code] ?: $code;
     }
 
-    /** @return Abstract Data Structure of current object
+    /** @return array - Abstract Data Structure of current object
      *  @deprecated - for backward compatibility (used in AA_Object getContent)
      */
     function getContent() {
@@ -836,10 +836,10 @@ class ItemContent extends AA_Content {
 
     /** setFromCSVArray function
      *  Set the content with CSV data
-     * @param $csvRec
-     * @param $fieldNames
+     * @param $csvRec[]
+     * @param $fieldNames[]
      */
-    function setFromCSVArray(&$csvRec, &$fieldNames) {
+    function setFromCSVArray($csvRec, $fieldNames) {
         $i = 0;
         foreach ($fieldNames as $k => $foo) {
             $this->content[$k][0]['value'] = $csvRec[$i++];
@@ -1519,12 +1519,12 @@ class ItemContent extends AA_Content {
     /** transform function
      * Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
      * @param $itemContent
-     * @param $trans_actions
+     * @param Actions $trans_actions
      * @param $slice_fields
      * @return
      */
-    function transform(&$itemContent, &$trans_actions, &$slice_fields) {
-        return $trans_actions->transform($itemContent,$slice_fields,$this);
+    function transform(&$itemContent, $trans_actions, $slice_fields) {
+        return $trans_actions->transform($itemContent, $slice_fields, $this);
     }
 
     /** showAsRowInTable function

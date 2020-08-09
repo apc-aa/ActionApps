@@ -347,7 +347,9 @@ class AA_Adminpage implements AA_iEditable {
     public static function addFormrows($form) {}
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null) {}
-    /** AA_iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database
+     *    @return string|bool - id of saved data or false
+     */
     public        function save() {}
     public        function validateData() {}
 }

@@ -136,7 +136,7 @@ function showSelectionTable() {
         in views of type Alerts Selection Set")."</B></TD></TR>";
     } else {
         foreach ($a as $slice_id => $slice) {
-            if (! IsSuperadmin() && ! strchr ($myslices [unpack_id($slice_id)], PS_FULLTEXT)) {
+            if (! IsSuperadmin() && ! strchr($myslices[unpack_id($slice_id)], PS_FULLTEXT)) {
                 continue;
             }
             echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">

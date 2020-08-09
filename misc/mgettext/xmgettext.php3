@@ -277,10 +277,10 @@ function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
     if (!file_exists($file)) {
         echo "ERROR: $file does not exist<br>";
     } else {
-        $_log = "";
+        $_log = array();
         require_once $file;
         $en_log = $_log;
-        $_log = "";
+        $_log = array();
         require_once str_replace("??",$lang,$log_files);
         foreach ($en_log as $msg => $names) {
             foreach ($names as $name) {

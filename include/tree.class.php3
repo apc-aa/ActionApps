@@ -294,7 +294,7 @@ class AA_Trees {
      * @param array $slices
      * @return AA_Supertree|AA_Supertree_Reverse
      */
-    function getSupertree($relation_field, $reverse, $sort, $slices=array()) {
+    static function getSupertree($relation_field, $reverse, $sort, $slices=array()) {
         $trees = AA_Trees::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
         if (!isset($trees->a[$key])) {

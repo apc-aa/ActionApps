@@ -141,7 +141,7 @@ class AA_Actionapps {
         return $this->requestModules(array('S'));
     }
 
-    /** @return all module names form remote AA
+    /** @return array - all module names form remote AA
      *  @param $types array of requested module types (A|Alerts|J|Lins|P|S|W)
      */
     function requestModules($types) {
@@ -149,7 +149,7 @@ class AA_Actionapps {
         return ($response->isError()) ? array() : $response->getResponse();
     }
 
-    /** @return structure which define all the definition of the slice
+    /** @return array - structure which define all the definition of the slice
      *  (like slice properties, fields, views, ...). It is returned for all the
      *  slices in array
      */

@@ -49,7 +49,7 @@ class Files {
      * @param $getmsg
      * @return null
      */
-    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
+    static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
         static $lastErrMsg;
         if (!is_null($err_id)) {
@@ -63,7 +63,7 @@ class Files {
      *  Return last error message - it is grabbed from static variable
      *  of lastErr() method
      */
-    function lastErrMsg() {
+    static function lastErrMsg() {
         return Files::lastErr(null, null, true);
     }
 
@@ -82,7 +82,7 @@ class Files {
      *  Prepares global AA directory for uploaded file and returns destination
      *  dir name
      */
-    function aadestinationDir() {
+    static function aadestinationDir() {
         return Files::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
     }
 
@@ -92,7 +92,7 @@ class Files {
      * @param $perms
      * @return bool
      */
-    function _destinationDirCreate($path, $perms) {
+    static function _destinationDirCreate($path, $perms) {
         if (!$path OR !is_dir($path)) {
             if (!Files::createFolder($path, $perms)) {
                 Files::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
@@ -136,7 +136,7 @@ class Files {
      * @param string $filevarname - name of form variable, where the file is stored
      * @return bool|string
      */
-    function getUploadedFile($filevarname) {
+    static function getUploadedFile($filevarname) {
         $file_name  = Files::getTmpFilename('tmp');
 
         // upload file - todo: error is not returned, if not exist
@@ -236,7 +236,7 @@ class Files {
      * @param $filename
      * @return bool|string
      */
-    function createFileFromString(&$text, $dest_dir, $filename) {
+    static function createFileFromString($text, $dest_dir, $filename) {
         $dest_file = Files::makeFile($dest_dir, Files::escape($filename));
         if ($dest_file === false) {
             // lastErr is already set from destinationFile;
@@ -262,7 +262,7 @@ class Files {
      * @param $ident
      * @return string
      */
-    function getTmpFilename($ident) {
+    static function getTmpFilename($ident) {
         return $ident . "_" . hash('md5', uniqid('',true)) . "_" . date("mdY");
     }
 
@@ -272,7 +272,7 @@ class Files {
      * @param $ident
      * @param $slice
      */
-    function deleteTmpFiles($ident, $slice=null) {
+    static function deleteTmpFiles($ident, $slice=null) {
         if ( !$slice ) {
             $upload_dir = IMG_UPLOAD_PATH. AA_ID;
         } else {
@@ -304,11 +304,11 @@ class Files {
 
     /** backupFile function
      *  Create backup copy of the file
-     *  @param $source
-     *  @return whole filename of the backup file (or empty string, if
+     *  @param string $source
+     *  @return false|string - whole filename of the backup file (or empty string, if
      *           the source file do not exists; returns false if backup fails
      */
-    function backupFile($source) {
+    static function backupFile($source) {
         if (!is_file($source)) {
             return "";
         }
@@ -381,7 +381,7 @@ class Files {
      * @param string $filename the orginal filename
      * @return string the escaped safe filename
      */
-    function escape($filename) {
+    static function escape($filename) {
         return ConvertCharset::singleton()->escape($filename, AA_Langs::getCharset(), true);
     }
 
@@ -487,7 +487,7 @@ class Files {
      * @param string $filename the name of file (with path, protocol, ...)
      * @return string FILE, HTTP, HTTPS, ...
      */
-     function sourceType($filename) {
+     static function sourceType($filename) {
          if ( strtoupper(substr($filename,0,5)) == 'HTTPS') return 'HTTPS';
          if ( strtoupper(substr($filename,0,4)) == 'HTTP')  return 'HTTP';
          if ( strtoupper(substr($filename,0,3)) == 'FTP')   return 'FTP';
@@ -603,7 +603,7 @@ class AA_File_Wrapper {
 	 * @param $source mixed; URL, filename, or resources
      * @return AA_File_Wrapper
      */
-    function wrapper($url) {
+    static function wrapper($url) {
         $info = parse_url($url);
         if (ini_get('allow_url_fopen')) {
             $wrapper = new AA_File_Wrapper($url, $info);
@@ -720,7 +720,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
 					$this->info['path'] = $newPath;
 					$this->url = $this->glue_url($this->info);
 				}
-				$returner =& AA_File_Wrapper::wrapper($this->url);
+				$returner = AA_File_Wrapper::wrapper($this->url);
 				$returner->redirects = $this->redirects - 1;
 				return $returner;
 			}
@@ -1078,7 +1078,7 @@ class AA_Directory_Wrapper {
 
     /**
      * Make subdir wrapper from subdir array
-     * @return array of AA_Directory_Wrapper instances
+     * @return AA_Directory_Wrapper[] instances
      */
     function makeSubdirWrappers() {
         foreach ($this->subdir_names as $subdir_name) {
@@ -1089,7 +1089,7 @@ class AA_Directory_Wrapper {
 
     /**
      * Read and return the contents of the directory.
-     * @return array of AA_File_Wrapper instances
+     * @return false|AA_File_Wrapper[] instances
      */
     function getFiles() {
         if ($this->readWholeDir()) {
@@ -1101,7 +1101,7 @@ class AA_Directory_Wrapper {
 
     /**
      * Read and return wrapped subdirs
-     * @return array of directory wrappers (type by my type)
+     * @return false|AA_Directory_Wrapper[] (type by my type)
      */
     function getSubdirs() {
         if ($this->readWholeDir()) {
@@ -1113,8 +1113,8 @@ class AA_Directory_Wrapper {
 
     /**
      * Read and return file names
-     * @param $full_path
-     * @return array of strings file names
+     * @param bool $full_path
+     * @return false|string[] - of strings file names
      */
     function getFileNames($full_path = false) {
         if ($this->readWholeDir()) {
@@ -1134,7 +1134,7 @@ class AA_Directory_Wrapper {
     /**
      * Read and return filtered file names
      * @param $full_path
-     * @return array of strings filtered file names
+     * @return false|string[] - of strings filtered file names
      */
     function getRegFilteredFileNames($full_path = false) {
         if (!is_array($all_file_names = $this->getFileNames($full_path))) {
@@ -1186,6 +1186,7 @@ class AA_Directory_Wrapper {
      * @return array of arrays indexed by values
      */
     function  getSubdirNamesRecur() {
+        $return_array = array();
         if ($this->readWholeDir()) {
             //compare if is it prefered subdir
             if ($this->url == self::_getStatic('needed_subdir_name')) {
@@ -1202,7 +1203,7 @@ class AA_Directory_Wrapper {
             return $return_array;
 
         } else {
-            return false;
+            return array();
         }
     }
 
@@ -1239,7 +1240,7 @@ class AA_Directory_Wrapper {
      * @param string $url
      * @return AA_Directory_Wrapper directory wrapper (type by $url)
      */
-    function &wrapper($url) {
+    static function &wrapper($url) {
         $info = parse_url($url);
         /*if (ini_get('allow_url_fopen')) {
             $wrapper = new AA_File_Wrapper($url, $info);

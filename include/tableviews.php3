@@ -99,14 +99,3 @@ function GetTableView($viewID) {
     }
 } // end of GetTableView
 
-// ----------------------------------------------------------------------------------
-
-/** te_au_confirm function
- *  user function for confirmed
- * @param $val
- * @return if|mixed
- */
-function te_au_confirm($val) {
-    return $val ? _m("no") : _m("yes");
-}
-

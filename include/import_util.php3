@@ -41,7 +41,7 @@ define("UPDATE", 2);
  * @param string $enclosure
  * @return array|false|null
  */
-function getCSV($handle,$delimiter = ";",$enclosure = '"') {
+function getCSV($handle, $delimiter = ';', $enclosure = '"') {
     if ($delimiter == '\t') {
         $delimiter = chr(9);  // tabulator ascii
     }
@@ -82,12 +82,12 @@ function createFieldNames($fileName,&$addParams) {
 /** convertCSV2Items function
  * @param             $csvRec
  * @param             $fieldNames
- * @param             $trans_actions
+ * @param Actions     $trans_actions
  * @param             $slice_fields
  * @param ItemContent $itemContent
  * @return
  */
-function convertCSV2Items(&$csvRec,&$fieldNames,&$trans_actions,&$slice_fields,&$itemContent) {
+function convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice_fields, &$itemContent) {
     $itemContent1 = new ItemContent;
     $itemContent1->setFromCSVArray($csvRec, $fieldNames);
     $itemContent  = new ItemContent;
@@ -99,7 +99,7 @@ class Actions {
     var $actions;
     var $globalParams;
     /** Actions function
-     * @param $actions
+     * @param $actions[]
      * @param $inFields
      * @param $html
      * @param $params
@@ -121,7 +121,7 @@ class Actions {
      * @param $outputItemContent
      * @return
      */
-     function transform(&$itemContent, $slice_fields, &$outputItemContent) {
+     function transform(&$itemContent, $slice_fields, $outputItemContent) {
          global $auth;
 
          // id is not part of $slice_fields, unfortunatelly (should be changed)

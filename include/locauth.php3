@@ -75,7 +75,7 @@ class AA_Auth extends Auth {
         require_once (AA_INC_PATH . "loginform.inc");
     }
     /** auth_validatelogin function
-     *  @return uid
+     *  @return string uid
      */
     function auth_validatelogin() {
         $username = $_POST["username"];  // there was problem with variables

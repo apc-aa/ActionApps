@@ -52,7 +52,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /** processSlashes function
  * @param $s
- * @return the HTML tags to be printed verbatim are back-slashed in the text
+ * @return string - the HTML tags to be printed verbatim are back-slashed in the text
  *          e.g. <A ....> is written \<A ...\>
  */
 function processSlashes($s) {
@@ -63,7 +63,7 @@ function processSlashes($s) {
 
 /** processValue function
  * @param $s
- * @return replace \r and \n with empty space and " with &quot;
+ * @return string replace \r and \n with empty space and " with &quot;
  */
 function processValue($s) {
     $s = str_replace("\r", "", $s);
@@ -74,7 +74,7 @@ function processValue($s) {
 
 /** processJavaScript function
  * @param $s
- * @return same as processValue, plus replace ' with \'
+ * @return string same as processValue, plus replace ' with \'
  */
 function processJavaScript($s) {
     $s = str_replace("\r", "", $s);
@@ -85,6 +85,11 @@ function processJavaScript($s) {
 }
 
 
+/**
+ * @param string $name
+ * @param $param[]
+ * @return string
+ */
 function GetWizardRow($name, $param) {
     $ret     = '';
     $example = processValue($param['example']);

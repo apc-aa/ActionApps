@@ -168,7 +168,7 @@ class uploader {
         if (preg_match('/^([a-z]+)\:\/\/([^\/^\:]+)(\:(\d+))?\/(.+)\/?$/',
                 $this->config['uploadURL'], $patt)
         ) {
-            list($unused, $protocol, $domain, $unused, $port, $path) = $patt;
+            list(, $protocol, $domain, , $port, $path) = $patt;
             $path = path::normalize($path);
             $this->config['uploadURL'] = "$protocol://$domain" . (strlen($port) ? ":$port" : "") . "/$path";
             $this->config['uploadDir'] = strlen($this->config['uploadDir'])
@@ -312,7 +312,7 @@ class uploader {
                     if (isset($udir)) $url .= "/$udir";
                     $url .= "/" . basename($target);
                     if (preg_match('/^([a-z]+)\:\/\/([^\/^\:]+)(\:(\d+))?\/(.+)$/', $url, $patt)) {
-                        list($unused, $protocol, $domain, $unused, $port, $path) = $patt;
+                        list(, $protocol, $domain, , $port, $path) = $patt;
                         $base = "$protocol://$domain" . (strlen($port) ? ":$port" : "") . "/";
                         $url = $base . path::urlPathEncode($path);
                     } else
@@ -441,7 +441,7 @@ class uploader {
 
         // SPECIAL DIRECTORY TYPES CHECK (e.g. *img)
         elseif (preg_match('/^\*([^ ]+)(.*)?$/s', $typePatt, $patt)) {
-            list($typePatt, $type, $params) = $patt;
+            list(, $type, $params) = $patt;
             $class = __NAMESPACE__ . "\\type_$type";
             if (class_exists($class)) {
                 $type = new $class();

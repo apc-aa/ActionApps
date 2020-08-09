@@ -61,7 +61,7 @@ define('VALIDATE_ERROR_NOT_IN_LIST',      409);
 define('VALIDATE_ERROR_NOT_FILLED',       410);
 
 /** AA user input validation class
- *  Ussage (for standard validators):
+ *  usage (for standard validators):
  *      if ( AA_Validate::validate($variable, 'int') ) {...};
  *      if ( AA_Validate::validate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
  */
@@ -144,7 +144,10 @@ class AA_Validate extends AA_Serializable {
         return array_filter((array)$vararray, array(self::factoryCached($type),'validate'));
     }
 
-    /** checks if the variable is empty */
+    /** checks if the variable is empty
+     * @param $var
+     * @return bool
+     */
     function varempty($var) {
         return strlen(trim($var))==0;
     }
@@ -152,10 +155,10 @@ class AA_Validate extends AA_Serializable {
     /** lastErr function
      *  Method returns or sets last itemContent error
      *  The trick for static class variables is used
-     * @param $err_id
-     * @param $err_msg
-     * @param $getmsg
-     * @return null
+     * @param int $err_id
+     * @param string $err_msg
+     * @param bool $getmsg
+     * @return int|string
      */
     static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
@@ -168,7 +171,7 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** lastErrMsg function
-     * @return last error message - it is grabbed from static variable
+     * @return string - last error message - it is grabbed from static variable
      *  of lastErr() method */
     static function lastErrMsg() {
         return self::lastErr(null, null, true);

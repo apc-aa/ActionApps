@@ -158,7 +158,7 @@ class htmlMimeMail {
 * add_html_image() or add_attachment().
 */
     function getFile($filename) {
-        $file = &AA_File_Wrapper::wrapper($filename);
+        $file = AA_File_Wrapper::wrapper($filename);
         // $file->contents(); opens the stream, reads the data and close the stream
         return $file->contents();
     }

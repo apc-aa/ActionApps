@@ -62,10 +62,10 @@ array ("name" => _m("Text = don't modify"),
        "desc" => _m("Does not modify the value."));
 $INSERT_TYPES["items"]["dte"] =
 array ("name" => _m("Date = don't modify"),
-       "desc" => _m("Does not modify the value (just like Text), but it is better to separate it for future ussage."));
+       "desc" => _m("Does not modify the value (just like Text), but it is better to separate it for future usage."));
 $INSERT_TYPES["items"]["num"] =
 array ("name" => _m("Number = don't modify"),
-       "desc" => _m("Does not modify the value (just like Text), but it is better to separate it for future ussage."));
+       "desc" => _m("Does not modify the value (just like Text), but it is better to separate it for future usage."));
 $INSERT_TYPES["items"]["boo"] =
 array ("name" => _m("Boolean = store 0 or 1"));
 $INSERT_TYPES["items"]["fil"] =

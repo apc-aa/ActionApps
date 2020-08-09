@@ -126,12 +126,13 @@ function PrintRule($rule, $fields) {
 }
 
 /** Prints one Rule
- *  @param $n       rule row number
- *  @param $rule    id of rule as in $PROPERTY_TYPES
- *  @param $sfld    bool|array - should we show field selectbox or other selectbox?
- *  @param $func    bool - should we show function selectbox?
- *  @param $func    bool - should we show function parameter input field?
- *  @param $func    bool - should we show html chackbox?
+ * @param $n       int rule row number
+ * @param $rule    string id of rule as in $PROPERTY_TYPES
+ * @param $sfld    bool|array - should we show field selectbox or other selectbox?
+ * @param $func    bool - should we show html checkbox?
+ * @param $sparam
+ * @param $shtml
+ * @param $desc
  */
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     global $PROPERTY_TYPES, $lookup_fields;

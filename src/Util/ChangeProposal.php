@@ -9,7 +9,7 @@
 namespace AA\Util;
 
 /** Tracks one field change
- *  Ussage:
+ *  Usage:
  *     new AA\Util\ChangeProposal(<item_id>, <field_id>, <normal_array_of_values>);
  *     $changes = new AA\Util\ChangeProposal($this->getId(), $field_id, $content4id->getValuesArray($field_id));
  */

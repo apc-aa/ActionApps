@@ -334,7 +334,7 @@ class AA_SQL_Updater {
     }
 
     /** Report function
-    * @return messages separated by <br>
+    * @return string - messages separated by <br>
     */
     function report()       {
         return join('<br>', $this->messages);

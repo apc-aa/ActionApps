@@ -176,7 +176,7 @@ class AA_Condition extends AA_Object {
     }
 
     /** getArray function
-     *  @return clasic $conds array - array('operator'  => ..,
+     *  @return array - clasic $conds array - array('operator'  => ..,
      *                                      'value'     => ..,
      *                                      <field_1>   => 1
      *                                      [,<field_n> => 1])
@@ -325,7 +325,7 @@ class AA_Sortorder extends AA_Object {
     }
 
     /** getArray function
-     *  @return clasic $sort array - array('field'  => a|d [,limit => <group_no>])
+     *  @return array - clasic $sort array - array('field'  => a|d [,limit => <group_no>])
      *
      *  Mainly for backward compatibility with old - array approach
      */
@@ -756,7 +756,7 @@ class AA_Set extends AA_Object {
     }
 
     /** getSort function
-     *  retruns $sort[] array - mainly for backward compatibility
+     *  @returns $sort[] array - mainly for backward compatibility
      */
     function getSort() {
         $ret = array();
@@ -1536,7 +1536,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         } else {
                             $cond_field  = AA_Slice::getModule($rel_f_slice)->getField($cf);
                             if (!is_object($cond_field)) {
-                                if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>";
+                                if (AA::$debug) echo "Skipping $fid in conds[]: $fid is not field.<br>";
                                 continue;            // bad field_id or not defined condition - skip
                             }
 
@@ -1884,7 +1884,7 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 *   @param string $defaultCondsOperator
 *       replaces the default "RLIKE" for conditions with no operator set
 *
-*   @return A zids object with a list of the ids that match the query.
+*   @return zids object with a list of the ids that match the query.
 *
 *   Parameter format example - {see QueryZids, FAQ}
 *   Fields definition - {see include/constants.php3}

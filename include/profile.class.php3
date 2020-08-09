@@ -143,19 +143,18 @@ class AA_Profile {
      *  Get specific property array for current user and slice
      *  This function returns property as array(0 => <value>, 1 => <is_general>)
      *  (or as array of arrays, if selector '*' is used)
-     * @param $property
+     *  @param $property
      *  @param $selector - for properties with only one value (like listlen) it
      *                    is always 0 (you can ommit it)
-     * @param $no_load
-     *  @return array property value (directly - not in array as get() does)
+     *  @param $no_load
+     *  @return false|array property value (directly - not in array as get() does)
      */
     function get($property, $selector=0, $no_load=false ) {
         if ( !$no_load ) {
             $this->loadprofile();
         }
         if ( isset($this->properties) AND isset($this->properties[$property]) ) {
-            return ( (string)$selector=='*' ) ? $this->properties[$property] :
-                                        $this->properties[$property][$selector];
+            return ( (string)$selector=='*' ) ? $this->properties[$property] : $this->properties[$property][$selector];
         }
         return false;
 

@@ -226,7 +226,7 @@ class AA_Collection {
             $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
             if (!$db->next_record()) {
                 freeDB($db);
-                return "";
+                return array();
             }
             $SQL .= " AND slice.id='".quote($db->f("slice_id"))."'";
         }
@@ -253,7 +253,7 @@ class AA_Collection {
         }
         if (!$slices ) {
             freeDB($db);
-            return;
+            return array();
         }
 
         // first I create a hierarchical array $slices and than use it instead of the recordset
@@ -401,14 +401,17 @@ class AA_Collection {
 
 // -------------------------------------------------------------------------------------
 /** Sends emails to all or chosen users, from all or chosen collections.
-*
-*   @param string $ho      = how often
-*   @param array $collection_ids (collection_id, collection_id, ...).
-*            If set to "all", all collections are processed.
-*   @param array $email (email, email, ...)
-*            If set to "all", all Alerts users are processed.
-*   @return count of emails sent
-*/
+ *
+ * @param string $ho = how often
+ * @param array  $collection_ids (collection_id, collection_id, ...).
+ *            If set to "all", all collections are processed.
+ * @param array  $emails (email, email, ...)
+ *            If set to "all", all Alerts users are processed.
+ * @param        $update
+ * @param        $item_id
+ * @param null   $reader_id
+ * @return int - count of emails sent
+ */
 function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_id = null) {
 
     /* get all (or just some, if $collection_ids specified) collections and put

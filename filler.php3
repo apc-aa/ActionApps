@@ -307,7 +307,8 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
         pageOpen('nobody');
         $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
-    } elseif ($_COOKIE['AA_Sess']) {
+    }
+    // elseif ($_COOKIE['AA_Sess']) {
         // old unused approach
 
         // require_once AA_BASE_PATH."modules/site/router.class.php";
@@ -321,7 +322,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         //     $auth = $client_auth->getRemoteAuth();
         //     $GLOBALS['apc_state']['xuser'] = $usr;
         // }
-    }
+    //}
 
     $grabber = new AA\IO\Grabber\Form();
     $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');

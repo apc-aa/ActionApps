@@ -33,9 +33,10 @@ require_once "../include/init_page.php3";
 /** GetModuleTemplateSelecbox function
  * @param $type
  * @param $g_modules
- * @return an html select box or false if g_modules is null or not an array
+ * @return string - an html select box or false if g_modules is null or not an array
  */
 function GetModuleTemplateSelecbox($type, $g_modules) {
+    $ret = '';
     if (isset($g_modules) AND is_array($g_modules) ) {
         foreach ($g_modules as $mid => $mod) {
             if ( $mod['type']==$type ) {

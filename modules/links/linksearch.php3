@@ -124,6 +124,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         case 'unasigned3': $SQL .= ' WHERE (links_link_cat.category_id IS NULL) AND (links_links.folder=3)';
                            break;
         case 'app':        $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                           break; //?
         default:           $folder = Links_GetFolder($type);
                            // folder string (like folder3) contains folder number
 
@@ -159,11 +160,11 @@ function Links_QueryCatZIDs($cid, $conds, $sort=array(), $subcat=false, $type="a
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $CATEGORY_FIELDS, $foo);
     $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);
 
-    if ( $subcat ) {  // this is not obvious ussage - used for category search
+    if ( $subcat ) {  // this is not obvious usage - used for category search
         $cat_path = Links_GetCategoryColumn( $cid, 'path');
         $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories
                   WHERE ((path = '$cat_path') OR (path LIKE '$cat_path,%')) ";
-    } else {         // standard ussage - looking for subcategories of given $cid (crossreferenced included)
+    } else {         // standard usage - looking for subcategories of given $cid (crossreferenced included)
         $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories, links_cat_cat
                   WHERE links_categories.id = links_cat_cat.what_id
                     AND links_cat_cat.category_id = $cid ";

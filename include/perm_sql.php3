@@ -237,6 +237,7 @@ function DelPermObject($objectID, $objectType, $flags = 0) {
  * @param $objectType
  * @param $perm
  * @param $flags
+ * @return bool
  */
 function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
     DelPerm($id, $objectID, $object_type);
@@ -244,7 +245,7 @@ function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
                                 array('objectid',$objectID),
                                 array('userid',$id),
                                 array('perm',$perm)));
-    $varset->doInsert('perms');
+    return $varset->doInsert('perms');
 }
 
 /** DelPerm function
@@ -293,7 +294,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     /** authenticateUsername function
      * @param $username
      * @param $password
-     * @return uid if user is authenticated, else false.
+     * @return false|string uid if user is authenticated, else false.
      */
     function authenticateUsername($username, $password) {
         if ($user = DB_AA::select1('SELECT id, password FROM `users`', '', array(array(strpos($username, "@") ? 'mail' : 'uid', $username)))) {
@@ -313,7 +314,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** findUsernames function
      * @param $pattern
-     * @return list of users which corresponds to mask $pattern
+     * @return array - list of users which corresponds to mask $pattern
      */
     function findUsernames($pattern) {
         $pattern = quote($pattern);
@@ -331,7 +332,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** findGroups function
      * @param $pattern
-     * @return list of groups which corresponds to mask $pattern
+     * @return array - list of groups which corresponds to mask $pattern
      */
     function findGroups($pattern) {
         return DB_AA::select(array('id'=>array('name')), "SELECT id, name FROM `users` WHERE name LIKE '%".quote($pattern)."%' AND (type = '".quote(_m("Group"))."' OR type = 'Group')");
@@ -348,7 +349,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     /** getIDsInfo function
      * @param $id
      * @param $ds
-     * @return an array containing basic information on $id (user DN or group DN)
+     * @return false|array containing basic information on $id (user DN or group DN)
      * or false if ID does not exist
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
@@ -421,7 +422,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @param $uid
      * @param $objectType
      * @param $groups
-     * @return an array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
+     * @return array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
      * (the gorups could be also foreign - like from Reader Set, but permissions for such groups are stored here)
      */
     function getJoinedPerms($uid, $objectType, $groups=array()) {
@@ -448,7 +449,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     /** getObjectsPerms function
      * @param $obejctID
      * @param $objectType
-     * @return an array of user/group identities and their permissions
+     * @return array of user/group identities and their permissions
      * granted on specified object $objectID
      *
      *  example: $arr["uid=honzam,dc=ecn,dc=apc,dc=org"] == 2

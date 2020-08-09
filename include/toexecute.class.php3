@@ -36,7 +36,7 @@ define( 'TOEXECUTE_USER_TASK_TIME', 2000000000);
  *  Then we call misc/toexecute.php3 script from AA cron (say each 2 minutes)
  *  and if there is any task in the queue, it is executed. This way we spread
  *  sending of weeks alerts to thounsands users to several hours.
- *  Ussage:
+ *  Usage:
  *    Instead of calling:
  *        $object->function_name(param1, param2);
  *    we will use
@@ -66,7 +66,7 @@ class AA_Toexecute {
     }
 
     /** Report function
-    * @return messages separated by <br>
+    * @return string - messages separated by <br>
     */
     function report()       {
         return join('<br>', $this->messages);

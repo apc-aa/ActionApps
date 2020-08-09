@@ -156,7 +156,7 @@ class AA_Scroller extends AA_Storable {
     }
 
     /** navarray function
-     * @return navigation bar as a hash
+     * @return array - navigation bar as an array
      * labels as keys, query string fragments a values
      */
     function navarray() {

@@ -39,18 +39,20 @@ function get_mgettext_lang() {
 
 /** bind_mgettext_domain function
  *  Reads language constants from given file/
- *   @param $filename  full path
- *   @param $cache     Should the old language constants remain in memory?
+ *   @param string $filename  full path
+ *   @param bool $cache     Should the old language constants remain in memory?
  *                     You will need this behaviour only when using a script which
  *                     several times changes the language,
  *                     e.g. sends a lot of emails in different languages.
- *   @param $lang      If you want to include several language files,
+ *   @param string $lang      If you want to include several language files,
  *                     you must tell mgettext not too free the
  *                     translations from the previous lang file. You do so by
  *                     sending the language shortcut.
  */
 function bind_mgettext_domain($filename, $cache = false, $lang = "") {
-    global $_m, $mgettext_lang, $mgettext_domain;
+    global $_m, $mgettext_lang, $mgettext_domain;     //    $mgettext_lang must be here for some reason... hm-2020-08-10
+
+    static $_m_backup = array();
 
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded

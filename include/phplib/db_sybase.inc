@@ -164,7 +164,7 @@ class DB_Sybase {
   
   function haltmsg($msg) {
     printf("<p><b>Database error:</b> %s<br>\n", $msg);
-    printf("<b>Sybase Error</b></p>\n", $this->Error);
+    printf("<b>Sybase Error</b> %s<br></p>\n", $this->Error);
   }
 }
 if(!class_exists("DB_Sql"))	{

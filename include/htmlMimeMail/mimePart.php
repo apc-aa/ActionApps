@@ -187,7 +187,7 @@ class Mail_mimePart {
      * Encodes and returns the email. Also stores
      * it in the encoded member variable
      *
-     * @return An associative array containing two elements,
+     * @return string[] - An associative array containing two elements,
 	*  body and headers. The headers element is itself an indexed array.
      * @access public
      */
@@ -249,27 +249,22 @@ class Mail_mimePart {
      *
      * Returns encoded data based upon encoding passed to it
      *
-     * @param $data     The data to encode.
-     * @param $encoding The encoding type to use, 7bit, base64,
-     *                  or quoted-printable.
-     * @access private
+     * @param $data     string - The data to encode.
+     * @param $encoding string - The encoding type to use, 7bit, base64, or quoted-printable.
      * @return bool|string|The
      */
-    function _getEncodedData($data, $encoding)
+    private function _getEncodedData($data, $encoding)
     {
         switch ($encoding) {
             case '8bit':
             case '7bit':
                 return $data;
-                break;
 
             case 'quoted-printable':
                 return $this->_quotedPrintableEncode($data);
-                break;
 
             case 'base64':
                 return rtrim(chunk_split(base64_encode($data), 76, MAIL_MIMEPART_CRLF));
-                break;
 
             default:
                 return $data;

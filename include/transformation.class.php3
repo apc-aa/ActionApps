@@ -76,7 +76,7 @@ abstract class AA_Transformation {
      * Grabs only variables, which is intended for class $classname
      * @param $input_id
      * @param $classname
-     * @return string
+     * @return string[]
      */
     static function getRequestVariables($input_id, $classname) {
         $ret = array();
@@ -157,14 +157,14 @@ class AA_Transformation_Value extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Fill by value");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ...");
@@ -221,14 +221,14 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Fill by exact values");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Returns values exactly as specified (no evaluation, ...)");
@@ -237,7 +237,7 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
-     * @return array
+     * @return AA_Value
      */
     function transform($field_id, $itemcontent, $silent=true) {
         $item = GetItemFromContent($itemcontent);
@@ -276,14 +276,14 @@ class AA_Transformation_Recompute extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Recompute field");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the comuted fields are recomputed (just like with other transformations))");
@@ -326,14 +326,14 @@ class AA_Transformation_Setflag extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Set HTML/Plain-text flag");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Changes the HTML or Plain-text flag for the field.");
@@ -390,14 +390,14 @@ class AA_Transformation_AddValue extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Add value to field");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value.");
@@ -463,14 +463,14 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Divide the text to multiple values");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
 
     function description() {
@@ -580,23 +580,24 @@ class AA_Transformation_Translate extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Translate");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated seperately.");
     }
 
     /** transform function
-     * @param $field_id
-     * @param $itemcontent (by link)
-     * @return array/false
+     * @param      $field_id
+     * @param      $itemcontent (by link)
+     * @param bool $silent
+     * @return AA_Value|false
      */
     function transform($field_id, $itemcontent, $silent=true) {
         if (!$this->translation) {
@@ -686,14 +687,14 @@ class AA_Transformation_Replace extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Search and Replace");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Search the content of text and replaces it with the another text. No other transformations/unaliasing are applied - just basic search and replace.");
@@ -702,7 +703,7 @@ class AA_Transformation_Replace extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
-     * @return array/false
+     * @return AA_Value|false
      */
     function transform($field_id, $itemcontent, $silent=true) {
         if (!$this->searchpattern) {
@@ -753,14 +754,14 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Regular Expressions Search and Replace");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m("Search the content of text and replaces it with the another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)$<br> - Replace: {item:$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(http://biom.cz/item.shtml?x=2344 --&gt; http://biom.cz/cz/about-biom)");
@@ -769,7 +770,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     /** transform function
      * @param $field_id
      * @param $itemcontent (by link)
-     * @return array/false
+     * @return AA_Value|false
      */
     function transform($field_id, $itemcontent, $silent=true) {
         if (!$this->searchpattern) {
@@ -826,23 +827,24 @@ class AA_Transformation_CopyField extends AA_Transformation {
     }
 
     /** name function
-     * @return message
+     * @return string - message
      */
     function name() {
         return _m("Copy field");
     }
 
     /** description function
-     * @return message
+     * @return string - message
      */
     function description() {
         return _m('Selected field will be copied to the "Field" (including multivalues)');
     }
 
     /** transform function
-     * @param $field_id
-     * @param $itemcontent (by link)
-     * @return bool
+     * @param      $field_id
+     * @param      $itemcontent
+     * @param bool $silent
+     * @return AA_Value|false
      */
     function transform($field_id, $itemcontent, $silent=true) {
         if (($this->field2copy == 'no_field') OR !$field_id OR ($field_id == 'no_field')) {

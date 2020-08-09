@@ -80,7 +80,7 @@ class CodWidget extends \AA\Widget\Widget
 
 // AA\Widget\Widget class should implement some interface (in php5), so it is possible
 // to use AA_Components factory, ... methods
-// used for easy ussage of factory, adding new user widgets, and selectbox
+// used for easy usage of factory, adding new user widgets, and selectbox
 // AA\Widget\Widget should became abstract in php5
 
 

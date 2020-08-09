@@ -555,7 +555,7 @@ class DB_AA extends DB_Sql {
 
     /** static
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
-     *  @return number of affected rows (useful for INSERT/UPDATE/DELETE) or false on problem
+     *  @return false|int - number of affected rows (useful for INSERT/UPDATE/DELETE) or false on problem
      **/
     static function sql($query, $where=null) {
         $db = getDB();

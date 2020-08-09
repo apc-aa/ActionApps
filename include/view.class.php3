@@ -383,7 +383,7 @@ class AA_Views {
      * @param $field
      * @return null
      */
-    function getViewField($vid, $field) {
+    static function getViewField($vid, $field) {
         $views = AA_Views::singleton();
         $view  = $views->_getView($vid);
         return $view ? $view->f($field) : null;

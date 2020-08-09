@@ -259,7 +259,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
      *  Sends mail defined in e-mail template id $mail_id to all e-mails listed
      *  in $to (array or string) and unalias aliases according to $item
      * @param $mail_id
-     * @param $to         array()
+     * @param $to   string|array
      * @param $item
      *
      * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)

@@ -226,5 +226,3 @@ AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual langu
 AA::$langnum      = array(AA_Content::getLangName2Num(AA::$lang)); // array of prefered languages in priority order.
 AA::$slice_id     = AA::$module_id;
 $_SESSION['r_last_module_id'] = AA::$module_id; // we need it only in filebrowser of CKEditor
-
-

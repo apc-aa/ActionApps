@@ -28,8 +28,6 @@
 namespace AA\IO\Grabber;
 
 use AA_Property;
-use Exception;
-use ItemContent;
 
 /**
  * Class SOAP

@@ -12,9 +12,9 @@ require_once AA_INC_PATH."varset.php3";
  *  of the data from the conf file. We have to use this technique, since it is 
  *  impossible to redefine the constants in PHP, so we have to include 
  *  the config.php files to clean HTTP request.
- */  
-    
-crash  - comment this but then uncoment it again, since it is very dangerous 
+ */
+
+die('For security reasons, this demo is disabled by default.'); // Comment this but then uncomment it again, since it is very dangerous;
 
 $db = getDb();
 

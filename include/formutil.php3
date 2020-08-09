@@ -1465,15 +1465,11 @@ class AA_Inputfield {
     }
 
     /** inputRadio function
-    * Prints a radio group, html tags <input type="radio" .. to 2-column table
-    * for use within <form> and <table> tag
-    * @param $ncols
-    * @param $move_right
-    * @param $slice_field
-    * @param $whichitems
-    * @param $conds_str
-    * @param $sort_str
-    */
+     * Prints a radio group, html tags <input type="radio" .. to 2-column table
+     * for use within <form> and <table> tag
+     * @param int  $ncols
+     * @param bool $move_right
+     */
     function inputRadio($ncols=0, $move_right=true) {
         list($name,$val,$add) = $this->prepareVars('multi');
         $records = array();
@@ -2001,7 +1997,6 @@ class AA_Inputfield {
      * @param bool   $sort_str
      * @param string $addform
      * @param bool   $add_slice_pwd
-     * @noinspection JSConstantReassignment
      */
     function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');

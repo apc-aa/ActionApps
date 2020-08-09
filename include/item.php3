@@ -1660,7 +1660,7 @@ class AA_Item {
 
 class AA_Items {
     /** Array of all items grabbed from database during rendering of the page
-     *  Array short item id -> AA_Item object (short for smaller memmory ussage)
+     *  Array short item id -> AA_Item object (short for smaller memmory usage)
      */
     var $_i;
 

@@ -85,7 +85,7 @@ function http_fetch($url, $d=null) {
     if ($GLOBALS['debugfeed'] >= 8) {
         print("http_fetch:$url\n");
     }
-    $file = &AA_File_Wrapper::wrapper($url);
+    $file = AA_File_Wrapper::wrapper($url);
     // $file->contents(); opens the stream, reads the data and close the stream
     $data = $file->contents();
     if ($GLOBALS['debugfeed'] >= 8) {

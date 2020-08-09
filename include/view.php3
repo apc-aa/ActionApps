@@ -168,7 +168,7 @@ class AA_View_Commands {
 
     /** addCommand function
      *  add new command to the command set
-     *  @param $command the letter indicating the command (x, c, d, v, ...)
+     *  @param $command string - the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters array of command patameters
      */
     function addCommand($command, $parameters) {
@@ -196,7 +196,7 @@ class AA_View_Commands {
         AA::$debug&2 && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
 
         // cmd could be array - in this case more commands are passed to view
-        // Ussage: cmd[89][]=c-1-On&cmd[89][]=c-2-Cars&cmd[89][]=x-89-2233-5244
+        // Usage: cmd[89][]=c-1-On&cmd[89][]=c-2-Cars&cmd[89][]=x-89-2233-5244
         // this will display items 2233 and 5244 if passes the conditions
         foreach( (array)$cmd as $cmd_part ) {
 
@@ -337,9 +337,9 @@ function ParseViewParameters($query_string="") {
                            $command_params = $command->getParameterArray();
                        }
 
-                       if (ctype_digit((string)$command_params[0])) {
-
-                       }
+//                       if (ctype_digit((string)$command_params[0])) {
+//
+//                       }
 
                        if (AA_Set::check($command_params[0], $command_params[1])) {
                            $param_conds[$command_params[0]] = stripslashes($command_params[1]);
@@ -648,7 +648,7 @@ class AA_Showview {
                 $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
 
                 if ( !isset($zids) || $zids->count() <= 0) {
-                    $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
+                    $ret = $itemview->unaliasWithScroller($noitem_msg);
                     break;
                 }
 
@@ -771,7 +771,7 @@ class AA_Showview {
                 if (isset($zids2) && ($zids2->count() > $list_from)) {
                     $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
                 } else {
-                    $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
+                    $ret = $itemview->unaliasWithScroller($noitem_msg);
                 }
                 break;
 

@@ -74,7 +74,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $myslices = GetUserSlices();
         while ($db->next_record()) {
             $txt = myspecialchars($db->f("fdesc"));
-            if (IsSuperadmin() || strchr ($myslices [unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
+            if (IsSuperadmin() || strchr($myslices[unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt = "<a href='".StateUrl(AA_INSTAL_PATH
                     ."admin/se_view.php3?slice_id=".unpack_id($db->f("slice_id"))
@@ -246,41 +246,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
 
 // ----------------------------------------------------------------------------------
 
-function FindAlertsFilterPermissions() {
-    global $_filter_permissions;
-
-    // work only once
-    if (isset ($_filter_permissions))
-        return $_filter_permissions;
-
-    if (IsSuperadmin())
-        return 0;
-
-    $myslices = GetUserSlices();
-    foreach ($myslices as $my_slice_id => $perms) {
-        if ( strchr($perms, PS_FULLTEXT) ) {
-            $restrict_slices[] = q_pack_id($my_slice_id);
-        }
-    }
-    $_filter_permissions = array ();
-
-    $db = getDB();
-    if (is_array($restrict_slices)) {
-        $db->query("SELECT DISTINCT ADF.id FROM alerts_filter ADF
-                     INNER JOIN view ON view.id = ADF.vid
-                     INNER JOIN slice ON slice.id = view.slice_id
-                     WHERE slice_id IN ('".join("','",$restrict_slices)."')");
-        $_filter_permissions = array ();
-        while ($db->next_record()) {
-            $_filter_permissions[] = $db->f("id");
-        }
-    }
-    freeDB($db);
-    return $_filter_permissions;
-}
-
-// ----------------------------------------------------------------------------------
-
 function FindAlertsUserPermissions() {
     global $Tab, $collectionid;
     $now = time();
@@ -306,11 +271,6 @@ function FindAlertsUserPermissions() {
 }
 
 // ----------------------------------------------------------------------------------
-
-// user function for confirmed
-function te_au_confirm($val) {
-    return $val ? _m("no") : _m("yes");
-}
 
 function AlertsModeditAfterInsert($varset) {
     // called for all tables

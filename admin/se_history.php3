@@ -162,7 +162,7 @@ function GetHistoryAliases() {  // function - we need trnslate _m() on use (not 
  */
 function GetHistoryContent($zids) {
     if (!$zids OR $zids->count()<1) {
-        return false;
+        return array();
     }
 
     // construct WHERE clausule

@@ -389,7 +389,7 @@ class AA_Field {
      * @param int         $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
      * @param bool  $widget_only
      *
-     * Ussage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
+     * Usage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
      * @return string
      * @throws Exception
      */

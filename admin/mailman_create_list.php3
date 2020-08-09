@@ -80,7 +80,7 @@ if ($create_list && $admin_email && $list_name && $admin_password) {
 }
 /** add_mailman_list function
  * Creates a new mailman list
- * @return none on error
+ * @return void - none on error
  */
 function add_mailman_list() {
     global $admin_email, $list_name, $admin_password, $groupid;

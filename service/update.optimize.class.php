@@ -90,7 +90,7 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     }
 
     /** Report function
-    * @return messages separated by <br>
+    * @return string - messages separated by <br>
     */
     function report()       {
         return join('<br>', $this->messages);
@@ -110,14 +110,14 @@ class AA_Optimize implements \AA\Util\NamedInterface {
 class AA_Optimize_Field_Duplicates extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Fix field definitions duplicates");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added).");
@@ -209,14 +209,14 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
 class AA_Optimize_Update_Db_Structure extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Update database structure");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("[experimental] "). _m("Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
@@ -233,7 +233,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     function priority()     { return 50; }  // quite big priority but not first
 
     /** Test function
-    * @return a message
+    * @return string - a message
     */
     function test() {
         $template_metabase = AA::Metabase();
@@ -308,14 +308,14 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
 class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Redefine core constants");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Updates core constants - like Code-pages, Languge Constants and AA Bins");
@@ -533,14 +533,14 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
 class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Redefine News EN template slice");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Deletes and recreates the News EN slice, used as template or example slice");
@@ -625,14 +625,14 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
 class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Redefine Reader Management template slice");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Deletes and recreates the Reader Management slice, used as template or example slice");
@@ -708,14 +708,14 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
 class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Redefine Noticas - ES template slice");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Deletes and recreates the Noticas - ES slice, used as template or example slice");
@@ -1331,14 +1331,14 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
 class AA_Optimize_Add_Polls extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Add Polls tables");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Create tables for new Polls module and adds first - template polls. It removes all current polls!");
@@ -1351,7 +1351,7 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
     function isType($type)  { return in_array($type, array('sql_update')); }
 
     /** Test function
-    * @return a message
+    * @return string - a message
     */
     function test() {
         $ret = true;
@@ -1406,14 +1406,14 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
 class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Redefine field templates");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Updates field templates (in ActionApps Core slice), which is used when you adding new field to slice");
@@ -1548,14 +1548,14 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
 class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Add seo fields template");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("Updates field templates (in ActionApps Core slice) - redefine the field template");
@@ -1794,14 +1794,14 @@ class AA_Optimize_Add__Url_Preview_Field_Template extends AA_Optimize_Add_Seo_Fi
 class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
         */
     function name() {
         return _m("Restore data from backup tables");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("[experimental] "). _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
@@ -1811,7 +1811,7 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     function isType($type)  { return in_array($type, array()); }
 
     /** Test function
-    * @return a message
+    * @return string - a message
     */
     function test() {
         $ret = true;
@@ -1855,14 +1855,14 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
 class AA_Optimize_Backup_Tables extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
         */
     function name() {
         return _m("Backup tables");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("[experimental] "). _m("Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...).");
@@ -2003,14 +2003,14 @@ class AA_Optimize_Add_Mandatory_Short_Id extends AA_Optimize_Add_Mandatory_Statu
 class AA_Optimize_Generate_Metabase extends AA_Optimize {
 
     /** Name function
-    * @return a message
+    * @return string - a name
     */
     function name() {
         return _m("Generate metabase definition row");
     }
 
     /** Description function
-    * @return a message
+    * @return string - a description
     */
     function description() {
         return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php3 and /include/metabase.class.php3 scripts");

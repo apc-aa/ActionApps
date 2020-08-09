@@ -393,11 +393,14 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     function setProperty($property_id, $value) {
-        return $this->$property_id = $value;
+        $this->$property_id = $value;
         return $this;
     }
 
-    /** AA_iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database
+     * @return string|bool - id of saved data or false
+     * @throws Exception
+     */
     public function save() {
         if ( !$this->aa_owner ) {
             throw new Exception('No owner set for property '. $this->id. ' - '. $this->name);
@@ -535,7 +538,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     /** called as AA_Object::loadProperties($ids, 'name')
-     *  @return properties always in array   ['obj1'=>[valA,valB,...], 'obj2'=>[valC], ...]
+     *  @return array - properties always in array   ['obj1'=>[valA,valB,...], 'obj2'=>[valC], ...]
      */
     static function loadProperties($ids, $property) {
         return DB_AA::select( array('object_id'=> '+value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids), array('property', $property)));
@@ -864,7 +867,6 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
             if (is_null($obj)) {
                 throw new Exception('object not loaded: '. $id);
-                continue;
             }
             foreach ($properties as $prop_id => $property) {
                 // @todo - make alias field type aware
@@ -1019,7 +1021,9 @@ interface AA_iEditable {
     public static function addFormrows($form);
     /** AA_iEditable method - creates Object from the form data */
     public static function factoryFromForm($oowner, $otype=null);
-    /** AA_iEditable method - save the object to the database */
+    /** AA_iEditable method - save the object to the database
+     *  @return string|bool - id of saved data or false
+     */
     public        function save();
 }
 

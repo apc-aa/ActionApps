@@ -68,15 +68,19 @@ function GetAliasDef( $fce, $field='', $hlp='') {
 
 
 class AA_Alias {
+    /** @var string  */
     private $alias;
+    /** @var string  */
     private $funct;
+    /** @var string  */
     private $field_id;
+    /** @var string  */
     private $hlp;
 
     /** AA_Alias function
-     * @param $alias
-     * @param $field_id
-     * @param $funct
+     * @param string $alias
+     * @param string $field_id
+     * @param string $funct
      * @param string $hlp = ''
      */
     function __construct($alias, $field_id, $funct, $hlp = '') {
@@ -85,6 +89,7 @@ class AA_Alias {
         $this->funct       = $funct;
         $this->hlp         = $hlp;
     }
+
     /** getArray function
      * @return array
      */
@@ -92,8 +97,9 @@ class AA_Alias {
         // $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
         return array('fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp);
     }
+
     /** getAlias function
-     * @return $this->alias
+     * @return string
      */
     function getAlias() {
         return $this->alias;
@@ -255,9 +261,10 @@ class AA_Langs {
     }
 
     /** returns charset - like 'windows-1250' from given lang code or current lang
-     *  ussage: AA_Langs::getCharset();
+     *  usage: AA_Langs::getCharset();
      */
     public static function getCharset($lang_code=null) {
+
         if (!$lang_code OR !is_array($ret = self::$LANGS[$lang_code])) {
             $ret = self::$LANGS[get_mgettext_lang()];
         }
@@ -481,7 +488,7 @@ function getViewGroupFunctions() {
 */
 function getViewTypes() {
     $field3def = array ( "label" => _m("vid"),
-                         "help" => _m("now possible to use non numeric vid - like: photo_list and ussage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_].")
+                         "help" => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_].")
                        );
     return   array(
         'list' => array(

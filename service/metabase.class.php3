@@ -765,7 +765,7 @@ class AA_Metabase {
     /** The best (most safe) low-level approach to update data in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
      *  For now, the table keys must be provided - we are not able to update multiple records. Could be changed in future
-     *  ussage: AA::Metabase()->doUpdate(...);
+     *  usage: AA::Metabase()->doUpdate(...);
      * @param      $tablename table, where to store data
      * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
      * @return bool|int   0|false on error
@@ -779,7 +779,7 @@ class AA_Metabase {
 
     /** The best (most safe) low-level approach to store date in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
-     *  ussage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
+     *  usage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
      * @param      $tablename table, where to store data
      * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
      * @param  string $nohalt  'nohalt' - do not halt on database error
@@ -794,7 +794,7 @@ class AA_Metabase {
 
     /** The same as doInsert, but for mulThe best (most safe) low-level approach to store date in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
-     *  ussage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
+     *  usage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
      * @see AA_Metabase::doInsert()
      * @param      $tablename table, where to store data
      * @param      $data[][]  data rows - all data unpacked. The values are converted to correct ones
@@ -812,7 +812,7 @@ class AA_Metabase {
 
     /** The best (most safe) low-level approach to delete data in the AA table
      *  - the packed keys are packesd automaticaly, the integer data are typecasted to numbers, ...
-     *  ussage: AA::Metabase()->doDelete(...);
+     *  usage: AA::Metabase()->doDelete(...);
      * @param $tablename
      * @param $keydata
      * @return bool|int   0|false on error

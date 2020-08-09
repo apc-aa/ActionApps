@@ -36,7 +36,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
 /** EditConstantURL function
- * @return result of the con_url function
+ * @return string - result of the con_url function
  */
 function EditConstantURL() {
     global $fld;

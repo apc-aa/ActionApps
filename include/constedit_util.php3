@@ -601,7 +601,7 @@ function get_unique_group_id($group_id) {
 *   @param string $group_id Desired group name, may be changed on conflicts
 *                           and $unique is set
 *   @param array $constants2import array('name'=>.., 'value'=>.., 'pri'=>.., 'group'=>..)
-*   @return true on succes or error string if it fails
+*   @return true|string - true on success or error string if it fails
 */
 function add_constant_group($group_id, $constants2import)
 {

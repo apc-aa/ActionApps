@@ -40,7 +40,7 @@ class ChangesMonitor {
     }
 
     /** Prepares AA\Util\ChangeProposal array from old values and new values
-     *  Ussage: AA\Util\ChangesMonitor::singleton()->addHistory(AA\Util\ChangesMonitor::getDiff($id, $old, $new));
+     *  Usage: AA\Util\ChangesMonitor::singleton()->addHistory(AA\Util\ChangesMonitor::getDiff($id, $old, $new));
      */
     static function getDiff($id, $old, $new) {
         $changes = array();

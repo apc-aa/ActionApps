@@ -252,11 +252,11 @@ class AA_Router_Seo extends AA_Router {
      * @param $url
      * @return array
      */
-    function parse($url) {
+    function parse($url='') {
         $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
         $this->apc['state'] = self::getState($this->apc);
 
-        /** Login From Ussage:
+        /** Login From Usage:
          *   <form action="{go:xqs=}" method="post">
          *     <fieldset>
          *       <legend>Login, please</legend>
@@ -594,7 +594,7 @@ class AA_Router_Seo extends AA_Router {
 
 /** {go:<query-string>}
  *  @return string url based on current state (apc) and query-string paramater
- *  Ussage: {go:xseo1=faq&xseo2=questions}
+ *  Usage: {go:xseo1=faq&xseo2=questions}
  *  (we used {go2url} custom function in previous versions of AA. This function
  *  is however core function)
  */

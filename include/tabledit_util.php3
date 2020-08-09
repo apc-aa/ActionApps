@@ -299,13 +299,14 @@ function TableDelete($table, $key, $columns, $primary_aliases, $error_msg="", $t
  * @param $error_msg
  * @param $triggers
  * @param $be_cautios
- * @return true if successfull, false if not
+ * @return bool - true if successfull, false if not
  */
 function TableUpdate($val, $columns, $primary_aliases, $error_msg="", $triggers = "", $be_cautious=1) {
     global $err;
 
-    if (!ProoveVals($val, $columns))
+    if (!ProoveVals($val, $columns)) {
         return false;
+    }
 
     // prepare varsets with primary key values
     foreach ($primary_aliases as $table => $primary) {

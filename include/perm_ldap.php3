@@ -526,7 +526,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      *  Try to authenticate user from LDAP
      *  @param $username
      *  @param $password
-     *  @return uid if user is authentificied, else false.
+     *  @return false|string - uid if user is authentificied, else false.
      */
     function authenticateUsername($username, $password) {
         if (!$username or !$password) {         // no password => anonymous in LDAP
@@ -581,7 +581,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** findUsers function
      *  @param $pattern
-     *  @return list of users which corresponds to mask $pattern
+     *  @return string|array - list of users which corresponds to mask $pattern
      */
     function findUsernames($pattern) {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
@@ -619,7 +619,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** findGroups function
      *  @param $pattern
-     *  @return list of groups which corresponds to mask $pattern
+     *  @return false|string|array - list of groups which corresponds to mask $pattern
      */
     function findGroups($pattern) {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
@@ -647,7 +647,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** getGroup function
      *  @param $group_id
-     *  @return array(uid, name, description)
+     *  @return false|array - (uid, name, description)
      */
     function getGroup($group_id) {
         if ( !($ds=InitLDAP()) ) {
@@ -677,7 +677,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** getIDsInfo function
      * @param $id
-     * @return an array containing basic information on $id (user DN or group DN)
+     * @return false|array - array containing basic information on $id (user DN or group DN)
      * or false if ID does not exist
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
@@ -761,7 +761,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     /** getMembership function
      * @param $id
      * @param $flags - use to obey group in groups?
-     * @return array of group_ids, where id (group or user) is a member
+     * @return false|string|array of group_ids, where id (group or user) is a member
      */
     function getMembership($id, $flags = 0) {
         $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
@@ -808,7 +808,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
      * @param $uid
      * @param $objectType
      * @param $groups
-     * @return an array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
+     * @return array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
      * (the gorups could be also foreign - like from Reader Set, but permissions for such groups are stored here)
      */
     function getJoinedPerms($uid, $objectType, $groups=array()) {
@@ -854,7 +854,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
     /** getObjectsPerms function
      * @param $objectID
      * @param $ojectType
-     * @return an array of user/group identities and their permissions
+     * @return false|array of user/group identities and their permissions
      *  granted on specified object $objectID
      */
     function getObjectsPerms($objectID, $objectType) {

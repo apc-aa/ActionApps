@@ -37,7 +37,7 @@ require_once __DIR__. '/go_url.php3';
 require_once __DIR__. '/formutil.php3';
 
 /** identity function - used for chaining with constructor
- *  Ussage: with(new AA_Some_Object())->set(something);
+ *  Usage: with(new AA_Some_Object())->set(something);
  */
 function with($object) {
     return $object;
@@ -407,7 +407,7 @@ function is_marked_by($id, $mark) {
 
 /** string2id function
  * @param $str
- *  @return a unique (long - unpacked) id from a string.
+ *  @return string - unique (long - unpacked) id from a string.
  *  Note that it will always return the same id from the same string so it
  *  can be used to compare the hashes as well as create new item id (combining
  *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
@@ -1501,7 +1501,7 @@ class AA_Credentials {
 
 /** AA_Contentcache class - prevents from executing the same - time consuming code
  *  twice in one run of the script.
- *  Ussage:
+ *  Usage:
  *    Instead of calling:
  *        $result = function_name(param1, param2);
  *    we will use

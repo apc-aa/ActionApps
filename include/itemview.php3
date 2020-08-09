@@ -294,7 +294,7 @@ class itemview {
 
       // buttons bar
       $CurItem->setformat($this->slice_info['d_bottom']);        // bottom html code
-      $col["d_buttons......."][0]['value'] = $this->unaliasWithScrollerEasy($this->get_disc_buttons($cnt==0));
+      $col["d_buttons......."][0]['value'] = $this->unaliasWithScroller($this->get_disc_buttons($cnt==0));
       $col["d_buttons......."][0]['flag']  = FLAG_HTML;
       $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
 
@@ -421,24 +421,12 @@ class itemview {
       return $out;
   }
 
-    /** unaliasWithScrollerEasy function
-     *  Just wrapper for unaliasWithScroller() without $item parameter
-     * @param $txt
-     * @return mixed|null|string|string[]
-     */
-  function unaliasWithScrollerEasy(&$txt) {
-      // we just need to pass something as item parameter
-      // in unaliasWithScroller (in order we can use reference, there)
-      $fooparameter = null;
-      return $this->unaliasWithScroller($txt, $fooparameter);
-  }
-
     /** unaliasWithScroller function
-     * @param $txt
-     * @param $item
+     * @param string $txt
+     * @param AA_Item $item
      * @return mixed|null|string|string[]
      */
-  function unaliasWithScroller($txt, &$item) {
+  function unaliasWithScroller($txt, $item=null) {
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
           $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
@@ -463,7 +451,6 @@ class itemview {
   }
 
   // ----------------------------------------------------------------------------------
-  //  get_output
 
     /** get_output
      *  view_type used internaly for different view types

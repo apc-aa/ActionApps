@@ -144,13 +144,14 @@ function IsItemFed($item_id, $destination) {
  *                    description (the result will be the fields' content
  *                    separated by the separators)
  *  @param  result  - the value to be changed (see FeedItemTo)
- *  @return  result
+ *  @return void - changed $result
  *  @author   Jakub Adamek
  */
 function FeedJoin($columns, $fields, $params, &$result) {
     $params = str_replace ("#:","#~",$params);
     $params = explode(":",$params);
     $i = 0;
+    $result_val = '';
     // should all the joined fields be updated? 0 = don't know, -1 = no, 1 = yes
     $update = 0;
     foreach ($params as $val) {
@@ -163,6 +164,7 @@ function FeedJoin($columns, $fields, $params, &$result) {
                 break;
             case STATE_FEEDABLE_UPDATE_LOCKED:
                 $result['flag'] |= FLAG_FREEZE; // break shouldn't be here!
+
             case STATE_FEEDABLE_UPDATE:
                 if ($update > -1) {
                     $update = 1;
@@ -436,7 +438,7 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
 
 /** FeedItem function
  *  Feeds item to all apropriate slices
- * @param $item_id is unpacked id of feeded item
+ * @param $item_id string - is unpacked id of feeded item
  * @return bool
  */
 function FeedItem($item_id) {

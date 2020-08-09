@@ -123,7 +123,7 @@ class AA_Slice_Exporter {
      *  Export each view
      * @param $slobj
      * @param $temp_file
-     * @return writes to file
+     * @return void - writes to file
      */
     function exportOneSliceViews($slobj, $temp_file) {
         if (!($views_data = $slobj->views())) {

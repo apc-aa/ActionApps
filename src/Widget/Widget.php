@@ -280,8 +280,12 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
     /** returns select options created from given array
      *  This method is rewritten get_options() method form formutil.php3
+     * @param        $options[]
+     * @param string $restrict
+     * @param bool   $do_not_select
+     * @return string
      */
-    function getSelectOptions(&$options, $restrict = 'all', $do_not_select = false)
+    function getSelectOptions($options, $restrict = 'all', $do_not_select = false)
     {
 
         $select_string = ($do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
@@ -532,7 +536,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     }
 
     /** propertiesShop - repository of all used properties of Widgets
-     *  ussage:  return AA\Widget\Widget::propertiesShop(array('rows','max_characters'));
+     *  usage:  return AA\Widget\Widget::propertiesShop(array('rows','max_characters'));
      *  most of widgets uses this shop (to coordinate labels and helps), but there is no problem, if you use your own properties in widget, however
      */
     static function propertiesShop($props = array())

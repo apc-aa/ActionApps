@@ -216,7 +216,7 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
 
 /** GetUserSlices function
  * @param $user_id
- * @return string
+ * @return array|string
  */
 function GetUserSlices( $user_id = "current") {
     global $permission_uid, $permission_to, $auth;
@@ -476,7 +476,7 @@ class AA_Perm {
 
 
     /**
-     * ussage: AA::$perm->isUsernameFree($var)
+     * usage: AA::$perm->isUsernameFree($var)
      */
     public function isUsernameFree($username) {
         foreach ($this->perm_systems as $perm_sys) {
@@ -522,8 +522,8 @@ class AA_Perm {
 
     /**
      *  @param $group_id
-     *  @return array(uid, name, description) - info about the group
-     *  ussage: AA::$perm->getGroup($var)
+     *  @return false|array(uid, name, description) - info about the group
+     *  usage: AA::$perm->getGroup($var)
      */
     public function getGroup($group_id) {
         foreach ($this->perm_systems as $perm_sys) {
@@ -536,7 +536,7 @@ class AA_Perm {
 
     /** getIDsInfo function
      * @param $uid
-     * @return an array containing basic information on $uid
+     * @return false|array - containing basic information on $uid
      * or false if ID does not exist
      * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
      */
@@ -571,7 +571,7 @@ class AA_Perm {
 
     /** isUserEditable function
      * @param $uid
-     * @return true, if the User data (name, mail, ..) could be edited on AA Permission page
+     * @return bool - true, if the User data (name, mail, ..) could be edited on AA Permission page
      */
     public function isUserEditable($uid) {
         if ( $uid AND ($ps = $this->_whichUsersystem($uid))) {
@@ -582,7 +582,7 @@ class AA_Perm {
 
     /** isGroupWritable function
      * @param $gid
-     * @return true, if the Group can accept members by direst write - AddMember, .. (Readder group and ReaderSet are not writable, for example)
+     * @return bool - true, if the Group can accept members by direst write - AddMember, .. (Readder group and ReaderSet are not writable, for example)
      */
     public function isGroupWritable($gid) {
         if ( $gid AND ($ps = $this->_whichUsersystem($gid))) {
@@ -591,6 +591,10 @@ class AA_Perm {
         return false;
     }
 
+    /**
+     * @param string $group_id
+     * @return array
+     */
     function getGroupMembers($group_id) {
         if ( $group_id AND ($ps = $this->_whichUsersystem($group_id))) {
             return $ps->getGroupMembers($group_id);
@@ -601,7 +605,7 @@ class AA_Perm {
     /** getMembership function
      * @param string $uid
      * @param $flags - use to obey group in groups?
-     * @return return array of group_ids, where id (group or user) is a member
+     * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($uid, $flags = 0) {
         $groups = array();
@@ -615,7 +619,7 @@ class AA_Perm {
      * @param $uid
      * @param $objectType
      * @param $flags
-     * @return an array of sliceids and their permissions (for user $userid).
+     * @return array of sliceids and their permissions (for user $userid).
      * granted on all objects of type $objectType
      * flags & 1 -> do not involve membership in groups
      */
@@ -626,6 +630,11 @@ class AA_Perm {
         return array();
     }
 
+    /**
+     * @param $objectID
+     * @param $objectType
+     * @return array
+     */
     function getObjectsPerms($objectID, $objectType) {
         if ( $ps = $this->_whichPermstorage()) {
             return $ps->getObjectsPerms($objectID, $objectType);
@@ -868,7 +877,7 @@ class AA_Permsystem {
      * @param $uid
      * @param $objectType
      * @param $flags
-     * @return an array of sliceids and their permissions (for user $userid).
+     * @return array of sliceids and their permissions (for user $userid).
      * granted on all objects of type $objectType
      * flags & 1 -> do not involve membership in groups
      */
@@ -1007,7 +1016,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     /** getGroup function
      *  @param $group_id
-     *  @return array(uid, name, description) or false if not found
+     *  @return false|array(uid, name, description) or false if not found
      */
     function getGroup($group_id) {
         $ret = array('uid' => $group_id);
@@ -1027,7 +1036,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     /** getIDsInfo function
      * @param $uid
-     * @return an array containing basic information on $id
+     * @return false|array containing basic information on $id
      * or false if ID does not exist
      * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
      */

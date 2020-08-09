@@ -586,29 +586,51 @@ class Auth {
       return false;
   }
 
-  ////////////////////////////////////////////////////////////////////////
-  //
-  // Helper functions
-  //
-  function url() {
-    return $GLOBALS["sess"]->self_url();
-  }
+    ////////////////////////////////////////////////////////////////////////
+    //
+    // Helper functions
+    //
+    function url() {
+        return $GLOBALS["sess"]->self_url();
+    }
 
-  // This method can authenticate a user before the loginform
-  // is being displayed. If it does, it must set a valid uid
-  // (i.e. nobody IS NOT a valid uid) just like auth_validatelogin,
-  // else it shall return false.
+    // This method can authenticate a user before the loginform
+    // is being displayed. If it does, it must set a valid uid
+    // (i.e. nobody IS NOT a valid uid) just like auth_validatelogin,
+    // else it shall return false.
 
-  function auth_preauth() { return false; }
+    function auth_preauth() {
+        return false;
+    }
 
-  //
-  // Authentication dummies. Must be overridden by user.
-  //
-  function auth_loginform($msg='') { ; }
-  function auth_validatelogin() { ; }
-  function auth_refreshlogin() { ; }
-  function auth_registerform() { ; }
-  function auth_doregister() { ; }
+    //
+    // Authentication dummies. Must be overridden by user.
+    //
+    function auth_loginform($msg = '') {
+        ;
+    }
+
+    /**
+     * @return string uid
+     */
+    function auth_validatelogin() {
+        ;
+    }
+
+    /**
+     * @return bool
+     */
+    function auth_refreshlogin() {
+        ;
+    }
+
+    function auth_registerform() {
+        ;
+    }
+
+    function auth_doregister() {
+        ;
+    }
 }
 
 /*

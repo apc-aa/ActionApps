@@ -95,7 +95,7 @@ $_m["Date = don't modify"]
  = "";
 
 // include/constants_param_wizard.php3, row 65
-$_m["Does not modify the value (just like Text), but it is better to separate it for future ussage."]
+$_m["Does not modify the value (just like Text), but it is better to separate it for future usage."]
  = "";
 
 // include/constants_param_wizard.php3, row 67

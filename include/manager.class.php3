@@ -528,7 +528,7 @@ class AA_Manager extends AA_Storable {
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            echo "<div class=\"tabtxt\">". $this->itemview->unaliasWithScrollerEasy($this->messages['noitem_msg']). "</div></form><br>";
+            echo "<div class=\"tabtxt\">". $this->itemview->unaliasWithScroller($this->messages['noitem_msg']). "</div></form><br>";
             return $ids_count;
         }
 

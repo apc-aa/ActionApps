@@ -310,7 +310,7 @@ function AA_SendForm(id, refresh, ok_func) {
 }
 
 /** Sends the form and replaces the form with the response
- *  Polls ussage - @see: https://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+ *  Polls usage - @see: https://actionapps.org/en/Polls_Module#AJAX_Polls_Design
  */
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls

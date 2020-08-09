@@ -389,11 +389,6 @@ class DB_Sql {
       }
       for ($i=0;$i<$stmt->columnCount();$i++) {
         $res[$i] = $stmt->getColumnMeta($i);
-    if (false) {
-        echo " \n$i:<pre>";
-        var_dump($res[$i]);
-        echo "</pre>";
-    }
     if ((array_key_exists("native_type",$res[$i])) and (!array_key_exists("type",$res[$i]))) {
         $res[$i]["type"] = strtolower($res[$i]["native_type"]);
     }

@@ -41,14 +41,13 @@ class httpCache {
         self::content(@file_get_contents($file), $mtime, $type, $expire, $headers, false);
     }
 
-/** Cache the given $content with $mtime modification time.
-  * @param binary $content
-  * @param integer $mtime
-  * @param string $type
-  * @param integer $expire
-  * @param array $headers
-  * @param bool $checkMTime */
-
+    /** Cache the given $content with $mtime modification time.
+      * @param binary $content
+      * @param integer $mtime
+      * @param string $type
+      * @param integer $expire
+      * @param array $headers
+      * @param bool $checkMTime */
     static function content($content, $mtime, $type=null, $expire=null, array $headers=null, $checkMTime=true) {
         if ($checkMTime) self::checkMTime($mtime);
         if ($type === null) $type = self::DEFAULT_TYPE;

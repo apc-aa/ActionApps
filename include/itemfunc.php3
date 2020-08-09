@@ -41,7 +41,7 @@ if ( !is_object($event) ) {
 /** classes for default values of the fields
  *  derived from  AA_Serializable in order to be able to factory from string
  *
- *  Ussage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
+ *  Usage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
  *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
 */
 
@@ -239,7 +239,7 @@ class AA_Generator_Mul extends AA_Generator {
 /** classes for insert data to the database field
  *  derived from  AA_Serializable in order to be able to factory from string
  *
- *  Ussage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
+ *  Usage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
  *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
  */
 abstract class AA_Inserter extends AA_Serializable {
@@ -370,7 +370,7 @@ class AA_Inserter_Qte extends AA_Inserter {
 /** AA_Inserter_Dte - Just insert string (so quote it before storing to the DB) */
 class AA_Inserter_Dte extends AA_Inserter {
     // static function name()        { return _m("Date = don't modify");  }             // see NamedInterface;  not used yet
-    // static function description() { return _m("Does not modify the value (just like Text), but it is better to separate it for future ussage.");  }      // see NamedInterface;  not used yet
+    // static function description() { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface;  not used yet
 }
 
 // not used. eventualy the same as Qte
@@ -379,7 +379,7 @@ class AA_Inserter_Dte extends AA_Inserter {
 /** AA_Inserter_Num - Just insert string (so quote it before storing to the DB) */
 class AA_Inserter_Num extends AA_Inserter {
     // static function name()        { return _m("Number = don't modify");  }             // see NamedInterface;  not used yet
-    // static function description() { return _m("Does not modify the value (just like Text), but it is better to separate it for future ussage.");  }      // see NamedInterface;  not used yet
+    // static function description() { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface;  not used yet
 }
 
 /** AA_Inserter_Boo - 0 | 1 */

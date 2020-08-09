@@ -48,16 +48,19 @@ $err = array();          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 /** ShowField function
+ * @param $slice_id
  * @param $id
  * @param $name
  * @param $pri
  * @param $required
  * @param $show
- * @param $type=""
- * @param $alias=""
- * @param $separate=false
+ * @param string $type
+ * @param string[] $alias
+ * @param bool $separate
+ * @param $text_stored
+ * @param $analyze
  */
-function ShowField($slice_id, $id, $name, $pri, $required, $show, $type="", $alias="", $separate, $text_stored, $analyze) {
+function ShowField($slice_id, $id, $name, $pri, $required, $show, $type, $alias, $separate, $text_stored, $analyze) {
     $name = safe($name); $pri=safe($pri);
 
     $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');

@@ -30,7 +30,7 @@ class DB_OCI8 {
   var $Record     = array();
   var $Row;
   var $Parse;
-  var $Error      = "";
+  var $Error      = array();
   var $autoCommit = 1; // Commit on successful query
   var $autoCount  = 1; // Count num_rows on select
 
