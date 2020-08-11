@@ -215,7 +215,7 @@ class inputform {
                 <title>'. $page_title .'</title>
                 {generate:HEAD}
               </head>
-              <body '. AA_Jstriggers::get('body', '', "") .'>
+              <body '. AA_Jstriggers::get('body', '', "") .' class="aa-ui">
                 <h1><b>' . $page_title .'</b></h1>';
 
             // you can add some html code by user profiles, above the form
@@ -2682,7 +2682,7 @@ function getFrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor =
     if ($tr) {
         $ret .= '<tr class=formbuttons>';
     }
-    $sticky = ($prefix=='top') ? ' style="border:'.COLOR_TABTITBG.' 1px solid; padding: 4px; position: sticky; top: 0; z-index: 1;"' : ''; //z-index - CodeMirror goes over if not provided
+    $sticky = ($prefix=='top') ? ' style="border:'.COLOR_TABTITBG.' 1px solid; padding: 4px; position: sticky; top: 0; z-index: 5;"' : ''; //z-index - CodeMirror goes over if not > 2
 
     $ret .= "<td align=center valign=\"$valign\" bgcolor=\"$bgcolor\" $sticky>";
     if ( isset($buttons) AND is_array($buttons) ) {

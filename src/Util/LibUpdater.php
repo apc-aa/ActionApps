@@ -8,7 +8,6 @@ class LibUpdater {
         $newdefs = array();
         $defs  = \AA_Requires::systemDefinitions();
         foreach ($defs as $name => $req) {
-            huhl($name, $req, $req->getUrl());
             if ( strpos($url = $req->getUrl(),'cdn.jsdelivr.net') === false ) {
                 $msg[$name]     = "$name - untested - non jsdelivr ($url)";
                 $newdefs[$name] =  "'$name' => new ". $req->getConstructor().',';
@@ -20,7 +19,7 @@ class LibUpdater {
                 $newdefs[$name] =  "'$name' => new ". $req->getConstructor().',';
                 continue;
             }
-            $json    = json_decode(file_get_contents(JS_UPDATE_API_URL.$reqinfo['package']), true);
+            $json    = json_decode(file_get_contents(JS_UPDATE_API_URL.$reqinfo['path'].$reqinfo['package']), true);
             $latest  =  $json['tags']['latest'];
             if ( ((int)$latest == $reqinfo['major']) ) {
                 if ( $latest == $reqinfo['version']) {

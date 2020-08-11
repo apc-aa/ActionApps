@@ -5955,19 +5955,27 @@ class AA_Req_Lib extends AA_Req {
 
     function parseUrl() {
         $ret = array();
-        if (preg_match('|(^.*npm)/([a-zA-Z0-9._-]+)@([^/]+)/(.*)|', $this->url, $matches)) {
-            $ret['path']    = $matches[1];
-            $ret['package'] = $matches[2];
-            $ret['version'] = $matches[3];
-            $ret['major']   = (int)$matches[3];
-            $ret['file']    = $matches[4];
+        if (preg_match('`^(.*)(npm/)([a-zA-Z0-9._-]+)@([^/]+)/(.*)`', $this->url, $matches)) {
+            $ret['base']    = $matches[1];
+            $ret['path']    = $matches[2];
+            $ret['package'] = $matches[3];
+            $ret['version'] = $matches[4];
+            $ret['major']   = (int)$matches[4];
+            $ret['file']    = $matches[5];
+        } elseif (preg_match('`^(.*)(gh/[a-zA-Z0-9._-]+/)([a-zA-Z0-9._-]+)@([^/]+)/(.*)`', $this->url, $matches)) {
+            $ret['base']    = $matches[1];
+            $ret['path']    = $matches[2];
+            $ret['package'] = $matches[3];
+            $ret['version'] = $matches[4];
+            $ret['major']   = (int)$matches[4];
+            $ret['file']    = $matches[5];
         }
         return $ret;
     }
 
     function tryUpdate($version) {
         $reqinfo = $this->parseUrl();
-        $json    = json_decode(file_get_contents(JS_UPDATE_API_URL.$reqinfo['package'].'@'.$version), true);
+        $json    = json_decode(file_get_contents(JS_UPDATE_API_URL.$reqinfo['path'].$reqinfo['package'].'@'.$version), true);
         $files   = $json;
         $dirs = explode('/',$reqinfo['file']);
         foreach ($dirs as $dir) {
@@ -5981,7 +5989,7 @@ class AA_Req_Lib extends AA_Req {
             }
         }
         if ($found) {
-            $this->url       = $reqinfo['path'].'/'. $reqinfo['package'].'@'. $version.'/'. $reqinfo['file'];
+            $this->url       = $reqinfo['base'].$reqinfo['path']. $reqinfo['package'].'@'. $version.'/'. $reqinfo['file'];
             $this->integrity = 'sha256-'. $found['hash'];
         }
     }
@@ -6312,7 +6320,7 @@ class AA_Requires {
     }
 
     /**
-     * @return array
+     * @return AA_Req[]
      */
     static function systemDefinitions() {
         return array(
@@ -6341,7 +6349,7 @@ class AA_Requires {
             'select2@4' => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.full.min.js', 'sha256-vucLmrjdfi9YwjGY/3CQ7HnccFSS/XRS1M/3k/FDXJw=', array('jquery@3','_css-select2@4')),
             'select2@3'                  => new AA_Req_Lib('https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.4/select2.min.js', 'sha256-7A2MDY2eGSSUvgfbuH1IdzYk8qkEd3uzwiXADqPDdtY=', array('jquery@3','_css-select2@3')),
             'sortable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.1.0/sortable.min.js', 'sha256-V8PMckul3Ye9uzgIf40mKseZiUXv1441jN3YBTHdDGA='),
-	    'datatable@1'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.10.20/js/jquery.dataTables.min.js','sha256-LXQzPhL1IRyKkA7HpCOBi8I+OC8HqzHUYkjK8S+LKTs=',array('jquery@3')),
+            'datatable@1'                => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.10.20/js/jquery.dataTables.min.js','sha256-LXQzPhL1IRyKkA7HpCOBi8I+OC8HqzHUYkjK8S+LKTs=',array('jquery@3')),
             'form-saver@1'               => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false),'',array('deserialize@2')),
             'deserialize@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0-rc1/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', array('jquery@3')),
             'lightgallery@1'             => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', array('_css-lightgallery@1')), // v 1.1.1 do nt work
