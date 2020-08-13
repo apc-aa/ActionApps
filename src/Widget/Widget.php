@@ -418,6 +418,8 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $required = $winfo['required'];
         $help = $aa_property->getHelp();
         $class = $aa_property->getTranslations() ? 'aa-widget aa-langdiv' : 'aa-widget';
+        $class .= ' aa-widget-'. AA_Components::getClassType('Widget',get_called_class());
+        $class .= ' aa-stdwidget';
 
         $this->registerRequires($aa_property, $winfo);
 
@@ -454,7 +456,8 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
         $base_name = $winfo['base_name'];
         $base_id = FormArray::formName2Id($base_name);
         $help = $aa_property->getHelp();
-        $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-ajax-inline' : 'aa-ajax-open';
+        $class = ($this->getProperty('ajaxtype', '') == 'inline') ? 'aa-widget aa-ajax-inline' : 'aa-widget aa-ajax-open';
+        $class .= ' aa-widget-'. AA_Components::getClassType('Widget',get_called_class());
         $widget_html = "<div class=\"ajax_widget $class\" id=\"widget-$base_id\">";
         $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
         $widget_html .= "\n<div class=ajax_buttons>";
@@ -485,10 +488,11 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     function _finalizeLiveHtml($winfo, $aa_property)
     {
         $base_id = $winfo['base_id'];
-        $help = $aa_property->getHelp();
+        // $help = $aa_property->getHelp();  //not used
         $widget_html = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
-        $ret = "<div class=\"aa-widget\"" . ($winfo['required'] ? ' data-aa-required' : '') . " id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html . "</div>";
-        return $ret;
+        $class =  'aa-widget aa-live';
+        $class .= ' aa-widget-'. AA_Components::getClassType('Widget',get_called_class());
+        return "<div class=\"$class\"" . ($winfo['required'] ? ' data-aa-required' : '') . " id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html . "</div>";
     }
 
     /** function which offers filtered selections for current widget */

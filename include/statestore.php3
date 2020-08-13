@@ -1075,6 +1075,16 @@ class AA_Components {
         }
     }
 
+    /** get 'cod' from AA\Widget\CodWidget
+     *  called as:  AA_Components::getClassType('Widget',get_called_class());
+     * @param string $mask class start like
+     * @param string $classname - probably from get_called_class()
+     * @return string
+     */
+    static function getClassType($mask, $classname) {
+        return strtolower(str_replace($mask,'',substr($classname, strrpos($classname, '\\') + 1)));
+    }
+
     /** returns sorted array for selectbox (class => name)
      * @param  string $mask
      * @return array of class => name

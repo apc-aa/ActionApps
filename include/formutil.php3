@@ -1281,7 +1281,7 @@ class AA_Inputfield {
         }
 
         $attrs['size']      = get_if($size, $attrs['size']);
-        if (!$attrs['size']) {
+        if (!$attrs['size'] AND $attrs['type']=='text') {
             $attrs['style'] = 'width:95%';
         }
         $attrs['maxlength'] = get_if($maxsize, $attrs['maxlength'], 255);
@@ -1291,8 +1291,8 @@ class AA_Inputfield {
             $attrs['max'] = pow(10,$nchars)-1;
             $attrs['min'] = $attrs['min'] ?: '0';
         }
-
         $attr_string = join(' ', array_map( function($k, $v) {return "$k=\"$v\"";}, array_keys($attrs), $attrs));
+
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');

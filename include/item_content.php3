@@ -185,6 +185,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** Makes sure the value contains all the translations.
      *  It also converts untranslated values to default language (then user switched to translated field, for example)
+     * @param string[] $translations
+     * @return AA_Value
      */
     function fixTranslations($translations) {
         if ($translations) {

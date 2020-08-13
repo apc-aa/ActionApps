@@ -34,6 +34,13 @@ class FldWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(array('max_characters', 'width'));
     }
 
+    /** libs to run after the page DOM is loaded */
+    function requireLibs($aa_property, $winfo)
+    {
+        return ( count($aa_property->getTranslations())>1 ) ? array('aa-jslib@3') : array();
+    }
+
+
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
@@ -55,13 +62,15 @@ class FldWidget extends \AA\Widget\Widget
         $delim = '';
         $value = $content->getAaValue($aa_property->getId());
 
+        $translations = $aa_property->getTranslations();
+
         $attrs = array('type' => 'text');
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
         $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
         if (!$attrs['size']) {
             unset($attrs['size']);
-            $attrs['style'] = 'width:95%';
+            $attrs['style'] = (count($translations)>1) ? 'width:85%' : 'width:95%'; // for translations we need more space for buttons
         }
 
         $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
@@ -79,7 +88,7 @@ class FldWidget extends \AA\Widget\Widget
         if ($value->isEmpty()) {
             $value->addValue('');   // display empty field at least
         }
-        $value->fixTranslations($aa_property->getTranslations());  // modify for tranclations if needed
+        $value->fixTranslations($translations);  // modify for tranclations if needed
 
         $base = array();
         foreach ($value as $i => $val) {
@@ -119,7 +128,7 @@ class FldWidget extends \AA\Widget\Widget
         if ($lang = AA_Content::getLangNum2Name($i)) {
             $langcode  =  AA_Content::getLangName2Code( $lang );
             $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '.AA_Content::getLangCode2Name($base['langcode']). "</span>";
-            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</span>";
+            $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</span>";
         }
         return $ret;
     }

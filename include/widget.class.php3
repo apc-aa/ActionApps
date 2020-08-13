@@ -103,7 +103,7 @@ class AA_Property extends AA_Storable {
     /** array of constants used for selections (selectbox, radio, ...) */
     var $const_arr = array();
 
-    /** array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es') */
+    /** @var string[] of two letters shortcuts for languages used in this slice for translations - array('en','cz','es') */
     var $translations = array();
 
 
@@ -173,7 +173,10 @@ class AA_Property extends AA_Storable {
     function getMorehelp()            { return $this->input_morehlp; }
     function getExample()             { return $this->example;       }
     function getConstants()           { return $this->const_arr;     }
+
+    /** @return string[] */
     function getTranslations()        { return $this->translations;  }
+
     function getContentTypeSwitches() { return $this->show_content_type_switch;    }
     function getContentTypeDefault()  { return $this->content_type_switch_default; }
 

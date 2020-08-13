@@ -688,6 +688,15 @@ input.cancel-button {
     text-shadow: 0 0 1px #464545;
     font-size: 8pt;
 }
+
+.aa-widget-fld .aa-langtrans-label {
+    padding: 2px 3px 3px 3px;
+    border-radius: 5px 0 0 5px;
+    color: #FFF;
+    border-bottom: 1px solid #91856E;
+    margin: 0;
+}
+
 .aa-langtrans-tbtn {
     display: inline-block;
     background-color: #d5c2a4;
@@ -701,7 +710,7 @@ input.cancel-button {
     cursor:pointer;
 }
 
-.aa-langdiv input[type=text], .aa-langdiv textarea  {
+.aa-langdiv textarea  {
     display: block;
 }
 .aa-langswitch {
