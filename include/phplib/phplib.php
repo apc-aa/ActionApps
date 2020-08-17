@@ -224,7 +224,7 @@ class Session {
     * @return string  session_name() return value
     * @access public
     */
-    public function name() {
+    public function name() : string {
         return $this->name;         //$ok = session_name();
     }
 

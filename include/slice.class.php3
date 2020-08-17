@@ -399,7 +399,7 @@ class AA_Slice extends AA_Module {
     /** name function
      *
      */
-    function name() {
+    public function name(): string {
         return $this->getProperty('name');
     }
 

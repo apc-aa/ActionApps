@@ -21,7 +21,7 @@ class FldWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Text Field');   // widget name
     }
@@ -133,4 +133,8 @@ class FldWidget extends \AA\Widget\Widget
         return $ret;
     }
 
+    /** @inheritDoc */
+    public function description(): string {
+// TODO: Implement description() method.
+    }
 }

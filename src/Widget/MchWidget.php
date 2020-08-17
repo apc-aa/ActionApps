@@ -20,7 +20,7 @@ class MchWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Multiple Checkboxes');   // widget name
     }
@@ -107,7 +107,7 @@ class MchWidget extends \AA\Widget\Widget
      *   This method coverts such data to AA_Value.
      *
      */
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = [];
@@ -121,5 +121,10 @@ class MchWidget extends \AA\Widget\Widget
             $fld_value_arr[] = ['value' => $data4field['def'], 'flag' => $flag];
         }
         return new AA_Value($fld_value_arr, $flag);
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

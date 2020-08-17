@@ -13,12 +13,12 @@ use AA\FormArray;
 class MngWidget extends \AA\Widget\Widget {
 
     /** \AA\Util\NamedInterface function */
-    function name() {
+    public function name(): string {
         return _m('Manager');
     }   // widget name
 
     /** \AA\Util\NamedInterface function */
-    function description() {
+    public function description(): string {
         return _m('Best for galeries and other tabular data which is multivalue and different for each item');
     }   // widget name
 

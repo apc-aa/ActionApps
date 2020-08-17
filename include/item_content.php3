@@ -511,6 +511,8 @@ define('ITEMCONTENT_ERROR_INVALID',     205);
  */
 class ItemContent extends AA_Content {
 
+    use \AA\Util\LastErrTrait;
+
     /** ItemContent function
      *  Constructor which takes content for ID or item_id (unpacked).
      * @param $content4id
@@ -540,32 +542,6 @@ class ItemContent extends AA_Content {
 
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
         return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR $f_def[$field_id]);
-    }
-
-    /** lastErr function
-     *  Method returns or sets last itemContent error
-     *  The trick for static class variables is used
-     * @param $err_id
-     * @param $err_msg
-     * @param $getmsg
-     * @return null
-     */
-    static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
-        static $lastErr;
-        static $lastErrMsg;
-        if (!is_null($err_id)) {
-            $lastErr    = $err_id;
-            $lastErrMsg = $err_msg;
-        }
-        return $getmsg ? $lastErrMsg : $lastErr;
-    }
-
-    /** lastErrMsg function
-     *  Return last error message - it is grabbed from static variable
-     *  of lastErr() method
-     */
-    static function lastErrMsg() {
-        return ItemContent::lastErr(null, null, true);
     }
 
     /** setFromArray function

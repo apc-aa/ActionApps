@@ -19,7 +19,7 @@ class InfWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Info text - output');
     }   // widget name
@@ -49,5 +49,12 @@ class InfWidget extends \AA\Widget\Widget
         $base_id = FormArray::formName2Id($base_name);
         $input_name = $base_name . "[0]";
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

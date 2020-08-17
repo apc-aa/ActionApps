@@ -24,7 +24,7 @@ class FilWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('File Upload');   // widget name
     }
@@ -79,7 +79,7 @@ class FilWidget extends \AA\Widget\Widget
      *
      * @param $data4field - array('var'=>array(), 'url'=>array())
      */
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         $uploads = (array)$data4field['var'];
         $urls = (array)$data4field['url'];
@@ -227,5 +227,10 @@ class FilWidget extends \AA\Widget\Widget
         $widget_html .= "\n</div>";
         $widget_html .= "\n</div>";
         return $widget_html;
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

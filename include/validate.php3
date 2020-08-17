@@ -67,15 +67,17 @@ define('VALIDATE_ERROR_NOT_FILLED',       410);
  */
 class AA_Validate extends AA_Serializable {
 
+    use \AA\Util\LastErrTrait;
+
     /** factoryCached function
      *  Returns validators for standard data types
-     * @param $v_type is string, or array($type,$parameter)
+     * @param string|array $v_type - string, or array($type,$parameter)
      * @return mixed|null
      */
     static function factoryCached($v_type) {
         static $standard_validators = [];
 
-        list ($type, $parameters) = is_array($v_type) ? $v_type : [$v_type, []];
+        [$type, $parameters] = is_array($v_type) ? $v_type : [$v_type, []];
 
         $sv_key = get_hash($type, $parameters);
         if ( !isset($standard_validators[$sv_key]) ) {
@@ -150,31 +152,6 @@ class AA_Validate extends AA_Serializable {
      */
     function varempty($var) {
         return strlen(trim($var))==0;
-    }
-
-    /** lastErr function
-     *  Method returns or sets last itemContent error
-     *  The trick for static class variables is used
-     * @param int $err_id
-     * @param string $err_msg
-     * @param bool $getmsg
-     * @return int|string
-     */
-    static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
-        static $lastErr;
-        static $lastErrMsg;
-        if (!is_null($err_id)) {
-            $lastErr    = $err_id;
-            $lastErrMsg = $err_msg;
-        }
-        return $getmsg ? $lastErrMsg : $lastErr;
-    }
-
-    /** lastErrMsg function
-     * @return string - last error message - it is grabbed from static variable
-     *  of lastErr() method */
-    static function lastErrMsg() {
-        return self::lastErr(null, null, true);
     }
 
     /** bad function

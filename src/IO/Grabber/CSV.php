@@ -57,7 +57,7 @@ class CSV extends \AA\IO\Grabber\AbstractGrabber {
     /** name function
      * Name of the grabber - used for grabber selection box
      */
-    function name() {
+    public function name() : string {
         return _m('CSV');
     }
 
@@ -65,7 +65,7 @@ class CSV extends \AA\IO\Grabber\AbstractGrabber {
      *  Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    function description() {
+    public function description(): string {
         return _m('Import data from CSV (Comma Separated Values) format');
     }
 

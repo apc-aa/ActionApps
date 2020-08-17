@@ -18,7 +18,7 @@ class EdtWidget extends \AA\Widget\TxtWidget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Rich Edit Text Area');   // widget name
     }
@@ -34,5 +34,10 @@ class EdtWidget extends \AA\Widget\TxtWidget
     function requireLibs($aa_property, $winfo)
     {
         return ['ckeditor'];
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

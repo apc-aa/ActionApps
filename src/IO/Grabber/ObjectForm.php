@@ -59,7 +59,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
     /** Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    function description() {
+    public function description(): string {
         return _m('Grabbs data POSTed by AA form');
     }
 

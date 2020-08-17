@@ -21,7 +21,7 @@ class TagWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Tags');   // widget name
     }
@@ -152,7 +152,7 @@ class TagWidget extends \AA\Widget\Widget
      *   This method coverts such data to AA_Value.
      *
      */
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = [];
@@ -168,5 +168,12 @@ class TagWidget extends \AA\Widget\Widget
             }
         }
         return new AA_Value($fld_value_arr, $flag);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

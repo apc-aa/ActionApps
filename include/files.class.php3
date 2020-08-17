@@ -41,31 +41,8 @@ define('FILE_COPY_OK',                199);
 
 
 class Files {
-    /** lastErr function
-     *  Method returns or sets last file error
-     *  The trick for static class variables is used
-     * @param $err_id
-     * @param $err_msg
-     * @param $getmsg
-     * @return null
-     */
-    static function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
-        static $lastErr;
-        static $lastErrMsg;
-        if (!is_null($err_id)) {
-            $lastErr    = $err_id;
-            $lastErrMsg = $err_msg;
-        }
-        return $getmsg ? $lastErrMsg : $lastErr;
-    }
 
-    /** lastErrMsg function
-     *  Return last error message - it is grabbed from static variable
-     *  of lastErr() method
-     */
-    static function lastErrMsg() {
-        return Files::lastErr(null, null, true);
-    }
+    use \AA\Util\LastErrTrait;
 
     /** destinationDir function
      *  Prepares slice directories for uploaded file and returns destination
@@ -924,6 +901,8 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
  */
 class AA_Directory_Wrapper {
 
+    use \AA\Util\LastErrTrait;
+
     /** @var $url string URL to the directory */
     var $url;
 
@@ -933,7 +912,7 @@ class AA_Directory_Wrapper {
     /** @var $dp int the directory descriptor */
     var $dp;
 
-    /** @var $is_read boolean specified if the content od directory is read */
+    /** @var $is_read bool specified if the content od directory is read */
     var $is_read;
 
     /** @var $subdir_names array of subdir names */
@@ -958,24 +937,6 @@ class AA_Directory_Wrapper {
         $this->subdir_names    = [];
         $this->file_names      = [];
         $this->reg_file_filter = false;
-    }
-
-    /** Method returns or sets last error
-     *  The trick for static class variables is used */
-    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
-        static $lastErr;
-        static $lastErrMsg;
-        if (!is_null($err_id)) {
-            $lastErr    = $err_id;
-            $lastErrMsg = $err_msg;
-        }
-        return $getmsg ? $lastErrMsg : $lastErr;
-    }
-
-    /** Return last error message - it is grabbed from static variable
-     *  of lastErr() method */
-    function lastErrMsg() {
-        return self::lastErr(null, null, true);
     }
 
     /** Repository of static variables (trick for PHP4)

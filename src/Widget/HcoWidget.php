@@ -18,7 +18,7 @@ class HcoWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Hierachical constants');   // widget name
     }
@@ -76,4 +76,10 @@ class HcoWidget extends \AA\Widget\Widget
     //    $options = GetFormatedItems( $set->query($zids), $this->getProperty('slice_field','_#HEADLINE'), $this->getProperty('additional_slice_pwd'));
     //    return "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>". $this->getSelectOptions( $options ). "</select>";
     //}
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
+    }
 }

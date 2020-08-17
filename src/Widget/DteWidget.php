@@ -21,7 +21,7 @@ class DteWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Date');   // widget name
     }
@@ -156,7 +156,7 @@ class DteWidget extends \AA\Widget\Widget
      * @param $data4field - array('y'=>array(), 'm'=>array(), 'd'=>array(), 't'=>array())  - for select based date OR ...
      *                      array('i'=>array())                                            - for <input type=date> based date
      */
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         $values = [];
 
@@ -195,5 +195,12 @@ class DteWidget extends \AA\Widget\Widget
         }
 
         return new AA_Value($values);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

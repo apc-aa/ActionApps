@@ -16,7 +16,7 @@ class CodWidget extends \AA\Widget\Widget
     protected $ids_4_editor = [];
 
     /** widget name  */
-    function name()
+    public function name(): string
     {
         return _m('Code editor');
     }
@@ -76,6 +76,13 @@ class CodWidget extends \AA\Widget\Widget
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
+    }
 }
 
 // AA\Widget\Widget class should implement some interface (in php5), so it is possible
@@ -87,7 +94,7 @@ class CodWidget extends \AA\Widget\Widget
 //class AA\Widget\CodWidget extends AA\Widget\Widget {
 
 //    /** widget name  */
-//    function name() {
+//    public function name(): string {
 //        return _m('Code editor');
 //    }
 

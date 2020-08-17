@@ -20,7 +20,7 @@ class PwdWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Password and Change password');
     }   // widget name
@@ -63,7 +63,7 @@ class PwdWidget extends \AA\Widget\Widget
      * @param $data4field - array('pwd'=>MyPassword)
      *   This method coverts such data to AA_Value.
      */
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
         if (is_array($data4field) AND isset($data4field['new1'])) {
@@ -79,5 +79,12 @@ class PwdWidget extends \AA\Widget\Widget
     static function getClassProperties()
     {
         return \AA\Widget\Widget::propertiesShop(['width', 'change_label', 'retype_label', 'delete_label', 'change_hint', 'retype_hint']);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

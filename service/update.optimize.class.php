@@ -31,9 +31,9 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     var $db;
 
     /** \AA\Util\NamedInterface function */
-    function name()         {}
+    public function name(): string         {}
     /** \AA\Util\NamedInterface function */
-    function description()  {}
+    public function description(): string  {}
 
     function test()         {}
     function repair()       {}
@@ -112,14 +112,14 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Fix field definitions duplicates");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added).");
     }
 
@@ -211,14 +211,14 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Update database structure");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("[experimental] "). _m("Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
     }
 
@@ -310,14 +310,14 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Redefine core constants");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Updates core constants - like Code-pages, Languge Constants and AA Bins");
     }
 
@@ -535,14 +535,14 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Redefine News EN template slice");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Deletes and recreates the News EN slice, used as template or example slice");
     }
 
@@ -627,14 +627,14 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Redefine Reader Management template slice");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Deletes and recreates the Reader Management slice, used as template or example slice");
     }
 
@@ -710,14 +710,14 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Redefine Noticas - ES template slice");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Deletes and recreates the Noticas - ES slice, used as template or example slice");
     }
 
@@ -797,12 +797,12 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
 class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Redefine discus template view");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("Deletes and recreates that view, which is used as template view of that type");
     }
 
@@ -851,15 +851,22 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 /** Recreates the template view - const**/
 class AA_Optimize_Redefine_View_Const_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine const template view"); }
+    public function name(): string { return _m("Redefine const template view"); }
     function _viewType()       { return 'const'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Constant view ...', type='const', `before`='<table border=0 cellpadding=0 cellspacing=0>', even='', odd='<tr><td>_#VALUE###</td></tr>', even_odd_differ=0, after='</table>', remove_string=NULL, group_title=NULL, order1='value', o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=10, scroller=NULL, selected_item=0, modification=NULL, parameter='lt_languages', img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'"; }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
+    }
 }
 
 /** Recreates the template view - javascript**/
 class AA_Optimize_Redefine_View_Javascript_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine javascript template view"); }
+    public function name(): string { return _m("Redefine javascript template view"); }
     function _viewType()       { return 'javascript'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Javascript ...', type='javascript', `before`='/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', even=NULL, odd='document.write(\"_#HEADLINE\");', even_odd_differ=NULL, after='// script end ', remove_string=NULL, group_title=NULL, order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=8, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -867,7 +874,7 @@ class AA_Optimize_Redefine_View_Javascript_Templates extends AA_Optimize_Redefin
 /** Recreates the template view - rss**/
 class AA_Optimize_Redefine_View_Rss_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine rss template view"); }
+    public function name(): string { return _m("Redefine rss template view"); }
     function _viewType()       { return 'rss'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='rss', type='rss', `before`='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', even=NULL, odd=' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', even_odd_differ=NULL, after='</channel></rss>', remove_string=NULL, group_title=NULL, order1='publish_date....', o1_direction=0, order2='headline........', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='source..........', cond1op='', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=15, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='NULL', aditional2='NULL', aditional3='NULL', aditional4='NULL', aditional5='NULL', aditional6='NULL', noitem_msg='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language><channel></channel></rss>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -875,7 +882,7 @@ class AA_Optimize_Redefine_View_Rss_Templates extends AA_Optimize_Redefine_View_
 /** Recreates the template view - calendar**/
 class AA_Optimize_Redefine_View_Calendar_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine calendar template view"); }
+    public function name(): string { return _m("Redefine calendar template view"); }
     function _viewType()       { return 'calendar'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Calendar', type='calendar', `before`='<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', even=NULL, odd='_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', even_odd_differ=1, after='</table>', remove_string='', group_title='<td><font size=+2><a href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><b>_#CV_NUM_D</b></a></font></td>', order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='publish_date....', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=5, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='<td><font size=+2>_#CV_NUM_D</font></td>', aditional2='', aditional3='bgcolor=\"_#COLOR___\"', aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='There are no events in this month.', group_bottom='', field1='start_date.....1', field2='end_date.......1', field3=NULL, calendar_type='mon_table'"; }
 }
@@ -883,7 +890,7 @@ class AA_Optimize_Redefine_View_Calendar_Templates extends AA_Optimize_Redefine_
 /** Recreates the template view - links**/
 class AA_Optimize_Redefine_View_Links_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine links template view"); }
+    public function name(): string { return _m("Redefine links template view"); }
     function _viewType()       { return 'links'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Links', type='links', `before`='<br>\r\n', even='', odd='<p><a href=\"_#L_URL___\" class=\"link\">_#L_NAME__ (_#L_O_NAME)</a><br>\r\n          _#L_DESCRI<br>\r\n          <a href=\"_#L_URL___\" class=\"link2\">_#L_URL___</a>\r\n     </p>\r\n', even_odd_differ=0, after='', remove_string='()', group_title='', order1='', o1_direction=0, order2=NULL, o2_direction=0, group_by1=NULL, g1_direction=0, group_by2=NULL, g2_direction=0, cond1field=NULL, cond1op='<', cond1cond=NULL, cond2field=NULL, cond2op='<', cond2cond=NULL, cond3field=NULL, cond3op='<', cond3cond=NULL, listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no links in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -891,7 +898,7 @@ class AA_Optimize_Redefine_View_Links_Templates extends AA_Optimize_Redefine_Vie
 /** Recreates the template view - categories**/
 class AA_Optimize_Redefine_View_Categories_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine categories template view"); }
+    public function name(): string { return _m("Redefine categories template view"); }
     function _viewType()       { return 'categories'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Catategories', type='categories', `before`='     <br><b>_#C_PATH__</b><br><br>\r\n', even='', odd='<br>&#8226; <a href=\"?cat=_#CATEG_ID\" class=\"link\">_#C_NAME___#C_CROSS_</a>&nbsp;&nbsp;<b>(_#C_LCOUNT)</b>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no categories in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -899,7 +906,7 @@ class AA_Optimize_Redefine_View_Categories_Templates extends AA_Optimize_Redefin
 /** Recreates the template view - urls**/
 class AA_Optimize_Redefine_View_Urls_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine urls template view"); }
+    public function name(): string { return _m("Redefine urls template view"); }
     function _viewType()       { return 'urls'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='URLs listing', type='urls', `before`='<!-- view used for listing URLs of items -->', even=NULL, odd='<a href=\"http://www.example.org/index.stm?x=_#SITEM_ID\">_#SITEM_ID</a><br>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=100000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -907,7 +914,7 @@ class AA_Optimize_Redefine_View_Urls_Templates extends AA_Optimize_Redefine_View
 /** Recreates the template view - static**/
 class AA_Optimize_Redefine_View_Static_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine static template view"); }
+    public function name(): string { return _m("Redefine static template view"); }
     function _viewType()       { return 'static'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Static page', type='static', `before`=NULL, even=NULL, odd='<!-- Static page view is used for creating and viewing static pages like Contacts or About us.', even_odd_differ=NULL, after=NULL, remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg=NULL, group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -915,7 +922,7 @@ class AA_Optimize_Redefine_View_Static_Templates extends AA_Optimize_Redefine_Vi
 /** Recreates the template view - full**/
 class AA_Optimize_Redefine_View_Full_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    function name()            { return _m("Redefine full template view"); }
+    public function name(): string { return _m("Redefine full template view"); }
     function _viewType()       { return 'full'; }
     function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Fulltext view', type='full', `before`='<!-- Fulltext view is for viewing long items. It shows only one selected item with abstract and fulltext. -->\r\n\r\n<!-- top of the page -->\r\n<br>', even=NULL, odd='<h2><b>_#HEADLINE</b></h2>\r\n_#PUB_DATE, _#AUTHOR__\r\n<br>\r\n_#FULLTEXT<br>\r\n<div align=\"right\"><a href=\"javascript:history.go(-1)\">Back</a></div>\r\n', even_odd_differ=NULL, after='', remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<p>No item found.</p>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
@@ -924,12 +931,12 @@ class AA_Optimize_Redefine_View_Full_Templates extends AA_Optimize_Redefine_View
 class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Recreate Site module template");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("Deletes and recreates the default template for Site module");
     }
 
@@ -973,12 +980,12 @@ $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url
 class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Adds cron entry for Alerts Sending into AA cron");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
@@ -1016,12 +1023,12 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
 class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Adds cron entry for Feeding into AA cron");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
@@ -1059,12 +1066,12 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
 class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Adds cron entry for Database Optimalization into AA cron");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
@@ -1102,12 +1109,12 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
 class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Adds cron entry for Link checking in Links Module into AA cron");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
@@ -1145,12 +1152,12 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Adds cron entry for Toexecute queue execution into AA cron");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
@@ -1190,12 +1197,12 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
 class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Adds email templates for Alerts module");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("");
     }
 
@@ -1233,12 +1240,12 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
 class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Recreate Links module template");
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("Deletes and recreates the default settings for Links module");
     }
 
@@ -1333,14 +1340,14 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Add Polls tables");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Create tables for new Polls module and adds first - template polls. It removes all current polls!");
     }
 
@@ -1408,14 +1415,14 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Redefine field templates");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Updates field templates (in ActionApps Core slice), which is used when you adding new field to slice");
     }
 
@@ -1550,14 +1557,14 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Add seo fields template");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Updates field templates (in ActionApps Core slice) - redefine the field template");
     }
 
@@ -1597,7 +1604,7 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Auth_Group_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add auth_group...... field template"); }
+    public function name(): string             { return _m("Add auth_group...... field template"); }
     function _fieldType()       { return 'auth_group......'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('auth_group......', '', 'AA_Core_Fields..', 'Auth Group',         '350', 'Sets permissions for web sections', '', 'txt:', 0, 0, 0, 'sel:', '', 100, '', '', '', '', 1, 1, 1, '_#AUTGROUP', 'f_h:', 'Auth Group (membership type)', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);"; }
 }
@@ -1605,7 +1612,7 @@ class AA_Optimize_Add_Auth_Group_Field_Template extends AA_Optimize_Add_Seo_Fiel
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Mail_Lists_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add mail_lists field template"); }
+    public function name(): string             { return _m("Add mail_lists field template"); }
     function _fieldType()       { return 'mail_lists......'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('mail_lists......', '', 'AA_Core_Fields..', 'Mailing Lists',      '1000', 'Select mailing lists which you read', '', 'txt:', 0, 0, 1, 'mch::3:1', '', 100, '', '', '', '', 1, 1, 1, '_#MAILLIST', 'f_h:;&nbsp', 'Mailing Lists', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);"; }
 }
@@ -1613,7 +1620,7 @@ class AA_Optimize_Add_Mail_Lists_Field_Template extends AA_Optimize_Add_Seo_Fiel
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Mlxctrl_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add mlxctrl field template"); }
+    public function name(): string             { return _m("Add mlxctrl field template"); }
     function _fieldType()       { return 'mlxctrl'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', '6000', '', 'http://mimo.gn.apc.org/mlx/', 'txt:', 1, 0, 1, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 0, 1);"; }
 }
@@ -1621,7 +1628,7 @@ class AA_Optimize_Add_Mlxctrl_Field_Template extends AA_Optimize_Add_Seo_Field_T
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Integer_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add integer field template"); }
+    public function name(): string             { return _m("Add integer field template"); }
     function _fieldType()       { return 'integer'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('integer',  '', 'AA_Core_Fields..', 'Integer',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'num', '1', '0')"; }
 }
@@ -1629,7 +1636,7 @@ class AA_Optimize_Add_Integer_Field_Template extends AA_Optimize_Add_Seo_Field_T
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Name_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add name field template"); }
+    public function name(): string             { return _m("Add name field template"); }
     function _fieldType()       { return 'name'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('name',        '', 'AA_Core_Fields..', 'Name',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // name
 }
@@ -1637,7 +1644,7 @@ class AA_Optimize_Add_Name_Field_Template extends AA_Optimize_Add_Seo_Field_Temp
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Phone_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add phone field template"); }
+    public function name(): string             { return _m("Add phone field template"); }
     function _fieldType()       { return 'phone'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('phone',       '', 'AA_Core_Fields..', 'Phone',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // phone
 }
@@ -1645,7 +1652,7 @@ class AA_Optimize_Add_Phone_Field_Template extends AA_Optimize_Add_Seo_Field_Tem
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Fax_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add fax field template"); }
+    public function name(): string             { return _m("Add fax field template"); }
     function _fieldType()       { return 'fax'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('fax',         '', 'AA_Core_Fields..', 'Fax',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // fax
 }
@@ -1653,7 +1660,7 @@ class AA_Optimize_Add_Fax_Field_Template extends AA_Optimize_Add_Seo_Field_Templ
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Address_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add address field template"); }
+    public function name(): string             { return _m("Add address field template"); }
     function _fieldType()       { return 'address'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('address',     '', 'AA_Core_Fields..', 'Address',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // address
 }
@@ -1661,7 +1668,7 @@ class AA_Optimize_Add_Address_Field_Template extends AA_Optimize_Add_Seo_Field_T
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Location_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add location field template"); }
+    public function name(): string             { return _m("Add location field template"); }
     function _fieldType()       { return 'location'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('location',    '', 'AA_Core_Fields..', 'Location',        '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // location
 }
@@ -1669,7 +1676,7 @@ class AA_Optimize_Add_Location_Field_Template extends AA_Optimize_Add_Seo_Field_
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_City_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add city field template"); }
+    public function name(): string             { return _m("Add city field template"); }
     function _fieldType()       { return 'city'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('city',        '', 'AA_Core_Fields..', 'City',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // city
 }
@@ -1677,7 +1684,7 @@ class AA_Optimize_Add_City_Field_Template extends AA_Optimize_Add_Seo_Field_Temp
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Country_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add country field template"); }
+    public function name(): string             { return _m("Add country field template"); }
     function _fieldType()       { return 'country'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('country',     '', 'AA_Core_Fields..', 'Country',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // country
 }
@@ -1685,7 +1692,7 @@ class AA_Optimize_Add_Country_Field_Template extends AA_Optimize_Add_Seo_Field_T
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Range_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add range field template"); }
+    public function name(): string             { return _m("Add range field template"); }
     function _fieldType()       { return 'range'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('range',       '', 'AA_Core_Fields..', 'Range',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // range
 }
@@ -1693,7 +1700,7 @@ class AA_Optimize_Add_Range_Field_Template extends AA_Optimize_Add_Seo_Field_Tem
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Real_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add real field template"); }
+    public function name(): string             { return _m("Add real field template"); }
     function _fieldType()       { return 'real'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('real',        '', 'AA_Core_Fields..', 'Real number',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // real
 }
@@ -1701,7 +1708,7 @@ class AA_Optimize_Add_Real_Field_Template extends AA_Optimize_Add_Seo_Field_Temp
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Computed_Num_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add computed_num field template"); }
+    public function name(): string             { return _m("Add computed_num field template"); }
     function _fieldType()       { return 'computed_num'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('computed_num','', 'AA_Core_Fields..', 'Computed number', '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'com', '1', '0')"; } // computed_num
 }
@@ -1709,7 +1716,7 @@ class AA_Optimize_Add_Computed_Num_Field_Template extends AA_Optimize_Add_Seo_Fi
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Computed_Txt_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add computed_txt field template"); }
+    public function name(): string             { return _m("Add computed_txt field template"); }
     function _fieldType()       { return 'computed_txt'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('computed_txt','', 'AA_Core_Fields..', 'Computed text',   '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'com', '1', '1')"; } // computed_txt
 }
@@ -1717,7 +1724,7 @@ class AA_Optimize_Add_Computed_Txt_Field_Template extends AA_Optimize_Add_Seo_Fi
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Upload_Url_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add _upload_url field template"); }
+    public function name(): string             { return _m("Add _upload_url field template"); }
     function _fieldType()       { return '_upload_url'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_upload_url', '', 'AA_Core_Fields..', 'Upload URL',      '100', 'If you want to have your files stored in your domain, then you can create symbolic link from http://yourdomain.org/upload -> http://your.actionapps.org/IMG_UPLOAD_PATH and fill there \"http://yourdomain.org/upload\". The url stored in AA will be changed (The file is stored still on the same place).', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
 }
@@ -1725,7 +1732,7 @@ class AA_Optimize_Add__Upload_Url_Field_Template extends AA_Optimize_Add_Seo_Fie
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Hit_1_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add hit_1 field template"); }
+    public function name(): string             { return _m("Add hit_1 field template"); }
     function _fieldType()       { return 'hit_1'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_1', '', 'AA_Core_Fields..', 'Hits last day', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }     // hit_1
 }
@@ -1733,7 +1740,7 @@ class AA_Optimize_Add_Hit_1_Field_Template extends AA_Optimize_Add_Seo_Field_Tem
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Hit_7_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add hit_7 field template"); }
+    public function name(): string             { return _m("Add hit_7 field template"); }
     function _fieldType()       { return 'hit_7'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_7', '', 'AA_Core_Fields..', 'Hits last week', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }    // hit_7
 }
@@ -1741,7 +1748,7 @@ class AA_Optimize_Add_Hit_7_Field_Template extends AA_Optimize_Add_Seo_Field_Tem
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Hit_30_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add hit_30 field template"); }
+    public function name(): string             { return _m("Add hit_30 field template"); }
     function _fieldType()       { return 'hit_30'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_30', '', 'AA_Core_Fields..', 'Hits last month', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }  // hit_30
 }
@@ -1749,7 +1756,7 @@ class AA_Optimize_Add_Hit_30_Field_Template extends AA_Optimize_Add_Seo_Field_Te
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Ip_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add ip field template"); }
+    public function name(): string             { return _m("Add ip field template"); }
     function _fieldType()       { return 'ip'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('ip', '', 'AA_Core_Fields..', 'IP address',      '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
 }
@@ -1757,7 +1764,7 @@ class AA_Optimize_Add_Ip_Field_Template extends AA_Optimize_Add_Seo_Field_Templa
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Ip_Banned_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add _ip_banned field template"); }
+    public function name(): string             { return _m("Add _ip_banned field template"); }
     function _fieldType()       { return '_ip_banned'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_ip_banned', '', 'AA_Core_Fields..', 'Banned IPs slice ID',      '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
 }
@@ -1765,7 +1772,7 @@ class AA_Optimize_Add__Ip_Banned_Field_Template extends AA_Optimize_Add_Seo_Fiel
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Msg_Banned_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add _msg_banned field template"); }
+    public function name(): string             { return _m("Add _msg_banned field template"); }
     function _fieldType()       { return '_msg_banned'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_msg_banned', '', 'AA_Core_Fields..', 'Message Banned',      '100', 'Message shown to user, when the IP address of the comment sender is on list of banned IP addresses', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
 }
@@ -1773,7 +1780,7 @@ class AA_Optimize_Add__Msg_Banned_Field_Template extends AA_Optimize_Add_Seo_Fie
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Msg_Spam_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add _msg_spam field template"); }
+    public function name(): string             { return _m("Add _msg_spam field template"); }
     function _fieldType()       { return '_msg_spam'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_msg_spam', '', 'AA_Core_Fields..', 'Message Spam',      '100', 'Message shown to user, when the SPAM detection filter in the comments decides the post is spam', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
 }
@@ -1781,7 +1788,7 @@ class AA_Optimize_Add__Msg_Spam_Field_Template extends AA_Optimize_Add_Seo_Field
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Url_Preview_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    function name()             { return _m("Add _url_preview field template"); }
+    public function name(): string             { return _m("Add _url_preview field template"); }
     function _fieldType()       { return '_url_preview'; }
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_url_preview', '', 'AA_Core_Fields..', 'Preview Url',      '100', 'Url for item previw - could contain AA Expressions', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
 }
@@ -1796,14 +1803,14 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     /** Name function
     * @return string - a name
         */
-    function name() {
+    public function name(): string {
         return _m("Restore data from backup tables");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("[experimental] "). _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
     }
 
@@ -1857,14 +1864,14 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
     /** Name function
     * @return string - a name
         */
-    function name() {
+    public function name(): string {
         return _m("Backup tables");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("[experimental] "). _m("Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...).");
     }
 
@@ -1908,12 +1915,12 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
 class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
     /** Name function @return a message */
-    function name() {
+    public function name(): string {
         return _m("Fixing missing %1 field definitions in slices", ['status_code.....']);
     }
 
     /** Description function @return a message */
-    function description() {
+    public function description(): string {
         return _m("Adds fields definitions for slices, where missing");
     }
 
@@ -1965,35 +1972,35 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Display_Count extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['display_count...']); }
+    public function name(): string                 { return _m("Fixing missing %1 field definitions in slices", ['display_count...']); }
     function _field()               { return 'display_count...'; }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'display_count...', '', '". quote($sid) ."', 'Displayed Times', '5050', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')"; }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Disc_Count extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['disc_count......']); }
+    public function name(): string                 { return _m("Fixing missing %1 field definitions in slices", ['disc_count......']); }
     function _field()               { return 'disc_count......';    }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_count......', '', '". quote($sid) ."', 'Comments Count', '5060', 'Internal field - do not change',  '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";    }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Disc_App extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['disc_app........']); }
+    public function name(): string                 { return _m("Fixing missing %1 field definitions in slices", ['disc_app........']); }
     function _field()               { return 'disc_app........';   }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_app........', '', '". quote($sid) ."', 'Approved Comments Count', '5070', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";    }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Id extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['id..............']); }
+    public function name(): string                 { return _m("Fixing missing %1 field definitions in slices", ['id..............']); }
     function _field()               { return 'id..............';    }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('id..............', '', '". quote($sid) ."', 'Long ID', 5080, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 0, '', '', '', '', 1, 1, 1, '_#ITEM_ID_', 'f_n:', 'alias for Long Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'id', '', 'nul', 0, 1)";    }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Short_Id extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['short_id........']); }
+    public function name(): string                 { return _m("Fixing missing %1 field definitions in slices", ['short_id........']); }
     function _field()               { return 'short_id........';    }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('short_id........', '', '". quote($sid) ."', 'Short ID', 5090, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 100, '', '', '', '', 1, 1, 1, '_#SITEM_ID', 'f_t:', 'alias for Short Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'short_id', '', 'nul', 0, 0)";    }
 }
@@ -2005,14 +2012,14 @@ class AA_Optimize_Generate_Metabase extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name() : string {
         return _m("Generate metabase definition row");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php3 and /include/metabase.class.php3 scripts");
     }
 

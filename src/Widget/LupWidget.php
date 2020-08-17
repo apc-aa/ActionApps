@@ -18,7 +18,7 @@ class LupWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Local URL Picker');   // widget name
     }
@@ -29,5 +29,12 @@ class LupWidget extends \AA\Widget\Widget
     static function getClassProperties()
     {
         return \AA\Widget\Widget::propertiesShop(['url']);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

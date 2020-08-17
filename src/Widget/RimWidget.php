@@ -8,6 +8,7 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Value;
 use zids;
 
 /** Related Item Manager widget */
@@ -20,7 +21,7 @@ class RimWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Related Item Manager');   // widget name
     }
@@ -187,8 +188,13 @@ HTML;
         return $ret;
     }
 
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         return \AA\Widget\MchWidget::getValue($data4field);
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

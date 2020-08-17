@@ -19,7 +19,7 @@ class HidWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Hidden field');
     }   // widget name
@@ -91,5 +91,12 @@ class HidWidget extends \AA\Widget\Widget
     function _finalizeLiveHtml($winfo, $aa_property)
     {
         return $winfo['html'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

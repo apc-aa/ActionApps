@@ -156,7 +156,7 @@ class FormrowWidget extends Widget {
      */
 
     /** name function */
-    function name() {
+    public function name(): string {
         return _m('Form Row - special widget for form setting');
     }   // widget name
 
@@ -211,6 +211,12 @@ class FormrowWidget extends Widget {
         return ['html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired()];
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
+    }
 }
 
 

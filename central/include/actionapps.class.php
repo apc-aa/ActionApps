@@ -788,13 +788,14 @@ class AA_Task_Sync implements \AA\Util\LaterInterface {
  *  Objects are stored into AA_Toexecute queue for running from Task Manager
  **/
 class AA_Task_Import_Module_Chunk implements \AA\Util\LaterInterface {
-    /** AA_Module_Definition_* object for import */
-    var $module_definition_chunk;
 
-    /** AA_Actionapps object  - In which AA we have to do the action */
-    var $actionapps;
+    /** @var AA_Module_Definition $module_definition_chunk -  object or similar for import */
+    protected $module_definition_chunk;
 
-    function __construct($module_definition_chunk, $actionapps) {
+    /** @var AA_Actionapps $actionapps object in which AA we have to do the action */
+    protected $actionapps;
+
+    function __construct($module_definition_chunk, AA_Actionapps $actionapps) {
         $this->module_definition_chunk = $module_definition_chunk;
         $this->actionapps              = $actionapps;
     }

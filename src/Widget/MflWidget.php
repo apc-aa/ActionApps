@@ -23,13 +23,15 @@ class MflWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Multiple Text Field');   // widget name
     }
 
+    /** @inheritDoc */
+    public function description(): string {}
+
     // inherited from \AA\Widget\Widget
-    // function description() { }
     function requireLibs($aa_property, $winfo)
     {
         return ['codemirror@5'];
@@ -160,7 +162,7 @@ class MflWidget extends \AA\Widget\Widget
      *
      *  static class method
      */
-    static function getValue($data4field)
+    public static function getValue($data4field): AA_Value
     {
         $flag = $data4field['flag'] & FLAG_HTML;
         $fld_value_arr = [];
@@ -176,6 +178,4 @@ class MflWidget extends \AA\Widget\Widget
 
         return new AA_Value($fld_value_arr, $flag);
     }
-
-
 }

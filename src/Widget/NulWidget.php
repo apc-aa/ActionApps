@@ -18,9 +18,16 @@ class NulWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Do not show');   // widget name
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 
     /** getClassProperties function of AA_Serializable

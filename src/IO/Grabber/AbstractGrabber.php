@@ -39,7 +39,7 @@ use ItemContent;
  *
  * @todo this class should be abstract after we switch to PHP5
  */
-abstract class AbstractGrabber {
+abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     protected $_messages = [];
 
     /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
@@ -62,14 +62,13 @@ abstract class AbstractGrabber {
     /** name function
      *  Name of the grabber - used for grabber selection box
      */
-    abstract public function name();
+    public function name() : string {}
 
     /** description function
      *  Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    public function description() {
-    }
+    public function description() : string {}
 
     /** loads data form, url or direct input
      * @return string

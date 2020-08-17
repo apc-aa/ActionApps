@@ -41,44 +41,21 @@ https://www.apc.org/
 */
 
 class AA_Http {
-    /** lastErr function
-     *  Method returns or sets last file error
-     *  The trick for static class variables is used
-     * @param $err_id
-     * @param $err_msg
-     * @param $getmsg
-     * @return null
-     */
-    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
-        static $lastErr;
-        static $lastErrMsg;
-        if (!is_null($err_id)) {
-            $lastErr    = $err_id;
-            $lastErrMsg = $err_msg;
-        }
-        return $getmsg ? $lastErrMsg : $lastErr;
-    }
 
-    /** lastErrMsg function
-     *  Return last error message - it is grabbed from static variable
-     *  of lastErr() method
-     */
-    function lastErrMsg() {
-        return AA_Http::lastErr(null, null, true);
-    }
+    use \AA\Util\LastErrTrait;
 
     /** Move to another page
      *  new version of go_ur() - could use POST redirect
      *  static function - called like AA_Http::go("http://ecn.cz", array('a'=>'my string'), 'POST')
-     *  @param url - destination url
-     *  @param parameters = array('a' => 1, 'b' => 'OK boy')
-     *  @param type  - preffered type. Could be GET or POST, but if headers
+     *  @param string $url - destination url
+     *  @param array  $parameters = array('a' => 1, 'b' => 'OK boy')
+     *  @param string $type  - preffered type. Could be GET or POST, but if headers
      *                 are already sent, then we use javascript for redirection
-     *  @param sess_close - try to close session, if the session is set
+     *  @param bool   $sess_close - try to close session, if the session is set
      *                      we do not want to try it, when database connection
      *                      error ocures, for example
      **/
-    function go($url, $parameters, $type='GET', $sess_close=true) {
+    function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
         global $sess;
 
         if (is_object($sess) AND $sess_close) {

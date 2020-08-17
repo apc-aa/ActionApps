@@ -74,7 +74,7 @@ class AA_Poll {
     }
 
     /** name function  */
-    function name() {
+    public function name(): string {
         return $this->getProperty('name');
     }
 

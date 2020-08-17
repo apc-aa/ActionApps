@@ -18,7 +18,7 @@ class IsoWidget extends \AA\Widget\MchWidget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Related Item Window');   // widget name
     }
@@ -37,5 +37,12 @@ class IsoWidget extends \AA\Widget\MchWidget
         $ret = \AA\Widget\Widget::propertiesShop(['const', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', 'bin_filter', 'filter_conds', 'filter_conds_rw', 'slice_field', 'sort_by', 'additional_slice_pwd', 'const_arr']);
         $ret['filter_conds_rw']->setHelp(_m("Conditions for filtering items in related items window. This conds user can change."));
         return $ret;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

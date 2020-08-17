@@ -18,9 +18,14 @@ class MseWidget extends \AA\Widget\MchWidget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Multiple Selectbox');   // widget name
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 
     /** returns if the widget handles multivalue or just single value   */

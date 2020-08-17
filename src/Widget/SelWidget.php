@@ -19,7 +19,7 @@ class SelWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Select Box');   // widget name
     }
@@ -70,4 +70,10 @@ class SelWidget extends \AA\Widget\Widget
     }
 
 
+    /**
+     * @inheritDoc
+     */
+    public function description(): string {
+        // TODO: Implement description() method.
+    }
 }

@@ -18,7 +18,7 @@ class TprWidget extends \AA\Widget\TxtWidget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Textarea with Presets');   // widget name
     }
@@ -29,5 +29,10 @@ class TprWidget extends \AA\Widget\TxtWidget
     static function getClassProperties()
     {
         return \AA\Widget\Widget::propertiesShop(['rows', 'cols', 'const', 'const_arr']);
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

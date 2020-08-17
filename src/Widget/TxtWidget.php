@@ -26,7 +26,7 @@ class TxtWidget extends \AA\Widget\Widget
     /** name function
      *
      */
-    function name()
+    public function name(): string
     {
         return _m('Text Area');   // widget name
     }
@@ -171,5 +171,10 @@ class TxtWidget extends \AA\Widget\Widget
             $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</span>";
         }
         return $ret;
+    }
+
+    /** @inheritDoc */
+    public function description(): string {
+        // TODO: Implement description() method.
     }
 }

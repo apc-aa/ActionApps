@@ -8,11 +8,15 @@
 
 namespace AA\Util;
 
+/**
+ * Interface NamedInterface
+ * @package AA\Util
+ */
 interface NamedInterface {
 
     /** name function     */
-    function name();
+    public function name(): string;
 
     /** necessary for parameter wizard */
-    function description();
+    public function description(): string;
 }

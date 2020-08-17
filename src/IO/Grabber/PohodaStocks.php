@@ -26,14 +26,14 @@ class PohodaStocks extends \AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Name of the grabber - used for grabber selection box */
-    function name() {
+    public function name(): string {
         return _m('Pohoda (www.stormware.cz) - Stocks');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    function description() {
+    public function description(): string {
         return _m('Imports stock from POHODA accounting system');
     }
 
