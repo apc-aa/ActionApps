@@ -67,7 +67,7 @@ require_once AA_BASE_PATH."modules/alerts/alerts_sending.php3";
 // get 'howoften' parameter from comandline, if it is specified.
 
 if (isset($_SERVER["argv"] )) {
-    $cmd_parameters = array();
+    $cmd_parameters = [];
     parse_str( implode('&',$_SERVER["argv"]), $cmd_parameters );
     if ( $cmd_parameters['howoften'] ) {
         $howoften = $cmd_parameters['howoften'];

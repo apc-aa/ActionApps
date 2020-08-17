@@ -27,11 +27,12 @@
 */
 
 // array params: column header, default sort order
-$sortable_columns = array (
-    "name"=>array("label"=>_m("Name"),"sort"=>"a"),
-    "size"=>array("label"=>_m("Size"),"sort"=>"a"),
-    "type"=>array("label"=>_m("Type"),"sort"=>"a"),
-    "lastm"=>array("label"=>_m("Last modified"),"sort"=>"d"));
+$sortable_columns = [
+    "name"=> ["label"=>_m("Name"),"sort"=>"a"],
+    "size"=> ["label"=>_m("Size"),"sort"=>"a"],
+    "type"=> ["label"=>_m("Type"),"sort"=>"a"],
+    "lastm"=> ["label"=>_m("Last modified"),"sort"=>"d"]
+];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /** filesuffix function
@@ -123,14 +124,15 @@ function format_file_size($size) {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-$filetypes = array (
-    _m("HTML file") => array ("img"=>"html", "ext"=>array ("shtml","html","htm","js")),
-    _m("Web file") => array ("img"=>"ie", "ext"=>array ("php","php3","asp")),
-    _m("Image file") => array ("img"=>"image2", "ext"=>array("gif","jpg","jpeg","tiff","img")),
-    _m("Text file") => array ("img"=>"txt", "ext"=>array("txt")),
-    _m("Directory") => array ("img"=>"folder"),
-    _m("Parent") => array ("img"=>"parent"),
-    _m("Other") => array ("img"=>"oth"));
+$filetypes = [
+    _m("HTML file") => ["img"=>"html", "ext"=> ["shtml","html","htm","js"]],
+    _m("Web file") => ["img"=>"ie", "ext"=> ["php","php3","asp"]],
+    _m("Image file") => ["img"=>"image2", "ext"=> ["gif","jpg","jpeg","tiff","img"]],
+    _m("Text file") => ["img"=>"txt", "ext"=> ["txt"]],
+    _m("Directory") => ["img"=>"folder"],
+    _m("Parent") => ["img"=>"parent"],
+    _m("Other") => ["img"=>"oth"]
+];
 /** get_filetype function
  * @param $filepath
  * @return if|int|mixed|string
@@ -188,7 +190,7 @@ function get_file_array($path, $dirname) {
 */
 
     if (!is_dir ($path.$dirname)) {
-            return array ();
+            return [];
     }
 
     // fill the $files array
@@ -210,7 +212,7 @@ function get_file_array($path, $dirname) {
             }
 
             $filetype = get_filetype($path.$dirname.$filename);
-            $files[] = array (
+            $files[] = [
                 "path"=>$filepath,
                 "dir"=>is_dir ($path.$filepath),
                 "name"=>$filename,
@@ -218,7 +220,7 @@ function get_file_array($path, $dirname) {
                 "type"=>$filetype,
                 "img"=>$filetypes[$filetype]["img"],
                 "lastm"=>date("d-M-Y",filemtime($path.$filepath))
-            );
+            ];
         }
         closedir($dir);
 
@@ -431,10 +433,10 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 function get_files_subtree($mydir) {
     endslash($mydir);
     if (!is_dir ($mydir)) {
-        return array ();
+        return [];
     }
     if (!($dir = opendir($mydir))) {
-        return array ();
+        return [];
     }
     else {
         while ($filename = readdir($dir)) {
@@ -461,8 +463,9 @@ function get_files_subtree($mydir) {
 function fileman_copy_template($srcdir, $dstdir) {
     global $slice_id;
 
-    $aliases = array (
-        "_#SLICE_ID" => $slice_id);
+    $aliases = [
+        "_#SLICE_ID" => $slice_id
+    ];
 
     $db = getDB();
     $db->query("SELECT name FROM slice WHERE id = '".q_pack_id ($slice_id)."'");

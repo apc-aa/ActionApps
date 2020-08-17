@@ -158,10 +158,10 @@ if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
 }
 $db->Halt_On_Error = $store_halt;
 
-$notusers    = array();
-$others      = array();
-$supergroups = array();
-$superusers  = array();
+$notusers    = [];
+$others      = [];
+$supergroups = [];
+$superusers  = [];
 
 // Discover current state in AA object perms
 if ($perms = AA::$perm->getObjectsPerms(AA_ID, "aa")) {
@@ -180,7 +180,7 @@ if ($perms = AA::$perm->getObjectsPerms(AA_ID, "aa")) {
 }
 
 // Consider only non-empty superadmin groups
-$nonemptysupergroups = array();
+$nonemptysupergroups = [];
 foreach ($supergroups as $uid) {
     $members = AA::$perm->getGroupMembers($uid);
     if (count($members)) {

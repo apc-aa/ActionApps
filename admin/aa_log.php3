@@ -40,7 +40,7 @@ if ( !IsSuperadmin() ) {
 }
 
 $manager_settings = AA::Metabase()->getManagerConf('log');
-$manager_settings['searchbar']['default_sort'] =  array( 0 => array('time' => 'd'));
+$manager_settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
 
 $manager = new AA_Manager('log', $manager_settings);
 $manager->performActions();
@@ -48,7 +48,7 @@ $manager->performActions();
 $aa_set  = $manager->getSet();
 
 //$aa_set->addCondition(new AA_Condition('params',       'LIKE', 'BMaFh'));
-$zids    = AA_Metabase::queryZids(array('table'=>'log'), $aa_set);
+$zids    = AA_Metabase::queryZids(['table'=>'log'], $aa_set);
 
 $manager->displayPage($zids, 'aaadmin', 'log');
 

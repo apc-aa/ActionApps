@@ -153,9 +153,10 @@ $db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name")
 while ($db->next_record()) {
     $my_slice_id = unpack_id($db->f('id'));
     if (IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] )) {
-        $g_modules[$my_slice_id] = array(
+        $g_modules[$my_slice_id] = [
             'name' => $db->f('name'),
-            'type' => $MODULES[$db->f('type')] ? $db->f('type') : 'S');
+            'type' => $MODULES[$db->f('type')] ? $db->f('type') : 'S'
+        ];
     }
 }
 
@@ -223,6 +224,6 @@ if (!$no_slice_id) {
 $mgettext_file    = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
 AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
-AA::$langnum      = array(AA_Content::getLangName2Num(AA::$lang)); // array of prefered languages in priority order.
+AA::$langnum      = [AA_Content::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.
 AA::$slice_id     = AA::$module_id;
 $_SESSION['r_last_module_id'] = AA::$module_id; // we need it only in filebrowser of CKEditor

@@ -41,7 +41,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 <?php echo _m("Welcome! Please identify yourself with a username and a password:") ?>
 </center>
 <?php
-   $qs= str_replace( array("&relogin=true", "relogin=true"),"", $this->url());
+   $qs= str_replace( ["&relogin=true", "relogin=true"],"", $this->url());
 ?>
 <form action="<?php echo $qs ?>" method=post>
 <center><table border="0" bgcolor="<?php echo COLOR_TABBG ?>" cellspacing=0 cellpadding=4>

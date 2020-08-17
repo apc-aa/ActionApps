@@ -119,7 +119,7 @@ class Mail_mimePart {
      *                  charset      - Character set to use
      * @access public
      */
-    function __construct($body = '', $params = array()) {
+    function __construct($body = '', $params = []) {
         if (!defined('MAIL_MIMEPART_CRLF')) {
             define('MAIL_MIMEPART_CRLF', defined('MAIL_MIME_CRLF') ? MAIL_MIME_CRLF : "\r\n", TRUE);
         }
@@ -176,7 +176,7 @@ class Mail_mimePart {
         }
 
         // Assign stuff to member variables
-        $this->_encoded  = array();
+        $this->_encoded  = [];
         $this->_headers  = $headers;
         $this->_body     = $body;
     }
@@ -201,7 +201,7 @@ class Mail_mimePart {
 
             // Add body parts to $subparts
             for ( $i=0, $ino=count($this->_subparts); $i<$ino; ++$i) {
-                $headers = array();
+                $headers = [];
                 $tmp = $this->_subparts[$i]->encode();
                 foreach ($tmp['headers'] as $key => $value) {
                     $headers[] = $key . ': ' . $value;

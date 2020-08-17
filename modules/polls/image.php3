@@ -29,7 +29,7 @@
 
 
 
-$COLORNAMES = array (
+$COLORNAMES = [
     "black"  => "#000000",
     "silver" => "#C0C0C0",
     "gray"   => "#808080",
@@ -45,7 +45,8 @@ $COLORNAMES = array (
     "navy"   => "#000080",
     "blue"   => "#0000FF",
     "teal"   => "#008080",
-    "aqua"   => "#00FFFF");
+    "aqua"   => "#00FFFF"
+];
 
 function mkcolor($color){  
     global $COLORNAMES;

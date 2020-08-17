@@ -33,7 +33,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."varset.php3";
 
 // create the $jumps array:
-$jumps = DB_AA::select(array('jid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', array(array('type','J')));
+$jumps = DB_AA::select(['jid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);
 
 // choose the first module when none is chosen
 if ($edit && !$jump_id && count ($jumps)) {
@@ -81,7 +81,7 @@ if ($update) {
 
         $varset->doINSERT('module');
     }
-    $jumps = DB_AA::select(array('jid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', array(array('type','J')));
+    $jumps = DB_AA::select(['jid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);
 }
 
 if (!$jump_id) {
@@ -143,8 +143,10 @@ echo '
      echo "</select></td>
      </tr>
      <tr><td class=tabtxt><b>"._m("Module ID").":</b></td><td>$jump_id</td></tr>";
-FrmTabEnd(array("update"=>array("value"=>($jump_id ? _m("Update") : _m("Create"))),
-                "cancel"=>array("url"=>AA_INSTAL_PATH."admin/um_uedit.php3")));
+FrmTabEnd([
+    "update"=> ["value"=>($jump_id ? _m("Update") : _m("Create"))],
+                "cancel"=> ["url"=>AA_INSTAL_PATH."admin/um_uedit.php3"]
+]);
 echo "</form>";
 
 $apage->printFoot();

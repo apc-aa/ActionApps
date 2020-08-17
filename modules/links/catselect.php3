@@ -52,10 +52,14 @@ echo '
       </tr>
       ';
 
-    FrmTabEnd( array('sbmt_button'  => array('type' =>"button",
+    FrmTabEnd( [
+        'sbmt_button'  => [
+            'type' =>"button",
                                              'value'=> ' '. _m('OK') .' ',
-                                             'add'  => 'onClick="UpdateCategory(\'update_submit\')"'),
-                     'cancel'       => array('add'  => 'onClick="window.close()"')));
+                                             'add'  => 'onClick="UpdateCategory(\'update_submit\')"'
+        ],
+                     'cancel'       => ['add'  => 'onClick="window.close()"']
+    ]);
 echo '
     </form>
   </body>

@@ -35,11 +35,11 @@ class AA_Supertree {
 
     protected $_restrict_slices;  // Array of allowed slices
 
-    function __construct($relation_field, $sort=null, $slices=array()) {
+    function __construct($relation_field, $sort=null, $slices= []) {
         $this->_relation_field  = $relation_field;
         $this->_sort            = $sort;
-        $this->_i               = array();
-        $this->_modules         = array();
+        $this->_i               = [];
+        $this->_modules         = [];
         $this->_restrict_slices = $slices;
     }
 
@@ -52,20 +52,20 @@ class AA_Supertree {
         }
 
         /** items, which are already in trash, or expired, ... */
-        $invalid       = array();
+        $invalid       = [];
 
-        $new_subitems  = array($id);
+        $new_subitems  = [$id];
         while (1) {
-            $content4ids   = GetItemContent($new_subitems, false, false, array('id..............','slice_id........', $this->_relation_field), null, AA_BIN_ACTIVE);
+            $content4ids   = GetItemContent($new_subitems, false, false, ['id..............','slice_id........', $this->_relation_field], null, AA_BIN_ACTIVE);
 
             $invalid = array_merge($invalid, array_diff($new_subitems, array_keys($content4ids)));
 
-            $new = array();
+            $new = [];
             if (is_array($content4ids) ) {
                 foreach ($content4ids as $item_id => $columns) {
                     $sid = $columns['u_slice_id......'][0]['value'];
                     if (count($this->_restrict_slices) AND !in_array($sid, $this->_restrict_slices)) {
-                        $invalid = array_merge($invalid, array($item_id));
+                        $invalid = array_merge($invalid, [$item_id]);
                         continue;
                     }
                     // mark module_id
@@ -109,9 +109,9 @@ class AA_Supertree {
     function _subIds($id, $level=1) {
         if ($level > 100) {
             // @todo throw error
-            return array();
+            return [];
         }
-        $sub = array($id);
+        $sub = [$id];
         foreach($this->_i[$id] as $down_id) {
             $sub = array_merge($sub, $this->_subIds($down_id, $level+1));
         }
@@ -175,7 +175,7 @@ class AA_Supertree {
     }
 
     function _compactValue($value_arr) {
-        $ret = array();
+        $ret = [];
         if (is_array($value_arr)) {
             foreach ( $value_arr as $fld_content ) {
                 if ( !empty($fld_content['value']) ) {
@@ -210,12 +210,12 @@ class AA_Supertree_Reverse extends AA_Supertree {
             if (!$sid) {
                 return;
             }
-            $this->_restrict_slices = array($sid);
+            $this->_restrict_slices = [$sid];
         }
         $this->_modules = array_fill_keys($this->_restrict_slices, true);
 
         /** items, which are already in trash, or expired, ... */
-        $queue    = array($id);
+        $queue    = [$id];
 
         // prepare cond in order we can be as quick as possible
         $cond[$this->_relation_field] = 1;
@@ -229,7 +229,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
             }
 
             $cond['value'] = $item_id;
-            $zids          = QueryZids($this->_restrict_slices, array($cond), $this->_sort);
+            $zids          = QueryZids($this->_restrict_slices, [$cond], $this->_sort);
 
             $next    = $zids->longids();
             $this->_i[$item_id] = $next;
@@ -243,14 +243,14 @@ class AA_Supertree_Reverse extends AA_Supertree {
 
 class AA_Trees {
     /** parent->child trees */
-    var $a   = array();
+    var $a   = [];
 
     /** reverse - child->parent trees */
-    var $rev = array();
+    var $rev = [];
 
     /** Constructor  */
     function __construct() {
-        $this->a   = array();
+        $this->a   = [];
     }
 
     /** singleton function
@@ -294,7 +294,7 @@ class AA_Trees {
      * @param array $slices
      * @return AA_Supertree|AA_Supertree_Reverse
      */
-    static function getSupertree($relation_field, $reverse, $sort, $slices=array()) {
+    static function getSupertree($relation_field, $reverse, $sort, $slices= []) {
         $trees = AA_Trees::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
         if (!isset($trees->a[$key])) {

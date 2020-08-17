@@ -99,33 +99,33 @@ if ($profile->getProperty('ui_manager_hide', 'mgr_sb_searchrows')) { $show_setti
 if ($profile->getProperty('ui_manager_hide', 'mgr_sb_orderrows'))  { $show_settings -= MGR_SB_ORDERROWS; }
 if ($profile->getProperty('ui_manager_hide', 'mgr_sb_bookmarks'))  { $show_settings -= MGR_SB_BOOKMARKS; }
 
-$manager_settings = array(
+$manager_settings = [
      'module_id' => $slice_id,
      'show'      => $show_settings,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
-     'searchbar' => array(
+     'searchbar' => [
          'fields'               => $slice->getSearchfields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
          'function'             => false  // name of function for aditional action hooked on standard filter action
-                         ),
-     'scroller'  => array(
+     ],
+     'scroller'  => [
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
-                         ),
-     'itemview'  => array(
+     ],
+     'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $slice->get_format_strings(),   // optionaly to manager_vid you can set format array
          'fields'               => $slice->fields('record'),
          'aliases'              => $slice->aliases(),
          'get_content_funct'    => 'GetItemContent'
-                         ),
+     ],
      'actions'   => $actions,
      'switches'  => $switches,
      'bin'       => 'app',
-     'messages'  => array(
+     'messages'  => [
          'title'       => $slice->name(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager'))
-                         )
-         );
+     ]
+];
 
 $manager = new AA_Manager('item'.$module_id, $manager_settings);
 

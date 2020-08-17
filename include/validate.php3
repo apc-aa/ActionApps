@@ -73,9 +73,9 @@ class AA_Validate extends AA_Serializable {
      * @return mixed|null
      */
     static function factoryCached($v_type) {
-        static $standard_validators = array();
+        static $standard_validators = [];
 
-        list ($type, $parameters) = is_array($v_type) ? $v_type : array($v_type, array());
+        list ($type, $parameters) = is_array($v_type) ? $v_type : [$v_type, []];
 
         $sv_key = get_hash($type, $parameters);
         if ( !isset($standard_validators[$sv_key]) ) {
@@ -88,12 +88,12 @@ class AA_Validate extends AA_Serializable {
                 case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float($parameters);  break;
                 case 'e-mail':
                 case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email($parameters);  break;
-                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[a-zA-Z]+$/'));          break;
+                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[a-zA-Z]+$/']);          break;
                 case 'id':
                 case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();    break;  // empty = "" or "0"
-                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(array('min'=>0));           break;
-                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[_X]#[0-9_#a-zA-Z]{8}$/')); break;
-                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[-.0-9a-zA-Z_]+$/')); break;
+                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(['min'=>0]);           break;
+                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[_X]#[0-9_#a-zA-Z]{8}$/']); break;
+                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[-.0-9a-zA-Z_]+$/']); break;
                 case 'regexp':   $standard_validators[$sv_key] = new AA_Validate_Regexp($parameters); break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);  break;
                 case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd($parameters);    break;
@@ -128,7 +128,7 @@ class AA_Validate extends AA_Serializable {
     function validate(&$var, $type, $default='AA_noDefault') {
         $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
-            return self::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', array($type)), $default);
+            return self::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]), $default);
         }
         return $validator->validate($var);
     }
@@ -141,7 +141,7 @@ class AA_Validate extends AA_Serializable {
      * @return array
      */
     static function filter($vararray, $type) {
-        return array_filter((array)$vararray, array(self::factoryCached($type),'validate'));
+        return array_filter((array)$vararray, [self::factoryCached($type),'validate']);
     }
 
     /** checks if the variable is empty
@@ -195,7 +195,7 @@ class AA_Validate extends AA_Serializable {
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some more attributtes (like min, max, step, pattern, ...) */
     function getHtmlInputAttr() {
-        return array();
+        return [];
     }
 
 }
@@ -220,12 +220,12 @@ class AA_Validate_Signed extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      */
     static function getClassProperties()  {
-        return array (
+        return [
                  //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'min'  => new AA_Property( 'min',  _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
             'max'  => new AA_Property( 'max',  _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
             'step' => new AA_Property( 'step', _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
-            );
+        ];
     }
 
     /** validate function
@@ -251,7 +251,7 @@ class AA_Validate_Signed extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $ret = array('type'=>'number', 'pattern'=>'-?[0-9]*');
+        $ret = ['type'=>'number', 'pattern'=>'-?[0-9]*'];
         if (IsSigInt($this->min))                        { $ret['min']  = $this->min; }
         if (IsSigInt($this->max))                        { $ret['max']  = $this->max; }
         if (IsSigInt($this->step) AND ($this->step > 1)) { $ret['step'] = $this->step; }
@@ -265,7 +265,7 @@ class AA_Validate_Signed extends AA_Validate {
  *  @param   $step
  */
 class AA_Validate_Number extends AA_Validate_Signed {
-    function __construct($param=array()) {
+    function __construct($param= []) {
         parent::__construct($param);
         $this->min = 0;
     }
@@ -284,7 +284,7 @@ class AA_Validate_Number extends AA_Validate_Signed {
 /** Test for bool value
  */
 class AA_Validate_Bool extends AA_Validate_Number {
-    function __construct($param=array()) {
+    function __construct($param= []) {
         parent::__construct($param);
         $this->min = 0;
         $this->max = 1;
@@ -308,11 +308,11 @@ class AA_Validate_Regexp extends AA_Validate {
     var $maxlength;
 
     static function getClassProperties()  {
-        return array (                      //           id            name              type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
             'pattern'          => new AA_Property( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
             'empty_expression' => new AA_Property( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
             'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
-            );
+        ];
     }
 
     /** validate function
@@ -338,7 +338,7 @@ class AA_Validate_Regexp extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $ret = array('type'=>'text');
+        $ret = ['type'=>'text'];
         if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
         if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
         if (strlen($this->pattern) > 2)                         { $ret['pattern']    = substr($this->pattern, 1, -1); } // we need to convert /^[a-z]*$/ to ^[a-z]*$
@@ -349,7 +349,7 @@ class AA_Validate_Regexp extends AA_Validate {
 /** Test for bool value
  */
 class AA_Validate_Url extends AA_Validate_Regexp {
-    function __construct($param=array()) {
+    function __construct($param= []) {
         parent::__construct($param);
         $this->pattern          = '|^http(s?):\/\/\S+\.\S+|';
         $this->empty_expression = '~(^http(s?):\/\/$)|(^\s*$)~';
@@ -359,14 +359,14 @@ class AA_Validate_Url extends AA_Validate_Regexp {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=> 'url', 'pattern'=>"^http(s?):\/\/\S+\.\S+");
+        return ['type'=> 'url', 'pattern'=>"^http(s?):\/\/\S+\.\S+"];
     }
 }
 
 /** Test for bool value
  */
 class AA_Validate_Email extends AA_Validate_Regexp {
-    function __construct($param=array()) {
+    function __construct($param= []) {
         parent::__construct($param);
         $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/';
     }
@@ -375,7 +375,7 @@ class AA_Validate_Email extends AA_Validate_Regexp {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=>'email');
+        return ['type'=>'email'];
     }
 }
 
@@ -388,7 +388,7 @@ class AA_Validate_Id extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=>'text', 'pattern'=>'[0-9a-f]{32}');
+        return ['type'=>'text', 'pattern'=>'[0-9a-f]{32}'];
     }
 
     /** validate function
@@ -416,10 +416,10 @@ class AA_Validate_Float extends AA_Validate {
     var $f_max;
 
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'f_min'  => new AA_Property( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
             'f_max'  => new AA_Property( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
-            );
+        ];
     }
 
     /** validate function
@@ -447,9 +447,9 @@ class AA_Validate_Enum extends AA_Validate {
     var $possible_values;
 
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'possible_values' => new AA_Property( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
-            );
+        ];
     }
 
     /** validate function
@@ -485,7 +485,7 @@ class AA_Validate_Login extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=>'text', 'pattern'=>'[a-zA-Z0-9]{3,32}');
+        return ['type'=>'text', 'pattern'=>'[a-zA-Z0-9]{3,32}'];
     }
 }
 
@@ -512,7 +512,7 @@ class AA_Validate_Pwd extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=>'password', 'min'=>'5');
+        return ['type'=>'password', 'min'=>'5'];
     }
 }
 
@@ -536,11 +536,11 @@ class AA_Validate_Unique extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
             'item_id'  => new AA_Property( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
-            );
+        ];
     }
 
     /** validate function
@@ -562,20 +562,20 @@ class AA_Validate_Unique extends AA_Validate {
             }
             return true;
         }
-        $tables = array('content', 'item');
-        $conds  = array(array('content.item_id', 'item.id', 'j'),array('item.status_code',1));  // only approved items
+        $tables = ['content', 'item'];
+        $conds  = [['content.item_id', 'item.id', 'j'], ['item.status_code',1]];  // only approved items
         if ( $this->scope == 'slice') {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
             if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($this->field_id) ) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
             }
-            $conds[] = array('item.slice_id', $slice_id, 'l');
+            $conds[] = ['item.slice_id', $slice_id, 'l'];
         }
-        $conds[] = array('content.field_id', $this->field_id);
-        $conds[] = array('content.text', $var);
+        $conds[] = ['content.field_id', $this->field_id];
+        $conds[] = ['content.text', $var];
         if ($this->item_id) {
-            $conds[] = array('item.id', $this->item_id, 'l<>');
+            $conds[] = ['item.id', $this->item_id, 'l<>'];
         }
         if (DB_AA::test($tables, $conds)) {
             return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $default);
@@ -605,11 +605,11 @@ class AA_Validate_Eunique extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
             'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
             'item_id'  => new AA_Property( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
-            );
+        ];
     }
 
     /** validate function
@@ -621,7 +621,7 @@ class AA_Validate_Eunique extends AA_Validate {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
             return false;
         }
-        $validator = new AA_Validate_Unique(array('field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id));
+        $validator = new AA_Validate_Unique(['field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id]);
         return $validator->validate($var, $default);
     }
 
@@ -629,7 +629,7 @@ class AA_Validate_Eunique extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return array('type'=>'email');
+        return ['type'=>'email'];
     }
 }
 
@@ -639,9 +639,9 @@ class AA_Validate_Text extends AA_Validate {
     var $maxlength;
 
     static function getClassProperties()  {
-        return array (                      //           id            name              type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
             'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
-            );
+        ];
     }
 
     /** validate function
@@ -660,7 +660,7 @@ class AA_Validate_Text extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $ret = array('type'=>'text');
+        $ret = ['type'=>'text'];
         if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
         if (($this->maxlength > 0) AND ($this->maxlength < 60)) { $ret['size']       = ((int)$this->maxlength+2); }
         return $ret;

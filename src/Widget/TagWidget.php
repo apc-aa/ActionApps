@@ -35,7 +35,7 @@ class TagWidget extends \AA\Widget\Widget
     /** array of libs needed for the widget - automaticaly inserted to the inputform */
     function requireLibs($aa_property, $winfo)
     {
-        return array('select2@4','aa-jslib@3');
+        return ['select2@4','aa-jslib@3'];
     }
 
     /** getClassProperties function of AA_Serializable
@@ -43,7 +43,7 @@ class TagWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -120,9 +120,9 @@ class TagWidget extends \AA\Widget\Widget
         // because people thinks, that the first value is filled in the database (which is not)
         //$options = $this->getOptions($selected, $content);
         $sel_options_plain = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
-        $sel_options = array();
+        $sel_options = [];
         foreach ($sel_options_plain as $k => $v) {
-            $sel_options[] = array('k'=>$k, 'v'=>$v, 'selected'=>true);
+            $sel_options[] = ['k'=>$k, 'v'=>$v, 'selected'=>true];
         }
         $widget .= $this->getSelectOptions($sel_options);
         $widget .= "</select>";
@@ -138,7 +138,7 @@ class TagWidget extends \AA\Widget\Widget
             </script>";
 
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
         
 
     }
@@ -155,14 +155,14 @@ class TagWidget extends \AA\Widget\Widget
     static function getValue($data4field)
     {
         $flag = $data4field['flag'] & FLAG_HTML;
-        $fld_value_arr = array();
+        $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
             if (ctype_digit((string)$key) AND strlen($value)) {
                 $vals = explode("|||", $value);
                 foreach ($vals as $v) {
                     if (strlen(trim($v))) {
-                        $fld_value_arr[] = array('value' => 't' . $v, 'flag' => $flag);
+                        $fld_value_arr[] = ['value' => 't' . $v, 'flag' => $flag];
                     }
                 }
             }

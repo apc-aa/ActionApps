@@ -81,9 +81,11 @@ function initSummarize() {
 function ignored_slice($si) {
     global $ignored_sliceids;
     if (!$ignored_sliceids) {
-        $ignored_sliceids = array( unpack_id("AA_Core_Fields.."),
+        $ignored_sliceids = [
+            unpack_id("AA_Core_Fields.."),
             unpack_id("News_EN_tmpl...."),
-            unpack_id("ReaderManagement"));
+            unpack_id("ReaderManagement")
+        ];
     }
     return !  (array_search($si,$ignored_sliceids) === false);
 }

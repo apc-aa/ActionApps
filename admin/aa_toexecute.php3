@@ -47,7 +47,7 @@ $manager = new AA_Manager('toexecute', $manager_settings);
 $manager->performActions();
 
 $aa_set  = $manager->getSet();
-$zids    = AA_Metabase::queryZids(array('table'=>'toexecute'), $aa_set);
+$zids    = AA_Metabase::queryZids(['table'=>'toexecute'], $aa_set);
 
 $manager->displayPage($zids, 'aaadmin', 'toexecute');
 

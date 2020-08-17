@@ -140,7 +140,7 @@ require_once AA_INC_PATH."formutil.php3";
 
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (1/2) - Source data"));
-$apage->setForm(array('enctype'=>'multipart/form-data'));
+$apage->setForm(['enctype'=>'multipart/form-data']);
 $apage->printHead($err, $Msg);
 
 if ($preview) { // file preview
@@ -183,28 +183,34 @@ if ($preview) { // file preview
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
       <?php
-         $arr = array(','  => 'comma ,',
+         $arr = [
+             ','  => 'comma ,',
                       ';'  => 'semicolon ;',
                       '\t' => 'tabulator \t',
                       '|'  => 'pipe |',
                       '~'  => 'tilde ~',
-                      ''   => 'other');
+                      ''   => 'other'
+         ];
 
      FrmInputPreSelect("delimiter", "Delimiter of fields", $arr, $preview ? $delimiter : ';' );
-     $arr = array('"'  => 'double quote "',
-                  "'"  => 'single quote \'');
+     $arr = [
+         '"'  => 'double quote "',
+                  "'"  => 'single quote \''
+     ];
      FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"');
 
      FrmInputChBox("caption","Use first row as field names",$preview ? $caption : true);
 
-     $options      = array ('file' => _m('File'),
+     $options      = [
+         'file' => _m('File'),
                             'url'  => _m('URL'),
                             'text' => _m('Text')
-                           );
-     $html_options = array ('file' => _m('File'),
+     ];
+     $html_options = [
+         'file' => _m('File'),
                             'url'  => _m('URL'),
                             'text' => _m('Text')
-                           );
+     ];
 
      //echo getSelectWithParam('dataType', $options, "", $html_options);
      ?>

@@ -40,7 +40,7 @@ if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
 
 if ( !$updated ) {
     // get this category info (r_category_id must be set (see init_page.php3))
-    $dbarr = DB_AA::select1("SELECT * FROM links_categories", '', array(array('id',$r_state['cat_id'],'i')));
+    $dbarr = DB_AA::select1("SELECT * FROM links_categories", '', [['id',$r_state['cat_id'],'i']]);
 
     if ($dbarr) {
         $cat_name       = $dbarr['name'];
@@ -87,7 +87,7 @@ PrintArray($r_msg);
 
 echo '<form name=f method=post action="catedit2.php3">';
     FrmTabCaption(_m('Category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "formular-kategorie"),
-            array("before" => "(", "text" => "?", "after" => ")")));
+            ["before" => "(", "text" => "?", "after" => ")"]));
     FrmStaticText(_m('Id'), $id . '&nbsp; &nbsp; &nbsp;(' . _m('Links in subtree') . ': ' . $links_count . ')', "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"nazev-kategorie") );
     FrmTextarea(  'description',  _m('Category description'),    $description, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"popis-kategorie"));
@@ -95,7 +95,7 @@ echo '<form name=f method=post action="catedit2.php3">';
     FrmTextarea(  'note',         _m('Editor\'s note'),    $note, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"poznamka-kategorie"));
     FrmHidden(    'additional',   $additional);
     FrmTabSeparator(_m('Subcategories') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "podkategorie"),
-            array("before" => "(", "text" => "?", "after" => ")")));
+            ["before" => "(", "text" => "?", "after" => ")"]));
 echo '
       <tr>
         <td width=255 align=center valign="top"><b>'. _m('Category tree') .'</b><div class="tabhlp"><i>'. _m('select the category for crossreference') .'</i></div></td>
@@ -122,14 +122,18 @@ if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'. _m('Del') .'</a> &nbsp; ';
     echo ' <a href="javascript:ChangeStateCateg(\'document.f.selcat\')">'. _m('Change state') .'</a>';
 
-    FrmTabEnd( array('sbmt_button'  => array('type' =>"button",
+    FrmTabEnd( [
+        'sbmt_button'  => [
+            'type' =>"button",
                                              'value'=> ' '. _m('OK') .' ',
-                                             'add'  => 'onClick="UpdateCategory(\'update_submit\')"'),
+                                             'add'  => 'onClick="UpdateCategory(\'update_submit\')"'
+        ],
                      'cancel',
-                     'cid'          => array('type'=>"hidden", 'value'=> $cid),
-                     'subcatIds'    => array('type'=>"hidden"),   // to this variable store assigned subcategory ids (by javascript)
-                     'subcatNames'  => array('type'=>"hidden"),   // to this variable store assigned subcategory names (by javascript)
-                     'subcatStates' => array('type'=>"hidden"))   // to this variable store assigned subcategory states (by javascript)
+                     'cid'          => ['type'=>"hidden", 'value'=> $cid],
+                     'subcatIds'    => ['type'=>"hidden"],   // to this variable store assigned subcategory ids (by javascript)
+                     'subcatNames'  => ['type'=>"hidden"],   // to this variable store assigned subcategory names (by javascript)
+                     'subcatStates' => ['type'=>"hidden"]
+    ]   // to this variable store assigned subcategory states (by javascript)
              );
 echo '
     </form>

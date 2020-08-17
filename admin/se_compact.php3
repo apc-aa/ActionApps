@@ -43,7 +43,7 @@ if (!IfSlPerm(PS_COMPACT)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ( $update ) {
@@ -179,12 +179,16 @@ $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
-$form_buttons = array ("update",
-                       "update"  => array ('type' => 'hidden', 'value'=>'1'),
-                       "cancel"  => array("url"=>"se_fields.php3"),
-                       "default" => array('type' => 'button',
+$form_buttons = [
+    "update",
+                       "update"  => ['type' => 'hidden', 'value'=>'1'],
+                       "cancel"  => ["url"=>"se_fields.php3"],
+                       "default" => [
+                           'type' => 'button',
                                           'value' => _m("Default"),
-                                          'add' => 'onclick="Defaults()"'));
+                                          'add' => 'onclick="Defaults()"'
+                       ]
+];
 
 FrmTabCaption(_m("HTML code for index view"), $form_buttons);
 
@@ -210,7 +214,7 @@ echo "<br>"."";
 echo "</td></tr>
 <tr><td>&nbsp;</td><td>";
 FrmSelectEasy("gb_header", getViewGroupFunctions(), $gb_header);
-FrmSelectEasy("gb_direction", array( '2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")  ),
+FrmSelectEasy("gb_direction", ['2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")],
             $gb_direction);
 PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );
 echo "<input type=hidden name='category_sort' value='$category_sort'>";

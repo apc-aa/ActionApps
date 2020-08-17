@@ -39,16 +39,16 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 // update database or get the value
 
 
 if ($slice_id && $update) {
-    DB_AA::update('slice', array(array('javascript',$_POST['javascript'])), array(array('id', $slice_id, 'l')));
+    DB_AA::update('slice', [['javascript',$_POST['javascript']]], [['id', $slice_id, 'l']]);
     $javascript = $_POST['javascript'];
 } else {
-    $javascript = DB_AA::select1('SELECT javascript FROM `slice`', 'javascript', array(array('id', $slice_id, 'l')));
+    $javascript = DB_AA::select1('SELECT javascript FROM `slice`', 'javascript', [['id', $slice_id, 'l']]);
 }
 
 
@@ -72,7 +72,7 @@ FrmTabCaption(_m("JavaScript for fields"));
 <tr><td class="tabtxt"><textarea name="javascript" id="javascriptarea" cols="100" rows="20">
 <?php
 echo $javascript.'</textarea></td></tr>';
-FrmTabSeparator(_m("Available fields and triggers"), array("update", "update" => array("type" => "hidden", "value" => "1"), "cancel" => array("url" => "se_fields.php3")));
+FrmTabSeparator(_m("Available fields and triggers"), ["update", "update" => ["type" => "hidden", "value" => "1"], "cancel" => ["url" => "se_fields.php3"]]);
 
 $fields = AA_Slice::getModule($slice_id)->fields('pri');
 

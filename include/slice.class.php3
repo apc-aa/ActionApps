@@ -44,8 +44,8 @@ class AA_Module {
     const SETTING_TABLE = '';
 
     /** array of already constructed modules */
-    protected static $_modules     = array();  // Array unpacked module id -> AA_Module object
-    protected static $_module_types= array();  // Array unpacked module id -> type
+    protected static $_modules     = [];  // Array unpacked module id -> AA_Module object
+    protected static $_module_types= [];  // Array unpacked module id -> type
 
     protected $module_id;
     protected $module_setting;         // Array of module settings
@@ -102,19 +102,19 @@ class AA_Module {
      */
     static public function getModuleInfo($info, $module_id)
     {
-        static $MODULEINFO = array(
+        static $MODULEINFO = [
             //                   class             url                         menu
-            'W'      => array('AA_Module_Site',  'modules/site/index.php3',   'modules/site/menu.php3'),
-            'S'      => array('AA_Slice',        'admin/index.php3',          'include/menu.php3'),
-            'Alerts' => array('AA_Module_Alerts','modules/alerts/index.php3', 'modules/alerts/menu.php3'),
-            'J'      => array('',                'modules/jump/index.php3',   'include/menu.php3'),
-            'P'      => array('AA_Module_Polls', 'modules/polls/index.php3',  'modules/polls/menu.php3'),
-            'Links'  => array('AA_Module_Links', 'modules/links/index.php3',  'modules/links/menu.php3')
-        );
-        static $_module_types = array();
+            'W'      => ['AA_Module_Site',  'modules/site/index.php3',   'modules/site/menu.php3'],
+            'S'      => ['AA_Slice',        'admin/index.php3',          'include/menu.php3'],
+            'Alerts' => ['AA_Module_Alerts','modules/alerts/index.php3', 'modules/alerts/menu.php3'],
+            'J'      => ['',                'modules/jump/index.php3',   'include/menu.php3'],
+            'P'      => ['AA_Module_Polls', 'modules/polls/index.php3',  'modules/polls/menu.php3'],
+            'Links'  => ['AA_Module_Links', 'modules/links/index.php3',  'modules/links/menu.php3']
+        ];
+        static $_module_types = [];
 
         if (empty($_module_types)) {
-            $_module_types = DB_AA::select(array('unpackid' => 'type'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `type` FROM `module`');
+            $_module_types = DB_AA::select(['unpackid' => 'type'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `type` FROM `module`');
         }
 
         $type = $_module_types[$module_id] ?: 'S';
@@ -150,14 +150,14 @@ class AA_Module {
             if (!is_long_id($module_id) OR !($class = AA_Module::getModuleInfo('class', $module_id))) {
                 return false;     // _m("No such module.")
             }
-            if (!$class::_deleteModules(array($module_id))) {
+            if (!$class::_deleteModules([$module_id])) {
                 return false;
             }
 
             AA_Object::deleteObjects(AA_Object::getOwnersObjects($module_id));
 
             // delete module from module table
-            DB_AA::delete_low_priority('module', array(array('id', $module_id, 'l')));
+            DB_AA::delete_low_priority('module', [['id', $module_id, 'l']]);
             DelPermObject($module_id, "slice");   // delete module from permission system
         }
         return true;
@@ -180,9 +180,9 @@ class AA_Module {
 
     protected function _getModuleTableProperty($prop) {
         if (is_null($this->module_setting)) {
-            $this->module_setting = DB_AA::select1('SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', '', array(array('id',$this->module_id, 'l')));
+            $this->module_setting = DB_AA::select1('SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', '', [['id',$this->module_id, 'l']]);
             if (!is_array($this->module_setting)) {
-                $this->module_setting = array();
+                $this->module_setting = [];
             }
         }
         return isset($this->module_setting[$prop]) ? $this->module_setting[$prop] : false;
@@ -194,9 +194,9 @@ class AA_Module {
 
     protected function _getSpecificTableProperty($prop) {
         if (is_null($this->table_setting)) {
-            $this->table_setting = DB_AA::select1('SELECT * FROM `'.static::SETTING_TABLE.'`', '', array(array('id',$this->module_id, 'l')));
+            $this->table_setting = DB_AA::select1('SELECT * FROM `'.static::SETTING_TABLE.'`', '', [['id',$this->module_id, 'l']]);
             if (!is_array($this->table_setting)) {
-                $this->table_setting = array();
+                $this->table_setting = [];
             } else {
                 unset($this->table_setting['id']);  // do not use it from here - it is packed - use $this->module_id instead
             }
@@ -299,7 +299,7 @@ class AA_Module {
 
         $user_id =  $auth->auth["uid"];
 
-        $ret = array();
+        $ret = [];
         foreach($all_modules as $mid => $mname) {
             if (CheckPerms( $user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS)) {
                 $ret[$mid] = $mname;
@@ -316,7 +316,7 @@ class AA_Module {
     public static function filterActive( array $module_ids) {
         static $active_modules = null;
         if ( is_null($active_modules)) {
-            $active_modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', array(array('deleted', 0, 'i')));
+            $active_modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['deleted', 0, 'i']]);
         }
         return array_intersect($module_ids, $active_modules);
     }
@@ -364,12 +364,14 @@ class AA_Slice extends AA_Module {
         $db = getDB();
         $SQL = "SELECT * FROM content WHERE item_id = '".q_pack_id($this->module_id)."' ORDER BY content.number";
         $db->query($SQL);
-        $content4id = array();
+        $content4id = [];
         while ($db->next_record()) {
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
             $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
-            $content4id[$db->f("field_id")][] = array( "value" => $db->f($db_field),
-                                                       "flag"  => $db->f("flag") );
+            $content4id[$db->f("field_id")][] = [
+                "value" => $db->f($db_field),
+                                                       "flag"  => $db->f("flag")
+            ];
         }
         freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
@@ -448,11 +450,20 @@ class AA_Slice extends AA_Module {
 
     public function countItemsInBins() {
         $now = now('step');
-        $ret = array('folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0);
+        $ret = ['folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0];
 
-        $ret = array_merge($ret, DB_AA::select(array('fldr'=>'cnt'), "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item ". DB_AA::makeWhere(array(array('slice_id', $this->module_id, 'l'))). ' GROUP BY status_code'));
-        $ret['expired'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', array(array('slice_id', $this->module_id, 'l'),array('status_code', 1),array('expiry_date', $now, '<=')));
-        $ret['pending'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', array(array('slice_id', $this->module_id, 'l'),array('status_code', 1),array('publish_date', $now, '>'),array('expiry_date', $now, '>')));
+        $ret = array_merge($ret, DB_AA::select(['fldr'=>'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item ". DB_AA::makeWhere([['slice_id', $this->module_id, 'l']]). ' GROUP BY status_code'));
+        $ret['expired'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', [
+            ['slice_id', $this->module_id, 'l'],
+            ['status_code', 1],
+            ['expiry_date', $now, '<=']
+        ]);
+        $ret['pending'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', [
+            ['slice_id', $this->module_id, 'l'],
+            ['status_code', 1],
+            ['publish_date', $now, '>'],
+            ['expiry_date', $now, '>']
+        ]);
         $ret['app']     = $ret['folder1']-$ret['pending']-$ret['expired'];
 
         return $ret;
@@ -467,32 +478,32 @@ class AA_Slice extends AA_Module {
             return false;     // _m("No such module.")
         }
         // deletes from content, offline and relation tables
-        AA_Items::deleteItems(new zids(DB_AA::select('id', 'SELECT id FROM `item`', array(array('slice_id', $module_ids, 'l'))),'p'));
+        AA_Items::deleteItems(new zids(DB_AA::select('id', 'SELECT id FROM `item`', [['slice_id', $module_ids, 'l']]),'p'));
 
         // now performed in AA_Items::deleteItems
         // DB_AA::delete_low_priority('item',  array(array('slice_id', $module_ids, 'l')));
 
-        DB_AA::delete_low_priority('alerts_collection',  array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('constant_slice',     array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('email',              array(array('owner_module_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('email_notify',       array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('external_feeds',     array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedmap',            array(array('from_slice_id',   $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedmap',            array(array('to_slice_id',     $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedperms',          array(array('from_id',         $module_ids, 'l')));
-        DB_AA::delete_low_priority('feedperms',          array(array('to_id',           $module_ids, 'l')));
-        DB_AA::delete_low_priority('field',              array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('jump',               array(array('dest_slice_id',   $module_ids, 'l')));
+        DB_AA::delete_low_priority('alerts_collection',  [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('constant_slice',     [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('email',              [['owner_module_id', $module_ids, 'l']]);
+        DB_AA::delete_low_priority('email_notify',       [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('external_feeds',     [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('feedmap',            [['from_slice_id',   $module_ids, 'l']]);
+        DB_AA::delete_low_priority('feedmap',            [['to_slice_id',     $module_ids, 'l']]);
+        DB_AA::delete_low_priority('feedperms',          [['from_id',         $module_ids, 'l']]);
+        DB_AA::delete_low_priority('feedperms',          [['to_id',           $module_ids, 'l']]);
+        DB_AA::delete_low_priority('field',              [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('jump',               [['dest_slice_id',   $module_ids, 'l']]);
         if (DB_AA::exists_table('mysql_auth_group')) {
-            DB_AA::delete_low_priority('mysql_auth_group',   array(array('slice_id',        $module_ids, 'l')));
+            DB_AA::delete_low_priority('mysql_auth_group',   [['slice_id',        $module_ids, 'l']]);
         }
         if (DB_AA::exists_table('mysql_auth_userinfo')) {
-            DB_AA::delete_low_priority('mysql_auth_userinfo',array(array('slice_id',        $module_ids, 'l')));
+            DB_AA::delete_low_priority('mysql_auth_userinfo', [['slice_id',        $module_ids, 'l']]);
         }
-        DB_AA::delete_low_priority('profile',            array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('rssfeeds',           array(array('slice_id',        $module_ids, 'l')));
-        DB_AA::delete_low_priority('slice',              array(array('id',              $module_ids, 'l')));
-        DB_AA::delete_low_priority('view',               array(array('slice_id',        $module_ids, 'l')));
+        DB_AA::delete_low_priority('profile',            [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('rssfeeds',           [['slice_id',        $module_ids, 'l']]);
+        DB_AA::delete_low_priority('slice',              [['id',              $module_ids, 'l']]);
+        DB_AA::delete_low_priority('view',               [['slice_id',        $module_ids, 'l']]);
 
         return true;
     }
@@ -559,7 +570,7 @@ class AA_Slice extends AA_Module {
             case 'name':    return $fields->getNameArray();
 
         }
-        return array($fields->getRecordArray(), $fields->getPriorityArray());                         // two member array ('record' array, 'pri' array)
+        return [$fields->getRecordArray(), $fields->getPriorityArray()];                         // two member array ('record' array, 'pri' array)
     }
 
     /**
@@ -591,7 +602,7 @@ class AA_Slice extends AA_Module {
      *  Get the base for the file uploads
      */
     function getUploadBase() {
-        $ret = array();
+        $ret = [];
         $fileman_dir = $this->getProperty('fileman_dir');
         if ($fileman_dir AND is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
             $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
@@ -633,7 +644,8 @@ class AA_Slice extends AA_Module {
     function get_format_strings() {
          // additional string for compact_top and compact_bottom needed
          // for historical reasons (not manager.class verion of item manager)
-         return array ( "compact_top"     => '<table border="0" cellspacing="0" cellpadding="1" bgcolor="#F5F0E7" class="mgr_table">'.
+         return [
+             "compact_top"     => '<table border="0" cellspacing="0" cellpadding="1" bgcolor="#F5F0E7" class="mgr_table">'.
                                              $this->getProperty('admin_format_top'),
                         "category_sort"   => false,
                         "category_format" => "",
@@ -647,7 +659,8 @@ class AA_Slice extends AA_Module {
                         "noitem_msg"      => $this->getProperty('admin_noitem_msg'),
                         // id is packed (format string are used as itemview
                         //               parameter, where $slice_info expected)
-                        "id"              => pack_id($this->module_id));
+                        "id"              => pack_id($this->module_id)
+         ];
     }
 
     /** aliases function
@@ -810,7 +823,7 @@ class AA_Module_Site extends AA_Module {
      */
     static function spotsOutput($module_id, $spot_ids, $item = null) {
         $out = '';
-        $spots =  DB_AA::select(array('spot_id'=>array()), 'SELECT spot_id, content, flag from site_spot', array(array('site_id', $module_id, 'l'), array('spot_id', $spot_ids, 'i')));
+        $spots =  DB_AA::select(['spot_id'=> []], 'SELECT spot_id, content, flag from site_spot', [['site_id', $module_id, 'l'], ['spot_id', $spot_ids, 'i']]);
 
         foreach ( $spot_ids as $v ) {
             $out .= ($spots[$v]['flag'] & AA_Module_Site::FLAG_JUST_TEXT) ? $spots[$v]['content'] : AA::Stringexpander()->unalias($spots[$v]['content'], '', $item);
@@ -820,7 +833,7 @@ class AA_Module_Site extends AA_Module {
 
     function getSite($apc_state) {
         $tree        = $this->getTree();   // new sitetree();
-        $show_ids    = array();
+        $show_ids    = [];
 
         // it fills $show_ids array
         $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; }, 'cond');
@@ -839,7 +852,7 @@ class AA_Module_Site extends AA_Module {
         $tree = null;
         if ($structre = $this->getProperty('structure')) {
             $tree = unserialize($structre);
-        } elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', array(array('site_id', $this->module_id, 'l'), array('spot_id','1')))) {  // false if not found
+        } elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', [['site_id', $this->module_id, 'l'], ['spot_id','1']])) {  // false if not found
             // get information about start spot (=start of the tree)
             $tree = new sitetree($spotrow);
         }
@@ -851,7 +864,7 @@ class AA_Module_Site extends AA_Module {
      * @param bool $clean_unused
      */
     public function saveTree($tree, $clean_unused=false) {
-        DB_AA::update('site', array(array('structure', serialize($tree))), array(array('id',$this->module_id, 'l')));
+        DB_AA::update('site', [['structure', serialize($tree)]], [['id',$this->module_id, 'l']]);
         if ($clean_unused) {
             $this->cleanTree($tree);
         }
@@ -862,9 +875,9 @@ class AA_Module_Site extends AA_Module {
      */
     public function cleanTree($tree) {
         $show_ids  = $tree->getAllSpotIds();
-        $all_spots = DB_AA::select(array('id'=>'spot_id'), 'SELECT id, spot_id FROM site_spot',array(array('site_id', $this->module_id, 'l')));
+        $all_spots = DB_AA::select(['id'=>'spot_id'], 'SELECT id, spot_id FROM site_spot', [['site_id', $this->module_id, 'l']]);
         if ( $ids2delete = array_keys(array_diff($all_spots, $show_ids)) ) {
-            DB_AA::delete('site_spot', array(array('site_id', $this->module_id, 'l'), array('id',$ids2delete,'i')));
+            DB_AA::delete('site_spot', [['site_id', $this->module_id, 'l'], ['id',$ids2delete,'i']]);
         }
     }
 
@@ -873,9 +886,9 @@ class AA_Module_Site extends AA_Module {
 
 
     public function showSpot($tree, $spot_id) {
-        $spot_data = DB_AA::select1('SELECT id, content FROM site_spot','',array(array('site_id', $this->module_id, 'l'), array('spot_id',$spot_id,'i')));
+        $spot_data = DB_AA::select1('SELECT id, content FROM site_spot','', [['site_id', $this->module_id, 'l'], ['spot_id',$spot_id,'i']]);
         FrmTabCaption();
-        FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', array($spot_id)));
+        FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', [$spot_id]));
 
         ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
         if (($vars=$tree->isOption($spot_id))) {
@@ -888,7 +901,7 @@ class AA_Module_Site extends AA_Module {
         ModW_HiddenRSpotId();
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
-        FrmTabEnd(array('submit', "cancel"=>array('value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]"))));
+        FrmTabEnd(['submit', "cancel"=> ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]")]]);
         echo "</form>";
     }
 
@@ -913,12 +926,12 @@ class AA_Module_Site extends AA_Module {
     function getRelatedSlices($type='') {
         if (is_null($this->_related_slices)) {
             // could be rewritten to form:  DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
-            $this->_related_slices = AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', array(array('source_id', $this->module_id, 'l'), array('flag', REL_FLAG_MODULE_DEPEND, 'i'))));
+            $this->_related_slices = AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $this->module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
         }
         if ($type) {
             // we need to preserve order!
-            $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', array(array('id', $this->_related_slices, 'l'), array('type', $type)));
-            $ret = array();
+            $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $this->_related_slices, 'l'], ['type', $type]]);
+            $ret = [];
             foreach ($this->_related_slices as $sl) {
                 if (in_array($sl,$type_slices)) {
                     $ret[] = $sl;
@@ -936,7 +949,7 @@ class AA_Module_Site extends AA_Module {
     function findViewId($vid) {
         if (is_null($this->_related_views)) {
             // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
-            $this->_related_views = DB_AA::select(array('field3'=>'id'), 'SELECT id, field3 FROM view', array(array('slice_id', $this->getRelatedSlices(), 'l'), array('field3', 'FILLED')), 'id');
+            $this->_related_views = DB_AA::select(['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', $this->getRelatedSlices(), 'l'], ['field3', 'FILLED']], 'id');
         }
         return $this->_related_views[$vid] ?: 0;
     }
@@ -950,8 +963,8 @@ class AA_Module_Site extends AA_Module {
             return false;     // _m("No such module.")
         }
 
-        DB_AA::delete_low_priority('site_spot',   array(array('site_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('site',        array(array('id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('site_spot',   [['site_id', $module_ids, 'l']]);
+        DB_AA::delete_low_priority('site',        [['id', $module_ids, 'l']]);
         return true;
     }
 }
@@ -971,13 +984,13 @@ class AA_Module_Alerts extends AA_Module {
             return false;     // _m("No such module.")
         }
 
-        if ( !count($collectionids = DB_AA::select('', 'SELECT id FROM `alerts_collection`', array(array('module_id', $module_ids, 'l'))))) {
-            DB_AA::delete_low_priority('alerts_collection',                                  array(array('module_id', $module_ids, 'l')));
+        if ( !count($collectionids = DB_AA::select('', 'SELECT id FROM `alerts_collection`', [['module_id', $module_ids, 'l']]))) {
+            DB_AA::delete_low_priority('alerts_collection',                                  [['module_id', $module_ids, 'l']]);
             return true;
         }
-        DB_AA::delete_low_priority('alerts_collection_filter',   array(array('collectionid', $collectionids)));
-        DB_AA::delete_low_priority('alerts_collection_howoften', array(array('collectionid', $collectionids)));
-        DB_AA::delete_low_priority('alerts_collection',          array(array('id', $collectionids)));
+        DB_AA::delete_low_priority('alerts_collection_filter',   [['collectionid', $collectionids]]);
+        DB_AA::delete_low_priority('alerts_collection_howoften', [['collectionid', $collectionids]]);
+        DB_AA::delete_low_priority('alerts_collection',          [['id', $collectionids]]);
         return true;
     }
 }
@@ -994,7 +1007,7 @@ class AA_Module_Links extends AA_Module {
         if (!is_array($module_ids) OR !count($module_ids)) {
             return false;     // _m("No such module.")
         }
-        DB_AA::delete_low_priority('links',   array(array('id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('links',   [['id', $module_ids, 'l']]);
         return true;
     }
 }
@@ -1012,14 +1025,14 @@ class AA_Module_Polls extends AA_Module {
             return false;     // _m("No such module.")
         }
 
-        if ( !count($pollids = DB_AA::select('', 'SELECT id FROM `polls`', array(array('module_id', $module_ids, 'l'))))) {
-            DB_AA::delete_low_priority('polls',                            array(array('module_id', $module_ids, 'l')));
+        if ( !count($pollids = DB_AA::select('', 'SELECT id FROM `polls`', [['module_id', $module_ids, 'l']]))) {
+            DB_AA::delete_low_priority('polls',                            [['module_id', $module_ids, 'l']]);
             return true;
         }
-        DB_AA::delete_low_priority('polls_ip_lock', array(array('poll_id',   $pollids)));
-        DB_AA::delete_low_priority('polls_answer',  array(array('poll_id',   $pollids)));
-        DB_AA::delete_low_priority('polls_design',  array(array('module_id', $module_ids, 'l')));
-        DB_AA::delete_low_priority('polls',         array(array('module_id', $module_ids, 'l')));
+        DB_AA::delete_low_priority('polls_ip_lock', [['poll_id',   $pollids]]);
+        DB_AA::delete_low_priority('polls_answer',  [['poll_id',   $pollids]]);
+        DB_AA::delete_low_priority('polls_design',  [['module_id', $module_ids, 'l']]);
+        DB_AA::delete_low_priority('polls',         [['module_id', $module_ids, 'l']]);
         return true;
     }
 }
@@ -1035,18 +1048,18 @@ class AA_Modulesettings_Slice extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, array('translations', 'autofields', 'fieldslice'));
+        return in_array($prop, ['translations', 'autofields', 'fieldslice']);
     }
 
     /** allows storing object in database
      *  AA_Object's method
      */
     static function getClassProperties() {
-        return array ( //                        id             name                            type     multi  persist validator, required, help, morehelp, example
-            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(array('pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2)), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
+        return [ //                        id             name                            type     multi  persist validator, required, help, morehelp, example
+            'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
             'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.'))
-            );
+        ];
     }
 }
 
@@ -1063,25 +1076,25 @@ class AA_Modulesettings_Site extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, array('translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id'));
+        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id']);
     }
 
     /** allows storing object in database
      *  AA_Object's method
      */
     static function getClassProperties() {
-        return array ( //                             id             name                                                type     multi  persist validator, required, help, morehelp, example
-            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"),                'string', false, true, array('enum', AA_Module::getUserModules('S')), false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
-            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),                     'string', true,  true, array('enum',   AA_Module::getUserModules('W')), false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
-            'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),                   'string', true,  true, array('regexp', array('pattern'=>'/^[a-z]{2}$/','maxlength'=>2)), false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php3 [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]<br>')),
-            'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),                   'string', false, true, array('enum',   array('1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below'))), false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
+        return [ //                             id             name                                                type     multi  persist validator, required, help, morehelp, example
+            'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"),                'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
+            'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),                     'string', true,  true, ['enum',   AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
+            'web_languages'   => new AA_Property( 'web_languages',    _m("Languages on website"),                   'string', true,  true, ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php3 [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php3 [L,QSA]<br>')),
+            'page404'         => new AA_Property( 'page404',          _m("Page not Found (404)"),                   'string', false, true, ['enum',   ['1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property( 'page404_code',     _m("HTML code for \"Page not Found\" (404)"), 'text',   false, true),
             'sitemap_alias'   => new AA_Property( 'sitemap_alias',    _m("sitemap.xml alias"),                      'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias shoud in each slice generate full url of the item. For private/hidden items it should generate empty string in order the URL is not shown.')),
             'perm_alias'      => new AA_Property( 'perm_alias',       _m("Permission alias"),                       'string', false, true, '', false, _m('You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word "Valid", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule.')),
             'loginpage_code'  => new AA_Property( 'loginpage_code',   _m("HTML code for \"Login page\""),           'text',   false, true),
-            'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),                   'string', false, true, array('enum',  array('1'=>_m('first Reader Management slice listed in Uses slices'),'2'=>_m('all Reader Management slices listed in Uses slices'),'3'=>_m('AA + all Reader Management slices in AA (old behavior)'))), false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.')),
-            'ga_id'           => new AA_Property( 'ga_id',            _m("Google analytics tracking id"),           'string', false, true, array('text', array('maxlength'=>20)),  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.'))
-            );
+            'perm_mode'       => new AA_Property( 'perm_mode',        _m("User login databases"),                   'string', false, true, ['enum',  ['1'=>_m('first Reader Management slice listed in Uses slices'),'2'=>_m('all Reader Management slices listed in Uses slices'),'3'=>_m('AA + all Reader Management slices in AA (old behavior)')]], false, _m('First Reader Management slice is encouraged option - only the people from this slice is allowed to login to public pages. If not selected, "AA + all Reader Management slices" option is used.')),
+            'ga_id'           => new AA_Property( 'ga_id',            _m("Google analytics tracking id"),           'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.'))
+        ];
     }
 }
 

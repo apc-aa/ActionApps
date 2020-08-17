@@ -39,9 +39,9 @@ class AA_Mailtemplate implements AA_iEditable {
     protected $record;
 
     function __construct($id=null) {
-        $this->record = array();
+        $this->record = [];
         if ($id and ctype_digit((string)$id)) {
-            $template = AA_Metabase::getContent( array('table'=>'email'), new zids($id, 's') );
+            $template = AA_Metabase::getContent( ['table'=>'email'], new zids($id, 's') );
             if ($template[$id]) {
                 $this->record = $template[$id];
             }
@@ -175,12 +175,12 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
 
             // first two mails in the script send directly (for better UX)
             if (++$send_mails_total < 3) {
-                $this->send(array($to));
+                $this->send([$to]);
                 ++$sent;
             } else {
                 // Yes, two nested arrays - mail->send() accepts array($to) and
                 // all parameters to later must be in another only one array
-                if ( $toexecute->later($this, array(array($to)), 'AA_Mail'.$this->getId())) {
+                if ( $toexecute->later($this, [[$to]], 'AA_Mail'.$this->getId())) {
                     ++$sent;
                 }
             }
@@ -193,12 +193,12 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
      * @param $record
      * @param $default
      */
-    function setBasicHeaders($record=array(), $default=array()) {
-        $headers = array (
+    function setBasicHeaders($record= [], $default= []) {
+        $headers = [
             "From"        => "header_from",
             "Reply-To"    => "reply_to",
             "Errors-To"   => "errors_to"
-            );
+        ];
         foreach ( $headers as $header => $field) {
             if ($record[$field]) {
                 $this->setHeader($header, $record[$field]);
@@ -250,7 +250,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         list($to) = $params;
         return $this->send($to);
     }
@@ -277,7 +277,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
         }
 
 
-        $tos  = array_unique(array_map('trim', is_array($to) ? $to : array($to)));
+        $tos  = array_unique(array_map('trim', is_array($to) ? $to : [$to]));
         return $mail->send($tos);
     }
 
@@ -301,7 +301,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
             $toexecute  = new AA_Toexecute;
             foreach ($chunks as $chunk) {
                 $mail_scheduler = new AA_Mail_Scheduler($mail_id, $chunk);
-                $toexecute->later($mail_scheduler, array(), "AA_Mail_Scheduler:$mail_id", 105);      // a bit higher priority than mail sending
+                $toexecute->later($mail_scheduler, [], "AA_Mail_Scheduler:$mail_id", 105);      // a bit higher priority than mail sending
             }
         }
         return $zids->count();
@@ -343,7 +343,7 @@ class AA_Mail_Scheduler implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         return $this->schedule();
     }
 }
@@ -356,7 +356,7 @@ class AA_Mail_Scheduler implements \AA\Util\LaterInterface {
  */
 function html2text($html, $encoding='utf-8') {
 
-    $html = html_entity_decode(str_ireplace(array('&nbsp;','&ensp;','&emsp;','&thinsp;'), array(' ',' ',' ',' '), $html));
+    $html = html_entity_decode(str_ireplace(['&nbsp;','&ensp;','&emsp;','&thinsp;'], [' ',' ',' ',' '], $html));
 
     // Strip diacritics
     // $html = strtr( $html, "������������������������������ة����ݮ",
@@ -366,13 +366,13 @@ function html2text($html, $encoding='utf-8') {
     /* We can't directly use preg_replace, because it would find the first <a href
        and the last </a>. */
     $ahref       = "<[ \t]*a[ \t][^>]*href[ \t]*=[ \t]*[\"\\']([^\"\\']*)[\"\\'][^>]*>";
-    $html_ahrefs = array();
+    $html_ahrefs = [];
     preg_match_all("'$ahref'si", $html, $html_ahrefs);
     $html_parts = preg_split("'$ahref'si", $html);
 
     reset($html_parts);
     reset($html_ahrefs[0]);
-    $matches = array();
+    $matches = [];
     // Take the first part before any <a href>
     list(, $html) = each ($html_parts);
     while (list(, $html_part) = each($html_parts)) {
@@ -385,7 +385,7 @@ function html2text($html, $encoding='utf-8') {
         }
     }
 
-    $search = array (
+    $search = [
         // Strip out leading white space
         "'[\r\n][ \t]+'",
         "'[\r\n]*'",
@@ -405,9 +405,9 @@ function html2text($html, $encoding='utf-8') {
         ($encoding=='utf-8') ? "'\\h+\\n'u" : "'\\h+\\n'",
         // If the previous commands added too much whitespace, delete it
         "'\\n\\n\\n+'si"
-    );
+    ];
 
-   $replace = array (
+   $replace = [
         // Strip out leading white space
         "",
         "",
@@ -427,7 +427,7 @@ function html2text($html, $encoding='utf-8') {
         "\n",
         // If the previous commands added too much whitespace, delete it
         "\n\n\n"
-       );
+   ];
 
         // Replace html entities - removed - now done by html_entity_decode() above
         // "'&(quot|#34);'i" => '"',

@@ -33,18 +33,20 @@
 function GetTableView($viewID) {
     global $auth, $slice_id;
 
-    $attrs_edit = array (
-        "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");
-    $attrs_browse = array (
+    $attrs_edit = [
+        "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"
+    ];
+    $attrs_browse = [
         "table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-        "table_search" => "border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");
+        "table_search" => "border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"
+    ];
     // $format = array (...
 
     /* ------------------------------------------------------------------------------------
        polls_design
     */
     if ($viewID == "polls_design") {
-        return  array (
+        return  [
         "table"     => "polls_design",
         "type"      => "browse",
         "mainmenu"  => "modadmin",
@@ -58,11 +60,12 @@ function GetTableView($viewID) {
         "caption"   => _m("Polls Design"),
         "attrs"     => $attrs_browse,
         "gotoview"  => "polls_design_edit",
-        "fields"    => array (
-            "id"       => array ("caption" => _m("Id")),
-            "name"     => array ("caption" => _m("Name")),
-            "comment"  => array ("caption" => _m("Comment"))
-        ));
+        "fields"    => [
+            "id"       => ["caption" => _m("Id")],
+            "name"     => ["caption" => _m("Name")],
+            "comment"  => ["caption" => _m("Comment")]
+        ]
+        ];
     }
 
     if ($viewID == "polls_design_edit") {
@@ -72,29 +75,47 @@ function GetTableView($viewID) {
         $retval["readonly"] = false;
         $retval["gotoview"] = "polls_design";
         $retval["addrecord"] = true;
-        $retval["fields"] = array (
-            "id"        => array ("caption" => _m("Id"),
+        $retval["fields"] = [
+            "id"        => [
+                "caption" => _m("Id"),
                                   "default" => new_id(),
-                                        "view" => array( "type"=>"text",
-                                                         "readonly" => true )),
-            "module_id" => array ("caption"  => _m("Module Id"),
+                                        "view" => [
+                                            "type"=>"text",
+                                                         "readonly" => true
+                                        ]
+            ],
+            "module_id" => [
+                "caption"  => _m("Module Id"),
                                   "default"  => pack_id($GLOBALS["slice_id"]),
-                                      "view" => array( "type"=>"hide",
+                                      "view" => [
+                                          "type"=>"hide",
                                                        "unpacked" => true,
-                                                       "readonly" => true )),
-            "name"            => array ("caption" => _m("Name"),
-                                        "view" => array( "type"=>"text" ),
-                                        "required" => true ),
-            "comment"         => array ("caption" => _m("Comment"),
-                                        "view" => array( "type"=>"text" ),
-                                         "hint" => _m("design description (for administrators only)")),
-            "top"             => array ("caption" => _m("Top HTML"),
-                                        "view" => array( "type"=>"area" )),
-            "answer"          => array ("caption" => _m("Answer HTML"),
-                                        "view" => array( "type"=>"area" )),
-            "bottom"          => array ("caption" => _m("Bottom HTML"),
-                                        "view" => array( "type"=>"area" ))
-            );
+                                                       "readonly" => true
+                                      ]
+            ],
+            "name"            => [
+                "caption" => _m("Name"),
+                                        "view" => ["type"=>"text"],
+                                        "required" => true
+            ],
+            "comment"         => [
+                "caption" => _m("Comment"),
+                                        "view" => ["type"=>"text"],
+                                         "hint" => _m("design description (for administrators only)")
+            ],
+            "top"             => [
+                "caption" => _m("Top HTML"),
+                                        "view" => ["type"=>"area"]
+            ],
+            "answer"          => [
+                "caption" => _m("Answer HTML"),
+                                        "view" => ["type"=>"area"]
+            ],
+            "bottom"          => [
+                "caption" => _m("Bottom HTML"),
+                                        "view" => ["type"=>"area"]
+            ]
+        ];
         return $retval;
     }
 } // end of GetTableView

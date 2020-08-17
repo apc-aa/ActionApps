@@ -39,7 +39,7 @@ if ($_POST['copy']) {
     $toexecute = new AA_Toexecute;
     $no_sync_tasks = 0;
 
-    $limit = array();
+    $limit = [];
     if ($sync_items) { $limit['items']       = true; }
     if ($sync_defs)  { $limit['definitions'] = true; }
     if (count($limit) > 0) {
@@ -51,7 +51,7 @@ if ($_POST['copy']) {
     foreach ($_POST['destination_aa'] as $dest_aa) {
 
         // import with changed module ids
-        $changed_ids = array();
+        $changed_ids = [];
         foreach ($_POST['sync_slices'] as $mid) { $changed_ids[$mid] = new_id(); }
         foreach ($_POST['sync_sites']  as $mid) { $changed_ids[$mid] = new_id(); }
         foreach ($_POST['sync_alerts'] as $mid) { $changed_ids[$mid] = new_id(); }
@@ -82,7 +82,7 @@ if ($_POST['copy']) {
             }
         }
     }
-    echo _m("%1 import actions planed. See", array($no_sync_tasks)). ' ';
+    echo _m("%1 import actions planed. See", [$no_sync_tasks]). ' ';
     echo a_href(get_admin_url('se_taskmanager.php3'), _m('Task Manager'));
 } else {
     // init values for form
@@ -95,28 +95,31 @@ $apage->setTitle( _m("Central - Copy Slice (2/2) - Slices to Copy") );
 $apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
-$aas_array = array('thisAA' => _m('* this ActionApps'));
+$aas_array = ['thisAA' => _m('* this ActionApps')];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
 
 // Template slice (and site) - grab from remote AA
-$template_slices = $aas[$_POST['template_aa']]->requestModules(array('S'));
-$template_sites  = $aas[$_POST['template_aa']]->requestModules(array('W'));
-$template_alerts = $aas[$_POST['template_aa']]->requestModules(array('Alerts'));
+$template_slices = $aas[$_POST['template_aa']]->requestModules(['S']);
+$template_sites  = $aas[$_POST['template_aa']]->requestModules(['W']);
+$template_alerts = $aas[$_POST['template_aa']]->requestModules(['Alerts']);
 
 
 //huhl($aas[$_POST['template_aa']], $template_slices, $template_sites, $template_alerts);
 
-$form_buttons = array("copy"      => array( "type"      => "submit",
+$form_buttons = [
+    "copy"      => [
+        "type"      => "submit",
                                             "value"     => _m("Copy"),
-                                            "accesskey" => "C"),
-                      "template_aa"     => array( "value"     =>  $_POST['template_aa'])
-                     );
+                                            "accesskey" => "C"
+    ],
+                      "template_aa"     => ["value"     =>  $_POST['template_aa']]
+];
 
 FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
-FrmTabSeparator(_m('Modules to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
+FrmTabSeparator(_m('Modules to Copy from %1', [$aas[$_POST['template_aa']]->getName()]));
 FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, @reset($_POST['sync_slices']), 10);
 FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, '', 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
 FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));

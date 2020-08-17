@@ -74,9 +74,9 @@ class AA_Router {
     private static $_instance;
 
     function __construct($slices=null, $home='') {
-        $this->slices = is_array($slices) ? $slices : array();
+        $this->slices = is_array($slices) ? $slices : [];
         $this->home   = $home;
-        $this->web_languages = array();
+        $this->web_languages = [];
     }
 
     /** @return AA_Router */
@@ -108,7 +108,7 @@ class AA_Router {
 
         $nav_arr = $this->_scrollerArray($page, $max);
         $add     = $this->getParam('scroller_add');
-        $arr     = array();
+        $arr     = [];
 
         foreach ( $nav_arr as $k => $v) {
             if ( $v ) {
@@ -126,7 +126,7 @@ class AA_Router {
     }
 
     function getParam($param) {
-        $params = array(
+        $params = [
                          'page_variable'      => 'xpage',
                          'scroller_delimiter' => '<span class="delimiter"> | </span>',
                          'scroller_begin'     => '',
@@ -136,7 +136,7 @@ class AA_Router {
                          'scroller_next'      => _m('&raquo;'),
                          'scroller_previous'  => _m('&laquo;'),
                          'scroller_length'    => SCROLLER_LENGTH
-                       );
+        ];
         if (!isset($params[$param])) {
             return '';
         }
@@ -154,7 +154,7 @@ class AA_Router {
         $mp       = floor(($page - 1) / $scrl_len);  // current means current page
         $from     = max(1, $mp * $scrl_len);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to       = min(($mp + 1) * $scrl_len + 1, $max);
-        $arr      = array();
+        $arr      = [];
 
         if ($page > 1) {
             $arr[$this->getParam('scroller_previous')] = $this->go2url($variable.'='.($page-1));
@@ -192,7 +192,7 @@ class AA_Router {
     function xuser($param='') { return ''; }
 
     // should be refined in subclass
-    function parse($url='') { return array(); }
+    function parse($url='') { return []; }
 
 
 }
@@ -323,7 +323,7 @@ class AA_Router_Seo extends AA_Router {
     }
 
     /** static function - caling from outside is not necessary, now */
-    function parseApc($apc, $home='', $langs=array()) {
+    function parseApc($apc, $home='', $langs= []) {
         if (!$home) {
             $home = '/'.get_mgettext_lang();
         }
@@ -339,21 +339,21 @@ class AA_Router_Seo extends AA_Router {
         $langs      = array_filter($langs);   // sometimes there is [0] => '' for some reason...
         $re_lang    = count($langs) ? join('|',$langs) : '[a-z]{2}';
 
-        $matches    = array();
-        $ret        = array();
+        $matches    = [];
+        $ret        = [];
         if (!(preg_match("/^($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
             if (count($langs) AND trim($arr[0])) {
                 // if we define web_languages in Site Module setting (so for newer sites), then we can use pages without
                 // the first directory - so instead of /en/users we can use just /users (xlang will be filled form first web_language)
                 array_unshift($arr,$langs[0]);
-                $ret = array('xlang'=>$langs[0],'xpage'=>'','xflag'=>'','xcat'=>'','xnolang'=>1);
+                $ret = ['xlang'=>$langs[0],'xpage'=>'','xflag'=>'','xcat'=>'','xnolang'=>1];
             } else {
-                return array();
+                return [];
                 // newer behavior (not helped on library4all, so commented out)
                 // return array('xlang'=>'','xpage'=>'','xflag'=>'','xcat'=>'','xseo1'=>'','xseo2'=>'','xseo3'=>'','xseo4'=>'','xseo5'=>'','xseo6'=>'','xseo7'=>'','xseo8'=>'','xseo9'=>'');
             }
         } else {
-            $ret = array('xlang' => $matches[1], 'xpage' => $matches[2], 'xflag' => $matches[3], 'xcat' => $matches[4], 'xnolang'=>'');
+            $ret = ['xlang' => $matches[1], 'xpage' => $matches[2], 'xflag' => $matches[3], 'xcat' => $matches[4], 'xnolang'=>''];
 
             // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
             // if (count($arr) < 2) {
@@ -414,7 +414,7 @@ class AA_Router_Seo extends AA_Router {
         aktualizuje hodnoty v $apc_state a vrati novy aktualni
         apc retezec */
     function newState($apc_state, $query_string) {
-        $new_arr = array();
+        $new_arr = [];
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
         if (!empty($new_arr['xlang'])) { //change language
@@ -471,7 +471,7 @@ class AA_Router_Seo extends AA_Router {
             $apc_state['xqs'] = $new_arr['xqs'];
         }
         // {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
-        $xqs_subst = array();
+        $xqs_subst = [];
         foreach ($new_arr as $var => $v) {
             if (strpos($var,'xqs_')===0 AND (strlen($var)>4)) { // begins with 'xqs_'
                $xqs_subst[substr($var,4)] = $v;
@@ -540,7 +540,7 @@ class AA_Router_Seo extends AA_Router {
         if (($param == 'list') OR is_long_id($param)) {
             // list of ids - just like 7663-7434-7432
             $i     = 1;
-            $ids   = array();
+            $ids   = [];
             while (!empty($apc['xseo'.$i])) {
                 $ids[] = $this->_xseo2id($apc['xseo'.$i++]);
             }
@@ -575,7 +575,7 @@ class AA_Router_Seo extends AA_Router {
         // Q: Is the cache needed, when AA_Stringexpand_Seo2ids is already cached? Honza 2015-07-16
         // A: Yes - based on measures it seams to be much quicker. Honza 2015-07-16
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', array(join('-',$this->slices), $seo_string)),0,32);
+            $this->_seocache[$seo_string] = substr(StrExpand('AA_Stringexpand_Seo2ids', [join('-',$this->slices), $seo_string]),0,32);
         }
         return $this->_seocache[$seo_string];
     }
@@ -610,11 +610,11 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
         $url = $router->go2url($query_string);
         // remove all internal system AA links
         if (strpos($query_string,'err=')===false) {
-            $url = str_replace(array('&err=1','?err=1&','?err=1'), array('','?',''), $url);
+            $url = str_replace(['&err=1','?err=1&','?err=1'], ['','?',''], $url);
 
         }
         if (strpos($query_string,'logout=')===false) {
-            $url = str_replace(array('&logout=1','?logout=1&','?logout=1'), array('','?',''), $url);
+            $url = str_replace(['&logout=1','?logout=1&','?logout=1'], ['','?',''], $url);
 
         }
         return ($html_encode=='1') ? myspecialchars($url) : $url;

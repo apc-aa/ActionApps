@@ -136,19 +136,19 @@ class aaevent {
      */
     function get_handlers($type, $class, $selector) {
         // TODO - read the events from database instead of this static definition
-        $this->handlers   = array();
-        $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',       array('type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemsMoved',              array('type' => 'ITEMS_MOVED',           'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemBeforeUpdate',        array('type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemBeforeInsert',        array('type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemAfterInsert',         array('type' => 'ITEM_NEW',              'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemAfterUpdate',         array('type' => 'ITEM_UPDATED',          'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_CommentAfterInsert',      array('type' => 'COMMENT_UPDATED',       'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate',    array('type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ConstantUpdated',         array('type' => 'CONSTANT_UPDATED',      'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_NEW',              'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_UPDATED',          'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
+        $this->handlers   = [];
+        $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',       ['type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ItemsMoved',              ['type' => 'ITEMS_MOVED',           'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ItemBeforeUpdate',        ['type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ItemBeforeInsert',        ['type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ItemAfterInsert',         ['type' => 'ITEM_NEW',              'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ItemAfterUpdate',         ['type' => 'ITEM_UPDATED',          'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_CommentAfterInsert',      ['type' => 'COMMENT_UPDATED',       'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate',    ['type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_ConstantUpdated',         ['type' => 'CONSTANT_UPDATED',      'slice_type' => 'S']);  // all slices
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_NEW',              'slice_type' => 'Links']);
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_UPDATED',          'slice_type' => 'Links']);
+        $this->handlers[] = new aahandler('Event_ItemNewComment',          ['type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item']);
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_UPDATED',     'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_NEW',         'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_UPDATED',     'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
@@ -163,8 +163,8 @@ class aaevent {
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_UPDATED',     'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
-        $this->handlers[] = new aahandler('Event_ItemInserted_Efekt',      array('type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Efekt',       array('type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
+        $this->handlers[] = new aahandler('Event_ItemInserted_Efekt',      ['type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Efekt',       ['type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
 //        $this->handlers[] = new aahandler('Event_ItemUpdated_Sasov_objed', array('type' => 'ITEM_UPDATED',     'slice'        => '2d81635df9bbff2a7deebd89808f3cfb'));  // Biofarma Sasov - objednavka
     }
 
@@ -283,7 +283,7 @@ function GetNotifications($type, $class, $selector, $reaction=null, $params=null
        $SQL .= ' AND params =\''.quote($params).'\'';
     }
     $notifications = GetTable2Array($SQL, 'NoCoLuMn', 'params');
-    return $notifications ? array_unique((array)$notifications) : array();
+    return $notifications ? array_unique((array)$notifications) : [];
 }
 /** AddNotification function
  * @param $type
@@ -325,7 +325,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
     $emails = GetNotifications($type, $slice_type, $item_id);
 
     $item_zid    = new zids($item_id, 'l');
-    $content4ids = GetItemContent($item_zid, false, false, array('id..............','slice_id........','e_posted_by.....'));
+    $content4ids = GetItemContent($item_zid, false, false, ['id..............','slice_id........','e_posted_by.....']);
     $content4id  = reset($content4ids);  // get first element
 
     // send e-mail also to author of the item
@@ -381,7 +381,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
  */
 function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
-    AA_Mysqlauth::updateReaders( array( pack_id( $item_id )), $slice_id );
+    AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
     AlertsSendWelcome( $slice_id, $itemContent );
     // AlertsSendInstantAlert( $item_id, $slice_id );
     $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
@@ -408,7 +408,7 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
 
     $item_id = $itemContent->getItemID();
-    AA_Mysqlauth::updateReaders( array( pack_id( $item_id )), $slice_id );
+    AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
 //    AlertsSendInstantAlert( $item_id, $slice_id );
     $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
 
@@ -449,7 +449,7 @@ function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $
     $item_id = $itemContent->getItemID();
     // Delete reader from Auth tables because if the username changes,
     // AA_Mysqlauth::updateReaders can not recognize it.
-    AA_Mysqlauth::deleteReaders( array( pack_id( $item_id)), $slice_id );
+    AA_Mysqlauth::deleteReaders( [pack_id( $item_id)], $slice_id );
     return true;
 }
 
@@ -576,7 +576,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // which means - do not store to category 1,2 but to the category 1,2,1224
 
     // Example: 1,2-1,2,1223:1,2,4-1,2,4,43:1,2,983-1,2,983,1226:1,2,984-1,2,984,1229:1,2,985-1,2,985,1232:1,2,986-1,2,986,1235:1,2,987-1,2,987,1238
-    $trans_string = str_replace( array("\n","\t","\r",' '), '', $general_cat['description'] );
+    $trans_string = str_replace( ["\n","\t","\r",' '], '', $general_cat['description'] );
     $translations = explode(':', $trans_string);             // parse
     if ( isset($translations) AND is_array($translations) ) {
         foreach ( $translations as $k ) {
@@ -587,7 +587,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // get categories in which we have to create global category
     // = categories and all subcategories - 1,2,33,88 => 1,2; 1,2,33; 1,2,33,88
-    $final_categories = array();     // clear return categories
+    $final_categories = [];     // clear return categories
     if ( isset($ret_params) AND is_array($ret_params) ) {
         foreach ( $ret_params as $cid ) {
             $cpath = GetCategoryPath( $cid );
@@ -816,7 +816,7 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return AA_Mail::sendTemplate(5, array($email1), $item, false) > 0;
+        return AA_Mail::sendTemplate(5, [$email1], $item, false) > 0;
     }
     return false;
 }
@@ -840,7 +840,7 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return AA_Mail::sendTemplate(4, array($email1), $item, false) > 0;
+        return AA_Mail::sendTemplate(4, [$email1], $item, false) > 0;
     }
     return false;
 }

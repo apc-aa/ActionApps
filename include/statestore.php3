@@ -73,7 +73,7 @@ abstract class AA_Serializable {
     /** Constructor
      *  @param $params array of parameters in form 'property_name' => 'value'
      */
-    function __construct($params=array()) {
+    function __construct($params= []) {
         // ask class, which parameters uses and fill it
         // call AA\Widget\TxtWidget::getClassProperties()), for example
         $this->setProperties($params);
@@ -82,7 +82,7 @@ abstract class AA_Serializable {
     /**
      * @param array $params
      */
-    function setProperties($params=array()) {
+    function setProperties($params= []) {
         $class = get_class($this);
         $props = $class::getClassProperties();
         foreach ($props as $name =>$property) {
@@ -104,7 +104,7 @@ abstract class AA_Serializable {
     static function getClassProperties()  {
         // array of AA parameters (can't be object's data, since we need
         // to call it statically (as class method)
-        return array();
+        return [];
     }
 
     /** create the name of class from the type and name
@@ -133,11 +133,11 @@ abstract class AA_Serializable {
      */
     static function parseClassProperties($string) {
         // we do not use ParamExplode() - I  do not like the http:// replacement there
-        $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
+        $splited = explode('##Sx', str_replace(['#:', ':', '~@|_'], ['~@|_', '##Sx', ':'], $string));
 
         // first parameter is the class identifier - the parameters starts then
         $class  = self::constructClassName(array_shift($splited), get_called_class().'_');
-        $params = array('class' => $class);
+        $params = ['class' => $class];
 
         if ( class_exists($class) ) {
             // ask class, which parameters uses
@@ -186,7 +186,7 @@ class AA_Storable extends AA_Serializable {
      * @return array
      */
     static function getPersistentProperties() {
-        $ret        = array();
+        $ret        = [];
         $properties = static::getClassProperties();
         foreach ( $properties as $id => $property) {
             if ( $property->isPersistent() ) {
@@ -229,7 +229,7 @@ class AA_Storable extends AA_Serializable {
             $propery_value = $this->$property_id;
             if ($property->isMulti()) {
                 if ( !is_array($propery_value) ) {
-                    $propery_value = array();
+                    $propery_value = [];
                 }
                 if ( is_array($state[$property_id])) {
                     foreach($state[$property_id] as $k => $v) {
@@ -279,7 +279,7 @@ class AA_Storable extends AA_Serializable {
      * restoring (by setFromState() method)
      */
     function getState() {
-        $ret   = array();
+        $ret   = [];
         $props = static::getPersistentProperties();
         foreach ($props as $property) {
             $property_id   = $property->getId();
@@ -462,7 +462,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      *  Deletes the object from the database including all the subobjects
      */
     function delete() {
-        AA_Object::deleteObjects(array($this->getId()));
+        AA_Object::deleteObjects([$this->getId()]);
     }
 
     // array of unpacked ids
@@ -473,23 +473,23 @@ class AA_Object extends AA_Storable implements AA_iEditable {
            $object_ids = array_merge($object_ids, $arr);
         }
         if (count($object_ids = array_unique($object_ids))) {
-            DB_AA::delete_low_priority('object_text',    array(array('object_id', $object_ids)));
-            DB_AA::delete_low_priority('object_integer', array(array('object_id', $object_ids)));
-            DB_AA::delete_low_priority('object_float',   array(array('object_id', $object_ids)));
+            DB_AA::delete_low_priority('object_text',    [['object_id', $object_ids]]);
+            DB_AA::delete_low_priority('object_integer', [['object_id', $object_ids]]);
+            DB_AA::delete_low_priority('object_float',   [['object_id', $object_ids]]);
         }
         return true;
     }
 
     // get all Owners objects (for deletion)
     static public function getOwnersObjects($owner_id) {
-        return is_long_id($owner_id) ? DB_AA::select( '', 'SELECT object_id FROM `object_text`', array(array('property', 'aa_owner'), array('value', $owner_id))) : array();
+        return is_long_id($owner_id) ? DB_AA::select( '', 'SELECT object_id FROM `object_text`', [['property', 'aa_owner'], ['value', $owner_id]]) : [];
     }
 
     /** _getSubObjects function
      *  Get all object ids which is inside this object
      */
     function _getSubObjects() {
-        $ret   = array();
+        $ret   = [];
         $props = static::getClassProperties();
         foreach ($props as $property) {
             if (!$property->isObject()) {
@@ -522,7 +522,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      */
     static function getNameArray($obj_type, $owner) {
         if ( empty($owner) ) {
-            return array();
+            return [];
         }
         $SQL = "SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id
                  WHERE o1.property = 'aa_type'  AND o1.value = '$obj_type'
@@ -530,18 +530,18 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                    AND o3.property = 'aa_name'";
 
         $ret = GetTable2Array($SQL, 'object_id', 'value');
-        return is_array($ret) ? $ret : array();
+        return is_array($ret) ? $ret : [];
     }
 
     static function loadProperty($id, $property) {
-        return DB_AA::select1('SELECT value FROM `object_text`', 'value', array(array('object_id',$id),array('property',$property)));
+        return DB_AA::select1('SELECT value FROM `object_text`', 'value', [['object_id',$id], ['property',$property]]);
     }
 
     /** called as AA_Object::loadProperties($ids, 'name')
      *  @return array - properties always in array   ['obj1'=>[valA,valB,...], 'obj2'=>[valC], ...]
      */
     static function loadProperties($ids, $property) {
-        return DB_AA::select( array('object_id'=> '+value'), 'SELECT object_id, value FROM `object_text`', array(array('object_id', $ids), array('property', $property)));
+        return DB_AA::select( ['object_id'=> '+value'], 'SELECT object_id, value FROM `object_text`', [['object_id', $ids], ['property', $property]]);
     }
 
     /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
@@ -563,9 +563,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $obj->setId($id);
         $properties = $type::getClassProperties();
 
-        $prop_arr =                        DB_AA::select( array('property'=> '+value'), 'SELECT `property`, `value` FROM `object_text`',    array(array('object_id', $id)), array('property', 'priority'));
-        $prop_arr = array_merge($prop_arr, DB_AA::select( array('property'=> '+value'), 'SELECT `property`, `value` FROM `object_integer`', array(array('object_id', $id)), array('property', 'priority')));
-        $prop_arr = array_merge($prop_arr, DB_AA::select( array('property'=> '+value'), 'SELECT `property`, `value` FROM `object_float`',   array(array('object_id', $id)), array('property', 'priority')));
+        $prop_arr =                        DB_AA::select( ['property'=> '+value'], 'SELECT `property`, `value` FROM `object_text`',    [['object_id', $id]], ['property', 'priority']);
+        $prop_arr = array_merge($prop_arr, DB_AA::select( ['property'=> '+value'], 'SELECT `property`, `value` FROM `object_integer`', [['object_id', $id]], ['property', 'priority']));
+        $prop_arr = array_merge($prop_arr, DB_AA::select( ['property'=> '+value'], 'SELECT `property`, `value` FROM `object_float`',   [['object_id', $id]], ['property', 'priority']));
 
         //$tab = GetTable2Array("SELECT `property`, `value` FROM object_text WHERE object_id = '$id' ORDER by property, priority", '');
         //$props_from_db = is_array($tab) ? $tab : array();
@@ -605,7 +605,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                         break;  // next property
                     }
                     if (!is_array($prop_val)) { // PHP 7.1 needs to convert var to array before use
-                        $prop_val = array();
+                        $prop_val = [];
                     }
                     $prop_val[] = $tmp_val;
                 }
@@ -650,8 +650,8 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $properties['aa_type']  = self::getPropertyObject('aa_type');
 
         // parse conditions ----------------------------------
-        $tables_counter = array('object_text'=>1, 'object_integer'=>0, 'object_float'=>0);
-        $tables         = array();
+        $tables_counter = ['object_text'=>1, 'object_integer'=>0, 'object_float'=>0];
+        $tables         = [];
 
         $tables['t0']['cond'] = "t0.property='aa_type' AND t0.value='".quote($type)."'";
         $tables['t0']['join'] = 'object_text as t0';
@@ -662,12 +662,12 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             $tables_counter['object_text']++;
         }
 
-        $sortable = array();
+        $sortable = [];
 
         // Conditions
         foreach ($conds as $cond) {
             // fill arrays according to this condition
-            $cond_flds   = array();
+            $cond_flds   = [];
             $store       = '';
             foreach ( $cond as $fid => $v ) {
                 if ( $GLOBALS['CONDS_NOT_FIELD_NAMES'][$fid] ) {
@@ -704,7 +704,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
 
         // Sorting
-        $select_order    = array();
+        $select_order    = [];
         $select_distinct = '';
         foreach ($sort as  $sort_no => $srt) {
             if (key($srt)=='limit') {
@@ -799,7 +799,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     protected static function getSearchfields($properties) {
         $i   = 0;
         $searchfields = new AA\Util\Searchfields();
-        $props = array_merge(array('aa_name' => self::getPropertyObject('aa_name')), $properties);
+        $props = array_merge(['aa_name' => self::getPropertyObject('aa_name')], $properties);
         //if (!isset($properties['aa_name']))  { $properties['aa_name']  = self::getPropertyObject('aa_name'); }
         //if (!isset($properties['aa_owner'])) { $properties['aa_owner'] = self::getPropertyObject('aa_owner'); }
         //if (!isset($properties['aa_type']))  { $properties['aa_type']  = self::getPropertyObject('aa_type'); }
@@ -856,7 +856,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
      *  @static
      */
     function getContent($settings, $zids) {
-        $ret        = array();
+        $ret        = [];
         $class      = $settings['class'];
         $properties = $class::getClassProperties();
 
@@ -890,7 +890,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array_merge( array(_m('Action')), $fields->getFieldnamesArray(), array( _m('ID'), _m('Owner ID'), _m('Owner')))).'</th>
+              <th>'.join("</th>\n<th>", array_merge( [_m('Action')], $fields->getFieldnamesArray(), [_m('ID'), _m('Owner ID'), _m('Owner')])).'</th>
             </tr>
             ';
     }
@@ -926,24 +926,24 @@ class AA_Object extends AA_Storable implements AA_iEditable {
 
 
         $search_fields = AA_Object::getSearchfields($properties);
-        $new_link      = a_href(get_admin_url('oedit.php3', array('otype' => $object_class, 'ret_url' => $manager_url)), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
+        $new_link      = a_href(get_admin_url('oedit.php3', ['otype' => $object_class, 'ret_url' => $manager_url]), GetAAImage('icon_new.gif', _m('new'), 17, 17).' '. _m('Add'));
 
-        $manager_settings = array(
+        $manager_settings = [
              'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
-             'searchbar' => array(
+             'searchbar' => [
                  'fields'               => $search_fields,
                  'search_row_count_min' => 1,
                  'order_row_count_min'  => 1,
                  'add_empty_search_row' => true,
                  'function'             => false  // name of function for aditional action hooked on standard filter action
 //                 'default_sort'         => array( 0 => array('time' => 'd'))  // it would be nice to add default sort, but we do not have creation_time or something like that
-                                 ),
-             'scroller'  => array(
+             ],
+             'scroller'  => [
                  'listlen'              => 200
-                                 ),
-             'itemview'  => array(
+             ],
+             'itemview'  => [
                  'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-                 'format'               => array(    // optionaly to manager_vid you can set format array
+                 'format'               => [    // optionaly to manager_vid you can set format array
                      'compact_top'      => '<div class="aa-table aa-items-manager">'. static::getManagerTopHtml($search_fields),
                      'category_sort'    => false,
                      'category_format'  => "",
@@ -952,23 +952,23 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                      'even_odd_differ'  => false,
                      'even_row_format'  => "",
 //                   'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
-                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, array('Edit'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url)),'Delete'=>get_admin_url('oedit.php3', array('module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1')))),
+                     'odd_row_format'   => static::getManagerRowHtml($search_fields, $aliases, ['Edit'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url]),'Delete'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1'])]),
                      'compact_remove'   => "",
                      'compact_bottom'   => "</table></div><br>". $new_link,
                      'noitem_msg'       => _m('No object found'). '<br>'. $new_link
-                     ),
+                 ],
                  'fields'               => $search_fields,
                  'aliases'              => $aliases,
                                            //    static class method               , first parameter to the method
-                 'get_content_funct'    => array(array('AA_Object', 'getContent'), array('class'=>$object_class))
-                                 ),
+                 'get_content_funct'    => [['AA_Object', 'getContent'], ['class'=>$object_class]]
+             ],
              'actions'   => $actions,
              'switches'  => $switches,
              'bin'       => 'app',
-             'messages'  => array(
-                 'title'       => _m('Manage %1', array($object_class))
-                                 )
-                 );
+             'messages'  => [
+                 'title'       => _m('Manage %1', [$object_class])
+             ]
+        ];
 
         return $manager_settings;
     }
@@ -1047,7 +1047,7 @@ class AA_Components {
      */
     static function getClassNames($mask)
     {
-        $right_classes = array();
+        $right_classes = [];
         if (false !== $pos = strrpos($mask, '\\')) {  // new composer approach with autoload - we can't use  get_declared_classes()
             $classfilter = substr($mask,$pos+1);
             $classdir    = substr($mask,3,$pos-3);
@@ -1055,7 +1055,7 @@ class AA_Components {
             $dirname = AA_BASE_PATH.'src/'.$classdir;
             $files = AA_Directory_Wrapper::wrapper($dirname)->getFileNames();
             foreach ($files as $file) {
-                $name = str_replace(array('.php'), array(''),$file);
+                $name = str_replace(['.php'], [''],$file);
 
                 // filter out other possible classes
                 if (!$name OR ($name=='Abstract')) {
@@ -1103,8 +1103,8 @@ class AA_Components {
      * @return string
      */
     static function getSelectionCode($mask, $input_id, &$params) {
-        $options      = array('AA_Empty' => _m('select ...'));
-        $html_options = array('AA_Empty' => '');
+        $options      = ['AA_Empty' => _m('select ...')];
+        $html_options = ['AA_Empty' => ''];
         foreach (AA_Components::getClassNames($mask) as $selection_class) {
             // call static class methods
             $options[$selection_class]      = $selection_class::name();

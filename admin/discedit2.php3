@@ -45,7 +45,7 @@ require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ($update) {
@@ -95,7 +95,7 @@ if ($db->next_record()) {
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Items managment - Discussion comments managment - Edit comment"));
-$apage->setForm(array('action' => "?d_id=$d_id"));
+$apage->setForm(['action' => "?d_id=$d_id"]);
 $apage->printHead($err, $Msg);
 ?>
 

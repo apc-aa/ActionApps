@@ -28,8 +28,8 @@ class Discussion extends \AA\IO\Grabber\AbstractGrabber {
 
     function __construct($set) {
         $this->set = $set;
-        $this->_longids = array();
-        $this->_content_cache = array();
+        $this->_longids = [];
+        $this->_content_cache = [];
         $this->_index = 0;
     }
 
@@ -52,12 +52,12 @@ class Discussion extends \AA\IO\Grabber\AbstractGrabber {
         // get all discussion comments ids
         $item_zids = $this->set->query();
         $item_long_ids = $item_zids->longids();
-        $this->_longids = array();
+        $this->_longids = [];
         foreach ($item_long_ids as $item_id) {
             $zids = QueryDiscussionZIDs($item_id);
             $this->_longids = array_merge($this->_longids, $zids->longids());
         }
-        $this->_content_cache = array();
+        $this->_content_cache = [];
         $this->_index = 0;
         reset($this->_longids);   // go to first long id
     }
@@ -82,6 +82,6 @@ class Discussion extends \AA\IO\Grabber\AbstractGrabber {
     }
 
     function finish() {
-        $this->_longids = array();
+        $this->_longids = [];
     }
 }

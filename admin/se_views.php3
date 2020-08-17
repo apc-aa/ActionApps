@@ -42,12 +42,12 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ( $del ) {
     // check if deleted view is from this slice (for security)
-    if (!AA::Metabase()->doDelete('view', array('id'=>$vid, 'slice_id'=>$slice_id))) {
+    if (!AA::Metabase()->doDelete('view', ['id'=>$vid, 'slice_id'=>$slice_id])) {
         $err["DB"] = MsgErr("Can't delete view");
         exit;
     }
@@ -128,7 +128,7 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 
 $manager_settings['show'] = MGR_ALL & ~MGR_SB_BOOKMARKS & ~MGR_SB_SEARCHROWS & ~MGR_SB_ORDERROWS;    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
-$manager_settings['searchbar']['default_sort'] =  array( 0 => array('id' => 'd'));
+$manager_settings['searchbar']['default_sort'] =  [0 => ['id' => 'd']];
 $manager_settings['actions'] =  $actions;
 
 $manager = new AA_Manager('views', $manager_settings);
@@ -138,7 +138,7 @@ $aa_set  = $manager->getSet();
 // $aa_set->setModules($module_id);
 $aa_set->addCondition(new AA_Condition('slice_id', '==', q_pack_id($module_id)));
 
-$zids    = AA_Metabase::queryZids(array('table'=>'view'), $aa_set);
+$zids    = AA_Metabase::queryZids(['table'=>'view'], $aa_set);
 
 //$manager->displayPage($zids, 'aaadmin', 'views');
 $manager->display($zids);
@@ -151,7 +151,7 @@ $manager->display($zids);
 
 // -- get all views --
 
-$views = DB_AA::select(array(), 'SELECT LOWER(HEX(`slice_id`)) as uslice_id, id, name, type, field3 FROM view', array(), array('id-'));
+$views = DB_AA::select([], 'SELECT LOWER(HEX(`slice_id`)) as uslice_id, id, name, type, field3 FROM view', [], ['id-']);
 $i   = 0;
 foreach ( $views as $vw ) {
     if ($g_modules[$vw['uslice_id']]) {     // if user has any permission for the view's slice

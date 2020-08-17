@@ -41,7 +41,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 is_object( $db ) || ($db = getDB());
 
 $varset      = new CVarset();
@@ -124,9 +124,9 @@ if ($add || $update) {
         } else { // insert (add)
             $varset->clear();
             // prepare varset variables for setFromArray() function
-            $varset->addArray(array('id','structure','state_file'), array('flag'));
+            $varset->addArray(['id','structure','state_file'], ['flag']);
 
-            if (!($site = DB_AA::select1('SELECT * FROM `site`', '', array(array('id', $template_id, 'l'))))) {
+            if (!($site = DB_AA::select1('SELECT * FROM `site`', '', [['id', $template_id, 'l']]))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
@@ -139,7 +139,7 @@ if ($add || $update) {
             $varset->doInsert('site');
 
             // copy spots
-            $sitespots = DB_AA::select(array(), 'SELECT spot_id, content FROM `site_spot`', array(array('site_id', $template_id, 'l')));
+            $sitespots = DB_AA::select([], 'SELECT spot_id, content FROM `site_spot`', [['site_id', $template_id, 'l']]);
             foreach ($sitespots as $spot) {
                 $varset->clear();
                 $varset->set("site_id", $module_id, "unpacked" );
@@ -184,14 +184,16 @@ if ($template['W']) {           // set new name for new module
 }
 
 if ( $template['W'] ) {
-    $form_buttons = array( 'insert',
-                           'template[W]' => array( 'type'=>"hidden", 'value'=> $template['W']),
-                           'add'         => array( 'type'=>"hidden", 'value'=> 1),
-                           );
+    $form_buttons = [
+        'insert',
+                           'template[W]' => ['type'=>"hidden", 'value'=> $template['W']],
+                           'add'         => ['type'=>"hidden", 'value'=> 1],
+    ];
 } else {
-    $form_buttons = array( 'update',
-                           "update"  => array ('type' => 'hidden', 'value'=>'1'),
-                           );
+    $form_buttons = [
+        'update',
+                           "update"  => ['type' => 'hidden', 'value'=>'1'],
+    ];
 }
 
 
@@ -242,7 +244,7 @@ $apage->printHead($err, $Msg);
         FrmInputChBox("deleted", _m("Deleted"), $deleted);
     }
     FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file, false);
-    FrmInputSelect("router",   _m("Router"), array(1 => 'AA_Router_Seo'), $router, false, _m("Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend."));
+    FrmInputSelect("router",   _m("Router"), [1 => 'AA_Router_Seo'], $router, false, _m("Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend."));
     FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."),'', 'false', 'text', '/en/home');
 
     foreach ($g_modules as  $k => $v) {

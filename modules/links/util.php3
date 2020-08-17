@@ -15,7 +15,7 @@ function Links_CountAllLinks() {
  * @return string|array
  */
 function GetLinkInfo( $lid ) {
-    $ret = DB_AA::select(array(), 'SELECT * FROM `links_links`', array(array('id', $lid, 'i')));
+    $ret = DB_AA::select([], 'SELECT * FROM `links_links`', [['id', $lid, 'i']]);
     return $ret ?: '';
 }
 
@@ -24,7 +24,7 @@ function GetLinkInfo( $lid ) {
  * @return string
  */
 function GetCategoryPath( $cid ) {
-    $ret = DB_AA::select1('SELECT path FROM `links_categories`','path', array(array('id', $cid, 'i')));
+    $ret = DB_AA::select1('SELECT path FROM `links_categories`','path', [['id', $cid, 'i']]);
     return $ret ?: '';
 }
 
@@ -76,7 +76,7 @@ function Links_GetBaseCategoryColumn( $lid, $col ) {
  * @return string
  */
 function Links_GetCategoryColumn( $cid, $col ) {
-    return DB_AA::select1("SELECT $col as retcol FROM links_categories", 'retcol', array(array('id',$cid,'i')));
+    return DB_AA::select1("SELECT $col as retcol FROM links_categories", 'retcol', [['id',$cid,'i']]);
 }
 
 /** Get base path from link id
@@ -243,9 +243,9 @@ function Links_GetLinkContent($zids) {
         $foo_id = $db->f('id');
         foreach ($db->Record as  $key => $val ) {
             if ( $changes_map[$foo_id] ) {    // this link is just change-link
-                $content[$changes_map[$foo_id]]["change_$key"][] = array('value' => $val);
+                $content[$changes_map[$foo_id]]["change_$key"][] = ['value' => $val];
             } else {
-                $content[$foo_id][$key][] = array('value' => $val);
+                $content[$foo_id][$key][] = ['value' => $val];
             }
         }
     }
@@ -285,13 +285,13 @@ function Links_GetLinkContent($zids) {
  * @see GetItemContent(), itemview class, item class
  */
 function Links_GetCategoryContent($zids) {
-    $content = array();
+    $content = [];
     if ($zids AND !$zids->isEmpty()) {
-        $categs = DB_AA::select(array(), 'SELECT * FROM `links_categories`', array(array('id', $zids->getArray(), 'i')));
+        $categs = DB_AA::select([], 'SELECT * FROM `links_categories`', [['id', $zids->getArray(), 'i']]);
         foreach ($categs as $record) {
             $foo_id = $record['id'];
             foreach ($record as $key => $val) {
-                $content[$foo_id][$key][] = array('value' => $val);
+                $content[$foo_id][$key][] = ['value' => $val];
             }
         }
     }
@@ -337,7 +337,7 @@ function Links_Assign2Category($lid, $categs, $proposal=false) {
     }
 
     // create array of categories, where we try to add link
-    $categories = is_array($categs) ? $categs : array($categs);
+    $categories = is_array($categs) ? $categs : [$categs];
 
     // what is the state of this link - proposal: y|n|'' (= not base category)
     $base_proposal = Links_GetBaseCategoryColumn( $lid, 'proposal' );
@@ -373,37 +373,37 @@ function Links_Assign2Category($lid, $categs, $proposal=false) {
     }
 }
 
-$GENERAL_CATS['Neziskov� organizace']                       = array( 'pri' => 1010, 'super' => 'Organizace' );
-$GENERAL_CATS['Nadace a nada�n� fondy']                     = array( 'pri' => 1020, 'super' => 'Organizace' );
-$GENERAL_CATS['St�tn� spr�va a samospr�va']                 = array( 'pri' => 1030, 'super' => 'Organizace' );
-$GENERAL_CATS['Firmy']                                      = array( 'pri' => 1100, 'super' => 'Organizace' );
-$GENERAL_CATS['Politick� strany a hnut�']                   = array( 'pri' => 1110, 'super' => 'Organizace' );
-$GENERAL_CATS['Mezist�tn� organizace']                      = array( 'pri' => 1120, 'super' => 'Organizace' );
-$GENERAL_CATS['Profesn� sdru�en�']                          = array( 'pri' => 1130, 'super' => 'Organizace' );
-$GENERAL_CATS['V�deck� a v�zkumn� organizace']              = array( 'pri' => 1140, 'super' => 'Organizace' );
-$GENERAL_CATS['Vzd�l�vac� a v�chovn� organizace']           = array( 'pri' => 1150, 'super' => 'Organizace' );
-$GENERAL_CATS['C�rkve a n�bo�ensk� spole�nosti']            = array( 'pri' => 1160, 'super' => 'Organizace' );
-$GENERAL_CATS['Zdravotnick� organizace']                    = array( 'pri' => 1170, 'super' => 'Organizace' );
-$GENERAL_CATS['Kulturn� organizace']                        = array( 'pri' => 1180, 'super' => 'Organizace' );
+$GENERAL_CATS['Neziskov� organizace']                       = ['pri' => 1010, 'super' => 'Organizace'];
+$GENERAL_CATS['Nadace a nada�n� fondy']                     = ['pri' => 1020, 'super' => 'Organizace'];
+$GENERAL_CATS['St�tn� spr�va a samospr�va']                 = ['pri' => 1030, 'super' => 'Organizace'];
+$GENERAL_CATS['Firmy']                                      = ['pri' => 1100, 'super' => 'Organizace'];
+$GENERAL_CATS['Politick� strany a hnut�']                   = ['pri' => 1110, 'super' => 'Organizace'];
+$GENERAL_CATS['Mezist�tn� organizace']                      = ['pri' => 1120, 'super' => 'Organizace'];
+$GENERAL_CATS['Profesn� sdru�en�']                          = ['pri' => 1130, 'super' => 'Organizace'];
+$GENERAL_CATS['V�deck� a v�zkumn� organizace']              = ['pri' => 1140, 'super' => 'Organizace'];
+$GENERAL_CATS['Vzd�l�vac� a v�chovn� organizace']           = ['pri' => 1150, 'super' => 'Organizace'];
+$GENERAL_CATS['C�rkve a n�bo�ensk� spole�nosti']            = ['pri' => 1160, 'super' => 'Organizace'];
+$GENERAL_CATS['Zdravotnick� organizace']                    = ['pri' => 1170, 'super' => 'Organizace'];
+$GENERAL_CATS['Kulturn� organizace']                        = ['pri' => 1180, 'super' => 'Organizace'];
 
-$GENERAL_CATS['Zpravodajsk� weby, noviny a �asopisy']       = array( 'pri' => 2001, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Rozhlas a televize']                         = array( 'pri' => 2010, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['E-mailov� konference a diskusn� skupiny']    = array( 'pri' => 2020, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['N�zory a koment��e']                         = array( 'pri' => 2030, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Knihovny, knihkupectv�, literatura']         = array( 'pri' => 2040, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Adres��e, datab�ze']                         = array( 'pri' => 2050, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Katalogy odkaz�, rozcestn�ky, vyhledava�e']  = array( 'pri' => 2060, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Pr�vn� p�edpisy']                            = array( 'pri' => 2070, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Studie, statistiky, hodnot�c� zpr�vy']       = array( 'pri' => 2080, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
-$GENERAL_CATS['Dokumenty, publikace, studijn� texty']       = array( 'pri' => 2090, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty' );
+$GENERAL_CATS['Zpravodajsk� weby, noviny a �asopisy']       = ['pri' => 2001, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Rozhlas a televize']                         = ['pri' => 2010, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['E-mailov� konference a diskusn� skupiny']    = ['pri' => 2020, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['N�zory a koment��e']                         = ['pri' => 2030, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Knihovny, knihkupectv�, literatura']         = ['pri' => 2040, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Adres��e, datab�ze']                         = ['pri' => 2050, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Katalogy odkaz�, rozcestn�ky, vyhledava�e']  = ['pri' => 2060, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Pr�vn� p�edpisy']                            = ['pri' => 2070, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Studie, statistiky, hodnot�c� zpr�vy']       = ['pri' => 2080, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
+$GENERAL_CATS['Dokumenty, publikace, studijn� texty']       = ['pri' => 2090, 'super' => 'Zpravodajstv�, informa�n� zdroje, dokumenty'];
 
-$GENERAL_CATS['Odborn� konference, semin��e, kurzy']        = array( 'pri' => 3001, 'super' => 'Akce' );
-$GENERAL_CATS['Politick� jedn�n� a konference']             = array( 'pri' => 3010, 'super' => 'Akce' );
-$GENERAL_CATS['V�stavy a veletrhy']                         = array( 'pri' => 3020, 'super' => 'Akce' );
-$GENERAL_CATS['T�bory a v�kendovky']                        = array( 'pri' => 3030, 'super' => 'Akce' );
-$GENERAL_CATS['Festivaly']                                  = array( 'pri' => 3040, 'super' => 'Akce' );
-$GENERAL_CATS['Kalend��e akc�']                             = array( 'pri' => 3050, 'super' => 'Akce' );
-$GENERAL_CATS['Ostatn� akce']                               = array( 'pri' => 3060, 'super' => 'Akce' );
+$GENERAL_CATS['Odborn� konference, semin��e, kurzy']        = ['pri' => 3001, 'super' => 'Akce'];
+$GENERAL_CATS['Politick� jedn�n� a konference']             = ['pri' => 3010, 'super' => 'Akce'];
+$GENERAL_CATS['V�stavy a veletrhy']                         = ['pri' => 3020, 'super' => 'Akce'];
+$GENERAL_CATS['T�bory a v�kendovky']                        = ['pri' => 3030, 'super' => 'Akce'];
+$GENERAL_CATS['Festivaly']                                  = ['pri' => 3040, 'super' => 'Akce'];
+$GENERAL_CATS['Kalend��e akc�']                             = ['pri' => 3050, 'super' => 'Akce'];
+$GENERAL_CATS['Ostatn� akce']                               = ['pri' => 3060, 'super' => 'Akce'];
 
  /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
 function  Links_LoadGlobalCategories() {
@@ -461,12 +461,18 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     }
 
     $url   = addslashes($url);
-    $conds = array( array( 'value'    => "$url OR ${url}_",
+    $conds = [
+        [
+            'value'    => "$url OR ${url}_",
                            'operator' => 'XLIKE',
-                           'url'      => 1 ),
-                    array( 'value'    => $checked_id,  // we do not want to find
+                           'url'      => 1
+        ],
+                    [
+                        'value'    => $checked_id,  // we do not want to find
                            'operator' => '<>',         // the link we are asking to
-                           'id'       => 1 ));
+                           'id'       => 1
+                    ]
+    ];
     $sort  = '';
     // 1 - base category - look for all links in the database (no matter in which subtree)
     $start_cat_path = ($tree_start ? GetCategoryPath( $tree_start ) : 1);

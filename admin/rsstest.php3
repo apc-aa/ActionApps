@@ -69,8 +69,8 @@ $tview = 'rss_tv';
 /// this must be function
 function GetRSS_tv() {
 
-    $debug_params = array( 0 => '0 - none', 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9 - maximum');
-    return array (
+    $debug_params = [0 => '0 - none', 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9 - maximum'];
+    return [
         "table" => "rssfeeds",
         "type" => "browse",
         "search" => false,
@@ -84,35 +84,43 @@ function GetRSS_tv() {
         "title" => _m ("RSS Feed import test"),
         "caption" => _m("RSS Feed import test"),
         "help" => _m("RSS feeds testing page."),
-        "messages" => array (
-            "no_item" => _m("No RSS Feeds set.")),
-        "buttons_down" => array( 'update_all'=> false, 'delete_all' => false ),
-        "buttons_left" => array( 'edit'=> false, 'delete_checkbox' => false ),
-        "fields" => array (
-            "feed_id" => array (  // actions
-                "view" => array ( "type"=>"userdef", "function" => 'showRSSFeedActions', "html" => true ),
-                "caption" => _m('Actions')),
-            "debug" => array (
-                "view" => array ( "type"=>"select", "source"=>$debug_params ),
+        "messages" => [
+            "no_item" => _m("No RSS Feeds set.")
+        ],
+        "buttons_down" => ['update_all'=> false, 'delete_all' => false],
+        "buttons_left" => ['edit'=> false, 'delete_checkbox' => false],
+        "fields" => [
+            "feed_id" => [  // actions
+                "view" => ["type"=>"userdef", "function" => 'showRSSFeedActions', "html" => true],
+                "caption" => _m('Actions')
+            ],
+            "debug" => [
+                "view" => ["type"=>"select", "source"=>$debug_params],
                 "caption" => _m('Messages'),
                 "table" => 'aa_notable',
-                "default" => 4),
-            "fire" => array (
-                "view" => array ( "type"=>"checkbox" ),
+                "default" => 4
+            ],
+            "fire" => [
+                "view" => ["type"=>"checkbox"],
                 "caption" => _m('Write'),
                 "hint" => _m('update database'),
                 "table" => 'aa_notable',
-                "default" => 1),
-            "server_url" => array (
-                "view" => array ("type" => 'text'),
-                "caption" => _m("Feed url")),
-            "name" => array (
-                "view" => array ("readonly" => true),
-                "caption" => _m('Node')),
-            "slice_id" => array (
-                "view" => array ( "type"=>"userdef", "function" => 'displaySliceName', "html" => true ),
-                "caption" => _m('Local slice'))
-        ));
+                "default" => 1
+            ],
+            "server_url" => [
+                "view" => ["type" => 'text'],
+                "caption" => _m("Feed url")
+            ],
+            "name" => [
+                "view" => ["readonly" => true],
+                "caption" => _m('Node')
+            ],
+            "slice_id" => [
+                "view" => ["type"=>"userdef", "function" => 'displaySliceName', "html" => true],
+                "caption" => _m('Local slice')
+            ]
+        ]
+    ];
 }
 
 $rss_tv = GetRSS_tv();

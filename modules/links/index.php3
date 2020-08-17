@@ -154,8 +154,8 @@ $switches->addAction(new AA_Manageraction_Links_Tab('Tab'));
 $switches->addAction(new AA_Manageraction_Links_GoBookmark('GoBookmark'));
 
 
-$manager_settings = array(
-     'searchbar' => array(
+$manager_settings = [
+     'searchbar' => [
          'fields'               => GetLinkFields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
@@ -164,14 +164,14 @@ $manager_settings = array(
          'function'             => 'Links_UpdateStateFromFilter',  // aditional action hooked on standard filter action
          'hint'                 => _m("HINT: \"social ecology\" AND environment"),
          'hint_url'             => get_help_url(AA_LINKS_HELP_MAIN,"hledat-radit")
-                         ),
-     'scroller'  => array(
+     ],
+     'scroller'  => [
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
          'slice_id'             => $slice_id
-                         ),
-     'itemview'  => array(
+     ],
+     'itemview'  => [
          'manager_vid'          => $links_info['manager_vid'],      // id of view which controls the design
-         'format'               => array(                           // optionaly to manager_vid you can set format array
+         'format'               => [                           // optionaly to manager_vid you can set format array
              'compact_top'      => "<table border=0 cellspacing=0 cellpadding=5>",
              'category_sort'    => false,
              'category_format'  => "",
@@ -183,18 +183,20 @@ $manager_settings = array(
              ',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
-             'id'               => $link_info['id'] ),
+             'id'               => $link_info['id']
+         ],
          'fields'               => '',
          'aliases'              => GetLinkAliases(),
          'get_content_funct'    => 'Links_GetLinkContent'
-                         ),
+     ],
      'actions_hint' => _m("Perform action on selected items"),
      'actions_hint_url' => get_help_url(AA_LINKS_HELP_MAIN,"co-udelat-sodkazy"),
      'actions'   => $actions,
      'switches'  => $switches,
-     'messages'  => array(
-         'title'            => _m('ActionApps - Links Manager'))
-                         );
+     'messages'  => [
+         'title'            => _m('ActionApps - Links Manager')
+     ]
+];
 
 if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // we are here for the first time or we are switching to another slice
@@ -271,22 +273,22 @@ echo '<tr>
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
               class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
-echo getFrmInputButtons(array(
-    'gocat' => array(
+echo getFrmInputButtons([
+    'gocat' => [
         'type' => 'button',
         'value' => _m('Show Links'),
         'add' => 'onclick="document.filterform.submit()"',
         'help' => get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy")
-    ),
-    'editcat' => array(
+    ],
+    'editcat' => [
         'type' => 'button',
         'value' => _m('Edit Category'),
         'add' => 'onclick="EditCurrentCat()"',
         'help' => get_help_url(AA_LINKS_HELP_MAIN, "editujkat")
-    )
+    ]
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
-), 'bottom', true, COLOR_TABBG);
+], 'bottom', true, COLOR_TABBG);
 
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);

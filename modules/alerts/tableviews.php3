@@ -86,12 +86,12 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         }
         freeDB($db);
 
-        return  array (
+        return  [
         "table" => "alerts_collection_filter",
         "type" => "browse",
         "readonly" => false, //$no_filters,
-        "buttons_left" => array ("delete_checkbox" => 1),
-        "buttons_down" => array ("update_all" => 1, "delete_all" => 1),
+        "buttons_left" => ["delete_checkbox" => 1],
+        "buttons_down" => ["update_all" => 1, "delete_all" => 1],
         "addrecord" => is_array($new_filters),
         "gotoview" => "au_edit",
         "mainmenu" => "admin",
@@ -103,24 +103,31 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "orderby" => "myindex",
         "help" => _m("Choose selections which form the Alert email."),
         "where" => "collectionid = '$collectionid'",
-        "fields" => array (
-            "collectionid" => array (
-                "view" => array ("type" => "hide"),
-                "default" => $collectionid),
-            "filterid" => array (
+        "fields" => [
+            "collectionid" => [
+                "view" => ["type" => "hide"],
+                "default" => $collectionid
+            ],
+            "filterid" => [
                 "caption" => _m("selection"),
-                "view" => array (
+                "view" => [
                     "readonly" => true,
                     "type" => "select",
                     "html" => true,
-                    "source" => $filters),
-                "view_new_record" => array (
+                    "source" => $filters
+                ],
+                "view_new_record" => [
                     "type" => "select",
-                    "source" => $new_filters)),
-            "myindex" => array (
+                    "source" => $new_filters
+                ]
+            ],
+            "myindex" => [
                 "caption" => _m("order"),
-                "default" => 1)),
-        "attrs" => $attrs_browse);
+                "default" => 1
+            ]
+        ],
+        "attrs" => $attrs_browse
+        ];
     }
 
     /* ------------------------------------------------------------------------------------
@@ -133,13 +140,16 @@ function GetAlertsTableView ($viewID, $processForm = false) {
 
     if ($viewID == "modedit") {
         $alertslangs = AA_Langs::getFiles('alerts');
-        return array (
+        return [
         "table" => "module",
-        "join" => array (
-            "alerts_collection" => array (
-                "joinfields" => array (
-                    "id" => "module_id"),
-                "jointype" => "1 to 1")),
+        "join" => [
+            "alerts_collection" => [
+                "joinfields" => [
+                    "id" => "module_id"
+                ],
+                "jointype" => "1 to 1"
+            ]
+        ],
         "type" => "edit",
         "readonly" => false,
         "cond" => 1,
@@ -148,77 +158,94 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "mainmenu" => "admin",
         "submenu" => "settings",
         "help" => _m("Core settings for the Alerts."),
-        "triggers" => array (
-            "AfterInsert" => "AlertsModeditAfterInsert"),
-        "fields" => array (
-            "_alerts_collection_id_" => array (
+        "triggers" => [
+            "AfterInsert" => "AlertsModeditAfterInsert"
+        ],
+        "fields" => [
+            "_alerts_collection_id_" => [
                 "table" => "alerts_collection",
                 "field" => "id",
                 "default" => new_collection_id(),
-                "view" => array ("readonly" => true),
-                "caption" => _m("alerts ID")),
+                "view" => ["readonly" => true],
+                "caption" => _m("alerts ID")
+            ],
 /*            "slice_id" => array (
                 "table" => "alerts_collection",
                 "view" => array ("type"=>"select", "source"=>getReaderManagementSlices()),
                 "caption" => _m("reader management slice")),*/
-            "name" => array (
-                "view" => array ("type" => "text", "size" => array("cols"=>60)),
+            "name" => [
+                "view" => ["type" => "text", "size" => ["cols"=>60]],
                 "caption" => _m("name"),
-                "required" => true),
-            "slice_url" => array ("caption" => _m("form URL"), "required"=>true),
-            "lang_file" => array (
+                "required" => true
+            ],
+            "slice_url" => ["caption" => _m("form URL"), "required"=>true],
+            "lang_file" => [
                 "caption" => _m("language"),
-                "view" => array ("type"=>"select","source"=>$alertslangs)),
-            "deleted" => array (
+                "view" => ["type"=>"select","source"=>$alertslangs]
+            ],
+            "deleted" => [
                 "caption" => _m("deleted"),
                 "hint" => _m("Use AA Admin / Delete<br>to delete permanently"),
-                "view" => array ("type"=>"checkbox")),
-            "emailid_welcome" => array (
+                "view" => ["type"=>"checkbox"]
+            ],
+            "emailid_welcome" => [
                 "table" => "alerts_collection",
                 "caption" => _m("welcome email"),
-                "view" => ($processForm ? "" : array (
+                "view" => ($processForm ? "" : [
                     "type"=>"select",
                     "href_view" => "email_edit",
-                    "source"=>GetUserEmails("alerts welcome")))),
-            "emailid_alert" => array (
+                    "source"=>GetUserEmails("alerts welcome")
+                ])
+            ],
+            "emailid_alert" => [
                 "table" => "alerts_collection",
                 "caption" => _m("alert email"),
-                "view" => ($processForm ? "" : array (
+                "view" => ($processForm ? "" : [
                     "type"=>"select",
                     "href_view" => "email_edit",
-                    "source"=>GetUserEmails("alerts alert")))),
-            "type"  => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
-            "owner" => array ("default" => "",       "view" => array (
+                    "source"=>GetUserEmails("alerts alert")
+                ])
+            ],
+            "type"  => ["default" => "Alerts", "view" => ["type"=>"hide"]],
+            "owner" => [
+                "default" => "",       "view" => [
                 "type"=>"text",
-                "readonly" => 1)),
-            "id" => array (
+                "readonly" => 1
+                ]
+            ],
+            "id" => [
                 "default" => pack_id(new_id()),
-                "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
-            "created_at" => array (
+                "view" => ["type"=>"text", "unpacked" => true, "readonly" => true]
+            ],
+            "created_at" => [
                 "caption" => _m("created at"),
                 "default"=>time(),
-                "view"=>array (
+                "view"=> [
                     "type"=>"date",
                     "format" => "j.m.y",
-                    "readonly" => 1)),
-            "created_by" => array (
+                    "readonly" => 1]
+            ],
+            "created_by" => [
                 "caption" => _m("created by"),
                 "default"=>$auth->auth["uid"],
-                "view"=>array(
+                "view"=> [
                     "type"=>"text",
-                    "readonly" => 1))
-        ),
+                    "readonly" => 1
+                ]
+            ]
+        ],
         "attrs" => $attrs_edit,
-        "messages" => array (
+        "messages" => [
             "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")
-        ));
+        ]
+        ];
     }
 
     /* ------------------------------------------------------------------------------------
        send_emails
     */
     if ($viewID == "send_emails") {
-        return array (
+        return [
         "table" => "alerts_collection",
         "type" => "edit",
         "readonly" => false,
@@ -228,18 +255,22 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "mainmenu" => "admin",
         "submenu" => "send_emails",
         "attrs" => $attrs_edit,
-        "messages" => array (
-            "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")),
+        "messages" => [
+            "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")
+        ],
         "help" => _m("Here you send the Alert emails manually."),
-        "fields" => array (
-            "emailid_alert" => array (
+        "fields" => [
+            "emailid_alert" => [
                 "table" => "alerts_collection",
                 "caption" => _m("alert email"),
-                "view" => ($processForm ? "" : array (
+                "view" => ($processForm ? "" : [
                     "type"=>"select",
                     "href_view" => "email_edit",
-                    "source"=>GetUserEmails("alerts alert")))),
-        ));
+                    "source"=>GetUserEmails("alerts alert")
+                ])
+            ],
+        ]
+        ];
     }
 
 } // end of GetTableView
@@ -262,7 +293,7 @@ function FindAlertsUserPermissions() {
     $db->query("SELECT userid
         FROM alerts_user_collection
         WHERE collectionid='$collectionid' AND $where");
-    $retval = array ();
+    $retval = [];
     while ($db->next_record()) {
         $retval[] = $db->f("userid");
     }

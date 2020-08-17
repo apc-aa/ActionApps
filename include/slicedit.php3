@@ -31,7 +31,8 @@ require_once AA_INC_PATH."mail.php3";
 require_once AA_INC_PATH."mlx.php";
 require_once AA_INC_PATH."um_util.php3";
 
-$SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
+$SLICE_FIELDS_TEXT = [
+    "id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
    "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
    "category_top", "category_format", "category_bottom", "slice_url",
@@ -43,12 +44,15 @@ $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "noitem_msg",
    "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove",
    "fileman_dir","fileman_access","javascript","aditional",
-   "mailman_field_lists", "auth_field_group", "reading_password");
+   "mailman_field_lists", "auth_field_group", "reading_password"
+];
 
-$SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template",
+$SLICE_FIELDS_NUM  = [
+    "deleted", "export_to_all", "template",
    "even_odd_differ", "category_sort", "d_listlen",
    "email_sub_enable", "exclude_from_dir","permit_anonymous_post",
-   "permit_anonymous_edit", "permit_offline_fill",);
+   "permit_anonymous_edit", "permit_offline_fill",
+];
 
 /** add_user_and_welcome function
  *  Assigns user privileges and sends a welcome email, if the email address is filled.
@@ -79,12 +83,12 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
         return "";
     }
 
-    if ( ($slice_name = DB_AA::select1('SELECT name FROM `slice`', 'name', array(array('id',$slice_id, 'l')))) === false) {
+    if ( ($slice_name = DB_AA::select1('SELECT name FROM `slice`', 'name', [['id',$slice_id, 'l']])) === false) {
         return _m("Slice not found.");
     }
     $me = AA::$perm->getIDsInfo($auth->auth["uid"]);
 
-    $aliases               = array();
+    $aliases               = [];
     $aliases["_#SLICNAME"] = GetAliasDef( "f_t:$slice_name",      "id..............");
     $aliases["_#LOGIN___"] = GetAliasDef( "f_t:$user_login",      "id..............");
     $aliases["_#NAME____"] = GetAliasDef( "f_t:". $user["name"],  "id..............");
@@ -93,7 +97,7 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
     $aliases["_#ME_NAME_"] = GetAliasDef( "f_t:". $me["cn"],      "id..............");
 
     $item = new AA_Item('', $aliases);
-    if (AA_Mail::sendTemplate($welcome_id, array ($me["mail"], $user["mail"]), $item) != 2) {
+    if (AA_Mail::sendTemplate($welcome_id, [$me["mail"], $user["mail"]], $item) != 2) {
         return _m("Error mailing");
     }
 }
@@ -189,7 +193,7 @@ if ( $add || $update ) {
         ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
         ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
-        if ($fileman_dir AND DB_AA::test('slice', array(array('fileman_dir',$fileman_dir), array('id', $slice_id, 'l<>')))) {
+        if ($fileman_dir AND DB_AA::test('slice', [['fileman_dir',$fileman_dir], ['id', $slice_id, 'l<>']])) {
             $err[] = _m("This File Manager Directory is already used by another slice.");
         }
 
@@ -234,7 +238,7 @@ if ( $add || $update ) {
             $varset->add("mailman_field_lists", "text", $mailman_field_lists);
             $varset->add("reading_password", "text", $reading_password);
 
-            $slice_flag  = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', array(array('id',$slice_id,'l')));
+            $slice_flag  = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', [['id',$slice_id,'l']]);
             $slice_flag &= ~(SLICE_ALLOW_EXPIRED_CONTENT | SLICE_ALLOW_PENDING_CONTENT); // clear the bits
             $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
             $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
@@ -275,7 +279,7 @@ if ( $add || $update ) {
 
             // get template data
             $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
-            if (! ($record = DB_AA::select1('SELECT * FROM slice', '', array(array('id', $set_template_id, 'l'))))) {
+            if (! ($record = DB_AA::select1('SELECT * FROM slice', '', [['id', $set_template_id, 'l']]))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
@@ -312,7 +316,7 @@ if ( $add || $update ) {
             }
 
             // copy fields
-            $fields = DB_AA::select(array(), 'SELECT * FROM field', array(array('slice_id', $set_template_id, 'l')));
+            $fields = DB_AA::select([], 'SELECT * FROM field', [['slice_id', $set_template_id, 'l']]);
             foreach ($fields as $field) {
                 $varset->clear();
                 $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
@@ -337,8 +341,8 @@ if ( $add || $update ) {
             if ($wiz["copyviews"] && $slice_id && $set_template_id) {
                 if (!CopyTableRows( "view",
                                     "slice_id='".q_pack_id($set_template_id)."'",
-                                    array ("slice_id"=>q_pack_id($slice_id)),
-                                    array ("id"))) {
+                                    ["slice_id"=>q_pack_id($slice_id)],
+                                    ["id"])) {
                     $err[] = _m("Error when copying views.");
                 }
             }

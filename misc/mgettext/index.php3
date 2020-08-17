@@ -37,7 +37,8 @@ require_once AA_BASE_PATH."misc/mgettext/translate.php3";
 require_once AA_BASE_PATH."misc/mgettext/createlogs.php3";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
-$lang_list = array ("cz"     => 1,
+$lang_list = [
+    "cz"     => 1,
                     "cz-utf8"=> 1,
                     "sk"     => 1,
                     "es"     => 1,
@@ -52,7 +53,7 @@ $lang_list = array ("cz"     => 1,
                     "hu"     => 1,
                     "fr"     => 1,
                     "hr"     => 1
-                   );
+];
 
 // $aadir is the source dir for updating translation files
 $aadir = AA_BASE_PATH;
@@ -75,10 +76,11 @@ endslash($destdir);
 
 // _alerts_lang.php3 language files, used in the Alerts module
 $lang_groups ["alerts"] =
-    array ("modules/alerts/");
+    ["modules/alerts/"];
 // _news_lang.php3 language files, used almost everywhere in Control panel
 $lang_groups ["news"] =
-    array ("./",
+    [
+        "./",
            "admin/",
            "central/",
            "include/",
@@ -86,22 +88,26 @@ $lang_groups ["news"] =
            "-admin/param_wizard.php3",
            "-include/view.php3",
            "-include/constants_param_wizard.php3",
-           "-include/mgettext.php3");
+           "-include/mgettext.php3"
+    ];
 // _site_lang.php3 language files, used in the Site module
 $lang_groups ["site"] =
-    array ("modules/site/");
+    ["modules/site/"];
 // _links_lang.php3 language files, used in the Links module
 $lang_groups ["links"] =
-    array ("modules/links/",
+    [
+        "modules/links/",
            "include/manager.class.php3",
            "include/searchbar.class.php3",
-           "include/util.php3" );
+           "include/util.php3"
+    ];
 // _polls_lang.php3 language files, used in the Links module
 $lang_groups ["polls"] =
-    array ("modules/polls/");
+    ["modules/polls/"];
 // _output_lang.php3 language files, used in the output, i.e. slice.php3 and view.php3
 $lang_groups ["output"] =
-    array ("./slice.php3",
+    [
+        "./slice.php3",
            "./view.php3",
            "./discussion.php3",
            "include/util.php3",
@@ -110,12 +116,15 @@ $lang_groups ["output"] =
            "include/discussion.php3",
            "include/item.php3",
            "include/scroller.php3",
-           "include/itemview.php3");
+           "include/itemview.php3"
+    ];
 // _param_wizard_lang.php3 language files, used only in the parameter wizard
 $lang_groups ["param_wizard"] =
-    array ("admin/param_wizard.php3",
+    [
+        "admin/param_wizard.php3",
            "include/constants_param_wizard.php3",
-           "doc/param_wizard_list.php3");
+           "doc/param_wizard_list.php3"
+    ];
 
 /* ----------------------------------------------------------------------------
    CREATING MGETTEXT LANGUAGE FILES
@@ -140,9 +149,11 @@ $old_lang_files = $aadir."include/??_".$old_group."_lang.php3";
 $log_files = $destdir."log_??_".$old_group."_lang.php3";
 
 // directories from which to translate files (replace language constants by _m() calls)
-$translate_dirlist = array (".","include","admin","central",
+$translate_dirlist = [
+    ".","include","admin","central",
     "modules","modules/module_TEMPLATE", "modules/jump", "modules/alerts", "modules/links",
-    "misc/oldDb2db", 'misc/charset', 'misc/msconvert', 'misc/offline2slice');
+    "misc/oldDb2db", 'misc/charset', 'misc/msconvert', 'misc/offline2slice'
+];
 
 
 /*

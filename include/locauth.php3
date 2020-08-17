@@ -69,7 +69,7 @@ class AA_Auth extends Auth {
         if ( !$login_msg AND $username )  {
             $login_msg  = '<div style="color:red;"><b>'. _m("Either your username or your password is not valid.") .'</b></div>';
             $login_msg .= '<div>'. _m("Please try again!") .'</div>';
-            $login_msg .= '<div>'. _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", array(ERROR_REPORTING_EMAIL)) .'</div>';
+            $login_msg .= '<div>'. _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", [ERROR_REPORTING_EMAIL]) .'</div>';
         }
 
         require_once (AA_INC_PATH . "loginform.inc");

@@ -41,7 +41,7 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
      */
     function expand($ids_string='', $expression='') {
         $ids     = explode_ids($ids_string);
-        $results = array();
+        $results = [];
         foreach ( $ids as $poll_id ) {
             if ( $poll_id ) {
                 $poll = AA_Polls::getPoll($poll_id);

@@ -114,44 +114,50 @@ define("PS_MODW_SETTINGS",  "A");         //       | set site module properties
 // $perms_roles[role]['perm']. However, it is possible to store the permission
 // letters into perm system directly (in case you want user with specific rights)
 
-$perms_roles = array(
-  "AUTHOR" => array(         // AUTHOR can write items and edit his items (is true for 'slice' module)
+$perms_roles = [
+  "AUTHOR" => [         // AUTHOR can write items and edit his items (is true for 'slice' module)
      'id' => '1',
-     'perm' => 'abcdefg'),                // author
-  "EDITOR" => array(         // EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
+     'perm' => 'abcdefg'
+  ],                // author
+  "EDITOR" => [         // EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
      'id' => '2',
      'perm' => 'abcdefg'.                 // author
-               'hijklmnopqrs'),           // editor
-  "ADMINISTRATOR" => array(  // ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
+               'hijklmnopqrs'
+  ],           // editor
+  "ADMINISTRATOR" => [  // ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
      'id' => '3',
      'perm' => 'abcdefg'.                 // author
                'hijklmnopqrs'.            // editor
-               'ABCDEFGHIJKLMNOP'),       // administrator
-  "SUPER" => array(          // SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
+               'ABCDEFGHIJKLMNOP'
+  ],       // administrator
+  "SUPER" => [          // SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
      'id' => '4',
      'perm' => 'abcdefg'.                 // author
                'hijklmnopqrs'.            // editor
                'ABCDEFGHIJKLMNOP'.        // administrator
-               'QRSTUVW'));               // super
+               'QRSTUVW'
+  ]
+];               // super
 // reserve: tuvwxyzXYZ and special characters like +-/*@... (but no numbers!!!)
 
 
 // defines, which roles youcan use with each module
-$perms_roles_modules = array(
-  'S'     => array("AUTHOR","EDITOR","ADMINISTRATOR"),  // S - slice
+$perms_roles_modules = [
+  'S'     => ["AUTHOR","EDITOR","ADMINISTRATOR"],  // S - slice
       // There is not listed SUPER, because SUPER is permission for 'aa' object
       // and not 'slice' object. 'aa' object is parent of all modules - setting
       // perm to 'aa' object is the same as setting it for all the modules
       // (specific setting of 'slice' module for the user is stronger than
       // the 'aa' seting)
-  'W'     => array("ADMINISTRATOR"),                    // site module
-  'A'     => array("ADMINISTRATOR"),                    // MySQL Auth module
-  'J'     => array("ADMINISTRATOR"),                    // jump module
+  'W'     => ["ADMINISTRATOR"],                    // site module
+  'A'     => ["ADMINISTRATOR"],                    // MySQL Auth module
+  'J'     => ["ADMINISTRATOR"],                    // jump module
       // There is no specific roles in 'W', 'A', 'J' modules.
       // See include/constants.php3 for module definitions
-  'Alerts'=> array("ADMINISTRATOR"),                    // Alerts module
-  'P'     => array("EDITOR","ADMINISTRATOR"),           // polls module
-  'Links' => array("AUTHOR","EDITOR","ADMINISTRATOR")); // Links module
+  'Alerts'=> ["ADMINISTRATOR"],                    // Alerts module
+  'P'     => ["EDITOR","ADMINISTRATOR"],           // polls module
+  'Links' => ["AUTHOR","EDITOR","ADMINISTRATOR"]
+]; // Links module
       // AUTHOR in Links module is public - probably identified by free/freepwd
       // user. (S)he can just add links
 
@@ -404,9 +410,9 @@ function GetUserEmails($type = "", $user_id = "current") {
     }
     if ($slices == "all") {
     } elseif (!is_array($slices) || count ($slices) == 0) {
-        return array();
+        return [];
     } else {
-        $slice_ids = array();
+        $slice_ids = [];
         foreach ($slices as $slice => $foo) {
             $slice_ids[] = q_pack_id($slice);
         }
@@ -443,7 +449,7 @@ class AA_Perm {
     private $perm_mode;
 
     function __construct($systems) {
-        $this->perm_systems = array();
+        $this->perm_systems = [];
         foreach ($systems as $system_name) {
             $system_name = 'AA_Permsystem_' . ucfirst($system_name);
             $this->perm_systems[$system_name] = new $system_name;
@@ -458,7 +464,7 @@ class AA_Perm {
         // restrict to slices
         $ps_rm->restrictSlices($rm_slices);
         // use just Reader slices
-        $this->perm_systems = array( 'AA_Permsystem_Reader' => $ps_rm );
+        $this->perm_systems = ['AA_Permsystem_Reader' => $ps_rm];
     }
 
 
@@ -488,7 +494,7 @@ class AA_Perm {
     }
 
     public function findUsernames($pattern) {
-        $users = array();
+        $users = [];
         foreach ($this->perm_systems as $perm_sys) {
             $new_users = $perm_sys->findUsernames($pattern);
             if (is_array($new_users) AND count($new_users)) {
@@ -509,7 +515,7 @@ class AA_Perm {
     }
 
     public function findGroups($pattern) {
-        $groups = array();
+        $groups = [];
         foreach ($this->perm_systems as $perm_sys) {
             $new_groups = $perm_sys->findGroups($pattern);
             if (is_array($new_groups) AND count($new_groups)) {
@@ -599,7 +605,7 @@ class AA_Perm {
         if ( $group_id AND ($ps = $this->_whichUsersystem($group_id))) {
             return $ps->getGroupMembers($group_id);
         }
-        return array();
+        return [];
     }
 
     /** getMembership function
@@ -608,7 +614,7 @@ class AA_Perm {
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($uid, $flags = 0) {
-        $groups = array();
+        $groups = [];
         foreach ($this->perm_systems as $perm_sys) {
             $groups = array_merge($groups, $perm_sys->getMembership($uid, $flags));
         }
@@ -625,9 +631,9 @@ class AA_Perm {
      */
     function getUserPerms($uid, $objectType, $flags = 0) {
         if ( $ps = $this->_whichPermstorage()) {
-            return $ps->getJoinedPerms($uid, $objectType, ($flags & 1) ? array() : $this->getMembership($uid));
+            return $ps->getJoinedPerms($uid, $objectType, ($flags & 1) ? [] : $this->getMembership($uid));
         }
-        return array();
+        return [];
     }
 
     /**
@@ -639,7 +645,7 @@ class AA_Perm {
         if ( $ps = $this->_whichPermstorage()) {
             return $ps->getObjectsPerms($objectID, $objectType);
         }
-        return array();
+        return [];
     }
 
     /** $this->_whichUsersystem($uid) function
@@ -828,7 +834,7 @@ class AA_Perm {
     }
 }
 
-AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
+AA::$perm = new AA_Perm([PERM_LIB, 'Reader']);
 
 class AA_Permsystem {
     /** userIdFormatMatches - is user id in correct format?
@@ -849,9 +855,9 @@ class AA_Permsystem {
     function getGroup($group_id)                                {}
     function getIDsInfo($uid)                                   {}
     function getGroupMembers($group_id)                         {}
-    function getMembership($id, $flags=0)                       { return array(); }
-    function getObjectsPerms($objectID, $objectType)            { return array(); }
-    function getJoinedPerms($uid, $objectType, $groups=array()) { return array(); }
+    function getMembership($id, $flags=0)                       { return []; }
+    function getObjectsPerms($objectID, $objectType)            { return []; }
+    function getJoinedPerms($uid, $objectType, $groups= []) { return []; }
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
@@ -882,7 +888,7 @@ class AA_Permsystem {
      * flags & 1 -> do not involve membership in groups
      */
     function getUserPerms($uid, $objectType, $flags = 0) {
-        return $this->getJoinedPerms($uid, $objectType, ($flags & 1) ? array() : $this->getMembership($uid));
+        return $this->getJoinedPerms($uid, $objectType, ($flags & 1) ? [] : $this->getMembership($uid));
     }
 }
 
@@ -941,7 +947,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     protected function rehashPassword($user_id, $password) {
         if ($user_id AND $password) {
             AA_Log::write('PWD_REHASH', AA_Log::context($user_id));
-            UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(array('AA_PASSWD',$password))), array(false,false,false)); // we do not need to invalidate cache - from the outside it is the same
+            UpdateField($user_id, FIELDID_PASSWORD, new AA_Value(ParamImplode(['AA_PASSWD',$password])), [false,false,false]); // we do not need to invalidate cache - from the outside it is the same
         }
     }
 
@@ -984,9 +990,9 @@ class AA_Permsystem_Reader extends AA_Permsystem {
                       WHERE slice.type = 'ReaderManagement'
                         AND content.field_id = '".FIELDID_USERNAME."'
                         AND content.text LIKE '%". quote($pattern) ."%'");
-        $users = array();
+        $users = [];
         while ($db->next_record()) {
-            $users[unpack_id($db->f('id'))] = array('name' => $db->f('name'));
+            $users[unpack_id($db->f('id'))] = ['name' => $db->f('name')];
         }
         freeDB($db);
         return $users;
@@ -1000,16 +1006,16 @@ class AA_Permsystem_Reader extends AA_Permsystem {
                         AND module.deleted < '1'
                         AND module.name LIKE '%". quote($pattern) ."%'");
         $prefix = _m('Reader Slice');
-        $groups = array();
+        $groups = [];
         while ($db->next_record()) {
-            $groups[unpack_id($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
+            $groups[unpack_id($db->f('id'))] = ['name' => "$prefix: ". $db->f('name')];
         }
         freeDB($db);
 
         // get all ReaderSets
         $prefix = _m('Reader Set');
         foreach ( AA_Object::getNameArray('AA_Set', array_keys($groups)) as $set_id => $name ) {
-            $groups[$set_id] = array('name' => "$prefix: $name");
+            $groups[$set_id] = ['name' => "$prefix: $name"];
         }
         return $groups;
     }
@@ -1019,7 +1025,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      *  @return false|array(uid, name, description) or false if not found
      */
     function getGroup($group_id) {
-        $ret = array('uid' => $group_id);
+        $ret = ['uid' => $group_id];
         if ( $this->_isGroupReader($group_id) ) {
             $ret['description'] = _m('Reader Slice');
         } elseif ( $this->_isGroupReaderSet($group_id) ) {
@@ -1066,11 +1072,11 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         if ($user_info->isEmpty()) {
             return false;
         }
-        $res              = array();
+        $res              = [];
         $res['id']        = $user_id;
         $res['name']      = $user_info->getValue(FIELDID_USERNAME);
         $res['mail']      = $user_info->getValue(FIELDID_EMAIL);
-        $res['mails']     = array($res['mail']);
+        $res['mails']     = [$res['mail']];
         $res['login']     = $user_info->getValue(FIELDID_USERNAME);
         $res['sn']        = '';
         $res['givenname'] = '';
@@ -1085,7 +1091,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      */
     private function _readerGroupIDsInfo($rm_id) {
         $slice       = AA_Slice::getModule($rm_id);
-        $res         = array();
+        $res         = [];
         $res['type'] = 'ReaderGroup';
         $res['name'] = $slice->getProperty('name');
         return $res;
@@ -1100,7 +1106,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         if ( empty($set) ) {
             return false;
         }
-        $res         = array();
+        $res         = [];
         $res['type'] = 'ReaderSet';
         $res['name'] = $set->getName();
         return $res;
@@ -1108,7 +1114,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     function getGroupMembers($group_id) {
         // @todo implement it
-        return array();
+        return [];
     }
 
     /** getMembership function
@@ -1118,23 +1124,23 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      */
     function getMembership($user_id, $flags=0) {
         if (!$user_id) {
-            return array();
+            return [];
         }
         $user_info = GetAuthData( $user_id );
 
         if ($user_info->isEmpty()) {
-            return array();
+            return [];
         }
 
         $reader_slice_id = $user_info->getSliceID();
-        $ret             = array($reader_slice_id);
+        $ret             = [$reader_slice_id];
 
         $restrict_zids   = new zids($user_id, 'l');
         // groups could be definned also by subset of readers - defined by AA_Set
-        $set_ids         = AA_Object::querySet('AA_Set', new AA_Set(array($reader_slice_id)));
+        $set_ids         = AA_Object::querySet('AA_Set', new AA_Set([$reader_slice_id]));
         foreach( $set_ids as $set_id ) {
             $set  = AA_Object::load($set_id, 'AA_Set');
-            $zids = QueryZids(array($reader_slice_id), $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
+            $zids = QueryZids([$reader_slice_id], $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
 
             // reader is in this reader set
             if ($zids->count() > 0) {

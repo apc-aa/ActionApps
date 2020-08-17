@@ -126,30 +126,30 @@ if ($design) {
 $conds_ro = String2Conds( rawurldecode($showcondsro) );
 $conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
-$manager_settings = array(
+$manager_settings = [
      'module_id' => $related_sid,
      'show'      =>  MGR_ALL & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
-     'searchbar'  => array(
+     'searchbar'  => [
          'fields'               => $slice->getSearchfields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
          'function'             => false  // name of function for aditional action hooked on standard filter action
-                         ),
-     'scroller'  => array(
+     ],
+     'scroller'  => [
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
-                         ),
-     'itemview'  => array(
+     ],
+     'itemview'  => [
          'manager_vid'          => $manager_vid,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
          'fields'               => $slice->fields('record'),
          'aliases'              => $aliases,
          'get_content_funct'    => 'GetItemContent'
-                         ),
-     'messages'  => array(
+     ],
+     'messages'  => [
          'title'       => _m("Editor window - item manager, related selection window")
-                         )
-         );
+     ]
+];
 
 $manager = new AA_Manager('related'. $related_sid, $manager_settings);
 if ((isset($conds_ro)) && (isset($showcondsro))) {
@@ -192,7 +192,7 @@ FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);  // for Selec
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-$zids = QueryZids(array($related_sid), $conds, $sort, $frombins);
+$zids = QueryZids([$related_sid], $conds, $sort, $frombins);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

@@ -32,14 +32,15 @@
  *
 */
 
-$hcCol = array("Name"  => 0,
+$hcCol = [
+    "Name"  => 0,
                "Value" => 1,
                "Prior" => 2,
                "Desc"  => 3,
                "ID"    => 4,
                "Dirty" => 5,
                "Child" => 6       // always leave colChild as the last one
-              );
+];
 
 /**  getHierConstInitJavaScript function
  * Params:
@@ -91,7 +92,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  * @return string
  */
 function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true,
-    $minLevelSelect=0, $boxWidth=0, $levelNames=array()) {
+    $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
 
     $admin = $admin ? 1 : 0;
     if ($boxWidth == 0) $boxWidth = $horizontal ? 30 : 70;
@@ -156,7 +157,7 @@ function showHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName=
 /** showHierConstBoxes function
  *
  */
-function showHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true, $minLevelSelect=0, $boxWidth=0, $levelNames=array()) {
+function showHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $admin=true, $minLevelSelect=0, $boxWidth=0, $levelNames= []) {
     echo getHierConstBoxes($hcid, $levelCount, $horizontal, $targetBox, $admin, $minLevelSelect, $boxWidth, $levelNames);
 }
 
@@ -193,7 +194,7 @@ function createConstsArray($group_id, $admin, &$consts)
     global $get_method;
     $dbc = getDB();
 
-    $data = array();
+    $data = [];
     $dbc->query("SELECT * FROM constant WHERE group_id = '$group_id'");
     while ($dbc->next_record()) {
         // & in from _GET is taken as parameter delimiter, so we replace it
@@ -218,7 +219,7 @@ function createConstsArray($group_id, $admin, &$consts)
 
     $path       = "";
     $consts     = "array(";
-    $error_data = array();
+    $error_data = [];
     $ok_data    = 0;
     $depth      = 0;
     foreach ( $data as $ancestors => $col) {
@@ -314,7 +315,7 @@ function hcSortArray(&$arr) {
  * @return mixed
  */
 function ff($str) {
-    return str_replace(array("\r","\n","'"), array('','',"\\'"), $str);
+    return str_replace(["\r","\n","'"], ['','',"\\'"], $str);
 }
 
 /** printConstsArray function
@@ -396,7 +397,7 @@ function hcUpdate()
             $changes   = substr ($hcalldata, strpos ($hcalldata,$chtag) + strlen($chtag) + 1);
             $hcalldata = substr ($hcalldata, 0, strpos ($hcalldata,$chtag) - 1);
             $chs       = explode(":", $changes);
-            $changes   = array();
+            $changes   = [];
             foreach ($chs as $ch) {
                 if (!strchr($ch,"~")) {
                     continue;
@@ -526,9 +527,9 @@ function CopyConstants($slice_id){
         if (!CopyTableRows(
             "constant",
             "group_id='lt_groupNames' AND name='$old_id'",
-            array ("name"=>$new_id,"value"=>$new_id), // set_columns
-            array ("short_id"),                       // omit_columns
-            array ("id")                              // id_columns
+            ["name"=>$new_id,"value"=>$new_id], // set_columns
+            ["short_id"],                       // omit_columns
+            ["id"]                              // id_columns
             )) {
             $err[] = "Could not copy constant group.";
             freeDB($db);
@@ -539,9 +540,9 @@ function CopyConstants($slice_id){
         if (!CopyTableRows(
             "constant",
             "group_id='$old_id'",
-            array ("group_id"=>$new_id),              // set_columns
-            array ("short_id"),                       // omit_columns
-            array ("id")                              // id_columns
+            ["group_id"=>$new_id],              // set_columns
+            ["short_id"],                       // omit_columns
+            ["id"]                              // id_columns
             )) {
             $err[] = "Could not copy constant group.";
             freeDB($db);

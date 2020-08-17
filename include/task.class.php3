@@ -45,14 +45,17 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
      *  AA_Object's method
      */
     static function getClassProperties() {
-        return array (          //           id            name              type        multi  persist validator, required, help, morehelp, example
+        return [          //           id            name              type        multi  persist validator, required, help, morehelp, example
             'task'      => new AA_Property( 'task',      _m("Task"),         'text',    false, true, '', true),
             'condition' => new AA_Property( 'condition', _m("Condition"),    'text',    false, true, '', false, _m('If specified, the task is performed only if Condition is evaluated to value different from zero or empty value')),
-            'event'     => new AA_Property( 'event',     _m("Event to run"), 'string',  true,  true, array('enum',array('ITEM_NEW'=> _m('New Item'), 'ITEM_UPDATED'=> _m('Item Updated'))), false,  _m('Event, when the task shoud be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify "+ seconds" parameter or set it to 0, then the task is executed directly. If the "+ seconds" offset is set, then the task is planed to execute once after x seconds.')),
+            'event'     => new AA_Property( 'event',     _m("Event to run"), 'string',  true,  true, [
+                'enum',
+                ['ITEM_NEW'=> _m('New Item'), 'ITEM_UPDATED'=> _m('Item Updated')]
+            ], false,  _m('Event, when the task shoud be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify "+ seconds" parameter or set it to 0, then the task is executed directly. If the "+ seconds" offset is set, then the task is planed to execute once after x seconds.')),
             'time'      => new AA_Property( 'time',      _m("Time to run"),  'string',  false, true, '', false, _m('Specify the time, when the task shoud be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="http://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>"Monday 10:00" - runs every Monday at 16:00<br>"first day of this month 10:00"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.')),
             'shift'     => new AA_Property( 'shift',     _m("+ seconds"),    'int',     false, true, '', false, _m('Optionaly specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)')),
             'item_id'   => new AA_Property( 'item_id',   _m("Item ID"),      'string',  false, true, 'id', false, _m('Optionaly specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For "event" tasks (Item updated/new) is always filled with id of modified item.'))
-            );
+        ];
     }
 
     // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
@@ -65,7 +68,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
          '
           <table>
             <tr>
-              <th>'.join("</th>\n<th>", array(  _m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module'))).'</th>
+              <th>'.join("</th>\n<th>", [_m('Action'),_m('Name'), _m('Event'), _m('Time').'<br>'. _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module')]).'</th>
             </tr>
             ';
     }
@@ -125,7 +128,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         $ret = $this->task;
         AA::$slice_id = $this->getOwnerId();
         if (is_long_id($this->item_id)) {
@@ -162,14 +165,14 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
             $toexecute = new AA_Toexecute;
-            $toexecute->laterOnce($this, array(), self::toexecuteSelector($this->getId()), 100, $time);
+            $toexecute->laterOnce($this, [], self::toexecuteSelector($this->getId()), 100, $time);
         }
         return "$time>=".time().' ';
     }
 
     static function getForm($oid=null, $owner=null, $otype=null) {
         $form  = parent::getForm($oid, $owner, $otype);
-        $next_time      = DB_AA::select1("SELECT execute_after FROM `toexecute`", 'execute_after', array(array('selector',"Plannedtask_$oid")));
+        $next_time      = DB_AA::select1("SELECT execute_after FROM `toexecute`", 'execute_after', [['selector',"Plannedtask_$oid"]]);
         $next_time      = $next_time ? date('Y-m-d H:i',$next_time) : _m('not scheduled, yet');
         // $last_execution = DB_AA::select1("SELECT time FROM `log`", 'time', array(array('type','TOEXECUTE'),array('selector',"Plannedtask_$oid")));
         // $last_execution = $last_execution ? date('Y-m-d H:i',$last_execution) : _m('no log entry, yet');
@@ -211,7 +214,7 @@ class AA_Plannedtask_Schedule implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
 
         $ret = '';
         $aa_set = new AA_Set();

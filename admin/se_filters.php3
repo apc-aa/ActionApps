@@ -43,7 +43,7 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 // lookup (slices)
 $SQL= "SELECT name, id FROM feeds, slice
@@ -151,11 +151,15 @@ $apage->setTitle(_m("Admin - Content Pooling - Filters"));
 $apage->addRequire('InitPage();', 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
-$form_buttons=array("btn_upd"=>array("type"  =>"button",
+$form_buttons= [
+    "btn_upd"=> [
+        "type"  =>"button",
                                "value"       =>_m("Update"),
                                "accesskey"   =>"S",
-                               "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
-                    "cancel" =>array("url"   =>"se_fields.php3"));
+                               "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""
+    ],
+                    "cancel" => ["url"   =>"se_fields.php3"]
+];
 
 FrmTabCaption(_m("Content Pooling - Configure Filters"), $form_buttons);
 ?>

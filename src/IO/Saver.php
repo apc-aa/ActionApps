@@ -51,14 +51,14 @@ class Saver implements AA\Util\LaterInterface {
     protected $id_mode;
     /** id-policy    - how to construct id - old | new | combined */
 
-    private $_new_ids = array();
+    private $_new_ids = [];
     /** array of newly inserted ids (after run()) - the long ones */
-    private $_updated_ids = array();
+    private $_updated_ids = [];
     /** array of ids of rewritten items (after run()) - the long ones */
-    private $_updated_slices = array();
+    private $_updated_slices = [];
     /** array of slice ids with rewritten items (after run()) - the long ones */
 
-    protected $_messages = array();
+    protected $_messages = [];
 
 
     /** AA\IO\Saver function
@@ -70,7 +70,7 @@ class Saver implements AA\Util\LaterInterface {
      */
     function __construct($grabber, $transformations = null, $slice_id = null, $store_mode = 'overwrite', $id_mode = 'old') {
         $this->grabber = $grabber;
-        $this->transformations = is_array($transformations) ? $transformations : array();
+        $this->transformations = is_array($transformations) ? $transformations : [];
         $this->slice_id = $slice_id;
         $this->store_mode = $store_mode;
         $this->id_mode = $id_mode;
@@ -78,9 +78,9 @@ class Saver implements AA\Util\LaterInterface {
 
     /** resets item / slice counters */
     function clear_ids() {
-        $this->_new_ids = array();
-        $this->_updated_ids = array();
-        $this->_updated_slices = array();
+        $this->_new_ids = [];
+        $this->_updated_ids = [];
+        $this->_updated_slices = [];
     }
 
     /** run function
@@ -94,7 +94,7 @@ class Saver implements AA\Util\LaterInterface {
             $this->grabber->prepare();    // maybe some initialization in grabber
         } catch (\Exception $e) {
             $this->message("grabber->prepare() Error: ". $e->getMessage());
-            return array(0,1);
+            return [0,1];
         }
 
         // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
@@ -163,7 +163,7 @@ class Saver implements AA\Util\LaterInterface {
                         // If found, then the item is updated
                         // If not found, the item is_a created, but only with fields if $content4id (not whole insert)
 
-                        $set = new AA_Set(array($this->slice_id));
+                        $set = new AA_Set([$this->slice_id]);
                         if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
                             foreach ($flds as $fld) {
                                 $set->addCondition(new AA_Condition($fld, '=', $content4id->getValue($fld)));
@@ -242,7 +242,7 @@ class Saver implements AA\Util\LaterInterface {
         if (!$fire) {
             print($this->report());
         }
-        return array($ok_count, $err_count);
+        return [$ok_count, $err_count];
     }
 
     /** Returns array of long new saved ids */
@@ -265,7 +265,7 @@ class Saver implements AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         return $this->run();
     }
 
@@ -274,10 +274,10 @@ class Saver implements AA\Util\LaterInterface {
      * @param $text
      */
     function message($text) {
-        $this->_messages[] = (is_object($text) && !is_callable(array(
+        $this->_messages[] = (is_object($text) && !is_callable([
                 $text,
                 "__toString"
-            ))) ? print_r($text, true) : $text;
+            ])) ? print_r($text, true) : $text;
     }
 
     /** report function
@@ -292,6 +292,6 @@ class Saver implements AA\Util\LaterInterface {
      */
     function clear_report() {
         unset($this->_messages);
-        $this->_messages = array();
+        $this->_messages = [];
     }
 }

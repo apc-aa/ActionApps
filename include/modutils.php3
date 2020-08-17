@@ -145,8 +145,8 @@ function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $
  */
 function GetModuleFields($source_id) {
     // lookup owners
-    $slice_owners = array(_m("Select owner")) + DB_AA::select(array('uid'=>'name'),"SELECT LOWER(HEX(`id`)) AS uid, name FROM slice_owner",'',array('name'));
-    $arr = array_values(DB_AA::select1("SELECT name, slice_url, priority, lang_file, LOWER(HEX(`owner`)) AS owner, deleted FROM module",'', array(array('id',$source_id,'l'))));
+    $slice_owners = [_m("Select owner")] + DB_AA::select(['uid'=>'name'],"SELECT LOWER(HEX(`id`)) AS uid, name FROM slice_owner",'', ['name']);
+    $arr = array_values(DB_AA::select1("SELECT name, slice_url, priority, lang_file, LOWER(HEX(`owner`)) AS owner, deleted FROM module",'', [['id',$source_id,'l']]));
     if ($arr) {
         $arr[] = $slice_owners;
     }
@@ -159,7 +159,7 @@ function GetModuleFields($source_id) {
  * @param $del
  */
 function ExitIfCantDelete( $del ) {
-    if ( DB_AA::select1('SELECT deleted FROM `module`', '', array(array('id',$del, 'l'))) === false ) {
+    if ( DB_AA::select1('SELECT deleted FROM `module`', '', [['id',$del, 'l']]) === false ) {
         go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
     }
 }
@@ -169,6 +169,6 @@ function ExitIfCantDelete( $del ) {
  * @param $del
  */
 function DeleteModule( $del ) {
-    DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', array(array('id', $del, 'l')));
+    DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', [['id', $del, 'l']]);
 }
 

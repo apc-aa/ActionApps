@@ -62,7 +62,7 @@ function createFieldNames($fileName,&$addParams) {
     $fn = getCSV($handle,$addParams['delimiter'],$addParams['enclosure']);
     fclose($handle);
     if (!is_array($fn)) {
-        return $addParams['caption'] ? array($fn=>$fn) : array("Field 1"=>"Field 1");
+        return $addParams['caption'] ? [$fn=>$fn] : ["Field 1"=>"Field 1"];
     }
 
     if ($addParams['caption']) {
@@ -107,8 +107,10 @@ class Actions {
      */
     function __construct($actions, $inFields, $html, $params, $globalParams="") {
         foreach ( $actions as $f_id => $action) {
-            $this->actions[$f_id] = array( "from"=>$inFields[$f_id],
-                                           "action"=>new Action($action,$html[$f_id],stripslashes($params[$f_id])));
+            $this->actions[$f_id] = [
+                "from"=>$inFields[$f_id],
+                                           "action"=>new Action($action,$html[$f_id],stripslashes($params[$f_id]))
+            ];
         }
         $this->globalParams = $globalParams;
     }
@@ -317,7 +319,7 @@ class Action {
                 }
             case "storemultiasone" : {
                 // $param is delimiter
-                if (!is_array($from)) $from = array($from);
+                if (!is_array($from)) $from = [$from];
                 $save = "";
                 foreach ( $from as $tostore ) {
                     $savenext = trim($itemContent->GetValue($tostore));
@@ -332,7 +334,7 @@ class Action {
                 break;
             }
             case "storeasmulti": {
-                if (!is_array($from)) $from = array($from);
+                if (!is_array($from)) $from = [$from];
                 foreach ( $from as $tostore ) {
                     $save = trim($itemContent->GetValue($tostore));
                     $fvalues[]['value'] = $save;
@@ -381,7 +383,7 @@ class Action {
                 break;
             }
             case "nszmciselnik": {
-                $from = array('c1','c2','c3','c4','c5','c6');
+                $from = ['c1','c2','c3','c4','c5','c6'];
                 foreach ( $from as $tostore ) {
                     $save = $GLOBALS['nszmciselnik'][(string)trim($itemContent->GetValue($tostore))];
                     if ( $save ) {
@@ -414,7 +416,7 @@ class Action {
                 break;
             }
             case "password": {
-                $fvalues[]['value'] = ParamImplode(array('AA_PASSWD',$itemContent->GetValue($from)));
+                $fvalues[]['value'] = ParamImplode(['AA_PASSWD',$itemContent->GetValue($from)]);
                 break;
             }
             default: {
@@ -434,7 +436,7 @@ class Action {
     }
 }
 
-$nszmciselnik = array (
+$nszmciselnik = [
 '1'=>'1.',
 '11'=>'1.1',
 '12'=>'1.2',
@@ -525,9 +527,9 @@ $nszmciselnik = array (
 '97'=>'9.7',
 '98'=>'9.8',
 '99'=>'9.9'
-);
+];
 
-$nszmmesta = array(
+$nszmmesta = [
     '���r nad S�zavou'         => '5f3e1d8a5654bcbec5aebc18802cc3ab',
     'Velk� Mezi����'           => '6bfe94a7be75cba6bf4d382d2cfa56c3',
     'T�eb��'                   => 'f2fab2ff86ab58626148f7b7d8141f92',
@@ -542,13 +544,14 @@ $nszmmesta = array(
     'Humpolec'                 => '358bd219028e31e6612d607bc79cd058',
     'Havl��k�v Brod'           => 'ede15d796d90d4c6ce6180d48a7aecbd',
     'Chot�bo�'                 => '135e12ccfa199f24e3ce9e9d7a6e46aa',
-    'Byst�ice nad Pern�tejnem' => '7723d9023b66ad5a950fb2d945fadfcb');
+    'Byst�ice nad Pern�tejnem' => '7723d9023b66ad5a950fb2d945fadfcb'
+];
 
 /** getActions function
  *  Get List of actions
  */
 function getActions() {
-    $a = array("store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack",'nszmnewidunpacked', 'nszmmultiidunpacked', "value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', 'password', "default");
+    $a = ["store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack",'nszmnewidunpacked', 'nszmmultiidunpacked', "value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', 'password', "default"];
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;

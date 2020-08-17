@@ -70,7 +70,7 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     function doMove($zids, $to_bin) {
         $ids = $zids->longids();
         foreach ($ids as $id) {
-            UpdateField($id, 'status_code.....', new AA_Value($to_bin), array( true, true, true ));   // invalidate cache, feed, throw events
+            UpdateField($id, 'status_code.....', new AA_Value($to_bin), [true, true, true]);   // invalidate cache, feed, throw events
         }
     }
 
@@ -95,7 +95,7 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
         $module_id   = $manager->getModuleId();
 
         switch($this->to_bin) {
-            case 1: return IfSlPerm(PS_ITEMS2ACT, $module_id) AND !in_array($current_bin, array('app', 'appb', 'appc'));
+            case 1: return IfSlPerm(PS_ITEMS2ACT, $module_id) AND !in_array($current_bin, ['app', 'appb', 'appc']);
                     // Folder2 is Holding bin - prepared for more than three bins
             case 2: return IfSlPerm(PS_ITEMS2HOLD, $module_id) AND  ($current_bin != 'hold');
                     // Folder3 is Trash
@@ -129,7 +129,7 @@ class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
     function perform($manager, $item_zids, $action_param) {
         $sid = $manager->getModuleId();
 
-        $grabber = new AA\IO\Grabber\Slice( new AA_Set(array($sid),null,null,AA_BIN_ALL), $item_zids->itemFilter($sid));
+        $grabber = new AA\IO\Grabber\Slice( new AA_Set([$sid],null,null,AA_BIN_ALL), $item_zids->itemFilter($sid));
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
         $saver   = new AA\IO\Saver($grabber, null, null, 'insert_if_new', 'new');
         $saver->run();
@@ -249,7 +249,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     function htmlSettings() {
         global $g_modules;
 
-        $options = array();
+        $options = [];
         if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
             foreach ( $g_modules as $sid => $v) {
                 //  we can feed just between slices ('S')                                                 // we must have autor or editor perms in destination slices
@@ -299,7 +299,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
 
         DB_AA::sql("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
 
-        AA::Pagecache()->invalidateFor( array($this->slice_id, $dest_slice_id) );  // invalidate old cached values
+        AA::Pagecache()->invalidateFor( [$this->slice_id, $dest_slice_id]);  // invalidate old cached values
 
         return false;                                  // OK - no error
     }
@@ -349,15 +349,18 @@ class AA_Manageraction_View_Move2slice extends AA_Manageraction_Item_Move2slice 
             return false;     // OK
         }
 
-        $ids = DB_AA::select('id','SELECT id FROM view', array(array('slice_id',$this->slice_id,'l'),array('id',$item_zids->shortids(), 'i')));
+        $ids = DB_AA::select('id','SELECT id FROM view', [
+            ['slice_id',$this->slice_id,'l'],
+            ['id',$item_zids->shortids(), 'i']
+        ]);
 
         if (!$ids) {
             return false;     // OK
         }
 
-        DB_AA::update('view', array(array('slice_id', $dest_slice_id, 'l')), array(array('id',$ids,'i')));
+        DB_AA::update('view', [['slice_id', $dest_slice_id, 'l']], [['id',$ids,'i']]);
 
-        AA::Pagecache()->invalidateFor( array($this->slice_id, $dest_slice_id));  // invalidate old cached values
+        AA::Pagecache()->invalidateFor( [$this->slice_id, $dest_slice_id]);  // invalidate old cached values
 
         return false;                                  // OK - no error
     }
@@ -415,9 +418,9 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
             if ($item_zids->count()< 1) {
                 return false;     // OK
             }
-            $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', array(array('status_code', 3), array('slice_id', $slice_id, 'l'), array('id', $item_zids->longids(), 'l'))),'p');
+            $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', [['status_code', 3], ['slice_id', $slice_id, 'l'], ['id', $item_zids->longids(), 'l']]),'p');
         } else {
-            $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', array(array('status_code', 3), array('slice_id', $slice_id, 'l'))),'p');
+            $items_to_delete = new zids(DB_AA::select('id', 'SELECT id FROM `item`', [['status_code', 3], ['slice_id', $slice_id, 'l']]),'p');
         }
 
         if ($items_to_delete->count() < 1) {
@@ -526,7 +529,7 @@ class AA_Manageraction_Item_Export extends AA_Manageraction {
     function perform($manager, $item_zids, $action_param) {
 
         if ($item_zids->count() > 0) {
-            $exportset = AA_Object::factory('AA_Exportsetings', array('grabber_type'=> 'AA\IO\Grabber\Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human', 'bins'=>AA_BIN_ALL));
+            $exportset = AA_Object::factory('AA_Exportsetings', ['grabber_type'=> 'AA\IO\Grabber\Slice', 'format'=>'AA_Exporter_Excel', 'type' => 'human', 'bins'=>AA_BIN_ALL]);
             $exportset->setOwnerId($manager->getModuleId());
             $exportset->export($item_zids);
         }
@@ -711,7 +714,7 @@ function GetToexecuteManagerSettings() {
                                         <td>{htmlspecialchars:{_#PARAMS__}}</td>
                                     </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 
-    $manager_settings['searchbar']['default_sort'] =  array( 0 => array('execute_after' => 'a'));
+    $manager_settings['searchbar']['default_sort'] =  [0 => ['execute_after' => 'a']];
     return $manager_settings;
 }
 

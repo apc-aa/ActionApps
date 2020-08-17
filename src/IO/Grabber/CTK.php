@@ -63,7 +63,7 @@ class CTK extends \AA\IO\Grabber\AbstractGrabber {
         #$xml  = simplexml_load_string($data);
         $xml = simplexml_load_file($this->file);
 
-        $this->_items = array();
+        $this->_items = [];
         //$items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
         foreach ($xml->NewsItem as $v) {
             $this->_items[] = $v;
@@ -92,7 +92,7 @@ class CTK extends \AA\IO\Grabber\AbstractGrabber {
             $ftext .= $f->asXML() . "\n";
         };
 	// cisteni kodu
-	$EraseCTKStrings = array('<span class="linkTagNoBg">', '<i class="icon-ico-arrow-up icon"/></span>');
+	$EraseCTKStrings = ['<span class="linkTagNoBg">', '<i class="icon-ico-arrow-up icon"/></span>'];
 	$ftext = str_replace($EraseCTKStrings,'',$ftext);
 
         $item = new ItemContent();

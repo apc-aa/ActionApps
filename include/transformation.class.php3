@@ -36,8 +36,8 @@
  *  Main method is transform(), which do the all work.
  */
 abstract class AA_Transformation {
-    var $messages   = array();
-    var $parameters = array();
+    var $messages   = [];
+    var $parameters = [];
 
     /** name function
      *
@@ -79,7 +79,7 @@ abstract class AA_Transformation {
      * @return string[]
      */
     static function getRequestVariables($input_id, $classname) {
-        $ret = array();
+        $ret = [];
         if ( strtolower(substr($classname,0,18)) != 'aa_transformation_' ) {  // to lower - php4 fix
             return $ret;
         }
@@ -112,7 +112,7 @@ abstract class AA_Transformation {
      */
     function clear_report() {
         unset($this->messages);
-        $this->messages = array();
+        $this->messages = [];
     }
     /** getParam function
      * @param $param_name
@@ -189,9 +189,11 @@ class AA_Transformation_Value extends AA_Transformation {
      * @return string
      */
     function htmlSetting($input_prefix, $params) {
-        $flag_options = array('h' => _m('HTML'),
+        $flag_options = [
+            'h' => _m('HTML'),
                               't' => _m('Plain text'),
-                              'u' => _m('As for other values of this field'));
+                              'u' => _m('As for other values of this field')
+        ];
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -296,7 +298,7 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @return AA_Value|bool
      */
     function transform($field_id, $itemcontent, $silent=true) {
-        $itemcontent->updateComputedFields(null, 'update', $silent ? array($field_id) : null);
+        $itemcontent->updateComputedFields(null, 'update', $silent ? [$field_id] : null);
         return true; // this means: Success - no other operations are needed
     }
 
@@ -357,8 +359,10 @@ class AA_Transformation_Setflag extends AA_Transformation {
      * @return string
      */
     function htmlSetting($input_prefix, $params) {
-        $flag_options = array('h' => _m('HTML'),
-                              't' => _m('Plain text'));
+        $flag_options = [
+            'h' => _m('HTML'),
+                              't' => _m('Plain text')
+        ];
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -425,9 +429,11 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @return string
      */
     function htmlSetting($input_prefix, $params) {
-        $flag_options = array('h' => _m('HTML'),
+        $flag_options = [
+            'h' => _m('HTML'),
                               't' => _m('Plain text'),
-                              'u' => _m('As for other values of this field'));
+                              'u' => _m('As for other values of this field')
+        ];
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -494,9 +500,11 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @return string
      */
     function htmlSetting($input_prefix, $params) {
-        $flag_options = array('h' => _m('HTML'),
+        $flag_options = [
+            'h' => _m('HTML'),
                               't' => _m('Plain text'),
-                              'u' => _m('As for other values of this field'));
+                              'u' => _m('As for other values of this field')
+        ];
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -554,7 +562,7 @@ class AA_Strreplace {
      * @return array
      */
     function replace($value, $item) {
-        $ret = array();
+        $ret = [];
 
         foreach ( $this->replacements as $replacement) {
             $replacement = str_replace('_#0', $value, $replacement);
@@ -613,7 +621,7 @@ class AA_Transformation_Translate extends AA_Transformation {
         $ret->setFlag($flag);
         foreach ( $itemcontent->getValues($field_id) as $source ) {
             // if not found any match, use the old value
-            $new_value = array($source['value']);
+            $new_value = [$source['value']];
             foreach ($translations as $strreplace) {
                 if ( $strreplace->matches($source['value']) ) {
                     // matches - add all translations to the resulting array
@@ -631,7 +639,7 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @return $translations array
      */
     function & _parseTranslation() {
-        $translations = array();
+        $translations = [];
         foreach (explode("\n",$this->translation) as $row) {
             // explode do not eat possible \r at the end - we trim it
             $row = rtrim($row, "\r");
@@ -655,9 +663,11 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @return string
      */
     function htmlSetting($input_prefix, $params) {
-        $flag_options = array('h' => _m('HTML'),
+        $flag_options = [
+            'h' => _m('HTML'),
                               't' => _m('Plain text'),
-                              'u' => _m('Unchanged'));
+                              'u' => _m('Unchanged')
+        ];
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
@@ -883,7 +893,7 @@ class AA_Transformator {
     function transform($zids, $field_id, $transformation, $silent=true) {
 
         $updated_items     = 0;         // number of updated items
-        $slices2invalidate = array();
+        $slices2invalidate = [];
 
         for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
 
@@ -915,7 +925,7 @@ class AA_Transformator {
             $newitemcontent->setItemID($item_id);
             $newitemcontent->setSliceID($sli_id);
 
-            if ($newitemcontent->storeItem( $silent ? 'update_silent' : 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
+            if ($newitemcontent->storeItem( $silent ? 'update_silent' : 'update', [false, false, false])) {    // not invalidatecache, not feed, no events
                 $updated_items++;
             }
             $slices2invalidate[$sli_id] = $sli_id;

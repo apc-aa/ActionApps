@@ -61,7 +61,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
             $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent);
         }
 
-        $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", array($zids->count(), $updated_items)));
+        $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", [$zids->count(), $updated_items]));
         if ((string)$group == (string)"sel_item") {
             $sel = "LIST";
         } elseif ((string)$group == (string)"testitemgroup") {
@@ -69,7 +69,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
         } else {
             $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
         }
-        AA_Log::write("ITEM_FIELD_FILLED", $sel, array($zids->count(), $updated_items));
+        AA_Log::write("ITEM_FIELD_FILLED", $sel, [$zids->count(), $updated_items]);
     }
 }
 
@@ -92,11 +92,13 @@ echo $Msg;
 $slice  = AA_Slice::getModule($slice_id);
 
 if ( !IsSuperadmin() ) {
-    $restricted_fields = array( 'slice_id........' => true,
+    $restricted_fields = [
+        'slice_id........' => true,
                                 'id..............' => true,
-                                'short_id........' => true );
+                                'short_id........' => true
+    ];
 } else {
-    $restricted_fields = array( 'short_id........' => true );
+    $restricted_fields = ['short_id........' => true];
 }
 
 // create field_select array for field selection
@@ -113,8 +115,10 @@ foreach ($fields as $fld_id => $fld) {
     $field_copy_arr[$fld_id] = $fld['name']. ' ('. $fld_id. ')';
 }
 
-$params = array('field_copy_arr' => $field_copy_arr,
-                'field_select'   => $field_select);
+$params = [
+    'field_copy_arr' => $field_copy_arr,
+                'field_select'   => $field_select
+];
 
 FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $slice->name())));
 
@@ -130,8 +134,10 @@ FrmInputChBox('silent', _m('Silent'), true, false, "", 1, false, _m('Just update
 
 FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_', SEARCH_REPLACE_PREFIX, $params), "", "", false);
 
-FrmTabEnd(array( 'fill' =>array('type'=>'submit', 'value'=>_m('Fill')),
-                 'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));
+FrmTabEnd([
+    'fill' => ['type'=>'submit', 'value'=>_m('Fill')],
+                 'close'=> ['type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"']
+]);
 
 // list selected items to special form - used by manager.min.js to show items (recipients)
 echo "\n  </form>";

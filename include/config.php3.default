@@ -113,9 +113,8 @@ define("DB_TYPE",    "db_mysql");      // you can (in theory) use also another
  *     define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
  *  Default is: commented out
  */
-define("DB_CHARACTER_SET", "cp1250");
-define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
-
+define("DB_CHARACTER_SET", "utf8mb4");
+define("DB_COLLATION_CONNECTION", "utf8mb4_czech_ci");
 
 /** Use MySQL non-persistent database connect (mysql_connect())
  *  or the persistent one?

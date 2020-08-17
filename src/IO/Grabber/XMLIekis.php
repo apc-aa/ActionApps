@@ -40,7 +40,7 @@ class XMLIekis extends \AA\IO\Grabber\AbstractGrabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $this->_files = array();
+        $this->_files = [];
         // instance of class iCalFile (external file ical.php)
         if ($handle = opendir($this->dir)) {
             while (false !== ($file = readdir($handle))) {
@@ -99,7 +99,7 @@ class XMLIekis extends \AA\IO\Grabber\AbstractGrabber {
         $item->setValue('switch.........2', '1');  // ulozit pro mpo
         $item->setValue('switch..........', '0');  // storno
 
-        $TEMAS = array(
+        $TEMAS = [
             '1' => 'b2269049caf8e47737b718e62ccc905c',   // Územní energetické koncepce
             '2' => 'b2269049caf8e47737b718e62ccc905c',   // Akční plány
             '3' => 'afbab0cf8bfb524ce48e50862fb8fa88',   // Energetické audity a průkazy (99)
@@ -125,7 +125,7 @@ class XMLIekis extends \AA\IO\Grabber\AbstractGrabber {
             '23' => '3c3e0d17813eccc67afd3a267329595a',   // Projekty energetických služeb se zárukou
             '24' => '3c3e0d17813eccc67afd3a267329595a',   // Financování z fondů Evropské unie
             '25' => 'b2269049caf8e47737b718e62ccc905c'    // Ostatní (536)
-        );
+        ];
 
         if ($TEMAS[(string)$att['obor']]) {
             $item->setValue('relation.......2', $TEMAS[(string)$att['obor']]);

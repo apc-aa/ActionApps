@@ -54,12 +54,12 @@ if ($deleteGroup AND $group_id) {
     go_url(StateUrl($back_url));
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 // Check permissions
 if ( $group_id ) {
-    $constant_info = DB_AA::select1('SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice','', array(array('constant_slice.slice_id', 'slice.id','j'), array('group_id',$group_id)));
+    $constant_info = DB_AA::select1('SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice','', [['constant_slice.slice_id', 'slice.id','j'], ['group_id',$group_id]]);
     if ($constant_info && !CheckPerms( $auth->auth["uid"], "slice", $constant_info["owner_id"], PS_FIELDS)) {
         MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$constant_info['name'].")", "admin");
         exit;
@@ -82,7 +82,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
     if (is_array($using_slices_arr) AND count($using_slices_arr)) {
         $count = 0;
         foreach ($using_slices_arr as $arr) {
-            $set = new AA_Set(array(unpack_id($arr['psid'])), new AA_Condition($arr['fid'], '=', '"'.$value.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+            $set = new AA_Set([unpack_id($arr['psid'])], new AA_Condition($arr['fid'], '=', '"'.$value.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
             $count += count($set->query());
         }
     }
@@ -111,7 +111,7 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
     $event->comes('CONSTANT_BEFORE_UPDATE', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
 
     $cnt = 0;
-    $items2update = array();
+    $items2update = [];
     $db = getDB();
 
     if ($oldvalue) {
@@ -271,12 +271,15 @@ $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - Constants Setting"));
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("update",
-                      "cancel"   => array("url"=> $back_url),
-                      "delgroup" => array("type"  => "button",
+$form_buttons = [
+    "update",
+                      "cancel"   => ["url"=> $back_url],
+                      "delgroup" => [
+                          "type"  => "button",
                                           "value" => _m("Delete whole group"),
-                                          "add"   => 'onclick="deleteWholeGroup();"')
-                      );
+                                          "add"   => 'onclick="deleteWholeGroup();"'
+                      ]
+];
 ?>
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
 <?php
@@ -290,9 +293,9 @@ if ($hierarch) {
 FrmTabCaption(_m("Constants"), $form_buttons);
 
 // this must be just once on the page
-$form_buttons["deleteGroup"] = array("value" => "0");
-$form_buttons["return_url"]  = array("value" => $return_url);
-$form_buttons["fid"]         = array("value" => $fid);
+$form_buttons["deleteGroup"] = ["value" => "0"];
+$form_buttons["return_url"]  = ["value" => $return_url];
+$form_buttons["fid"]         = ["value" => $fid];
 
 
 echo "<td class=\"tabtxt\"><b>"._m("Constant Group") ."</b></td>
@@ -312,7 +315,7 @@ if ($group_id) {
     $using_slices_arr = GetTable2Array("SELECT slice.id as psid, slice.name as sname, field.id as fid, field.name as fname FROM slice, field WHERE slice.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')",'');
 
     if ( !is_array($using_slices_arr) ) {
-         $using_slices_arr = array();
+         $using_slices_arr = [];
     }
 
     echo "

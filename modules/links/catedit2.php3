@@ -46,14 +46,14 @@ function IsCatEmpty($category_id) {
 
 // Delete one category assignment
 function DeleteCatAssignment($parent, $child) {
-    DB_AA::delete('links_cat_cat', array(array('what_id', $child, 'i'), array('category_id', $parent, 'i')));
+    DB_AA::delete('links_cat_cat', [['what_id', $child, 'i'], ['category_id', $parent, 'i']]);
 }
 
 // Delete one category
 function DeleteCategory($catId) {
-    DB_AA::delete('links_link_cat',   array(array('category_id', $catId, 'i')));
-    DB_AA::delete('links_cat_cat',    array(array('category_id', $catId, 'i')));
-    DB_AA::delete('links_categories', array(array('id', $catId, 'i')));
+    DB_AA::delete('links_link_cat',   [['category_id', $catId, 'i']]);
+    DB_AA::delete('links_cat_cat',    [['category_id', $catId, 'i']]);
+    DB_AA::delete('links_categories', [['id', $catId, 'i']]);
 }
 
 function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name) {
@@ -169,7 +169,7 @@ if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     exit;
 }
 
-$err = array();            // error array (just for initializing variable)
+$err = [];            // error array (just for initializing variable)
 $varset = new Cvarset();
 
 // Category properties ------------------

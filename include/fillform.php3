@@ -35,7 +35,7 @@ function fillFormFromVars($fillConds) {
     global $err;
 
     // init used objects
-    $err = array();     // error array (Init - just for initializing variable
+    $err = [];     // error array (Init - just for initializing variable
     add_vars();
     add_post2shtml_vars();
 
@@ -82,7 +82,7 @@ function fillForm() {
     // get slice_id if not specified - try get it from $my_item_id
     if ( !$slice_id AND $my_item_id ) {
         $zid = new zids( $my_item_id, 'l' );
-        $content = GetItemContentMinimal($zid, array('id','slice_id'));
+        $content = GetItemContentMinimal($zid, ['id','slice_id']);
         if ($p_slice_id = $content[$my_item_id]["slice_id........"][0]['value']) {
             $slice_id = unpack_id($p_slice_id);
         }

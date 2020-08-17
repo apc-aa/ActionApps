@@ -39,7 +39,7 @@ $apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
 $aas = AA_Actionapps::getArray();
-$aas_array = array();
+$aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
@@ -48,14 +48,17 @@ foreach ( $aas as $k => $aa ) {
 $tmplate_slices = $aas[$_POST['template_aa']]->requestSlices();
 
 // Compared slice - grab from remote AA
-$cmp_slices = array_merge( array(0 => _m('do not compare')), $aas[$_POST['comparation_aa']]->requestSlices());
+$cmp_slices = array_merge( [0 => _m('do not compare')], $aas[$_POST['comparation_aa']]->requestSlices());
 
-$form_buttons = array("compare"      => array( "type"      => "submit",
+$form_buttons = [
+    "compare"      => [
+        "type"      => "submit",
                                                "value"     => _m("Compare"),
-                                               "accesskey" => "C"),
-                      "template_aa"     => array( "value"     =>  $_POST['template_aa']),
-                      "comparation_aa"  => array( "value"     =>  $_POST['comparation_aa'])
-                     );
+                                               "accesskey" => "C"
+    ],
+                      "template_aa"     => ["value"     =>  $_POST['template_aa']],
+                      "comparation_aa"  => ["value"     =>  $_POST['comparation_aa']]
+];
 
 ?>
 <form name=f method=post action="<?php echo StateUrl(self_base() ."synchronize3.php") ?>">

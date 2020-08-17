@@ -62,7 +62,7 @@ $apage->setTitle(_m("Central - Import Sites from CSV"));
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
-$form_buttons = array ("submit");
+$form_buttons = ["submit"];
 ?>
 <form name=f method=post enctype="multipart/form-data" action="<?php echo StateUrl(self_base() ."import_csv.php") ?>">
 <?php

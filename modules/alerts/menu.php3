@@ -44,13 +44,14 @@ set_collectionid();
 function get_aamenus() {
     global $auth, $slice_id;
 
-    $aamenus["admin"] = array (
+    $aamenus["admin"] = [
         "label" => _m("Alerts Settings"),
         "title" => _m("Alerts Settings"),
         "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .urlencode($GLOBALS["slice_id"])."]=1",
         "cond" => IfSlPerm(PS_USERS),
         "level" => "main",
-        "submenu" => "admin_submenu");
+        "submenu" => "admin_submenu"
+    ];
 /*
     $aamenus["filters"] = array (
         "label" => _m("Filters"),
@@ -78,31 +79,34 @@ function get_aamenus() {
         "submenu"=>"admin_submenu");
 */
 
-    $aamenus["admin_submenu"] = array (
+    $aamenus["admin_submenu"] = [
         "bottom_td"=>200,
         "level"=>"submenu",
-        "items"=> array(
+        "items"=> [
         "header1"=>_m("Alerts Admin"),
   //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
-        "settings"=>array ("cond"=>IfSlPerm(PS_USERS),
+        "settings"=> ["cond"=>IfSlPerm(PS_USERS),
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-                .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
-        "filters"=>array ("cond"=>IfSlPerm(PS_USERS),
+                .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")],
+        "filters"=> ["cond"=>IfSlPerm(PS_USERS),
             "href"=>"modules/alerts/tabledit.php3?set_tview=acf",
-            "label"=>_m("Selections")),
-        "send_emails"=>array ("cond"=>IfSlPerm(PS_USERS),
+            "label"=>_m("Selections")],
+        "send_emails"=> ["cond"=>IfSlPerm(PS_USERS),
             "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
                 .$GLOBALS["collectionid"]."]=1",
-            "label"=>_m("Send emails")),
-        "synchro"=>array("cond"=>IfSlPerm(PS_USERS),
+            "label"=>_m("Send emails")],
+        "synchro"=> [
+            "cond"=>IfSlPerm(PS_USERS),
             "href" => "modules/alerts/synchro.php3",
-            "label" => _m("Reader management")),
-        "doc"=>array("cond"=>1, "href"=>"doc/alerts.html", "label" => _m("Documentation")),
+            "label" => _m("Reader management")
+        ],
+        "doc"=> ["cond"=>1, "href"=>"doc/alerts.html", "label" => _m("Documentation")],
 
         "header2" => _m("Common"),
-        "email"=>array ("cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Email templates"))
-    ));
+        "email"=> ["cond"=>IfSlPerm(PS_USERS),
+            "href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Email templates")]
+        ]
+    ];
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 

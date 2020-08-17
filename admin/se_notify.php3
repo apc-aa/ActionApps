@@ -86,7 +86,7 @@ if (!IfSlPerm(PS_EDIT)) {
 
 // initialization of vars needed by the next 3 parts of the program
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $superadmin  = IsSuperadmin();
 
@@ -193,9 +193,11 @@ $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
 
-$form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
+$form_buttons = [
+    "update" => ["type"=>"hidden", "value"=>"1"],
                       "update",
-                      "cancel" => array("url"=>"se_fields.php3"));
+                      "cancel" => ["url"=>"se_fields.php3"]
+];
 
     FrmTabCaption(_m("Email Notifications of Events"), $form_buttons);
 

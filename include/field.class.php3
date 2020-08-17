@@ -48,15 +48,15 @@ class AA_Field {
     /** cache array of all used widgets for this field
      *  @var Widget[]
      */
-    var $widget = array();
+    var $widget = [];
 
     /** AA_Field function
      *  @param $data
      */
     function __construct($data, $sli_id=null) {
-        $this->data          = array();
-        $this->widget_params = array();
-        $this->widget        = array();
+        $this->data          = [];
+        $this->widget_params = [];
+        $this->widget        = [];
 
         if (is_array($data)) {
             $this->data = $data;
@@ -153,7 +153,7 @@ class AA_Field {
      * @param $properties - array of properties to redefine for $widget_type
      * @return Widget|mixed
      */
-    function getWidget($widget_type=null, $properties=array()) {
+    function getWidget($widget_type=null, $properties= []) {
         $widget_hash = get_hash($widget_type,$properties);
 
         // just for cache. maybe it is not necessary...
@@ -236,21 +236,21 @@ class AA_Field {
             $delete_var   = $_REQUEST[$varname.'d'];
 
             if ($change_var && ($change_var == $retype_var)) {
-                $var = ParamImplode(array('AA_PASSWD',$change_var));
+                $var = ParamImplode(['AA_PASSWD',$change_var]);
             } elseif ($delete_var) {
                 $var = '';
             } elseif (!$insert) {
                 // store the original password to use it in
                 // insert_fnc_pwd when it is not changed
                 // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
-                $var = ParamImplode(array('AA_PASSWD_CRYPTED',$oldcontent4id[$fid][0]['value']));
+                $var = ParamImplode(['AA_PASSWD_CRYPTED',$oldcontent4id[$fid][0]['value']]);
             } else {
                 return null;
             }
             $ret = new AA_Value($var, FLAG_HTML);
         } else {
             if (!is_array($var)) {
-                $var = array(0 => $var);
+                $var = [0 => $var];
             }
             $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
             $ret = new AA_Value($var, $flag);
@@ -316,14 +316,14 @@ class AA_Field {
             $field_type = ($field_type == 'numeric') ? 'numconstants' : $r[0];
         }
 
-        return array($field_type, $field_add);
+        return [$field_type, $field_add];
     }
 
     /** getTranslations
      *  Returns array of two letters shortcuts for languages used in this slice for translations - array('en','cz','es')
      */
     function getTranslations() {
-        return ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : array();
+        return ($this->data['multiple'] & 2) ? AA_Slice::getModule($this->getSliceId())->getTranslations() : [];
     }
 
     /** getAaProperty function
@@ -331,7 +331,7 @@ class AA_Field {
      * @param $required - not usual, but sometimes we want to redefine it required for ajax...
      * @return AA_Property
      */
-    function getAaProperty($widget_properties=array()) {
+    function getAaProperty($widget_properties= []) {
 
         // huhl($this->getName(), $widget_properties);
         $translations = $this->getTranslations();
@@ -364,7 +364,7 @@ class AA_Field {
      * @param $widget_properties - array of properties to redefine for $widget_type - array('columns' => 1)
      * @return
      */
-    function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties=array()) {
+    function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties= []) {
         return $this->_getWidget('getAjaxHtml', $item_id, $required, $function, $widget_type, $widget_properties);
     }
 
@@ -393,7 +393,7 @@ class AA_Field {
      * @return string
      * @throws Exception
      */
-    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties=array(), $preset_value=null, $item_index=null, $widget_only=false) {
+    function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties= [], $preset_value=null, $item_index=null, $widget_only=false) {
         $widget  = $this->getWidget($widget_type, $widget_properties);
         if ($item_index) {
             $widget->setIndex($item_index);
@@ -422,16 +422,16 @@ class AA_Field {
     function getRelation() {
         $showfunc = Widget::parseClassProperties($this->data['input_show_func']);
         if (!$showfunc['const']) {
-            return array();
+            return [];
         }
         // prefix indicates select from items
-        return (substr($showfunc['const'],0,7) == "#sLiCe-") ? array('relation', substr($showfunc['const'],7)) : array('constants', $showfunc['const']);
+        return (substr($showfunc['const'],0,7) == "#sLiCe-") ? ['relation', substr($showfunc['const'],7)] : ['constants', $showfunc['const']];
     }
 
     /** isMultiline - @return bool - if the default widget allows block elements  */
     function isMultiline() {
         $params = Widget::parseClassProperties($this->data['input_show_func']);
-        return in_array($params['class'], array('AA\Widget\TxtWidget', 'AA\Widget\TprWidget', 'AA\Widget\EdtWidget'));
+        return in_array($params['class'], ['AA\Widget\TxtWidget', 'AA\Widget\TprWidget', 'AA\Widget\EdtWidget']);
     }
 
     function cloneWithId($id) {
@@ -477,8 +477,8 @@ class AA_Fields implements Iterator, Countable {
             return;
         }
 
-        $this->fields = array();
-        $a = DB_AA::select(array('id'=>array()), 'SELECT * FROM `field`', array(array('slice_id', $this->master_id, 'l'), array('id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE')), array('input_pri'));
+        $this->fields = [];
+        $a = DB_AA::select(['id'=> []], 'SELECT * FROM `field`', [['slice_id', $this->master_id, 'l'], ['id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE']], ['input_pri']);
         foreach ($a as $fid => $data) {
             $this->fields[$fid] = new AA_Field($data);
         }
@@ -534,7 +534,7 @@ class AA_Fields implements Iterator, Countable {
         }
         $this->load();
 
-        $this->aliases = is_array($additional) ? $additional : array();
+        $this->aliases = is_array($additional) ? $additional : [];
 
         //  Standard aliases
         $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
@@ -596,7 +596,7 @@ class AA_Fields implements Iterator, Countable {
      */
     function getRecordArray() {
         $this->load();
-        $ret = array();
+        $ret = [];
         foreach ( $this->fields as $fid => $fld ) { // in priority order
             $ret[$fid] = $fld->getRecord();
         }
@@ -606,7 +606,7 @@ class AA_Fields implements Iterator, Countable {
     /** getNameArray function */
     function getNameArray() {
         $this->load();
-        $ret = array();
+        $ret = [];
         foreach ( $this->fields as $fid => $fld ) { // in priority order
             $ret[$fid] = $fld->getProperty('name');
         }
@@ -678,7 +678,7 @@ class AA_Fields implements Iterator, Countable {
         if ($related_cnt) {
 
             // add all fields of slices which points to this sice
-            $related_fields = DB_AA::select(array(), 'SELECT id, name, LOWER(HEX(slice_id)) as sid FROM `field`', array(array('input_show_func','___:#sLiCe-' . $this->master_id . '%','LIKE')));
+            $related_fields = DB_AA::select([], 'SELECT id, name, LOWER(HEX(slice_id)) as sid FROM `field`', [['input_show_func','___:#sLiCe-' . $this->master_id . '%','LIKE']]);
             foreach ($related_fields as $rf_def) {
                 $related_fields = with(new AA_Fields($rf_def['sid']))->getSearchfields(0);
                 $related += 1000;
@@ -775,20 +775,20 @@ class AA_Fields implements Iterator, Countable {
      * @return array
      */
     static function getFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false, $add_all=false) {
-        $where = array(array('slice_id',$slice_id,'l'));
+        $where = [['slice_id',$slice_id,'l']];
         if ($slice_fields == 'all') {
             // all fields (item as well as slice fields) - no additional conditions
             //$slice_fields_where = '';
         } elseif (!$slice_fields) {
             // only item fields (not begins with underscore)
-            $where[] = array('id', '\_%', 'NOT LIKE');
+            $where[] = ['id', '\_%', 'NOT LIKE'];
         } else {
             // only slice fields (begins with underscore)
-            $where[] = array('id', '\_%', 'LIKE');
+            $where[] = ['id', '\_%', 'LIKE'];
         }
-        $lookup_fields = DB_AA::select(array('id'=>'name'), 'SELECT `id`, `name` FROM `field`', $where, array($order));
+        $lookup_fields = DB_AA::select(['id'=>'name'], 'SELECT `id`, `name` FROM `field`', $where, [$order]);
         if ($add_empty) {
-            $lookup_fields = array_merge(array(''=>' '), $lookup_fields);  // default - none
+            $lookup_fields = array_merge([''=>' '], $lookup_fields);  // default - none
         }
         if ($add_all) {
             $lookup_fields['all_fields'] = _m('-- any text field --');

@@ -50,7 +50,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
 
     function run() {
         global $sess, $auth;
-        return new AA_Response(array($sess->id(), $auth));
+        return new AA_Response([$sess->id(), $auth]);
     }
 }
 
@@ -66,7 +66,7 @@ class AA_Responder_Logout extends AA_Responder {
 
     function run() {
         global $sess;
-        $ret = array('sessid'=>$sess->id(), 'command' => $GLOBALS['request']->getCommand());
+        $ret = ['sessid'=>$sess->id(), 'command' => $GLOBALS['request']->getCommand()];
         if (is_object($sess)) {
             $sess->delete();
         }
@@ -79,7 +79,7 @@ class AA_Responder_Get_Aaname extends AA_Responder {
     function __construct($param=null) {}
 
     function run() {
-        return new AA_Response(array('org_name'=>ORG_NAME, 'domain'=>AA_HTTP_DOMAIN));
+        return new AA_Response(['org_name'=>ORG_NAME, 'domain'=>AA_HTTP_DOMAIN]);
     }
 }
 
@@ -89,7 +89,7 @@ class AA_Responder_Get_Modules extends AA_Responder {
     var $types;
 
     function __construct($param=null) {
-        $this->types = is_array($param['types']) ? $param['types'] : array();
+        $this->types = is_array($param['types']) ? $param['types'] : [];
     }
 
     function run() {
@@ -108,13 +108,13 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
     var $type;     // module type
 
     function __construct($param) {
-        $this->ids     = is_array($param['ids']) ? $param['ids'] : array();
-        $this->limited = is_array($param['limited']) ? $param['limited'] : array();
+        $this->ids     = is_array($param['ids']) ? $param['ids'] : [];
+        $this->limited = is_array($param['limited']) ? $param['limited'] : [];
         $this->type    = $param['type'];
     }
 
     function run() {
-        $ret        = array();
+        $ret        = [];
         $class_name = 'AA_Module_Definition_'. $this->type;
         foreach ( $this->ids as $sid ) {
             $ret[$sid] = new $class_name;
@@ -131,11 +131,11 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
     var $sync_commands;
 
     function __construct($param) {
-        $this->sync_commands = is_array($param['sync']) ? $param['sync'] : array();
+        $this->sync_commands = is_array($param['sync']) ? $param['sync'] : [];
     }
 
     function run() {
-        $ret = array();
+        $ret = [];
         foreach ( $this->sync_commands as $serialized_command ) {
             $cmd = unserialize($serialized_command);
             $ret[] = $cmd->doAction();
@@ -186,7 +186,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $lang         = $slice->getLang();
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum  = array(AA_Content::getLangName2Num(AA::$lang));   // array of prefered languages in priority order.
+        AA::$langnum  = [AA_Content::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         AA::setEncoding(AA_Langs::getCharset($lang));
 
         $field = $slice->getField($this->field_id);
@@ -255,7 +255,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
 
             // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
             // and we do not want to list it as option for normal fields
-            $current_types = DB_AA::select(array('id' => 'name'), 'SELECT `id`, `name` FROM `field`', array(array('slice_id', $this->slice_id, 'l'), array('id', '\_%', 'NOT LIKE'), array('in_item_tbl', '')), array('name'));
+            $current_types = DB_AA::select(['id' => 'name'], 'SELECT `id`, `name` FROM `field`', [['slice_id', $this->slice_id, 'l'], ['id', '\_%', 'NOT LIKE'], ['in_item_tbl', '']], ['name']);
             $ret = "\n <select name=\"ftype\">";
             foreach ($current_types as $k => $v) {
                 $ret .= "\n  <option value=\"" . $this->slice_id . '-' . myspecialchars($k) . '"> ' . myspecialchars($v) . " </option>";
@@ -284,7 +284,7 @@ class AA_Responder_Tags extends AA_Responder {
     function isPerm() { return true; }
 
     function run() {
-        $ret    = array();
+        $ret    = [];
         $trimed = trim($this->input);
         $field  = AA_Slice::getModule($this->slice_id)->getField($this->field_id);
         $found  = false;
@@ -295,10 +295,10 @@ class AA_Responder_Tags extends AA_Responder {
             foreach ($opts as $id => $text) {
                 if (trim($text)==trim($this->input)) {
                     // to the front
-                    array_unshift($ret, array('id'=>$id, 'text'=>$text));
+                    array_unshift($ret, ['id'=>$id, 'text'=>$text]);
                     $found = true;
                 } else {
-                    $ret[] = array('id'=>$id, 'text'=>$text);
+                    $ret[] = ['id'=>$id, 'text'=>$text];
                 }
                 if (!(--$i)) {
                     break;
@@ -306,7 +306,7 @@ class AA_Responder_Tags extends AA_Responder {
             }
         }
         if ($trimed AND !$found AND ((int)$widget->getProperty('disable_new', 0) != 1)) {
-            array_unshift($ret, array('id'=>$this->input, 'text'=>$this->input));
+            array_unshift($ret, ['id'=>$this->input, 'text'=>$this->input]);
         }
         header("Content-type: application/json");
         return new AA_Response(json_encode($ret));
@@ -350,7 +350,7 @@ class AA_Responder_Alertitem extends AA_Responder {
         // the slice id and the field id defines the field, where the widget is DEFINED
         $this->item_id       = $param['item_id'];
         $this->collection_id = $param['collection_id'];
-        $this->test_email    = strpos($param['test_email'],'@') ? array($param['test_email']) : array();
+        $this->test_email    = strpos($param['test_email'],'@') ? [$param['test_email']] : [];
     }
 
     function isPerm() {
@@ -368,7 +368,7 @@ class AA_Responder_Alertitem extends AA_Responder {
         if (is_long_id($this->item_id) AND (strlen($this->collection_id)==5)) {
             //initialize_last();
             //set_time_limit(600); // This can take a while
-            $ret = send_emails("irregular", array($this->collection_id), $this->test_email, true, $this->item_id);
+            $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);
             // We must reset moved2active so that the item is not re-sent on update.
             //$db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");    }
         }
@@ -401,12 +401,12 @@ if ( !is_object($request)) {
 
 $responder = AA_Responder::factoryByName($request->getCommand(), $request->getParameters());
 if ( empty($responder) ) {
-    AA_Response::error(_m("Bad request sent for responder.php - %1", array($request->getCommand())), 103);  // error code > 0
+    AA_Response::error(_m("Bad request sent for responder.php - %1", [$request->getCommand()]), 103);  // error code > 0
     exit;
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", array($responder->name(), $auth->auth["uid"])), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(), $auth->auth["uid"]]), 101);  // error code > 0
     exit;
 }
 

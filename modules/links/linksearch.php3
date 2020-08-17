@@ -153,7 +153,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  * @global int   $QueryIDsCount - set to the count of IDs returned
  * @return zids
  */
-function Links_QueryCatZIDs($cid, $conds, $sort=array(), $subcat=false, $type="app") {
+function Links_QueryCatZIDs($cid, $conds, $sort= [], $subcat=false, $type="app") {
     $CATEGORY_FIELDS = GetCategoryFields();
     $cid = (int)$cid;
 

@@ -112,7 +112,7 @@ if ( $selected_group ) {
     }
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
@@ -302,8 +302,8 @@ if ( !$add_submit AND !$usr_new) {
 
     FrmTabSeparator(_m("Groups"));
     array_walk($all_groups, function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
-    $writable_groups        = array_filter($all_groups, array(AA::$perm, 'isGroupWritable'), ARRAY_FILTER_USE_KEY);
-    $user_writable_groups   = array_filter($sel_groups, array(AA::$perm, 'isGroupWritable'), ARRAY_FILTER_USE_KEY);
+    $writable_groups        = array_filter($all_groups, [AA::$perm, 'isGroupWritable'], ARRAY_FILTER_USE_KEY);
+    $user_writable_groups   = array_filter($sel_groups, [AA::$perm, 'isGroupWritable'], ARRAY_FILTER_USE_KEY);
     $user_unwritable_groups = array_diff_key($sel_groups, $user_writable_groups);
 
     FrmTwoBox('sel_groups_sel', _m("Groups"), $writable_groups, array_keys($user_writable_groups), 8, false, _m("All Writable Groups"), _m("User's Groups"));
@@ -340,24 +340,32 @@ if ( !$add_submit AND !$usr_new) {
 
 if ($usr_new or $add_submit) {
     // buttons for adding new user
-    $form_buttons = array("add_submit"=>array("value"=>_m("Add"),
+    $form_buttons = [
+        "add_submit"=> [
+            "value"=>_m("Add"),
                                               "type"=>"submit",
-                                              "accesskey"=>"S"),
-                           "usr_new"=>array("value"=>"1"));
+                                              "accesskey"=>"S"
+        ],
+                           "usr_new"=> ["value"=>"1"]
+    ];
 } else {
     // buttons for update user
-    $form_buttons = array("submit_button"=>array("value"=>_m("Update"),
+    $form_buttons = [
+        "submit_button"=> [
+            "value"=>_m("Update"),
                                                  "type"=>"button",
                                                  "add"=>'onclick="UpdateUser(\'update_submit\')"',
-                                                 "accesskey"=>"S"),
-                          "usr_edit"=>array("value"=>"1"));
+                                                 "accesskey"=>"S"
+        ],
+                          "usr_edit"=> ["value"=>"1"]
+    ];
 }
 
 // add common fields
-$form_buttons["selected_user"] = array("value"=>$selected_user);
-$form_buttons["posted_groups"] = array("value"=>"0");
-$form_buttons["submit_action"] = array("value"=>"0");
-$form_buttons["cancel"]        = array("url"=>"um_uedit.php3");
+$form_buttons["selected_user"] = ["value"=>$selected_user];
+$form_buttons["posted_groups"] = ["value"=>"0"];
+$form_buttons["submit_action"] = ["value"=>"0"];
+$form_buttons["cancel"]        = ["url"=>"um_uedit.php3"];
 
 
 FrmTabEnd($form_buttons);

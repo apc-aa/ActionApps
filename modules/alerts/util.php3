@@ -54,7 +54,7 @@ function set_collectionid() {
 }
 
 function get_howoften_options() {
-    $retval = array();
+    $retval = [];
     $retval["instant"]   = _m("instant");
     $retval["daily"]     = _m("daily");
     $retval["weekly"]    = _m("weekly");
@@ -65,16 +65,17 @@ function get_howoften_options() {
 }
 
 function get_bin_names() {
-    return array (
+    return [
         1 => _m("Active"),
         2 => _m("Holding bin"),
-        3 => _m("Trash bin"));
+        3 => _m("Trash bin")
+    ];
 }
 
 function new_collection_id() {
     do {
         $new_id = gensalt(5);
-    } while ( DB_AA::select1('SELECT id FROM `alerts_collection`', 'id',  array(array('id',$new_id))) );
+    } while ( DB_AA::select1('SELECT id FROM `alerts_collection`', 'id',  [['id',$new_id]]) );
     return $new_id;
 }
 

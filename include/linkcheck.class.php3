@@ -44,53 +44,54 @@
 class AA_Linkcheck {
 
     // http codes, error names and their weight
-    private static $HTTP_ERROR_CODES = array (
+    private static $HTTP_ERROR_CODES = [
     // first 3 are for checking domain from email
-        'N/A' => array ("comment" => "Non HTTP", "weight" => "5"),
-        'OK'  => array ("comment" => "Valid hostname", "weight" => "0"),
-        'ERROR' => array ("comment" => "Invalid hostname", "weight" => "5"),
+        'N/A' => ["comment" => "Non HTTP", "weight" => "5"],
+        'OK'  => ["comment" => "Valid hostname", "weight" => "0"],
+        'ERROR' => ["comment" => "Invalid hostname", "weight" => "5"],
     // http error codes
-        '999' => array ("comment" => "No response", "weight" => "5"),
-        '100' => array ("comment" => "Continue", "weight" => "0"),
-        '101' => array ("comment" => "Switching Protocols", "weight" => "0"),
-        '200' => array ("comment" => "OK", "weight" => "0"),
-        '201' => array ("comment" => "Created", "weight" => "0"),
-        '202' => array ("comment" => "Accepted", "weight" => "0"),
-        '203' => array ("comment" => "Non-Authoritative Information", "weight" => "0"),
-        '204' => array ("comment" => "No Content", "weight" => "1"),
-        '205' => array ("comment" => "Reset Content", "weight" => "0"),
-        '206' => array ("comment" => "Partial Content", "weight" => "0"),
-        '300' => array ("comment" => "Multiple Choices", "weight" => "2"),
-        '301' => array ("comment" => "Moved Permanently", "weight" => "1"),
-        '302' => array ("comment" => "Found", "weight" => "1"),
-        '303' => array ("comment" => "See Other", "weight" => "2"),
-        '304' => array ("comment" => "Not Modified", "weight" => "2"),
-        '305' => array ("comment" => "Use Proxy", "weight" => "3"),
-        '307' => array ("comment" => "Temporary Redirect", "weight" => "1"),
-        '400' => array ("comment" => "Bad Request", "weight" => "5"),
-        '401' => array ("comment" => "Unauthorized", "weight" => "4"),
-        '402' => array ("comment" => "Payment Required", "weight" => "3"),
-        '403' => array ("comment" => "Forbidden", "weight" => "5"),
-        '404' => array ("comment" => "Not Found", "weight" => "5"),
-        '405' => array ("comment" => "Method Not Allowed", "weight" => "5"),
-        '406' => array ("comment" => "Not Acceptable", "weight" => "5"),
-        '407' => array ("comment" => "Proxy Authentication Required", "weight" => "5"),
-        '408' => array ("comment" => "Request Timeout", "weight" => "5"),
-        '409' => array ("comment" => "Conflict", "weight" => "5"),
-        '410' => array ("comment" => "Gone", "weight" => "5"),
-        '411' => array ("comment" => "Length Required", "weight" => "5"),
-        '412' => array ("comment" => "Precondition Failed", "weight" => "5"),
-        '413' => array ("comment" => "Request Entity Too Large", "weight" => "5"),
-        '414' => array ("comment" => "Request-URI Too Long", "weight" => "5"),
-        '415' => array ("comment" => "Unsupported Media Type", "weight" => "5"),
-        '416' => array ("comment" => "Requested Range Not Satisfiable", "weight" => "5"),
-        '417' => array ("comment" => "Expectation Failed", "weight" => "5"),
-        '500' => array ("comment" => "Internal Server Error", "weight" => "5"),
-        '501' => array ("comment" => "Not Implemented", "weight" => "5"),
-        '502' => array ("comment" => "Bad Gateway", "weight" => "5"),
-        '503' => array ("comment" => "Service Unavailable", "weight" => "5"),
-        '504' => array ("comment" => "Gateway Timeout", "weight" => "5"),
-        '505' => array ("comment" => "HTTP Version Not Supported", "weight" => "5"));
+        '999' => ["comment" => "No response", "weight" => "5"],
+        '100' => ["comment" => "Continue", "weight" => "0"],
+        '101' => ["comment" => "Switching Protocols", "weight" => "0"],
+        '200' => ["comment" => "OK", "weight" => "0"],
+        '201' => ["comment" => "Created", "weight" => "0"],
+        '202' => ["comment" => "Accepted", "weight" => "0"],
+        '203' => ["comment" => "Non-Authoritative Information", "weight" => "0"],
+        '204' => ["comment" => "No Content", "weight" => "1"],
+        '205' => ["comment" => "Reset Content", "weight" => "0"],
+        '206' => ["comment" => "Partial Content", "weight" => "0"],
+        '300' => ["comment" => "Multiple Choices", "weight" => "2"],
+        '301' => ["comment" => "Moved Permanently", "weight" => "1"],
+        '302' => ["comment" => "Found", "weight" => "1"],
+        '303' => ["comment" => "See Other", "weight" => "2"],
+        '304' => ["comment" => "Not Modified", "weight" => "2"],
+        '305' => ["comment" => "Use Proxy", "weight" => "3"],
+        '307' => ["comment" => "Temporary Redirect", "weight" => "1"],
+        '400' => ["comment" => "Bad Request", "weight" => "5"],
+        '401' => ["comment" => "Unauthorized", "weight" => "4"],
+        '402' => ["comment" => "Payment Required", "weight" => "3"],
+        '403' => ["comment" => "Forbidden", "weight" => "5"],
+        '404' => ["comment" => "Not Found", "weight" => "5"],
+        '405' => ["comment" => "Method Not Allowed", "weight" => "5"],
+        '406' => ["comment" => "Not Acceptable", "weight" => "5"],
+        '407' => ["comment" => "Proxy Authentication Required", "weight" => "5"],
+        '408' => ["comment" => "Request Timeout", "weight" => "5"],
+        '409' => ["comment" => "Conflict", "weight" => "5"],
+        '410' => ["comment" => "Gone", "weight" => "5"],
+        '411' => ["comment" => "Length Required", "weight" => "5"],
+        '412' => ["comment" => "Precondition Failed", "weight" => "5"],
+        '413' => ["comment" => "Request Entity Too Large", "weight" => "5"],
+        '414' => ["comment" => "Request-URI Too Long", "weight" => "5"],
+        '415' => ["comment" => "Unsupported Media Type", "weight" => "5"],
+        '416' => ["comment" => "Requested Range Not Satisfiable", "weight" => "5"],
+        '417' => ["comment" => "Expectation Failed", "weight" => "5"],
+        '500' => ["comment" => "Internal Server Error", "weight" => "5"],
+        '501' => ["comment" => "Not Implemented", "weight" => "5"],
+        '502' => ["comment" => "Bad Gateway", "weight" => "5"],
+        '503' => ["comment" => "Service Unavailable", "weight" => "5"],
+        '504' => ["comment" => "Gateway Timeout", "weight" => "5"],
+        '505' => ["comment" => "HTTP Version Not Supported", "weight" => "5"]
+    ];
 
     /** check_irl function
      *  check url - returns error codes, content type, error weight and comment
@@ -98,7 +99,7 @@ class AA_Linkcheck {
      * @return array
      */
     function check_url($url) {
-        $return = array();
+        $return = [];
         $time   = time();
         if (!preg_match("~^https?://~i", $url)) {
             if (preg_match("/^mailto:/i", $url)) {
@@ -132,7 +133,7 @@ class AA_Linkcheck {
                $dump .= "Connection: close\r\n\r\n";
                fputs($sock, $dump);
                while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
-                   $match = array();
+                   $match = [];
                    if (preg_match("~^http/[0-9]+.[0-9]+ ([0-9]{3})~i", $str, $match)) {
                        $return["code"] = $match[1];
                    }
@@ -158,7 +159,7 @@ class AA_Linkcheck {
 
         // select from links_links, ordered by validated (timestamp),
         // unchecked links have validated = 0
-        $links = DB_AA::select(array(), 'SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated');
+        $links = DB_AA::select([], 'SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated');
         $max   = min(LINKS_VALIDATION_COUNT, count($links));
 
         for ($i = 0; $i < $max; ++$i) {

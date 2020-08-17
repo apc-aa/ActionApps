@@ -64,7 +64,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
 
     // get form - we need to call $form->getForm() before we call
     // $form->getFormStart(), $form->getFormJavascript
-    $inputform_settings = array('form_action' => AA_INSTAL_URL.'filler.php3');
+    $inputform_settings = ['form_action' => AA_INSTAL_URL.'filler.php3'];
     $form               = new inputform($inputform_settings);
     $content4id       = new ItemContent;
     $form_code          = '{generate:HEAD}'.$form->getForm($content4id, $slice, false, $show).'{generate:FOOT}';
@@ -130,10 +130,13 @@ if (!IfSlPerm(PS_FIELDS)) {
 }
 
 // get all warnings
-$warning = array();
+$warning = [];
 $slice   = AA_Slice::getModule($slice_id);
 
-$s_fields = DB_AA::select(array('id'=>array()),'SELECT id, name, input_pri, required, input_show, in_item_tbl FROM field', array(array('slice_id', $slice_id, 'l'),array('id', '\_%', 'NOT LIKE')), array('input_pri'));
+$s_fields = DB_AA::select(['id'=> []],'SELECT id, name, input_pri, required, input_show, in_item_tbl FROM field', [
+    ['slice_id', $slice_id, 'l'],
+    ['id', '\_%', 'NOT LIKE']
+], ['input_pri']);
 
 if ($slice->getProperty('permit_anonymous_post') == 0) {
     $warning[] = _m("WARNING: You did not permit anonymous posting in slice settings.");
@@ -174,9 +177,13 @@ $apage = new AA_Adminpageutil('sliceadmin','anonym_wizard');
 $apage->setTitle(_m("Admin - Anonymous Form Wizard"));
 $apage->printHead(array_merge($err,$warning), $Msg);
 
-$form_buttons=array("show_form" => array("value"=>_m("Show Form"),
-                                         "type" =>"submit"),
-                    "cancel"    => array("url"  =>"se_fields.php3"));
+$form_buttons= [
+    "show_form" => [
+        "value"=>_m("Show Form"),
+                                         "type" =>"submit"
+    ],
+                    "cancel"    => ["url"  =>"se_fields.php3"]
+];
 
 $helplink = ' <a href="'.AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage("help100_simple.gif", _m("Help"),11,18).'<b>'._m("Help - Documentation").'</b></a>';
 FrmTabCaption(_m("URLs shown after the form was sent") . $helplink, $form_buttons);

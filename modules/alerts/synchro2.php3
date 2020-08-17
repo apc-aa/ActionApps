@@ -42,7 +42,7 @@ function get_alerts_specific_fields($collectionid) {
     */
 
     // Add this to each field definition alerts1, 2, ...
-    $FIELD_DEFAULTS = array (
+    $FIELD_DEFAULTS = [
         'type' => '',
         "input_default" => "txt:",
         "required" => 0,
@@ -54,30 +54,32 @@ function get_alerts_specific_fields($collectionid) {
         "input_show" => 1,
         "text_stored" => 1,
         'input_validate' => ''
-    );
+    ];
 
-    $retval[getAlertsField('alerts1', $collectionid)] = array_merge($FIELD_DEFAULTS, array (
+    $retval[getAlertsField('alerts1', $collectionid)] = array_merge($FIELD_DEFAULTS, [
             "name" => _m("How often"),
             "input_help" => _m("How often for {ALERNAME}"),   // {ALERNAME} will be replaced by the current Alerts Name
             "input_show_func" => "sel:{CONSTGROUP}",          // Add a constant group and add its name to "input_show_func"
-            "constants" => array (
+            "constants" => [
                 "group" => "How often",
-                "items" => get_howoften_options() + array (" " => _m("not subscribed"))),
+                "items" => get_howoften_options() + [" " => _m("not subscribed")]
+            ],
             "alias1" => "_#HOWOFTEN",
             "alias1_func" => "f_c:!:::&nbsp;",
             "alias1_help" => _m("How often for {ALERNAME}"),
-        ));
-    $retval[getAlertsField('alerts2', $collectionid)] = array_merge($FIELD_DEFAULTS, array (
+    ]);
+    $retval[getAlertsField('alerts2', $collectionid)] = array_merge($FIELD_DEFAULTS, [
         "name" => _m("Selections"),
         "input_help" => _m("Selections for {ALERNAME}"),
         "input_show_func" => "mch:{CONSTGROUP}:3:1",
-        "constants" => array (
+        "constants" => [
             "group" => "Selections",
-            "items" => "{FILTERS}"),
+            "items" => "{FILTERS}"
+        ],
         "alias1" => "_#FILTERS_",
         "alias1_func" => "f_h:,",
         "alias1_help" => _m("Selecetion IDs for {ALERNAME}"),
-        ));
+    ]);
     return $retval;
 }
 
@@ -92,14 +94,20 @@ function add_fields_2_slice($collectionid, $slice_id) {
     $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
 
     // find current Alerts Name
-    $alerts_name = DB_AA::select1('SELECT module.name FROM alerts_collection, module', 'name', array(array('alerts_collection.module_id','module.id','j'),array('alerts_collection.id',$collectionid)));
+    $alerts_name = DB_AA::select1('SELECT module.name FROM alerts_collection, module', 'name', [
+        ['alerts_collection.module_id','module.id','j'],
+        ['alerts_collection.id',$collectionid]
+    ]);
 
     // find filters to fill into the Filters constant group
-    $filters = DB_AA::select(array('fid'=>'description'), 'SELECT CONCAT("f",alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter', array(array('alerts_filter.id','alerts_collection_filter.filterid','j'),array('alerts_collection_filter.collectionid',$collectionid)), array('alerts_collection_filter.myindex'));
+    $filters = DB_AA::select(['fid'=>'description'], 'SELECT CONCAT("f",alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter', [
+        ['alerts_filter.id','alerts_collection_filter.filterid','j'],
+        ['alerts_collection_filter.collectionid',$collectionid]
+    ], ['alerts_collection_filter.myindex']);
 
     // find priority: find gap beginning by 2000 with step 200
     $input_pri = 2000;
-    while (DB_AA::test('field',array(array('slice_id',$slice_id,'l'),array('id', '\_%', 'NOT LIKE'),array('input_pri',$input_pri,'i')))) {
+    while (DB_AA::test('field', [['slice_id',$slice_id,'l'], ['id', '\_%', 'NOT LIKE'], ['input_pri',$input_pri,'i']])) {
         $input_pri += 200;
     }
 
@@ -115,7 +123,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         $varset->addkey("id",       "text", $field_id);
 
         // don't add fields twice
-        $field_info = DB_AA::select1('SELECT * FROM field','', array(array('slice_id',$slice_id,'l'),array('id', $field_id)));
+        $field_info = DB_AA::select1('SELECT * FROM field','', [['slice_id',$slice_id,'l'], ['id', $field_id]]);
 
         if (! is_array($field_info) ) {
             $nadded ++;
@@ -136,10 +144,10 @@ function add_fields_2_slice($collectionid, $slice_id) {
                 $groupname = get_unique_group_id($fprop["constants"]["group"]);
 
                 // prepare array for adding to constants
-                $constants = array();
+                $constants = [];
                 if (isset($fprop["constants"]["items"]) AND is_array($fprop["constants"]["items"])) {
                     foreach ( $fprop["constants"]["items"] as $value => $name ) {
-                        $constants[] = array('name'=>$name, 'value'=>$value);
+                        $constants[] = ['name'=>$name, 'value'=>$value];
                     }
                 }
                 add_constant_group($groupname, $constants);
@@ -154,7 +162,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         }
         $varset->doREPLACE("field");
     }
-    return _m("%1 field(s) added", array ($nadded));
+    return _m("%1 field(s) added", [$nadded]);
 }
 
 // -------------------------------------------------------------------
@@ -183,7 +191,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
         }
     }
     freeDB($db);
-    return _m("%1 field(s) and %2 constant group(s) deleted", array($ndeleted+0, $ndeleted_groups+0));
+    return _m("%1 field(s) and %2 constant group(s) deleted", [$ndeleted+0, $ndeleted_groups+0]);
 }
 
 // -------------------------------------------------------------------

@@ -56,7 +56,7 @@ function proove_ID($slice) {
     if ((strlen($res)!=0)&&(strlen($res) != 16))	{
         if ((strlen($res) != 16)&&(strlen($res) != 32)) {
             echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)",
-                array ($res, strlen ($res)))."<br>\n";
+                [$res, strlen ($res)])."<br>\n";
         }
         $res = pack_id($res);
         if (strlen($res) == 16) {
@@ -309,7 +309,7 @@ if ($slice_def != "") {
 
 $apage = new AA_Adminpageutil('aaadmin','sliceimp');
 $apage->setTitle(_m("Import exported data (slice structure and content)"));
-$apage->setForm(array('enctype'=>'multipart/form-data'));
+$apage->setForm(['enctype'=>'multipart/form-data']);
 $apage->printHead($err, $Msg);
 
 echo $pom;
@@ -453,8 +453,10 @@ echo myspecialchars($slice_def_bck) ?></textarea>
     <input type="checkbox" name="only_data" checked><?php echo _m("Import slice items") ?><br><br>
     <input type="checkbox" name="force_this_slice"><?php echo _m("Import into this slice - whatever file says") ?><br><br>
 <?php
-    FrmTabEnd(array("Submit"=>array("value"=>_m("Send the slice structure and data"), "accesskey"=>"S", "type"=>"submit"),
-              "Cancel"=>array("value"=>_m("Cancel"), "type"=>"submit")));
+    FrmTabEnd([
+        "Submit"=> ["value"=>_m("Send the slice structure and data"), "accesskey"=>"S", "type"=>"submit"],
+              "Cancel"=> ["value"=>_m("Cancel"), "type"=>"submit"]
+    ]);
  } ?>
 <?php
 }

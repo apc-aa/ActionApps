@@ -152,8 +152,8 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     $name=safe($name); $txt=safe($txt);
 
     $order_type = $easy_order ?
-        array( '0'=>_m("Ascending"), '1' => _m("Descending")) :
-        array( '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority"));
+        ['0'=>_m("Ascending"), '1' => _m("Descending")] :
+        ['0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")];
     echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
     echo "</td>\n<td>";
     FrmSelectEasy($name, $order_fields, $val);
@@ -178,7 +178,7 @@ function OrderAliasFrm($name, $txt, $val) {
     global $vw_data;
     $name=safe($name); $txt=safe($txt);
 
-    $order_type = array( '0'=>_m("Ascending"), '1' => _m("Descending"), '4'=>_m("Ascending (numeric)"),     '5' => _m("Descending (numeric)"));
+    $order_type = ['0'=>_m("Ascending"), '1' => _m("Descending"), '4'=>_m("Ascending (numeric)"),     '5' => _m("Descending (numeric)")];
     echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
     echo "</td>\n<td><input name=\"$name\" size=\"14\" maxlength=\"10\" value=\"". safe($val) ."\">";
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
@@ -242,7 +242,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
@@ -311,20 +311,20 @@ if ( $update ) {
 }
 
 if ( !$update ) {  // set variables from database
-    $vw_data = array();
+    $vw_data = [];
     if ( $view_id ) {
         // edit specified view data
-        $vw_data = DB_AA::select1('SELECT * FROM view','', array(array('id',$view_id,'i')));
+        $vw_data = DB_AA::select1('SELECT * FROM view','', [['id',$view_id,'i']]);
     } elseif( $new_templ AND $view_view) {
         // new view from template
-        $vw_data = DB_AA::select1('SELECT * FROM view','', array(array('id',$view_view,'i')));
+        $vw_data = DB_AA::select1('SELECT * FROM view','', [['id',$view_view,'i']]);
     } elseif( $view_type == 'inputform') {
         // new view - inputform
         $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
     } elseif( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
-        $vw_data = DB_AA::select1('SELECT * FROM view','', array(array('type',$view_type)), array('id'));
+        $vw_data = DB_AA::select1('SELECT * FROM view','', [['type',$view_type]], ['id']);
     } else {        // error - someone swith the slice or so
         go_url($back_url);
     }
@@ -336,7 +336,7 @@ if ( !$update ) {  // set variables from database
             $view_type = 'javascript';
         }
     } else {
-        $vw_data = array( "listlen" => 10 );   // default values
+        $vw_data = ["listlen" => 10];   // default values
     }
 } else {        // updating - load data into vw_data array
     foreach ($VIEW_FIELDS as $k => $v) {
@@ -347,7 +347,8 @@ if ( !$update ) {  // set variables from database
 }
 
 // operators array
-$lookup_op = array( "<"  => "<",
+$lookup_op = [
+    "<"  => "<",
                     "<=" => "<=",
                     "="  => "=",
                     "==" => "== (exact match)",
@@ -359,7 +360,8 @@ $lookup_op = array( "<"  => "<",
                     "ISNULL"  => "not set",
                     "NOTNULL"  => "is set",
                     "m:<" => "< now() - x [in seconds]",
-                    "m:>" => "> now() - x [in seconds]");
+                    "m:>" => "> now() - x [in seconds]"
+];
 
 // lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', 'name');
@@ -426,11 +428,12 @@ $apage->addRequire('codemirror@5');
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 
-$form_buttons = array( 'update',
-                       'cancel'    => array("url"=>"se_views.php3"),
-                       'view_id'   => array('value'=> $view_id),
-                       'view_type' => array('value'=> $view_type),
-                      );
+$form_buttons = [
+    'update',
+                       'cancel'    => ["url"=>"se_views.php3"],
+                       'view_id'   => ['value'=> $view_id],
+                       'view_type' => ['value'=> $view_type],
+];
 
 // Print View Form ----------
 FrmTabCaption(_m("Defined Views"), $form_buttons);

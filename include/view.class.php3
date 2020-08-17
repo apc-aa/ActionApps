@@ -149,14 +149,14 @@ class AA_View {
      * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
      * @return array conditions array
      */
-    public function getConds($param_conds=array()) {
+    public function getConds($param_conds= []) {
         // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
         // used by ParseMultiSelectConds
 
         // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
         AA::$debug&2 && AA::$dbg->log("(AA_View->getConds) param_conds=",$param_conds);
-        $conds = array();
+        $conds = [];
 
         $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'),  $param_conds[1]);
         $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'),  $param_conds[2]);
@@ -173,7 +173,7 @@ class AA_View {
      * @return AA_Set of the view
      */
     public function getSet() {
-        return new AA_Set(array($this->getSliceId()), $this->getConds(), $this->getSort());
+        return new AA_Set([$this->getSliceId()], $this->getConds(), $this->getSort());
     }
 
     /** ResolveCondsConflict function
@@ -186,9 +186,11 @@ class AA_View {
      */
     protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param) {
         if ($fld AND $op) {
-            $conds[] = array( 'operator' => $op,
+            $conds[] = [
+                'operator' => $op,
                 'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
-                $fld       => 1 );
+                $fld       => 1
+            ];
         }
     }
 
@@ -210,7 +212,7 @@ class AA_View {
             $sort = String2Sort('100000'.$param_sort['group_by']);
         } else {
             if ($this->f('group_by1')) {
-                $sort[] = array($this->f('group_by1') => $VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]);
+                $sort[] = [$this->f('group_by1') => $VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
             }
         }
 
@@ -223,10 +225,10 @@ class AA_View {
             }
         } else {
             if ($this->f('order1')) {
-                $sort[] = array($this->f('order1') => $VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]);
+                $sort[] = [$this->f('order1') => $VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]];
             }
             if ($this->f('order2')) {
-                $sort[] = array($this->f('order2') => $VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]);
+                $sort[] = [$this->f('order2') => $VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]];
             }
         }
 
@@ -242,7 +244,7 @@ class AA_View {
      * @return array
      */
     function getViewFormat($selected_item='') {
-        $format                        = array();
+        $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
         $format['gb_header']           = $this->fields['gb_header'];
         $format['category_format']     = $this->fields['group_title'];
@@ -281,9 +283,9 @@ class AA_View {
      */
     static function getViewJumpLinks($text) {
         $ret = '';
-        $matches = array();
+        $matches = [];
         if ($text) {
-            $view_ids = array();
+            $view_ids = [];
             if (preg_match_all("/view\.php3?\?vid=(\w+)/",$text, $matches) > 0) {
                 $view_ids = (array)$matches[1];
             }
@@ -318,11 +320,11 @@ class AA_View {
 
 /** usualy called as $view = AA_Views::getView($vid); */
 class AA_Views {
-    var $a = array();
+    var $a = [];
 
     /** AA_Views function  */
     function __construct() {
-        $this->a = array();
+        $this->a = [];
     }
 
     /** singleton function
@@ -406,7 +408,7 @@ class AA_Views {
      * @return array
      */
     static function getSliceViews($slice_id) {
-        $a = array();
+        $a = [];
         if ($slice_id) {
             $views = AA_Views::singleton();
             $SQL   = "SELECT id FROM view WHERE slice_id='". q_pack_id($slice_id) ."'";

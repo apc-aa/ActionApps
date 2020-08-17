@@ -52,32 +52,34 @@ define('L_D_SHOW_SELECTED','Zobrazit vybran�');
 define('L_D_SHOW_ALL','Zobrazit v�e');
 define('L_D_SELECTED_NONE','Nen� vybr�n ��dn� p��sp�vek');
 
-$regiony_arr = array(  // path, searchstring for zpravodajstvi, searchstrig for tiskove zpravy
-  "p" => array( "&nbsp;&gt;&nbsp;Praha",                    "Praha",          "Praha"),
-  "s" => array( "&nbsp;&gt;&nbsp;St�edo�esk�&nbsp;kraj",    "St�edo�esk�",    "St�edo�esk�"),
-  "j" => array( "&nbsp;&gt;&nbsp;Jiho�esk�&nbsp;kraj",      "Jiho�esk�",      "Jiho�esk�"),
-  "e" => array( "&nbsp;&gt;&nbsp;Plze�sk�&nbsp;kraj",       "Plze�sk�",       "Plze�sk�"),
-  "k" => array( "&nbsp;&gt;&nbsp;Karlovarsk�&nbsp;kraj",    "Karlovarsk�",    "Karlovarsk�"),
-  "u" => array( "&nbsp;&gt;&nbsp;�steck�&nbsp;kraj",        "�steck�",        "�steck�"),
-  "l" => array( "&nbsp;&gt;&nbsp;Libereck�&nbsp;kraj",      "Libereck�",      "Kr�lovehradeck�"),
-  "r" => array( "&nbsp;&gt;&nbsp;Kr�lov�hradeck�&nbsp;kraj","Kr�lovehradeck�","Kr�lovehradeck�"),
-  "a" => array( "&nbsp;&gt;&nbsp;Pardubick�&nbsp;kraj",     "Pardubick�",     "Pardubick�"),
-  "v" => array( "&nbsp;&gt;&nbsp;Vyso�ina",                 "Vyso�ina",       "Vyso�ina"),
-  "i" => array( "&nbsp;&gt;&nbsp;Jihomoravsk�&nbsp;kraj",   "Jihomoravsk�",   "Jihomoravsk�"),
-  "o" => array( "&nbsp;&gt;&nbsp;Olomouck�&nbsp;kraj",      "Olomouck�",      "Olomouck�"),
-  "m" => array( "&nbsp;&gt;&nbsp;Moravskoslezsk�&nbsp;kraj","Moravskoslezsk�","Moravskoslezsk�"),
-  "z" => array( "&nbsp;&gt;&nbsp;Zl�nsk�&nbsp;kraj",        "Zl�nsk�",        "Zl�nsk�"),
-  "x" => array( "&nbsp;&gt;&nbsp;�R",                       "�esk�",          "�R"),
-  "n" => array( "&nbsp;&gt;&nbsp;Slovensko",                "Slovensko",      "Slovensko"),
-  "c" => array( "&nbsp;&gt;&nbsp;Sv�t",                     "Zahrani��",      "Ma�arsko+or+N�mecko+or+Polsko+or+Rakousko+or+Ukrajina+or+Evropa+or+Rusko+or+Amerika+or+Asie+or+Afrika+or+Austr�lie+or+Antarktida+or+Sv�t")
-);
+$regiony_arr = [  // path, searchstring for zpravodajstvi, searchstrig for tiskove zpravy
+  "p" => ["&nbsp;&gt;&nbsp;Praha",                    "Praha",          "Praha"],
+  "s" => ["&nbsp;&gt;&nbsp;St�edo�esk�&nbsp;kraj",    "St�edo�esk�",    "St�edo�esk�"],
+  "j" => ["&nbsp;&gt;&nbsp;Jiho�esk�&nbsp;kraj",      "Jiho�esk�",      "Jiho�esk�"],
+  "e" => ["&nbsp;&gt;&nbsp;Plze�sk�&nbsp;kraj",       "Plze�sk�",       "Plze�sk�"],
+  "k" => ["&nbsp;&gt;&nbsp;Karlovarsk�&nbsp;kraj",    "Karlovarsk�",    "Karlovarsk�"],
+  "u" => ["&nbsp;&gt;&nbsp;�steck�&nbsp;kraj",        "�steck�",        "�steck�"],
+  "l" => ["&nbsp;&gt;&nbsp;Libereck�&nbsp;kraj",      "Libereck�",      "Kr�lovehradeck�"],
+  "r" => ["&nbsp;&gt;&nbsp;Kr�lov�hradeck�&nbsp;kraj","Kr�lovehradeck�","Kr�lovehradeck�"],
+  "a" => ["&nbsp;&gt;&nbsp;Pardubick�&nbsp;kraj",     "Pardubick�",     "Pardubick�"],
+  "v" => ["&nbsp;&gt;&nbsp;Vyso�ina",                 "Vyso�ina",       "Vyso�ina"],
+  "i" => ["&nbsp;&gt;&nbsp;Jihomoravsk�&nbsp;kraj",   "Jihomoravsk�",   "Jihomoravsk�"],
+  "o" => ["&nbsp;&gt;&nbsp;Olomouck�&nbsp;kraj",      "Olomouck�",      "Olomouck�"],
+  "m" => ["&nbsp;&gt;&nbsp;Moravskoslezsk�&nbsp;kraj","Moravskoslezsk�","Moravskoslezsk�"],
+  "z" => ["&nbsp;&gt;&nbsp;Zl�nsk�&nbsp;kraj",        "Zl�nsk�",        "Zl�nsk�"],
+  "x" => ["&nbsp;&gt;&nbsp;�R",                       "�esk�",          "�R"],
+  "n" => ["&nbsp;&gt;&nbsp;Slovensko",                "Slovensko",      "Slovensko"],
+  "c" => ["&nbsp;&gt;&nbsp;Sv�t",                     "Zahrani��",      "Ma�arsko+or+N�mecko+or+Polsko+or+Rakousko+or+Ukrajina+or+Evropa+or+Rusko+or+Amerika+or+Asie+or+Afrika+or+Austr�lie+or+Antarktida+or+Sv�t"]
+];
 
-$formaty_arr = array( 'z' => 'zpr�vy',
+$formaty_arr = [
+    'z' => 'zpr�vy',
                       'm' => 'kauzy',
                       'k' => 'koment��e',
                       't' => 'tiskov�&nbsp;zpr�vy',
                       'a' => 'kampan�',
-                      's' => 'ze&nbsp;sv�ta');
+                      's' => 'ze&nbsp;sv�ta'
+];
 
 if ( !$apc ) {
   if ( $x ) {         // want to view text?
@@ -119,13 +121,13 @@ if ( !$apc ) {
 if ( preg_match( "/^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)/", $apc, $vars ))
   list($old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = $vars;
  else
-  list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t) = array( 'z', 'z', 'v', 'x', '-', '-');
+  list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t) = ['z', 'z', 'v', 'x', '-', '-'];
 
 if ( isset($w) ) {                          // w stands for WEB (like zpravodajstvi - z, econnect - e, nno - n
   switch($w) {
-    case 'z':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'z', 'z', 'v', 'x', '-', '-', ''); break;
-    case 'n':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'n', 'N', '1', '-', '-', '-', ''); break;
-    case 'e':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'e', '1', '1', '-', '-', '-', '73161'); break;
+    case 'z':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = ['z', 'z', 'v', 'x', '-', '-', '']; break;
+    case 'n':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = ['n', 'N', '1', '-', '-', '-', '']; break;
+    case 'e':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = ['e', '1', '1', '-', '-', '-', '73161']; break;
   }
 }
 if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy - z, komentare - k, o Econnectu - 1) We use disjunct sets of subweb chracters, so zpravodajstvi uses [a-z], econnect uses [1-9], nno [A-Z]
@@ -179,7 +181,8 @@ $old_x = CheckX( $old_x );
 list( $region_cesta, $region_z, $region_k ) = $regiony_arr[$old_r];
 $format_cesta = '&nbsp;&gt;&nbsp;'.$formaty_arr[$old_s];
 
-$apc_state = array ('state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
+$apc_state = [
+    'state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
                     'w' => $old_w,
                     's' => $old_s,
                     'f' => $old_f,
@@ -193,7 +196,7 @@ $apc_state = array ('state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
                     'region_z' =>     ($region_z ? $region_z : ''),
                     'region_k' =>     ($region_k ?$region_k : ''),
                     'format_cesta' => ($format_cesta ? $format_cesta : '')
-                    );
+];
 
 // $r variable is could be array, so create variables like r0, r1, .. to be used in site
 for ( $i=0; $i< strlen($old_r); $i++)

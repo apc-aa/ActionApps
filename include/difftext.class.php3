@@ -45,7 +45,7 @@
 
 class AA_Difftext {
     static function renderHtml($from_text, $to_text) {
-        $diff     = new Text_Diff(array($from_text), array($to_text));
+        $diff     = new Text_Diff([$from_text], [$to_text]);
         $renderer = new Text_Diff_Renderer_inline();
         return '<div class="difftext">'. $renderer->render($diff). '</div>';
     }
@@ -148,7 +148,7 @@ class Text_Diff {
     public function reverse()
     {
         $rev = clone($this);
-        $rev->_edits = array();
+        $rev->_edits = [];
         foreach ($this->_edits as $edit) {
             $rev->_edits[] = $edit->reverse();
         }
@@ -197,7 +197,7 @@ class Text_Diff {
      */
     function getOriginal()
     {
-        $lines = array();
+        $lines = [];
         foreach ($this->_edits as $edit) {
             if ($edit->orig) {
                 array_splice($lines, count($lines), 0, $edit->orig);
@@ -215,7 +215,7 @@ class Text_Diff {
      */
     public function getFinal()
     {
-        $lines = array();
+        $lines = [];
         foreach ($this->_edits as $edit) {
             if ($edit->final) {
                 array_splice($lines, count($lines), 0, $edit->final);
@@ -233,7 +233,7 @@ class Text_Diff {
      */
     public static function trimNewlines(&$line, $key)
     {
-        $line = str_replace(array("\n", "\r"), '', $line);
+        $line = str_replace(["\n", "\r"], '', $line);
     }
     /**
      * Checks a diff for validity.
@@ -419,15 +419,15 @@ class Text_Diff_Op_change extends Text_Diff_Op {
 class Text_Diff_Engine_native {
 
     function diff($from_lines, $to_lines) {
-        array_walk($from_lines, array('Text_Diff', 'trimNewlines'));
-        array_walk($to_lines, array('Text_Diff', 'trimNewlines'));
+        array_walk($from_lines, ['Text_Diff', 'trimNewlines']);
+        array_walk($to_lines, ['Text_Diff', 'trimNewlines']);
 
         $n_from = count($from_lines);
         $n_to = count($to_lines);
 
-        $this->xchanged = $this->ychanged = array();
-        $this->xv = $this->yv = array();
-        $this->xind = $this->yind = array();
+        $this->xchanged = $this->ychanged = [];
+        $this->xv = $this->yv = [];
+        $this->xind = $this->yind = [];
         unset($this->seq);
         unset($this->in_seq);
         unset($this->lcs);
@@ -479,14 +479,14 @@ class Text_Diff_Engine_native {
         $this->_shiftBoundaries($to_lines, $this->ychanged, $this->xchanged);
 
         // Compute the edit operations.
-        $edits = array();
+        $edits = [];
         $xi = $yi = 0;
         while ($xi < $n_from || $yi < $n_to) {
             assert($yi < $n_to || $this->xchanged[$xi]);
             assert($xi < $n_from || $this->ychanged[$yi]);
 
             // Skip matching "snake".
-            $copy = array();
+            $copy = [];
             while ($xi < $n_from && $yi < $n_to
                    && !$this->xchanged[$xi] && !$this->ychanged[$yi]) {
                 $copy[] = $from_lines[$xi++];
@@ -497,12 +497,12 @@ class Text_Diff_Engine_native {
             }
 
             // Find deletes & adds.
-            $delete = array();
+            $delete = [];
             while ($xi < $n_from && $this->xchanged[$xi]) {
                 $delete[] = $from_lines[$xi++];
             }
 
-            $add = array();
+            $add = [];
             while ($yi < $n_to && $this->ychanged[$yi]) {
                 $add[] = $to_lines[$yi++];
             }
@@ -543,7 +543,7 @@ class Text_Diff_Engine_native {
              * shortest sequence is in X. */
             $flip = true;
             list ($xoff, $xlim, $yoff, $ylim)
-                = array($yoff, $ylim, $xoff, $xlim);
+                = [$yoff, $ylim, $xoff, $xlim];
         }
 
         if ($flip) {
@@ -558,8 +558,8 @@ class Text_Diff_Engine_native {
 
         $this->lcs = 0;
         $this->seq[0]= $yoff - 1;
-        $this->in_seq = array();
-        $ymids[0] = array();
+        $this->in_seq = [];
+        $ymids[0] = [];
 
         $numer = $xlim - $xoff + $nchunks - 1;
         $x = $xoff;
@@ -602,16 +602,16 @@ class Text_Diff_Engine_native {
             }
         }
 
-        $seps[] = $flip ? array($yoff, $xoff) : array($xoff, $yoff);
+        $seps[] = $flip ? [$yoff, $xoff] : [$xoff, $yoff];
         $ymid = $ymids[$this->lcs];
         for ($n = 0; $n < $nchunks - 1; $n++) {
             $x1 = $xoff + (int)(($numer + ($xlim - $xoff) * $n) / $nchunks);
             $y1 = $ymid[$n] + 1;
-            $seps[] = $flip ? array($y1, $x1) : array($x1, $y1);
+            $seps[] = $flip ? [$y1, $x1] : [$x1, $y1];
         }
-        $seps[] = $flip ? array($ylim, $xlim) : array($xlim, $ylim);
+        $seps[] = $flip ? [$ylim, $xlim] : [$xlim, $ylim];
 
-        return array($this->lcs, $seps);
+        return [$this->lcs, $seps];
     }
 
     function _lcsPos($ypos) {
@@ -840,7 +840,7 @@ class Text_Diff_Renderer {
     /**
      * Constructor.
      */
-    function __construct($params = array()) {
+    function __construct($params = []) {
         foreach ($params as $param => $value) {
             $v = '_' . $param;
             if (isset($this->$v)) {
@@ -855,7 +855,7 @@ class Text_Diff_Renderer {
      * @return array  All parameters of this renderer object.
      */
     function getParams() {
-        $params = array();
+        $params = [];
         foreach (get_object_vars($this) as $k => $v) {
             if ($k[0] == '_') {
                 $params[substr($k, 1)] = $v;
@@ -875,7 +875,7 @@ class Text_Diff_Renderer {
     function render($diff) {
         $xi = $yi = 1;
         $block = false;
-        $context = array();
+        $context = [];
 
         $nlead = $this->_leading_context_lines;
         $ntrail = $this->_trailing_context_lines;
@@ -920,7 +920,7 @@ class Text_Diff_Renderer {
                     $context = array_slice($context, count($context) - $nlead);
                     $x0 = $xi - count($context);
                     $y0 = $yi - count($context);
-                    $block = array();
+                    $block = [];
                     if ($context) {
                         $block[] = new Text_Diff_Op_copy($context);
                     }
@@ -1087,7 +1087,7 @@ class Text_Diff_Renderer_inline extends Text_Diff_Renderer {
 
     function _lines($lines, $prefix = ' ', $encode = true) {
         if ($encode) {
-            array_walk($lines, array(&$this, '_encode'));
+            array_walk($lines, [&$this, '_encode']);
         }
 
         if ($this->_split_level == 'words') {
@@ -1098,14 +1098,14 @@ class Text_Diff_Renderer_inline extends Text_Diff_Renderer {
     }
 
     function _added($lines) {
-        array_walk($lines, array(&$this, '_encode'));
+        array_walk($lines, [&$this, '_encode']);
         $lines[0] = $this->_ins_prefix . $lines[0];
         $lines[count($lines) - 1] .= $this->_ins_suffix;
         return $this->_lines($lines, ' ', false);
     }
 
     function _deleted($lines, $words = false) {
-        array_walk($lines, array(&$this, '_encode'));
+        array_walk($lines, [&$this, '_encode']);
         $lines[0] = $this->_del_prefix . $lines[0];
         $lines[count($lines) - 1] .= $this->_del_suffix;
         return $this->_lines($lines, ' ', false);
@@ -1140,7 +1140,7 @@ class Text_Diff_Renderer_inline extends Text_Diff_Renderer {
 
         /* Get the diff in inline format. */
         $renderer = new Text_Diff_Renderer_inline(array_merge($this->getParams(),
-                                                              array('split_level' => 'words')));
+                                                              ['split_level' => 'words']));
 
         /* Run the diff and get the output. */
         return str_replace($nl, "\n", $renderer->render($diff)) . "\n";
@@ -1150,7 +1150,7 @@ class Text_Diff_Renderer_inline extends Text_Diff_Renderer {
         // Ignore \0; otherwise the while loop will never finish.
         $string = str_replace("\0", '', $string);
 
-        $words = array();
+        $words = [];
         $length = strlen($string);
         $pos = 0;
 

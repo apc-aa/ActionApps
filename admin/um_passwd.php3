@@ -44,7 +44,7 @@ if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) OR !AA::$perm->isUserEditable($auth->auth[
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
@@ -85,8 +85,10 @@ $apage->setTitle(_m("Change user data"));
 $apage->printHead($err, $Msg);
 
 
-$form_buttons = array ("update",
-                       "cancel" => array("url"=>"index.php3"));
+$form_buttons = [
+    "update",
+                       "cancel" => ["url"=>"index.php3"]
+];
 
 FrmTabCaption(_m("Edit User"));
 FrmStaticText(_m("Login name"), $user_data['login']);

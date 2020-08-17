@@ -147,7 +147,7 @@ final class Crypt {
         }
         $v = self::calcVector($A);
         $a_len_padding = self::addPadding($A);
-        return array($J0, $v, $a_len_padding, $H);
+        return [$J0, $v, $a_len_padding, $H];
     }
     /**
      * @param string $value
@@ -281,7 +281,7 @@ final class Crypt {
      */
     private static function getHash($H, $X)
     {
-        $Y = array();
+        $Y = [];
         $Y[0] = str_pad('', 16, "\0");
         $num_blocks = (int) (mb_strlen($X, '8bit') / 16);
         for ($i = 1; $i <= $num_blocks; $i++) {
@@ -303,8 +303,8 @@ final class Crypt {
             return '';
         }
         $n = (int) ceil(self::getLength($X) / 128);
-        $CB = array();
-        $Y = array();
+        $CB = [];
+        $Y = [];
         $CB[1] = $ICB;
         for ($i = 2; $i <= $n; $i++) {
             $CB[$i] = self::getInc(32, $CB[$i - 1]);

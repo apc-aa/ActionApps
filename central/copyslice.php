@@ -36,16 +36,16 @@ $aas = AA_Actionapps::getArray();
 
 $apage = new AA_Adminpageutil('central', 'copyslice');
 $apage->setTitle( _m("Central - Copy Slice (1/2) - Select Source ActionApps") );
-$apage->setForm(array('action'=>'copyslice2.php'));
+$apage->setForm(['action'=>'copyslice2.php']);
 $apage->printHead($err, $Msg);
 
 
-$aas_array = array();
+$aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
 
-$form_buttons = array ("submit");
+$form_buttons = ["submit"];
 FrmTabCaption('', $form_buttons);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
 FrmTabEnd($form_buttons);

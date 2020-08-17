@@ -41,9 +41,9 @@ class AA_Adminpageutil {
     protected $submenu    = '';
     protected $title      = '';
     protected $subtitle   = '';
-    protected $require    = array();
-    protected $form       = array('name' => 'f', 'id'=>'', 'method'=>'post', 'action' => '', 'enctype'=>'', 'onsubmit'=>'');
-    protected $helpboxes  = array();
+    protected $require    = [];
+    protected $form       = ['name' => 'f', 'id'=>'', 'method'=>'post', 'action' => '', 'enctype'=>'', 'onsubmit'=>''];
+    protected $helpboxes  = [];
 
     /**
      * AA_Adminpageutil constructor.
@@ -67,10 +67,10 @@ class AA_Adminpageutil {
     /**
      * @param string $title
      */
-    public function setForm(array $settings=array())
+    public function setForm(array $settings= [])
     {
         if ( empty($settings) ) {
-            $this->form = array();
+            $this->form = [];
         } else {
             foreach ($settings as $k => $v) {
                 $this->form[$k] = $v;
@@ -100,7 +100,7 @@ class AA_Adminpageutil {
      * @param string $html
      */
     public function addHelpbox($name, $html) {
-        $this->helpboxes[] = array('name'=>$name, 'html'=>$html);
+        $this->helpboxes[] = ['name'=>$name, 'html'=>$html];
     }
 
     /**
@@ -109,7 +109,7 @@ class AA_Adminpageutil {
      */
     public function addRequire($require, $type='')
     {
-        $this->require[] = array($require, $type);
+        $this->require[] = [$require, $type];
     }
 
 
@@ -210,7 +210,7 @@ class AA_Adminpageutil {
     public function printHelpbox() {
         $html = '';
         foreach ($this->helpboxes as $helpbox) {
-            $html .= GetHtmlTable( array(array($helpbox['html'])), 'td', $helpbox['name'], true );  // clasic aa table
+            $html .= GetHtmlTable( [[$helpbox['html']]], 'td', $helpbox['name'], true );  // clasic aa table
         }
         if ($html) {
             $html = '<br>'. $html;
@@ -269,7 +269,7 @@ class AA_Adminpage implements AA_iEditable {
             MsgPageMenu($this->getCancelUrl(), _m('You have not permissions to this page').': '.$this->getName(), 'admin');
         }
         if ($_POST['update'] AND !empty($_POST['aa'])) {
-            $err = array();          // error array (Init - just for initializing variable
+            $err = [];          // error array (Init - just for initializing variable
             // update or insert
             $this->setFromForm();
             if ($this->validateData()) {
@@ -322,12 +322,16 @@ class AA_Adminpage implements AA_iEditable {
 
         echo '<form name="f" method="post" action="'. StateUrl('') .'">';
 
-        $form_buttons = array ("update",
-                       "update" => array ('type' => 'hidden', 'value'=>'1'),
-                       "cancel" => array ("url"=>"se_fields.php3"),
-                       "default" => array('type'  => 'button',
+        $form_buttons = [
+            "update",
+                       "update" => ['type' => 'hidden', 'value'=>'1'],
+                       "cancel" => ["url"=>"se_fields.php3"],
+                       "default" => [
+                           'type'  => 'button',
                                           'value' => _m("Default"),
-                                          'add'   => 'onclick="Defaults()"'));
+                                          'add'   => 'onclick="Defaults()"'
+                       ]
+        ];
 
         FrmTabCaption(_m("Object Edit"), $form_buttons);
         // FrmHidden('ret_url', $ret_url);
@@ -368,7 +372,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
     public function getProperty($property_id, $default=null) { return $this->record[$property_id]; }
 
     /** managed table columns */
-    public static function getTableColumns() { return array(); }
+    public static function getTableColumns() { return []; }
 
     /** AA_iEditable method - adds Object's editable properties to the $form */
     public static function addFormrows($form) {
@@ -404,7 +408,7 @@ class AA_Adminpage_Table extends AA_Adminpage {
         $grabber->finish();    // maybe some finalization in grabber
 
         $cols = static::getColumns();
-        $this->record = array();
+        $this->record = [];
         foreach ($cols as $name) {
             $this->record[$name] = $content->getValue($name);
         }
@@ -417,9 +421,9 @@ class AA_Adminpage_Table extends AA_Adminpage {
     }
 
     protected function doLoad() {
-        $this->record = array();
+        $this->record = [];
         if ($this->module_id) {
-            $content = AA_Metabase::getContent( array('table'=>static::DB_TABLE), new zids($this->module_id, 'l'));
+            $content = AA_Metabase::getContent( ['table'=>static::DB_TABLE], new zids($this->module_id, 'l'));
             if ($content4id = $content[$this->module_id]) {
                 // filter only used columns
                 $cols = static::getTableColumns();

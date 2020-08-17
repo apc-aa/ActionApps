@@ -57,14 +57,14 @@ if (!$userfile) {
             }
             unlink ("$uploadpath$file_name");
             $insidesection=false;
-            $buffer=array();
-            $output=array();
+            $buffer= [];
+            $output= [];
             foreach ($out as $linenum => $line) {
                 if (preg_match("/^<!--Section/",$line)) {
                     if ($insidesection==true) {
                         $output=array_merge ($output,$buffer);
-                        $buffer=array();
-                    } else $buffer=array();
+                        $buffer= [];
+                    } else $buffer= [];
                     $insidesection=true;
                 } else {
                     $line=str_replace("&scaron;","�",$line);
@@ -81,14 +81,14 @@ if (!$userfile) {
             unlink ("$uploadpath$file_name");
             if (!$out) $out[]=" ";
             $insidesection=false;
-            $buffer=array();
-            $output=array();
+            $buffer= [];
+            $output= [];
             foreach ($out as $linenum => $line) {
                 if (preg_match("/body/i",$line)) {
                     if ($insidesection==true) {
                         $output=array_merge ($output,$buffer);
-                        $buffer=array();
-                    } else $buffer=array();
+                        $buffer= [];
+                    } else $buffer= [];
                     $insidesection=true;
                 } else {
                     $buffer[]=$line;
@@ -105,7 +105,7 @@ if (!$userfile) {
             unlink ("$uploadpath$file_name");
             if (!$out) $out[]=" ";
             $insidesection=true;
-            $output=array();
+            $output= [];
             foreach ($out as $linenum => $line) {
                 if (preg_match("/<HR>/",$line)) {
                     $line=str_replace("<HR>","",$line);

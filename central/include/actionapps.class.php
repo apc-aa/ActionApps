@@ -70,7 +70,7 @@ class AA_Actionapps {
         $this->local_data          = $content4id;
         $this->_remote_session_id  = null;
         $this->_remote_session_id_time  = 0;
-        $this->_cached             = array();
+        $this->_cached             = [];
     }
 
     /** getActionapps function
@@ -80,7 +80,7 @@ class AA_Actionapps {
      * @return mixed
      */
     static function getActionapps($aa_id) {
-        static $aas = array();
+        static $aas = [];
         if (!isset($aas[$aa_id])) {
             $aa_ic       = Central_GetAaContent(new zids($aa_id, 's'));
             $aas[$aa_id] = new AA_Actionapps(new ItemContent($aa_ic[$aa_id]));
@@ -138,26 +138,26 @@ class AA_Actionapps {
      *  mention, that the slices are identified by !name! not id for synchronization
      */
     function requestSlices() {
-        return $this->requestModules(array('S'));
+        return $this->requestModules(['S']);
     }
 
     /** @return array - all module names form remote AA
      *  @param $types array of requested module types (A|Alerts|J|Lins|P|S|W)
      */
     function requestModules($types) {
-        $response = $this->getResponse( new AA_Request('Get_Modules', array('types'=>$types)) );
-        return ($response->isError()) ? array() : $response->getResponse();
+        $response = $this->getResponse( new AA_Request('Get_Modules', ['types'=>$types]) );
+        return ($response->isError()) ? [] : $response->getResponse();
     }
 
     /** @return array - structure which define all the definition of the slice
      *  (like slice properties, fields, views, ...). It is returned for all the
      *  slices in array
      */
-    function requestDefinitions($type, $ids, $limited = array()) {
+    function requestDefinitions($type, $ids, $limited = []) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
-        $response = $this->getResponse( new AA_Request('Get_Module_Defs', array('type'=>$type, 'ids'=>$ids, 'limited'=>$limited)) );
-        return ($response->isError()) ? array() : $response->getResponse();
+        $response = $this->getResponse( new AA_Request('Get_Module_Defs', ['type'=>$type, 'ids'=>$ids, 'limited'=>$limited]) );
+        return ($response->isError()) ? [] : $response->getResponse();
     }
 
     /** This command synchronizes the slices base on sync[] array
@@ -166,7 +166,7 @@ class AA_Actionapps {
     function synchronize($sync_commands) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
-        $response = $this->getResponse( new AA_Request('Do_Synchronize', array('sync'=>$sync_commands)) );
+        $response = $this->getResponse( new AA_Request('Do_Synchronize', ['sync'=>$sync_commands]) );
         return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
@@ -174,7 +174,7 @@ class AA_Actionapps {
      *  @return the report on the optimize
      */
     function doOptimize($optimize_class, $optimize_method) {
-        $response = $this->getResponse( new AA_Request('Do_Optimize', array('class'=>$optimize_class, 'method'=>$optimize_method)) );
+        $response = $this->getResponse( new AA_Request('Do_Optimize', ['class'=>$optimize_class, 'method'=>$optimize_method]) );
         return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
@@ -185,7 +185,7 @@ class AA_Actionapps {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
 
-        $response = $this->getResponse( new AA_Request('Do_Import_Module_Chunk', array('definition_chunk'=>$definition_chunk)) );
+        $response = $this->getResponse( new AA_Request('Do_Import_Module_Chunk', ['definition_chunk'=>$definition_chunk]) );
         return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
@@ -199,7 +199,7 @@ class AA_Actionapps {
             }
         }
         // _remote_session_id is set
-        return $request->ask($this->getComunicatorUrl(), array('AA_CP_Session'=>$this->_remote_session_id), array('Cookie'=>'AA_Session='.$this->_remote_session_id));
+        return $request->ask($this->getComunicatorUrl(), ['AA_CP_Session'=>$this->_remote_session_id], ['Cookie'=>'AA_Session='.$this->_remote_session_id]);
         // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
         // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
     }
@@ -215,7 +215,7 @@ class AA_Actionapps {
     function _authenticate() {
         $request  = new AA_Request('Get_Sessionid');
         // $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
-        $response = $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
+        $response = $request->ask($this->getComunicatorUrl(), ['username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()]);
         if ( !$response->isError() ) {
             $arr = $response->getResponse();
             $this->setSession($arr[0]);
@@ -234,9 +234,9 @@ class AA_Actionapps {
     /** create array of all Approved AAs from central database */
     static function getArray() {
 
-        $ret    = array();
-        $conds  = array();
-        $sort[] = array('ORG_NAME' => 'a');
+        $ret    = [];
+        $conds  = [];
+        $sort[] = ['ORG_NAME' => 'a'];
         $zids   = Central_QueryZids($conds, $sort, AA_BIN_APPROVED);
         $aa_ic  = Central_GetAaContent($zids);
 
@@ -284,7 +284,7 @@ class AA_Module_Definition {
 
     function clear() {
         $this->module_id = null;
-        $this->data      = array();
+        $this->data      = [];
     }
 
     function loadForId($module_id, $limited=false) {
@@ -321,7 +321,7 @@ class AA_Module_Definition {
         $toexecute = new AA_Toexecute;
         foreach ($chunks as $chunk) {
             $import_task = new AA_Task_Import_Module_Chunk($chunk, $aa);
-            $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module_Chunk');
+            $toexecute->userQueue($import_task, [], 'AA_Task_Import_Module_Chunk');
         }
         return count($chunks);
     }
@@ -336,7 +336,7 @@ class AA_Module_Definition {
     }
 
     protected function _getChunks($replaces) {
-        $chunks = array();
+        $chunks = [];
         if (is_array($replaces)) {
             $this->data = recursive_array_replace(array_keys($replaces), array_values($replaces), $this->data);
         }
@@ -362,7 +362,7 @@ class AA_Module_Definition_Chunk {
      *  chunks, if it is bigger than limit.
      **/
     static function factoryArray($module_id, $table, $rows) {
-        $chunks = array();
+        $chunks = [];
 
         // maximum 1000 rows in one chunk
         $chunks_data = array_chunk($rows, 1000, true);
@@ -374,15 +374,15 @@ class AA_Module_Definition_Chunk {
 
     function __construct($module_id, $table, $rows) {
         $this->module_id = $module_id;
-        $this->data      = array($table => $rows);
+        $this->data      = [$table => $rows];
     }
 
     function importModuleChunk() {
 
         $metabase    = AA::Metabase();
 
-        $msgs = array('ok'=>array(), 'err'=>array());
-        $keys = array();
+        $msgs = ['ok'=> [], 'err'=> []];
+        $keys = [];
 
         foreach ($this->data as $table => $records) {
             if ( empty($records) ) {
@@ -391,14 +391,14 @@ class AA_Module_Definition_Chunk {
 
             // just for reporting
             if (!isset($msgs['ok'][$table])) {
-                $msgs['ok'][$table]  = array();
-                $msgs['err'][$table] = array();
+                $msgs['ok'][$table]  = [];
+                $msgs['err'][$table] = [];
                 $keys[$table] = $metabase->getKeys($table);
             }
             // now we packing the data in the AA_Metabase::do*() functions
             // $metabase->packIds($table, $records);    // pack ids ...
             foreach ($records as $data) {
-                $ident = array();
+                $ident = [];
                 foreach ($keys[$table] as $col) {
                     $ident[] = $data[$col];
                 }
@@ -413,7 +413,7 @@ class AA_Module_Definition_Chunk {
 
             }
         }
-        $ret = array();
+        $ret = [];
         if ($msg = $this->_formatReport($msgs['ok'])) {
             $ret[] = 'OK: '. $msg;
         }
@@ -438,7 +438,7 @@ class AA_Module_Definition_Chunk {
 
 class AA_Module_Definition_Slice extends AA_Module_Definition {
 
-    function loadForId($module_id, $limited=array()) {
+    function loadForId($module_id, $limited= []) {
         $this->clear();
         $this->module_id = $module_id;
         $metabase        = AA::Metabase();
@@ -457,7 +457,7 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
             $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
             $this->data['constant']       = $metabase->getModuleRows('constant', $module_id);
             if (is_array($this->data['constant'])) {
-                $constant_groups = array();
+                $constant_groups = [];
                 foreach ($this->data['constant'] as $k => $v) {
                     $constant_groups[$v['group_id']] = true;   // get list of all groups
                 }
@@ -466,7 +466,7 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
 
                 $groups = GetTable2Array($SQL, "unpack:id", 'aa_fields');
                 if (!is_array($groups)) {
-                    $groups = array();
+                    $groups = [];
                 }
                 foreach ($groups as $k => $v) {
                     $groups[$k]['id'] = unpack_id($v['id']);
@@ -487,13 +487,13 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
         $dest_module_id = $dest_def->getId();
         $metabase       = AA::Metabase();
 
-        $diff =                    AA_Difference::_compareArray(reset($this->data['module']),  reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), array($metabase->getModuleField('module'))); // just module data
-        $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']),   reset($dest_def->data['slice']),  new AA_Identifier($dest_module_id, 'slice', $dest_module_id),  array($metabase->getModuleField('slice'))));  // just slice data
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    array($metabase->getModuleField('field'))));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     array($metabase->getModuleField('view'))));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    array($metabase->getModuleField('email'))));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant_slice'], $dest_def->data['constant_slice'], new AA_Identifier($dest_module_id, 'constant_slice'), array($metabase->getModuleField('constant_slice'))));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), array($metabase->getModuleField('constant'))));
+        $diff =                    AA_Difference::_compareArray(reset($this->data['module']),  reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), [$metabase->getModuleField('module')]); // just module data
+        $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']),   reset($dest_def->data['slice']),  new AA_Identifier($dest_module_id, 'slice', $dest_module_id),  [$metabase->getModuleField('slice')]));  // just slice data
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    [$metabase->getModuleField('field')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     [$metabase->getModuleField('view')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    [$metabase->getModuleField('email')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant_slice'], $dest_def->data['constant_slice'], new AA_Identifier($dest_module_id, 'constant_slice'), [$metabase->getModuleField('constant_slice')]));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), [$metabase->getModuleField('constant')]));
         return $diff;
     }
 }
@@ -542,10 +542,10 @@ class AA_Difference {
     var $actions;
 
     /** */
-    function __construct($type, $description, $actions=array()) {
+    function __construct($type, $description, $actions= []) {
         $this->type        = $type;
         $this->description = $description;
-        $this->actions     = empty($actions) ? array() : (is_array($actions) ? $actions : array($actions));
+        $this->actions     = empty($actions) ? [] : (is_array($actions) ? $actions : [$actions]);
     }
 
     function printOut() {
@@ -559,15 +559,15 @@ class AA_Difference {
     /// Static
 
     static function _compareArray($template_arr, $destination_arr, $identifier, $ignore) {
-        $diff       = array();
+        $diff       = [];
         if (! is_array($template_arr) AND is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', array($identifier->toString())), new AA_Sync_Action('DELETE', $identifier)));
+            return [0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', [$identifier->toString()]), new AA_Sync_Action('DELETE', $identifier))];
         }
         if ( is_array($template_arr) AND !is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', array($identifier->toString())), new AA_Sync_Action('INSERT', $identifier, $template_arr)));
+            return [0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', [$identifier->toString()]), new AA_Sync_Action('INSERT', $identifier, $template_arr))];
         }
         if ( !is_array($template_arr) AND !is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', array($identifier->toString()))));
+            return [0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', [$identifier->toString()]))];
         }
 
         // if we comparing row values, we can also update whole row at once - so we mark it
@@ -590,7 +590,7 @@ class AA_Difference {
                 unset($destination_arr[$key]);
             }
             elseif (!array_key_exists($key,$destination_arr)) {
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in destination slice for %2', array($key, $identifier->toString())), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in destination slice for %2', [$key, $identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
             }
             elseif (($value != $destination_arr[$key]) AND !(empty($value) AND empty($destination_arr[$key]))) {  // '' and 0 is considered equal
                // if we comparing row values, we can also update whole row at once - so we mark it
@@ -600,7 +600,7 @@ class AA_Difference {
                        <div style="background-color:#FFE0E0;border: solid 1px #F88;">'._m('Destination').':<br>'.safe($destination_arr[$key]).'</div>
                        <br>
                        <div style="background-color:#E0E0FF;border: solid 1px #88F;">'._m('Template').':<br>'.safe($value).'</div>'). '}';
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('The value for key %1 in %2 array is different %3', array($key, $identifier->toString(), AA::Stringexpander()->unalias($code))), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('The value for key %1 in %2 array is different %3', [$key, $identifier->toString(), AA::Stringexpander()->unalias($code)]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -609,7 +609,7 @@ class AA_Difference {
             }
         }
         if ($is_different) {
-            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', array($identifier->toString())), new AA_Sync_Action('UPDATE_ROW', $identifier, $template_arr)));
+            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$identifier->toString()]), new AA_Sync_Action('UPDATE_ROW', $identifier, $template_arr)));
         }
 
         foreach ($destination_arr as $key => $value) {
@@ -621,11 +621,11 @@ class AA_Difference {
                 // I know - we can define the difference right here, but it is better to use the same method as above
                 $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $sub_identifier, $ignore));
             } else {
-                $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in template slice for %2', array($key, $sub_identifier->toString())), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
+                $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in template slice for %2', [$key, $sub_identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
             }
         }
         if ( count($diff) < 1 ) {
-            $diff[] = new AA_Difference('INFO', _m('%1 are identical', array($identifier->toString())));
+            $diff[] = new AA_Difference('INFO', _m('%1 are identical', [$identifier->toString()]));
         }
         return $diff;
     }
@@ -637,7 +637,7 @@ class AA_Identifier {
     var $path;
 
     function __construct($module_id=null, $table=null, $row=null, $column=null) {
-        $this->path = array();
+        $this->path = [];
         if ($module_id) {
             $this->path[0] = $module_id;
             if ($table) {
@@ -713,7 +713,7 @@ class AA_Sync_Action {
     function _getDataArray() {
         $idf    = $this->identifier;
         $column = $idf->getColumn();
-        return $column ? array( $column => $this->params) : $this->params;
+        return $column ? [$column => $this->params] : $this->params;
     }
 
     /** do synchronization action in destination slice */
@@ -733,27 +733,27 @@ class AA_Sync_Action {
         $metabase    = AA::Metabase();
 
         if (!$row) {
-            return _m('Wrong command - row is not defined - %1', array($idf->toString()));
+            return _m('Wrong command - row is not defined - %1', [$idf->toString()]);
         }
         if ( ($this->type == 'UPDATE_ROW') OR ($this->type == 'UPDATE_VALUE') ) {
             $data = $this->_getDataArray();
             $metabase->fillKeys($data, $idf);
             $metabase->doUpdate($table, $data);
-            return _m('%1 %2 in slice %3 updated', array($table, $row, $module_id));
+            return _m('%1 %2 in slice %3 updated', [$table, $row, $module_id]);
         }
         if ( $this->type == 'INSERT' ) {
             $data = $this->params;
             $metabase->fillKeys($data, $idf);
             $metabase->doInsert($table, $data);
-            return _m('%1 %2 inserted into slice %3', array($table, $row, $module_id));  // field xy inserted into slice yz
+            return _m('%1 %2 inserted into slice %3', [$table, $row, $module_id]);  // field xy inserted into slice yz
         }
         if ( $this->type == 'DELETE' ) {
-            $data = array();
+            $data = [];
             $metabase->fillKeys($data, $idf);
             $metabase->doDelete($table, $data);
-            return _m('%1 %2 deleted from slice %3', array($table, $row, $module_id));
+            return _m('%1 %2 deleted from slice %3', [$table, $row, $module_id]);
         }
-        return _m("Unknown action (%1) for field %2 in slice %3", array($this->type, $row, $module_id));
+        return _m("Unknown action (%1) for field %2 in slice %3", [$this->type, $row, $module_id]);
     }
 }
 
@@ -777,10 +777,10 @@ class AA_Task_Sync implements \AA\Util\LaterInterface {
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
-        return $this->actionapps->synchronize(array($this->sync_action));
+        return $this->actionapps->synchronize([$this->sync_action]);
     }
 }
 
@@ -804,7 +804,7 @@ class AA_Task_Import_Module_Chunk implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
         return $this->actionapps->importModuleChunk($this->module_definition_chunk);
@@ -824,8 +824,8 @@ class AA_Task_Import_Module_Chunk implements \AA\Util\LaterInterface {
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */
 function Central_GetAaContent($zids) {
-    $content = array();
-    $ret     = array();
+    $content = [];
+    $ret     = [];
 
     // construct WHERE clausule
     $sel_in = $zids->sqlin( false );
@@ -857,7 +857,7 @@ function Central_QueryZids($conds, $sort="", $type="app") {
     $metabase    = AA::Metabase();
 
     $fields      = $metabase->getSearchArray('central_conf');
-    $join_tables = array();   // not used in this function
+    $join_tables = [];   // not used in this function
 
     $SQL  = 'SELECT DISTINCT id FROM central_conf WHERE ';
     $SQL .= CreateBinCondition($type, 'central_conf');

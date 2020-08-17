@@ -28,6 +28,6 @@ class NulWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return array();
+        return [];
     }
 }

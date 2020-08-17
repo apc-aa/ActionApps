@@ -72,7 +72,7 @@ function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timesta
  */
 function http_fetch($url, $d=null) {
     if (isset($d)) {
-        $param = array();
+        $param = [];
         foreach ($d as $k =>$v) {
             if ($v) {
                 $param[] = urlencode($k). "=". urlencode($v);
@@ -113,11 +113,11 @@ function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs
 
     if ( $local_cat_id == UNPACKED_AA_THE_SAME_CATE ) {
         // we have to not rename the category - return original name
-        return array( $remote_cat_value, $approved );
+        return [$remote_cat_value, $approved];
     }
 
     // return local category name or empty value for "not feed"
-    return array( $l_categs[$local_cat_id]['value'], $approved );
+    return [$l_categs[$local_cat_id]['value'], $approved];
 }
 
 /** translateCategories function
@@ -151,7 +151,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
             $used_values[trim($ext_categs[$r_cid]['value'])] = true; // mark it
             if ( $new_cat ) {
                 // create new $content4id entry for categories
-                $new_categories[] = array( 'value' => $new_cat );
+                $new_categories[] = ['value' => $new_cat];
             }
         }
     }
@@ -167,7 +167,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
                 }
                 if ( $new_cat ) {
                     // create new $content4id entry for categories
-                    $new_categories[] = array( 'value' => $new_cat );
+                    $new_categories[] = ['value' => $new_cat];
                 }
             }
         }
@@ -323,7 +323,7 @@ function field2arr($field) {
     } else { // Must be 1.0 which doesn't have an RSS version
         $flag = FLAG_HTML;
     }
-    return array('value' => $field, 'flag' => $flag);
+    return ['value' => $field, 'flag' => $flag];
 }
 
 /** map1field function
@@ -362,17 +362,17 @@ function map1field($value,$item,$channel) {
         }
         return $try1;
     } elseif ($value == "NOW") {
-        return array(0 => array('value' => time(), 'flag' => 0));
+        return [0 => ['value' => time(), 'flag' => 0]];
     } elseif (preg_match("~CHANNEL/(.*)~",$value,$vals)) {
-        return array ( 0 => field2arr($channel[$vals[1]]));
+        return [0 => field2arr($channel[$vals[1]])];
     } elseif (preg_match("~ITEM/(.*)~",$value,$vals)) {
-        return array ( 0 => field2arr($item[$vals[1]]));
+        return [0 => field2arr($item[$vals[1]])];
     } elseif (preg_match("~DC/(.*)~",$value,$vals)) {
         // Dont believe DC fields can be HTML
-        return array(0 => array('value' => $item['dc'][$vals[1]], 'flag' => 0));
+        return [0 => ['value' => $item['dc'][$vals[1]], 'flag' => 0]];
     } elseif ($value == "CONTENT") {
         // Note this code is repeated above in map1field
-        return array (0 => contentvalue($item));
+        return [0 => contentvalue($item)];
     } else {
         return $item['fields_content'][$value];
     }
@@ -392,7 +392,7 @@ function contentvalue($item) {
     } else {   // otherwise PLAIN. Other formats are not supported,
         $cont_flag = PLAIN;      // but they can be added in future
     }
-    return array("value"=>$item['content'][$cont_flag], "flag"=>$flag);
+    return ["value"=>$item['content'][$cont_flag], "flag"=>$flag];
 }
 
 

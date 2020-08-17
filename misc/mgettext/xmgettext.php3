@@ -92,7 +92,7 @@ class mgettext_writer_php extends mgettext_writer {
 
     /** Prepares a string to be printed in double quotes into a file. */
     function prepare_string($str) {
-        $str = str_replace(array("\\", '"', "$"), array("\\\\",'\\"', "\\$"), $str);
+        $str = str_replace(["\\", '"', "$"], ["\\\\",'\\"', "\\$"], $str);
         // write line ends as new lines, but handle two line ends in other way
         while (strstr($str, "\n\n")) {
             $str = str_replace("\n\n", "\\n\n", $str);
@@ -150,7 +150,7 @@ class mgettext_writer_po extends mgettext_writer {
 
     /** Prepares a string to be printed in double quotes into a file. */
     function prepare_string($str) {
-        $str = str_replace(array("\\", '"'), array("\\\\",'\\"'), $str);
+        $str = str_replace(["\\", '"'], ["\\\\",'\\"'], $str);
         // write line ends as new lines, but handle two line ends in other way
         while (strstr($str, "\n\n")) {
             $str = str_replace("\n\n", "\\n\n", $str);
@@ -228,7 +228,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
             $out->write_comment('Unused messages');
             foreach ( $_m as $message => $tr) {
                 if (!isset($messages[$message]) && $tr) {
-                    $pair = array('message'=>$message, 'translation'=>$tr);
+                    $pair = ['message'=>$message, 'translation'=>$tr];
                     $out->write_pair($pair);
                 }
             }
@@ -238,7 +238,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
         // messages with code location description and other translations (from old lang files)
         if (is_array($messages)) {
             foreach ( $messages as $message => $params) {
-                $pair = array();    // clean the variable
+                $pair = [];    // clean the variable
                 if ($add_source_links) {
                     foreach ($params["code"] as $filename => $rows) {
                         $pair['comments'][] = "$filename, row ".join(", ",$rows);
@@ -277,10 +277,10 @@ function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
     if (!file_exists($file)) {
         echo "ERROR: $file does not exist<br>";
     } else {
-        $_log = array();
+        $_log = [];
         require_once $file;
         $en_log = $_log;
-        $_log = array();
+        $_log = [];
         require_once str_replace("??",$lang,$log_files);
         foreach ($en_log as $msg => $names) {
             foreach ($names as $name) {
@@ -361,8 +361,8 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
     // echo "<br> filelist:";
     // print_r($filelist);
     foreach ($filelist as $filename => $foo) {
-        $messages = array();
-        $warnings = array();
+        $messages = [];
+        $warnings = [];
         if (!$processed_files[$filename]) {
             collect_messages_from_file($files_base_dir, $filename, $messages, $warnings);
             $msgstr = php_string(serialize($messages));

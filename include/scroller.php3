@@ -45,7 +45,7 @@ class AA_Scroller extends AA_Storable {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
-        return array (
+        return [
             'pgcnt'      => new AA_Property( 'pgcnt'     , _m('Pgcnt'     ), 'int',  false, true),
             'current'    => new AA_Property( 'current'   , _m('Current'   ), 'int',  false, true),
             'id'         => new AA_Property( 'id'        , _m('Id'        ), 'text', false, true),
@@ -55,7 +55,7 @@ class AA_Scroller extends AA_Storable {
             'itmcnt'     => new AA_Property( 'itmcnt'    , _m('Itmcnt'    ), 'int',  false, true),
             'metapage'   => new AA_Property( 'metapage'  , _m('Metapage'  ), 'int',  false, true),
             'urldefault' => new AA_Property( 'urldefault', _m('Urldefault'), 'text', false, true)
-            );
+        ];
     }
 
     /** AA_Scroller function
@@ -161,9 +161,9 @@ class AA_Scroller extends AA_Storable {
      */
     function navarray() {
         if (!$this->pgcnt) {
-            return array();
+            return [];
         }
-        $arr  = array();
+        $arr  = [];
         $mp   = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
         $from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to   = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
@@ -210,12 +210,12 @@ class AA_Scroller extends AA_Storable {
                 $ret .= $delimiter;
                 $delimiter = " | ";
                 if ($v) {
-                    $ret .= "<a href=\"" . get_url($url, array($v)) . "\">$k</a>\n";
+                    $ret .= "<a href=\"" . get_url($url, [$v]) . "\">$k</a>\n";
                 } else {
                     $ret .= ($k == $this->current) ? "<span class=active>$k</span>\n" : "<span class=dots>..</span>\n";
                 }
             }
-            $ret .= "| <a href=\"" . get_url($url, array("listlen=99999")) . "\">" . _m("All") . "</a> &nbsp; ";
+            $ret .= "| <a href=\"" . get_url($url, ["listlen=99999"]) . "\">" . _m("All") . "</a> &nbsp; ";
         }
         echo "<div class=pager>$ret <span class=found>(". _m('found').' '. $this->itmcnt .")</span></div>";
     }
@@ -324,12 +324,12 @@ class AA_Scroller_Easy {
      *  labels as keys, query string fragments a values
      */
     function navarray() {
-        if (!$this->itmcnt) return array();
+        if (!$this->itmcnt) return [];
         $pgcnt = $this->pageCount();
         $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
         $from  = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to    = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
-        $arr   = array();
+        $arr   = [];
         if ($this->current > 1) {
             $arr[_m("Previous")]     = $this->Absolute($this->current-1);
         }
@@ -362,7 +362,7 @@ class AA_Scroller_Easy {
      *  Commands are added to $url
      */
     function pnavbar() {
-        $url = con_url($this->urldefault,array('scrl'=>1));
+        $url = con_url($this->urldefault, ['scrl'=>1]);
         $i   = 0;
         $arr = $this->navarray();
         if ( count($arr) > 0 ) {
@@ -444,7 +444,7 @@ class AA_Scroller_Sitemodule {
     function navarray() {
         $this->checkBounds();
         if (!$this->itmcnt) {
-            return array();
+            return [];
         }
         $pgcnt = $this->pageCount();
         $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page

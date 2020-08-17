@@ -50,7 +50,7 @@ class AA_Poll {
             return;
         }
 
-        $content = AA_Metabase::getContent(array('table'=>'polls'), new zids($this->poll_id));
+        $content = AA_Metabase::getContent(['table'=>'polls'], new zids($this->poll_id));
         $this->content = new ItemContent($content[$this->poll_id]);
     }
 
@@ -106,7 +106,8 @@ class AA_Poll {
         $design = GetTable2Array("SELECT top, answer, bottom FROM polls_design WHERE id = '".quote($design_id)."'", 'aa_first');
         // additional string for compact_top and compact_bottom needed
         // for historical reasons (not manager.class verion of item manager)
-        return array ( "compact_top"     => $design['top'],
+        return [
+            "compact_top"     => $design['top'],
                        "category_sort"   => false,
                        "category_format" => "",
                        "category_top"    => "",
@@ -119,7 +120,8 @@ class AA_Poll {
                        "noitem_msg"      => '',
                        // id is packed (format string are used as itemview
                        //               parameter, where $slice_info expected)
-                       "id"              => $this->id() ); // we need id for invalidating cache in itemview
+                       "id"              => $this->id()
+        ]; // we need id for invalidating cache in itemview
     }
 
     /** aliases function
@@ -172,7 +174,7 @@ class AA_Poll {
             if ($ip) {
                 $vote_invalid = "IP";
             } else {
-                $varset->resetFromRecord( array('poll_id'=>$poll_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time) );
+                $varset->resetFromRecord( ['poll_id'=>$poll_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time]);
                 $varset->doInsert('polls_ip_lock');
             }
         }
@@ -192,7 +194,7 @@ class AA_Poll {
             AA::Pagecache()->invalidateFor( $this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
-                $varset->resetFromRecord( array('answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time) );
+                $varset->resetFromRecord( ['answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time]);
                 $varset->doInsert('polls_log');
             }
         }
@@ -207,10 +209,10 @@ class AA_Poll {
 
         $set = new AA_Set;
         $set->addCondition(new AA_Condition('poll_id', '==', $this->id()));
-        $set->addSortorder(new AA_Sortorder(array('priority' => 'a')));
+        $set->addSortorder(new AA_Sortorder(['priority' => 'a']));
 
-        $zids     = AA::Metabase()->queryZids(array('table'=>'polls_answer'), $set);
-        $itemview = new itemview( $format, '', $aliases, $zids, 0, $zids->count(), shtml_url(), "", array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer')));
+        $zids     = AA::Metabase()->queryZids(['table'=>'polls_answer'], $set);
+        $itemview = new itemview( $format, '', $aliases, $zids, 0, $zids->count(), shtml_url(), "", [['AA_Metabase', 'getContent'], ['table'=>'polls_answer']]);
 
         return $itemview->get_output();
     }
@@ -254,7 +256,7 @@ class AA_Poll {
             $set->addSortFromArray($sort);
         } else {
             // default sort order - just like for items - publish date - descending
-            $set->addSortorder( new AA_Sortorder( array('publish_date' => 'd')));
+            $set->addSortorder( new AA_Sortorder( ['publish_date' => 'd']));
         }
         return $set;
     }
@@ -274,7 +276,7 @@ class AA_Poll {
             $poll_zids = new zids($request['poll_id']);
         } else {
             $set       = AA_Poll::generateSet($request['pid'],$request['conds'],$request['sort']);
-            $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
+            $poll_zids = AA_Metabase::queryZids(['table'=>'polls'], $set);
             $from      = $request['from'] ? $request['from']-1 : 0;
             $listlen   = get_if($request['listlen'], 1);
             $poll_zids = $poll_zids->slice($from, $listlen);
@@ -301,11 +303,11 @@ class AA_Poll {
 }
 
 class AA_Polls {
-    var $a = array();     // Array poll_id -> AA_Poll object
+    var $a = [];     // Array poll_id -> AA_Poll object
 
     /** AA_Polls constructor  */
     function __construct() {
-        $this->a = array();
+        $this->a = [];
     }
 
     /** singleton

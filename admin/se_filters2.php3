@@ -55,7 +55,7 @@ function ParseIdA($param,&$app) {
    }
 }
 
-$err = array();       // error array (Init - just for initializing variable)
+$err = [];       // error array (Init - just for initializing variable)
 $catVS       = new Cvarset();
 
 if ($feed_id) { // cross server feeding
@@ -63,7 +63,7 @@ if ($feed_id) { // cross server feeding
 
     if ($ext_categs = GetExternalCategories($feed_id)) {
         // delete current filters and then insert new
-        DB_AA::delete('ef_categories', array(array('feed_id', $feed_id)));
+        DB_AA::delete('ef_categories', [['feed_id', $feed_id]]);
 
         // clear setting of feeding
         // Note all external categories MUST be stored in the ef_categories
@@ -114,7 +114,7 @@ if ($feed_id) { // cross server feeding
     // We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
     // A transaction would be nice.
 
-    DB_AA::delete('feeds', array(array('to_id', $slice_id, 'l'), array('from_id', $import_id, 'l')));
+    DB_AA::delete('feeds', [['to_id', $slice_id, 'l'], ['from_id', $import_id, 'l']]);
 
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);

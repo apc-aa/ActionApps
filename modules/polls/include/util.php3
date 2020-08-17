@@ -33,7 +33,7 @@ require_once AA_INC_PATH. "varset.php3";
 
 /** Predefined aliases for polls. For another aliases use 'inline' aliases. */
 function GetAnswerAliases() {
-    $aliases = array (
+    $aliases = [
         "_#QUESTION" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),
         "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),  // @deprecated
         "_#PUB_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PUB_DATE}",   "", _m('Poll publish date')),
@@ -49,14 +49,14 @@ function GetAnswerAliases() {
         "_#ANS_ID__" => GetAliasDef( "f_1",                "id",                _m('ID of answer (32 characters hexadecimal number)')),
         "_#ANS_PERC" => GetAliasDef( "f_t:{poll_share}",     "",                _m('Votes for this answer in percent. You can use also {poll_share}.')),
         "_#ANS_SUM_" => GetAliasDef( "f_t:{poll_sum}",       "",                _m('Sum of all votes. You can use also {poll_sum}.')),
-    );
+    ];
 //    return array_merge($metabase->generateAliases('polls_answer'), $aliases);
     return $aliases;
 }
 
 /** Predefined aliases for polls. For another aliases use 'inline' aliases. */
 function GetPollsAliases() {  // function - we need trnslate _m() on use (not at include time)
-    $aliases = array (
+    $aliases = [
         "_#POLL_ID_" => GetAliasDef( "f_1",               "id",           _m('Poll ID')),
         "_#MODULEID" => GetAliasDef( "f_n",               "module_id",    _m('Module ID')),
         "_#QUESTION" => GetAliasDef( "f_1",               "headline",     _m('Prints poll question')),
@@ -64,7 +64,7 @@ function GetPollsAliases() {  // function - we need trnslate _m() on use (not at
         "_#EXP_DATE" => GetAliasDef( "f_d:n/j/Y",         "expiry_date",  _m('Expiry Date')),
         "_#PARAMS__" => GetAliasDef( "f_1",               "params",       _m('Prints poll params')),
         "_#EDITPOLL" => GetAliasDef( "f_e:poll_edit",     "id",           _m('Link to poll editing page (for admin interface only)')),
-    );
+    ];
     return $aliases;
     // array_merge($metabase->generateAliases('polls'), $aliases);
 }

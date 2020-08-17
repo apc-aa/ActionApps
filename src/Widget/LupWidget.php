@@ -28,6 +28,6 @@ class LupWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('url'));
+        return \AA\Widget\Widget::propertiesShop(['url']);
     }
 }

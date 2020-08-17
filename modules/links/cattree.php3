@@ -67,7 +67,7 @@ class cattree {
     var $assignments;    // category assignments - stores which category is subcategory of another
     var $ancesors_idx;   // for each category it defines array of ancessors - used just for speedup (walkTree)
 
-    var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x');
+    var $STATES_CODING = ['highlight'=>'!', 'visible'=>'-', 'hidden'=>'x'];
 
     // constructor
     function __construct($treeStart=-1, $go_to_empty=false, $path_delimiter=' > ') {
@@ -105,7 +105,7 @@ class cattree {
 
     /** Sort categories assignments by name - general categories goes at the end*/
     function sort_categories() {
-        usort($this->assignments, array($this, "cmp_assignments"));
+        usort($this->assignments, [$this, "cmp_assignments"]);
     }
 
     function update() {
@@ -115,7 +115,7 @@ class cattree {
         unset( $this->catnolinks );
         unset( $this->assignments );
         unset( $this->ancesors_idx );
-        $this->ancesors_idx = array();
+        $this->ancesors_idx = [];
 
         // lookup - all categories names
         $SQL= " SELECT id, name, path, nolinks FROM links_categories WHERE deleted='n'";
@@ -340,9 +340,9 @@ class cattree {
         // It is not possible however to put ALL asignments for one name to one
         // row since Firefox (at least 1.0.6) say "too much recursion", so we
         // the asignments to group of max 100 categories
-        $names_count = array();
+        $names_count = [];
         define('MAX_JS_NODES_AT_LINE',100);
-        $js_arr = array();
+        $js_arr = [];
         foreach ( $this->catnames as $allId => $allName) {
             if (!$names_count[$allName]) {
                 $names_count[$allName] =1;
@@ -496,7 +496,7 @@ class cattree {
         $toexecute->cancel_all('COUNT_LINKS');
 
         foreach ($this->catpaths as $cid => $cpath) {
-            $toexecute->later($linkcounter, array($cpath), 'COUNT_LINKS', 50);
+            $toexecute->later($linkcounter, [$cpath], 'COUNT_LINKS', 50);
         }
     }
 }
@@ -528,7 +528,7 @@ class linkcounter implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         list($cpath) = $params;
         return $this->get_link_count($cpath, true);
     }

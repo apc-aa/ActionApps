@@ -54,7 +54,7 @@ function CopyImage2Destination($simage, $dimage) {
     if ($simage == $dimage) {
         return false; // no need to copy
     }
-    return copy($simage,$dimage) ? false : _m("Cannot copy %1 to %2", array($simage, $dimage) );
+    return copy($simage,$dimage) ? false : _m("Cannot copy %1 to %2", [$simage, $dimage]);
 }
 
 
@@ -149,7 +149,7 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
             $f="ImageCreateFrom".$imagetype;
             $src_img=$f($simage);
             if (!$src_img) {
-                return _m("ResampleImage unable to %1",array($f));
+                return _m("ResampleImage unable to %1", [$f]);
             }
             if (function_exists('imagecopyresampled')) {
                 // better quality resizing - works with GD 2.0.1
@@ -179,12 +179,12 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
 // m = mime type, e = extension for GD functions and files,  u = human readable
 // b = bitmask x = exif_imagetype or imageinfo[2]
 // t = true if should use truecolor
-$imageTable = array(
-    1 => array("m" => "image/gif",  "e" => "gif",  "u" => "GIF",  "b" => IMG_GIF, " x" => IMAGETYPE_GIF,  "t" => false),
-    2 => array("m" => "image/jpeg", "e" => "jpeg", "u" => "JPEG", "b" => IMG_JPG,  "x" => IMAGETYPE_JPEG, "t" => true),
-    3 => array("m" => "image/png",  "e" => "png",  "u" => "PNG",  "b" => IMG_PNG,  "x" => IMAGETYPE_PNG,  "t" => true),
-    6 => array("m" => "image/wbmp", "e" => "bmp",  "u" => "WBMP", "b" => IMG_WBMP, "x" => IMAGETYPE_BMP,  "t" => false)
-);
+$imageTable = [
+    1 => ["m" => "image/gif",  "e" => "gif",  "u" => "GIF",  "b" => IMG_GIF, " x" => IMAGETYPE_GIF,  "t" => false],
+    2 => ["m" => "image/jpeg", "e" => "jpeg", "u" => "JPEG", "b" => IMG_JPG,  "x" => IMAGETYPE_JPEG, "t" => true],
+    3 => ["m" => "image/png",  "e" => "png",  "u" => "PNG",  "b" => IMG_PNG,  "x" => IMAGETYPE_PNG,  "t" => true],
+    6 => ["m" => "image/wbmp", "e" => "bmp",  "u" => "WBMP", "b" => IMG_WBMP, "x" => IMAGETYPE_BMP,  "t" => false]
+];
 
 // function checks type of images supported by GD library
 // if type is defined return true ro false,

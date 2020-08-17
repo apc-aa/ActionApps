@@ -97,7 +97,7 @@ class AA_Debug_Firephp extends AA_Debug {
     function _do($func, $params) {
         $this->_console->log(microtime(true) - $this->_starttime['main']);
         foreach ($params as $var) {
-           call_user_func_array(array($this->_console, $func), array($var));
+           call_user_func_array([$this->_console, $func], [$var]);
         }
     }
 }
@@ -107,11 +107,11 @@ class AA_Debug_Console extends AA_Debug {
     function _do($func, $params) {
         $code = '';
         foreach ($params as $a) {
-            if (is_array($a) OR (is_object($a) && !is_callable(array($a,"__toString")))) {
+            if (is_array($a) OR (is_object($a) && !is_callable([$a,"__toString"]))) {
                 $a = print_r($a, true);
             }
             // we used escape4js, but it is sometimes not defined yet
-            $a = str_replace( array("\\", "'","\r\n","\n","\r",'<script','</script'), array("\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $a );
+            $a = str_replace( ["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $a );
             $code .= "console.$func('$a');\n";  //str_replace("'", "\'", str_replace('\\', '\\\\', $a)).
         }
         $this->_script($code);
@@ -119,12 +119,12 @@ class AA_Debug_Console extends AA_Debug {
 
     function _groupstart($group) {
         $this->_script("console.group();");
-        $this->_do('log', array($group));
+        $this->_do('log', [$group]);
     }
 
     function _groupend($group) {
         $this->_script("console.groupEnd();");
-        $this->_do('log', array($group));
+        $this->_do('log', [$group]);
     }
 
     function _script($code) {
@@ -191,7 +191,7 @@ class PhpConsole {
          */
         protected static $instance;
 
-        protected $handledMessagesHashes = array();
+        protected $handledMessagesHashes = [];
         protected $sourceBasePath;
 
         protected function __construct($handleErrors, $handleExceptions, $sourceBasePath) {
@@ -252,7 +252,7 @@ class PhpConsole {
 
         protected static $isEnabledOnClient;
         protected static $isDisabled;
-        protected static $messagesBuffer = array();
+        protected static $messagesBuffer = [];
         protected static $bufferLength = 0;
         protected static $messagesSent = 0;
         protected static $cookiesSent = 0;
@@ -282,7 +282,7 @@ class PhpConsole {
                 if(!self::$isEnabledOnClient || self::$isDisabled) {
                         return;
                 }
-                $message = array();
+                $message = [];
                 $message['type'] = strpos($event->tags, 'error,') === 0 ? 'error' : 'debug';
                 $message['subject'] = $event->type;
                 $message['text'] = substr($event->message, 0, self::messageLengthLimit);
@@ -305,13 +305,13 @@ class PhpConsole {
         }
 
         protected function convertTraceToArray($traceData, $eventFile = null, $eventLine = null) {
-                $trace = array();
+                $trace = [];
                 foreach($traceData as $call) {
                         if((isset($call['class']) && $call['class'] == __CLASS__) || (!$trace && isset($call['file']) && $call['file'] == $eventFile && $call['line'] == $eventLine)) {
-                                $trace = array();
+                                $trace = [];
                                 continue;
                         }
-                        $args = array();
+                        $args = [];
                         if(isset($call['args'])) {
                                 foreach($call['args'] as $arg) {
                                         if(is_object($arg)) {
@@ -356,12 +356,12 @@ class PhpConsole {
                         self::sendMessages(self::$messagesBuffer);
                         self::$bufferLength = 0;
                         self::$messagesSent += count(self::$messagesBuffer);
-                        self::$messagesBuffer = array();
+                        self::$messagesBuffer = [];
                         self::$cookiesSent++;
                         if(self::$cookiesSent == self::cookiesLimit) {
                                 self::$isDisabled = true;
-                                $message = array('type' => 'error', 'subject' => 'PHP CONSOLE', 'text' => 'MESSAGES LIMIT EXCEEDED BECAUSE OF COOKIES STORAGE LIMIT. TOTAL MESSAGES SENT: ' . self::$messagesSent, 'source' => __FILE__, 'notify' => 3);
-                                self::sendMessages(array($message));
+                                $message = ['type' => 'error', 'subject' => 'PHP CONSOLE', 'text' => 'MESSAGES LIMIT EXCEEDED BECAUSE OF COOKIES STORAGE LIMIT. TOTAL MESSAGES SENT: ' . self::$messagesSent, 'source' => __FILE__, 'notify' => 3];
+                                self::sendMessages([$message]);
                         }
                 }
         }
@@ -381,9 +381,9 @@ class PhpConsole {
         ERRORS
          **************************************************************/
 
-        protected $codesTags = array(E_ERROR => 'fatal', E_WARNING => 'warning', E_PARSE => 'fatal', E_NOTICE => 'notice', E_CORE_ERROR => 'fatal', E_CORE_WARNING => 'warning', E_COMPILE_ERROR => 'fatal', E_COMPILE_WARNING => 'warning', E_USER_ERROR => 'fatal', E_USER_WARNING => 'warning', E_USER_NOTICE => 'notice', E_STRICT => 'warning');
-        protected $codesNames = array(E_ERROR => 'E_ERROR', E_WARNING => 'E_WARNING', E_PARSE => 'E_PARSE', E_NOTICE => 'E_NOTICE', E_CORE_ERROR => 'E_CORE_ERROR', E_CORE_WARNING => 'E_CORE_WARNING', E_COMPILE_ERROR => 'E_COMPILE_ERROR', E_COMPILE_WARNING => 'E_COMPILE_WARNING', E_USER_ERROR => 'E_USER_ERROR', E_USER_WARNING => 'E_USER_WARNING', E_USER_NOTICE => 'E_USER_NOTICE', E_STRICT => 'E_STRICT');
-        protected $notCompitableCodes = array('E_RECOVERABLE_ERROR' => 'warning', 'E_DEPRECATED' => 'warning');
+        protected $codesTags = [E_ERROR => 'fatal', E_WARNING => 'warning', E_PARSE => 'fatal', E_NOTICE => 'notice', E_CORE_ERROR => 'fatal', E_CORE_WARNING => 'warning', E_COMPILE_ERROR => 'fatal', E_COMPILE_WARNING => 'warning', E_USER_ERROR => 'fatal', E_USER_WARNING => 'warning', E_USER_NOTICE => 'notice', E_STRICT => 'warning'];
+        protected $codesNames = [E_ERROR => 'E_ERROR', E_WARNING => 'E_WARNING', E_PARSE => 'E_PARSE', E_NOTICE => 'E_NOTICE', E_CORE_ERROR => 'E_CORE_ERROR', E_CORE_WARNING => 'E_CORE_WARNING', E_COMPILE_ERROR => 'E_COMPILE_ERROR', E_COMPILE_WARNING => 'E_COMPILE_WARNING', E_USER_ERROR => 'E_USER_ERROR', E_USER_WARNING => 'E_USER_WARNING', E_USER_NOTICE => 'E_USER_NOTICE', E_STRICT => 'E_STRICT'];
+        protected $notCompitableCodes = ['E_RECOVERABLE_ERROR' => 'warning', 'E_DEPRECATED' => 'warning'];
         protected $oldErrorHandler;
 
         protected function initErrorsHandler() {
@@ -399,8 +399,8 @@ class PhpConsole {
                         }
                 }
 
-                $this->oldErrorHandler = set_error_handler(array($this, 'handleError'));
-                register_shutdown_function(array($this, 'checkFatalError'));
+                $this->oldErrorHandler = set_error_handler([$this, 'handleError']);
+                register_shutdown_function([$this, 'checkFatalError']);
         }
 
         public function checkFatalError() {
@@ -429,7 +429,7 @@ class PhpConsole {
                 $this->handle($event);
 
                 if(self::$callOldErrorHandler && $this->oldErrorHandler) {
-                        call_user_func_array($this->oldErrorHandler, array($code, $message, $file, $line));
+                        call_user_func_array($this->oldErrorHandler, [$code, $message, $file, $line]);
                 }
         }
 
@@ -440,7 +440,7 @@ class PhpConsole {
         protected $oldExceptionsHandler;
 
         protected function initExceptionsHandler() {
-                $this->oldExceptionsHandler = set_exception_handler(array($this, 'handleException'));
+                $this->oldExceptionsHandler = set_exception_handler([$this, 'handleException']);
         }
 
         public function handleException(Exception $exception) {

@@ -27,13 +27,13 @@
 */
 
 class AA_Jstriggers {
-    private static $CONTROL_TRIGGERS = array (
-        "input"    => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
-        "select"   => array ("onBlur", "onFocus", "onChange"),
-        "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
-        "form"     => array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"),
-        "body"     => array ("onLoad")
-    );
+    private static $CONTROL_TRIGGERS = [
+        "input"    => ["onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"],
+        "select"   => ["onBlur", "onFocus", "onChange"],
+        "textarea" => ["onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"],
+        "form"     => ["onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"],
+        "body"     => ["onLoad"]
+    ];
 
     private static $js_trig = null;
 
@@ -48,10 +48,10 @@ class AA_Jstriggers {
         if (!is_null(AA_Jstriggers::$js_trig)) {
             return AA_Jstriggers::$js_trig;
         }
-        AA_Jstriggers::$js_trig = array();
+        AA_Jstriggers::$js_trig = [];
 
         if ($javascript = (string)AA_Slice::getModuleProperty($slice_id,'javascript')) {
-            $all_trig = array();
+            $all_trig = [];
             foreach (AA_Jstriggers::$CONTROL_TRIGGERS as $ctrigs) {
                 $all_trig = array_merge($all_trig, $ctrigs);
             }

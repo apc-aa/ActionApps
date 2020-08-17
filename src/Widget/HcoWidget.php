@@ -28,7 +28,7 @@ class HcoWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'level_count', 'box_width', 'target_size', 'horizontal', 'first_selectable_level', 'level_names', 'const_arr'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'level_count', 'box_width', 'target_size', 'horizontal', 'first_selectable_level', 'level_names', 'const_arr']);
     }
 
 

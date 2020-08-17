@@ -235,7 +235,10 @@ function import_views(&$slvs, $slice_id_new) {
 
     // Get all views in current AA
     // $av = GetViewsWhere();
-    $av = DB_AA::select(array('vid'=>1), "SELECT view.* as vid FROM `view`, `slice`", array(array('slice.id', 'view.slice_id', 'j'),array('slice.deleted', '1', '<>')));
+    $av = DB_AA::select(['vid'=>1], "SELECT view.* as vid FROM `view`, `slice`", [
+        ['slice.id', 'view.slice_id', 'j'],
+        ['slice.deleted', '1', '<>']
+    ]);
     
     /** Several cases here
       *  If there is a conflict, then
@@ -280,7 +283,7 @@ function import_views(&$slvs, $slice_id_new) {
         if ( isset($av[$id]) AND ($GLOBALS["Submit"] == _m("Overwrite"))) {
             // owerwrite
             $SQL = "UPDATE view SET ".$varset->makeUPDATE()." WHERE id='$id'";
-            print(_m("<br>Overwriting view %1",array($id)));
+            print(_m("<br>Overwriting view %1", [$id]));
         } else {
             // insert as new view
             $varset->remove('id');  // id is autoincremented

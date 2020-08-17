@@ -73,7 +73,7 @@ class AA_Mailman {
     private static function _createOneFile($slice_id, $field_id, $listname) {
         global $MAILMAN_SYNCHRO_DIR;
         if ($slice_id AND $field_id AND $listname) {
-            $mails = join("\n",AA_Validate::filter(explode('|',str_replace(array(' ',"\t"),array('',''),AA::Stringexpander()->unalias("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
+            $mails = join("\n",AA_Validate::filter(explode('|',str_replace([' ',"\t"], ['',''],AA::Stringexpander()->unalias("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
 
             if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
                fwrite ($fd, $mails);
@@ -91,7 +91,7 @@ class AA_Mailman {
      * @param $newvalue
      */
     static function constantsChanged( $constant_id, $oldvalue, $newvalue ) {
-        if ( !($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', array(array('id',$constant_id, 'l')))) ) {
+        if ( !($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', [['id',$constant_id, 'l']])) ) {
             return;
         }
         $db = getDB();
@@ -100,7 +100,7 @@ class AA_Mailman {
             WHERE slice.type = 'ReaderManagement'
             AND (field.input_show_func LIKE '___:$group_id:%'
             OR  field.input_show_func LIKE '___:$group_id')");
-        $slices = array();
+        $slices = [];
         while ($db->next_record()) {
             $slices[] = unpack_id($db->f("id"));
         }

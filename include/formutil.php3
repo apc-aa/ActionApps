@@ -57,15 +57,18 @@ define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
     // but any letters can be used, i.e. this table can be extended.
     // Next step might be to extend parameter recognition to load this table
     // Retaining backward compatibility with "[AMB]+" recognition
-$TPS = array (
-  'AMB' => array (
-    'A' => array ( 'prefix' => '&rarr; ',   'tag' => '',  'str' => 'Add'),             // _m("Add") ),             - we call the translation later - here it is not translated
-    'M' => array ( 'prefix' => '&harr; ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'), // _m("Add&nbsp;Mutual") ),
-    'B' => array ( 'prefix' => '&larr; ',   'tag' => 'z', 'str' => 'Backward') ),      // _m("Backward") ) ),
-  'GYR' => array (
-    'G' => array ( 'prefix' => 'Good:', 'tag' => 'x', 'str' => 'Good'),
-    'Y' => array ( 'prefix' => 'OK  :', 'tag' => 'y', 'str' => 'OK'),
-    'R' => array ( 'prefix' => 'Bad :', 'tag' => 'z', 'str' => 'Bad') ) );
+$TPS = [
+  'AMB' => [
+    'A' => ['prefix' => '&rarr; ',   'tag' => '',  'str' => 'Add'],             // _m("Add") ),             - we call the translation later - here it is not translated
+    'M' => ['prefix' => '&harr; ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'], // _m("Add&nbsp;Mutual") ),
+    'B' => ['prefix' => '&larr; ',   'tag' => 'z', 'str' => 'Backward']
+  ],      // _m("Backward") ) ),
+  'GYR' => [
+    'G' => ['prefix' => 'Good:', 'tag' => 'x', 'str' => 'Good'],
+    'Y' => ['prefix' => 'OK  :', 'tag' => 'y', 'str' => 'OK'],
+    'R' => ['prefix' => 'Bad :', 'tag' => 'z', 'str' => 'Bad']
+  ]
+];
 
 /** varname4form function
  * @param $fid
@@ -73,7 +76,7 @@ $TPS = array (
  * @return string
  */
 function varname4form($fid, $type='normal') {
-    $additions = array( 'normal' => '', 'multi' => '[]', 'file' => 'x' );
+    $additions = ['normal' => '', 'multi' => '[]', 'file' => 'x'];
     return $fid ? ('v'. unpack_id($fid) .$additions[$type]) : '';
 }
 
@@ -117,7 +120,7 @@ class inputform {
      *  Constructor - initializes inputform
      * @param $settings
      */
-    function __construct($settings=array()) {
+    function __construct($settings= []) {
         $this->display_aa_begin_end = $settings['display_aa_begin_end'];
         $this->page_title           = $settings['page_title'];
         $this->form_action          = $settings['form_action'];
@@ -132,7 +135,7 @@ class inputform {
 
     /** static */
     function _getButton($key, $type, $default_text, $profile_text, $url = null) {
-        return ($profile_text === '') ? array() : array( $key => array('type'=>$type, 'value'=> get_if($profile_text, $default_text), 'url' => $url));
+        return ($profile_text === '') ? [] : [$key => ['type'=>$type, 'value'=> get_if($profile_text, $default_text), 'url' => $url]];
     }
 
 
@@ -174,7 +177,7 @@ class inputform {
         $profile       = AA_Profile::getProfile($auth->auth["uid"], $slice->getId()); // current user settings
 
         // create buttons array for top (and lately for bottom of the form) ------------------
-        $buttons = array();
+        $buttons = [];
         if ( $this->form4update ) {
             $buttons += inputform::_getButton('update',   'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
             $buttons += inputform::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
@@ -246,7 +249,7 @@ class inputform {
         echo $this->getFormStart();
 
         echo getFrmTabCaption('', $buttons, 'id="inputtab"', 'id="inputtabrows"');
-        $tabs  = array();
+        $tabs  = [];
         if ( $form_parts ) {
             for ( $idx=0; $idx <= $form_parts; $idx++ ) {
                 $tabs['formrow'.(string)$idx] = get_if( $form_part_names[$idx], _m('Part'). " ".($idx+1));
@@ -271,13 +274,13 @@ class inputform {
 
         if (is_array($this->hidden)) {
             foreach ( $this->hidden as $name => $value) {
-                $buttons[$name]         = array('value' => $value);
+                $buttons[$name]         = ['value' => $value];
             }
         }
 
         // add rest "hidden buttons" to the end of form
         // $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );   // browsers do not use this variable - removed
-        $buttons['encap']               = array('value' => "false");
+        $buttons['encap']               = ['value' => "false"];
 
         //$buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - @todo
 
@@ -324,7 +327,7 @@ class inputform {
 
         // holds array of fields, which we will use on the form, so we have
         // to count with them for javascript and show_func_used
-        $shown_fields = array();
+        $shown_fields = [];
 
         // $item = $edit ? GetItemFromContent($content4id) : null;
         $item = $content4id ? GetItemFromContent($content4id) : null;
@@ -423,7 +426,7 @@ class inputform {
         // uses fileupload?
         $html_form_type = $this->show_func_used['fil'] ? 'enctype="multipart/form-data"' : '';
         return "<form name=\"inputform\" $html_form_type method=\"post\" action=\"" . $this->form_action .'"'.
-            AA_Jstriggers::get("form", "v" . unpack_id("inputform"), array("onSubmit" => "return BeforeSubmit()")) .'>';
+            AA_Jstriggers::get("form", "v" . unpack_id("inputform"), ["onSubmit" => "return BeforeSubmit()"]) .'>';
     }
 } // inputform class
 
@@ -501,7 +504,8 @@ class AA_Inputfield {
      */
     function __construct($value='', $html_flag=true, $mode='normal', $varname="", $name="", $add=false, $required=false, $hlp="", $morehlp="", $arr=null) {
         $this->clear();
-        $settings = array( 'value'         => is_array($value) ? $value : array( 0=>array('value'=>$value)),
+        $settings = [
+            'value'         => is_array($value) ? $value : [0=> ['value'=>$value]],
                            'html_flag'     => $html_flag,
                            'mode'          => $mode,
                            'varname'       => $varname,
@@ -511,7 +515,7 @@ class AA_Inputfield {
                            'input_morehlp' => $morehlp,
                            'additional'    => $add,
                            'const_arr'     => $arr
-                         );
+        ];
         $this->setFromArray($settings);
     }
 
@@ -526,7 +530,7 @@ class AA_Inputfield {
      * @param $value
      */
     function setValue($value) {
-        $this->value = array( 0=>array('value'=>$value));
+        $this->value = [0=> ['value'=>$value]];
     }
 
     /**
@@ -534,9 +538,9 @@ class AA_Inputfield {
      */
     function setAaValue($val) {
         $arr         = $val->getValues();
-        $this->value = array();
+        $this->value = [];
         foreach ($arr as $k => $v) {
-             $this->value[$k] = array('value'=>$v);
+             $this->value[$k] = ['value'=>$v];
         }
         $this->html_flag = $val->getFlag() & FLAG_HTML;
     }
@@ -552,7 +556,8 @@ class AA_Inputfield {
      * private function - Returns list of class variables and its defaults
      */
     function getDefaults() {
-        return array( 'value'         =>  array( 0 => array( 'value' => '')),
+        return [
+            'value'         =>  [0 => ['value' => '']],
                       'html_flag'     => true,
                       'mode'          => 'normal',
                       'varname'       => '',
@@ -566,7 +571,7 @@ class AA_Inputfield {
                       'html_rb_show'  => false,
                       'valid'         => 'text',
                       'dbfield'       => null
-                    );
+        ];
     }
 
     /** clear function
@@ -699,7 +704,7 @@ class AA_Inputfield {
         }
 
         if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
-            $this->const_arr = array();
+            $this->const_arr = [];
         }
         return $sid; // in most cases not very important information, but used in inputRelation() input type
     }
@@ -742,7 +747,7 @@ class AA_Inputfield {
         } else {
             $val = $this->value;
         }
-        return array( $this->varname(), $val, $this->additional);
+        return [$this->varname(), $val, $this->additional];
     }
 
     /** echoo function
@@ -945,7 +950,7 @@ class AA_Inputfield {
                             $tagprefix = ( isset($GLOBALS['TPS'][$tp])              ? $GLOBALS['TPS'][$tp] :
                                          ( isset($GLOBALS['apc_state']['TPS'][$tp]) ? $GLOBALS['apc_state']['TPS'][$tp] : null ));
                             if ( is_null($tagprefix) ) {
-                                $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
+                                $this->msg[] = _m("Unable to find tagprefix table %1", [$tp]);
                             }
                             $this->varname_modify('[]');         // use slightly modified varname
                             // read related items for selected items
@@ -1265,12 +1270,12 @@ class AA_Inputfield {
     function inputText($maxsize=255, $size=25, $type="text", $placeholder='', $pattern='') {
         list($name,$val,$add) = $this->prepareVars('multi');
 
-        $attrs = array('type'=>'text');
+        $attrs = ['type'=>'text'];
         if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
             $attrs = array_merge($attrs, $validator->getHtmlInputAttr());
         }
 
-        if (in_array($type, array('password','search', 'email', 'url', 'tel', 'number', 'range', 'date', 'month', 'week', 'time', 'datetime', 'datetime-local', 'color'))) {
+        if (in_array($type, ['password','search', 'email', 'url', 'tel', 'number', 'range', 'date', 'month', 'week', 'time', 'datetime', 'datetime-local', 'color'])) {
             $attrs['type'] = $type;
         }
         if ($placeholder) {
@@ -1300,7 +1305,7 @@ class AA_Inputfield {
 
         if ($this->translations) {
             $first = true;
-            $parts = array();
+            $parts = [];
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
@@ -1312,11 +1317,11 @@ class AA_Inputfield {
 
                 $name2             = $name."[$lang_id]";
                 $id2               = $name.'-'.$lang_id;
-                $classes           = array($first ?'aa-open' : '');
+                $classes           = [$first ?'aa-open' : ''];
                 if (strlen(trim($value))) {
                     $classes[] = 'aa-filled';
                 }
-                $parts["part$id2"] = array($lang, $classes);
+                $parts["part$id2"] = [$lang, $classes];
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
@@ -1421,7 +1426,7 @@ class AA_Inputfield {
 
         if ($this->translations) {
             $first = true;
-            $parts = array();
+            $parts = [];
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
@@ -1435,11 +1440,11 @@ class AA_Inputfield {
 
                 $name2             = $name."[$lang_id]";
                 $id2               = $name.'-'.$lang_id;
-                $classes           = array($first ?'aa-open' : '');
+                $classes           = [$first ?'aa-open' : ''];
                 if (strlen(trim($value))) {
                     $classes[] = 'aa-filled';
                 }
-                $parts["part$id2"] = array($lang, $classes);
+                $parts["part$id2"] = [$lang, $classes];
 
                 $widg .= "<label class=\"aa-langtrans $lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen style=\"width:95%; height:${rows_css}em;\" $triggers>$value</textarea>\n";
@@ -1472,7 +1477,7 @@ class AA_Inputfield {
      */
     function inputRadio($ncols=0, $move_right=true) {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $records = array();
+        $records = [];
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getRadioButtonTag($k, $v, $add);
         }
@@ -1534,8 +1539,8 @@ class AA_Inputfield {
         $selectedused  = false;
         $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
-        $already_selected = array();    // array where we mark selected values
-        $pair_used        = array();    // array where we mark used pairs
+        $already_selected = [];    // array where we mark selected values
+        $pair_used        = [];    // array where we mark used pairs
         $this->_fillSelected();         // fill selected array by all values in order we can print invlaid values later
         $ret = '';
         if (isset($arr) && is_array($arr)) {
@@ -1636,7 +1641,7 @@ class AA_Inputfield {
         list($name,$val,$add) = $this->prepareVars('multi');
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
         $actions              = get_if($actions, 'DR');
-        $actions              = str_replace(array('0','1'), array('DR','MDR'),(string)$actions);
+        $actions              = str_replace(['0','1'], ['DR','MDR'],(string)$actions);
         $movebuttons          = (strpos($actions,'M') !== false);
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
@@ -2035,7 +2040,7 @@ class AA_Inputfield {
         $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\" $triggers ondblclick=\"MoveSelected(this,this.parentNode.parentNode.querySelector(&quot;select[name='$offername']&quot;))\">";
 
         // we need values in second box sorted just like in values
-        $selected_values = array();
+        $selected_values = [];
         if ( isset($this->value) AND is_array($this->value) ) {
             foreach ( $this->value as $v ) {
                 $key = (string)$v['value'];
@@ -2061,7 +2066,7 @@ class AA_Inputfield {
             if (!$slice_field) {
                 $slice_field = '{'.GetHeadlineFieldID($sid, "headline.").'}';
             }
-            $form_url = get_aa_url('form.php', array('form_id' => $addform, 'type' => 'ajax', 'ret_code' => $slice_field));
+            $form_url = get_aa_url('form.php', ['form_id' => $addform, 'type' => 'ajax', 'ret_code' => $slice_field]);
             $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);
             // varname used for as pointer to right selectbox for returning ajax call
             $this->echoo("\n<a id=\"a".$this->varname ."\"href=\"javascript:void(0)\" onclick=\"AA_AjaxInsert(this, '$form_url'); return false;\">$img</a>");
@@ -2466,10 +2471,10 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $nee
 function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
-    $sel = array();
+    $sel = [];
     if (is_array($selected)) {
         foreach($selected as $val) {
-            $sel[] = array('value'=>$val);
+            $sel[] = ['value'=>$val];
         }
     }
     // $val is not used - there is only from historical reasons and should be removed accross files
@@ -2695,7 +2700,7 @@ function getFrmInputButtons($buttons, $valign = 'middle', $tr = true, $bgcolor =
         foreach ( $buttons as  $name => $properties ) {
             if ( !is_array($properties) ) {
                 $name = $properties;
-                $properties = array();
+                $properties = [];
             }
             switch($name) {
                 case 'update':
@@ -3089,7 +3094,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
                 $conds = $set->getConds();
                 $sort  = $set->getSort();
         }
-        $zids  = QueryZids( array($slice_id), $conds, $sort,  $bins);
+        $zids  = QueryZids( [$slice_id], $conds, $sort,  $bins);
     }
     return $zids;
 }

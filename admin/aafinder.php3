@@ -76,7 +76,7 @@ function AafinderFieldLink($field_id, $slice_id) {
 function AafinderObjectLink($object_id) {
     if ($obj = AA_Object::load($object_id)) {
         print_r($obj)    ;
-        return a_href( get_admin_url('oedit.php3', array('module_id'=>$obj->getOwnerId(), 'oid' => $object_id, 'otype' => $obj->getObjectType(), 'ret_url' => document_uri())), "$object_id");
+        return a_href( get_admin_url('oedit.php3', ['module_id'=>$obj->getOwnerId(), 'oid' => $object_id, 'otype' => $obj->getObjectType(), 'ret_url' => document_uri()]), "$object_id");
     }
     return '';
 }
@@ -112,14 +112,14 @@ function query_search($where) {
 
     $output = $num_rows." "._m('Show results with string')."  <b><i>$where</i></b><br>";
 
-    $items = array(array(_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by' ));
+    $items = [[_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     while ($db->next_record()) {
         $slice_name = $db->f('slice_name');
         $slice_id   = (string)bin2hex($db->f('slice_id'));
         $short_id   = $db->f('short_id');
         $long_id    = (string)bin2hex($db->f('id'));
 
-        $items[]    = array("<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $db->f('status_code'), date('Y-m-d H:i',$db->f('post_date')), date('Y-m-d H:i',$db->f('last_edit')),$db->f('edited_by'));
+        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $db->f('status_code'), date('Y-m-d H:i',$db->f('post_date')), date('Y-m-d H:i',$db->f('last_edit')),$db->f('edited_by')];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
@@ -141,33 +141,33 @@ function PrintItemInfo($item_id) {
 
     $long_id = $zid->longids(0);
     if ($long_id) {
-        if ($res = DB_AA::select(array(), 'SELECT * FROM `item`', array(array('id',$long_id, 'l')))) {
+        if ($res = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
             echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
         }
 
-        if ($res = DB_AA::select(array(), 'SELECT * FROM `content`', array(array('item_id',$long_id, 'l')))) {
+        if ($res = DB_AA::select([], 'SELECT * FROM `content`', [['item_id',$long_id, 'l']])) {
             echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
         }
 
-        if ($res = DB_AA::select(array(), 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', array(array('selector',$long_id,'RLIKE')))) {
+        if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector',$long_id,'RLIKE']])) {
             echo GetHtmlTable($res, 'key', _m('Log'));
         }
 
-        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
+        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', [['id',$long_id, 'l']])) {
             echo '<h3>'. _m('Slice') .'</h3><pre>';
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";
         }
-        if ($sdata = DB_AA::select1('SELECT * FROM module', '', array(array('id',$long_id, 'l')))) {
+        if ($sdata = DB_AA::select1('SELECT * FROM module', '', [['id',$long_id, 'l']])) {
             echo '<h3>'. _m('Module') .'</h3><pre>';
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";
         }
-        if ($rec = DB_AA::select(array(), 'SELECT * FROM `object_text`', array(array('object_id',$long_id)))) {
+        if ($rec = DB_AA::select([], 'SELECT * FROM `object_text`', [['object_id',$long_id]])) {
             echo '<h3>'. _m('Object') .'</h3><pre>';
             print_r($rec);
-            print_r(DB_AA::select(array(), 'SELECT * FROM `object_integer`', array(array('object_id',$long_id))));
-            print_r(DB_AA::select(array(), 'SELECT * FROM `object_float`', array(array('object_id',$long_id))));
+            print_r(DB_AA::select([], 'SELECT * FROM `object_integer`', [['object_id',$long_id]]));
+            print_r(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id',$long_id]]));
             echo "</pre>";
         }
 
@@ -208,7 +208,7 @@ is_object( $db ) || ($db = getDB());
 
 if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     if ($_GET['findinview']) {
-        $fields = array (
+        $fields = [
             'id',
             'before',
             'even',
@@ -232,7 +232,8 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
             'group_bottom',
             'field1',
             'field2',
-            'field3');
+            'field3'
+        ];
 
         $SQL = "SELECT view.id, view.type, view.slice_id, slice.name FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
         foreach ($fields as $field) {
@@ -248,7 +249,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     }
 
     if ($_GET['findinslice']) {
-        $fields = array (
+        $fields = [
             'slice.name',
             'slice.type',
             'slice.id',
@@ -268,7 +269,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
             'slice.aditional',
             'slice.javascript',
             'email_notify.uid'
-            );
+        ];
 
         $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
         foreach ($fields as $field) {
@@ -286,7 +287,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     }
 
     if ($_GET['findinfield']) {
-        $fields = array (
+        $fields = [
             'id',
             'type',
             'slice_id',
@@ -312,7 +313,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
             'input_validate',
             'input_insert_func',
             'input_show'
-            );
+        ];
 
         $SQL = "SELECT slice_id, id, name FROM field WHERE ";
         foreach ($fields as $field) {
@@ -328,7 +329,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     }
 
     if ($_GET['findinseo']) {
-        if ( in_array(guesstype(trim($_REQUEST['findtext'])), array('s','l')) ) {
+        if ( in_array(guesstype(trim($_REQUEST['findtext'])), ['s','l']) ) {
             PrintItemInfo(trim($_REQUEST['findtext']));
         } elseif (preg_match_all("/([0-9a-f]{32})/", $_REQUEST['findtext'], $ids)) {
             $ids = array_unique($ids[0]);
@@ -344,9 +345,9 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     if ($_GET['findinspot']) {
         $like_text = addcslashes(quote($_REQUEST['findtext']),'_%');
 
-        $fields = array (
+        $fields = [
             'content'
-            );
+        ];
 
         $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
         foreach ($fields as $field) {
@@ -378,7 +379,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
     }
 
     if ($_GET['findindiscus']) {
-        $fields = array (
+        $fields = [
             'subject',
             'author',
             'e_mail',
@@ -388,7 +389,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
             'remote_addr',
             'free1',
             'free2'
-            );
+        ];
 
         $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {
@@ -415,7 +416,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
 }
 
 if ($_GET['go_finditem'] && $_GET['finditem']) {
-    if ( in_array(guesstype(trim($_GET['finditem'])), array('s','l')) ) {
+    if ( in_array(guesstype(trim($_GET['finditem'])), ['s','l']) ) {
         PrintItemInfo(trim($_GET['finditem']));
     } elseif (preg_match_all("/([0-9a-f]{32})/", $_GET['finditem'], $ids)) {
         $ids = array_unique($ids[0]);
@@ -441,33 +442,33 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
     if ( strlen($_GET['search']) OR ( strlen($_GET['go_replace']) AND (strlen($_GET['replace'])>5) ) ) {
         $metabase = AA::Metabase();
 
-        $table2search = array();
+        $table2search = [];
         if ($_GET['searchinview'] == 1) {
-            $table2search['view'] = array('id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))');
+            $table2search['view'] = ['id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))'];
         }
         if ($_GET['searchinslice'] == 1) {
-            $table2search['slice'] = array('id' => 'LOWER(HEX(`id`))');
+            $table2search['slice'] = ['id' => 'LOWER(HEX(`id`))'];
         }
         if ($_GET['searchinfield'] == 1) {
-            $table2search['field'] = array('id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))');
+            $table2search['field'] = ['id' => '`id`', 'slice_id' => 'LOWER(HEX(`slice_id`))'];
         }
         if ($_GET['searchinspot'] == 1) {
-            $table2search['site_spot'] = array('id' => '`spot_id`', 'slice_id' => 'LOWER(HEX(`site_id`))');
+            $table2search['site_spot'] = ['id' => '`spot_id`', 'slice_id' => 'LOWER(HEX(`site_id`))'];
         }
         if ($_GET['searchinitems'] == 1) {
-            $table2search['content'] = array('id' => 'LOWER(HEX(`item_id`))');
+            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))'];
         }
         if ($_GET['searchinobject'] == 1) {
-            $table2search['object_text'] = array('id' => '`object_id`');
+            $table2search['object_text'] = ['id' => '`object_id`'];
         }
         if ($_GET['searchinhistory'] == 1) {
-            $table2search['change_record'] = array('id' => '`change_id`');
+            $table2search['change_record'] = ['id' => '`change_id`'];
         }
         if ($_GET['searchindiscus'] == 1) {
-            $table2search['discussion'] = array('id' => 'LOWER(HEX(`item_id`))');
-            $table2search['object_text'] = array('id' => 'object_id');
-            $table2search['object_integer'] = array('id' => 'object_id');
-            $table2search['object_float'] = array('id' => 'object_id');
+            $table2search['discussion'] = ['id' => 'LOWER(HEX(`item_id`))'];
+            $table2search['object_text'] = ['id' => 'object_id'];
+            $table2search['object_integer'] = ['id' => 'object_id'];
+            $table2search['object_float'] = ['id' => 'object_id'];
         }
 
         echo '<table>';
@@ -476,22 +477,22 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
                 return ($col['operators'] == 'text');
             }));
             huhl($tbl, $fields);
-            $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), array(AA_Metabase::getModuleField($tbl))));
+            $fields = array_diff($fields, array_merge(AA_Metabase::getPacked($tbl), [AA_Metabase::getModuleField($tbl)]));
             huhl($fields);
 
             $addfields = $tblinfo['id'] ? (', ' . $tblinfo['id']) . ' as iid' : '';
             $addfields .= $tblinfo['slice_id'] ? (', ' . $tblinfo['slice_id']) . ' as sid' : '';
 
             foreach ($fields as $fld) {
-                $row = array();
+                $row = [];
 
                 if (strlen($_GET['go_search'])) {
                     $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,\"" . quote($_GET['search']) . "\") as pos $addfields FROM `$tbl` WHERE INSTR(`$fld`,\"" . quote($_GET['search']) . "\")>0";
-                    $txt = DB_AA::select(array(), $SQL);
+                    $txt = DB_AA::select([], $SQL);
                     $row[0] = count($txt) ? "<b>$tbl.$fld</b>" : "$tbl.$fld";
                     $row[1] = count($txt);
                     FrmTabRow($row);
-                    $row = array();
+                    $row = [];
                     foreach ($txt as $t) {
                         $code = aa_substr($t['txt'], 0, $t['pos']-1). 'AA_$@MArK%'. aa_substr($t['txt'], $t['pos']-1);
                         if (strlen($code) > 210) {
@@ -530,7 +531,7 @@ if ( strlen($_GET['go_search']) OR strlen($_GET['go_replace']) ) {
 
 if ($_GET['showhistory']) {
     echo '<h3>'. _m('History') .'</h3>';
-    ChangesMonitor::singleton()->display(array($_GET['showhistory']));
+    ChangesMonitor::singleton()->display([$_GET['showhistory']]);
     echo '<br><br>';
 
 }

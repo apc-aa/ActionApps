@@ -99,7 +99,7 @@ class itemview {
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php3 parameter
     if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
-        $this->aliases['_#SELECTED'] = array('fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>"");
+        $this->aliases['_#SELECTED'] = ['fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>""];
     }
 
     // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
@@ -114,8 +114,8 @@ class itemview {
     $this->num_records       = $number;    // negative number used for displaying n-th group of items only
     $this->clean_url         = $clean_url;
     $this->disc              = $disc;
-    $this->parameters        = array();
-    $this->_content          = array();
+    $this->parameters        = [];
+    $this->_content          = [];
     $this->get_content_funct = $get_content_funct ?: 'GetItemContent';
   }
 
@@ -409,7 +409,7 @@ class itemview {
       // preset the for values from cookies
       $cookie = new CookieManager();
       $js     = '';
-      foreach (array('d_author', 'd_e_mail', 'd_url_address', 'd_url_description') as $form_field) {
+      foreach (['d_author', 'd_e_mail', 'd_url_address', 'd_url_description'] as $form_field) {
           if ( $value = $cookie->get($form_field) ) {
               $js .= "setControl('f','$form_field',\"$value\");\n";
           }
@@ -481,14 +481,14 @@ class itemview {
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
         if ((strlen($this->slice_info['group_by2'])==10) AND (substr($this->slice_info['group_by2'],0,2)=='_#')) {
-            $SORT_CONST = array('0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric');
-            $this->zids = new zids(explode_ids(StrExpand('AA_Stringexpand_Order', array(join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]))));
+            $SORT_CONST = ['0'=> 'locale', '1' => 'rlocale', '4'=>'numeric', '5' => 'rnumeric'];
+            $this->zids = new zids(explode_ids(StrExpand('AA_Stringexpand_Order', [join('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], $SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }
         $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
       if ( !$rweight ) {
-        $foo_ids = array();
+        $foo_ids = [];
         // not weighted, we can select random id(s)
         for ( $i=0; $i<$this->num_records; $i++) {
           $sel = mt_rand( 0, $this->zids->count() - 1) ;
@@ -515,9 +515,9 @@ class itemview {
         // Example array(array('AA_Metabase','getContent'),array(table=>'toexecute'))
         // getContent is in this case static class method
         // parameter array (if supplied) is passed as FIRST parameter of the method
-        $this->_content = call_user_func_array($this->get_content_funct[0], array($this->get_content_funct[1], $foo_zids));
+        $this->_content = call_user_func_array($this->get_content_funct[0], [$this->get_content_funct[1], $foo_zids]);
     } else {
-        $this->_content = call_user_func_array($this->get_content_funct, array($foo_zids));
+        $this->_content = call_user_func_array($this->get_content_funct, [$foo_zids]);
     }
 
     $CurItem = new AA_Item("", $this->aliases);   // just prepare
@@ -605,10 +605,10 @@ class itemview {
                 break;
             }
             /* mimo hack -- put this on a stack **/
-            if (!$GLOBALS['QueryIDsIndex'])          { $GLOBALS['QueryIDsIndex']          = array(); }
-            if (!$GLOBALS['QueryIDsPageIndex'])      { $GLOBALS['QueryIDsPageIndex']      = array(); }
-            if (!$GLOBALS['QueryIDsGroupIndex'])     { $GLOBALS['QueryIDsGroupIndex']     = array(); }
-            if (!$GLOBALS['QueryIDsItemGroupIndex']) { $GLOBALS['QueryIDsItemGroupIndex'] = array(); }
+            if (!$GLOBALS['QueryIDsIndex'])          { $GLOBALS['QueryIDsIndex']          = []; }
+            if (!$GLOBALS['QueryIDsPageIndex'])      { $GLOBALS['QueryIDsPageIndex']      = []; }
+            if (!$GLOBALS['QueryIDsGroupIndex'])     { $GLOBALS['QueryIDsGroupIndex']     = []; }
+            if (!$GLOBALS['QueryIDsItemGroupIndex']) { $GLOBALS['QueryIDsItemGroupIndex'] = []; }
             array_push($GLOBALS['QueryIDsIndex'],         $zidx);          // So that _#ITEMINDX = f_e:itemindex can find it
             array_push($GLOBALS['QueryIDsPageIndex'],     $i);             // So that _#PAGEINDX = f_e:pageindex can find it
             array_push($GLOBALS['QueryIDsGroupIndex'],    $group_index);   // So that _#GRP_INDX = f_e:groupindex can find it
@@ -636,7 +636,7 @@ class itemview {
                     // it shoudn't be set, but just in case - we do not want to redefine it
                     // @todo move it outside else - there it is just for first testing
                     if (!isset($CurItem->aliases["_#GRP_NAME"])) {
-                        $CurItem->aliases["_#GRP_NAME"] = GetAliasDef( ParamImplode(array("f_t", $catname)),  "id..............", _m("exact group name"));
+                        $CurItem->aliases["_#GRP_NAME"] = GetAliasDef( ParamImplode(["f_t", $catname]),  "id..............", _m("exact group name"));
                     }
                 }
                 if ($this->slice_info['gb_header']) {
@@ -753,12 +753,13 @@ class itemview {
         $month = (int)$this->slice_info['calendar_month'];
         $year  = (int)$this->slice_info['calendar_year'];
 
-        $aliases = array (
+        $aliases = [
             '_#CV_NUM_Y' => $year,
             '_#CV_NUM_M' => $month,
             '_#CV_NUM_D' => $day,
             '_#CV_TST_1' => mktime(0,0,0,$month,(int)$day,$year),
-            '_#CV_TST_2' => mktime(0,0,0,$month,(int)$day+1,$year));
+            '_#CV_TST_2' => mktime(0,0,0,$month,(int)$day+1,$year)
+        ];
 
         return strtr($txt, $aliases);
     }
@@ -787,7 +788,7 @@ class itemview {
             span is number of days in current month
             start is 1 when it's the first cell containing this iid. The event is repeated in all days over which it spans.
         */
-        $calendar = array();
+        $calendar = [];
         $max_events = 0;
         $row_len  = 7;
         $firstday = getdate(mktime (0,0,0,$month,1,$year));
@@ -838,9 +839,9 @@ class itemview {
 
             AA::$debug&2 && AA::$dbg->info("------ $start_date - $end_date: $start_cell - $end_cell : min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1)");
 
-            $calendar[$start_cell][$ievent] = array("iid"=>$iid,"span"=>min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1),"start"=>1);
+            $calendar[$start_cell][$ievent] = ["iid"=>$iid,"span"=>min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1),"start"=>1];
             for ($date = $start_cell+1; $date <= $end_cell; ++$date) {
-                $calendar[$date][$ievent] = array ("iid" => $iid,"span"=>$end_cell-$date+1);
+                $calendar[$date][$ievent] = ["iid" => $iid,"span"=>$end_cell-$date+1];
             }
         }
 

@@ -45,10 +45,10 @@ if ($del OR $deletearr) {
     exit;
 }
 
-$err = array();      // error array (Init - just for initializing variable
+$err = [];      // error array (Init - just for initializing variable
 //AA::$debug = 127;
 
-if (!AA_Module::deleteModules($del ? array($del) : $deletearr)) {
+if (!AA_Module::deleteModules($del ? [$del] : $deletearr)) {
     go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
 }
 //AA::$dbg->duration_stat();

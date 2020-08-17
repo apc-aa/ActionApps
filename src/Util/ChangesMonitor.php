@@ -43,11 +43,11 @@ class ChangesMonitor {
      *  Usage: AA\Util\ChangesMonitor::singleton()->addHistory(AA\Util\ChangesMonitor::getDiff($id, $old, $new));
      */
     static function getDiff($id, $old, $new) {
-        $changes = array();
+        $changes = [];
         if (is_array($old) AND is_array($new)) {
             foreach ($new as $fid => $a) {
                 if ($old[$fid] != $a) {
-                    $changes[] = new \AA\Util\ChangeProposal($id, $fid, array($old[$fid]));
+                    $changes[] = new \AA\Util\ChangeProposal($id, $fid, [$old[$fid]]);
                 }
             }
         }
@@ -59,7 +59,7 @@ class ChangesMonitor {
      * @return string url to history table in AA Admin interface
      */
     static function getHistoryUrl($resource_id) {
-        return get_admin_url('aafinder.php3', array('showhistory' => $resource_id));
+        return get_admin_url('aafinder.php3', ['showhistory' => $resource_id]);
     }
 
     /** link to history table in AA Admin interface
@@ -68,7 +68,7 @@ class ChangesMonitor {
      */
     static function getHistoryLink($resource_id) {
         $history_entries = self::getChangeList($resource_id);
-        return $history_entries ? a_href(self::getHistoryUrl($resource_id), _m('history (%1)', array(count($history_entries)))) : '';
+        return $history_entries ? a_href(self::getHistoryUrl($resource_id), _m('history (%1)', [count($history_entries)])) : '';
     }
 
     /** _add function
@@ -80,7 +80,7 @@ class ChangesMonitor {
         global $auth;
 
         if (!is_array($change_proposals)) {
-            $change_proposals = array($change_proposals);
+            $change_proposals = [$change_proposals];
         }
         if (!is_object($change = reset($change_proposals))) {
             return true;
@@ -113,21 +113,21 @@ class ChangesMonitor {
     // array of unpacked ids
     static public function deleteChanges($resources_long_ids) {
         // it is qucker to split it into two deletes because of index type_resource_time
-        $changes_ids = \DB_AA::select('id', 'SELECT id FROM `change`', array(
-            array('type', 'h'),
-            array('resource_id', $resources_long_ids)
-        ));
-        $changes_ids = array_merge($changes_ids, \DB_AA::select('id', 'SELECT id FROM `change`', array(
-            array(
+        $changes_ids = \DB_AA::select('id', 'SELECT id FROM `change`', [
+            ['type', 'h'],
+            ['resource_id', $resources_long_ids]
+        ]);
+        $changes_ids = array_merge($changes_ids, \DB_AA::select('id', 'SELECT id FROM `change`', [
+            [
                 'type',
                 'p'
-            ),
-            array('resource_id', $resources_long_ids)
-        )));
-        \DB_AA::delete_low_priority('change_record', array(array('change_id', $changes_ids)));
+            ],
+            ['resource_id', $resources_long_ids]
+        ]));
+        \DB_AA::delete_low_priority('change_record', [['change_id', $changes_ids]]);
 
-        \DB_AA::delete_low_priority('change', array(array('type', 'h'), array('resource_id', $resources_long_ids)));
-        \DB_AA::delete_low_priority('change', array(array('type', 'p'), array('resource_id', $resources_long_ids)));
+        \DB_AA::delete_low_priority('change', [['type', 'h'], ['resource_id', $resources_long_ids]]);
+        \DB_AA::delete_low_priority('change', [['type', 'p'], ['resource_id', $resources_long_ids]]);
         return true;
     }
 
@@ -145,7 +145,7 @@ class ChangesMonitor {
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChanged($resource_id) {
 
-        $chid = \DB_AA::select1("SELECT id FROM `change`", 'id', array(array('resource_id', $resource_id), array('type', 'h')), array('time-'));  // false if not found
+        $chid = \DB_AA::select1("SELECT id FROM `change`", 'id', [['resource_id', $resource_id], ['type', 'h']], ['time-']);  // false if not found
         $ret = '';
         if ($chid) {
             $changes_arr = $this->getProposalByID($chid);
@@ -161,12 +161,12 @@ class ChangesMonitor {
      * @return array
      */
     static function getChangeList($resource_id) {
-        return \DB_AA::select(array('id'=>array('time', 'user')), 'SELECT `id`, `time`, `user` from `change`', array(array('resource_id',$resource_id), array('type','h')), array('time-'));
+        return \DB_AA::select(['id'=> ['time', 'user']], 'SELECT `id`, `time`, `user` from `change`', [['resource_id',$resource_id], ['type','h']], ['time-']);
     }
 
     /** timestamp of last change */
     function lastChangeDate($resource_id, $selector) {
-        $time = \DB_AA::select1("SELECT time FROM `change`, `change_record`", 'time', array( array('change.id', 'change_record.change_id' , 'j'), array('change.resource_id', $resource_id), array('change.type', 'h'), array('change_record.selector',$selector)), array('time-'));
+        $time = \DB_AA::select1("SELECT time FROM `change`, `change_record`", 'time', [['change.id', 'change_record.change_id' , 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector',$selector]], ['time-']);
         return $time ? $time : 0;
     }
 
@@ -210,7 +210,7 @@ class ChangesMonitor {
     function _get($resource_ids, $type) {
         $garr = new \AA_GeneralizedArray();
         if (!is_array($resource_ids) OR (count($resource_ids) < 1)) {
-            return array();
+            return [];
         }
 
         $ids4sql = sqlin("`change`.resource_id", $resource_ids);
@@ -228,7 +228,7 @@ class ChangesMonitor {
                 if ($change['type']) {
                     $value = $change['value'];
                     settype($value, $change['type']);
-                    $garr->add($value, array($change['resource_id'], $change['change_id'], $change['selector']));
+                    $garr->add($value, [$change['resource_id'], $change['change_id'], $change['selector']]);
                 }
             }
         }
@@ -239,11 +239,11 @@ class ChangesMonitor {
     /** experimental display function - prints the table with all changes  */
     function display($resource_ids, $type = 'h') {
         if (!is_array($resource_ids) OR (count($resource_ids) < 1)) {
-            return array();
+            return [];
         }
 
-        if ($arr = \DB_AA::select(array(), "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
-                                FROM `change`, `change_record`", array( array('change.id', 'change_record.change_id' , 'j'), array("`change`.resource_id", $resource_ids), array('change.type',$type)), array( 'change.resource_id', 'change.time', 'change_record.change_id', 'change_record.selector', 'change_record.priority'))) {
+        if ($arr = \DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
+                                FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
             echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';
             foreach ($arr as $change) {
@@ -281,7 +281,7 @@ class ChangesMonitor {
                 if ($change['type']) {
                     $value = $change['value'];
                     settype($value, $change['type']);
-                    $garr->add($value, array($change['resource_id'], $change['selector']));
+                    $garr->add($value, [$change['resource_id'], $change['selector']]);
                 }
             }
         }

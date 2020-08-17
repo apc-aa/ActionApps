@@ -91,7 +91,7 @@ if ($_GET['delete']==1) {
 }
 
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 
 $form       = AA_Form::factoryForm($otype, $oid, $oowner);
@@ -109,18 +109,19 @@ $apage->setTitle( _m("Admin - Object Edit") );
 $apage->addRequire('aa-jslib' );
 
 
-$form_buttons = array ("update",
-                       "cancel" =>array("url"=>$ret_url),
-                      );
+$form_buttons = [
+    "update",
+                       "cancel" => ["url"=>$ret_url],
+];
 
 $html  = getFrmTabCaption(_m("Object Edit"), $form_buttons);
 $html .= '<tr><td colspan="2">';
 $html .= $form->getObjectEditHtml();
 $html .= '</td></tr>';
 
-$form_buttons['ret_url'] = array ("value"=> $ret_url);
-$form_buttons['oid']     = array ("value"=> $oid);
-$form_buttons['otype']   = array ("value"=> $otype);
+$form_buttons['ret_url'] = ["value"=> $ret_url];
+$form_buttons['oid']     = ["value"=> $oid];
+$form_buttons['otype']   = ["value"=> $otype];
 
 $html .= getFrmTabEnd($form_buttons);
 

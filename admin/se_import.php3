@@ -40,7 +40,7 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
               // lookup all slices without this one
 $SQL        = "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";
@@ -116,9 +116,13 @@ $apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', 
 $apage->printHead($err, $Msg);
 
 
-$form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
-                                      "add" =>"onClick=\"UpdateImportExport('".$slice_id."')\""),
-                       "cancel"=>array("url"=>"se_fields.php3"));
+$form_buttons = [
+    "upd" => [
+        "type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
+                                      "add" =>"onClick=\"UpdateImportExport('".$slice_id."')\""
+    ],
+                       "cancel"=> ["url"=>"se_fields.php3"]
+];
 
 FrmTabCaption(_m("Enable export to slice:"));
 ?>

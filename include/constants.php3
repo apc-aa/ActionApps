@@ -42,7 +42,7 @@ require_once AA_INC_PATH."mgettext.php3";
  * @return array
  */
 function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pri=false, $order_pri=false) {
-    $ret = array('name' => $name, 'field' => $field, 'operators' => $operators);
+    $ret = ['name' => $name, 'field' => $field, 'operators' => $operators];
     if ( $table ) {
         $ret['table']      = $table;
     }
@@ -63,7 +63,7 @@ function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pr
  * @return array
  */
 function GetAliasDef( $fce, $field='', $hlp='') {
-    return array('fce' => $fce, 'param' => $field, 'hlp' => $hlp);
+    return ['fce' => $fce, 'param' => $field, 'hlp' => $hlp];
 }
 
 
@@ -95,7 +95,7 @@ class AA_Alias {
      */
     function getArray() {
         // $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
-        return array('fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp);
+        return ['fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp];
     }
 
     /** getAlias function
@@ -112,7 +112,7 @@ class AA_Aliases {
      *
      */
     function __construct() {
-        $this->aliases = array();
+        $this->aliases = [];
     }
     /** addAlias function
      * @param $alias AA_Alias
@@ -125,13 +125,13 @@ class AA_Aliases {
      * @param $text
      */
     function addTextAlias($alias_name, $text) {
-        $this->addAlias(new AA_Alias($alias_name, "id..............", ParamImplode(array('f_p',$text))));
+        $this->addAlias(new AA_Alias($alias_name, "id..............", ParamImplode(['f_p',$text])));
     }
     /** getArray function
      *
      */
     function getArray() {
-        $ret = array();
+        $ret = [];
         foreach ($this->aliases as $alias) {
             $ret[$alias->getAlias()] = $alias->getArray();
         }
@@ -156,17 +156,21 @@ class AA_Aliases {
 *     "hide_create_module" doesn't show the module in the Create Slice / Module page
 *     @todo convert to AA_Module (AA_Module_site, ...)
 */
-$MODULES = array( 'S' => array( 'table' => 'slice',
+$MODULES = [
+    'S' => [
+        'table' => 'slice',
                                 'name' => _m('Slice'),
                                 'hide_create_module' => 1,
                                 'directory' => "admin/",
-                                'menu' => "include/menu.php3"),
-                  'W' => array( 'table' => 'site',
+                                'menu' => "include/menu.php3"
+    ],
+                  'W' => [
+                      'table' => 'site',
                                 'name' => 'Site',
                                 'show_templates' => 1,  // show list of sites on 'create new' - used as templates
                                 'directory' => "modules/site/",
                                 'menu' => "modules/site/menu.php3",
-                                'language_files' => array(
+                                'language_files' => [
                                     'en-utf8_site_lang.php3' => 'en-utf8_site_lang.php3',
                                     'en_site_lang.php3' => 'en_site_lang.php3',
                                     'es_site_lang.php3' => 'es_site_lang.php3',
@@ -174,68 +178,77 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3',
                                     'cz-utf8_site_lang.php3' => 'cz-utf8_site_lang.php3',
                                     'sk-utf8_site_lang.php3' => 'sk-utf8_site_lang.php3'
-                                    )),
-                  'J' => array( 'table' => 'jump',
+                                ]
+                  ],
+                  'J' => [
+                      'table' => 'jump',
                                 'name' => _m('Jump inside AA control panel'),
                                 'directory' => "modules/jump/",
-                                'menu' => "menu.php3"),
-                  'P' => array ('table' => 'polls',
+                                'menu' => "menu.php3"
+                  ],
+                  'P' => [
+                      'table' => 'polls',
                                 'name' => _m('Polls for AA'),
                                 'show_templates' => 1,
                                 'directory' => "modules/polls/",
                                 'menu' => "modules/polls/menu.php3",
-                                'language_files' => array(
+                                'language_files' => [
                                     "en_polls_lang.php3" => "en_polls_lang.php3",
                                     "es_polls_lang.php3" => "es_polls_lang.php3",
                                     "es-utf8_polls_lang.php3" => "es-utf8_polls_lang.php3",
                                     "cz_polls_lang.php3" => "cz_polls_lang.php3",
                                     "cz-utf8_polls_lang.php3" => "cz-utf8_polls_lang.php3",
                                     "sk-utf8_polls_lang.php3" => "sk-utf8_polls_lang.php3",
-                                    )),
+                                ]
+                  ],
 
-                 );
+];
 
 
-$MODULES['Alerts'] = array ('table' => 'module',
+$MODULES['Alerts'] = [
+    'table' => 'module',
                             'name' => _m('Alerts'),
                             'directory' => "modules/alerts/",
                             'menu' => "modules/alerts/menu.php3",
-                            'letter' => 'A');  // letter is used for the modules
+                            'letter' => 'A'
+];  // letter is used for the modules
                                                // which indentificator is not 1
                                                // letter long (we need 1-letter
                                                // identification for some
                                                // javascripts in um_util.php3
-$MODULES['Links'] =  array ('table' => 'links',
+$MODULES['Links'] =  [
+    'table' => 'links',
                             'name' => _m('Links'),
                             'show_templates' => 1,
                             'directory' => "modules/links/",
                             'menu' => "modules/links/menu.php3",
-                            'letter' => 'L');
+                            'letter' => 'L'
+];
 
 
 class AA_Langs {
-    protected static $LANGS = array(
-        'cz-utf8' => array('utf-8'       , 'Cestina (Unicode)'),
-        'en-utf8' => array('utf-8'       , 'English (Unicode)'),
-        'es-utf8' => array('utf-8'       , 'Espanol (Unicode)'),
-        'sk-utf8' => array('utf-8'       , 'Slovencina (Unicode)'),
-        'vn'      => array('utf-8'       , 'Vietnamese (Unicode)'),
-        'bg'      => array('windows-1251', 'Bulgarian (windows-1251)'),
-        'cz'      => array('windows-1250', 'Cestina (windows-1250)'),
-        'de'      => array('iso-8859-1'  , 'Deutsch (iso-8859-1)'),
-        'en'      => array('iso-8859-1'  , 'English (iso-8859-1)'),
-        'es'      => array('iso-8859-1'  , 'Espanol (iso-8859-1)'),
-        'fr'      => array('iso-8859-1'  , 'Fran�ais (iso-8859-1)'),
-        'hr'      => array('windows-1250', 'Hrvatski (windows-1250)'),
-        'ja'      => array('EUC-JP'      , 'Japanian (EUC-JP)'),
-        'hu'      => array('iso-8859-2'  , 'Magyar (iso-8859-2)'),
-        'ro'      => array('iso-8859-2'  , 'Romanian (iso-8859-2)'),
-        'ru'      => array('windows-1251', 'Russian (windows-1251)'),
-        'sk'      => array('windows-1250', 'Slovencina (windows-1250)')
-    );
+    protected static $LANGS = [
+        'cz-utf8' => ['utf-8'       , 'Cestina (Unicode)'],
+        'en-utf8' => ['utf-8'       , 'English (Unicode)'],
+        'es-utf8' => ['utf-8'       , 'Espanol (Unicode)'],
+        'sk-utf8' => ['utf-8'       , 'Slovencina (Unicode)'],
+        'vn'      => ['utf-8'       , 'Vietnamese (Unicode)'],
+        'bg'      => ['windows-1251', 'Bulgarian (windows-1251)'],
+        'cz'      => ['windows-1250', 'Cestina (windows-1250)'],
+        'de'      => ['iso-8859-1'  , 'Deutsch (iso-8859-1)'],
+        'en'      => ['iso-8859-1'  , 'English (iso-8859-1)'],
+        'es'      => ['iso-8859-1'  , 'Espanol (iso-8859-1)'],
+        'fr'      => ['iso-8859-1'  , 'Fran�ais (iso-8859-1)'],
+        'hr'      => ['windows-1250', 'Hrvatski (windows-1250)'],
+        'ja'      => ['EUC-JP'      , 'Japanian (EUC-JP)'],
+        'hu'      => ['iso-8859-2'  , 'Magyar (iso-8859-2)'],
+        'ro'      => ['iso-8859-2'  , 'Romanian (iso-8859-2)'],
+        'ru'      => ['windows-1251', 'Russian (windows-1251)'],
+        'sk'      => ['windows-1250', 'Slovencina (windows-1250)']
+    ];
 
     public static function getFiles($type='news') {
-        $arr = array();
+        $arr = [];
         foreach (self::$LANGS as $k => $l) {
             $arr[$k.'_'.$type.'_lang.php3'] = $l[1];
         }
@@ -243,7 +256,7 @@ class AA_Langs {
     }
 
     public static function getCharsets() {
-        $arr = array();
+        $arr = [];
         foreach (self::$LANGS as $k => $l) {
             $arr[$l[0]] = $l[0];
         }
@@ -293,7 +306,7 @@ define ("FIELDID_FILTERS",       "alerts2");
  *  (we use numbers in views from historical reason)
  *  '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
  */
-$VIEW_SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
+$VIEW_SORT_DIRECTIONS = [0 => 'a', 1 => 'd', 2 => '1', 3 => '9'];
 
 /** Number of items in editor window */
 define("EDIT_ITEM_COUNT", 20);
@@ -318,20 +331,24 @@ define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
 
 define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
 
-$FIELD_FIELDS_TEXT = array(  "id", "type", "slice_id", "name",
+$FIELD_FIELDS_TEXT = [
+    "id", "type", "slice_id", "name",
   "input_help", "input_morehlp", "input_default",
   "input_show_func", "content_id", "search_type", "search_help",
   "search_before", "search_more_help", "alias1", "alias1_func", "alias1_help",
   "alias2", "alias2_func", "alias2_help", "alias3","alias3_func", "alias3_help",
-  "input_before", "aditional", "input_validate", "input_insert_func", "in_item_tbl");
+  "input_before", "aditional", "input_validate", "input_insert_func", "in_item_tbl"
+];
 
-$FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
+$FIELD_FIELDS_NUM = [
+    "input_pri", "required", "feed", "multiple",
   "search_pri", "search_show", "search_ft_show", "search_ft_default",
-  "content_edit", "html_default", "html_show", "input_show", "text_stored");
+  "content_edit", "html_default", "html_show", "input_show", "text_stored"
+];
 
 
 function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
-    return array(
+    return [
         'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
         'const_name'        => GetFieldDef( _m('Name'),        'constant.name',       'text'),
         'const_value'       => GetFieldDef( _m('Value'),       'constant.value',      'text'),
@@ -341,7 +358,8 @@ function GetConstantFields() {  // function - we need translate _m() on use (not
     //  'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
         'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'text'),   // 'id'
         'const_description' => GetFieldDef( _m('Description'), 'constant.description','text'),
-        'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
+        'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric')
+    ];
 }
 
 /** content table flags */
@@ -375,12 +393,13 @@ define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after 
  * @return array
  */
 function inputFeedModes() {
-  return array( STATE_FEEDABLE               => _m("Feed"),
+  return [
+      STATE_FEEDABLE               => _m("Feed"),
                 STATE_UNFEEDABLE             => _m("Do not feed"),
                 STATE_FEEDNOCHANGE           => _m("Feed locked"),
                 STATE_FEEDABLE_UPDATE        => _m("Feed & update"),
                 STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock")
-              );
+  ];
 }
 /** GetViewFieldDef function
  * @param $validate
@@ -391,7 +410,7 @@ function inputFeedModes() {
  * @return array
  */
 function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
-    $ret = array( "validate"=>$validate, "insert"=>$insert, "type"=>$type, "input"=>$input );
+    $ret = ["validate"=>$validate, "insert"=>$insert, "type"=>$type, "input"=>$input];
     if ( $value ) {
         $ret['value'] =  $value;
     }
@@ -401,7 +420,7 @@ function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
  * @return array
  */
 function getViewFields() {
-    $VIEW_FIELDS = array();
+    $VIEW_FIELDS = [];
     // se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
                                                  // $validate, $insert,  $type,   $input,  $value
@@ -453,12 +472,13 @@ function getViewFields() {
     $VIEW_FIELDS["field1"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
     $VIEW_FIELDS["field2"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
     $VIEW_FIELDS["field3"]          = GetViewFieldDef("text",  "quoted", "text",   "vid");
-    $VIEW_FIELDS["calendar_type"]   = GetViewFieldDef("text",  "quoted", "text",   "select", array ("mon"=>_m("Month List"),"mon_table"=>_m("Month Table")));
+    $VIEW_FIELDS["calendar_type"]   = GetViewFieldDef("text",  "quoted", "text",   "select", ["mon"=>_m("Month List"),"mon_table"=>_m("Month Table")]);
     return $VIEW_FIELDS;
 }
 
 function getViewGroupFunctions() {
-    return array ('0'   => _m("Whole text"),
+    return [
+        '0'   => _m("Whole text"),
                   '1'   => _m("1st letter"),
                   '2'   => '2 '._m("letters"),
                   '3'   => '3 '._m("letters"),
@@ -469,7 +489,7 @@ function getViewGroupFunctions() {
                   '8'   => '8 '._m("letters"),
                   '9'   => '9 '._m("letters"),
                   '127' => _m("all before "). '~'   // we could add 126, 125,...
-                  );
+    ];
 }
 
 /** getViewTypes function
@@ -487,11 +507,12 @@ function getViewGroupFunctions() {
 *   @return array
 */
 function getViewTypes() {
-    $field3def = array ( "label" => _m("vid"),
+    $field3def = [
+        "label" => _m("vid"),
                          "help" => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_].")
-                       );
-    return   array(
-        'list' => array(
+    ];
+    return   [
+        'list' => [
                          "field3" => $field3def,
                          "name" => _m("Item listing"),
                          "before" => _m("Top HTML") ,
@@ -529,17 +550,19 @@ function getViewTypes() {
                          "cond3op" => " " ,
                          "cond3cond" => " " ,
                          "listlen" => _m("Listing length") ,
-                         "scroller" => array (
+                         "scroller" => [
                              "label" => _m("Accept site module paging - {xpage}"),
-                             "help" => _m("if checked, no need to pass page-{xpage} param to the view")),
-                         "noitem_msg" => array (
+                             "help" => _m("if checked, no need to pass page-{xpage} param to the view")
+                         ],
+                         "noitem_msg" => [
                                  "label" => _m("HTML code for \"No item found\" message"),
-                                 "help" => _m("use {#} if you do not want print anything")),
+                                 "help" => _m("use {#} if you do not want print anything")
+                         ],
                          "flag" => _m("Add view ID as HTML comment")
     //                     "aditional" => _m("Additional") );
-                       ),
+        ],
 
-        'full' => array(
+        'full' => [
                          "field3" => $field3def,
                          'name' => _m("Fulltext view"),
                          "before" => _m("Top HTML") ,
@@ -557,9 +580,9 @@ function getViewTypes() {
                          "cond3cond" => " " ,
                          "noitem_msg" => _m("HTML code for \"No item found\" message"),
                          "flag" => _m("Add view ID as HTML comment")
-                        ),
+        ],
 
-        'discus' => array(
+        'discus' => [
                            "field3" => $field3def,
                            'name' => _m("Discussion"),
                            "before" => _m("Top HTML") ,
@@ -577,15 +600,16 @@ function getViewTypes() {
                            "even" => _m("HTML code for fulltext view of the comment"),
                            "aditional" => _m("HTML code for space before comment") ,
                            "remove_string" => _m("HTML code of the form for posting comment"),
-                           "aditional6" => array (
+                           "aditional6" => [
                                "label" => _m("E-mail template"),
                                "input" => "field",
-                               "help" => _m("Number of e-mail template used for posting new comments to users")),
+                               "help" => _m("Number of e-mail template used for posting new comments to users")
+                           ],
                            "flag" => _m("Allow HTML tags in the comments")
-                         ),
+        ],
 
         // discussion to mail
-        'disc2mail' => array(
+        'disc2mail' => [
                               "field3" => $field3def,
                               'name' => _m("Discussion To Mail"),
                               "aditional" => _m("From: (email header)"),
@@ -594,7 +618,7 @@ function getViewTypes() {
                               "aditional4" => _m("Sender:"),
                               "aditional5" => _m("Mail Subject:"),
                               "even" => _m("Mail Body:")
-                            ),
+        ],
 
     /*  TODO
         'seetoo' => array( 'name' => _m("Related item"),
@@ -612,7 +636,7 @@ function getViewTypes() {
                                   "listlen" => _m("Listing length") );
     */
 
-        'const' => array(
+        'const' => [
                           "field3" => $field3def,
                           'name' => _m("View of Constants"),
                           "before" => _m("Top HTML") ,
@@ -644,9 +668,9 @@ function getViewTypes() {
                           "noitem_msg" => _m("HTML code for \"No item found\" message"),
                           "even_odd_differ" => _m("Use different HTML code for even rows"),
                           "flag" => _m("Add view ID as HTML comment")
-                        ),
+        ],
 
-        'rss' => array(
+        'rss' => [
                         "field3" => $field3def,
                         'name' => _m("RSS exchange"),
                         "before" => _m("Top HTML") ,
@@ -667,17 +691,17 @@ function getViewTypes() {
                         "cond3cond" => " " ,
                         "listlen" => _m("Listing length") ,
                         "noitem_msg" => _m("HTML code for \"No item found\" message")
-                      ),
+        ],
 
-        'static' => array(
+        'static' => [
                            "field3" => $field3def,
                            'name' => _m("Static page"),
                            "odd" => _m("HTML code"),
                            "flag" => _m("Add view ID as HTML comment")
-                         ),
+        ],
 
         // for javascript list of items
-        'javascript' => array(
+        'javascript' => [
                                "field3" => $field3def,
                                'name' => _m("Javascript item exchange"),
                                "before" => _m("Top HTML") ,
@@ -698,9 +722,9 @@ function getViewTypes() {
                                "cond3cond" => " " ,
                                "listlen" => _m("Listing length") ,
                                "noitem_msg" => _m("HTML code for \"No item found\" message")
-                             ),
+        ],
 
-        'calendar' => array(
+        'calendar' => [
                              "field3" => $field3def,
                              'name' => _m("Calendar"),
                              "calendar_type" => _m("Calendar Type"),
@@ -732,20 +756,21 @@ function getViewTypes() {
                              "listlen" => _m("Listing length") ,
                              "noitem_msg" => _m("HTML code for \"No item found\" message"),
                              "flag" => _m("Add view ID as HTML comment")
-                           ),
+        ],
 
         // this view uses also "aditonal" and "aditional3" for the "Group by"
         // radio buttons and for the sort[] box, see se_view.php3
 
-        'digest' => array(
+        'digest' => [
                            "field3" => $field3def,
                            "name" => _m("Alerts Selection Set"),
                            "function:digest_filters" => "",
-                           "aditional2" => array (
+                           "aditional2" => [
                                "label" => _m("Fulltext URL"),
                                "input" => "field",
                                "help" => _m("Link to the .shtml page used
-                                 to create headline links.")),
+                                 to create headline links.")
+                           ],
                            "before" => _m("Top HTML") ,
                            "odd" => _m("Odd Rows") ,
                            "even_odd_differ" => _m("Use different HTML code for even rows") ,
@@ -765,14 +790,14 @@ function getViewTypes() {
                            "listlen" => _m("Max number of items"),
                            "noitem_msg" => _m("HTML code for \"No item found\" message"),
                            "flag" => _m("Add view ID as HTML comment")
-                         ),
+        ],
 
         // View used for listing of ursl - mainly for listing items for index
         // servers (HtDig, MnogoSearch, ...)
         // The main difference from 'list' view is that the aliases are created
         // just from item table, so the memory usage is much smaller - you can
         // list all urls, even if there is a lot of items in the slice.
-        'urls' => array(
+        'urls' => [
                          "field3" => $field3def,
                          "name" => _m("URL listing"),
                          "before" => _m("Top HTML") ,
@@ -795,10 +820,10 @@ function getViewTypes() {
                          "listlen" => _m("Listing length") ,
                          "noitem_msg" => _m("HTML code for \"No item found\" message"),
                          "flag" => _m("Add view ID as HTML comment")
-                       ),
+        ],
 
         // View used in Links module - displays set of link
-        'links' => array(
+        'links' => [
                           "field3" => $field3def,
                           "name" => _m("Link listing"),
                           "before" => _m("Top HTML") ,
@@ -829,10 +854,10 @@ function getViewTypes() {
                           "listlen" => _m("Listing length") ,
                           "noitem_msg" => _m("HTML code for \"No item found\" message"),
                           "flag" => _m("Add view ID as HTML comment")
-                        ),
+        ],
 
         // View used in Links module - displays set of categories
-        'categories' => array(
+        'categories' => [
                                "field3" => $field3def,
                                "name" => _m("Category listing"),
                                "before" => _m("Top HTML") ,
@@ -863,9 +888,9 @@ function getViewTypes() {
                                "listlen" => _m("Listing length") ,
                                "noitem_msg" => _m("HTML code for \"No item found\" message"),
                                "flag" => _m("Add view ID as HTML comment")
-                             ),
+        ],
         // View used for creating input forms
-        'inputform' => array(
+        'inputform' => [
                          "field3" => $field3def,
                          'name' => _m("Input Form"),
 //                       "before" => _m("Top HTML") ,
@@ -875,66 +900,89 @@ function getViewTypes() {
                          "remove_string" => _m("Remove strings"),
 //                       "after" => _m("Bottom HTML") ,
                          "flag" => _m("Add view ID as HTML comment")
-                        ),
-    );
+        ],
+    ];
 }
 /** getViewTypesInfo function
  * @return array
  */
 function getViewTypesInfo() {
-    $VIEW_TYPES_INFO = array();
+    $VIEW_TYPES_INFO = [];
     // modification - options for modification field of views
     // alias  - which aliases to show
     // order  - 'easy' - show just Ascending/Descending
     // fields - which fields show in selectboxes (slice / 'constant')
-    $VIEW_TYPES_INFO['list'] = array('modification'=>array('1'=>'search',
+    $VIEW_TYPES_INFO['list'] = [
+        'modification'=> [
+            '1'=>'search',
                                                            '2'=>'parameter',
                                                            '3'=>'statistic',
                                                            '4'=>'all in thread',
                                                            '5'=>'related',
-                                                           '6'=>'keyword related'),
-                                     'aliases' => 'field');
-    $VIEW_TYPES_INFO['full'] = array('modification'=>array ('11'=>'newest',
+                                                           '6'=>'keyword related'
+        ],
+                                     'aliases' => 'field'
+    ];
+    $VIEW_TYPES_INFO['full'] = [
+        'modification'=> ['11'=>'newest',
                                                             '12'=>'newest with condition',
                                                             '13'=>'oldest with condition',
-                                                            '14'=>'id', '15'=>'parameter'),
-                                     'aliases' => 'field');
-    $VIEW_TYPES_INFO['digest'] = array('aliases' => 'field');
-    $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder',
+                                                            '14'=>'id', '15'=>'parameter'],
+                                     'aliases' => 'field'
+    ];
+    $VIEW_TYPES_INFO['digest'] = ['aliases' => 'field'];
+    $VIEW_TYPES_INFO['discus'] = [
+        'modification'=> [
+            '21'=>'timeorder',
                                                              '22'=>'reverse timeorder',
-                                                             '23'=>'thread' ),
-                                       'aditional' =>array('default'=>'<img src="'.AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
-                                       'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">'),
-                                       'aditional3'=>array('default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'),
-                                       'aditional4'=>array('default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'),
-                                       'aliases' => 'discus');
-    $VIEW_TYPES_INFO['disc2mail'] = array ('aliases' => 'disc2mail');
-    $VIEW_TYPES_INFO['seetoo']     = array('modification'=>array('31'=>'related',
+                                                             '23'=>'thread'
+        ],
+                                       'aditional' => ['default'=>'<img src="'.AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'],
+                                       'aditional2'=> ['default'=>'<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">'],
+                                       'aditional3'=> ['default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'],
+                                       'aditional4'=> ['default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'],
+                                       'aliases' => 'discus'
+    ];
+    $VIEW_TYPES_INFO['disc2mail'] = ['aliases' => 'disc2mail'];
+    $VIEW_TYPES_INFO['seetoo']     = [
+        'modification'=> [
+            '31'=>'related',
                                                              '32'=>'keyword with OR',
-                                                             '33'=>'keyword with AND' ),
-                                     'aliases' => 'field');
-    $VIEW_TYPES_INFO['const']      = array('aliases' => 'const',
+                                                             '33'=>'keyword with AND'
+        ],
+                                     'aliases' => 'field'
+    ];
+    $VIEW_TYPES_INFO['const']      = [
+        'aliases' => 'const',
                                            'order' => 'easy',
-                                           'fields' => 'GetConstantFields');
-    $VIEW_TYPES_INFO['urls']       = array('aliases' => 'justids');
-    $VIEW_TYPES_INFO['links']      = array('aliases' => 'links',
+                                           'fields' => 'GetConstantFields'
+    ];
+    $VIEW_TYPES_INFO['urls']       = ['aliases' => 'justids'];
+    $VIEW_TYPES_INFO['links']      = [
+        'aliases' => 'links',
                                            'order' => 'easy',
-                                           'fields' => 'GetLinkFields');
-    $VIEW_TYPES_INFO['categories'] = array('aliases' => 'categories',
+                                           'fields' => 'GetLinkFields'
+    ];
+    $VIEW_TYPES_INFO['categories'] = [
+        'aliases' => 'categories',
                                            'order' => 'easy',
-                                           'fields' => 'GetCategoryFields');
-    $VIEW_TYPES_INFO['rss']        = array('aliases' => 'field');
-    $VIEW_TYPES_INFO['calendar']   = array('aliases' => 'field',
-        'aliases_additional' => array (
-            '_#CV_TST_1' => array ('hlp'=>_m("Calendar: Time stamp at 0:00 of processed cell")),
-            '_#CV_TST_2' => array ('hlp'=>_m("Calendar: Time stamp at 24:00 of processed cell")),
-            '_#CV_NUM_D' => array ('hlp'=>_m("Calendar: Day in month of processed cell")),
-            '_#CV_NUM_M' => array ('hlp'=>_m("Calendar: Month number of processed cell")),
-            '_#CV_NUM_Y' => array ('hlp'=>_m("Calendar: Year number of processed cell"))));
+                                           'fields' => 'GetCategoryFields'
+    ];
+    $VIEW_TYPES_INFO['rss']        = ['aliases' => 'field'];
+    $VIEW_TYPES_INFO['calendar']   = [
+        'aliases' => 'field',
+        'aliases_additional' => [
+            '_#CV_TST_1' => ['hlp'=>_m("Calendar: Time stamp at 0:00 of processed cell")],
+            '_#CV_TST_2' => ['hlp'=>_m("Calendar: Time stamp at 24:00 of processed cell")],
+            '_#CV_NUM_D' => ['hlp'=>_m("Calendar: Day in month of processed cell")],
+            '_#CV_NUM_M' => ['hlp'=>_m("Calendar: Month number of processed cell")],
+            '_#CV_NUM_Y' => ['hlp'=>_m("Calendar: Year number of processed cell")]
+        ]
+    ];
 
-    $VIEW_TYPES_INFO['static']     = array('aliases' => 'none');
-    $VIEW_TYPES_INFO['javascript'] = array('aliases' => 'field');
-    $VIEW_TYPES_INFO['inputform']  = array('aliases' => '');
+    $VIEW_TYPES_INFO['static']     = ['aliases' => 'none'];
+    $VIEW_TYPES_INFO['javascript'] = ['aliases' => 'field'];
+    $VIEW_TYPES_INFO['inputform']  = ['aliases' => ''];
     return $VIEW_TYPES_INFO;
 }
 
@@ -953,11 +1001,12 @@ define ('SLICE_ALLOW_EXPIRED_CONTENT', 4);  // when we reference expired item, t
 define ('SLICE_ALLOW_PENDING_CONTENT', 8);  // pending items, when referenced, will be wisible - this allows you also to see preview of pending item
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
-$CONDS_NOT_FIELD_NAMES = array(
+$CONDS_NOT_FIELD_NAMES = [
     "operator"   => true,
     "value"      => true,
     "discussion" => true,
-    "valuejoin"  => true );
+    "valuejoin"  => true
+];
 
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
@@ -999,8 +1048,9 @@ define("SC_NO_BIN",      4);
  * @return array
  */
 function getFilemanAccesses()
-{ return array (
+{ return [
     "0" => _m("Superadmin"),
 //    "EDITOR" => _m("Slice Editor"),
-    "ADMINISTRATOR" => _m("Slice Administrator"));
+    "ADMINISTRATOR" => _m("Slice Administrator")
+];
 }

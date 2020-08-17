@@ -71,10 +71,13 @@ require_once AA_INC_PATH."csn_util.php3";
 
 //-------------------------- Constants -----------------------------------------
 
-$FORMATS = array("HTML"  => "http://www.isi.edu/in-notes/iana/assignments/media-types/text/html",
-                 "PLAIN" => "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain");
+$FORMATS = [
+    "HTML"  => "http://www.isi.edu/in-notes/iana/assignments/media-types/text/html",
+                 "PLAIN" => "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"
+];
 
-$MAP_DC2AA = array("title"       => "headline",
+$MAP_DC2AA = [
+    "title"       => "headline",
                    "creator"     => "author",
                    "subject"     => "abstract",
                    "description" => "abstract",
@@ -82,7 +85,8 @@ $MAP_DC2AA = array("title"       => "headline",
                    "source"      => "source",
                    "language"    => "lang_code",
                    "relation"    => "source_href",
-                   "coverage"    => "place");
+                   "coverage"    => "place"
+];
 
 $XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
 "<rdf:RDF
@@ -138,7 +142,13 @@ function Error($str) {
  * @return array of unpacked slice ids
  */
 function GetFeedingSlices( $node_name, $user) {
-    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM ef_permissions", array(array('node',array($node_name,'')),array('user',array($user,''))));
+    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM ef_permissions", [
+        [
+            'node',
+            [$node_name,'']
+        ],
+        ['user', [$user,'']]
+    ]);
 //    $db = getDB();
 //    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='') AND (user='$user' OR user='')");
 //    while ($db->next_record()) {
@@ -361,7 +371,7 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     //  $f = array("full_text" ,"category", "slice_id");
     //  now we will send also category field (there could be (in special case)
     //  also values, which arn't in category definition (csv filled items, fed, ...)
-    $f = array("full_text", "slice_id");
+    $f = ["full_text", "slice_id"];
 
     foreach ( $f as $k => $v) {        // create array of elements, which will be skipped
         $rss[GetBaseFieldId($slice_fields,$v)] = $v;
@@ -415,7 +425,7 @@ function GetXMLItemsRefs(&$items_ids) {
  * @return array
  */
 function RestrictIdsByCategory( $ids, $categories, $slice_id, $content, $cat_field ) {
-    $new_ids = array();
+    $new_ids = [];
     if ( !is_array($ids) OR !is_array($categories) ) {
         return $new_ids;                              // empty array
     }
@@ -453,7 +463,7 @@ function RestrictIdsByCategory( $ids, $categories, $slice_id, $content, $cat_fie
 //------------------------------------------------------------------------------
 
 // check the node_name and password against the nodes table's data
-if (!DB_AA::test("nodes", array(array('name',$node_name),array('password',$password)))) {
+if (!DB_AA::test("nodes", [['name',$node_name], ['password',$password]])) {
     Error(ERR_PASSWORD);
 }
 
@@ -515,7 +525,7 @@ if ($ids) {
      */
     $ids           = explode('-',$ids);
     $restrict_zids = new zids($ids);
-    $zids          = QueryZids( array($slice_id), $conds, '', 'ALL', 0, $restrict_zids);
+    $zids          = QueryZids( [$slice_id], $conds, '', 'ALL', 0, $restrict_zids);
     $ids           = $zids->longids();
     if ($ids) {
         $content        = GetItemContent($ids);     // get the content of all items
@@ -534,12 +544,17 @@ if ($ids) {
     $cat_field            = $tmpobj->getCategoryFieldId();
     $now   = now();
 
-    $cond  = DB_AA::makeWhere(array(array('slice_id', $slice_id, 'l'),array('status_code', 1),array('publish_date', $now, '<='),array('expiry_date', $now, '>')));
+    $cond  = DB_AA::makeWhere([
+        ['slice_id', $slice_id, 'l'],
+        ['status_code', 1],
+        ['publish_date', $now, '<='],
+        ['expiry_date', $now, '>']
+    ]);
     $cond .= " AND (item.last_edit >'$start_timestamp' OR item.publish_date > '$start_timestamp')";
 
-    $ids   = array();
+    $ids   = [];
     $time  = 0;
-    $arr   = DB_AA::select( array('unpackid'=>'edittime'), "SELECT LOWER(HEX(`id`)) AS unpackid, GREATEST(publish_date, last_edit) as edittime FROM item ". $cond);
+    $arr   = DB_AA::select( ['unpackid'=>'edittime'], "SELECT LOWER(HEX(`id`)) AS unpackid, GREATEST(publish_date, last_edit) as edittime FROM item ". $cond);
     if ($arr) {
         $ids = array_keys($arr);
         $time = max($arr);

@@ -111,7 +111,7 @@ if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                      // and REDIRECT_STRING_UNESCAPED - from url
 
-QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
+QuoteVars("post", ['encap'=>1]);  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
 AA::setEncoding(AA_Langs::getCharset());
 
@@ -172,7 +172,7 @@ if ( $id ) {
 // --- Process all AJAX commandes and possibly EXIT ---------------------
 
 $content_function = function () use (&$content4id, $slice_id, $edit) {
-    return with(new inputform(array()))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
+    return with(new inputform([]))->dryEvaluate($content4id, AA_Slice::getModule($slice_id), $edit);
 };
 
 $page_changer = new \AA\IO\OnPageChanger($content_function);
@@ -286,7 +286,7 @@ if ($edit) {
     // fill content array from item and content tables
     $content = GetItemContent($id);
     if ( !$content ) {
-        $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
+        $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
         MsgPage(con_url(StateUrl(self_base() ."index.php3"), ''), $err);
         exit;
     }
@@ -318,18 +318,19 @@ if ($lang_control) {
     if (empty($mlx)) {
         $mlx = new MLX($slice);
     }
-    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(array('encap'=>$encap), $content4id->getContent(),$action,$mlxl,$mlxid);
+    list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform(['encap'=>$encap], $content4id->getContent(),$action,$mlxl,$mlxid);
 }
 // end mimo changes
 
 // print begin ---------------------------------------------------------------
 if ( !$encap ) {
-    $inputform_settings = array(
+    $inputform_settings = [
         'display_aa_begin_end' => true,
         'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($slice->name()).")",
-        'formheading'          => $mlx_formheading ); //added MLX
+        'formheading'          => $mlx_formheading
+    ]; //added MLX
 }
-$inputform_settings['messages']            = array('err' => $err);
+$inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
@@ -340,11 +341,12 @@ $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
                                               ($return_url ? expand_return_url(1) :
                                               get_admin_url("index.php3?cancel=1"))));
 
-$inputform_settings['hidden']              = array(
+$inputform_settings['hidden']              = [
                              'anonymous'   => (($free OR $anonymous) ? true : ""),
                              'mlxid'       => $mlxid,
                              'mlxl'        => $mlxl,
-                             'openervar'   => $openervar);  // id of variable in parent window (used for popup inputform)
+                             'openervar'   => $openervar
+];  // id of variable in parent window (used for popup inputform)
 
 if ( $inputform_settings['form4update'] ) {
     $inputform_settings['hidden']['id']    = $id;

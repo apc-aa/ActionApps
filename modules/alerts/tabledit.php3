@@ -93,7 +93,7 @@ $script = StateUrl("tabledit.php3");
 
 // fixed bug when inner table is not updated to new module_id
 if (!$cmd) {
-    $cmd = array($tview => array('edit'=>array(AA::$module_id=>1)));
+    $cmd = [$tview => ['edit'=> [AA::$module_id=>1]]];
 }
 
 $tabledit = new tabledit($tview, $script, $cmd, $tableview, AA_INSTAL_PATH."images/", $sess, "GetAlertsTableView");

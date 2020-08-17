@@ -42,6 +42,6 @@ interface LaterInterface {
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
      */
-    public function toexecutelater($params=array());
+    public function toexecutelater($params= []);
 
 }

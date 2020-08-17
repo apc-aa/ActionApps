@@ -42,14 +42,14 @@ class AA_Table {
      */
     function __construct($id) {
         $this->id       = $id;
-        $this->rows     = array();
-        $this->colindex = array();
-        $this->attrs    = array();
+        $this->rows     = [];
+        $this->colindex = [];
+        $this->attrs    = [];
     }
 
     function set($r, $c, $value, $attribute='') {
         if (!isset($this->rows[$r])) {
-            $this->rows[$r] = array();
+            $this->rows[$r] = [];
         }
         if (!isset($this->colindex[$c])) {
             $newindex = count($this->colindex);
@@ -57,7 +57,7 @@ class AA_Table {
         }
         $val = $this->rows[$r][$this->colindex[$c]];
         if (!is_array($val)) {
-            $val = array();
+            $val = [];
         }
         $attribute = (string)$attribute;
         if (strlen($attribute)==0) {
@@ -157,7 +157,7 @@ class AA_Array {
      */
     function __construct($id) {
         $this->id      = $id;
-        $this->arr     = array();
+        $this->arr     = [];
     }
 
     function set($i, $value) {
@@ -187,13 +187,13 @@ class AA_Array {
             case 'key':  ksort($work_arr, SORT_NUMERIC);  break;
             case 'rkey': krsort($work_arr, SORT_NUMERIC); break;
         }
-        $ret = array();
+        $ret = [];
         // speedup
         if ( !strlen($exp) OR ($exp == '_#1')) {
             $ret = $work_arr;
         } else {
             foreach ($work_arr as $k => $v) {
-                $ret[] = str_replace(array('_#1','_#2'), array($v,$k), $exp);
+                $ret[] = str_replace(['_#1','_#2'], [$v,$k], $exp);
             }
         }
         return join($join, $ret);

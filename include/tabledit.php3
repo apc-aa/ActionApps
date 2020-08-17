@@ -131,7 +131,7 @@ class tabledit {
             }
             else {
                 $tecmd["orderdir"] = 'a';
-                $tecmd["orderby"]  = array($orderby => 1);
+                $tecmd["orderby"]  = [$orderby => 1];
             }
         }
         else {
@@ -336,7 +336,7 @@ class tabledit {
             //echo "</TABLE>";
         }
         else if ($this->type == "browse") {
-            $this->ShowButtons(false, "", "", "", 0, "down", array(), $record_count);
+            $this->ShowButtons(false, "", "", "", 0, "down", [], $record_count);
             // scroller
             if ($scroll->pageCount() > 1) {
                 echo "<p align=\"center\">";
@@ -790,57 +790,65 @@ class tabledit {
     function ButtonsText($new_record) {
         // "new" is label for new record, "new_name" is command for new record,
         // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown
-        $buttons_text["edit"] = array (
+        $buttons_text["edit"] = [
             "name" => "edit",
             "img" => $new_record ? "" : "edit",
             "alt" => _m("edit"),
             "view" => $this->gotoview(),
-            "gotoview" => $this->gotoview());
-        $buttons_text["add"] = array (
+            "gotoview" => $this->gotoview()
+        ];
+        $buttons_text["add"] = [
             "name" => "add",
             "img" => "edit",
             "alt" => _m("add"),
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview());
-        $buttons_text["delete"] = array (
+            "gotoview" => $this->gotoview()
+        ];
+        $buttons_text["delete"] = [
             "name" => "delete",
             "img" => $new_record ? "" : "delete",
             "alt" => _m("delete"),
             "view" => $this->viewID,
-            "gotoview" => $this->type == "browse" ? $this->gotoview2() : $this->gotoview());
+            "gotoview" => $this->type == "browse" ? $this->gotoview2() : $this->gotoview()
+        ];
 
         // SPECIAL: "delete_checkbox" becomes "add" on new records
-        $buttons_text["delete_checkbox"] = array (
+        $buttons_text["delete_checkbox"] = [
             "name" => $new_record ? "insert" : "delete_all",
             "img" => $new_record ? "ok" : "delete",
             "alt" => $new_record ? _m("insert") : _m("delete"),
             "checkbox" => !$new_record,
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview2());
-        $buttons_text["delete_all"] = array (
+            "gotoview" => $this->gotoview2()
+        ];
+        $buttons_text["delete_all"] = [
             "name" => "run_delete_all",
             "img" => "delete",
             "alt" => _m("delete checked"),
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview2());
-        $buttons_text["update"] = array (
+            "gotoview" => $this->gotoview2()
+        ];
+        $buttons_text["update"] = [
             "name" => $new_record ? "insert" : "update",
             "img" => "ok",
             "alt" => $new_record ? _m("insert") : _m("update"),
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview2());
-        $buttons_text["update_all"] = array (
+            "gotoview" => $this->gotoview2()
+        ];
+        $buttons_text["update_all"] = [
             "name" => "update_all",
             "img" => "ok",
             "alt" => _m("update all"),
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview2());
-        $buttons_text["cancel"] = array (
+            "gotoview" => $this->gotoview2()
+        ];
+        $buttons_text["cancel"] = [
             "name" => "cancel",
             "img" => "exit",
             "alt" => _m("browse"),
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview());
+            "gotoview" => $this->gotoview()
+        ];
         return $buttons_text;
     }
 

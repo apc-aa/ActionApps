@@ -82,7 +82,7 @@ class AA_Manageraction_Links_Check extends AA_Manageraction {
     /** function, which checks permissions in for many Links action classes */
     static public function permCheck($item_zids, $perm, $allow_nobase4super=false) {
 
-        $base_categs = array();
+        $base_categs = [];
         $check_super = false;
         foreach ($item_zids as $lid) {
             // get link's base category
@@ -434,8 +434,8 @@ class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
                 $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
                 $GLOBALS['r_state']['bin'] = 'app';
                 $manager->resetSearchBar();
-                $manager->addOrderBar(  array(0=>array('name'=>'a')) );
-                $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
+                $manager->addOrderBar(  [0=> ['name'=>'a']]);
+                $manager->addSearchBar( [0=> ['name'=>1, 'value'=>'', 'operator'=>'RLIKE']]);
                 break;
             case '2':             // links to check
                 $GLOBALS['r_state']['show_subtree']    = 1;
@@ -445,8 +445,8 @@ class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
                 $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
                 $GLOBALS['r_state']['bin'] = 'app';
                 $manager->resetSearchBar();
-                $manager->addOrderBar(  array(0=>array('checked'=>'a')) );
-                $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
+                $manager->addOrderBar(  [0=> ['checked'=>'a']]);
+                $manager->addSearchBar( [0=> ['name'=>1, 'value'=>'', 'operator'=>'RLIKE']]);
                 break;
             case '3':             // last edited links
                 $GLOBALS['r_state']['show_subtree']    = 1;
@@ -456,8 +456,8 @@ class AA_Manageraction_Links_GoBookmark extends AA_Manageraction {
                 $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
                 $GLOBALS['r_state']['bin'] = 'app';
                 $manager->resetSearchBar();
-                $manager->addOrderBar(  array(0=>array('last_edit'=>'d')) );
-                $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
+                $manager->addOrderBar(  [0=> ['last_edit'=>'d']]);
+                $manager->addSearchBar( [0=> ['name'=>1, 'value'=>'', 'operator'=>'RLIKE']]);
                 break;
         }
     }
@@ -606,5 +606,5 @@ function Links_GetAsociationId($lid, $cid) {
     if ( !$lid OR !$cid ) {
         return false;
     }
-    return DB_AA::select1('SELECT a_id FROM links_link_cat', 'a_id', array(array('category_id',$cid, 'i'),array('what_id',$lid, 'i')));
+    return DB_AA::select1('SELECT a_id FROM links_link_cat', 'a_id', [['category_id',$cid, 'i'], ['what_id',$lid, 'i']]);
 }

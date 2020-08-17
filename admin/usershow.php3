@@ -65,42 +65,43 @@ switch( $type ) {
     case 'users':
            $row =  '<td>_#LASTNAME</td><td>_#FIRSTNAM</td><td>_#EMAIL___<input type="hidden" name="items[x_#ITEM_ID#]" value=""></td>';
            $default_sort_field = "con_email.......";
-           $format = array(
+           $format = [
               'compact_top'      => '<table border=1 cellspacing=0 cellpadding=3 width=100%><tr align="center" class="tabtit">'.
                                     '<td><b>Last</b></td><td><b>First</b></td><td><b>Email</b></td></tr>',
               'even_odd_differ'  => 1,
               'even_row_format'  => '<tr class="tabtxteven">'.$row.'</tr>',
               'odd_row_format'   => '<tr class="tabtxt">'.$row.'</tr>',
-              'compact_bottom'   => "</table>");
+              'compact_bottom'   => "</table>"
+           ];
     // add your type here
     default:  // no format used - taken default format from manager class
 }
 
-$manager_settings = array(
+$manager_settings = [
      'module_id' => $slice_id,
      'show'      => MGR_SB_ORDERROWS,      //     // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
-     'searchbar' => array(
+     'searchbar' => [
          'fields'               => $slice->getSearchfields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
          'function'             => false,  // name of function for aditional action hooked on standard filter action
          'default_bookmark'     => $group
-                         ),
-     'scroller'  => array(
+     ],
+     'scroller'  => [
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
-                         ),
-     'itemview'  => array(
+     ],
+     'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
          'fields'               => $slice->fields('record'),
          'aliases'              => $slice->aliases(),
          'get_content_funct'    => 'GetItemContent'
-                         ),
-     'messages' => array (
+     ],
+     'messages' => [
          'title'                => _m("Show selected users")
-                         )
-         );
+     ]
+];
 
 $manager = new AA_Manager('users'.$slice_id, $manager_settings);
 
@@ -142,7 +143,7 @@ if ( $r_userstate['items'] ) {
     $zids->setFromItemArr($r_userstate['items']);
 }
 
-$zids = QueryZids( array($slice_id), $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
+$zids = QueryZids( [$slice_id], $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

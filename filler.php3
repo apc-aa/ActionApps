@@ -193,7 +193,7 @@ function SendErrorPage($txt) {
  * Loads a page if posting is successful. If the ok_url parameter is passed,
  * redirects to the specified URL, else returns to the calling page.
  */
-function SendOkPage($txt, $new_ids = array()) {
+function SendOkPage($txt, $new_ids = []) {
 
 
     global $debugfill;
@@ -225,7 +225,7 @@ function SendOkPage($txt, $new_ids = array()) {
         // use _##ITEM_ID_ instead of _#ITEM_ID_, ...
         $_REQUEST["ok_url"] = str_replace('_##', '_#', $_REQUEST["ok_url"]);
         if (false !== strpos($_REQUEST["ok_url"],'_#N')) {
-            $new_als = array();
+            $new_als = [];
             foreach ($new_ids as $k => $v) {
                 $new_als[] = '_#N'.($k+1).'_ID___';
             }
@@ -240,7 +240,7 @@ function SendOkPage($txt, $new_ids = array()) {
         if ($_REQUEST["ok_url"]) {
             ReadFileSafe($_REQUEST["ok_url"]);
         } else {
-            $ret     = array();
+            $ret     = [];
             if ($txt['report']) {
                 $ret['report'] = $txt['report'];
             }
@@ -285,13 +285,13 @@ bind_mgettext_domain(AA_INC_PATH.'lang/'.DEFAULT_LANG_INCLUDE);
 
 // trap field for spammer bots
 if ( $_REQUEST['answer'] )    {
-    SendErrorPage(array ("fatal"=>_m("Not allowed to post comments")));
+    SendErrorPage(["fatal"=>_m("Not allowed to post comments")]);
 }
 
 if (ctype_digit((string)$_REQUEST['respuesta'])) {
     if (($_REQUEST['varA'] + $_REQUEST['varB']) != $_REQUEST['respuesta']) {
         // $varA + $varB must be equal to $respuesta, if provided
-        SendErrorPage(array ("fatal"=>_m("Wrong result, not posible to post comments.")));
+        SendErrorPage(["fatal"=>_m("Wrong result, not posible to post comments.")]);
     }
 }
 
@@ -327,7 +327,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     $grabber = new AA\IO\Grabber\Form();
     $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
     $saver->run();
-    SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
+    SendOkPage( ["report" => $saver->report()], $saver->changedIds());
     exit;
 }
 
@@ -346,13 +346,13 @@ if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 // init used objects
 //if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
 if ( !$slice_id ) {
-    SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
+    SendErrorPage(["fatal"=>_m("Slice ID not defined")]);
 }
 AA::$slice_id = $slice_id;
 $slice        = AA_Slice::getModule($slice_id);
 
 if (!is_object($slice) OR !$slice->isValid()) {
-    SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
+    SendErrorPage(["fatal"=>_m("Bad slice ID")]);
 }
 
 // if you want to edit an item from an anonymous form, prepare its ID into
@@ -363,7 +363,7 @@ if (!$my_item_id) {
 } else {
     // $db->query("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
     // $insert = ! $db->next_record();
-    $insert = ! DB_AA::test('item', array(array('id', $my_item_id, 'l')));
+    $insert = ! DB_AA::test('item', [['id', $my_item_id, 'l']]);
 }
 if ($debugfill) huhl("Debugfill insert=",$insert);
 
@@ -374,7 +374,7 @@ ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_i
 list($fields, $prifields) = $slice->fields();
 
 if (!(isset($prifields) AND is_array($prifields))) {
-    SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
+    SendErrorPage(["fatal"=>_m("No fields defined for this slice")]);
 }
 
 if ($debugfill) huhl("Debugfill err_valid=",$err_valid);
@@ -401,7 +401,7 @@ foreach ($content4id as $field) {
     if (is_array($field)) {
         foreach ($field as $value) {
             if ( IsSpamText($value['value']) ) {
-                SendErrorPage(array ("spam"=>_m("Not accepted, sorry. Looks like spam.")));
+                SendErrorPage(["spam"=>_m("Not accepted, sorry. Looks like spam.")]);
             }
         }
     }
@@ -422,7 +422,7 @@ if (! $insert && is_array($notshown)) {
 
 // put the item into the right bin
 if (SC_NO_BIN == ($bin2fill = $slice->allowed_bin_4_user())) {
-    SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
+    SendErrorPage(["fatal"=>_m("Anonymous posting not admitted.")]);
 }
 // you may force to put the item into a higher bin (active < hold < trash)
 $bin2fill = max ($bin2fill, $force_status_code);
@@ -459,7 +459,7 @@ if ($insert) {
                            // Old check, based on text_password flag
                   ($text_password ? ($password == $old_password) : AA_Perm::comparePwds($password, $old_password))
                   // Heuristic based on if old looks encrypted
-                  || ( !in_array(substr($old_password,0,2), array('xx','$2')) && ($old_password == $password)));
+                  || ( !in_array(substr($old_password,0,2), ['xx','$2']) && ($old_password == $password)));
                 break;
             }
         }
@@ -484,10 +484,10 @@ if (is_array($result)) {
     SendErrorPage( $result );
 } elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $insert, true, true )) { // insert, invalidatecache, feed
     if ($debugfill) huhl("Filler: sending error");
-    SendErrorPage( array("store" => _m("Some error in store item.")));
+    SendErrorPage( ["store" => _m("Some error in store item.")]);
 } else {
     if ($debugfill) huhl("Filler: Sending ok");
-    SendOkPage( array("success" => $insert ? "insert" : "update" ), array($my_item_id));
+    SendOkPage( ["success" => $insert ? "insert" : "update"], [$my_item_id]);
 }
 
 

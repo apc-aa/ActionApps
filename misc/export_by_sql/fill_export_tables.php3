@@ -11,7 +11,7 @@ if (!IsSuperadmin()) {
   exit;
 }
 
-$tables = array (
+$tables = [
 "constant_slice"=>"WHERE slice_id IN",
 "content"=>"INNER JOIN field ON content.field_id = field.id
             WHERE slice_id IN",
@@ -19,7 +19,7 @@ $tables = array (
 "module"=>"WHERE id IN",
 "slice"=>"WHERE id IN",
 "view"=>"WHERE slice_id IN",
-);
+];
 
 if ($slices_chosen) {
     $slice_ids = "";

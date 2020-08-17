@@ -27,7 +27,7 @@
 
 /** @todo this class should be abstract after we switch to PHP5 */
 class AA_Optimize implements \AA\Util\NamedInterface {
-    var $messages = array();
+    var $messages = [];
     var $db;
 
     /** \AA\Util\NamedInterface function */
@@ -39,10 +39,10 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     function repair()       {}
 
     /** implemented actions within this class */
-    function actions()      { return array('test','repair'); }
+    function actions()      { return ['test','repair']; }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array()); }
+    function isType($type)  { return in_array($type, []); }
 
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
     function priority()     { return 100; }
@@ -101,7 +101,7 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     */
     function clear_report() {
         unset($this->messages);
-        $this->messages = array();
+        $this->messages = [];
     }
 }
 
@@ -124,7 +124,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
     /** the optimizers are ordered by priority (less first) when executed
      *  in chain (like for sql_update)
@@ -144,7 +144,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
             return true;
         }
         foreach ($duplicates as $dup) {
-            $this->message(_m('Duplicate in slice - field: %1 - %2', array(unpack_id($dup[0]), $dup[1])));
+            $this->message(_m('Duplicate in slice - field: %1 - %2', [unpack_id($dup[0]), $dup[1]]));
         }
         return false;
     }
@@ -158,7 +158,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
             $this->message(_m('No duplicates found'));
             return true;
         }
-        $fixed = array();
+        $fixed = [];
         foreach ($duplicates as $dup) {
             if ( $fixed[$dup[0].$dup[1]] ) {
                 // already fixed
@@ -169,7 +169,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
             $varset->doDeleteWhere('field', "slice_id='".quote($dup[0])."' AND id='".quote($dup[1])."'");
             $varset->resetFromRecord($dup[2]);
             $varset->doInsert('field');
-            $this->message(_m('Field %2 in slice %1 fixed', array(unpack_id($dup[0]), $dup[1])));
+            $this->message(_m('Field %2 in slice %1 fixed', [unpack_id($dup[0]), $dup[1]]));
         }
         return true;
     }
@@ -178,20 +178,20 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
         // does the table exist at all?
         $field_exists = GetTable2Array("SHOW TABLES LIKE 'field'", "aa_first");
         if (!$field_exists) {
-            return array();
+            return [];
         }
         $fields = GetTable2Array("SELECT * FROM field ORDER BY slice_id, id", '');
 
-        $field_table = array();
-        $duplicates  = array();
+        $field_table = [];
+        $duplicates  = [];
         foreach ($fields as $field) {
             $sid = $field['slice_id'];
             $fid = $field['id'];
             if (!isset($field_table[$sid])) {
-                $field_table[$sid] = array();
+                $field_table[$sid] = [];
             }
             if ( isset($field_table[$sid][$fid])) {
-                $duplicates[] = array($sid, $fid, $field_table[$sid][$fid]);
+                $duplicates[] = [$sid, $fid, $field_table[$sid][$fid]];
             } else {
                 $field_table[$sid][$fid] = $field;
             }
@@ -223,7 +223,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
     /** the optimizers are ordered by priority (less first) when executed
      *  in chain (like for sql_update)
@@ -247,7 +247,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
         foreach($diffs as $tablename => $diff) {
             if ($diff['equal']) {
                 //huhl($diff);
-                $this->message(_m('<em>Tables %1 are identical.</em><br>', array($tablename)));
+                $this->message(_m('<em>Tables %1 are identical.</em><br>', [$tablename]));
             } else {
                 $this->message(AA_Difftext::renderHtml($diff['table2'], $diff['table1']));
                 $different = true;
@@ -266,23 +266,23 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
         $diffs     = $template_metabase->compare($this_metabase);
         foreach($diffs as $tablename => $diff) {
             if ($diff['equal']) {
-                $this->message(_m('Tables %1 are identical. Skipping.', array($tablename)));
+                $this->message(_m('Tables %1 are identical. Skipping.', [$tablename]));
                 continue;
             }
             // create temporary table
-            $this->message(_m('Deleting temporary table tmp_%1, if exist.', array($tablename)));
+            $this->message(_m('Deleting temporary table tmp_%1, if exist.', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `tmp_$tablename`");
-            $this->message(_m('Creating temporary table tmp_%1.', array($tablename)));
+            $this->message(_m('Creating temporary table tmp_%1.', [$tablename]));
             $this->query($template_metabase->getCreateSql($tablename, 'tmp_'));
 
             // create new tables that do not exist in database
             // (we need it for next data copy, else if ends up with db error)
-            $this->message(_m('Creating "old" data table %1 if not exists.', array($tablename)));
+            $this->message(_m('Creating "old" data table %1 if not exists.', [$tablename]));
             $this->query($template_metabase->getCreateSql($tablename));
 
 
             // copy old data to tmp table
-            $this->message(_m('copying old values to new table %1 -> tmp_%1', array($tablename)));
+            $this->message(_m('copying old values to new table %1 -> tmp_%1', [$tablename]));
 
             $tmp_columns = $template_metabase->getColumnNames($tablename);
             $old_columns = $this_metabase->getColumnNames($tablename);
@@ -294,11 +294,11 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
             }
 
             // backup table and use the new one
-            $this->message(_m('backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1', array($tablename)));
+            $this->message(_m('backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `bck_$tablename`");
             $this->query("ALTER TABLE `$tablename` RENAME `bck_$tablename");
             $this->query("ALTER TABLE `tmp_$tablename` RENAME `$tablename");
-            $this->message(_m('%1 done.', array($tablename)));
+            $this->message(_m('%1 done.', [$tablename]));
         }
         return true;
     }
@@ -322,7 +322,7 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
     /** Test function
     * @return bool
@@ -333,28 +333,28 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
         // Code-pages
         $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='lt_codepages'", "aa_first", 'count');
         if ($row_count < 9) {
-            $this->message(_m('Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9', array($row_count)));
+            $this->message(_m('Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9', [$row_count]));
             $ret = false;
         }
 
         // Language
         $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='lt_languages'", "aa_first", 'count');
         if ($row_count < 46) {
-            $this->message(_m('Language constants (lt_languages) are not up-to-date - found: %1 from 46', array($row_count)));
+            $this->message(_m('Language constants (lt_languages) are not up-to-date - found: %1 from 46', [$row_count]));
             $ret = false;
         }
 
         // AA Bins
         $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='AA_Core_Bins....'", "aa_first", 'count');
         if ($row_count < 3) {
-            $this->message(_m('AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3', array($row_count)));
+            $this->message(_m('AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3', [$row_count]));
             $ret = false;
         }
 
         // APC-wide categories
         $row_count   = GetTable2Array("SELECT count(*) as count FROM constant WHERE group_id='lt_apcCategories'", "aa_first", 'count');
         if ($row_count < 82) {
-            $this->message(_m('APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82', array($row_count)));
+            $this->message(_m('APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82', [$row_count]));
             $ret = false;
         }
         return $ret;
@@ -547,7 +547,7 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function
@@ -639,7 +639,7 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function
@@ -722,7 +722,7 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function
@@ -818,7 +818,7 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -827,7 +827,7 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."'", "aa_first", 'count');
         if ($row_count <> 1) {
-            $this->message(_m('"%1" template view is not defined', array($this->_viewType())));
+            $this->message(_m('"%1" template view is not defined', [$this->_viewType()]));
             $ret = false;
         }
         return $ret;
@@ -837,13 +837,13 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-        $this->message(_m('Deleting the view template "%1"', array($this->_viewType())));
+        $this->message(_m('Deleting the view template "%1"', [$this->_viewType()]));
         $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."' ");
 
         $this->message(_m('Inserting the view "discus" template'));
         $this->query($this->_viewDefinition());
 
-        $this->message(_m('view "%1" redefinition - done.', array($this->_viewType())));
+        $this->message(_m('view "%1" redefinition - done.', [$this->_viewType()]));
         return true;
     }
 }
@@ -934,7 +934,7 @@ class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -983,7 +983,7 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1026,7 +1026,7 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1069,7 +1069,7 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1112,7 +1112,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1155,7 +1155,7 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1200,7 +1200,7 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1243,7 +1243,7 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function @return bool */
@@ -1345,10 +1345,10 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
     /** Test function
     * @return string - a message
@@ -1420,7 +1420,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function
@@ -1565,7 +1565,7 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('seo',         '', 'AA_Core_Fields..', 'SEO',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
 
     /** Test function
@@ -1576,7 +1576,7 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='".$this->_fieldType()."' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
         if ($row_count <> 1) {
-            $this->message(_m('The "%1" field template missing', array($this->_fieldType())));
+            $this->message(_m('The "%1" field template missing', [$this->_fieldType()]));
             $ret = false;
         }
         return $ret;
@@ -1587,9 +1587,9 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-        $this->message(_m('Recreate "%1" field definition', array($this->_fieldType())));
+        $this->message(_m('Recreate "%1" field definition', [$this->_fieldType()]));
         $this->query($this->_fieldDefinition());
-        $this->message(_m('New "%1" field template added', array($this->_fieldType())));
+        $this->message(_m('New "%1" field template added', [$this->_fieldType()]));
         return true;
     }
 }
@@ -1808,7 +1808,7 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array()); }
+    function isType($type)  { return in_array($type, []); }
 
     /** Test function
     * @return string - a message
@@ -1836,10 +1836,10 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
             $bck_exists = GetTable2Array("SHOW TABLES LIKE 'bck_$tablename'", "aa_first");
             if ( !$bck_exists ) {
                 // we do not have bck table
-                $this->message(_m('There is no bck_%1 table - %1 not restored.', array($tablename)));
+                $this->message(_m('There is no bck_%1 table - %1 not restored.', [$tablename]));
                 continue;
             }
-            $this->message(_m('Replace table bck_%1 -> %1', array($tablename)));
+            $this->message(_m('Replace table bck_%1 -> %1', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `$tablename`");
             $this->query("ALTER TABLE `bck_$tablename` RENAME `$tablename");
         }
@@ -1869,9 +1869,9 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array()); }
+    function isType($type)  { return in_array($type, []); }
 
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Main update function
      *  @return bool
@@ -1886,18 +1886,18 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
             }
 
             // create backup table
-            $this->message(_m('Deleting old backup table bck_%1, if exist.', array($tablename)));
+            $this->message(_m('Deleting old backup table bck_%1, if exist.', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `bck_$tablename`");
 
-            $this->message(_m('Creating empty backup table bck_%1.', array($tablename)));
+            $this->message(_m('Creating empty backup table bck_%1.', [$tablename]));
             $this->query("CREATE TABLE `bck_$tablename` LIKE `$tablename`");
 
             // create new tables that do not exist in database
             // (we need it for next data copy, else if ends up with db error)
-            $this->message(_m('Copy data from %1 to bck_%1.', array($tablename)));
+            $this->message(_m('Copy data from %1 to bck_%1.', [$tablename]));
             $this->query("INSERT INTO `bck_$tablename` SELECT * FROM `$tablename`");
 
-            $this->message(_m('%1 done.', array($tablename)));
+            $this->message(_m('%1 done.', [$tablename]));
 
         }
         return true;
@@ -1909,7 +1909,7 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
     /** Name function @return a message */
     function name() {
-        return _m("Fixing missing %1 field definitions in slices", array('status_code.....'));
+        return _m("Fixing missing %1 field definitions in slices", ['status_code.....']);
     }
 
     /** Description function @return a message */
@@ -1926,7 +1926,7 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
     }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
+    function isType($type)  { return in_array($type, ['sql_update']); }
 
     /** Test function @return a message  */
     function test() {
@@ -1934,7 +1934,7 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='".$this->_field()."') WHERE field.id IS NULL AND slice.id <> 'AA_Core_Fields..'", "aa_first", 'count');
         if ($row_count > 0) {
-            $this->message(_m('Missing %1 field definition in some slices - need to repair', array($this->_field())));
+            $this->message(_m('Missing %1 field definition in some slices - need to repair', [$this->_field()]));
             $ret = false;
         }
         return $ret;
@@ -1945,7 +1945,7 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
      * @return bool
      */
     function repair() {
-        $this->message(_m('Fixing missing %1 fields in slices', array($this->_field())));
+        $this->message(_m('Fixing missing %1 fields in slices', [$this->_field()]));
 
         $slices_to_fix = GetTable2Array("SELECT slice.id as sid FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='".$this->_field()."') WHERE field.id IS NULL", "", 'sid');
 
@@ -1958,42 +1958,42 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
         // UPDATE ALSO AA_Optimize_Redefine_Field_Templates !!!
 
-        $this->message(_m('Mandatory field %1 added to all slices', array($this->_field())));
+        $this->message(_m('Mandatory field %1 added to all slices', [$this->_field()]));
         return true;
     }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Display_Count extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('display_count...')); }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['display_count...']); }
     function _field()               { return 'display_count...'; }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'display_count...', '', '". quote($sid) ."', 'Displayed Times', '5050', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')"; }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Disc_Count extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('disc_count......')); }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['disc_count......']); }
     function _field()               { return 'disc_count......';    }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_count......', '', '". quote($sid) ."', 'Comments Count', '5060', 'Internal field - do not change',  '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";    }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Disc_App extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('disc_app........')); }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['disc_app........']); }
     function _field()               { return 'disc_app........';   }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_app........', '', '". quote($sid) ."', 'Approved Comments Count', '5070', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";    }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Id extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('id..............')); }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['id..............']); }
     function _field()               { return 'id..............';    }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('id..............', '', '". quote($sid) ."', 'Long ID', 5080, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 0, '', '', '', '', 1, 1, 1, '_#ITEM_ID_', 'f_n:', 'alias for Long Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'id', '', 'nul', 0, 1)";    }
 }
 
 /** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Short_Id extends AA_Optimize_Add_Mandatory_Status_Code {
-    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('short_id........')); }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", ['short_id........']); }
     function _field()               { return 'short_id........';    }
     function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('short_id........', '', '". quote($sid) ."', 'Short ID', 5090, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 100, '', '', '', '', 1, 1, 1, '_#SITEM_ID', 'f_t:', 'alias for Short Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'short_id', '', 'nul', 0, 0)";    }
 }
@@ -2017,7 +2017,7 @@ class AA_Optimize_Generate_Metabase extends AA_Optimize {
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Name function
     * @return bool

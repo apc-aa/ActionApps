@@ -57,7 +57,7 @@ class ChbWidget extends \AA\Widget\Widget
         $input_id = FormArray::formName2Id($input_name);
         $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"0\">";
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /** - static member functions
@@ -76,7 +76,7 @@ class ChbWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return array();
+        return [];
     }
 
     /** @return AA_Value for the data send by the widget
@@ -90,15 +90,15 @@ class ChbWidget extends \AA\Widget\Widget
     static function getValue($data4field)
     {
         $flag = $data4field['flag'] & FLAG_HTML;
-        $fld_value_arr = array();
+        $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
             if (ctype_digit((string)$key)) {
-                $fld_value_arr[$key] = array('value' => $value, 'flag' => $flag);
+                $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }
         if (!count($fld_value_arr)) {
-            $fld_value_arr[] = array('value' => $data4field['def'], 'flag' => $flag);
+            $fld_value_arr[] = ['value' => $data4field['def'], 'flag' => $flag];
         }
         return new AA_Value($fld_value_arr, $flag);
     }

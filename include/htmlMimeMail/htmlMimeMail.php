@@ -93,8 +93,8 @@ class htmlMimeMail {
         /**
         * Initialise some variables.
         */
-        $this->html_images = array();
-        $this->headers     = array();
+        $this->html_images = [];
+        $this->headers     = [];
         $this->is_built    = false;
 
         /**
@@ -102,7 +102,7 @@ class htmlMimeMail {
         * to find other image/file types, add the
         * extension and content type here.
         */
-        $this->image_types = array(
+        $this->image_types = [
                                     'gif'    => 'image/gif',
                                     'jpg'    => 'image/jpeg',
                                     'jpeg'    => 'image/jpeg',
@@ -112,7 +112,7 @@ class htmlMimeMail {
                                     'tif'    => 'image/tiff',
                                     'tiff'    => 'image/tiff',
                                     'swf'    => 'application/x-shockwave-flash'
-                                  );
+        ];
 
         /**
         * Set these up
@@ -354,15 +354,15 @@ class htmlMimeMail {
         $extensions = array_keys($this->image_types);
 
         // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
-        $sanit_text = str_ireplace(array('href="', "href='"), array('', ''), $this->html);
+        $sanit_text = str_ireplace(['href="', "href='"], ['', ''], $this->html);
         preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', $sanit_text, $images); // (?:x) - non capturing parenthes - matches, but not in the result
         preg_match_all('~(?:"|\')([^"\']+/img\.php\?src\=[^"\']+)(?:"|\')~Ui', $sanit_text, $images2);
 
         $images      = array_unique(array_merge($images[1], $images2[1]));
 
-        $img_content = array();
-        $img_name    = array();
-        $html_images = array();
+        $img_content = [];
+        $img_name    = [];
+        $html_images = [];
 
         foreach ($images as $img) {
 
@@ -416,12 +416,12 @@ class htmlMimeMail {
 */
     function addHtmlImage($file, $name = '', $c_type='application/octet-stream')
     {
-        $this->html_images[] = array(
+        $this->html_images[] = [
                                         'body'   => $file,
                                         'name'   => $name,
                                         'c_type' => $c_type,
                                         'cid'    => md5(uniqid(time()))
-                                    );
+        ];
     }
 
 
@@ -430,12 +430,12 @@ class htmlMimeMail {
 */
     function addAttachment($file, $name = '', $c_type='application/octet-stream', $encoding = 'base64')
     {
-        $this->attachments[] = array(
+        $this->attachments[] = [
                                     'body'        => $file,
                                     'name'        => $name,
                                     'c_type'    => $c_type,
                                     'encoding'    => $encoding
-                                  );
+        ];
     }
 
 /**
@@ -559,7 +559,7 @@ class htmlMimeMail {
 * $params['head_charset']  - The character set to use for header encoding should it be needed.
 *                          - Default is ISO-8859-1
 */
-    function buildMessage($params = array())
+    function buildMessage($params = [])
     {
         if (!empty($params)) {
             foreach ($params as $key => $value) {

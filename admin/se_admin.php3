@@ -49,7 +49,7 @@ if (!IfSlPerm(PS_CONFIG)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ($update) {
@@ -106,7 +106,10 @@ if ( $slice_id!="" ) {  // set variables from database
 }
 
 // lookup inputform views
-$inputform_vids = DB_AA::select(array('id'=>'name'), "SELECT id, name FROM view", array(array('slice_id', $slice_id, 'l'),array('type', 'inputform')));
+$inputform_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", [
+    ['slice_id', $slice_id, 'l'],
+    ['type', 'inputform']
+]);
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
@@ -131,9 +134,11 @@ $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire('codemirror@5');
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
-                      "update", "cancel"=>array("url"=>"se_fields.php3"),
-                      "defaults" => array("type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"'));
+$form_buttons = [
+    "update" => ["type"=>"hidden", "value"=>"1"],
+                      "update", "cancel"=> ["url"=>"se_fields.php3"],
+                      "defaults" => ["type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"']
+];
 
 FrmTabCaption(_m("Listing of items in Admin interface"), $form_buttons);
 

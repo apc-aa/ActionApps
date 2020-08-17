@@ -144,7 +144,7 @@ echo '
 <table width="440" border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">
 <tr><td class="tabtit" colspan="2"><b>'._m("List Settings").'</b></td></tr>
 <tr><td class="tabtxt" colspan="2">'._m("The list will be added to mailman and also
-    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", array ($field_name)).'<br><br>'
+    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]).'<br><br>'
 ._m("All the fields are required.").'</td></tr>
 <tr class="tabtxt"><td>'.caption(_m("List name")).'</td>
 <td><input type="text" name="list_name" size="20" value="'.$list_name.'"></td></tr>

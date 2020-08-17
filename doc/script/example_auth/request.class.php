@@ -123,17 +123,18 @@ class AA_Http {
      * @return false|string
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
-    function postRequest($url, $data = array(), $headers=array() ) {
+    function postRequest($url, $data = [], $headers= []) {
 
         if (empty($data)) {
             $fp = @fopen($url, 'rb', false);
         } else {
             $data = http_build_query($data);
-            $params = array('http' => array(
+            $params = [
+                'http' => [
                                 'method' => 'POST',
                                 'content' => $data
-                                           )
-                           );
+                ]
+            ];
             if (!empty($headers)) {
                 $header = '';
                 foreach ($headers as $k => $v) {
@@ -210,7 +211,7 @@ class AA_Request {
     var $command;
     var $params;
 
-    function __construct( $command, $params=array()) {
+    function __construct( $command, $params= []) {
         $this->command = $command;
         $this->params  = $params;
     }
@@ -220,7 +221,7 @@ class AA_Request {
     }
 
     function _requestArr() {
-        return array('request' => $this->_requestVal());
+        return ['request' => $this->_requestVal()];
     }
 
     function encode4Url() {
@@ -247,7 +248,7 @@ class AA_Request {
      * @param $parameters - optional array of additional url parameters 'k'=>'v'
      * @return AA_Response|mixed
      */
-    function ask($url, $parameters=array()) {
+    function ask($url, $parameters= []) {
         $ask_arr = $this->_requestArr();
         if (is_array($parameters)) {
             $ask_arr = array_merge($ask_arr, $parameters);
@@ -286,25 +287,25 @@ class AA_ClientAuth {
     /** caches remote auth object */
     var $_auth = null;
 
-    protected $_reader_slices = array();
+    protected $_reader_slices = [];
 
-    function __construct($options=array()) {
+    function __construct($options= []) {
         if (!is_array($options)) {
-            $options = array();
+            $options = [];
         }
         $this->_aa_responder_script = $options['aa_url'] . 'central/responder.php';
         $this->_cookie_lifetime     = isset($options['cookie_lifetime']) ? (time() + $options['cookie_lifetime']) : 0;
-        $this->_reader_slices       = isset($options['reader_slices'])   ? $options['reader_slices'] : array();
+        $this->_reader_slices       = isset($options['reader_slices'])   ? $options['reader_slices'] : [];
     }
 
     function checkAuth() {
         // we are trying to login
         $request  = new AA_Request('Get_Sessionid');
         if ($_REQUEST['username']) {
-            $params = array('free' => $_REQUEST['username'], 'freepwd' =>$_REQUEST['password']);
+            $params = ['free' => $_REQUEST['username'], 'freepwd' =>$_REQUEST['password']];
         }
         elseif ($_COOKIE['AA_Sess']) {
-            $params = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
+            $params = ['AA_CP_Session'=>$_COOKIE['AA_Sess']];
         }
         else {
             $this->logout();
@@ -342,7 +343,7 @@ class AA_ClientAuth {
 
     function logout() {
         $request  = new AA_Request('Logout');
-        $params   = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
+        $params   = ['AA_CP_Session'=>$_COOKIE['AA_Sess']];
         $response = $request->ask($this->_aa_responder_script, $params);
 
         // both is necessary - one for current page, one for next page

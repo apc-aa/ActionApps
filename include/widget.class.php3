@@ -101,10 +101,10 @@ class AA_Property extends AA_Storable {
     var $perm;
 
     /** array of constants used for selections (selectbox, radio, ...) */
-    var $const_arr = array();
+    var $const_arr = [];
 
     /** @var string[] of two letters shortcuts for languages used in this slice for translations - array('en','cz','es') */
-    var $translations = array();
+    var $translations = [];
 
 
     /** AA_Property function
@@ -135,16 +135,16 @@ class AA_Property extends AA_Storable {
         $this->show_content_type_switch    = $show_content_type_switch;
         $this->content_type_switch_default = $content_type_switch_default;
         $this->perm                        = $perm;
-        $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
+        $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : [];
         $this->default                     = $default;
-        $this->translations                = is_array($translations) ? $translations : array();
+        $this->translations                = is_array($translations) ? $translations : [];
     }
 
     /** getClassProperties function of AA_Serializable
      * Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (
+        return [
             //                                                 id                            name                                 type    multi  persist validator, required, help, morehelp, example
             'id'                          => new AA_Property( 'id'                         , _m('id'                         ), 'string',   false),
             'name'                        => new AA_Property( 'name'                       , _m('name'                       ), 'string',   false),
@@ -161,7 +161,7 @@ class AA_Property extends AA_Storable {
             'perm'                        => new AA_Property( 'perm'                       , _m('perm'                       ), 'string',   false),
             'const_arr'                   => new AA_Property( 'const_arr'                  , _m('const_arr'                  ), 'string',   true),
             'default'                     => new AA_Property( 'default'                    , _m('default'                    ), 'AA_Value', true)
-            );
+        ];
     }
 
 
@@ -196,7 +196,7 @@ class AA_Property extends AA_Storable {
     /** set the Values array and also the validator */
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
-        $this->_validator = new AA_Validate_Enum(array('possible_values'=>array_keys($this->const_arr)));
+        $this->_validator = new AA_Validate_Enum(['possible_values'=>array_keys($this->const_arr)]);
     }
 
     /** called before StoreItem to fill the field with correct data */
@@ -241,8 +241,8 @@ class AA_Property extends AA_Storable {
      */
     function addPropertyFormrows($form) {
         if ($this->isObject()) {
-            if (is_callable(array($this->type, 'addFormrows'))) {
-                return call_user_func_array(array($this->type, 'addFormrows'), array($form));
+            if (is_callable([$this->type, 'addFormrows'])) {
+                return call_user_func_array([$this->type, 'addFormrows'], [$form]);
             }
             throw new Exception('Can\'t generate widget for '.$this->type.' object property');
         }
@@ -258,13 +258,13 @@ class AA_Property extends AA_Storable {
                 $widget = new \AA\Widget\MflWidget();
             }
             elseif (count($values) < 5) {
-                $widget = new \AA\Widget\MchWidget(array('const_arr' => $values));
+                $widget = new \AA\Widget\MchWidget(['const_arr' => $values]);
             } else {
-                $widget = new \AA\Widget\MseWidget(array('const_arr' => $values));
+                $widget = new \AA\Widget\MseWidget(['const_arr' => $values]);
             }
         }
         elseif (!empty($values)) {
-            $widget = new \AA\Widget\SelWidget(array('const_arr' => $values));
+            $widget = new \AA\Widget\SelWidget(['const_arr' => $values]);
         }
         elseif ($this->type == 'bool') {
             $widget = new \AA\Widget\ChbWidget();
@@ -304,14 +304,14 @@ class AA_Property extends AA_Storable {
             }
         }
         if ($empty AND $this->isRequired()) {
-            return array(VALIDATE_ERROR_NOT_FILLED, _m("Not filled"));
+            return [VALIDATE_ERROR_NOT_FILLED, _m("Not filled")];
         }
-        return $valid ? array() : array($validator->lastErr(), $validator->lastErrMsg());
+        return $valid ? [] : [$validator->lastErr(), $validator->lastErrMsg()];
     }
 
     /** isObject function */
     function isObject() {
-        return !in_array($this->type, array('text', 'string', 'int', 'bool', 'float'));
+        return !in_array($this->type, ['text', 'string', 'int', 'bool', 'float']);
     }
 
     /** @return string - table, where the property would be stored */
@@ -334,7 +334,7 @@ class AA_Property extends AA_Storable {
 
     /** isRequired function */
     function isRequired() {
-        return $this->required AND !in_array(trim($this->id,'.'), array('short_id','status_code','post_date','last_edit','display_count','disc_count','disc_app','moved2active'));
+        return $this->required AND !in_array(trim($this->id,'.'), ['short_id','status_code','post_date','last_edit','display_count','disc_count','disc_app','moved2active']);
     }
 
     /** isPersistent function */
@@ -445,10 +445,10 @@ class AA_Formatters {
     protected static function getFromatters() {
         static $formatters = null;
         if (is_null($formatters)) {
-            $formatters = array(
-                0 => array('TEXT2HTML', _m("Plain text")),
-                1 => array('RAW', _m("HTML"))
-            );
+            $formatters = [
+                0 => ['TEXT2HTML', _m("Plain text")],
+                1 => ['RAW', _m("HTML")]
+            ];
         }
         return $formatters;
     }

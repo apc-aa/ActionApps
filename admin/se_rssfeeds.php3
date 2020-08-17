@@ -43,7 +43,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."xml_fetch.php3";
 
-$err = array();
+$err = [];
 require_once AA_INC_PATH."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 
@@ -99,7 +99,7 @@ if ($mode == "edit" || $mode == "test") {
 
 }
 
-$rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", array(array('slice_id',$slice_id,'l')), array('name'));
+$rssfeeds = DB_AA::select('',"SELECT `name` FROM rssfeeds", [['slice_id',$slice_id,'l']], ['name']);
 //$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
 //$rssfeeds=array();
 //while ($db->next_record()) {
@@ -146,7 +146,7 @@ $apage->printHead($err, $Msg);
 </tr>
 <?php
 
-  FrmTabEnd(array("send"=>array('type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'), "cancel"=>array("url"=>"se_fields.php3")));
+  FrmTabEnd(["send"=> ['type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'], "cancel"=> ["url"=>"se_fields.php3"]]);
 
 ?>
 <script>

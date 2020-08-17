@@ -29,7 +29,7 @@ class RioWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
@@ -67,13 +67,13 @@ class RioWidget extends \AA\Widget\Widget
         $input_id = FormArray::formName2Id($input_name);
         $selected = $content->getAaValue($aa_property->getId());
         $options = $this->getOptions($selected, $content, $use_name);
-        $htmlopt = array();
+        $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
             $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id . $i, "$widget_add $required");
             // $required     = ''; // fotr radio it could be in all options
         }
 
         $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-rio') . $widget_add2;
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }

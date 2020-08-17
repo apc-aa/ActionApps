@@ -61,11 +61,13 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     $username   = perm_username($usr_id);
     $usr_id_enc = rawurlencode($usr_id);
     // select role icon
-    $role_images = array(0 => "rolex.gif",
+    $role_images = [
+        0 => "rolex.gif",
                          1 => "role1.gif",
                          2 => "role2.gif",
                          3 => "role3.gif",
-                         4 => "role4.gif");
+                         4 => "role4.gif"
+    ];
     $role = 0;
 
     if (      IsPerm($perm,$perms_roles["SUPER"]['id']) ) {
@@ -80,10 +82,12 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     echo "<tr><td><img src=\"../images/". $role_images[$role] ."\" width=50 height=25 border=0></td>\n";
 
-    $go_url_arr = array( 'User'        => "um_uedit.php3?usr_edit=1&selected_user=$usr_id_enc",
+    $go_url_arr = [
+        'User'        => "um_uedit.php3?usr_edit=1&selected_user=$usr_id_enc",
                          'Group'       => "um_gedit.php3?grp_edit=1&selected_group=$usr_id_enc",
                          'Reader'      => "#",
-                         'ReaderGroup' => "index.php3?change_id=$usr_id_enc" );
+                         'ReaderGroup' => "index.php3?change_id=$usr_id_enc"
+    ];
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
 
     // add link to user settings for superadmins
@@ -101,7 +105,10 @@ function PrintUser($perm, $usr_id, $editor_perm) {
     IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrDel=$usr_id_enc&role=AUTHOR"), _m("Revoke"));
 
     // show profile button also for groups
-    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', array(array('slice_id', $GLOBALS['slice_id'], 'l'),array('uid', $usr_id)))) ? " ($cnt)" : '';
+    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', [
+        ['slice_id', $GLOBALS['slice_id'], 'l'],
+        ['uid', $usr_id]
+    ])) ? " ($cnt)" : '';
 
     echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."$cnt\" onclick=\"document.location='". StateUrl("se_profile.php3?uid=$usr_id_enc") ."'\"></td>\n";
     echo "</tr>\n";
@@ -147,7 +154,10 @@ if ( $continue ) {
         PrintUser($prm, $usr_id, $editor_perms);
     }
 
-    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', array(array('slice_id', $GLOBALS['slice_id'], 'l'),array('uid', '*')))) ? " ($cnt)" : '';
+    $cnt = ($cnt = DB_AA::select1('SELECT count(*) as cnt FROM profile', 'cnt', [
+        ['slice_id', $GLOBALS['slice_id'], 'l'],
+        ['uid', '*']
+    ])) ? " ($cnt)" : '';
 
     echo "<tr><td class=\"tabtxt\">&nbsp;</td>
               <td class=\"tabtxt\" colspan=\"8\">". _m("Default user profile") ."</td>

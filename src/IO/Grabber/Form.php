@@ -53,7 +53,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
     private $_last_store_mode;
 
     function __construct() {
-        $this->_items = array();
+        $this->_items = [];
     }
 
     /** Name of the grabber - used for grabber selection box */
@@ -92,12 +92,12 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
     }
 
     private function rearangeAaFilesArray(array $files) {
-        $ret = array();
+        $ret = [];
         foreach ($files as $type => $items) {
             foreach ($items as $item => $fields) {
                 foreach ($fields as $field => $f) {
                     foreach ((array)$f['fil']['var'] as $k => $value) {
-                        $arr = array($item => array($field => array('fil' => array('var' => array("_$k" => array($type => $value))))));
+                        $arr = [$item => [$field => ['fil' => ['var' => ["_$k" => [$type => $value]]]]]];
                         $ret = array_merge_recursive($ret, $arr);
 
                     }
@@ -118,7 +118,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
                 unset($aa[$type]);   // remove old form and add new one
                 if (is_array($file['file']['fil']['var']) AND ($s = AA_Slice::getModule($sid)) AND ($fid = $s->getDefaultUploadField())) {
                     foreach ($file['file']['fil']['var'] as $f) {
-                        $aa['n' . (++$i) . "_$sid"] = array($fid => array('fil' => array('var' => array($f))));
+                        $aa['n' . (++$i) . "_$sid"] = [$fid => ['fil' => ['var' => [$f]]]];
                     }
                 }
             }
@@ -141,7 +141,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
      */
     function prepare() {
 
-        $this->_items = array();
+        $this->_items = [];
         if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
             if (!isset($_FILES['aa']) OR !is_array($_FILES['aa'])) {
                 return;
@@ -152,11 +152,11 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
          *  or n<number>_<slice_id> for new item.
          *  We have to construct translation table of the ids
          */
-        $id_trans_table = array();
+        $id_trans_table = [];
 
         $aa = $_POST['aa'];
         if (!is_array($aa)) {
-            $aa = array();
+            $aa = [];
         }
 
         // uploaded files are not $_POST variable.
@@ -186,7 +186,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
         $trans_item_alias = array_keys($id_trans_table);
         $trans_item_ids = array_values($id_trans_table);
 
-        $UPDATE_MODES = array('u' => 'update', 'i' => 'add', 'r' => 'update');
+        $UPDATE_MODES = ['u' => 'update', 'i' => 'add', 'r' => 'update'];
         foreach ($aa as $dirty_item_id => $item_fields) {
 
             // common fields
@@ -209,7 +209,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
                 //grabb slice_id of new item
                 $item_slice_id = substr($dirty_item_id, strpos($dirty_item_id, '_') + 1);
                 // and add slice_id field to the item
-                $item_fields['slice_id________'] = array(pack_id($item_slice_id));
+                $item_fields['slice_id________'] = [pack_id($item_slice_id)];
             }
             $id_trans_table[$dirty_item_id] = $item_id;
 
@@ -243,7 +243,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
                 }
                 $item->setAaValue($field_id, $aa_value);
             }
-            $this->_items[] = array($item, $store_mode);
+            $this->_items[] = [$item, $store_mode];
         }
         reset($this->_items);
     }
@@ -252,7 +252,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
      *  input
      */
     function finish() {
-        $this->_items = array();
+        $this->_items = [];
     }
 
 

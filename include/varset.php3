@@ -122,9 +122,9 @@ class Cvarset {
      *  constructor - also good for filling the varset
      * @param $arr
      */
-    function __construct( $arr=array()) {
-        $TRANS              = array('i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked');
-        $this->vars         = array();
+    function __construct( $arr= []) {
+        $TRANS              = ['i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked'];
+        $this->vars         = [];
         $this->last_used_db = null;
         $this->just_print   = false;
 
@@ -141,7 +141,7 @@ class Cvarset {
      *  clears whole varset
      */
     function clear() {
-        $this->vars = array();
+        $this->vars = [];
     }
 
     /** Returns true, is the varset do not contain any variable */
@@ -247,7 +247,7 @@ class Cvarset {
     }
 
     function getArray() {
-        $ret = array();
+        $ret = [];
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
                 $ret[$varname] = $variable->getValue();
@@ -327,7 +327,7 @@ class Cvarset {
         if ( !($cols = AA::Metabase()->getColumns($tablename))) {
             return '';
         }
-        $arr  = array();
+        $arr  = [];
 
         foreach ($cols as $colname => $coldef) {
             if (isset($this->vars[$colname])) {
@@ -382,7 +382,7 @@ class Cvarset {
      * @return string
      */
     function makeUPDATE($tablename = "") {
-        $updates = array();
+        $updates = [];
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
                 $updates[] = "`$varname`" ."=". $variable->getSQLValue();
@@ -560,9 +560,9 @@ class Cvarset {
      */
     function sqlin($column, $values) {
         if (!is_array($values)) {
-            $values = array($values);
+            $values = [$values];
         }
-        $arr = array();
+        $arr = [];
         foreach ((array)$values as $v) {
             if ($v!='') {
                 $arr[] = "'".quote($v)."'";
@@ -583,7 +583,7 @@ class Cvarset {
  * @return bool
  */
 function is_field_type_numerical($field_type) {
-    return in_array($field_type, array("float","double","decimal","int","timestamp"));
+    return in_array($field_type, ["float","double","decimal","int","timestamp"]);
 }
 
 // -----------------------------------------------------------------------------
@@ -600,10 +600,10 @@ function is_field_type_numerical($field_type) {
  */
 function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
     if (!$omit_columns) {
-        $omit_columns = array();
+        $omit_columns = [];
     }
     if (!$id_columns) {
-        $id_columns = array();
+        $id_columns = [];
     }
 
     $db     = getDB();

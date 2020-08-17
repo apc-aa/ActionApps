@@ -73,7 +73,7 @@ class FormArray
 
     static public function formName2Id($name)
     {
-        return str_replace(array(']', '['), array('', '-'), $name);
+        return str_replace([']', '['], ['', '-'], $name);
     }
 
     /** Converts real field id into field id as used in the AA form, like:
@@ -99,7 +99,7 @@ class FormArray
         $parsed = explode(']', $input_name);
         $item_id = substr($parsed[0], 4);
         $field_id = self::getFieldIdFromVar(substr($parsed[1], 1));
-        return array($item_id, $field_id);
+        return [$item_id, $field_id];
     }
 
     static public function getCharset($aa)

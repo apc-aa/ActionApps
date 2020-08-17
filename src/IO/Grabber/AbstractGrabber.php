@@ -40,10 +40,10 @@ use ItemContent;
  * @todo this class should be abstract after we switch to PHP5
  */
 abstract class AbstractGrabber {
-    protected $_messages = array();
+    protected $_messages = [];
 
     /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
-    protected static $last_reqest_4_domain = array();
+    protected static $last_reqest_4_domain = [];
 
     /** @var float wait in order we do not contact the same domain more often than $load_frequency miliseconds */
     protected $load_frequency = null;
@@ -85,7 +85,7 @@ abstract class AbstractGrabber {
             $this->waitForDomain($domain);
         }
 
-        $context = !($post_body) ? null : stream_context_create(array('http' => array('method'=>'POST','header'=>'Content-Type: text/xml','content'=>$post_body)));
+        $context = !($post_body) ? null : stream_context_create(['http' => ['method'=>'POST','header'=>'Content-Type: text/xml','content'=>$post_body]]);
         if (false === ($data = file_get_contents($url, false, $context))) {
             throw new \Exception('file not loaded: ' . $url);
         }
@@ -121,7 +121,7 @@ abstract class AbstractGrabber {
     /** getClassProperties function of AA_Serializable - used for htmlSetting()
      */
     static function getClassProperties() {
-        return array();
+        return [];
     }
 
     /** getItem function
@@ -186,7 +186,7 @@ abstract class AbstractGrabber {
      */
     function clear_report() {
         unset($this->_messages);
-        $this->_messages = array();
+        $this->_messages = [];
     }
 
     /**

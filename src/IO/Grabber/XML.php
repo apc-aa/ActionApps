@@ -93,7 +93,7 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
      *  Used for importer and htmlSettings()
      */
     static function getClassProperties() {
-        $properties = array();//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
+        $properties = [];//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['file']         = new AA_Property('file',         _m("URL of the file"), 'string', false, true);
         $properties['post_body']    = new AA_Property('post_body',    _m("POST request body"), 'string', false, true);
         $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
@@ -121,7 +121,7 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
 
         if ( $nss = $xml->getNamespaces(true) ) {
             if ($this->fake_namespaces) {
-                $search = array();
+                $search = [];
                 foreach ($nss as $prefix => $url) {
                     $search[] = "<$prefix:";
                     $search[] = "</$prefix:";
@@ -148,7 +148,7 @@ class XML extends \AA\IO\Grabber\AbstractGrabber {
             //$items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
         }
 
-        $this->_items = array();
+        $this->_items = [];
         foreach ($splitted as $item) {
             $this->_items[] = $item;
         }

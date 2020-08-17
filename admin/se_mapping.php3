@@ -41,7 +41,7 @@ require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."csn_util.php3";
 
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 $p_slice_id = q_pack_id($slice_id);
 
@@ -129,23 +129,29 @@ if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
 
 foreach ($to_fields as  $k => $v) {
     if (!isset($field_map[$k])) {
-        $field_map[$k] =  $from_fields[$k] ? array("feedmap_flag"=>FEEDMAP_FLAG_MAP,"value"=>$k)  :
-                                             array("feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"value"=>"");
+        $field_map[$k] =  $from_fields[$k] ? ["feedmap_flag"=>FEEDMAP_FLAG_MAP,"value"=>$k] :
+                                             ["feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"value"=>""];
     }
 }
 
 $apage = new AA_Adminpageutil('sliceadmin','mapping');
 $apage->setTitle(_m("Admin - Content Pooling - Fields' Mapping"));
-$apage->setForm(array('action'=>'se_mapping2.php3', 'enctype'=>'multipart/form-data'));
+$apage->setForm(['action'=>'se_mapping2.php3', 'enctype'=>'multipart/form-data']);
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("ext_slice"=>array("type"=>"hidden",
-                                         "value"=>$remote_slices[$from_slice_id]),
-                      "btn_upd"=>array("type"=>"button",
+$form_buttons = [
+    "ext_slice"=> [
+        "type"=>"hidden",
+                                         "value"=>$remote_slices[$from_slice_id]
+    ],
+                      "btn_upd"=> [
+                          "type"=>"button",
                                        "value"=>_m("Update"),
                                        "accesskey"=>"S",
-                                       "add"=>'onclick="Submit()"'),
-                      "cancel"=>array("url"=>"se_fields.php3"));
+                                       "add"=>'onclick="Submit()"'
+                      ],
+                      "cancel"=> ["url"=>"se_fields.php3"]
+];
 
 FrmTabCaption(_m("Content Pooling - Fields' mapping"), $form_buttons);
 ?>

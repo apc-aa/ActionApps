@@ -37,12 +37,12 @@ $apage->setForm();
 $apage->printHead($err, $Msg);
 
 $aas       = AA_Actionapps::getArray();
-$aas_array = array();
+$aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
 
-$form_buttons = array ("submit");
+$form_buttons = ["submit"];
 ?>
 <form name=f method=post action="<?php echo StateUrl(self_base() ."synchronize2.php") ?>">
 <?php

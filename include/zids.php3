@@ -77,12 +77,12 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @param array $extended_att  additional attribute for each zid. It is in the form
      *                             array('attr'=>array(<array of attr for zids in the same based array, as $initial>))
      */
-    function __construct($initial = null, $inittype = "z", $extended_att = array()){  // constructor
+    function __construct($initial = null, $inittype = "z", $extended_att = []){  // constructor
         // $inittype is for where type is known
         // Note it refers to the type of ELEMENTS if its an array
         $this->type = $inittype;
-        $this->a    = array();  // Make sure at least empty array
-        $this->_ext = is_array($extended_att) ? $extended_att : array();
+        $this->a    = [];  // Make sure at least empty array
+        $this->_ext = is_array($extended_att) ? $extended_att : [];
 
         if (empty($initial)) {
             return;
@@ -156,9 +156,9 @@ class zids implements Iterator, ArrayAccess, Countable {
      * @return zids
      */
     function clear($inittype = 'z') {
-        $this->a    = array();
+        $this->a    = [];
         $this->type = $inittype;
-        $this->_ext = array();
+        $this->_ext = [];
         return $this;
     }
 
@@ -169,7 +169,7 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     function addDirty($ids) {
         if (substr(reset($ids),0,1)=='[') {
-            $json_ids = array();
+            $json_ids = [];
             foreach ($ids as $json) {
                 $json_ids = array_merge($json_ids, json_decode($json, true));
             }
@@ -178,7 +178,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         foreach ((array)$ids as $id) {
             $id   = trim($id);
             $type = guesstype($id);
-            if ( !in_array($type, array('s','l')) OR ($id=='0') OR ($id=='')) {
+            if ( !in_array($type, ['s','l']) OR ($id=='0') OR ($id=='')) {
                 continue;
             }
             if ($this->type == 'z') {
@@ -227,7 +227,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             // we can't use array_unique because we need to preserve key range 0..x
             sort ($this->a);
             $last = "XXXXXXXX";
-            $unique = array();
+            $unique = [];
             foreach ($this->a as $v) {
                 if ($v && $v != $last) {
                     $unique[] = $v;
@@ -281,7 +281,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             return null;
         }
         if ( !isset($i) AND ($this->count()<1) ) {
-            return array();
+            return [];
         }
         switch ($this->type) {
             case "l":  return (isset($i) ? $this->a[$i]            : $this->a);
@@ -346,13 +346,13 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     public function getDbWhereArray() {
         switch ($this->type) {
-            case 'p': return array('id', $this->a);
-            case 'l': return array('id', $this->a, 'l');
-            case 't': return array('id', $this->longids(), 'l');
-            case 's': return array('short_id', $this->a, 'i');
+            case 'p': return ['id', $this->a];
+            case 'l': return ['id', $this->a, 'l'];
+            case 't': return ['id', $this->longids(), 'l'];
+            case 's': return ['short_id', $this->a, 'i'];
         }
         warn("ERROR - zids::getDbWhereArray(): can't handle type $this->type");
-        return array('id', array());  // never satisfy condition... (1=2)
+        return ['id', []];  // never satisfy condition... (1=2)
     }
 
     /** sanitize ids  - restrict (filter) item ids from specified slice
@@ -363,7 +363,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if (($this->count() < 1) OR !is_long_id($slice_id)) {
             return $this->clear('l');
         }
-        $where = array(array('slice_id',$slice_id,'l'),$this->getDbWhereArray());
+        $where = [['slice_id',$slice_id,'l'],$this->getDbWhereArray()];
         return $this->clear('l')->add(DB_AA::select('', "SELECT LOWER(HEX(id)) FROM item", $where));
     }
 
@@ -408,7 +408,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($this->type != "t") {
             return false;
         }
-        $tags = array();
+        $tags = [];
         foreach ( $this->a as $v ) {
             if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$v,$parts)) {
                 $tags[$parts[2]] = $parts[1]; // Note can be empty
@@ -430,7 +430,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         if ($zids->type != "t") {
             return $this;  // Array is fine
         }
-        $tags = array();
+        $tags = [];
         foreach ($zids->a as $v) {
             switch ($this->type) {
                 case 'p': $k = pack_id(id_t2l($v)); break;
@@ -440,7 +440,7 @@ class zids implements Iterator, ArrayAccess, Countable {
             }
             $tags[$k]=$v;
         }
-        $b = array();
+        $b = [];
         if ( $this->count() > 0 ) {
             foreach ($this->a as $v) {
                 $b[] = $tags[$v];
@@ -512,7 +512,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         }
         freeDB($db);
         // we need it in the same order as in source
-        $ret = array();
+        $ret = [];
         foreach ( $this->a as $idx => $zid ) {
             switch ($type) {
                 case 'l': $ret[$idx] = $this->s2l[$zid]; break;
@@ -593,7 +593,7 @@ function ParamExplode($param) {
     // convert separators to ##Sx
     // change "#:" to ":" and change back "://" - then split by separation string
     // replaces in order
-    return explode('##Sx', str_replace(array('#:', 'tp://', 'tps://', ':', '~@|_'), array('~@|_', 'tp~@|_//', 'tps~@|_//', '##Sx', ':'), $param));
+    return explode('##Sx', str_replace(['#:', 'tp://', 'tps://', ':', '~@|_'], ['~@|_', 'tp~@|_//', 'tps~@|_//', '##Sx', ':'], $param));
 }
 
 function get_hash() {
@@ -609,7 +609,7 @@ function get_short_hash() {
     $arg_list = func_get_args();   // must be asssigned to the variable
     // we do not need '-' - it is bad for DOM identifiers, '+' is bad for urls, '/' and even '_' has some problems in Dropzone, so we remove it as well.
     // We use Q as escape, so we replace Q as well to be able to convert back, if needed
-    $hash = str_replace(array('Q','+','/'), array('QA','QB','QC'), rtrim(base64_encode(hash('crc32b', serialize($arg_list), true)), '='));
+    $hash = str_replace(['Q','+','/'], ['QA','QB','QC'], rtrim(base64_encode(hash('crc32b', serialize($arg_list), true)), '='));
     // we want to start with character so we change 1 to Q1, 2 to Q2, ... at the begin of the hash
     return is_numeric($hash{0}) ? 'Q'.$hash : $hash;
 }

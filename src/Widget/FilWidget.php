@@ -34,7 +34,7 @@ class FilWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('allowed_ftypes', 'label', 'hint', 'display_url', 'multiple'));
+        return \AA\Widget\Widget::propertiesShop(['allowed_ftypes', 'label', 'hint', 'display_url', 'multiple']);
     }
 
 //    function requireLibs($aa_property, $winfo)
@@ -88,7 +88,7 @@ class FilWidget extends \AA\Widget\Widget
         // upload could be also multivalue
         $max = max(count($uploads), count($urls));
 
-        $values = array();
+        $values = [];
 
         $upload_ok = false;
         if (!empty($uploads)) {
@@ -168,9 +168,10 @@ class FilWidget extends \AA\Widget\Widget
             $required = ($aa_property->isRequired() AND !$value->count() AND ($display_url > 0)) ? 'required' : '';
             $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required><!--$type -->";
         } else {
-            $url_params = array('inline' => 1,
+            $url_params = [
+                'inline' => 1,
                 'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)'
-            );
+            ];
             $widget .= '
                 <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . myspecialchars(get_aa_url('filler.php3', $url_params)) . '" target="iframe' . $base_id . '">';
             if ($link) {
@@ -188,7 +189,7 @@ class FilWidget extends \AA\Widget\Widget
                 </script>
             ';
         }
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /** Get Live HTML widget (in place editing)

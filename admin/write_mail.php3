@@ -72,7 +72,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
             ValidateInput("template_id", _m("Email template"),     $template_id, $err, false, "number");
 
-            foreach (array('attachment1', 'attachment2', 'attachment3') as $attach) {
+            foreach (['attachment1', 'attachment2', 'attachment3'] as $attach) {
                 $uploadvar = $attach.'x';
                 if ( $_FILES[$uploadvar]['name'] != '' ) {
                     $dest_file = Files::uploadFile($uploadvar, Files::destinationDir($slice));
@@ -94,13 +94,15 @@ if ( !$send ) {               // for the first time - directly from item manager
                 break;
             }
 
-            $varset->addglobals( array('description', 'subject',
+            $varset->addglobals( [
+                'description', 'subject',
                                        'header_from', 'reply_to', 'errors_to', 'sender',
-                                       'lang', 'owner_module_id', 'type', 'attachments'),
+                                       'lang', 'owner_module_id', 'type', 'attachments'
+            ],
                                  'quoted');
 
             if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
-                $varset->add('body', 'text', str_replace(array('_#BODYTEXT','_#SUBJECT_'),array($_POST['body'], $_POST['subject']),$mailtemplate['body']));
+                $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
             } else {
                 $varset->add('body', 'quoted', $body);
             }
@@ -127,7 +129,7 @@ if ( !$send ) {               // for the first time - directly from item manager
                 $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
                 $users_count = $zids->count();
             }
-            $Msg = MsgOk(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", array($users_count, $mails_sent, $mail_id)));
+            $Msg = MsgOk(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
 
             if ((string)$group == (string)"sel_item") {
                 $sel = "LIST";
@@ -139,7 +141,7 @@ if ( !$send ) {               // for the first time - directly from item manager
                 $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
                 $description .= ' - '. _m('Filter'). " $sel";
             }
-            AA_Log::write("EMAIL_SENT", $sel, array($mail_id, $users_count, $mails_sent));
+            AA_Log::write("EMAIL_SENT", $sel, [$mail_id, $users_count, $mails_sent]);
             // remove temporary email template from database
             $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
             if ( !$db->query($SQL)) {
@@ -176,8 +178,10 @@ FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ")
 
 $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');
-$additional[]               = array( 'text'    => '<input type="text" name="testemail" value="'.$testemail.'" size="80"> '._m('Test email address(es)'),
-                                     'varname' => 'testuser');
+$additional[]               = [
+    'text'    => '<input type="text" name="testemail" value="'.$testemail.'" size="80"> '._m('Test email address(es)'),
+                                     'varname' => 'testuser'
+];
 
 $user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
 
@@ -198,14 +202,16 @@ FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    25
 FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false, '', '', false, 'email');
 FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false, '', '', false, 'email');
 FrmInputSelect('lang',        _m('Language (charset)'),  AA_Langs::getNames(),  $_POST['lang'] ? $_POST['lang'] : $slice->getLang(), true);
-FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
+FrmInputSelect('html',        _m('Use HTML'),           [_m('no'), _m('yes')], $_POST['html'], true);
 FrmInputFile(  'attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
 FrmInputFile(  'attachment2',   _m('Attachement 2'), $attachment2, false, "*/*");
 FrmInputFile(  'attachment3',   _m('Attachement 3'), $attachment3, false, "*/*");
 
 
-FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),
-                 'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')));
+FrmTabEnd([
+    'send' => ['type'=>'submit', 'value'=>_m('Send')],
+                 'close'=> ['type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"']
+]);
 
 // list selected items to special form - used by manager.min.js to show items (recipients)
 echo "\n  </form>";

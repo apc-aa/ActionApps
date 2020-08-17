@@ -39,7 +39,7 @@ if ($del) {
   exit;
 }
 
-$err = array();      // error array (Init - just for initializing variable
+$err = [];      // error array (Init - just for initializing variable
 
 // check if module can be deleted
 ExitIfCantDelete( $del );
@@ -48,8 +48,8 @@ ExitIfCantDelete( $del );
 DeleteModule( $del );
 
 // delete all module specific tables
-DB_AA::sql('DELETE LOW_PRIORITY FROM `site`', array(array('id', $del, 'l')));
-DB_AA::sql('DELETE LOW_PRIORITY FROM `site_spot`', array(array('site_id', $del, 'l')));
+DB_AA::sql('DELETE LOW_PRIORITY FROM `site`', [['id', $del, 'l']]);
+DB_AA::sql('DELETE LOW_PRIORITY FROM `site_spot`', [['site_id', $del, 'l']]);
 
 // delete module from permission system
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change

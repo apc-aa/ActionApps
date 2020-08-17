@@ -62,7 +62,7 @@ if (!$config_arr) {
 
 $inner_body = '';
 foreach ($_POST as $k => $v) {
-    if (in_array($k, array('answer', 'aa_mailconf'))) {
+    if (in_array($k, ['answer', 'aa_mailconf'])) {
         continue;
     }
     $inner_body .= "<br><b>$k</b><br>$v<br><br>\n";
@@ -80,11 +80,13 @@ if (empty($to)) {
 }
 
 $body = strlen(trim($config_arr['body'])) ? str_replace('_#1', $inner_body, $config_arr['body']) : $inner_body;
-$mail_arr = array( 'subject'     => $config_arr['subject'],
+$mail_arr = [
+    'subject'     => $config_arr['subject'],
                    'body'        => $body,
                    'header_from' => $config_arr['from'],
                    'lang'        => $config_arr['lang'],
-                   'html'        => 1);
+                   'html'        => 1
+];
 
 $mail = new AA_Mail;
 $mail->setFromArray($mail_arr);

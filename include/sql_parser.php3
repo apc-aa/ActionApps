@@ -67,68 +67,69 @@ define("SYNTAX_STRING", "string");
 define("SYNTAX_EOF", "EOF");
 
 // translates number representation token types to textual reprasentation
-$readable = Array(TOKEN_TYPE_LEFT_PARENTHESIS  => SYNTAX_LEFT_PAR,
+$readable = [
+    TOKEN_TYPE_LEFT_PARENTHESIS  => SYNTAX_LEFT_PAR,
                   TOKEN_TYPE_RIGHT_PARENTHESIS => SYNTAX_RIGHT_PAR,
                   TOKEN_TYPE_OPERATOR_AND       => SYNTAX_AND,
                   TOKEN_TYPE_OPERATOR_OR       => SYNTAX_OR,
                   TOKEN_TYPE_OPERATOR_NOT       => SYNTAX_NOT,
                   TOKEN_TYPE_STRING               => SYNTAX_STRING,
                   TOKEN_TYPE_EOF               => SYNTAX_EOF
-                 );
+];
 
 // operator LIKE, RLIKE a LLIKE
-$rl = Array(
-        "operator" => Array( "LIKE" => "LIKE", "RLIKE" => "LIKE", "LLIKE" => "LIKE", "XLIKE" => "LIKE", "=" => "="),
-        "pre"  => Array( "LIKE" => "%", "LLIKE" => "%", "RLIKE" => "",  "XLIKE" => "",  "=" => ""),
-        "post" => Array( "LIKE" => "%", "LLIKE" => "",  "RLIKE" => "%", "XLIKE" => "",  "=" => "")
-      );
+$rl = [
+        "operator" => ["LIKE" => "LIKE", "RLIKE" => "LIKE", "LLIKE" => "LIKE", "XLIKE" => "LIKE", "=" => "="],
+        "pre"  => ["LIKE" => "%", "LLIKE" => "%", "RLIKE" => "",  "XLIKE" => "",  "=" => ""],
+        "post" => ["LIKE" => "%", "LLIKE" => "",  "RLIKE" => "%", "XLIKE" => "",  "=" => ""]
+];
 
 
-$N = Array("S", "E", "Eap", "T", "Tap", "F", "G");
-$T = Array("string", "and", "or", "not", "(", ")");
-$P = Array(
-        "S"   => Array(
-                    Array("E", "lambda")
-                 ),
-        "E"   => Array(
-                    Array("T", "Eap", "lambda")
-                 ),
-        "Eap" => Array(
-                    Array("or", "T", "Eap", "lambda"),
-                     Array("lambda")
-                 ),
-        "T"   => Array(
-                    Array("F", "Tap", "lambda")
-                 ),
-        "Tap" => Array(
-                    Array("and", "F", "Tap", "lambda"),
-                     Array("lambda")
-                 ),
-        "F"      => Array(
-                    Array("not", "G", "lambda"),
-                    Array("G", "lambda")
-                 ),
-        "G"   => Array(
-                    Array("(", "E", ")", "lambda"),
-                     Array("string", "lambda")
-                 )
-    );
+$N = ["S", "E", "Eap", "T", "Tap", "F", "G"];
+$T = ["string", "and", "or", "not", "(", ")"];
+$P = [
+        "S"   => [
+                    ["E", "lambda"]
+        ],
+        "E"   => [
+                    ["T", "Eap", "lambda"]
+        ],
+        "Eap" => [
+                    ["or", "T", "Eap", "lambda"],
+                     ["lambda"]
+        ],
+        "T"   => [
+                    ["F", "Tap", "lambda"]
+        ],
+        "Tap" => [
+                    ["and", "F", "Tap", "lambda"],
+                     ["lambda"]
+        ],
+        "F"      => [
+                    ["not", "G", "lambda"],
+                    ["G", "lambda"]
+        ],
+        "G"   => [
+                    ["(", "E", ")", "lambda"],
+                     ["string", "lambda"]
+        ]
+];
 
-$First = Array(
-            "string" => Array("string"),
-            "and"    => Array("and"),
-            "or"     => Array("or"),
-            "not"     => Array("not"),
-            "("         => Array("("),
-            ")"         => Array(")"),
-            "S"         => Array("string", "(", "not"),
-            "E"         => Array("string", "(", "not"),
-            "Eap"     => Array("lambda", "or"),
-            "T"         => Array("string", "(", "not"),
-            "Tap"     => Array("lambda", "and"),
-            "F"         => Array("string", "(", "not"),
-            "G"         => Array("string", "(")
-         );
+$First = [
+            "string" => ["string"],
+            "and"    => ["and"],
+            "or"     => ["or"],
+            "not"     => ["not"],
+            "("         => ["("],
+            ")"         => [")"],
+            "S"         => ["string", "(", "not"],
+            "E"         => ["string", "(", "not"],
+            "Eap"     => ["lambda", "or"],
+            "T"         => ["string", "(", "not"],
+            "Tap"     => ["lambda", "and"],
+            "F"         => ["string", "(", "not"],
+            "G"         => ["string", "("]
+];
 
 
 // -----------------------------------------------------------------------------
@@ -141,10 +142,10 @@ $First = Array(
  */
 function resolveOperator($op) {
     switch ($op) {
-    case '+': return array("type"=>TOKEN_TYPE_OPERATOR_AND, "value"=>"and");
-    case '-': return array("type"=>TOKEN_TYPE_OPERATOR_NOT, "value"=>"not");
+    case '+': return ["type"=>TOKEN_TYPE_OPERATOR_AND, "value"=>"and"];
+    case '-': return ["type"=>TOKEN_TYPE_OPERATOR_NOT, "value"=>"not"];
     }
-    return array("type"=>TOKEN_TYPE_UNKNOWN, "value"=>"strange operator");
+    return ["type"=>TOKEN_TYPE_UNKNOWN, "value"=>"strange operator"];
 }
 
 ///** isLetter function
@@ -176,10 +177,10 @@ function tillTheEndingQuotApos($input, $i, $length, $ending) {
     while ($input[$i] != $ending) {
         $tok .= $input[$i++];
         if ($i >= $length) {
-            return array("status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i);
+            return ["status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i];
         }
     }
-    return array("status"=>S_OK, "value"=>$tok, "i"=>$i+1);    // i+1  =>  skips string terminator
+    return ["status"=>S_OK, "value"=>$tok, "i"=>$i+1];    // i+1  =>  skips string terminator
 }
 
 /** tillTheFirstSpecial function
@@ -202,7 +203,7 @@ function tillTheFirstSpecial($input, $i, $length) {
                 // (false !== strpos("'-", $input[$i])) && ($i != 0) && ($i != $length - 1) && !isSpecial($input[$i-1].$input[$i+1])))) {
         $tok .= $input[$i++];
     }
-    return array("status"=>S_OK, "value"=>$tok, "i"=>$i);
+    return ["status"=>S_OK, "value"=>$tok, "i"=>$i];
 }
 
 /** getToken function
@@ -216,7 +217,7 @@ function getToken($input, $i, $length) {
     $i += strspn($input, WHITE, $i, $length);
     if ($i >= $length) {
         // no more tokens
-        return array("status"=>S_NO_MORE_TOKENS, "value"=>"", "i"=>$i, "type"=>TOKEN_TYPE_EMPTY_TOKEN);
+        return ["status"=>S_NO_MORE_TOKENS, "value"=>"", "i"=>$i, "type"=>TOKEN_TYPE_EMPTY_TOKEN];
     }
     if (($input[$i]==QUOT) || ($input[$i]==APOS)) {
         $tok = tillTheEndingQuotApos($input, $i+1, $length, $input[$i]);
@@ -293,11 +294,11 @@ function preProcess($toks) {
             $t2 = next($newtoks);
             if ($t1["type"]==TOKEN_TYPE_STRING) {
                 if ( ($t2) && (($t2["type"]==TOKEN_TYPE_STRING) || ($t2["type"]==TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"]==TOKEN_TYPE_OPERATOR_NOT)))
-                    $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND);
+                    $newtoks2[] = ["status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND];
             }
         }
     }
-    $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"end of input", "i"=>65536, "type"=>TOKEN_TYPE_EOF);
+    $newtoks2[] = ["status"=>S_IMPLICIT, "value"=>"end of input", "i"=>65536, "type"=>TOKEN_TYPE_EOF];
     return $newtoks2;
 }
 

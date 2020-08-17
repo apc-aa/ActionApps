@@ -29,8 +29,14 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
     exit;
 }
 
-$templates   = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', array(array('deleted',1,'<>'),array('template',1)), array('name'));
-$temp_slices = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', array(array('deleted',1,'<>'),array('template',1,'<>')), array('name'));
+$templates   = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', [
+    ['deleted',1,'<>'],
+    ['template',1]
+], ['name']);
+$temp_slices = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', [
+    ['deleted',1,'<>'],
+    ['template',1,'<>']
+], ['name']);
 // 'Action Aplication Core' slice - do not use as template
 unset($temp_slices['41415f436f72655f4669656c64732e2e']);
 
@@ -73,8 +79,8 @@ if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
 }
 
 if ($$display_views_constants) {
-    FrmInputRadio("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
-    FrmInputRadio("wiz[constants]", _m("Categories/Constants"), array ('share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")),'copy');
+    FrmInputRadio("wiz[copyviews]", _m("Copy Views"), [1=>_m("yes"),0=>_m("no")], 1);
+    FrmInputRadio("wiz[constants]", _m("Categories/Constants"), ['share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")],'copy');
 }
 
 FrmTabEnd();

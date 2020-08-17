@@ -71,7 +71,7 @@ $manager = new AA_Manager('searchlog', $manager_settings);
 $manager->performActions();
 
 $set  = $manager->getSet();
-$zids = AA_Metabase::queryZids(array('table'=>'searchlog'), $set);
+$zids = AA_Metabase::queryZids(['table'=>'searchlog'], $set);
 
 $manager->displayPage($zids, 'aaadmin', 'searchlog');
 page_close();

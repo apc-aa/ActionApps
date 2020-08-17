@@ -28,11 +28,11 @@ class EdtWidget extends \AA\Widget\TxtWidget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('rows', 'cols', 'area_type'));
+        return \AA\Widget\Widget::propertiesShop(['rows', 'cols', 'area_type']);
     }
 
     function requireLibs($aa_property, $winfo)
     {
-        return array('ckeditor');
+        return ['ckeditor'];
     }
 }

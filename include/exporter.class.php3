@@ -153,7 +153,7 @@ class AA_Exporter_Csv extends AA_Exporter {
 
     function _outputStartFile($file, $item)  {
         $fs      = $this->field_set;
-        $out_arr = array();
+        $out_arr = [];
         $count   = $fs->fieldCount();
 
         for ($i=0; $i < $count; $i++) {
@@ -274,7 +274,7 @@ class AA_Exporter_Html extends AA_Exporter {
         $ret .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$this->getCharset().'"><title>ActionApps Export</title></head><body><table border="1">';
 
         $arr = $this->field_set->getNameArray();
-        array_walk($arr, array('AA_Exporter_Html', '_valueSanity'), 'th');
+        array_walk($arr, ['AA_Exporter_Html', '_valueSanity'], 'th');
         return $ret. "\n <tr>" . join("\n  ", $arr)."\n </tr>";
     }
 
@@ -284,7 +284,7 @@ class AA_Exporter_Html extends AA_Exporter {
 
     function _outputItem($item)  {
         $arr = $this->field_set->getValueArray($item);
-        array_walk($arr, array('AA_Exporter_Html', '_valueSanity'), 'td');
+        array_walk($arr, ['AA_Exporter_Html', '_valueSanity'], 'td');
         return "\n <tr>" . join("\n  ", $arr)."\n </tr>";
     }
 }
@@ -401,9 +401,9 @@ class AA_Fieldset {
     var $_names;
 
     function __construct() {
-        $this->_fields = array();
-        $this->_types  = array();
-        $this->_names  = array();
+        $this->_fields = [];
+        $this->_types  = [];
+        $this->_names  = [];
     }
 
     function addField($field_id, $field_name='') {
@@ -424,7 +424,7 @@ class AA_Fieldset {
     function isField($index)       { return $this->_types[$index] == 'f'; }
 
     function getValueArray($item)  {
-        $arr     = array();
+        $arr     = [];
 
         foreach ($this->_fields as $index => $definition) {
             $recipe = ($this->_types[$index]=='f') ? "{@$definition:|}" : $definition;
@@ -434,7 +434,7 @@ class AA_Fieldset {
     }
 
     function getNameArray($short=false)  {
-        $arr     = array();
+        $arr     = [];
         foreach ($this->_fields as $index => $definition) {
             $arr[]  = $this->_names[$index] . ($short ? '' : " ($definition)");
         }
@@ -460,7 +460,7 @@ class AA_Exportsetings extends AA_Object {
      */
     static function getClassProperties() {
 
-        $bins_arr = array(
+        $bins_arr = [
             AA_BIN_ALL      => _m('All'),
             AA_BIN_ACTIVE   => _m('Active'),
             AA_BIN_PENDING  => _m('Pending'),
@@ -468,23 +468,23 @@ class AA_Exportsetings extends AA_Object {
             AA_BIN_APPROVED => _m('Approved'),
             AA_BIN_HOLDING  => _m('Holding'),
             AA_BIN_TRASH    => _m('Trash')
-            );
+        ];
 
-        $types_arr = array(
+        $types_arr = [
             'db'    => _m('Database backup (as stored in DB)'),
             'human' => _m('Human - dates converted to Y-m-d format, ...')
-            );
+        ];
 
-        $format_arr     = array();
+        $format_arr     = [];
         $format_classes = AA_Components::getClassNames('AA_Exporter_');
         foreach ($format_classes as $fclass) {
             $format_arr[$fclass] = substr($fclass,12);
         }
 
-        $grabber_arr = array(
+        $grabber_arr = [
            'AA\IO\Grabber\Slice' => _m('Item Contents'),
            'AA\IO\Grabber\Discussion' => _m('Discussion')
-        );
+        ];
 
         $grabber_type = new AA_Property( 'grabber_type', _m("What to export"), 'string', false, true, '', true);
         $format       = new AA_Property( 'format',       _m("Output Format"),  'string', false, true, '', true);
@@ -496,7 +496,7 @@ class AA_Exportsetings extends AA_Object {
         $type->setConstants($types_arr);
         $bins->setConstants($bins_arr);
 
-        return array ( //           id           name                type        multi  persist validator, required, help, morehelp, example
+        return [ //           id           name                type        multi  persist validator, required, help, morehelp, example
             'grabber_type' => $grabber_type,
             'format'       => $format,
             'type'         => $type,
@@ -505,7 +505,7 @@ class AA_Exportsetings extends AA_Object {
             'filename'     => new AA_Property( 'filename', _m("Filename"),      'string', false, true, '', false, _m('save as...')),
             'conds'        => new AA_Property( 'conds',    _m("Conditions"),    'text'  , false, true, '', false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)')),  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
             'sort'         => new AA_Property( 'sort',     _m("Sort"),          'string', false, true, '', false, _m('like: publish_date....-'))  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-            );
+        ];
     }
 
     function export($restict_zids=null) {
@@ -523,7 +523,7 @@ class AA_Exportsetings extends AA_Object {
         $fs  = new AA_Fieldset;
 
         if ($this->grabber_type== 'AA\IO\Grabber\Discussion') {
-            $possible_fields = array('d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........');
+            $possible_fields = ['d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........'];
             $grabber         = new Discussion($set);
         } else {
             $fields          = $slice->getFields();
@@ -535,7 +535,7 @@ class AA_Exportsetings extends AA_Object {
             foreach ($this->fields as $f) {
                 if (in_array($f, $possible_fields)) {
                     // just use unpacked variants
-                    $fs->addField(str_replace(array('id..............', 'slice_id........'),array('unpacked_id.....', 'u_slice_id......'), $f));
+                    $fs->addField(str_replace(['id..............', 'slice_id........'], ['unpacked_id.....', 'u_slice_id......'], $f));
                 } else {
                     $fs->addAlias($f);
                 }
@@ -548,7 +548,7 @@ class AA_Exportsetings extends AA_Object {
             } else {
                 foreach ($possible_fields as $field_id) {
                     // skip packed fields
-                    if ( in_array($field_id, array('id..............', 'slice_id........'))) {
+                    if ( in_array($field_id, ['id..............', 'slice_id........'])) {
                         continue;
                     }
                     $field = $fields->getField($field_id);
@@ -571,13 +571,13 @@ class AA_Exportsetings extends AA_Object {
 
         set_time_limit(5000);
 
-        $exporter = AA_Object::factory($this->format, array('field_set'=>$fs, 'grabber'=>$grabber));
+        $exporter = AA_Object::factory($this->format, ['field_set'=>$fs, 'grabber'=>$grabber]);
         if (is_null($exporter)) {
             echo _m('Bad file format - specify format');
             exit;
         }
 
-        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', array($slice->name(), '',$slice->getCharset())). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
+        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', [$slice->name(), '',$slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
 
         $exporter->sendFile($filename);
     }

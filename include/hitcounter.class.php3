@@ -112,12 +112,12 @@ class AA_Hitcounter {
 
             $display_counter  = new AA_Hitcounter_Update();
             $toexecute        = new AA_Toexecute;
-            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, time() + 300);  // run it once in 5 minutes
+            $toexecute->laterOnce($display_counter, [], 'AA_Hitcounter_Update', 100, time() + 300);  // run it once in 5 minutes
 
             require_once AA_INC_PATH.  "task.class.php3";
 
             $planned_task_scheduler = new AA_Plannedtask_Schedule();
-            $toexecute->laterOnce($planned_task_scheduler, array(), 'AA_Plannedtask_Schedule', 100, time() + 120);  // run it once in 2 minutes
+            $toexecute->laterOnce($planned_task_scheduler, [], 'AA_Plannedtask_Schedule', 100, time() + 120);  // run it once in 2 minutes
 
             $computedfields_updater = new AA_Computedfields_Updater;
             $computedfields_updater->plan();
@@ -143,7 +143,7 @@ class AA_Hitcounter_Update implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
 
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.
@@ -213,7 +213,7 @@ class AA_Hitcounter_Update implements \AA\Util\LaterInterface {
                 // hit_7  (week)  plan +/- 350  minutes later (5,8 hours)
                 // hit_30 (month) plan +/- 1500 minutes later (25 hours)
                 $time2execute   = time() + ($stats_counter->getDays() * 300 * (10 + $timeshift++));
-                $toexecute->laterOnce($stats_counter, array(), "Count_". $count_slice_id.'_'.$field_id, 100, $time2execute);
+                $toexecute->laterOnce($stats_counter, [], "Count_". $count_slice_id.'_'.$field_id, 100, $time2execute);
             }
         }
     }
@@ -240,8 +240,8 @@ class AA_Hitcounter_Stats implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
-        $dbgtime = array(microtime(true));
+    public function toexecutelater($params= []) {
+        $dbgtime = [microtime(true)];
 
         $days        = $this->getDays();
         $time        = time() - ($days * 86400);
@@ -249,19 +249,22 @@ class AA_Hitcounter_Stats implements \AA\Util\LaterInterface {
         $hits        = GetTable2Array("SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
                                         WHERE hit_archive.time > $time AND item.slice_id = '$qp_slice_id' GROUP BY hit_archive.id", 'id', 'count');
         $dbgtime[] = microtime(true);
-        $item_ids    = DB_AA::select('','SELECT id FROM item', array(array('slice_id', $this->slice_id, 'l')));
+        $item_ids    = DB_AA::select('','SELECT id FROM item', [['slice_id', $this->slice_id, 'l']]);
         $dbgtime[] = microtime(true);
 
         if ( is_array($item_ids) ) {
             // shuffle - if there are a lot of items, so we reach timelimit, it is better to
             // count hits in random order, so each item will be counted after some time period
             shuffle($item_ids);
-            $field = DB_AA::select1('SELECT `id`,`text_stored` FROM `field`', '', array(array('slice_id', $this->slice_id, 'l'),array('id',$this->field_id)));
+            $field = DB_AA::select1('SELECT `id`,`text_stored` FROM `field`', '', [
+                ['slice_id', $this->slice_id, 'l'],
+                ['id',$this->field_id]
+            ]);
 
             foreach ($item_ids as $id) {
                 //$db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
                 $value = $hits[$id] ?: 0;
-                StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], array('value'=>$value, 'flag'=>0), array(), true);
+                StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], ['value'=>$value, 'flag'=>0], [], true);
             }
         }
         $dbgtime[] = microtime(true);
@@ -292,7 +295,7 @@ class AA_Hitcounter_Group implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         list($begin, $step) = $params;
 
         $varset    = new CVarset;
@@ -323,7 +326,7 @@ class AA_Hitcounter_Group implements \AA\Util\LaterInterface {
         // run for all the days from $oldest to week ago
         $no_task = 0;
         for ($begin = $grouping_start; $begin + $step >= $oldest; $begin -= $step) {
-            $toexecute->laterOnce($this, array($begin, $step), "AA_Hitcounter_Group_$begin", 40, time() + 60*60*24); // once a day
+            $toexecute->laterOnce($this, [$begin, $step], "AA_Hitcounter_Group_$begin", 40, time() + 60*60*24); // once a day
 
             // by default we plan all the task
             if (++$no_task == $max_task) {
@@ -341,8 +344,8 @@ class AA_Computedfields_Updater implements \AA\Util\LaterInterface {
 
         $fields2count = GetTable2Array("SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'", '');
 
-        $intervals = array('minute'=>5,'hour'=>4,'day'=>3,'week'=>2,'month'=>1);
-        $updaters = array();
+        $intervals = ['minute'=>5,'hour'=>4,'day'=>3,'week'=>2,'month'=>1];
+        $updaters = [];
 
         if (is_array($fields2count)) {
             foreach ($fields2count as $to_count) {
@@ -364,7 +367,7 @@ class AA_Computedfields_Updater implements \AA\Util\LaterInterface {
                         case 4: $time = mktime(date("G")+1, mt_rand(0,4),   mt_rand(0,59), date("m"),   date("d"),   date("Y")); break;
                         case 5: $time = mktime(date("G"),   date("i")+1, mt_rand(0,10), date("m"),   date("d"),   date("Y")); break;
                     }
-                    $toexecute->laterOnce($this, array($sid), "AA_Computedfields_Updater_$sid", 100, $time); // once a day
+                    $toexecute->laterOnce($this, [$sid], "AA_Computedfields_Updater_$sid", 100, $time); // once a day
                 }
             }
         }
@@ -376,7 +379,7 @@ class AA_Computedfields_Updater implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         list($sid) = $params;
         $aa_set       = new AA_Set();
         $aa_set->setModules($sid);
@@ -394,7 +397,7 @@ class AA_Computedfields_Updater implements \AA\Util\LaterInterface {
         $item_updater = new AA_ComputedfieldsItem_Updater();
         $toexecute    = new AA_Toexecute;
         foreach ($chunks as $k => $ids) {
-            $toexecute->laterOnce($item_updater, array($sid, $ids), "AA_ComputedfieldsItem_Updater_". $sid.'_'.$k, 40, time()+10);
+            $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_". $sid.'_'.$k, 40, time()+10);
         }
     }
 }
@@ -406,7 +409,7 @@ class AA_ComputedfieldsItem_Updater implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         list($sid, $ids) = $params;
         foreach ($ids as $item_id) {
             $item = new ItemContent($item_id);

@@ -347,7 +347,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
         AA_Hitcounter::hit($zid, 0);
     }
     elseif ( $seo ) {
-        $zid = new zids(explode_ids(StrExpand('AA_Stringexpand_Seo2ids', array($slice_id, $seo))), 'l');
+        $zid = new zids(explode_ids(StrExpand('AA_Stringexpand_Seo2ids', [$slice_id, $seo])), 'l');
         AA_Hitcounter::hit($zid, 0);
     }
     elseif ( $o ) {
@@ -376,13 +376,14 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $view_info = $db->Record;
 
             // create array of parameters
-            $disc = array('ids'         => $all_ids ? "" : $ids,
+            $disc = [
+                'ids'         => $all_ids ? "" : $ids,
                           'type'        => $add_disc ? "adddisc" : (($sel_ids || $all_ids) ? "fulltext" : "thread"),
                           'item_id'     => $zid->longids(0),
                           'vid'         => $view_info['id'],
                           'html_format' => $view_info['flag'] & DISCUS_HTML_FORMAT,
                           'parent_id'   => $parent_id
-                         );
+            ];
             $aliases = GetDiscussionAliases();
 
             $format  = GetDiscussionFormat($view_info);
@@ -417,7 +418,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
  *         Parse parameters posted by query form and from $slice_info
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-$r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name", "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); // store in session, added mlx
+$r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx"]); // store in session, added mlx
 
 // ***** CONDS *****
 
@@ -426,24 +427,30 @@ if ($cat_id AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCa
     $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
     $db->query($SQL);
     if ( $db->next_record() ) {
-        $conds[] = array( $cat_field => 1,
+        $conds[] = [
+            $cat_field => 1,
                           'value'    => $db->f('value'),
-                          'operator' => ($exact ? '=' : 'LIKE'));
+                          'operator' => ($exact ? '=' : 'LIKE')
+        ];
     }
 } elseif ($cat_name AND ($tmpobj = $slice->getFields()) AND ($cat_field = $tmpobj->getCategoryFieldId()))  {  // optional parameter cat_name -------
-    $conds[]     = array( $cat_field => 1,
+    $conds[]     = [
+        $cat_field => 1,
                           'value'    => $cat_name,
-                          'operator' => ($exact ? '=' : 'LIKE'));
+                          'operator' => ($exact ? '=' : 'LIKE')
+    ];
 }
 
 if ($restrict) {
-    $conds[]     = array( $restrict  => 1,
+    $conds[]     = [
+        $restrict  => 1,
                           'value'    => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
-                          'operator' => ($exact ? '=' : 'LIKE'));
+                          'operator' => ($exact ? '=' : 'LIKE')
+    ];
 }
 
 if ($highlight != "") {
-    $conds[] = array('highlight.......' => 1);
+    $conds[] = ['highlight.......' => 1];
 }
 
 if (!isset($defaultCondsOperator)) {
@@ -482,7 +489,7 @@ if ($debug) {
     echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
 }
 
-$sort_tmp = array();
+$sort_tmp = [];
 if ($group_by) {
     $set = new AA_Set;
     $set->addSortFromString($group_by);
@@ -491,7 +498,7 @@ if ($group_by) {
 }
 elseif ($slice_info['category_sort'] AND ($tmpobj = $slice->getFields()) AND ($group_field = $tmpobj->getCategoryFieldId())) {
     $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
-    $sort_tmp[]  = array( $group_field => $grp_odir );
+    $sort_tmp[]  = [$group_field => $grp_odir];
 }
 elseif ($slice_info['group_by']) {
     switch( (string)$slice_info['gb_direction'] ) {  // gb_direction is number
@@ -501,17 +508,17 @@ elseif ($slice_info['group_by']) {
         case '9': $gbd = '9'; break;      // 9 (9)- descending by priority (for fields using constants)
         default:  $gbd = 'a';             // 2 (2)- ascending;
     }
-    $sort_tmp[] = array($slice_info['group_by'] => $gbd);
+    $sort_tmp[] = [$slice_info['group_by'] => $gbd];
 }
 
 $sort_tmp = array_merge($sort_tmp, getSortFromUrl($sort));
 
 if ($order) {
-    add2sort($sort_tmp, array($order => (strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
+    add2sort($sort_tmp, [$order => (strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')]);
 }
 
 // time order the fields in compact view
-add2sort($sort_tmp, array('publish_date....' => (($timeorder == "rev") ? 'a' : 'd')));
+add2sort($sort_tmp, ['publish_date....' => (($timeorder == "rev") ? 'a' : 'd')]);
 $sort  = $sort_tmp;
 
 //mlx stuff
@@ -523,7 +530,7 @@ if ($mlxslice = MLXSlice($slice)) {
     $mlxView->preQueryZIDs($mlxslice,$conds);
 }
 
-$zids = QueryZids( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
+$zids = QueryZids( ($slices ? $slices : [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator );
 
 if ($mlxslice) {
     $mlxView->postQueryZIDs($zids,$mlxslice,$slice_id);
@@ -533,7 +540,7 @@ if ($mlxslice) {
 
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? array('als'=>$als) : '');
+    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? ['als'=>$als] : '');
     $scr = new AA_Scroller_Easy( 'scr', $scr_url_param, $slice_info['d_listlen'], $zids->count());
 }
 

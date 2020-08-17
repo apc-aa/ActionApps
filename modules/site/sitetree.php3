@@ -35,14 +35,16 @@ function normalize_arr(&$arr) {
 
 
 // SiteTree and Spot class definition
-$SPOT_VAR_NAMES = array ('id'         => 'id',      // translation from long variable
+$SPOT_VAR_NAMES = [
+    'id'         => 'id',      // translation from long variable
                          'name'       => 'n',       // names to the current - shorter
                          'conditions' => 'c',
                          'variables'  => 'v',
                          'parent'     => 'p',
                          'positions'  => 'po',
                          'choices'    => 'ch',
-                         'flag'       => 'f');
+                         'flag'       => 'f'
+];
 
 class AA_Site_Spot_Match {
     public $op;
@@ -63,7 +65,7 @@ class AA_Site_Spot_Match {
     }
 
     function implode() {
-        return ParamImplode(array('=',$this->op, $this->val));
+        return ParamImplode(['=',$this->op, $this->val]);
     }
 
     public function match($value) {
@@ -256,7 +258,7 @@ class sitetree {
     var $start_id;
 
     function __construct($spot=false) {
-        $this->tree[1]  = new spot( $spot['spot_id'], $spot['name'] ? $spot['name']:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], array($spot['spot_id']), $spot['flag'] );
+        $this->tree[1]  = new spot( $spot['spot_id'], $spot['name'] ? $spot['name']:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
         $this->start_id = $spot['spot_id'];
     }
 
@@ -305,7 +307,7 @@ class sitetree {
     function addChoice($where, $name, $conditions = false, $variables = false, $flag = false) {
         // parent is not set yet (set by addChoice() in next step);
         $new_id = $this->new_id();
-        $spot = new spot( $new_id, $name, $conditions, $variables, false, array($new_id), $flag );
+        $spot = new spot( $new_id, $name, $conditions, $variables, false, [$new_id], $flag );
         if ($this->_addChoice($spot, $where)) {
             $this->tree[$spot->Id()] = $spot;
             return true;
@@ -596,8 +598,8 @@ class sitetree {
      *  @return array
      */
     public function getAllSpotIds() {
-        $foo_apc  = array();
-        $spot_ids = array();
+        $foo_apc  = [];
+        $spot_ids = [];
         $this->walkTree($foo_apc, 1, function ($spot_id) use (&$spot_ids) { $spot_ids[] = $spot_id; }, 'all');
         return $spot_ids;
     }

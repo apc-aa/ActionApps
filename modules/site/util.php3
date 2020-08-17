@@ -23,7 +23,7 @@ https://www.apc.org/
 
 function SiteAdminPage($spot_id, $add = null) {
     global $slice_id;
-    $url = get_url($_SERVER['PHP_SELF'], array('spot_id'=>$spot_id, 'slice_id'=>$slice_id));   // Always used this way
+    $url = get_url($_SERVER['PHP_SELF'], ['spot_id'=>$spot_id, 'slice_id'=>$slice_id]);   // Always used this way
     if ($add) {
         $url = get_url($url, $add);
     }

@@ -36,7 +36,7 @@ class RimWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -100,8 +100,8 @@ class RimWidget extends \AA\Widget\Widget
         $options = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
 
         $actions2show = $this->getProperty('show_buttons', 'MRND');
-        $actbuttons = array();
-        $actbuttonsdown = array();
+        $actbuttons = [];
+        $actbuttonsdown = [];
         if (strpos($actions2show, 'M') !== false) {
             $actbuttonsdown['M'] = '';
         }// @todo
@@ -164,7 +164,7 @@ HTML;
         // <article><i class="ico megainsert">přetánout</i></article>
         // <article><i class="ico new">nový</i></article>
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /** function which offers filtered selections for current widget */

@@ -73,7 +73,7 @@ require_once AA_INC_PATH."msgpage.php3";
 
 
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ( $update ) {
@@ -93,7 +93,7 @@ if ( $update ) {
         $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
         $varset->add("fulltext_remove", "quoted", $fulltext_remove);
 
-        $discus_flag = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', array(array('id',$slice_id,'l')));
+        $discus_flag = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', [['id',$slice_id,'l']]);
         $discus_flag &= ~ (DISCUS_HTML_FORMAT | DISCUS_ADD_DISABLED); // clear the bits
         $discus_flag |= $discus_htmlf ? DISCUS_HTML_FORMAT : 0;
         $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;
@@ -116,7 +116,7 @@ if ( $update ) {
 }
 
 if ( $slice_id != "" ) {  // set variables from database
-    $rec = DB_AA::select1('SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', '', array(array('id', $slice_id, 'l')));
+    $rec = DB_AA::select1('SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', '', [['id', $slice_id, 'l']]);
     if ($rec) {
         $fulltext_format_top    =  $rec['fulltext_format_top'];
         $fulltext_format        =  $rec['fulltext_format'];
@@ -154,14 +154,21 @@ $apage->printHead($err, $Msg);
 
 
 // lookup discussion views
-$discus_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", array(array('slice_id', $slice_id, 'l'),array('type','discus')));
+$discus_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", [
+    ['slice_id', $slice_id, 'l'],
+    ['type','discus']
+]);
 
-$form_buttons = array ("update",
-                       "update" => array ('type' => 'hidden', 'value'=>'1'),
-                       "cancel" => array ("url"=>"se_fields.php3"),
-                       "default" => array('type'  => 'button',
+$form_buttons = [
+    "update",
+                       "update" => ['type' => 'hidden', 'value'=>'1'],
+                       "cancel" => ["url"=>"se_fields.php3"],
+                       "default" => [
+                           'type'  => 'button',
                                           'value' => _m("Default"),
-                                          'add'   => 'onclick="Defaults()"'));
+                                          'add'   => 'onclick="Defaults()"'
+                       ]
+];
 
 FrmTabCaption(_m("HTML code for fulltext view"), $form_buttons);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,

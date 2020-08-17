@@ -101,7 +101,7 @@ function endslash(&$s) {
  *  use as: echo "el.insertAdjacentHTML('afterbegin',".escape4js($code).");";
  */
 function escape4js($code) {
-    return str_replace( array("\\", "'","\r\n","\n","\r",'<script','</script'), array("\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'), $code );   // remove newlines ...
+    return str_replace( ["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code );   // remove newlines ...
 }
 
 /** array_add function
@@ -254,7 +254,7 @@ function add_vars($query_string="", $where='GLOBALS') {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
     if ( !$varstring ) {
-        return array();
+        return [];
     }
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
         $varstring = substr($varstring,0,$pos);
@@ -280,7 +280,7 @@ function add_vars($query_string="", $where='GLOBALS') {
         }
         return $aa_query_arr;
     }
-    return array();
+    return [];
 }
 
 
@@ -330,7 +330,7 @@ function recursive_array_replace($find, $replace, $array) {
     if (!is_array($array)) {
         return str_replace($find, $replace, $array);
     }
-    $newArray = array();
+    $newArray = [];
     foreach ($array as $key => $value) {
         $newArray[$key] = recursive_array_replace($find, $replace, $value);
     }
@@ -451,7 +451,7 @@ function debug() {
 function warn($msg) {
     if (AA::$debug) {
         $trace = debug_backtrace();
-        AA::$dbg->warn( join('->',array($trace[1]['class'],$trace[1]['function'])).': '.$msg );
+        AA::$dbg->warn( join('->', [$trace[1]['class'],$trace[1]['function']]).': '.$msg );
     }
 }
 
@@ -530,7 +530,7 @@ function MsgErr($txt){
  */
 function UnpackFieldsToArray($packed, $fields) {
     $i=0;
-    $arr = array();
+    $arr = [];
     foreach ($fields as $field => $foo) {
         $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
     }
@@ -556,7 +556,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $db_column    = ($column    == 'level') ? 'ancestors' : $column;
     $db_keycolumn = ($keycolumn == 'level') ? 'ancestors' : $keycolumn;
 
-    $const_fields = array('id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1);
+    $const_fields = ['id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1];
 
     $db = getDB();
     if (  $const_fields[$db_order] ) {
@@ -671,7 +671,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
         case AA_BIN_ACTIVE | AA_BIN_PENDING:
             return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
     }
-    $or_conds = array();
+    $or_conds = [];
     if (($numeric_bin & (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
         $or_conds[] = " $table.status_code=1 ";
     } else {
@@ -740,8 +740,8 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {
 
-        $content_fields = array();
-        $item_fields    = array();
+        $content_fields = [];
+        $item_fields    = [];
         foreach ( (array)$fields2get as $field_name ) {
             //convert publish_date.... to publish_date
             $clean_name = AA_Fields::getFieldType($field_name);
@@ -785,10 +785,10 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     $db->query($SQL);
 
     // returned ids (possibly removed items in trash, ...)
-    $long_ids    = array();
-    $unpermitted = array();
-    $slices      = array();
-    $content     = array();
+    $long_ids    = [];
+    $unpermitted = [];
+    $slices      = [];
+    $content     = [];
 
     while ( $db->next_record() ) {
 
@@ -802,8 +802,8 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
         // add special fields to all items (zids)
         // slice_id... and id... is packed  - add unpacked variant now
-        $content[$unpack_id]['u_slice_id......'] = array(array('value' => $unpack_slice_id));
-        $content[$unpack_id]['unpacked_id.....'] = array(array('value' => $unpack_id));
+        $content[$unpack_id]['u_slice_id......'] = [['value' => $unpack_slice_id]];
+        $content[$unpack_id]['unpacked_id.....'] = [['value' => $unpack_id]];
 
         // if ($ignore_reading_password OR $credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
            // this row leads to creation second database connection db2 - for the first_child item in slice @todo - do something about it, Honza 2015-12-28
@@ -812,7 +812,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         foreach ($real_item_fields2get as $item_fid) {
             // FLAG_HTML do not means in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
             // we do not need to call txt2html() to any of the item table fields
-            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $row[$item_fid], "flag"  => FLAG_HTML);
+            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => $row[$item_fid], "flag"  => FLAG_HTML];
         }
     }
     freeDB($db);
@@ -824,7 +824,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                 // it should be rare
 
                 // mark all items from this slice as unpermitted
-                $ERR_VALUE = array(array("value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML));
+                $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
                 foreach ($content as $unpack_id => $c4id) {
                     $unpermitted[$unpack_id] = true;
                     foreach ($c4id as $fid) {
@@ -848,7 +848,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     if ( $zids->onetype() == 't') {
         $tags = $zids->gettags();
         foreach ($tags as $k => $v) {
-            $content[$k]["idtag..........."][] = array("value" => $v);
+            $content[$k]["idtag..........."][] = ["value" => $v];
         }
     }
 
@@ -897,14 +897,14 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                     continue;
                 }
                 if ($row['number'] > 999999) {  // translations
-                    $content[$unpack_id][$row['field_id']][$row['number']] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                    $content[$unpack_id][$row['field_id']][$row['number']] = ["value" => $row['text'], "flag"  => $row['flag']];
                 } else {
-                    $content[$unpack_id][$row['field_id']][] = array( "value" => $row['text'], "flag"  => $row['flag']);
+                    $content[$unpack_id][$row['field_id']][] = ["value" => $row['text'], "flag"  => $row['flag']];
                 }
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
                 // if speeds the item->f_h() function a bit
-                $content[$unpack_id][$row['field_id']][] = array( "value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML));
+                $content[$unpack_id][$row['field_id']][] = ["value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML)];
             }
         }
         freeDB($db);
@@ -915,7 +915,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         // it is deprecated, so maybe rather update calling code to accept $content with unpacked_id keys
         // (there is problem with calling after zids->short_or_longids - say: view.php3?vid=26&cmd[26]=x-26-23074  ) Honza 2016-09-30
         $content_long = $content;
-        $content = array();
+        $content = [];
         foreach ($content_long as $c4id) {
             $content[$c4id['short_id........'][0]['value']] = $c4id;
         }
@@ -940,7 +940,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
  */
 function GetItemContentMinimal($zids, $fields2get=false) {
     if ( !$fields2get ) {
-        $fields2get = array( 'id', 'short_id' );
+        $fields2get = ['id', 'short_id'];
     }
     $columns = join(',',$fields2get);
 
@@ -948,7 +948,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
         $zids = new zids( $zids, 'l');
     }
     $sel_in = $zids->sqlin( '' );
-    $content = array();
+    $content = [];
     $n_items = 0;
 
     if ($sel_in) {
@@ -960,7 +960,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
             $n_items++;
             $foo_id = unpack_id($db->f("id"));
             foreach ( $fields2get as $fld ) {
-                $content[$foo_id][AA_Fields::createFieldId($fld)][] = array("value" => $db->f($fld));
+                $content[$foo_id][AA_Fields::createFieldId($fld)][] = ["value" => $db->f($fld)];
             }
         }
         freeDB($db);
@@ -976,18 +976,18 @@ function GetItemContentMinimal($zids, $fields2get=false) {
  */
 function GrabConstantColumn(&$db, $column) {
     switch ($column) {
-        case "name":        return array( "value"=> $db->f("name") );
-        case "value":       return array( "value"=> $db->f("value"), "flag" => FLAG_HTML );
-        case "pri":         return array( "value"=> $db->f("pri") );
-        case "group":       return array( "value"=> $db->f("group_id") );
-        case "class":       return array( "value"=> $db->f("class") );
+        case "name":        return ["value"=> $db->f("name")];
+        case "value":       return ["value"=> $db->f("value"), "flag" => FLAG_HTML];
+        case "pri":         return ["value"=> $db->f("pri")];
+        case "group":       return ["value"=> $db->f("group_id")];
+        case "class":       return ["value"=> $db->f("class")];
         // case "counter":     return array( "value"=> $i++ );
-        case "id":          return array( "value"=> unpack_id($db->f("id") ));
-        case "description": return array( "value"=> $db->f("description"), "flag" => FLAG_HTML);
-        case "short_id":    return array( "value"=> $db->f("short_id") );
-        case "level":       return array( "value"=> strlen($db->f("ancestors"))/16);
+        case "id":          return ["value"=> unpack_id($db->f("id") )];
+        case "description": return ["value"=> $db->f("description"), "flag" => FLAG_HTML];
+        case "short_id":    return ["value"=> $db->f("short_id")];
+        case "level":       return ["value"=> strlen($db->f("ancestors"))/16];
     }
-    return array();
+    return [];
 }
 
 /** GetConstantContent function
@@ -1003,7 +1003,7 @@ function GetConstantContent( $zids ) {
 
     $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
     $db->query( $SQL );
-    $content = array();
+    $content = [];
     $i=1;
     while ($db->next_record()) {
         $coid = $db->f('short_id');
@@ -1036,7 +1036,7 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
         foreach ( $data as $row ) {
             $foo_id = $row[$id_field];
             foreach($row as $key => $val) {
-                $content[$foo_id][$prefix . $key][] = array('value' => $val);
+                $content[$foo_id][$prefix . $key][] = ['value' => $val];
             }
         }
     }
@@ -1050,7 +1050,7 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
  */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
     // first should be headline........, then headline.......1, etc.
-    return DB_AA::select1("SELECT id FROM field", 'id', array( array('slice_id', $sid, 'l'), array('id',"$slice_field%", 'LIKE') ), array('id'));  // false if not found
+    return DB_AA::select1("SELECT id FROM field", 'id', [['slice_id', $sid, 'l'], ['id',"$slice_field%", 'LIKE']], ['id']);  // false if not found
 }
 
 /** GetCategoryGroup function
@@ -1061,13 +1061,13 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
  */
 function GetCategoryGroup($slice_id, $field='') {
     // first should be category........, then category.......1, etc.
-    $order   = array();
-    $conds   = array(array('slice_id',$slice_id, 'l'));
+    $order   = [];
+    $conds   = [['slice_id',$slice_id, 'l']];
     if ($field) {
-        $conds[] = array('id', $field);
+        $conds[] = ['id', $field];
     } else {
-        $conds[] = array('id', 'category%', 'LIKE');
-        $order   = array('id');
+        $conds[] = ['id', 'category%', 'LIKE'];
+        $order   = ['id'];
     }
     $arr = explode( ":", DB_AA::select1("SELECT input_show_func FROM field", 'input_show_func', $conds, $order));  // false if not found
     return $arr[1];
@@ -1212,7 +1212,7 @@ function MsgPage($url, $msg) {
  * @param array  $additional
  * @param bool   $delete    - erease the old values
  */
-function StoreToContent($item_id, $field_id, $text_stored, $value, $additional=array(), $delete=false) {
+function StoreToContent($item_id, $field_id, $text_stored, $value, $additional= [], $delete=false) {
     if (!is_long_id($item_id) OR (strlen($field_id)!=16)) {
         return;
     }
@@ -1375,7 +1375,7 @@ function add_post2shtml_vars($delete = true) {
         $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
     }
     freeDB($db);
-    $var_types = array ("post","get","files","cookie");
+    $var_types = ["post","get","files","cookie"];
 
     foreach ($var_types as $var_type) {
         if (is_array($vars[$var_type])) {
@@ -1442,12 +1442,12 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
 */
 
 class AA_Credentials {
-    var $_pwd = array();     // Array of all known slice passwords (md5 for better security)
+    var $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
     /** AA_Credentials function
      */
     function __construct() {
-        $this->_pwd = array();
+        $this->_pwd = [];
     }
 
     /** singleton
@@ -1539,7 +1539,7 @@ class AA_Contentcache {
      *                     only on its parameters, but also on some (global?) variable
      * @return mixed
      */
-    function get_result( $function, $params=array(), $additional_params='' ) {
+    function get_result( $function, $params= [], $additional_params='' ) {
         return $this->_get_result(get_hash(func_get_args()), $function, $params, $function);
     }
 
@@ -1570,7 +1570,7 @@ class AA_Contentcache {
         }
         $time = microtime(true);
         $val = call_user_func_array($function, (array)$params);
-        $this->content[$key] = array($val, microtime(true)-$time, 0, $ident);
+        $this->content[$key] = [$val, microtime(true)-$time, 0, $ident];
         return $val;
     }
 
@@ -1603,9 +1603,9 @@ class AA_Contentcache {
      */
     function set($access_code, $val) {
         if ($this->is_soft($access_code)) {
-            $this->content[hash('md5', $access_code)] = array($val, 0, 0);
+            $this->content[hash('md5', $access_code)] = [$val, 0, 0];
         } else {
-            $this->content_stable[hash('md5', $access_code)] = array($val, 0, 0);
+            $this->content_stable[hash('md5', $access_code)] = [$val, 0, 0];
         }
     }
 
@@ -1733,10 +1733,10 @@ class AA_Contentcache {
         }
         echo '</table>';
 
-        $stat = array();
+        $stat = [];
         foreach($this->content as $c) {
             if ( !isset($stat[$c[3]]) ) {
-                $stat[$c[3]] = array();
+                $stat[$c[3]] = [];
             }
             $stat[$c[3]]['cases']++;
             $stat[$c[3]]['unused']+=($c[2] ? 0 : 1);
@@ -1811,7 +1811,7 @@ class AA_GeneralizedArray {
      *
      */
     function __construct() {
-        $this->arr = array();
+        $this->arr = [];
     }
     /** add function
      * @param $value
@@ -1822,12 +1822,12 @@ class AA_GeneralizedArray {
         // make sure the position exist
         foreach ( $coordinates as $key ) {
             if (!isset($arr[$key])) {
-                $arr[$key] = array();
+                $arr[$key] = [];
             }
             // go down - more deep in the structure
             $arr = &$arr[$key];
         }
-        $arr = array_merge($arr, array($value));
+        $arr = array_merge($arr, [$value]);
     }
 
     /** getValues function

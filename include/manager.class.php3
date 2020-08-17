@@ -73,14 +73,14 @@ class AA_Manager extends AA_Storable {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
-        return array (
+        return [
             'searchbar'   => new AA_Property( 'searchbar',   _m("Searchbar"),  'AA_Searchbar', false, true),
             'scroller'    => new AA_Property( 'scroller',    _m("Scroller"),   'AA_Scroller',  false, true),
             'msg'         => new AA_Property( 'msg',         _m("Msg"),        'text',         true,  true),
             'bin'         => new AA_Property( 'bin',         _m("Bin"),        'text',         false, true),
             'module_id'   => new AA_Property( 'module_id',   _m("Module ID"),  'text',         false, true),
             '_manager_id' => new AA_Property( '_manager_id', _m("Manager ID"), 'text',         false, true),
-            );
+        ];
     }
 
     /** AA_Manager function
@@ -163,7 +163,7 @@ class AA_Manager extends AA_Storable {
         // r_state array holds all configuration of Manager
         // the configuration then could be Bookmarked
         if ( !isset($r_state) ) {
-            $r_state = array();
+            $r_state = [];
             $sess->register('r_state');
         }
         // user switched to another page with different manager?
@@ -251,15 +251,15 @@ class AA_Manager extends AA_Storable {
     function getSet() {
         $set = $this->searchbar ? $this->searchbar->getSet() :  new AA_Set;
         if ($this->module_id) {
-            $set->setModules(array($this->module_id));
+            $set->setModules([$this->module_id]);
         }
-        $BIN_CONDS   = array(
+        $BIN_CONDS   = [
             'app'    => AA_BIN_ACTIVE,
             'appb'   => AA_BIN_PENDING,
             'appc'   => AA_BIN_EXPIRED,
             'hold'   => AA_BIN_HOLDING,
             'trash'  => AA_BIN_TRASH
-        );
+        ];
         if ($BIN_CONDS[$this->bin]) {
             $set->setBins($BIN_CONDS[$this->bin]);
         }
@@ -291,7 +291,7 @@ class AA_Manager extends AA_Storable {
         if ( $this->searchbar ) {
             return $this->searchbar->getBookmarkNames();
         }
-        return array();
+        return [];
     }
 
     function setFromBookmark($bookmark_id) {
@@ -655,11 +655,11 @@ class AA_Manageraction extends AA_Storable {
      *  we need to pass all parameters of the object
      */
     static function getClassProperties() {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
-        return array (
+        return [
             'id'            => new AA_Property( 'id',           _m('Action ID'),                  'text', false, true),
             'open_url'      => new AA_Property( 'open_url',     _m('URL to open' ),               'text', false, true),
             'open_url_add'  => new AA_Property( 'open_url_add', _m('Additional URL parameters' ), 'text', false, true)
-            );
+        ];
     }
 
     /** Name of this Manager's action
@@ -719,7 +719,7 @@ class AA_Manageraction extends AA_Storable {
 
     /** Do this action have some settings, which should be displayed? */
     function isSetting() {
-        return is_callable(array($this, 'htmlSettings'));
+        return is_callable([$this, 'htmlSettings']);
     }
 }
 
@@ -728,7 +728,7 @@ class AA_Manageractions {
     var $actions;
 
     function __construct() {
-        $this->actions = array();
+        $this->actions = [];
     }
 
     /**

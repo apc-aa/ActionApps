@@ -75,7 +75,7 @@ function IsDuplicated( $packet ) {
     if ( is_array($packet) || is_object($packet)) {
         $packet = serialize($packet);
     }
-    return DB_AA::test('offline', array(array('digest', md5($packet))));
+    return DB_AA::test('offline', [['digest', md5($packet)]]);
 }
 
 /** RegisterItem function
@@ -176,7 +176,7 @@ function SendOkPage($txt) {
 }
 
   // init used objects
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ( !$slice_id ) {

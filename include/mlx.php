@@ -35,12 +35,12 @@
 * @note the names dont follow any standard (but are based on DIN) and can be extended
 * the font face and align info should be in the stylesheet
 */
-$mlxScriptsTable = array(
-    "DR" => array("name"=>"Dari", "DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTIFY"),
-    "AR" => array("name"=>"Arabic","DIR"=>"RTL","ALIGN"=>"JUSTIFY"),
-    "PS" => array("name"=>"Pashtoo","DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTFIY"),
-    "KU" => array("name"=>"Kurdish","DIR"=>"RTL","FONT"=>"FACE=\"Ali_Web_Samik\"")
-);
+$mlxScriptsTable = [
+    "DR" => ["name"=>"Dari", "DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTIFY"],
+    "AR" => ["name"=>"Arabic","DIR"=>"RTL","ALIGN"=>"JUSTIFY"],
+    "PS" => ["name"=>"Pashtoo","DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTFIY"],
+    "KU" => ["name"=>"Kurdish","DIR"=>"RTL","FONT"=>"FACE=\"Ali_Web_Samik\""]
+];
 
 /** @deprecated: using mlxctrl instead
     the field type in the Control Slice whose name sets the
@@ -173,7 +173,7 @@ class MLXCtrl {
         foreach( $fields as $v ) {
             // is it mlxctrl field (field for one af the languages)?
             if (isset($v['id']) && ( strpos($v['id'],MLX_LANG2ID_TYPE)) === 0) {
-                $this->translations[] = array($v['name'] => $content[$itemid][$v['id']][0]['value']);
+                $this->translations[] = [$v['name'] => $content[$itemid][$v['id']][0]['value']];
             }
         }
     }
@@ -251,8 +251,8 @@ class MLX {
      */
     function update(&$content4id, $cntitemid, $action, $mlxl, $mlxid) {
 
-        $content4mlxid    = array();
-        $oldcontent4mlxid = array();
+        $content4mlxid    = [];
+        $oldcontent4mlxid = [];
         $insert = false;
         if ((($action == "insert") || ($action == "update")) && $mlxl && $mlxid) {
             $this->trace("Updating control data..");
@@ -272,7 +272,7 @@ class MLX {
         $qp_cntitemid = pack_id($cntitemid);
         foreach ($this->ctrlFields as $k => $v) {
             if ($v['name'] == $lang) {
-                $content4mlxid[(string)$k] = array(array('value' => $qp_cntitemid));
+                $content4mlxid[(string)$k] = [['value' => $qp_cntitemid]];
             } elseif ($oldcontent4mlxid && ($oldcontent4mlxid[(string)$k][0]['value'] == $qp_cntitemid)) {
                 $content4mlxid[(string)$k] = 0;
             }
@@ -424,7 +424,7 @@ class MLX {
         if ($GLOBALS['mlxScriptsTable'][(string)$lang] && $GLOBALS['mlxScriptsTable'][(string)$lang]['DIR']) {
             $GLOBALS['mlxFormControlExtra'] = " DIR=".$GLOBALS['mlxScriptsTable'][(string)$lang]['DIR']." ";
         }
-        return array($mlxout.MLX_HTML_TABFT, (string)$lang, (string)$mlxid);//"\n</tr>\n</tbody>\n</table>\n<br>\n";
+        return [$mlxout.MLX_HTML_TABFT, (string)$lang, (string)$mlxid];//"\n</tr>\n</tbody>\n</table>\n<br>\n";
     }
 
     // helper functions
@@ -450,7 +450,7 @@ class MLX {
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
-                $this->fatal(_m("Bad item ID %1", array($mlxid)).var_export($mlxid));
+                $this->fatal(_m("Bad item ID %1", [$mlxid]).var_export($mlxid));
             }
             $content4mlxid = $content[$mlxid];
         }
@@ -507,7 +507,7 @@ class MLX {
 class MLXView {
 
     // the language code to default to
-    var $language = array();
+    var $language = [];
     // the mode to use: MLX  -> use defaulting: if lang not available fall back
     //                          to another translation of same article (MultiLingual)
     //                  ONLY -> show only items available in this language (like conds[lc]=lang)
@@ -525,7 +525,7 @@ class MLXView {
             unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
         }
 //          __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
-        $supported_modes = array("MLX","ONLY","ALL");
+        $supported_modes = ["MLX","ONLY","ALL"];
         if($mlx) {
             $arr = explode("-",$mlx);
             foreach($arr as $av) {
@@ -551,7 +551,7 @@ class MLXView {
             case 'ONLY': //add to conds
                 $translations = $this->getPrioTranslationFields($ctrlSliceID);
                 $value = key($translations);
-                $conds[] = array('lang_code.......'=>$value, 'value'=>$value, 'operator'=>"=");
+                $conds[] = ['lang_code.......'=>$value, 'value'=>$value, 'operator'=>"="];
                 break;
                 // 		__mlx_dbg($conds,"conds".__FUNCTION__);
             default:
@@ -590,7 +590,7 @@ class MLXView {
         }
 
         $translations = $this->getPrioTranslationFields($ctrlSliceID,$slice_id);
-        $arr = array();
+        $arr = [];
         foreach($zidsObj->a as $packedid) {
             $arr[(string)$packedid] = 1;
         }
@@ -753,7 +753,7 @@ class MLXView {
             //$o .= unpack_id($db->Record[0]);
             $lang    = array_search((string)$db->Record[1],$translations);
             $itemid  = unpack_id($db->Record[0]);
-            $o      .= str_replace(array("%lang","%itemid"),array($lang,"$itemid"),
+            $o      .= str_replace(["%lang","%itemid"], [$lang,"$itemid"],
                 $tmpl);
             //__mlx_dbg($db->Record);
         }
@@ -770,7 +770,7 @@ class MLXView {
             return $GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID];
         }
         $fields        = AA_Slice::getModule($ctrlSliceID)->fields('record');
-        $translations  = array();
+        $translations  = [];
         if(!is_array($fields)) {
             return $translations;
         }
@@ -831,7 +831,7 @@ class MLXEvents {
 //		print_r($item_ids);
 //		print("$slice_id");
         // dont use this unless you use the special field type mlxctrl everywhere
-        $rm_itemids = array();
+        $rm_itemids = [];
         $db         = getDB();
         foreach($item_ids as $itemid) {
             $db->query("SELECT item_id FROM content WHERE ( `field_id` "
@@ -862,7 +862,7 @@ class MLXEvents {
 };
 class MLXGetText
 {
-    var $domains = array();
+    var $domains = [];
     var $currentDomain;
     var $currentDomainRef;
     var $currentLang = 0;
@@ -871,7 +871,7 @@ class MLXGetText
      *
      */
     function __construct() {
-        $ca = array('global');
+        $ca = ['global'];
         $this->setdomain($ca);
     }
 
@@ -913,7 +913,7 @@ class MLXGetText
     function command(&$args,$slice_id=0) {
 //		__mlx_dbg($args,"command args");
 //		__mlx_dbg($slice_id,"command slice");
-        call_user_func_array(array(&$this, $args[0]),array(&$args,&$slice_id));
+        call_user_func_array([&$this, $args[0]], [&$args,&$slice_id]);
         return "";
     }
     ///\param slice_id 	unpacked id of slice containing translations
@@ -928,7 +928,7 @@ class MLXGetText
     function addslice(&$args) {
         //xdebug_start_profiling();
         list(,$slice2add,$lang,$domain,$mode) = $args;
-        $scda = array($domain);
+        $scda = [$domain];
         $this->setdomain($scda);
         if($this->currentDomainRef['slices'][$slice2add]) {
             return $slice2add;
@@ -936,7 +936,7 @@ class MLXGetText
         $mode = ($mode=='learn'?1:0);
         $isModeActive = ($mode && 1);
         $this->currentDomainRef['mode'] = $mode;
-        $this->currentDomainRef['slices'][$slice2add] = array();
+        $this->currentDomainRef['slices'][$slice2add] = [];
         $fields = AA_Slice::getModule($slice2add)->fields('record');
         //__mlx_dbg($fields);
         $lang = strtoupper($lang);

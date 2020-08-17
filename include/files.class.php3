@@ -146,7 +146,7 @@ class Files {
         }
 
         if (($text = file_get_contents($dest_file)) === false) {
-            Files::lastErr(FILE_ERROR_READ, _m("Can't read the file %1", array($dest_file)));  // set error code
+            Files::lastErr(FILE_ERROR_READ, _m("Can't read the file %1", [$dest_file]));  // set error code
             return false;
         }
 
@@ -215,7 +215,7 @@ class Files {
         // copy the file from the temp directory to the upload directory, and test for success
         // (if the file already exists, move_uploaded_file will overwrite it!)
         if (!move_uploaded_file($up_file['tmp_name'], $dest_file)) {
-            Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", array($up_file['tmp_name'], $dest_file)));  // set error code
+            Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", [$up_file['tmp_name'], $dest_file]));  // set error code
             return false;
         }
 
@@ -670,7 +670,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper {
      */
     function addHeader($name, $value) {
         if (!isset($this->headers)) {
-            $this->headers = array();
+            $this->headers = [];
         }
         $this->headers[$name] = $value;
     }
@@ -955,8 +955,8 @@ class AA_Directory_Wrapper {
         $this->info            = $info;
         $this->dp              = NULL;
         $this->is_read         = false;
-        $this->subdir_names    = array();
-        $this->file_names      = array();
+        $this->subdir_names    = [];
+        $this->file_names      = [];
         $this->reg_file_filter = false;
     }
 
@@ -1060,8 +1060,8 @@ class AA_Directory_Wrapper {
      */
     function reloadWholeDir() {
         $this->is_read = false;
-        $this->subdir_names = array();
-        $this->file_names = array();
+        $this->subdir_names = [];
+        $this->file_names = [];
         $this->readWholeDir();
     }
 
@@ -1141,7 +1141,7 @@ class AA_Directory_Wrapper {
             return false;
         }
         if ($this->reg_file_filter) {
-            $return_array = array();
+            $return_array = [];
             foreach ($all_file_names as $file_name) {
                 if (preg_match('`'.str_replace('`','\`',$this->reg_file_filter).'`i', $file_name)) {
                     $return_array[] = $file_name;
@@ -1186,14 +1186,14 @@ class AA_Directory_Wrapper {
      * @return array of arrays indexed by values
      */
     function  getSubdirNamesRecur() {
-        $return_array = array();
+        $return_array = [];
         if ($this->readWholeDir()) {
             //compare if is it prefered subdir
             if ($this->url == self::_getStatic('needed_subdir_name')) {
                 self::_setStatic('subdir_file_names', $this->file_names);
             }
             if (empty($this->subdir_names)) {
-                return array();
+                return [];
             }
 
             foreach ($this->subdir_names as $subdir_name) {
@@ -1203,7 +1203,7 @@ class AA_Directory_Wrapper {
             return $return_array;
 
         } else {
-            return array();
+            return [];
         }
     }
 

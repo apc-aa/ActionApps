@@ -26,7 +26,7 @@ class MngWidget extends \AA\Widget\Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties() {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -84,6 +84,6 @@ class MngWidget extends \AA\Widget\Widget {
         //$mng_field=null, $mng_item_id=null, $mng_code=null, $mng_conds=null, $mng_sort=null, $mng_mode=null, $mng_edit_code=null)
 
         $widget .= \AA::Stringexpander()->unalias("{manager:$mng_slice:$mng_field:$input_value:$mng_code:$mng_conds:$mng_sort:$mng_mode:$mng_edit_code}");
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }

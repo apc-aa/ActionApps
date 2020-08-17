@@ -4,8 +4,8 @@ namespace AA\Util;
 
 class LibUpdater {
     public function getUpdatedsystemDefinitions() {
-        $msg     = array();
-        $newdefs = array();
+        $msg     = [];
+        $newdefs = [];
         $defs  = \AA_Requires::systemDefinitions();
         foreach ($defs as $name => $req) {
             $pad_name = str_pad("'$name'",29);

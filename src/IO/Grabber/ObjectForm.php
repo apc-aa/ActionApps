@@ -45,7 +45,7 @@ use AA_Content;
  *   is called to grab the value (or multivalues) from the submitted form
  */
 class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
-    private $_content = array();
+    private $_content = [];
     private $_last_store_mode;
 
     function __construct() {
@@ -99,7 +99,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $this->_content = array();
+        $this->_content = [];
         if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
             return;
         }
@@ -108,7 +108,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
          *  or n<number>_<slice_id> for new object.
          *  We have to construct translation table of the ids
          */
-        $id_trans_table = array();
+        $id_trans_table = [];
 
         $aa = $_POST['aa'];
 
@@ -148,7 +148,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
                 $aa_value->replaceInValues($trans_obj_alias, $trans_obj_ids);
                 $content->setAaValue($field_id, $aa_value);
             }
-            $this->_content[] = array($content, $ident['store_mode']);
+            $this->_content[] = [$content, $ident['store_mode']];
         }
 
         reset($this->_content);
@@ -158,7 +158,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
      *  input
      */
     function finish() {
-        $this->_content = array();
+        $this->_content = [];
     }
 
 
@@ -169,7 +169,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
      *    owner
      */
     private static function _parseDirtyId($dirty_obj_id, $id_trans_table) {
-        $ret = array();
+        $ret = [];
         switch ($dirty_obj_id{0}) {
             case 'u':
                 $ret['store_mode'] = 'update';

@@ -87,13 +87,17 @@ echo "$Msg <br>";
 echo '<form name="inputform" method=post action="'. StateUrl() .'">';
 FrmTabCaption(_m("Select constants"), '');
 
-echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1), $preset_value) : '') .'</td></tr>';
+echo '<tr><td>'. ($field ? $field->getWidgetNewHtml(null, null, 'mch', ['columns' => 1], $preset_value) : '') .'</td></tr>';
 
-$form_buttons = array("var_id" => array("type" =>"hidden", "value"=>$var_id),
-                      "btn_ok" => array("type" =>"button",
+$form_buttons = [
+    "var_id" => ["type" =>"hidden", "value"=>$var_id],
+                      "btn_ok" => [
+                          "type" =>"button",
                                         "value"=> _m("OK"),
-                                        "add"  => 'onclick=\'updateChanges(this.form)\''),
-                      "close");
+                                        "add"  => 'onclick=\'updateChanges(this.form)\''
+                      ],
+                      "close"
+];
 
 FrmTabEnd($form_buttons);
 echo "</form>

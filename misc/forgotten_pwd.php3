@@ -84,7 +84,7 @@ if ($do=="chu") { //CHeck User
     $mail->setHeader("Reply-To", ERROR_REPORTING_EMAIL);
     $mail->setHeader("Errors-To", ERROR_REPORTING_EMAIL);
     //$mail->setCharset(AA_Langs::getCharset(substr ($db->f("lang_file"),0,2)));
-    $mail->send(array($email));
+    $mail->send([$email]);
     echo "The email with the key allowing to reset your password has been sent to you to this email address: $email";
 }
 if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
@@ -116,7 +116,7 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
        $itemID  = unpack_id($userdata["id.............."][0]['value']);
        $fields = AA_Slice::getModule($sliceID)->fields('record');
        $fields["password........"]["input_insert_func"] = "qte:";
-       $userdata["password........"][0]['value']        = ParamImplode(array('AA_PASSWD',$password));
+       $userdata["password........"][0]['value']        = ParamImplode(['AA_PASSWD',$password]);
        $update = StoreItem( $itemID, $sliceID, $userdata, false, true, false ); // insert, invalidatecache, feed
        if ($update) echo "Your password has been updated."; else
        die ("There was an error updating your password. Please contact ".ERROR_REPORTING_EMAIL);
@@ -126,7 +126,7 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
 function GetUserData($identification,$findby="headline........") {
     // create fields array - headline........ for user name, con_email....... for email
     $ret=false;
-    $conds[] = array( $findby => $identification );
+    $conds[] = [$findby => $identification];
 
     // getReaderManagement slices
     $db = getDB();

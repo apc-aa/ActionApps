@@ -11,13 +11,13 @@ namespace AA\Util;
 
 class Searchfields implements \Iterator, \ArrayAccess, \Countable {
 
-    protected $fields = array();
+    protected $fields = [];
 
     /**  Valid searchfield properties
      * @todo convert to class constants after php >=5.6
      */
     private static function FLDPROPS() {
-        return  array('name', 'field', 'operators', 'table', 'search_pri', 'order_pri', 'opt_group');
+        return  ['name', 'field', 'operators', 'table', 'search_pri', 'order_pri', 'opt_group'];
     }
 
     /**  add search field to Searchfields
@@ -34,7 +34,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
         if (!$id) {
             return;
         }
-        $this->fields[$id] = array('name'=>$name, 'field'=>$field, 'operators'=>$operators, 'table'=>$table, 'search_pri'=>$search_pri, 'order_pri'=>$order_pri, 'opt_group'=>$opt_group);
+        $this->fields[$id] = ['name'=>$name, 'field'=>$field, 'operators'=>$operators, 'table'=>$table, 'search_pri'=>$search_pri, 'order_pri'=>$order_pri, 'opt_group'=>$opt_group];
     }
 
     public function addArray( $id, array $fld) {
@@ -67,7 +67,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @return array
      */
     public function getOrderArray() {
-        $order_fields     = array();
+        $order_fields     = [];
         $fields           = $this->fields;
 
         // sort
@@ -109,8 +109,8 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
      * @return array
      */
     private function generateArray($type, $add_alltext=true, $add_allnum=true) {
-        $search_fields    = array();
-        $search_operators = array();
+        $search_fields    = [];
+        $search_operators = [];
         $fields           = $this->fields;
 
         // add "all fields" search

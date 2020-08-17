@@ -33,11 +33,13 @@ require_once AA_INC_PATH."pagecache.php3";
 // add mlx functions
 require_once AA_INC_PATH."mlx.php";
 
-$PERMS_STATE = array( "0" => _m("Not allowed"),
+$PERMS_STATE = [
+    "0" => _m("Not allowed"),
                       "1" => _m("Active"),
-                      "2" => _m("Hold bin") );
+                      "2" => _m("Hold bin")
+];
 
-$PERMS_ANONYMOUS_EDIT = array(
+$PERMS_ANONYMOUS_EDIT = [
     ANONYMOUS_EDIT_NOT_ALLOWED      => _m("Not allowed"),
     ANONYMOUS_EDIT_ALL              => _m("All items"),
     ANONYMOUS_EDIT_ONLY_ANONYMOUS   => _m("Only items posted anonymously"),
@@ -45,7 +47,7 @@ $PERMS_ANONYMOUS_EDIT = array(
     ANONYMOUS_EDIT_PASSWORD         => _m("Authorized by a password field"),
     ANONYMOUS_EDIT_HTTP_AUTH        => _m("Readers, authorized by HTTP auth"),
     ANONYMOUS_EDIT_CRON             => _m("Only by Planned tasks (cron-toexecute)")
-);
+];
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -63,7 +65,7 @@ if ($cancel) {
 //     }
 // }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();
 
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
@@ -72,16 +74,16 @@ require_once AA_INC_PATH."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 
-$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), array('module.id',$foo_source, 'l')));
+$sarr = DB_AA::select1('SELECT slice.id, slice.name, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], ['module.id',$foo_source, 'l']]);
 if (!$sarr) {
-    $sarr = array();
+    $sarr = [];
 }
 
 $flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALLOW_EXPIRED_CONTENT;
 $flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
 
 // lookup owners
-$slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
+$slice_owners = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
 
 $biglangs = AA_Langs::getFiles();
 
@@ -90,9 +92,9 @@ $apage->setTitle( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")
 $apage->printHead($err, $Msg);
 
 if ($slice_id == "") {
-    $form_buttons = array("insert", "cancel"=>array("url"=>"sliceadd.php3"));
+    $form_buttons = ["insert", "cancel"=> ["url"=>"sliceadd.php3"]];
 } else {
-    $form_buttons = array ("update", "cancel"=>array("url"=>"sliceadd.php3"));
+    $form_buttons = ["update", "cancel"=> ["url"=>"sliceadd.php3"]];
 }
 
 FrmTabCaption(_m("Slice"), $form_buttons);
@@ -139,10 +141,10 @@ FrmStaticText(_m("Created"), date('Y-m-d H:i', $sarr['created_at']). ' ('. perm_
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
 FrmInputText("d_listlen", _m("Listing length"), $sarr['d_listlen'], 5, 5, false, _m('Used by slice.php3. Fill 0 to disable slice.php3 output for this slice (recommended for all newer slices - they are presented by Site Module).'));
 //mimo's MLX
-if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('SELECT name FROM `slice`', 'name', array(array('mlxctrl', $slice_id, 'l'))))) {
+if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('SELECT name FROM `slice`', 'name', [['mlxctrl', $slice_id, 'l']]))) {
     FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "http://mimo.gn.apc.org/mlx/");
 } else {
-    $mlx_slices = DB_AA::select(array('unpackid'=>'name'), "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
+    $mlx_slices = DB_AA::select(['unpackid'=>'name'], "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
     FrmInputSelect('mlxctrl', _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($sarr['mlxctrl']), false, "", "http://mimo.gn.apc.org/mlx/");
 }
 

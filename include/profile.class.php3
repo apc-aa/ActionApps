@@ -60,9 +60,9 @@ class AA_Profile {
      */
     static function getProfile($user_id, $module_id) {
         // AA_Profiles array
-        static $instances = array();
+        static $instances = [];
         if (empty($instances[$user_id])) {
-            $instances[$user_id] = array();
+            $instances[$user_id] = [];
         }
         if (empty($instances[$user_id][$module_id])) {
             $instances[$user_id][$module_id] = new AA_Profile($user_id, $module_id);
@@ -87,14 +87,14 @@ class AA_Profile {
         if ( !$this->module_id OR (isset($this->properties) AND is_array($this->properties)) ) {
             return;
         }
-        $this->properties = array();
+        $this->properties = [];
 
         // get also profiles from user's group(s)
         $groups     = AA::$perm->getMembership($this->user_id);
-        $usr_groups = array_merge(array($this->user_id, '*'), $groups);
+        $usr_groups = array_merge([$this->user_id, '*'], $groups);
 
         // default setting for the slice is stored as user with uid = *
-        $profiles = DB_AA::select(array(), 'SELECT * FROM profile', array(array('slice_id',$this->module_id,'l'), array('uid',$usr_groups)));
+        $profiles = DB_AA::select([], 'SELECT * FROM profile', [['slice_id',$this->module_id,'l'], ['uid',$usr_groups]]);
 
         foreach ($profiles as $pi) {
             if ( $pi['uid'] == $this->user_id ) {
@@ -135,7 +135,7 @@ class AA_Profile {
      * @param $uid
      */
     function set($property, $selector, $value, $type='u', $id='', $uid='') {
-        $this->properties[$property][$selector] = array($value,$type, $id, $uid);
+        $this->properties[$property][$selector] = [$value,$type, $id, $uid];
     }
 
 

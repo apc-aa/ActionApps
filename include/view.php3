@@ -43,7 +43,7 @@ require_once AA_INC_PATH . "mlx.php";
  * @return array
  */
 function GetAliasesFromUrl($als) {
-    $ret = array();
+    $ret = [];
     if (is_array($als) ) {
         foreach ( $als as $k => $v ) {
             $ret["_#".$k] = GetAliasDef( "f_s:$v" );
@@ -57,7 +57,7 @@ function GetAliasesFromUrl($als) {
  * @return array
  */
 function GetViewAliases($conds) {
-    $ret = array();
+    $ret = [];
     if (is_array($conds) ) {
         foreach ( $conds as $k => $v ) {
             $ret[str_pad('_#VIEW_C'.($k+1), 10 ,'_')] = GetAliasDef( 'f_s:'.$v['value'] );
@@ -128,7 +128,7 @@ class AA_View_Commands {
      * @param $als
      */
     function __construct($cmd, $als=false) {
-        $this->commands = array();
+        $this->commands = [];
         $this->parseCommand($cmd, $als);
     }
 
@@ -223,7 +223,7 @@ class AA_View_Commands {
             }
 
             list($command, $params) = explode("-", $cmd_part, 2);
-            $splited = in_array($command, array('x', 'i', 'o')) ? explode("-", $params) : split_escaped("-", $params, "--");
+            $splited = in_array($command, ['x', 'i', 'o']) ? explode("-", $params) : split_escaped("-", $params, "--");
             $this->addCommand($command, $splited);
 
 //            $splited = split_escaped("-", $cmd_part, "--");
@@ -243,7 +243,7 @@ class AA_View_Commands {
  * @return array asociative array of properties
  */
 function ParseSettings($set_arr) {
-    $ret  = array();
+    $ret  = [];
     foreach ($set_arr as $set) {
         $sets = split_escaped(",", $set, ",,");
         if (isset($sets) AND is_array($sets)) {
@@ -277,7 +277,7 @@ function ParseViewParameters($query_string="") {
             $vid = $parts[1];
 
             // it is possible to write vid=574&cmd[]=c-1-test&cmd[]=c-2-1
-            $query_string = str_replace( array('cmd[][]','cmd[]','set[][]','set[]'), array("cmd[$vid][]","cmd[$vid][]", "set[$vid][]", "set[$vid][]"), $query_string );
+            $query_string = str_replace( ['cmd[][]','cmd[]','set[][]','set[]'], ["cmd[$vid][]","cmd[$vid][]", "set[$vid][]", "set[$vid][]"], $query_string );
 
             // we no not want older calls to ParseViewParameters() will infect this call
             // @todo - make two versions - one for url parameters, second for
@@ -357,14 +357,14 @@ function ParseViewParameters($query_string="") {
         }
     }
 
-    $arr = isset($new_params['set'][$vid]) ? ParseSettings((array)$new_params['set'][$vid]) : array();
+    $arr = isset($new_params['set'][$vid]) ? ParseSettings((array)$new_params['set'][$vid]) : [];
 
     // Following line is here just for caching purposes - we are creating cache
     // keystring from view parameters and we need to add all set[] and cmd[]
     // in the keystring, because of cases like:
     //     view.php3?vid=1781&set[997]=selected-759644
     // (view 997 is called inside 1781)
-    $arr['forcache'] = array($new_params);
+    $arr['forcache'] = [$new_params];
 
     if ($arr['slices']) {
         $arr['slices'] = array_filter(explode_ids($arr['slices']),'is_long_id');
@@ -430,7 +430,7 @@ function ParseViewParameters($query_string="") {
  *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
  */
 function ParseBannerParam($banner_param) {
-    $ret = array();
+    $ret = [];
     if ( $banner_param ) {
         list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$banner_param);
         $ret['banner_position']   = $foo_pos;
@@ -475,13 +475,13 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
             $list_from   = $listlen * ($page-1) + $list_from;
         }
     }
-    return array( $listlen, $random ?: ($list_from ?: 0) );
+    return [$listlen, $random ?: ($list_from ?: 0)];
 }
 
 
 
 class AA_Showview {
-    protected $_view_param    = array();
+    protected $_view_param    = [];
     protected $_used_slice_id = null;
     protected $_hit_id        = null;
 
@@ -502,9 +502,11 @@ class AA_Showview {
         $conds = $this->_view_param["conds"];
         $slices = $this->_view_param["slices"];
         $param_conds = $this->_view_param["param_conds"];
-        $param_sort = array('sort' => $this->_view_param["sort"],
+        $param_sort = [
+            'sort' => $this->_view_param["sort"],
             'group_by' => $this->_view_param["group_by"],
-            'group_limit' => $this->_view_param["group_limit"]);
+            'group_limit' => $this->_view_param["group_limit"]
+        ];
         $category_id = $this->_view_param['cat'];
         // $item_ids   = $this->_view_param["item_ids"];
         $zids = $this->_view_param["zids"];
@@ -544,7 +546,7 @@ class AA_Showview {
         }
         if (!AA::$langnum) { // for multilingual content (not defined when called from view.php3, or cron.php3 mail, ...)
             AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
-            AA::$langnum = array(AA_Content::getLangName2Num(AA::$lang));   // array of prefered languages in priority order.
+            AA::$langnum = [AA_Content::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
 
         $noitem_msg = (isset($this->_view_param["noitem"]) ? $this->_view_param["noitem"] :
@@ -577,12 +579,14 @@ class AA_Showview {
         switch( $view_info['type'] ) {
             case 'discus':
                 // create array of discussion parameters
-                $disc = array('ids'         => ($this->_view_param["all_ids"] ? "" : $this->_view_param["ids"]),
+                $disc = [
+                    'ids'         => ($this->_view_param["all_ids"] ? "" : $this->_view_param["ids"]),
                               'item_id'     => $this->_view_param["sh_itm"],
                               'vid'         => $vid,
                               'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
                               'parent_id'   => $this->_view_param["parent_id"],
-                              'disc_ids'    => $this->_view_param["disc_ids"]);
+                              'disc_ids'    => $this->_view_param["disc_ids"]
+                ];
                 if (($this->_view_param["disc_type"] == "list") || is_array($this->_view_param["disc_ids"])) {
                     $disc['type'] = "list";
                 } elseif ($this->_view_param["add_disc"]) {
@@ -692,8 +696,10 @@ class AA_Showview {
                 if ($year < 1900 || $year > 3000) {
                     $year = $today['year'];
                 }
-                $calendar_conds = array (array( 'operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1 ),
-                                         array( 'operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1 ));
+                $calendar_conds = [
+                    ['operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1],
+                                         ['operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1]
+                ];
                 // Note drops through to next case
 
     //        case 'full':  // parameters: zids, als
@@ -738,7 +744,7 @@ class AA_Showview {
                     $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
                 }
                 $bin   = ($zids AND $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
-                $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, $bin, 0, $zids);
+                $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : [$slice_id]), $conds, $sort, $bin, 0, $zids);
 
                 if ($mlxslice) {
                     $GLOBALS['mlxView']->postQueryZIDs($zids2,$mlxslice,$slice_id);

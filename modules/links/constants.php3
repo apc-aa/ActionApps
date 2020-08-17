@@ -95,7 +95,7 @@ function GetLinkFields() {  // function - we need trnslate _m() on use (not at i
 
 /** Predefined aliases for links. For another aliases use 'inline' aliases. */
 function GetLinkAliases() {  // function - we need trnslate _m() on use (not at include time)
-  return array(
+  return [
     "_#LINK_ID_" => GetAliasDef( "f_t",               "id",              _m('Link id')),
     "_#L_NAME__" => GetAliasDef( "f_t",               "name",            _m('Link name')),
     "_#L_O_NAME" => GetAliasDef( "f_t",               "original_name",   _m('Link original name')),
@@ -137,7 +137,7 @@ function GetLinkAliases() {  // function - we need trnslate _m() on use (not at 
     "_#ID_COUNT" => GetAliasDef( "f_e:itemcount",     "cat_id",          _m("Number of found Links")),
     "_#EDITLINK" => GetAliasDef( "f_e:link_edit",     "cat_id",          _m('Link to link editing page (for admin interface only)')),
     "_#CATEG_GO" => GetAliasDef( "f_e:link_go_categ", "cat_id",          _m('Category listing with links (for admin interface only)'))
-    );
+  ];
 }
 
 
@@ -145,7 +145,7 @@ function GetLinkAliases() {  // function - we need trnslate _m() on use (not at 
  * (modules/links/index.php3)
  */
 function GetCategoryFields() {  // function - we need trnslate _m() on use (not at include time)
-    return array(
+    return [
      'id'          => GetFieldDef( _m('Id'),          'links_categories.id',          'numeric', false,           10, 10),
      'name'        => GetFieldDef( _m('Name'),        'links_categories.name',        'text',    false,           20, 20),
      'path'        => GetFieldDef( _m('Path'),        'links_categories.path',        'text',    false,           30, 30),
@@ -154,12 +154,12 @@ function GetCategoryFields() {  // function - we need trnslate _m() on use (not 
      'note'        => GetFieldDef( _m('Note'),        'links_categories.note',        'text',    false,           60, 60),
      'priority'    => GetFieldDef( _m('Priority'),    'links_cat_cat.priority',       'numeric', 'links_cat_cat', 70, 70),
      'state'       => GetFieldDef( _m('State'),       'links_cat_cat.state',          'text',    'links_cat_cat', 80, 80)
-               );
+    ];
 }
 
 /** Predefined aliases for links. For another aliases use 'inline' aliases. */
 function GetCategoryAliases() {  // function - we need trnslate _m() on use (not at include time)
-    return array(
+    return [
     "_#CATEG_ID" => GetAliasDef( "f_t", "id",          _m('Category id')),
     "_#C_NAME__" => GetAliasDef( "f_t", "name",        _m('Category name')),
     "_#C_LCOUNT" => GetAliasDef( "f_t", "link_count",  _m('Number of links in category')),
@@ -169,7 +169,7 @@ function GetCategoryAliases() {  // function - we need trnslate _m() on use (not
     "_#C_PATH__" => GetAliasDef( "l_p:1:: / :", "path",        _m('Path to current category')),
     "_#C_GENERL" => GetAliasDef( "l_g", "name",        _m('Is this category general one? (1/0)')),
     "_#C_GENPRI" => GetAliasDef( "l_o", "name",        _m('Print category priority, if category is general one.'))
-    );
+    ];
 }
 
 

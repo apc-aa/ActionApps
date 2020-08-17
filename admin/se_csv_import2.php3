@@ -218,7 +218,7 @@ class AA_Csv_Importer {
 
             if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
-                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, array(false));     // not invalidate cache
+                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, [false]);     // not invalidate cache
                 if ($added_to_db == false) {
                     $err = _m("Cannot store item to DB"). ' '. ItemContent::lastErrMsg();
                 }
@@ -227,7 +227,7 @@ class AA_Csv_Importer {
                 $numError++;
                 $msg.= _m("Transformation error:"). $err . "not inserted";
             } else {
-                $msg.= _m('Ok: Item %1 stored', array($added_to_db));
+                $msg.= _m('Ok: Item %1 stored', [$added_to_db]);
             }
             $msg .= "<br>\n";
         }
@@ -241,7 +241,7 @@ class AA_Csv_Importer {
         fclose($handle);
 
         // deletes  uploaded file, todo - uncomment
-        if ( !in_array( Files::sourceType($this->fileName), array('HTTP', 'HTTPS')) ) {
+        if ( !in_array( Files::sourceType($this->fileName), ['HTTP', 'HTTPS']) ) {
             if (unlink($this->fileName)) {
                 AA_Log::write("CSV_IMPORT", '', _m("Ok : file deleted ") . $this->fileName);
             } else {
@@ -321,21 +321,30 @@ class AA_Csv_Importer {
         $inFields = createFieldNames($this->fileName,$this->addParams);
 
 
-        $form_buttons = array("preview"         => array( "type"      => "submit",
+        $form_buttons = [
+            "preview"         => [
+                "type"      => "submit",
                                                           "value"     => _m("Preview"),
-                                                          "accesskey" => "P"),
-                              "upload"          => array( "type"      => "submit",
+                                                          "accesskey" => "P"
+            ],
+                              "upload"          => [
+                                  "type"      => "submit",
                                                           "value"     => _m("Finish"),
-                                                          "accesskey" => "S"),
-                              "save"            => array( "type"      => "submit",
+                                                          "accesskey" => "S"
+                              ],
+                              "save"            => [
+                                  "type"      => "submit",
                                                           "value"     => _m("Save"),
-                                                          "accesskey" => "A"),
-                              "load"            => array( "type"      => "submit",
+                                                          "accesskey" => "A"
+                              ],
+                              "load"            => [
+                                  "type"      => "submit",
                                                           "value"     => _m("Load"),
-                                                          "accesskey" => "L"),
-                              "fileName"        => array( "value"     => $this->fileName ),
-                              "addParamsSerial" => array( "value"     => bin2url(serialize($this->addParams)))
-                             );
+                                                          "accesskey" => "L"
+                              ],
+                              "fileName"        => ["value"     => $this->fileName],
+                              "addParamsSerial" => ["value"     => bin2url(serialize($this->addParams))]
+        ];
 
 
         echo '<form enctype="multipart/form-data" method=post name="f" action="'. StateUrl(self_base() . "se_csv_import2.php3") .'">';
@@ -382,9 +391,11 @@ class AA_Csv_Importer {
                  echo _m("Map item id from"). '&nbsp';
                  FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ? $this->itemIdMappedFrom : ( !$set_default ? '' : $inFields[0]));
                  echo '<br>';
-                 $mapping_options = array ( 'store'     => _m('unpacked long id (32 chracters)'),
+                 $mapping_options = [
+                     'store'     => _m('unpacked long id (32 chracters)'),
                                             'unpack_id' => _m('packed long id (16 chracters)'),
-                                            'string2id' => _m('string to be converted (string2id) - with param:'));
+                                            'string2id' => _m('string to be converted (string2id) - with param:')
+                 ];
 
                  FrmSelectEasy("itemIdMappedActions",$mapping_options, !$set_default ? $this->itemIdMappedActions : 'store');
                  echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. (!$set_default ? $this->itemIdMappedParams : '').'">';
@@ -392,14 +403,15 @@ class AA_Csv_Importer {
             </tr>
         <?php
         FrmTabSeparator(_m("Select, how to store the items"));
-        $storage_mode = array('insert_if_new' => _m('Do not store the item'),
+        $storage_mode = [
+            'insert_if_new' => _m('Do not store the item'),
                               'insert_new'    => _m('Store the item with new id'),
                               'overwrite'     => _m('Update the item (overwrite)'),
                               'add'           => _m('Add the values in paralel to current values (the multivalues are stored, where possible)'),
                               'update'        => _m('Rewrite only the fields, for which the action is defined and compute all computed fileds, ...'),
                               'update_silent' => _m('Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)'),
                               'update_filled' => _m('Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)')
-                              );
+        ];
 
         FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, !$set_default ? $this->actionIfItemExists : "insert_if_new", true, '', '', 1);
         FrmTabSeparator(_m("Data source"));
@@ -415,7 +427,7 @@ class AA_Csv_Importer {
 
         FrmInputText('save_name', _m('Save setting as'), $this->save_name);
 
-        if ( in_array(Files::sourceType($this->fileName), array('HTTP','HTTPS'))) {
+        if ( in_array(Files::sourceType($this->fileName), ['HTTP','HTTPS'])) {
             FrmInputChBox('save_periodical', _m('Upload periodicaly'), $this->save_periodical);
         }
 

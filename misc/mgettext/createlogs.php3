@@ -49,7 +49,7 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
         $consts = get_defined_constants();
         foreach ($consts as $name => $value) {
             if (substr ($name,0,2) == "L_" && $value) {
-                $value = str_replace( array('"',"\n","\r"), array('\\"',"\\n",""), $value);
+                $value = str_replace( ['"',"\n","\r"], ['\\"',"\\n",""], $value);
                 if ($lang == "en") {
                     fwrite ($fd, "\$_log[\"$value\"][] = \"$name\";\n");
                 } else {

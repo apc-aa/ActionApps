@@ -37,7 +37,7 @@
 
 // An array mapping all the name spaces we've seen in RSS feeds to abbreviations
 // Only a few of the abbreviations are likely to be used below
-$module2abbrev = array(
+$module2abbrev = [
         "HTTP://WWW.W3.ORG/1999/02/22-RDF-SYNTAX-NS#"   => "RDF",
         "HTTP://PURL.ORG/RSS/1.0/"                      => "RSS",
         "HTTP://MY.NETSCAPE.COM/RDF/SIMPLE/0.9/"        => "RSS", //same items
@@ -53,7 +53,7 @@ $module2abbrev = array(
         "HTTP://XMLNS.COM/FOAF/0.1/"					=> "FOAF",
         "HTTP://PURL.ORG/RSS/1.0/MODULES/SYNDICATION/"  => "SYNDICATION",
         "HTTP://WEBNS.NET/MVCB/"                        => "ADMIN"
-        );
+];
 
 // Examples refered to below (as EG1 ... EG5) where these have been seen,
 // 1 - APC e.g. http://web.changenet.sk/aa/admin/getxml.php3
@@ -172,7 +172,7 @@ function startElement($parser, $name, $attrs) {
       $item['categories'][] = substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1); break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
-      $fielddata = array('value'=>"", 'flag'=>0);
+      $fielddata = ['value'=>"", 'flag'=>0];
       break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELD":       // field's URI
@@ -208,17 +208,17 @@ function endElement($parser, $name) {
     case "^RDF:RDF^RSS:CHANNEL":
       if (!($channel_uri)) $channel_uri = string2id($channel['title']);   // RSS 0.9
       $aa_rss['channels'][$channel_uri] = $channel;
-      $channel = array();
+      $channel = [];
       break;
 
     case "^RDF:RDF^AA:CATEGORY":
       $aa_rss['categories'][$category_uri] = $category;
-      $category = array();
+      $category = [];
       break;
 
     case "^RDF:RDF^AA:FIELD":
       $aa_rss['fields'][$field_uri] = $field;
-      $field = array();
+      $field = [];
       break;
 
     case "^RSS^CHANNEL^ITEM":			// RSS 0.9
@@ -230,7 +230,7 @@ function endElement($parser, $name) {
         }
       if (!($item_uri)) { $item_uri = string2id($item['title'] . $item["link"] . $item['description']); } // RSS 0.9
       $aa_rss['items'][$item_uri] = $item;
-      $item = array();
+      $item = [];
       break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
@@ -337,14 +337,14 @@ function aa_rss_parse($xml_data) {
 
     // Clear out, or will just append to previous parse!
     // unset do not works for GLOBAL variables!!!
-    $channel   = array();
-    $category  = array();
-    $field     = array();
-    $fielddata = array();
-    $item      = array();
+    $channel   = [];
+    $category  = [];
+    $field     = [];
+    $fielddata = [];
+    $item      = [];
 
     $cur_tag = $fulltext_content = $content_format = null;
-    $aa_rss = array();
+    $aa_rss = [];
 
     xml_set_element_handler($xml_parser, "startElement", "endElement");
     xml_set_character_data_handler($xml_parser,"charD");

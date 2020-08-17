@@ -33,44 +33,52 @@ require_once "../../include/formutil.php3";
 
 add_post2shtml_vars();
 
-$cf_fields = array (
-    "lang" => array (
+$cf_fields = [
+    "lang" => [
         "code"=>getFrmSelectEasy ("formlang", AA_Langs::getCharsets(), get_mgettext_lang()),
         "label"=>_m("Language"),
         // do not show in wizard
-        "hidewizard"=>true),
-    "email" => array (
+        "hidewizard"=>true
+    ],
+    "email" => [
         "code"=>"<INPUT type=\"text\" name=\"alerts[email]\" size=\"40\">",
         "label"=>_m("Email"),
         "required"=>true,
-        "userinfo"=>true),
-    "password" => array (
+        "userinfo"=>true
+    ],
+    "password" => [
         "code"=>"<INPUT type=\"password\" name=\"alerts[password]\" size=\"20\">",
         "label"=>_m("Password"),
-        "required"=>true),
-    "firstname" => array (
+        "required"=>true
+    ],
+    "firstname" => [
         "code"=>"<INPUT type=\"text\" name=\"alerts[firstname]\" size=\"20\">",
         "label"=>_m("First name"),
-        "userinfo"=>true),
-    "lastname" => array (
+        "userinfo"=>true
+    ],
+    "lastname" => [
         "code"=>"<INPUT type=\"text\" name=\"alerts[lastname]\" size=\"25\">",
         "label"=>_m("Last name"),
-        "userinfo"=>true),
-    "howoften" => array (
+        "userinfo"=>true
+    ],
+    "howoften" => [
         "code"=>getFrmSelectEasy("alerts[howoften]", get_howoften_options()),
         "required"=>true,
         // do not show in user center
         "hidecenter"=>true,
-        "label"=>_m("How often")),
-    "chpwd" => array (
+        "label"=>_m("How often")
+    ],
+    "chpwd" => [
         "code"=>"<INPUT type=\"password\" name=\"alerts[chpwd]\">",
         "required"=>false,
         // the checkbox is valid for both this and the next row
         "rowspan"=>2,
-        "label"=>_m("Change password")),
-    "chpwd2" => array (
+        "label"=>_m("Change password")
+    ],
+    "chpwd2" => [
         "code"=>"<INPUT type=\"password\" name=\"alerts[chpwd2]\">",
         // the checkbox from chpwd is valid for this row too
         "checkbox"=>"chpwd",
-        "label"=>_m("Retype new password"))
-);
+        "label"=>_m("Retype new password")
+    ]
+];

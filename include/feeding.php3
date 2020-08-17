@@ -43,7 +43,7 @@ function GetFieldMapping($from_slice_id, $destination_id) {
     $fields_to   = AA_Slice::getModule($destination_id)->getFields()->getPriorityArray();
 
     if (empty($fields_to)) {
-        return array();
+        return [];
     }
 
     $p_from_slice_id  = q_pack_id($from_slice_id);
@@ -69,15 +69,15 @@ function GetFieldMapping($from_slice_id, $destination_id) {
             default:
                 $val = ""; break;
         }
-        $m[$db->f('to_field_id')] = array("feedmap_flag"=>$db->f('flag'),"val"=>$val);
+        $m[$db->f('to_field_id')] = ["feedmap_flag"=>$db->f('flag'),"val"=>$val];
     }
 
     foreach ($fields_to as $field_id ) {
         if ( $m[$field_id] ) {
             $map[$field_id] = $m[$field_id];                 // set if mapped
         } else {                                 // if not mapped - store in the same; if not exist, set empty
-            $map[$field_id] = $fields_from[$field_id] ? array("feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$field_id)  :
-                                                        array("feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>"") ;
+            $map[$field_id] = $fields_from[$field_id] ? ["feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$field_id] :
+                                                        ["feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>""];
         }
     }
 
@@ -118,7 +118,7 @@ function IsItemFed($item_id, $destination) {
     $base_id       = GetBaseItem($item_id);  // Trace back to the original id
 
     // if item comes from $destination slice (i.e. $destination slice contains base record)
-    if ( $p_destination == DB_AA::select1('SELECT slice_id FROM `item`', 'slice_id', array(array('id',$base_id, 'l'))) ) {
+    if ( $p_destination == DB_AA::select1('SELECT slice_id FROM `item`', 'slice_id', [['id',$base_id, 'l']]) ) {
         return true;
     }
 
@@ -217,7 +217,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     $catfieldid  = $fields->getCategoryFieldId();
 
     if ( $catfieldid AND ( (string)$tocategory != "0" ) ) {
-        $destinationcat = DB_AA::select1('SELECT value FROM constant', 'value', array(array('id',$tocategory, 'l')));
+        $destinationcat = DB_AA::select1('SELECT value FROM constant', 'value', [['id',$tocategory, 'l']]);
     }
 
     $id          = new_id();
@@ -279,7 +279,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
           ((int)$new4id['status_code.....'][0]['value'] > 0)) ) {
         $new4id['status_code.....'][0]['value'] = ($approved=='y' ? 1 : 2);
     }
-    $field_ids = array("post_date", "publish_date","expiry_date", "highlight", "posted_by", "edited_by", "last_edit");
+    $field_ids = ["post_date", "publish_date","expiry_date", "highlight", "posted_by", "edited_by", "last_edit"];
     foreach($field_ids as $fid) {
         $f_id = AA_Fields::createFieldId($fid);
         if (!$new4id[$f_id]) {
@@ -309,11 +309,11 @@ function AddRelationFeed($dest_id, $source_id, $flag = REL_FLAG_FEED) {
 }
 
 function FromFed($item_id) {
-    return array_map('unpack_id', DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
+    return array_map('unpack_id', DB_AA::select('', 'SELECT source_id FROM relation', [['destination_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]));
 }
 
 function WhereFed($item_id) {
-    return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
+    return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', [['source_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]));
 }
 
 /** CreateFeedTree function
@@ -327,7 +327,7 @@ function WhereFed($item_id) {
  */
 
 function CreateFeedTree($sl_id, $from_category_id) {
-    $slice_queue[$sl_id] = array('approved'=>"y", 'category'=>$from_category_id);
+    $slice_queue[$sl_id] = ['approved'=>"y", 'category'=>$from_category_id];
 
     foreach($slice_queue as $sl_id => $val) {
         if ($val['approved'] == "y") {
@@ -354,7 +354,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
                 }
                 $approved = $db->f('to_approved') ? "y" : "n";
                 if (($p_from_cat_id == $db->f('category_id')) OR $db->f('all_categories')) {
-                    $slice_queue[$to_id] = $tree[$sl_id][$to_id] = array( 'approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id')));
+                    $slice_queue[$to_id] = $tree[$sl_id][$to_id] = ['approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id'))];
                 }
             }
             freeDB($db);
@@ -407,7 +407,7 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
     }
 
     if ($do_update) {                       // update, invalidatecache, not feed
-        $updatecontent->storeItem('update', array(true, false), 'feed');
+        $updatecontent->storeItem('update', [true, false], 'feed');
     }
 }
 
@@ -419,11 +419,15 @@ function UpdateFedItem($item_id, $slice_id, $dest_id, $destination_id) {
  * @return bool
  */
 function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
-    $items  = array($item_id => $slice_id);
+    $items  = [$item_id => $slice_id];
     $update = false;
 
     foreach($items as $item_id => $slice_id) {
-        $destinations = DB_AA::select(array('iid'=>'sid'), "SELECT LOWER(HEX(`destination_id`)) AS iid, LOWER(HEX(`slice_id`)) as sid FROM `relation`, `item`", array(array('relation.destination_id', 'item.id', 'j'),array('source_id', $item_id, 'l'),array('flag', REL_FLAG_FEED, 'set')));
+        $destinations = DB_AA::select(['iid'=>'sid'], "SELECT LOWER(HEX(`destination_id`)) AS iid, LOWER(HEX(`slice_id`)) as sid FROM `relation`, `item`", [
+            ['relation.destination_id', 'item.id', 'j'],
+            ['source_id', $item_id, 'l'],
+            ['flag', REL_FLAG_FEED, 'set']
+        ]);
         foreach ($destinations as $d_iid => $d_sid) {
             $update     = true;
             //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
@@ -459,7 +463,7 @@ function FeedItem($item_id) {
     $cat_field = $slice->getFields()->getCategoryFieldId();
 
     if ($cat_group AND $cat_field) {
-        $p_cat_id = DB_AA::select1('SELECT id FROM `constant`', 'id', array(array('group_id', $cat_group), array('value', $content4id[$cat_field][0]['value'])));
+        $p_cat_id = DB_AA::select1('SELECT id FROM `constant`', 'id', [['group_id', $cat_group], ['value', $content4id[$cat_field][0]['value']]]);
         if ( $p_cat_id ) {
             $cat_id = unpack_id($p_cat_id);
         }

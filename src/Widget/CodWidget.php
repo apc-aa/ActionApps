@@ -13,7 +13,7 @@ use AA\FormArray;
 class CodWidget extends \AA\Widget\Widget
 {
     /** @var array  list of textareas for CodeMirror creation */
-    protected $ids_4_editor = array();
+    protected $ids_4_editor = [];
 
     /** widget name  */
     function name()
@@ -23,7 +23,7 @@ class CodWidget extends \AA\Widget\Widget
 
     function requireLibs($aa_property, $winfo)
     {
-        return array('codemirror@5');
+        return ['codemirror@5'];
     }
 
     /** script to run after the page DOM is loaded */
@@ -35,7 +35,7 @@ class CodWidget extends \AA\Widget\Widget
             $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" });});';
 
             // clean the list - all textareas are converted
-            $this->ids_4_editor = array();
+            $this->ids_4_editor = [];
         }
         return $ret;
     }
@@ -45,7 +45,7 @@ class CodWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('rows'));
+        return \AA\Widget\Widget::propertiesShop(['rows']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -74,7 +74,7 @@ class CodWidget extends \AA\Widget\Widget
 
         $widget .= "<input type=hidden name=\"$input_flag\" value=\"" . FLAG_HTML . "\">";
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }
 

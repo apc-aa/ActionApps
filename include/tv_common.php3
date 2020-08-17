@@ -28,18 +28,23 @@
 // DOCUMENTATION: doc/tableview.html
 // This file is meant to be included before any TableViews are defined.
 
-$attrs_edit = array (
-    "table"=>"border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'");
-$attrs_browse = array (
+$attrs_edit = [
+    "table"=>"border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'"
+];
+$attrs_browse = [
     "table"=>"border=\"1\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'",
-    "table_search" => "border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'");
-$format = array (
-    "hint" => array (
+    "table_search" => "border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor='".COLOR_TABBG."'"
+];
+$format = [
+    "hint" => [
         "before" => "<i>",
-        "after" => "</i>"),
-    "caption" => array (
+        "after" => "</i>"
+    ],
+    "caption" => [
         "before" => "<b>",
-        "after" => "</b>"));
+        "after" => "</b>"
+    ]
+];
 
 
 $langs = AA_Langs::getNames();

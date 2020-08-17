@@ -51,14 +51,14 @@ switch ($mode) {
       break;
 }
 
-$perms = DB_AA::select(array(), "SELECT `node`, `user` FROM `ef_permissions`", array(array('slice_id',$slice_id, 'l')), array('node','user'));
+$perms = DB_AA::select([], "SELECT `node`, `user` FROM `ef_permissions`", [['slice_id',$slice_id, 'l']], ['node','user']);
 //$db->query("SELECT * FROM ef_permissions WHERE slice_id='$p_slice_id' ORDER BY node,user ");
 //$perms="";
 //while ($db->next_record()) {
 //    $perms[] = array( 'node'=>$db->f('node'), 'user'=>$db->f('user'));
 //}
 
-$nodes = DB_AA::select('', "SELECT `name` FROM `nodes`", '', array('name'));
+$nodes = DB_AA::select('', "SELECT `name` FROM `nodes`", '', ['name']);
 //$db->query("SELECT * FROM nodes ORDER BY name ");
 //$nodes="";
 //while ($db->next_record()) {
@@ -66,7 +66,7 @@ $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`", '', array('name'));
 //}
 
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 $headcode = '<script>
     function SelectValue(sel) {
@@ -133,8 +133,10 @@ FrmTabCaption(_m("Inter node export settings"));
           <td align="left"><input type="text" name="user_name" size="40" value="<?php echo safe($user_name)?>" >
       </td></tr>
 <?php
-    FrmTabEnd(array("mode"=>array("type"=>"hidden", "value"=>"insert"),
+    FrmTabEnd([
+        "mode"=> ["type"=>"hidden", "value"=>"insert"],
                     "submit",
-                    "cancel"=>array("url"=>"se_fields.php3")));
+                    "cancel"=> ["url"=>"se_fields.php3"]
+    ]);
 
 $apage->printFoot();

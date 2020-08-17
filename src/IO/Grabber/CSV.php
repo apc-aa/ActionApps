@@ -78,24 +78,24 @@ class CSV extends \AA\IO\Grabber\AbstractGrabber {
      *  Used for importer and htmlSettings()
      */
     static function getClassProperties() {
-        $properties = array();   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
+        $properties = [];   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['file'] = new AA_Property('file', _m("URL of the file"), 'string', false, true);
         $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
-        $properties['delimiter'] = new AA_Property('delimiter', _m("Delimiter of fields"), 'string', false, true, array(
+        $properties['delimiter'] = new AA_Property('delimiter', _m("Delimiter of fields"), 'string', false, true, [
             'enum',
-            array(
+            [
                 ',' => ', (comma)',
                 ';' => '; (semicolon)',
                 '\t' => '\t (tabulator)',
                 '|' => '| (pipe)',
                 '~' => '~ (tilde)',
                 '' => 'other'
-            )
-        ), false, '', '', ',');
-        $properties['enclosure'] = new AA_Property('enclosure', _m("Enclosure"), 'string', false, true, array(
+            ]
+        ], false, '', '', ',');
+        $properties['enclosure'] = new AA_Property('enclosure', _m("Enclosure"), 'string', false, true, [
             'enum',
-            array('"' => '" (double quote )', "'" => '\' (single quote)')
-        ), false, '', '', '"');
+            ['"' => '" (double quote )', "'" => '\' (single quote)']
+        ], false, '', '', '"');
         $properties['caption'] = new AA_Property('caption', _m("Use first row as field names"), 'bool', false, true);
         return $properties;
     }
@@ -105,8 +105,8 @@ class CSV extends \AA\IO\Grabber\AbstractGrabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $this->_items    = array();
-        $this->_colnames = array();
+        $this->_items    = [];
+        $this->_colnames = [];
         $data = $this->loadData($this->file, $this->direct_input, '', $this->source_encoding);
 
         // fgetcsv works on streams - we have to use stream (we do notr want to use str_getcsv() - it is hard to work with \n inside fields)

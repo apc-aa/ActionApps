@@ -97,7 +97,7 @@ $apage->setTitle(_m("File Manager"));
 if ($directory) {
     $apage->setSubtitle(_m("Directory")." ".$directory);
 }
-$apage->setForm(array('enctype'=>"multipart/form-data"));
+$apage->setForm(['enctype'=>"multipart/form-data"]);
 $apage->addRequire(get_aa_url('tabledit.css?v='.AA_JS_VERSION, '', false ));
 $apage->printHead($err, $Msg);
 

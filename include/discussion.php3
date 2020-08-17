@@ -51,14 +51,15 @@ function PrintImg($src, $width=0, $height=0, $path='rel') {
     return "<img src=\"$img\" $width $height border='0'>";
 }
 
-$imgsrc = array(
+$imgsrc = [
     D_EXPAND_IMG => PrintImg("d_expand.gif",9,21),
     D_HLINE_IMG  => PrintImg("d_hline.gif",9,21),
     D_VLINE_IMG  => PrintImg("i.gif",9,21),
     D_CORNER_IMG => PrintImg("l.gif",9,21),
     D_SPACE_IMG  => PrintImg("blank.gif",12,21),
     D_T_IMG      => PrintImg("t.gif",9,21),
-    D_ITEM       => "");
+    D_ITEM       => ""
+];
 /** GetImageSrc function
  * @param $img
  * @return
@@ -90,7 +91,7 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
         return new zids($d_ids, 'p');
     }
     // filter for ids
-    $ret = array();
+    $ret = [];
     foreach ( $d_ids as $p_d_id ) {
         if ( $ids["x".unpack_id($p_d_id)] ) {
             $ret[] = $p_d_id;
@@ -115,9 +116,9 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
 
     $SQL = 'SELECT * FROM discussion WHERE '. $zids->sqlin('id');
     $db->query( $SQL );
-    $col              = array();
-    $d_content        = array();
-    $unsorted_content = array();
+    $col              = [];
+    $d_content        = [];
+    $unsorted_content = [];
     while ($db->next_record()) {
         $d_id = unpack_id($db->f('id'));
         $col["d_id............"][0]['value'] = $d_id;
@@ -249,12 +250,12 @@ function GetDiscussionFormat(&$view_info) {
                                                          '<input type="button" name="all_ids" value="' ._m("Show all"). '" onClick="showAllComments()" class="discbuttons">');
     $format['d_add_butt']   = ($view_info['aditional4'] ? $view_info['aditional4'] :
                                                          '<input type="button" name="add_disc" value="' ._m("Add new"). '" onClick="showAddComments()" class="discbuttons">');
-    $format['images'] = array(
+    $format['images'] = [
                            D_VLINE_IMG  => $view_info['img1'],
                            D_CORNER_IMG => $view_info['img2'],
                            D_T_IMG      => $view_info['img3'],
                            D_SPACE_IMG  => $view_info['img4']
-                             );
+    ];
     return $format;
 }
 
@@ -326,7 +327,7 @@ function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
  * @param $d_id
  */
 function DeleteTree(&$tree, $d_id) {
-    DB_AA::delete('discussion', array(array('id', $d_id, 'l')));
+    DB_AA::delete('discussion', [['id', $d_id, 'l']]);
     if (!($nodes = $tree[$d_id])) {
         return;
     }
@@ -362,7 +363,7 @@ function GetParent(&$tree, $d_id) {
  * @param $d_id
  */
 function DeleteNode(&$tree, &$d_content, $d_id) {
-    DB_AA::delete('discussion', array(array('id', $d_id, 'l')));
+    DB_AA::delete('discussion', [['id', $d_id, 'l']]);
     if (!$tree[$d_id]) {
         return;
     }
@@ -428,7 +429,7 @@ function updateDiscussionCount($item_id) {
 function GetDiscussion2MailAliases() {
     $aliases["_#ITEMPAR3"] = GetAliasDef("", "", _m("3rd parameter filled in DiscussionMailList field"));
     for ($i = 4; $i < 10; ++$i) {
-        $aliases["_#ITEMPAR$i"] = GetAliasDef("", "", _m("%1th parameter filled in DiscussionMailList field", array ($i)));
+        $aliases["_#ITEMPAR$i"] = GetAliasDef("", "", _m("%1th parameter filled in DiscussionMailList field", [$i]));
     }
     return $aliases;
 }
@@ -485,13 +486,14 @@ function send2mailList($d_item_id, $new_id) {
                 $html = $view_info['flag'] & DISCUS_HTML_FORMAT;
 
                 // older and deprecated version with discussion view
-                $mail_parts = array (
+                $mail_parts = [
                     "from"      => "aditional",
                     "reply_to"  => "aditional2",
                     "errors_to" => "aditional3",
                     "sender"    => "aditional4",
                     "subject"   => "aditional5",
-                    "body"      => "even");
+                    "body"      => "even"
+                ];
 
                 $mail = "";
                 foreach ($mail_parts as $part => $field) {
@@ -522,7 +524,7 @@ function send2mailList($d_item_id, $new_id) {
                 $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
                 $db->next_record();
                 $mail->setCharset(AA_Langs::getCharset(substr($db->f("lang_file"),0,2)));
-                $mail->send(array($maillist));
+                $mail->send([$maillist]);
             } //view found
         } // vid present
     } // DiscussionMailList Field present

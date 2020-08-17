@@ -36,7 +36,7 @@ class MchWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height']);
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
@@ -73,14 +73,14 @@ class MchWidget extends \AA\Widget\Widget
 
         $selected = $content->getAaValue($aa_property->getId());
         $options = $this->getOptions($selected, $content, $use_name);
-        $htmlopt = array();
+        $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";
             $input_id = FormArray::formName2Id($input_name);
             $htmlopt[] = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
         }
 
-        $selection = array();
+        $selection = [];
         foreach ($options as $o) {
             if ($o['selected']) {
                 $selection[] = '<span data-aa-mchval="' . myspecialchars($o['k']) . '" onclick="var el=document.querySelector(\'#widget-' . $base_id . ' input[type=checkbox][value=&quot;' . $o['k'] . '&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;el.dispatchEvent(new Event(\'change\', { \'bubbles\': true }));">' . $o['v'] . '</span>';
@@ -96,7 +96,7 @@ class MchWidget extends \AA\Widget\Widget
         $widget .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');
         $widget .= '</div>';
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /** @return AA_Value for the data send by the widget
@@ -110,15 +110,15 @@ class MchWidget extends \AA\Widget\Widget
     static function getValue($data4field)
     {
         $flag = $data4field['flag'] & FLAG_HTML;
-        $fld_value_arr = array();
+        $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
             if (ctype_digit((string)$key)) {
-                $fld_value_arr[$key] = array('value' => $value, 'flag' => $flag);
+                $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }
         if (!count($fld_value_arr)) {
-            $fld_value_arr[] = array('value' => $data4field['def'], 'flag' => $flag);
+            $fld_value_arr[] = ['value' => $data4field['def'], 'flag' => $flag];
         }
         return new AA_Value($fld_value_arr, $flag);
     }

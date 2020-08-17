@@ -39,7 +39,7 @@ if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
     exit;
 }
-$err = array();
+$err = [];
 require_once AA_INC_PATH . "formutil.php3";
 
 if ($mode == "edit") {
@@ -88,10 +88,10 @@ $nodes = DB_AA::select('', "SELECT `name` FROM `nodes`");
 
 $apage = new AA_Adminpageutil('sliceadmin','nodes');
 $apage->setTitle(_m("Remote node administration"));
-$apage->setForm(array('onsubmit' => "return checkData()"));
+$apage->setForm(['onsubmit' => "return checkData()"]);
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
+$form_buttons = ["submit","cancel"=> ["url"=>"se_fields.php3"]];
 
 FrmTabCaption(_m("Remote node administration"));
 ?>

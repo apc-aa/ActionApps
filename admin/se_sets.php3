@@ -45,7 +45,7 @@ if (!IfSlPerm(PS_FULLTEXT)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 if ( $update ) {
     do {
@@ -90,13 +90,14 @@ $apage = new AA_Adminpageutil('sliceadmin','sets');
 $apage->setTitle(_m("Admin - Item Sets"));
 $apage->printHead($err, $Msg);
 
-$form_buttons = array ("update",
-                       "cancel" =>array("url"=>"se_fields.php3"),
-                      );
+$form_buttons = [
+    "update",
+                       "cancel" => ["url"=>"se_fields.php3"],
+];
 FrmTabCaption(_m("Sets"), $form_buttons);
 FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), '', '', false);
 
-$set_ids = AA_Object::querySet('AA_Set', new AA_Set(array($slice_id)));
+$set_ids = AA_Object::querySet('AA_Set', new AA_Set([$slice_id]));
 $k = 0;
 foreach( $set_ids as $i => $set_id ) {
     $set = AA_Object::load($set_id, 'AA_Set');    /** @var AA_Set $set */
@@ -106,17 +107,17 @@ foreach( $set_ids as $i => $set_id ) {
     $k = $i+1;
     FrmHidden("objid[$k]", $set->getId());
     FrmStaticText(_m('ID'), $set->getId());
-    FrmInputText("name[$k]", _m("Set name %1",   array($k)), $set->getName(),             32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-    FrmTextarea("sli[$k]", _m("Slices %1",       array($k)), join('-',$set->getModules()), 2, 60, false, _m('possibly dash separated'));
-    FrmTextarea("cond[$k]",  _m("Conditions %1", array($k)), $set->getCondsAsString(),     4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
-    FrmInputText("sort[$k]", _m("Sort %1",       array($k)), $set->getSortAsString(),    500, 60, false, _m('Use "headline.......,publish_date....-" or "sort[]" conditions'));
+    FrmInputText("name[$k]", _m("Set name %1",   [$k]), $set->getName(),             32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+    FrmTextarea("sli[$k]", _m("Slices %1",       [$k]), join('-',$set->getModules()), 2, 60, false, _m('possibly dash separated'));
+    FrmTextarea("cond[$k]",  _m("Conditions %1", [$k]), $set->getCondsAsString(),     4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+    FrmInputText("sort[$k]", _m("Sort %1",       [$k]), $set->getSortAsString(),    500, 60, false, _m('Use "headline.......,publish_date....-" or "sort[]" conditions'));
 }
 
 ++$k;
-FrmInputText("name[$k]", _m("Set name %1", array($k)), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-FrmTextarea("sli[$k]", _m("Slices %1",     array($k)), '',  2, 60, false, _m('possibly dash separated'));
-FrmTextarea("cond[$k]",  _m("Conditions %1", array($k)), '',  4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
-FrmInputText("sort[$k]", _m("Sort %1",       array($k)), '', 500, 60,false, _m('Use "headline........,publish_date....-" or "sort[]" conditions'));
+FrmInputText("name[$k]", _m("Set name %1", [$k]), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+FrmTextarea("sli[$k]", _m("Slices %1",     [$k]), '',  2, 60, false, _m('possibly dash separated'));
+FrmTextarea("cond[$k]",  _m("Conditions %1", [$k]), '',  4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+FrmInputText("sort[$k]", _m("Sort %1",       [$k]), '', 500, 60,false, _m('Use "headline........,publish_date....-" or "sort[]" conditions'));
 FrmHidden("setcount", $k);
 
 

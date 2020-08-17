@@ -85,7 +85,7 @@ require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."event.class.php3";
 require_once AA_INC_PATH."validate.php3";
 
-$err = array();       // error array (Init - just for initializing variable)
+$err = [];       // error array (Init - just for initializing variable)
 
 // trap field for spammer bots
 if ( $answer )    {
@@ -113,7 +113,7 @@ if ($slice->getProperty('flag') & DISCUS_ADD_DISABLED) {
 }
 
 // test for spam
-$discussion_fields = array (
+$discussion_fields = [
     'd_parent'         => 0,   // allowed number of 'http' substings
     'd_item_id'        => 0,
     'd_subject'        => 0,
@@ -126,7 +126,7 @@ $discussion_fields = array (
     'd_free2'          => 4,
     'd_url_address'    => 1,
     'd_url_description'=> 0
-    );
+];
 foreach ($discussion_fields as $field => $tolerance) {
     if ( IsSpamText($$field, $tolerance) ) {
         echo get_if( $slice->getProperty('_msg_spam.......'), _m("Not accepted, sorry. Looks like spam."));
@@ -153,7 +153,7 @@ if ($ip_banned_slice_id) {
         $set     = new AA_Set($ip_banned_slice_id, new AA_Condition('keywords........', 'NOTNULL', '1'));
         $kw_item = GetFormatedItems($set->query(), $format);
 
-        $teststring = join('_AA~#^',array($_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']));
+        $teststring = join('_AA~#^', [$_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']]);
         foreach ( $kw_item as $kw_id => $kw_string ) {
             $bad_phrases = array_filter(explode('_AA_DeLiM_', $kw_string));
             foreach ($bad_phrases as $bph) {

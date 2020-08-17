@@ -69,8 +69,10 @@ add_vars();
 
 /* H E R E  begins the main script */
 
-$L_MONTH = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
-'July', 'August', 'September', 'October', 'November', 'December');
+$L_MONTH = [
+    1 => 'January', 'February', 'March', 'April', 'May', 'June',
+'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 // set default month and year to current date
 

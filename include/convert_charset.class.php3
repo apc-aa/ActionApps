@@ -335,7 +335,7 @@ class ConvertCharset {
      * @return array Table necessary to change one encoding to another.
      **/
     function MakeConvertTable($FirstEncoding, $SecondEncoding = "") {
-        $ConvertTable = array();
+        $ConvertTable = [];
         for ($i = 0, $fmax=func_num_args(); $i < $fmax; $i++) {
             /**
             * Because func_*** can't be used inside of another function call
@@ -404,7 +404,7 @@ class ConvertCharset {
         $base  = trim(preg_replace($dot ? '/[^\da-z-_.]/i' : '/[^\da-z-_]/i', '-', $base), '-.');
         $count = 1;
         while ( $count ) {
-            $base = str_replace(array('--','..','.-','-.'), array('-','.','.','.'), $base, $count);
+            $base = str_replace(['--','..','.-','-.'], ['-','.','.','.'], $base, $count);
         }
         // remove starting and ending dash
         return strtolower($base);
@@ -482,7 +482,7 @@ class ConvertCharset {
         if (($FromCharset == 'utf-8') AND ($ToCharset == 'us-ascii')) {
 
             // the strtr and the $table is workaround for systems with broken iconv (RHEL 4 with glibc 2.3.x), where iconv gives bad result just with questionmarks
-            $table = array(
+            $table = [
                 'Š'=>'S', 'š'=>'s', 'Đ'=>'Dj', 'đ'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'Č'=>'C', 'č'=>'c', 'Ć'=>'C', 'ć'=>'c',
                 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
                 'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
@@ -492,7 +492,7 @@ class ConvertCharset {
                 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b',
                 'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r', 'Ě'=>'E', 'ě'=>'e', 'ř'=>'r', 'Ř'=>'R', 'ť'=>'t', 'Ť'=>'T', 'Ď'=>'D',
                 'ď'=>'d', 'ň'=>'n', 'Ň'=>'N', 'ů'=>'u', 'Ů'=>'U'
-            );
+            ];
 
             return iconv("utf-8", "us-ascii//TRANSLIT", strtr($StringToChange, $table));
         }

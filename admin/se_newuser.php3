@@ -43,7 +43,7 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ( $update ) {

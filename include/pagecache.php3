@@ -43,12 +43,12 @@ require_once AA_INC_PATH."varset.php3";
 
 class AA_Cacheentry {
     protected $c = '';      // content
-    protected $h = array(); // headers array
+    protected $h = []; // headers array
     protected $i = '';      // item id for page hit
     protected $p = '';      // Cacheability - private/public/no-cache - private used for pages, where user is logged in
     protected $t = 0;       // timestamp
 
-    function __construct($content, array $headers=array(), $item_id='', $cacheability='public') {
+    function __construct($content, array $headers= [], $item_id='', $cacheability='public') {
         $this->c = $content;
         $this->h = $headers;
         $this->i = $item_id;
@@ -62,7 +62,7 @@ class AA_Cacheentry {
         $etag            = hash('md5', 'x'.$this->c.'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
         $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$lastModified) : false;
         $etagMatch       = isset($_SERVER['HTTP_IF_NONE_MATCH'])     ? (trim($_SERVER['HTTP_IF_NONE_MATCH'])==$etag) : false;   //(etag: unique file hash)
-        $cacheability    = in_array($this->p,array('public','private','no_cache')) ? $this->p : 'public';
+        $cacheability    = in_array($this->p, ['public','private','no_cache']) ? $this->p : 'public';
 
         header("Last-Modified: ".gmdate("D, d M Y H:i:s", $lastModified)." GMT");   // set last-modified header
         header("Etag: $etag");                                                      // set etag-header
@@ -102,7 +102,7 @@ class PageCache  {
      */
     static function globalKeyArray() {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
-        $ks = array('host' => (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : $host);
+        $ks = ['host' => (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : $host];
         if (isset($GLOBALS['apc_state'])) {
             $ks['apc_state'] = $GLOBALS['apc_state'];
         }
@@ -219,7 +219,7 @@ class PageCache  {
      * @return bool
      */
     function getById($keyid) {
-        $arr   = DB_AA::select1('SELECT stored, content FROM `pagecache`', '', array(array('id', $keyid)));
+        $arr   = DB_AA::select1('SELECT stored, content FROM `pagecache`', '', [['id', $keyid]]);
         return ( $arr AND ((time() - $this->cacheTime) < $arr['stored']) ) ? $arr['content'] : false;
     }
 
@@ -243,7 +243,7 @@ class PageCache  {
         if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");
-            $varset = new Cvarset( array( array('content', $content), array('stored', time())));
+            $varset = new Cvarset( [['content', $content], ['stored', time()]]);
             $varset->addkey('id', 'text', $key);
             $str2find->store($key);
 
@@ -263,7 +263,7 @@ class PageCache  {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $cache_purger  = new AA_Pagecache_Purge();
                 $toexecute     = new AA_Toexecute;
-                $toexecute->laterOnce($cache_purger, array($this->cacheTime), 'AA_Pagecache_Purge', 101, now() + 300);  // run it once in 5 minutes
+                $toexecute->laterOnce($cache_purger, [$this->cacheTime], 'AA_Pagecache_Purge', 101, now() + 300);  // run it once in 5 minutes
             }
         }
         return $key;
@@ -309,11 +309,11 @@ class PageCache  {
      * @param $keys
      */
     static function invalidateOlder( $time ) {
-        $highest_old_pid = DB_AA::select1('SELECT id FROM pagecache','id',array(array('stored',$time,'<')), array('id-'));
-        $highest_old_id  = DB_AA::select1('SELECT id FROM pagecache_str2find','id',array(array('pagecache_id',$highest_old_pid)));
+        $highest_old_pid = DB_AA::select1('SELECT id FROM pagecache','id', [['stored',$time,'<']], ['id-']);
+        $highest_old_id  = DB_AA::select1('SELECT id FROM pagecache_str2find','id', [['pagecache_id',$highest_old_pid]]);
         if ($highest_old_id) {
-            DB_AA::delete_low_priority('pagecache_str2find',array(array('id',$highest_old_id,'<=')));
-            DB_AA::delete_low_priority('pagecache',array(array('stored',$time,'<')));
+            DB_AA::delete_low_priority('pagecache_str2find', [['id',$highest_old_id,'<=']]);
+            DB_AA::delete_low_priority('pagecache', [['stored',$time,'<']]);
         }
         return "time<$time, id<=$highest_old_id";
     }
@@ -332,7 +332,7 @@ class PageCache  {
 
         $str2find = new CacheStr2find($strings, $type);
 
-        $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", array(array('str2find',$str2find->getStrings())));
+        $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", [['str2find',$str2find->getStrings()]]);
 
         // invalidateById() is quite slow - mainly if we have to delete more rows
         // I do not know, how to make it quicker. I tried to refine the SQL
@@ -362,7 +362,7 @@ class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
+    public function toexecutelater($params= []) {
         list($cache_time) = $params;
         // $tm   = time();
         // we tired to speed up the deletion by multi-table delete:
@@ -379,14 +379,14 @@ class AA_Pagecache_Purge implements \AA\Util\LaterInterface {
  *  to identify records to be deleted (invalidated) from cache
  */
 class CacheStr2find {
-    protected $strings = array();
+    protected $strings = [];
 
     /** CacheStr2find function
      * @param $ids
      * @param $type
      */
     function __construct( $strings=null, $type='M') {   // it was $type=slice_id, but for cache it is better to use shorter - M
-        $this->strings = array();
+        $this->strings = [];
         $this->add($strings, $type);
     }
 
@@ -426,14 +426,14 @@ class CacheStr2find {
     /** clear function
      */
     function clear() {
-        $this->strings = array();
+        $this->strings = [];
     }
 
     /** store function
      * @param $keyid
      */
     function store($keyid) {
-        $varset = new Cvarset( array( array('pagecache_id', $keyid), array('str2find','')));
+        $varset = new Cvarset( [['pagecache_id', $keyid], ['str2find','']]);
         $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
         foreach ((array)$this->strings as $str => $v) {
             $varset->set('str2find', $str);

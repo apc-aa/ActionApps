@@ -42,11 +42,11 @@ if (!IfSlPerm(PS_USERS)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ( $del ) {
-    DB_AA::delete('profile', array(array('id', $del), array('slice_id', $slice_id, 'l')));
+    DB_AA::delete('profile', [['id', $del], ['slice_id', $slice_id, 'l']]);
     // slice identification is not neccessry
        // $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
        // if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
@@ -76,7 +76,8 @@ $rules = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND 
 $lookup_fields = AA_Slice::getModule($slice_id)->fields('name');
 
 // set property names array
-$PROPERTY_TYPES = array( 'listlen'           => _m("Item number"),
+$PROPERTY_TYPES = [
+    'listlen'           => _m("Item number"),
                          'input_view'        => _m("Input view ID"),
                          'admin_search'      => _m("Item filter"),
                          'admin_order'       => _m("Item order"),
@@ -91,9 +92,9 @@ $PROPERTY_TYPES = array( 'listlen'           => _m("Item number"),
                          'ui_manager_hide'   => _m("UI - manager - hide"),
                          'ui_inputform'      => _m("UI - inputform"),
                          'ui_inputform_hide' => _m("UI - inputform - hide")
-                       );
+];
 
-$SORTORDER_TYPES = array( '+'=>_m("Ascending"), '-' => _m("Descending") );
+$SORTORDER_TYPES = ['+'=>_m("Ascending"), '-' => _m("Descending")];
 
 $apage = new AA_Adminpageutil('sliceadmin','users');
 $apage->setTitle(_m("Admin - user Profiles"));
@@ -136,7 +137,8 @@ echo "</table>
 
 $inputDefaultTypes = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
 
-$menu_entries = array('top_logo'                        => _m('Logo (top)'),
+$menu_entries = [
+    'top_logo'                        => _m('Logo (top)'),
                       'top_view'                        => _m('View site (top)'),
                       'top_additem'                     => _m('Add Item link (top)'),
                       'top_itemmanager'                 => _m('Item Manager link (top)'),
@@ -164,15 +166,16 @@ $menu_entries = array('top_logo'                        => _m('Logo (top)'),
                       'itemmanager_submenu_debug'       => _m('Item Manager Menu: Debug (left)'),
                       'itemmanager_submenu_add2'        => _m('Item Manager Menu: Additional 2 (left)'),
                       'css_add'                         => _m('Add CSS file')
-    );
+];
 
-$manager_hide = array('mgr_actions'                     => _m('Manager Actions'),
+$manager_hide = [
+    'mgr_actions'                     => _m('Manager Actions'),
                       'mgr_sb_searchrows'               => _m('Searchbar - Search Rows'),
                       'mgr_sb_orderrows'                => _m('Searchbar - Order Rows'),
                       'mgr_sb_bookmarks'                => _m('Searchbar - Boomarks')
-    );
+];
 
-$inputform_entries = array(
+$inputform_entries = [
                       'add_title'                       => _m('Title (add form)'),
                       'add_tophtml'                     => _m('Top HTML code (add form)'),
                       'add_bottomhtml'                  => _m('Bottom HTML code (add form)'),
@@ -188,14 +191,14 @@ $inputform_entries = array(
                       'edit_btn_upd_preview'            => _m('Button "Update & View" (edit form)'),
                       'edit_btn_reset'                  => _m('Button "Reset form" (edit form)'),
                       'edit_btn_cancel'                 => _m('Button "Cancel" (edit form)')
-                      );
+];
 
-$permission_roles = array(
+$permission_roles = [
                       'perm_author'                     => _m('Author Role'),
                       'perm_editor'                     => _m('Editor Role'),
                       'perm_admin'                      => _m('Adminostrator Role'),
                       'perm_super'                      => _m('Superadmin Role')
-                      );
+];
 
 
          // row, rule,            show_field_selectbox,function_selectbox,show_parameter_box,show_html_checkbox, description

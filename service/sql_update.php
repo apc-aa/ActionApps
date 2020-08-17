@@ -146,7 +146,7 @@ require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
  */
 
 if (!is_callable('getDB')) {
-    $spareDBs = array();
+    $spareDBs = [];
 
     /** getDB function */
     function getDB() {
@@ -254,7 +254,7 @@ require_once __DIR__."/varset.php3";
 require_once __DIR__."/update.optimize.class.php";
 
 class AA_SQL_Updater {
-    var $messages = array();
+    var $messages = [];
 
     function test() {
         $optimizers = $this->getOptimizers();
@@ -308,7 +308,7 @@ class AA_SQL_Updater {
      *  Return names of all known AA classes, which begins with AA_Optimize
      */
     function getOptimizers() {
-        $optimizers = array();
+        $optimizers = [];
 
         // php4 returns classes all in lower case :-(
         $mask          = 'aa_optimize_';
@@ -345,7 +345,7 @@ class AA_SQL_Updater {
     */
     function clear_report() {
         unset($this->messages);
-        $this->messages = array();
+        $this->messages = [];
     }
 
 }

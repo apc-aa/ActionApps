@@ -69,7 +69,7 @@ class AA_Collection {
 
     function getSliceUrl()       {
         if ( is_null($this->slice_url) ) {
-            $this->slice_url = DB_AA::select1("SELECT slice_url FROM `module`", 'slice_url', array(array('id',$this->_get('alerts_module_id'),'l')));
+            $this->slice_url = DB_AA::select1("SELECT slice_url FROM `module`", 'slice_url', [['id',$this->_get('alerts_module_id'),'l']]);
                               //GetTable2Array('SELECT slice_url FROM module WHERE id=\''.q_pack_id($alerts_id).'\'', 'aa_first', 'slice_url');
         }
         return $this->slice_url;
@@ -94,8 +94,8 @@ class AA_Collection {
     }
 
     function getReadersSelectArray($how_often = null) {
-        $ret = array();
-        $content4ids = GetItemContent($this->getReaders($how_often), false, true, array(FIELDID_USERNAME, FIELDID_EMAIL));
+        $ret = [];
+        $content4ids = GetItemContent($this->getReaders($how_often), false, true, [FIELDID_USERNAME, FIELDID_EMAIL]);
         if ( is_array($content4ids) ) {
             foreach ($content4ids as $reader_id => $content4id ) {
                 $ret[$reader_id] = trim( $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')', "() \t\n\r\0\x0B");
@@ -120,7 +120,7 @@ class AA_Collection {
         // find filters for this collection
         $filter_ids = GetTable2Array("SELECT filterid FROM alerts_collection_filter WHERE collectionid = '".$this->id."' ORDER BY myindex", 'NoCoLuMn', 'filterid');
 
-        $filters = array();
+        $filters = [];
         if ( is_array($filter_ids) ) {
             foreach ($filter_ids as $filter_id) {
                 $filters[$filter_id] = &$unordered_filters[$filter_id];
@@ -182,12 +182,12 @@ class AA_Collection {
             }
         }
         AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " . ((int)$email_count));
-        AA_Log::write("ALERTS", $ho, join('; ', array(
+        AA_Log::write("ALERTS", $ho, join('; ', [
             "Debug collection " . $this->id,
             $this->_get('email_id_alert'),
             join(',', (array)$emails),
             join(',', $aliases)
-        )));
+        ]));
         return $email_count;
     }
 
@@ -226,7 +226,7 @@ class AA_Collection {
             $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
             if (!$db->next_record()) {
                 freeDB($db);
-                return array();
+                return [];
             }
             $SQL .= " AND slice.id='".quote($db->f("slice_id"))."'";
         }
@@ -234,7 +234,7 @@ class AA_Collection {
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
         initialize_last();
-        $slices = array();
+        $slices = [];
 
         $db->query($SQL);
         while ($db->next_record()) {
@@ -243,7 +243,7 @@ class AA_Collection {
             $slices[$sid]["name"]                  = $db->f("slicename");
             $slices[$sid]["lang"]                  = substr($db->f("lang_file"),0,2);
             $myview                                = &$slices[$sid]["views"][$db->f("vid")];
-            $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
+            $myview["filters"][$db->f("filterid")] = ["conds"=>$db->f("conds")];
             // Group by selections?
             $myview["group"] = $db->f("aditional");
             if (! $myview["group"]) {
@@ -253,13 +253,13 @@ class AA_Collection {
         }
         if (!$slices ) {
             freeDB($db);
-            return array();
+            return [];
         }
 
         // first I create a hierarchical array $slices and than use it instead of the recordset
 
         $now    = time();
-        $retval = array();
+        $retval = [];
 
         foreach ( $slices as $slice_id => $slice ) {
             $p_slice_id   = q_pack_id($slice_id);
@@ -296,7 +296,7 @@ class AA_Collection {
 
             $db->query($SQL);
 
-            $all_ids = array();
+            $all_ids = [];
             while ($db->next_record()) {
                 $all_ids[] = $db->f("id");
             }
@@ -309,15 +309,15 @@ class AA_Collection {
                     $zids  = new zids(null, "p");
                     if ($all_ids) {
                         // find items for the given filter
-                        $zids = QueryZids(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
+                        $zids = QueryZids([$slice_id], $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
                     }
 
-                    $retval[$fid] = array (
+                    $retval[$fid] = [
                         "group" => $view["group"],
                         "sort"  => $view["sort"],
                         "vid"   => $vid,
                         "zids"  => $zids,
-                    );
+                    ];
                 }
             }
         }
@@ -342,7 +342,7 @@ class AA_Collection {
      * @return string
      */
     function getFilterText4Reader($readerContent, $filters) {
-        $user_filters = array();
+        $user_filters = [];
         if ($readerContent) {
             $user_filters_value = $readerContent->getValues(getAlertsField(FIELDID_FILTERS, $this->id));
 
@@ -356,8 +356,8 @@ class AA_Collection {
             }
         }
 
-        $last_fprop = array();
-        $filter_ids = array();  // $filter_ids = "";   // changed to array() for php 7.1 - Jirka
+        $last_fprop = [];
+        $filter_ids = [];  // $filter_ids = "";   // changed to array() for php 7.1 - Jirka
         $user_zids  = new zids(null, "p");
 
         // add dummy filter
@@ -373,13 +373,13 @@ class AA_Collection {
                     parse_str( $last_fprop["sort"], $dbconds_arr);
                     $sort      = $dbconds_arr['sort'];
                     $set       = &get_view_settings_cached($last_fprop["vid"]);
-                    $user_zids = QueryZids(array(unpack_id($set["info"]->f("slice_id"))), "", $sort, "ACTIVE", 0, $user_zids);
+                    $user_zids = QueryZids([unpack_id($set["info"]->f("slice_id"))], "", $sort, "ACTIVE", 0, $user_zids);
                 }
 
                 $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
 
                 // $filter_ids = "";   // changed to array() for php 7.1 - Jirka
-                $filter_ids = array();
+                $filter_ids = [];
                 $user_zids->clear("p");
             }
             if ($fprop == "dummy") {
@@ -470,7 +470,10 @@ function initialize_last() {
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
         while ($db->next_record()) {
-            DB_AA::update('alerts_collection_howoften', array(array('last',$init[$ho],'i')), array(array('collectionid', $db->f("id")),array('howoften', $ho)));
+            DB_AA::update('alerts_collection_howoften', [['last',$init[$ho],'i']], [
+                ['collectionid', $db->f("id")],
+                ['howoften', $ho]
+            ]);
            // $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
            //     ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
         }
@@ -490,12 +493,12 @@ function get_view_settings_cached($vid) {
     if (!$cached_view_settings[$vid]) {
         $view         = AA_Views::getViewNumeric($vid);
         $slice        = AA_Slice::getModule(unpack_id($view->f("slice_id")));
-        $cached_view_settings[$vid] = array (
+        $cached_view_settings[$vid] = [
             "lang"    => substr($slice->getProperty('lang_file'),0,2),
             "info"    => $view,
             "aliases" => $slice->aliases(),
             "format"  => $view->getViewFormat()
-        );
+        ];
     }
     return $cached_view_settings[$vid];
 }

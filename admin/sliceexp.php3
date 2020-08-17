@@ -67,7 +67,7 @@ if (isset($b_export_to_file)) {
 $apage = new AA_Adminpageutil('aaadmin','sliceexp');
 $apage->setTitle(_m("Export slice structure"));
 //$apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false ));
-$apage->setForm(array('id'=>'formf','onsubmit'=>"return validate2()"));
+$apage->setForm(['id'=>'formf','onsubmit'=>"return validate2()"]);
 $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Export slice structure"));
@@ -75,7 +75,7 @@ FrmTabCaption(_m("Export slice structure"));
 if ($_POST['b_export_type']) {
     $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
 } else {
-    $all_slices = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', array(array('type', 'S')), array('priority','name'));
+    $all_slices = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['type', 'S']], ['priority','name']);
 ?>
     <tr><td class="tabtxt" colspan="2">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">

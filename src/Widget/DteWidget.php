@@ -31,7 +31,7 @@ class DteWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('start_year', 'end_year', 'relative', 'show_time'));
+        return \AA\Widget\Widget::propertiesShop(['start_year', 'end_year', 'relative', 'show_time']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -85,7 +85,7 @@ class DteWidget extends \AA\Widget\Widget
             $delim = '<br />';
         }
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /** Alternative to clasical selectboxbased widget using HTML5 input type=date
@@ -104,7 +104,7 @@ class DteWidget extends \AA\Widget\Widget
 
         $widget = '';
         $delim = '';
-        $attrs = array('type' => 'date');
+        $attrs = ['type' => 'date'];
 
         $from_now = $this->getProperty('relative', 0);
         if ($start_year = $this->getProperty('start_year', 0)) {
@@ -137,7 +137,7 @@ class DteWidget extends \AA\Widget\Widget
             $delim = '<br>';
         }
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
 
@@ -158,7 +158,7 @@ class DteWidget extends \AA\Widget\Widget
      */
     static function getValue($data4field)
     {
-        $values = array();
+        $values = [];
 
         // special case - we use <input type=date
         $input_date = (array)$data4field['i'];

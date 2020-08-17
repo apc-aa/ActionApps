@@ -18,7 +18,7 @@ use Exception;
 class TxtWidget extends \AA\Widget\Widget
 {
     /** @var array  list of textareas for CodeMirror creation */
-    protected $ids_4_editor = array();
+    protected $ids_4_editor = [];
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -36,13 +36,13 @@ class TxtWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('rows', 'max_characters', 'ajaxtype'));
+        return \AA\Widget\Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype']);
     }
 
     /** libs to run after the page DOM is loaded */
     function requireLibs($aa_property, $winfo)
     {
-        return ( count($aa_property->getTranslations())>1 ) ? array('aa-jslib@3') : array();
+        return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
     }
 
     /** script to run after the page DOM is loaded */
@@ -54,7 +54,7 @@ class TxtWidget extends \AA\Widget\Widget
             $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CKEDITOR.replace( el );} );';
 
             // clean the list - all textareas are converted
-            $this->ids_4_editor = array();
+            $this->ids_4_editor = [];
         }
         return $ret;
     }
@@ -80,7 +80,7 @@ class TxtWidget extends \AA\Widget\Widget
         $value = $content->getAaValue($aa_property->getId());
         $def_rows = $this->getProperty('rows', 4);
 
-        $attrs = array();
+        $attrs = [];
         if ($maxlength = (int)$this->getProperty('max_characters', 0)) {
             $attrs['maxlength'] = $maxlength;
         }
@@ -94,7 +94,7 @@ class TxtWidget extends \AA\Widget\Widget
             $value->addValue('');   // display empty textarea at least
         }
         $value->fixTranslations($aa_property->getTranslations());
-        $base = array();
+        $base = [];
         foreach ($value as $i => $val) {
             $attrs['rows'] = (($my_rows = substr_count($val, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
             // $rows         = max( $def_rows, min($my_rows>$def_rowssubstr_count($val,"\n")+4, 30));
@@ -112,7 +112,7 @@ class TxtWidget extends \AA\Widget\Widget
         // if CKEditor called outside AA - in sitemodule, we have to tell, which slice to use for image uploads
         $_SESSION['r_last_module_id']=$content->getOwnerID();
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /**

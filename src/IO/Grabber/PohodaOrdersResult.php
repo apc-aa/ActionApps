@@ -41,10 +41,10 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
     function prepare() {
         $data = file_get_contents($this->file);
         // remove namespaces (it is pain to work with it in simple XML interface)
-        $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
+        $data = str_replace(['<rsp:', '</rsp:'], ['<rsp_', '</rsp_'], $data);
         $xml = simplexml_load_string($data);
 
-        $this->_items = array();
+        $this->_items = [];
         //$items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
         foreach ($xml as $v) {
             $this->_items[] = $v;

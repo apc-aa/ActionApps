@@ -52,7 +52,7 @@ function get_mgettext_lang() {
 function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;     //    $mgettext_lang must be here for some reason... hm-2020-08-10
 
-    static $_m_backup = array();
+    static $_m_backup = [];
 
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
@@ -73,7 +73,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
     } else {
         if ($lang != get_mgettext_lang()) {
-            $_m = array();
+            $_m = [];
         }
         include $filename;
     }
@@ -117,8 +117,8 @@ function _m($id, $params = 0) {
         return $retval;
     }
 
-    $s = array('\%');
-    $r = array('#$&*');
+    $s = ['\%'];
+    $r = ['#$&*'];
     for ( $i=0, $ino=count($params); $i<$ino; ++$i) {
         $s[] = '%'.($i+1);
         $r[] = $params[$i];

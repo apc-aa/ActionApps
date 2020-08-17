@@ -101,14 +101,14 @@ if ($insert  || $update ) {
 
     if (is_array($answers)) {
         $i=1;
-        $answers2store = array();
+        $answers2store = [];
         foreach ( $answers as $v) {
             $v = stripslashes($v);    // it is quoted
             if (isset($answertable[substr($v, 1, 32)])) { // old answer
                 $answ = $answertable[substr($v, 1, 32)];
                 $answ['answer'] = substr($v, 34);
             } else {
-                $answ = array('id'=>new_id(), 'answer'=>$v, 'votes'=>0);
+                $answ = ['id'=>new_id(), 'answer'=>$v, 'votes'=>0];
             }
             $answ['poll_id']  = $poll_id;
             $answ['priority'] = $i;
@@ -125,7 +125,7 @@ if ($insert  || $update ) {
         $varset->doINSERT('polls_answer');
     }
     // clear cache
-    AA::Pagecache()->invalidateFor(array($poll_id,$module_id));    // invalidate this concrete poll and also the list of polls in this module, if used
+    AA::Pagecache()->invalidateFor([$poll_id,$module_id]);    // invalidate this concrete poll and also the list of polls in this module, if used
 
     go_url(StateUrl(self_base(). "./index.php3"));  // back to poll manager
 }
@@ -139,14 +139,16 @@ $apage->printHead($err, $Msg);
 
 
 if ($poll_id) {
-    $form_buttons = array ("update",
-                           "poll_id" => array ('type' => 'hidden', 'value'=>$poll_id),
-                           "cancel" => array ("url"=>"index.php3")
-                           );
+    $form_buttons = [
+        "update",
+                           "poll_id" => ['type' => 'hidden', 'value'=>$poll_id],
+                           "cancel" => ["url"=>"index.php3"]
+    ];
 } else {
-    $form_buttons = array ("insert",
-                           "cancel" => array ("url"=>"index.php3")
-                           );
+    $form_buttons = [
+        "insert",
+                           "cancel" => ["url"=>"index.php3"]
+    ];
 }
 
 ?>
@@ -165,7 +167,7 @@ if ($poll_id) {
 
     $SQL         = "SELECT id, answer AS text FROM polls_answer WHERE (poll_id='$poll_id') ORDER BY priority";
     $answertable = GetTable2Array($SQL, '', 'aa_fields');
-    $polltext    = array();
+    $polltext    = [];
     if ( is_array($answertable) ) {
         foreach ($answertable as $answ) {
             $polltext[':'.$answ['id'].':'.$answ['text']] = $answ['text'];
@@ -180,7 +182,7 @@ if ($poll_id) {
 } else {
 
     FrmInputText("headline",       _m("Headline"),                                  "", 255, 40, true,  _m("Question"));
-    FrmInputMultiText('answers[]', _m("Insert new answers and choose their order"), array(), "", 10, true, "", "", 'MDAC');
+    FrmInputMultiText('answers[]', _m("Insert new answers and choose their order"), [], "", 10, true, "", "", 'MDAC');
     FrmDate('publish_date',        _m('Publish Date'),                              now(), true, "", "", true);
     FrmDate('expiry_date',         _m('Expiry Date'),                               now()+604800, true, "", "", true);   // 604800 - 60*60*24*7 - week
 }

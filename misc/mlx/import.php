@@ -58,8 +58,8 @@ class MLXImport {
         if (! ALLOW_DROP) {
             $this->fatal("drop is not enabled on this system");
         }
-        $numDeleted = array();
-        $slice_ids = array($this->ctrlSlice,$this->slice_id);
+        $numDeleted = [];
+        $slice_ids = [$this->ctrlSlice,$this->slice_id];
         foreach($slice_ids as $sliceid) {
             $db = mysql_connect(DB_HOST,DB_USER,DB_PASSWORD);
             mysql_select_db(DB_NAME,$db);
@@ -185,16 +185,16 @@ function mlx_import($slice_id,&$data) {
 /// handler for unit tests
 ///@return true uf works
 function test_misc_mlx_import($slice_id='f44255369e0d5e6c938c91ab929fd060') {
-    $testData = array(
-        'EN' => array(
-            'headline........' => array(array('value'=>'headline of imported bla')),
-            'full_text.......' => array(array('value'=>'fulltext of imported bla'))
-            ),
-        'DE' => array(
-            'headline........' => array(array('value'=>'deutscher Titel des importierten bla')),
-            'full_text.......' => array(array('value'=>'deutscher Volltext des importierten bla'))
-            )
-    );
+    $testData = [
+        'EN' => [
+            'headline........' => [['value'=>'headline of imported bla']],
+            'full_text.......' => [['value'=>'fulltext of imported bla']]
+        ],
+        'DE' => [
+            'headline........' => [['value'=>'deutscher Titel des importierten bla']],
+            'full_text.......' => [['value'=>'deutscher Volltext des importierten bla']]
+        ]
+    ];
     return (mlx_import($slice_id,$testData) == 2);
 }
 if($_REQUEST['test']) {

@@ -94,7 +94,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
 
         // select external categories in format
         // array('unpacked_cat_id'=> array( 'value'=>, 'name'=>, 'approved'=>, 'target_category_id'=>))
-        $cat_ids = array();
+        $cat_ids = [];
         if ($this->ext_categs AND is_array($this->ext_categs)) {
             foreach ($this->ext_categs as $ext_cat_id => $ext_cat) {
                 if ($ext_cat['target_category_id']) {  // the feeding is set for this categor
@@ -135,7 +135,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
             huhl('_getExactData() - Local pairs:', $local_pairs);
         }
 
-        $base = array();
+        $base = [];
         $base["node_name"] = ORG_NAME;
         $base["password"] = $this->feed['password'];
         $base["user"] = $this->feed['user_id'];
@@ -157,7 +157,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
         }
 
         // Get all ids, which was updated later than items in local slice
-        $ids = array();   // initialize
+        $ids = [];   // initialize
         foreach ($remote_pairs as $id => $time) {
             if (!isset($local_pairs[$id]) OR ($local_pairs[$id] < $time)) {
                 $ids[] = $id;  // array of ids to ask for
@@ -339,7 +339,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
 
 
         // create item from source data (in order we can unalias)
-        $item2fed = new AA_Item($item['fields_content'], array());
+        $item2fed = new AA_Item($item['fields_content'], []);
 
         foreach ($this->map as $to_field_id => $v) {
             switch ($v['feedmap_flag']) {

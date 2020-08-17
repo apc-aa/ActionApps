@@ -15,7 +15,7 @@ use AA_Value;
 class MflWidget extends \AA\Widget\Widget
 {
     /** @var array  list of textareas for CodeMirror creation */
-    protected $ids_4_editor = array();
+    protected $ids_4_editor = [];
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -32,7 +32,7 @@ class MflWidget extends \AA\Widget\Widget
     // function description() { }
     function requireLibs($aa_property, $winfo)
     {
-        return array('codemirror@5');
+        return ['codemirror@5'];
     }
 
     /** script to run after the page DOM is loaded */
@@ -44,7 +44,7 @@ class MflWidget extends \AA\Widget\Widget
            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
 
            // clean the list - all textareas are converted
-           $this->ids_4_editor = array();
+           $this->ids_4_editor = [];
         }
         return $ret;
     }
@@ -60,7 +60,7 @@ class MflWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        $ret = \AA\Widget\Widget::propertiesShop(array('show_buttons_txt', 'row_count', 'max_characters', 'width', 'rows'));
+        $ret = \AA\Widget\Widget::propertiesShop(['show_buttons_txt', 'row_count', 'max_characters', 'width', 'rows']);
         $ret['rows']->setHelp(_m("if 1 (default), textfield used. for rows>1 textareas are used"))->setExample(1);
         return $ret;
     }
@@ -95,7 +95,7 @@ class MflWidget extends \AA\Widget\Widget
         $widget_onchange = '';
 
         if ($type == 'textfield') {
-            $attrs = array('type' => 'text');
+            $attrs = ['type' => 'text'];
             $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
             $attrs['size'] = get_if($this->getProperty('width'), $attrs['size'], 60);
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], ($type == 'textarea') ? '' : 255);
@@ -138,15 +138,15 @@ class MflWidget extends \AA\Widget\Widget
         $widget = "<div id=\"allrows$base_id\">$widget</div>";
         $img = GetAAImage('icon_new.gif', _m('new'), 17, 17);
         $attr_string     = str_replace('"', '&quot;', $attr_string);
-        $widget_add      = str_replace(array('"',"'"), array('&quot;',"\'"), $widget_add);
-        $widget_onchange = str_replace(array('"',"'"), array('&quot;',"\'"), $widget_onchange);
+        $widget_add      = str_replace(['"',"'"], ['&quot;',"\'"], $widget_add);
+        $widget_onchange = str_replace(['"',"'"], ['&quot;',"\'"], $widget_onchange);
         if ($type == 'textarea') {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_add $widget_onchange></textarea>'; document.getElementById('allrows$base_id').appendChild(el); CodeMirror.fromTextArea(el.querySelector('textarea'), { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: &quot;htmlmixed&quot; }); return false;\">$img</a>";
         } else {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_add $widget_onchange>'; document.getElementById('allrows$base_id').appendChild(el); return false;\">$img</a>";
         }
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /** @return AA_Value for the data send by the widget
@@ -163,15 +163,15 @@ class MflWidget extends \AA\Widget\Widget
     static function getValue($data4field)
     {
         $flag = $data4field['flag'] & FLAG_HTML;
-        $fld_value_arr = array();
+        $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
             if (ctype_digit((string)$key) AND strlen($value)) {
-                $fld_value_arr[$key] = array('value' => $value, 'flag' => $flag);
+                $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }
         if (!count($fld_value_arr)) {
-            $fld_value_arr[] = array('value' => '', 'flag' => $flag);
+            $fld_value_arr[] = ['value' => '', 'flag' => $flag];
         }
 
         return new AA_Value($fld_value_arr, $flag);

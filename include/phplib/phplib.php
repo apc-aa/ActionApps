@@ -312,7 +312,7 @@ class Session {
      * @return array
      */
     protected function session_setup() {
-        $ret = array();
+        $ret = [];
         if (version_compare(phpversion(), '7.0.0', '<')) {
             ini_set("session.use_only_cookies", "1");
         } else {
@@ -332,7 +332,7 @@ class Session {
     }
 
     protected function cookie_setup() {
-        $ret = array();
+        $ret = [];
         $ret['httponly']  = 1;
         if (isset($_SERVER['HTTPS'])) {
             $ret['secure'] = 1;
@@ -452,7 +452,7 @@ class Auth {
     //
     // End of user qualifiable settings.
 
-    var $auth = array();            // Data array
+    var $auth = [];            // Data array
 
     //
     // Initialization

@@ -103,8 +103,8 @@ class AA_Mysqlauth {
      */
     static function getReadersData($slice_id, $restrict_zids=false) {
         $auth_field_group = AA_Slice::getModuleProperty($slice_id,'auth_field_group');
-        $zids  = QueryZids( array($slice_id), '', '', 'ALL', 0, $restrict_zids);
-        return GetItemContent($zids, false, true, array('id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD));
+        $zids  = QueryZids( [$slice_id], '', '', 'ALL', 0, $restrict_zids);
+        return GetItemContent($zids, false, true, ['id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD]);
     }
 
     // --------------------------------------------------------------------------
@@ -117,7 +117,7 @@ class AA_Mysqlauth {
     */
     static function maintenance() {
         $db = getDB();
-        $result = array();
+        $result = [];
 
         // Create the array $oldusers with user names
         $db->query("SELECT username FROM auth_user");
@@ -221,7 +221,7 @@ class AA_Mysqlauth {
      * @param $username
      */
     static function deleteReader($username) {
-        DB_AA::delete('auth_user', array(array('username', $username)));
+        DB_AA::delete('auth_user', [['username', $username]]);
         AA_Mysqlauth::updateGroups($username);
     }
 
@@ -259,10 +259,10 @@ class AA_Mysqlauth {
     *   @param $username
     *   @param $groups
     */
-    static function updateGroups($username, $groups = array()) {
-        DB_AA::delete('auth_group', array(array('username', $username)));
+    static function updateGroups($username, $groups = []) {
+        DB_AA::delete('auth_group', [['username', $username]]);
 
-        $final_groups = array();
+        $final_groups = [];
         foreach( (array)$groups as $group_string ) {
             $final_groups = array_merge($final_groups, explode(";", $group_string['value']));
         }
@@ -303,7 +303,7 @@ class AA_Mysqlauth {
         if (empty($newvalue) OR ($oldvalue == $newvalue)) {
             return;
         }
-        if (false === ($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', array(array('id', $constant_id, 'l'))))) {
+        if (false === ($group_id = DB_AA::select1('SELECT group_id FROM `constant`', 'group_id', [['id', $constant_id, 'l']]))) {
             return;
         }
 

@@ -50,7 +50,9 @@ define("L_EDITOR_TITLE", "Polls administration");
 define("L_ADMIN_POLLS_SETTINGS","Polls settings");
 define("L_ADMIN_POLLS_Design","Polls design");
 
-$L_MONTH = array( 1 => 'Leden', '�nor', 'B�ezen', 'Duben', 'Kv�ten', '�erven',
-                '�ervenec', 'Srpen', 'Z���', '��jen', 'Listopad', 'Prosinec');
+$L_MONTH = [
+    1 => 'Leden', '�nor', 'B�ezen', 'Duben', 'Kv�ten', '�erven',
+                '�ervenec', 'Srpen', 'Z���', '��jen', 'Listopad', 'Prosinec'
+];
 
 ?>

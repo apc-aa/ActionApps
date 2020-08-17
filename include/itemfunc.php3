@@ -110,9 +110,9 @@ class AA_Generator_Dte extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                        type    multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                        type    multi  persist validator, required, help, morehelp, example
             'plusdays' => new AA_Property( 'plusdays',  _m("Number of days"), 'int', false, true, 'int', false, '', '', '365')
-            );
+        ];
     }
 
     /** generate() value of currrent timestamp */    // checks maximum date bounds
@@ -129,9 +129,9 @@ class AA_Generator_Txt extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (      //           id         name     type    multi  persist validator, required, help, morehelp, example
+        return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
             'text' => new AA_Property( 'text',  _m("Text"), 'text' )
-            );
+        ];
     }
 
     /** generate() - main function for generating the value */
@@ -157,11 +157,11 @@ class AA_Generator_Rnd extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'length'       => new AA_Property( 'length      ',  _m("String length"),  'int',    false, true, 'int', false, '', '', '5'),
             'checkfield'   => new AA_Property( 'checkfield  ',  _m("Field to check"), 'string', false, true, 'field', false, _m("If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness."), '', 'unspecified.....'),
             'wheretocheck' => new AA_Property( 'wheretocheck',  _m("Slice only"),     'bool',   false, true, 'bool', false, _m("Do you want to check for uniqueness this slice only or all slices?"))
-            );
+        ];
     }
 
     /** generate() - main function for generating the value */
@@ -180,9 +180,13 @@ class AA_Generator_Rnd extends AA_Generator {
         do {
             $randstring = gensalt($len);
             if ($slice_only) {
-                $rec = DB_AA::select1('SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id','', array(array('item.slice_id',$slice_id, 'l'),array('field_id',$field_id),array('text',$randstring)));
+                $rec = DB_AA::select1('SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id','', [
+                    ['item.slice_id',$slice_id, 'l'],
+                    ['field_id',$field_id],
+                    ['text',$randstring]
+                ]);
             } else {
-                $rec = DB_AA::select1('SELECT item_id FROM content','', array(array('field_id',$field_id),array('text',$randstring)));
+                $rec = DB_AA::select1('SELECT item_id FROM content','', [['field_id',$field_id], ['text',$randstring]]);
             }
         } while ($rec);
         return new AA_Value($randstring);
@@ -201,9 +205,9 @@ class AA_Generator_Variable extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (      //           id         name     type    multi  persist validator, required, help, morehelp, example
+        return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
             'text' => new AA_Property( 'text',  _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}')
-            );
+        ];
     }
 
     /** getClassProperties function of AA_Serializable  */
@@ -223,10 +227,10 @@ class AA_Generator_Mul extends AA_Generator {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (      //           id         name     type                  multi  persist validator, required, help, morehelp, example
+        return [      //           id         name     type                  multi  persist validator, required, help, morehelp, example
             'text'      => new AA_Property( 'text',       _m("Text"),      'text',   false, true, 'text', false, '', '', 'red|green|blue'),
             'delimiter' => new AA_Property( 'delimiter',  _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|')
-            );
+        ];
     }
 
     /** getClassProperties function of AA_Serializable  */
@@ -282,7 +286,7 @@ abstract class AA_Inserter extends AA_Serializable {
      */
     protected function _clear_field($item_id, $field_id) {
         // delete content just for displayed fields
-        DB_AA::delete('content', array(array('item_id', $item_id, 'l'), array('field_id', $field_id)));
+        DB_AA::delete('content', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -298,7 +302,7 @@ abstract class AA_Inserter extends AA_Serializable {
      * @param array           $value
      * @param array          $additional
      */
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
 
         $varset = new Cvarset();
         // if input function is 'selectbox with presets' and add2connstant flag is set,
@@ -348,7 +352,7 @@ abstract class AA_Inserter extends AA_Serializable {
             }
 
             // field in item table  - check, if numeric...
-            if (in_array($fid, array('short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'))) {
+            if (in_array($fid, ['short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'])) {
                 $fieldwriter->getItemVarset()->add($fid, "number", (int)$value['value']);
             } else {
                 $fieldwriter->getItemVarset()->add($fid, "text", $value['value']);
@@ -387,7 +391,7 @@ class AA_Inserter_Boo extends AA_Inserter {
     // static function name()        { return _m("Boolean = store 0 or 1");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
         $value['value'] = ( $value['value'] ? 1 : 0 );
         parent::execute($fieldwriter, $item_id, $value, $additional);
     }
@@ -398,7 +402,7 @@ class AA_Inserter_Ids extends AA_Inserter {
     // static function name()        { return _m("Item IDs");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
 
         $fid         = $this->field->getId();
         $text_stored = $this->field->getProperty("text_stored");
@@ -443,10 +447,10 @@ class AA_Inserter_Ids extends AA_Inserter {
                 // get rid of empty dummy relations (text='')
                 // this is only a problem for text content
                 if ($text_stored) {
-                    DB_AA::delete('content', array(array('item_id', $reverse_id, 'l'), array('field_id', $fid), array('text', '')));
+                    DB_AA::delete('content', [['item_id', $reverse_id, 'l'], ['field_id', $fid], ['text', '']]);
                 }
                 // is reverse relation already set?
-                if (!DB_AA::test('content', array(array('item_id',$reverse_id, 'l'), array('field_id', $fid), array(($text_stored ? "text" : "number"), $value['value'])))) { // not found
+                if (!DB_AA::test('content', [['item_id',$reverse_id, 'l'], ['field_id', $fid], [($text_stored ? "text" : "number"), $value['value']]])) { // not found
                     parent::execute($fieldwriter, $reverse_id, $value, $additional);
                 }
                 break;
@@ -464,7 +468,7 @@ class AA_Inserter_Uid extends AA_Inserter {
     // static function name()        { return _m("User ID = always store current user ID");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
         global $auth;
 
         if ( $value['value'] AND IsSuperadmin() ) {
@@ -473,7 +477,7 @@ class AA_Inserter_Uid extends AA_Inserter {
             // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
             $val = (isset($auth) ?  $auth->auth["uid"] : ((strlen($value['value'])>0) ? $value['value'] : "9999999999"));
         }
-        parent::execute($fieldwriter, $item_id, array('value' => $val), $additional);
+        parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -489,12 +493,12 @@ class AA_Inserter_Log extends AA_Inserter {
     // static function name()        { return _m("Login name");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
         global $auth;
         // if not $auth, it is from anonymous posting
         $val = (isset($auth) ?  $auth->auth["uname"] : ((strlen($value['value'])>0) ? $value['value'] : 'anonymous'));
 
-        parent::execute($fieldwriter, $item_id, array('value' => $val), $additional);
+        parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -510,8 +514,8 @@ class AA_Inserter_Now extends AA_Inserter {
     // static function name()        { return _m("Now = always store current time");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('Inserts the current time, no matter what the user sets.');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
-        parent::execute($fieldwriter, $item_id, array("value"=>time()), $additional);
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        parent::execute($fieldwriter, $item_id, ["value"=>time()], $additional);
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -541,12 +545,12 @@ class AA_Inserter_Co2 extends AA_Inserter {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'       => new AA_Property( 'code',        _m("Code for unaliasing (INSERT)"),'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
             'code_update'=> new AA_Property( 'code_update', _m("Code for unaliasing (UPDATE)"),'text', false, true, 'text', false, _m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"), '', ''),
             'delimiter'  => new AA_Property( 'delimiter',   _m("Multivalue delimiter"),        'text', false, true, 'text', false, _m("Character or string, which will split the computed string into multiple values (the same field)"), '', '|'),
             'recompute'  => new AA_Property( 'recompute',   _m("Recompute every"),             'text', false, true, 'text', false, "minute|hour|day|week|month "._m("The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item."), '', '')
-        );
+        ];
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -567,9 +571,9 @@ class AA_Inserter_Com extends AA_Inserter {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}')
-        );
+        ];
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -592,9 +596,9 @@ class AA_Inserter_Seo extends AA_Inserter {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'code'   => new AA_Property( 'code', _m("Alias to compute from"), 'text', false, true, 'text', false, _m("if not specified, the _#HEADLINE is used"), '', '_#HEADLINE')
-        );
+        ];
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -634,18 +638,18 @@ class AA_Inserter_Fil extends AA_Inserter {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'type'          => new AA_Property( 'type',         _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
             'width'         => new AA_Property( 'width',        _m("Maximum image width"), 'int',  false, true, 'int',  false, '', '', '800'),
             'height'        => new AA_Property( 'height',       _m("Maximum image height"),'int',  false, true, 'int',  false, _m("The image will be resampled to be within these limits, while retaining aspect ratio."), '', '600'),
             'otherfield'    => new AA_Property( 'otherfield',   _m("Other fields"),        'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##"), '', 'image..........2'),
             'replacemethod' => new AA_Property( 'replacemethod',_m("Upload policy"),       'text', false, true, 'text', false, _m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."), '', 'new'),
             'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and croped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1')
-        );
+        ];
     }
 
     /**  @return array - fields stored inside this function as thumbnails.  */
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
         global $err;
 
         $fid         = $this->field->getId();
@@ -659,7 +663,7 @@ class AA_Inserter_Fil extends AA_Inserter {
         if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
             // newer - widget approach - the uploaded file is encoded into the value
             // and prefixed with "AA_UPLOAD:" constant
-            $up_file = array_combine(array('aa_const', 'name', 'type', 'tmp_name', 'error', 'size'), ParamExplode($value['value']));
+            $up_file = array_combine(['aa_const', 'name', 'type', 'tmp_name', 'error', 'size'], ParamExplode($value['value']));
             if ($up_file['name']=='') {
                 $value['value'] = '';
             }
@@ -679,7 +683,7 @@ class AA_Inserter_Fil extends AA_Inserter {
             }
             $slice = AA_Slice::getModule($sid);
             if (!is_object($slice) OR !$slice->isValid()) {
-                $err[$fid] = _m("Slice with id '%1' is not valid.", array($sid));
+                $err[$fid] = _m("Slice with id '%1' is not valid.", [$sid]);
                 return;
             }
 
@@ -749,22 +753,22 @@ class AA_Inserter_Pwd extends AA_Inserter {
 
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
-        return array (             //           id         name                       type      multi  persist validator, required, help, morehelp, example
+        return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
             'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m('Field_id, where you want to store the copy of the password. Some times usefull if you want to allow people to get hir/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter.'), '', 'password.......1'),
             'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m('If you specify the \'Copy of password\' field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}'), '', 'Some Phrase')
-        );
+        ];
     }
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
         list ($aa_const, $password) = ParamExplode($value['value']);
 
         if ($aa_const == 'AA_PASSWD') {
             if ($this->bck_field AND ($slice = AA_Slice::getModule($fieldwriter->getSliceId())) AND $slice->isField($this->bck_field)) {
                 // $password is_a decrypted here
-                $backup = $this->crypt_phrase ? StrExpand('AA_Stringexpand_Encrypt', array($password, $this->crypt_phrase)) : $password;
+                $backup = $this->crypt_phrase ? StrExpand('AA_Stringexpand_Encrypt', [$password, $this->crypt_phrase]) : $password;
                 // store backup value to specified field
                 $this->_clear_field($item_id, $this->bck_field);
-                AA_Inserter::factoryByField($slice->getField($this->bck_field))->execute($fieldwriter, $item_id, array('value'=> $backup));
+                AA_Inserter::factoryByField($slice->getField($this->bck_field))->execute($fieldwriter, $item_id, ['value'=> $backup]);
             }
             $value['value'] = AA_Perm::cryptPwd($password);
         } elseif ($aa_const == 'AA_PASSWD_CRYPTED') {
@@ -783,8 +787,8 @@ class AA_Inserter_Unq extends AA_Inserter {
     // static function name()        { return _m("");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
-        parent::execute($fieldwriter, $item_id, array("value"=>StrExpand('AA_Stringexpand_Finduniq', array($value['value'], $this->field->getId(), empty($unique_slices) ? $fieldwriter->getSliceId() : $unique_slices, $item_id))), $additional);
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
+        parent::execute($fieldwriter, $item_id, ["value"=>StrExpand('AA_Stringexpand_Finduniq', [$value['value'], $this->field->getId(), empty($unique_slices) ? $fieldwriter->getSliceId() : $unique_slices, $item_id])], $additional);
     }
 }
 
@@ -793,7 +797,7 @@ class AA_Inserter_Nul extends AA_Inserter {
     // static function name()        { return _m("");  }             // see NamedInterface;  not used yet
     // static function description() { return _m('');  }      // see NamedInterface;  not used yet
 
-    public function execute($fieldwriter, $item_id, $value, $additional=array()) {
+    public function execute($fieldwriter, $item_id, $value, $additional= []) {
     }
 
     /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
@@ -881,7 +885,7 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);
-    return $content4id->storeItem( $insert ? 'insert' : 'update', array($invalidatecache, $feed), $context);     // invalidatecache, feed
+    return $content4id->storeItem( $insert ? 'insert' : 'update', [$invalidatecache, $feed], $context);     // invalidatecache, feed
 } // end of StoreItem
 
 // ----------------------------------------------------------------------------
@@ -919,7 +923,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {
-        $err = array();
+        $err = [];
     }
 
     // Are we editing dynamic slice setting fields?
@@ -995,14 +999,14 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 global $$change_varname, $$retype_varname, $$delete_varname;
 
                 if ($$change_varname && ($$change_varname == $$retype_varname)) {
-                    $$varname = ParamImplode(array('AA_PASSWD',$$change_varname));
+                    $$varname = ParamImplode(['AA_PASSWD',$$change_varname]);
                 } elseif ($$delete_varname) {
                     $$varname = '';
                 } elseif ($action == "update") {
                     // store the original password to use it in
                     // insert_fnc_pwd when it is not changed
                     // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
-                    $$varname = ParamImplode(array('AA_PASSWD_CRYPTED',$oldcontent4id[$pri_field_id][0]['value']));
+                    $$varname = ParamImplode(['AA_PASSWD_CRYPTED',$oldcontent4id[$pri_field_id][0]['value']]);
                 }
             }
         }
@@ -1028,7 +1032,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     if (!$v_field) {
                         $v_field = $pri_field_id;
                     }
-                    $v_type = ParamImplode(array($v_func,$v_field,$v_scope,$id));
+                    $v_type = ParamImplode([$v_func,$v_field,$v_scope,$id]);
                     ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, AA_Validate::factoryByString($v_type));
 
                     break;

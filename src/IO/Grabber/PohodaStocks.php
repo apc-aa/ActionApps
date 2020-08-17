@@ -51,7 +51,7 @@ class PohodaStocks extends \AA\IO\Grabber\AbstractGrabber {
     function prepare() {
         $data = file_get_contents($this->file);
         // remove namespaces (it is pain to work with it in simple XML interface)
-        $data = str_replace(array(
+        $data = str_replace([
             '<rsp:',
             '</rsp:',
             '<lst:',
@@ -60,7 +60,7 @@ class PohodaStocks extends \AA\IO\Grabber\AbstractGrabber {
             '</stk:',
             '<typ:',
             '</typ:'
-        ), array('<rsp_', '</rsp_', '<lst_', '</lst_', '<stk_', '</stk_', '<typ_', '</typ_'), $data);
+        ], ['<rsp_', '</rsp_', '<lst_', '</lst_', '<stk_', '</stk_', '<typ_', '</typ_'], $data);
         $xml = simplexml_load_string($data);
 
         $items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
@@ -74,7 +74,7 @@ class PohodaStocks extends \AA\IO\Grabber\AbstractGrabber {
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
     function getItem() {
-        $VAT_RATES = array('none' => 0, 'low' => 10, 'high' => 20);
+        $VAT_RATES = ['none' => 0, 'low' => 10, 'high' => 20];
 
         if (!($polozka = current($this->_items))) {
             return false;

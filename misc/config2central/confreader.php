@@ -12,7 +12,8 @@
 die('For security reasons, this demo is disabled by default.'); // Comment this but then uncomment it again, since it is very dangerous;
 
 require('/data/www/aa-config/'.$_REQUEST['file']);
-$conf = array( 'dns_conf'                  => '',
+$conf = [
+    'dns_conf'                  => '',
                'dns_serial'                => '',
                'dns_web'                   => '',
                'dns_mx'                    => '',
@@ -42,7 +43,7 @@ $conf = array( 'dns_conf'                  => '',
                'AA_ADMIN_USER'             => defined('AA_ADMIN_USER')              ? AA_ADMIN_USER      : '',
                'AA_ADMIN_PWD'              => defined('AA_ADMIN_PWD')               ? AA_ADMIN_PWD       : '',
                'status_code'               => 1
-             );
+];
 
 echo serialize($conf);
 

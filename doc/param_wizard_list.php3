@@ -40,7 +40,7 @@ echo "<style> a {color: #CCCCFF}; </style>
 
 $list = $$mylist;
 
-$lists = array("INPUT_TYPES", "FIELD_FUNCTIONS", "INSERT_TYPES", "DEFAULT_VALUE_TYPES");
+$lists = ["INPUT_TYPES", "FIELD_FUNCTIONS", "INSERT_TYPES", "DEFAULT_VALUE_TYPES"];
 
 if (!is_array($list)) {
     echo "<h1>" . _m("Choose a Parameter Wizard") . "</h1>";

@@ -40,7 +40,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
@@ -166,17 +166,22 @@ $p_source_id = q_pack_id( $source_id );
 list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields($source_id);
 
 // load module specific data
-list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = array_values(DB_AA::select1("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls",'', array(array('module_id',$source_id,'l'),array('status_code',0))));
+list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = array_values(DB_AA::select1("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls",'', [
+    ['module_id',$source_id,'l'],
+    ['status_code',0]
+]));
 
 if ( $template['P'] ) {           // set new name for new module
     $name = "";
 }
 
 if ( $template['P'] ) {
-    $form_buttons = array( 'insert',
-                           'template[P]' => array( 'type'=>"hidden", 'value'=> $template['P']));
+    $form_buttons = [
+        'insert',
+                           'template[P]' => ['type'=>"hidden", 'value'=> $template['P']]
+    ];
 } else {
-    $form_buttons = array( 'update',  "update"  => array ('type' => 'hidden', 'value'=>'1'));
+    $form_buttons = ['update',  "update"  => ['type' => 'hidden', 'value'=>'1']];
 }
 
 

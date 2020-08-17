@@ -86,7 +86,7 @@ if ( $selected_group ) {
     }
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 
@@ -228,20 +228,26 @@ if ( $grp_edit OR ($submit_action == "update_submit") ) {
 
 if ( $grp_new OR $add_submit ) {
     // buttons for adding new group
-    $form_buttons = array("add_submit" => array("type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"),
-                          "grp_new" => array("value"=>"1"));
+    $form_buttons = [
+        "add_submit" => ["type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"],
+                          "grp_new" => ["value"=>"1"]
+    ];
 } else {
     // buttons for update group
-    $form_buttons = array("submit_button" => array("type"=>"button","value"=>_m("Update"),"accesskey"=>"S",
-                                                   "add"=>'onclick="UpdateGroup(\'update_submit\')"'),
-                          "grp_edit" => array("value"=>"1"));
+    $form_buttons = [
+        "submit_button" => [
+            "type"=>"button","value"=>_m("Update"),"accesskey"=>"S",
+                                                   "add"=>'onclick="UpdateGroup(\'update_submit\')"'
+        ],
+                          "grp_edit" => ["value"=>"1"]
+    ];
 }
 
 // common "buttons" (hidden fields)
-$form_buttons["cancel"]         = array("url"=>"um_gedit.php3");
-$form_buttons["selected_group"] = array("value"=>$selected_group);
-$form_buttons["posted_users"]   = array("value"=>"0");
-$form_buttons["submit_action"]  = array("value"=>"0");
+$form_buttons["cancel"]         = ["url"=>"um_gedit.php3"];
+$form_buttons["selected_group"] = ["value"=>$selected_group];
+$form_buttons["posted_users"]   = ["value"=>"0"];
+$form_buttons["submit_action"]  = ["value"=>"0"];
 
 if ( $grp_edit OR ($submit_action == "update_submit") ) {
     FrmStaticText(_m("Group Id"), $group_data['uid']);

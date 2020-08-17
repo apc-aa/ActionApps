@@ -76,9 +76,11 @@ function get_formatted_date($datestring, $format) {
         }
     }
 
-    $month_names = array ("January"=>1,"February"=>2,"March"=>3,"April"=>4,"May"=>5,"June"=>6,
-                          "July"=>7,"August"=>8,"September"=>9,"October"=>10,"November"=>11,"December"=>12);
-    $month3_names = array ("Jan"=>1,"Feb"=>2,"Mar"=>3,"Apr"=>4,"May"=>5,"Jun"=>6,"Jul"=>7,"Aug"=>8,"Sep"=>9,"Oct"=>10,"Nov"=>11,"Dec"=>12);
+    $month_names = [
+        "January"=>1,"February"=>2,"March"=>3,"April"=>4,"May"=>5,"June"=>6,
+                          "July"=>7,"August"=>8,"September"=>9,"October"=>10,"November"=>11,"December"=>12
+    ];
+    $month3_names = ["Jan"=>1,"Feb"=>2,"Mar"=>3,"Apr"=>4,"May"=>5,"Jun"=>6,"Jul"=>7,"Aug"=>8,"Sep"=>9,"Oct"=>10,"Nov"=>11,"Dec"=>12];
 
     // assing date parts to format parts
     for ($i=0, $ino=count($dateparts); $i<$ino; ++$i) {
@@ -261,7 +263,7 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         switch ($function) {
         case 'show':
             //echo "<input type=\"checkbox\" name=\"$name\"".($val ? " checked" : "").">";
-            FrmSelectEasy($name, array (0 => _m("no"), 1 => _m("yes")), $val ? 1 : 0);
+            FrmSelectEasy($name, [0 => _m("no"), 1 => _m("yes")], $val ? 1 : 0);
             break;
         case 'show_ro':
             echo $val ? _m("yes") : _m("no");

@@ -45,12 +45,12 @@ if ($add) {
     require_once AA_INC_PATH."slicedit.php3";
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Add Slice Wizard"));
-$apage->setForm(array('action'=>'slicedit.php3'));
+$apage->setForm(['action'=>'slicedit.php3']);
 $apage->printHead($err, $Msg);
 
 $display_views_constants = true;
@@ -60,7 +60,7 @@ FrmTabCaption(_m("[Optional] Create New User"));
 
 // User data ---------------------------------------------------
 FrmInputRadio("user_role", _m("Level of Access"),
-    array ("EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")), "EDITOR");
+    ["EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")], "EDITOR");
 FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
 FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
 FrmInputPwd("user_password2", _m("Retype password"), "", 50, 50, true);
@@ -80,9 +80,13 @@ FrmTabEnd();
 echo '<br><br>';
 
 FrmTabCaption("");
-FrmTabEnd(array("no_slice"=>array("value"=>_m("Go: Add Slice"),
+FrmTabEnd([
+    "no_slice"=> [
+        "value"=>_m("Go: Add Slice"),
                                     "type"=>"submit",
-                                    "accesskey"=>"S"),
-                  "cancel"=>array("url"=>"um_uedit.php3")));
+                                    "accesskey"=>"S"
+    ],
+                  "cancel"=> ["url"=>"um_uedit.php3"]
+]);
 
 $apage->printFoot();

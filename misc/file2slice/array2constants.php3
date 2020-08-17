@@ -26,7 +26,7 @@ function myQuery ($db, $SQL, $fire) {
 // Here you can write your own constants, which will be loaded into database
 // as $group_id group
 
-$constants2import = array (
+$constants2import = [
 'Byst�ice nad Pern�tejnem',
 'Chot�bo�',
 'Havl��k�v Brod',
@@ -36,7 +36,7 @@ $constants2import = array (
 'Moravsk� Bud�jovice',
 'N�m욝 nad Oslavou',
 'Nov� M�sto na Morav�'
-);
+];
 // ---------------------- Just do it -----------------------------------------
 
 $group_id = 'NSZM_Obce_3_____';              // define name of group
@@ -47,7 +47,7 @@ $timeLimit = 600;                               // time limit in seconds
 // set in seconds - allows the script to work so long
 set_time_limit($time_limit);
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 is_object( $db ) || ($db = getDB());
 

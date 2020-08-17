@@ -28,6 +28,6 @@ class PreWidget extends \AA\Widget\FldWidget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'max_characters', 'width', 'slice_field', 'use_name', 'adding', 'second_field', 'add2constant', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'max_characters', 'width', 'slice_field', 'use_name', 'adding', 'second_field', 'add2constant', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 }

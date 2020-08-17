@@ -75,19 +75,21 @@ $headcode = '
 
 $apage = new AA_Adminpageutil('aaadmin','slicedel');
 $apage->setTitle(_m("Admin - Delete Slice"));
-$apage->setForm(array('action'=>'slicedel2.php3'));
+$apage->setForm(['action'=>'slicedel2.php3']);
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
 
-$form_buttons=array("submit" => array('name' => _m('Delete selected') ),
-                    "cancel" => array("url"  => "um_uedit.php3"));
+$form_buttons= [
+    "submit" => ['name' => _m('Delete selected')],
+                    "cancel" => ["url"  => "um_uedit.php3"]
+];
 
 if ( !isset($slices2show) ) {
     $slices2show = 'todelete';
 }
 FrmTabCaption(_m("Select slice to delete"), $form_buttons);
-FrmInputRadio('slices2show', _m('Slices to show'), array('todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices" ),
+FrmInputRadio('slices2show', _m('Slices to show'), ['todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices"],
               $slices2show, false, _m('This option allows you to display all the slices and delete them, so be careful!'), '', 0, true,
               "onClick='document.location = \"". get_admin_url('slicedel.php3') ."&slices2show=\" + this.value'");
 FrmTabSeparator(_m('Slices to delete'));

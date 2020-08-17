@@ -40,7 +40,7 @@ function ModW_id2item($id,$use_short_ids="false") {
  */
 function ModW_str2arr($varnames, $str, $strdef, $reg) {
     if (!$str) { $str = $strdef; }
-    $varout = array();
+    $varout = [];
     $reg    = '`'.str_replace('`','\`',$reg).'`';
     if (!(preg_match($reg, $str, $vars))) {
         if (!(preg_match($reg, $strdef, $vars))) {

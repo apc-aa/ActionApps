@@ -60,7 +60,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     /** array of libs needed for the widget - automaticaly inserted to the inputform */
     function requireLibs($aa_property, $winfo)
     {
-        return array();
+        return [];
     }
 
     /** script to run after the page DOM is loaded */
@@ -121,7 +121,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
 
         $constgroup = $this->getProperty('const');
         if (!$constgroup) {  // no constants or slice defined
-            return array();
+            return [];
         }
 
         // $restrict_zids could be removed from this check. Honza 2015-06-11
@@ -160,7 +160,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
             if (!$slice_field) {
                 $slice_field = GetHeadlineFieldID($sid, "headline.");
                 if (!$slice_field) {
-                    return array();
+                    return [];
                 }
             }
             $format = AA_Slice::getModule($sid)->getField($slice_field) ? '{substr:{' . $slice_field . '}:0:50}' : $slice_field;
@@ -192,7 +192,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
      */
     function _fillSelected($aa_value)
     {
-        $this->_selected = array();
+        $this->_selected = [];
         //if ( is_null($this->_selected) ) {  // not cached yet => create selected array
         if (is_object($aa_value)) {
             for ($i = 0, $ino = $aa_value->count(); $i < $ino; ++$i) {
@@ -218,11 +218,11 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     {
         $selectedused = false;
 
-        $already_selected = array();     // array where we mark selected values
-        $pair_used = array();     // array where we mark used pairs
+        $already_selected = [];     // array where we mark selected values
+        $pair_used = [];     // array where we mark used pairs
         $this->_fillSelected($selected); // fill this->_selected array by all aa_values in order we can print invalid values later
 
-        $ret = array();
+        $ret = [];
 
         // It never refills the array (and we relly on this fact in the code)
         if (!is_array($this->_const_arr)) {  // already filled
@@ -250,7 +250,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                 $selectedused = true;
                 $already_selected[(string)$select_val] = true;  // flag
             }
-            $ret[] = array('k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false);
+            $ret[] = ['k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false];
         }
 
         // now add all values, which is not in the array, but field has this value
@@ -264,16 +264,16 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                         $val_txt = $k;
                     }
                 }
-                $ret[] = array('k' => $k, 'v' => $val_txt, 'selected' => true, 'mis' => true);
+                $ret[] = ['k' => $k, 'v' => $val_txt, 'selected' => true, 'mis' => true];
                 $selectedused = true;
             }
         }
 
         if ($add_empty == 1) {
             // put empty option to the front
-            array_unshift($ret, array('k' => '', 'v' => '', 'selected' => !$selectedused, 'mis' => false));
+            array_unshift($ret, ['k' => '', 'v' => '', 'selected' => !$selectedused, 'mis' => false]);
         } elseif (($add_empty == 2) AND !$selectedused) {
-            array_unshift($ret, array('k' => '', 'v' => '', 'selected' => true, 'mis' => false, 'justdefault' => true));
+            array_unshift($ret, ['k' => '', 'v' => '', 'selected' => true, 'mis' => false, 'justdefault' => true]);
         }
         return $ret;
     }
@@ -520,11 +520,11 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
     static function getValue($data4field)
     {
         $flag = $data4field['flag'] & FLAG_HTML;
-        $fld_value_arr = array();
+        $fld_value_arr = [];
 
         foreach ((array)$data4field as $key => $value) {
             if (ctype_digit((string)$key)) {
-                $fld_value_arr[$key] = array('value' => $value, 'flag' => $flag);
+                $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             } elseif (($key != 'flag') AND class_exists($class = Widget::constructClassName($key))) {
                 // call function like AA\Widget\DteWidget::getValue($data)
                 // where $data depends on the widget - for example for
@@ -543,9 +543,9 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
      *  usage:  return AA\Widget\Widget::propertiesShop(array('rows','max_characters'));
      *  most of widgets uses this shop (to coordinate labels and helps), but there is no problem, if you use your own properties in widget, however
      */
-    static function propertiesShop($props = array())
+    static function propertiesShop($props = [])
     {
-        $ret = array();
+        $ret = [];
         foreach ($props as $pid) {
             switch ($pid) {  //  id                                                    name                                    type   multi  persist validator, required, help, morehelp, example
                 case 'rows':
@@ -564,7 +564,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Values array"), 'string', true, true, 'string', false, _m("Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)"), '', '{"1"#:"Yes","0"#:"No"}');
                     break;
                 case 'area_type':
-                    $ret[$pid] = new AA_Property($pid, _m("Type"), 'string', false, true, array('enum', array('class' => 'class', 'iframe' => 'iframe')), false, _m("type: class (default) / iframe"), '', 'class');
+                    $ret[$pid] = new AA_Property($pid, _m("Type"), 'string', false, true, ['enum', ['class' => 'class', 'iframe' => 'iframe']], false, _m("type: class (default) / iframe"), '', 'class');
                     break;
                 case 'width':
                     $ret[$pid] = new AA_Property($pid, _m("Width"), 'int', false, true, 'int', false, _m("width of the field in characters (size parameter)"), '', 60);
@@ -591,7 +591,7 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Add to Constant"), 'bool', false, true, 'bool', false, _m("if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"), '', "0");
                     break;
                 case 'bin_filter':
-                    $ret[$pid] = new AA_Property($pid, _m("Show items from bins"), 'int', false, true, 'int', false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13",array(AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)), '', '3');
+                    $ret[$pid] = new AA_Property($pid, _m("Show items from bins"), 'int', false, true, 'int', false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", [AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH]), '', '3');
                     break;
                 case 'filter_conds':
                     $ret[$pid] = new AA_Property($pid, _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1");
@@ -739,23 +739,23 @@ class Widget extends \AA_Object implements \AA\Util\NamedInterface {
      */
     static function getParamWizardArr($type)
     {
-        $ret = array();
+        $ret = [];
         if (class_exists($widget_class = Widget::constructClassName($type))) {
             $ret['name'] = $widget_class::name();
             $ret['desc'] = $widget_class::description();
-            $ret['params'] = array();
+            $ret['params'] = [];
 
             $props = $widget_class::getClassProperties();
             if (key($props) == 'const') { // const or slice is not presented in popup
                 array_shift($props);
             }
             foreach ($props as $prop) {
-                $ret['params'][] = array(
+                $ret['params'][] = [
                     'name' => $prop->getName(),
                     'desc' => $prop->getHelp(),
                     'type' => $prop->getType(),
                     'example' => $prop->getExample()
-                );
+                ];
             }
         }
         return $ret;

@@ -67,14 +67,14 @@ function cron($time = 0) {
         echo "DEBUGGING. I don't run any script!<br>";
     }
 
-    $translate["mon"] = array ("jan"=>1,"feb"=>2,"mar"=>3,"apr"=>4,"may"=>5,"jun"=>6,"jul"=>7,"aug"=>8,"sep"=>9,"oct"=>10,"nov"=>11,"dec"=>12);
-    $translate["wday"] = array ("sun"=>0,"mon"=>1,"tue"=>2,"wed"=>3,"thu"=>4,"fri"=>5,"sat"=>6,"7"=>0);
+    $translate["mon"] = ["jan"=>1,"feb"=>2,"mar"=>3,"apr"=>4,"may"=>5,"jun"=>6,"jul"=>7,"aug"=>8,"sep"=>9,"oct"=>10,"nov"=>11,"dec"=>12];
+    $translate["wday"] = ["sun"=>0,"mon"=>1,"tue"=>2,"wed"=>3,"thu"=>4,"fri"=>5,"sat"=>6,"7"=>0];
 
     if (!$time) $time = time();
 
     $db = getDB();
 
-    $parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
+    $parts = ["mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60];
     if ($_GET['debug']) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
 
     $db->query("SELECT * FROM cron");

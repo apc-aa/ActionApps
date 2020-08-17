@@ -69,13 +69,13 @@ class AA_Log {
             $params = ParamImplode($params);
         }
 
-        $rows = array();
+        $rows = [];
         if (is_array($selector)) {
             foreach ($selector as $sel) {
-                $rows[] = array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$sel, 'params'=>$params);
+                $rows[] = ['time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$sel, 'params'=>$params];
             }
         } else {
-            $rows[] = array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params);
+            $rows[] = ['time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params];
         }
 
         AA::Metabase()->doInsertMulti('log', $rows);
@@ -87,7 +87,7 @@ class AA_Log {
 
             // clean all older than 40 days
             //                                                    what to clean                                         when to run
-            with( new AA_Toexecute )->laterOnce(new AA_Log_Clenup(now() - (60*60*24*40)), array(), "AA_Log_Clenup", 10, now() + (60*60*24));
+            with( new AA_Toexecute )->laterOnce(new AA_Log_Clenup(now() - (60*60*24*40)), [], "AA_Log_Clenup", 10, now() + (60*60*24));
         }
         return true;
     }
@@ -104,7 +104,7 @@ class AA_Log {
     }
 
     static function context($selector='') {
-        return ParamImplode(array($selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"));
+        return ParamImplode([$selector,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
     }
 
     /** Is the event logable?
@@ -114,7 +114,7 @@ class AA_Log {
          *  to log - it's just like filter
          *  This should be list of all logable events (at least now - 2005-11-9)
          */
-        $DO_NOT_LOG = array(
+        $DO_NOT_LOG = [
            // 'ALERTS',
            // 'BM_CREATE',
            // 'BM_DELETE',
@@ -142,7 +142,7 @@ class AA_Log {
            // AA_WARN
            // LOGIN
            // PWD_REHASH
-        );
+        ];
         return !in_array($event_type, $DO_NOT_LOG);
     }
 
@@ -153,11 +153,11 @@ class AA_Log {
      * @return array
      */
     static public function getLastLogEvents($event, $selector = "") {
-        $conds = array(array('type',$event, (strpos($event, '%') === false) ? '=' : 'LIKE'));
+        $conds = [['type',$event, (strpos($event, '%') === false) ? '=' : 'LIKE']];
         if ($selector != "") {
-            $conds[] = array('selector',$selector);
+            $conds[] = ['selector',$selector];
         }
-        return DB_AA::select1('SELECT * FROM log','', $conds, array('id-'));
+        return DB_AA::select1('SELECT * FROM log','', $conds, ['id-']);
     }
 
 }
@@ -178,21 +178,21 @@ class AA_Log_Clenup implements \AA\Util\LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params=array()) {
-        $where = array(array('time', $this->time, '<'));
+    public function toexecutelater($params= []) {
+        $where = [['time', $this->time, '<']];
 
         // delete also old records post2shtml table
         DB_AA::delete('post2shtml', $where);
 
         if ( $this->type ) {
-            $where[] = array('type',$this->type);
+            $where[] = ['type',$this->type];
         }
         DB_AA::delete('log', $where);
 
         // delete task with priority = 0 - considered as undoable (note the priority is decreased on each try of task execution.)
         $undoable_tasks = GetTable2Array('SELECT * FROM toexecute WHERE priority=0', 'NoCoLuMn');
         AA_Log::write('TOEXECUTE', 'cleanup', $undoable_tasks);
-        DB_AA::delete('toexecute', array(array('priority',0,'i')));
+        DB_AA::delete('toexecute', [['priority',0,'i']]);
     }
 }
 

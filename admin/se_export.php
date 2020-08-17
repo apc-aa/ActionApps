@@ -53,7 +53,7 @@ if (!IfSlPerm(PS_FEEDING)) {
 
 if ($_GET['export']) {
 
-    $exportset_params = array (
+    $exportset_params = [
         'grabber_type' => $grabber_name,
         'format'       => $format,
         'type'         => $type,
@@ -61,7 +61,7 @@ if ($_GET['export']) {
         'filename'     => $filename,
         'conds'        => $conds,
         'sort'         => $sort
-    );
+    ];
 
     $exportset = new AA_Exportsetings($exportset_params);
     $exportset->setOwnerId($slice_id);
@@ -76,14 +76,14 @@ $apage->setTitle(_m("Admin - Export Items"));
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
-$form_buttons = array ('export' => array('type'=>'submit', 'value'=> _m('Export')));
+$form_buttons = ['export' => ['type'=>'submit', 'value'=> _m('Export')]];
 
-$grabber_arr = array(
+$grabber_arr = [
     'AA\IO\Grabber\Slice' => _m('Item Contents'),
     'AA\IO\Grabber\Discussion' => _m('Discussion')
-    );
+];
 
-$bins_arr = array(
+$bins_arr = [
     AA_BIN_ALL      => _m('All'),
     AA_BIN_ACTIVE   => _m('Active'),
     AA_BIN_PENDING  => _m('Pending'),
@@ -91,15 +91,15 @@ $bins_arr = array(
     AA_BIN_APPROVED => _m('Approved'),
     AA_BIN_HOLDING  => _m('Holding'),
     AA_BIN_TRASH    => _m('Trash')
-    );
+];
 
-$types_arr = array(
+$types_arr = [
     'db'    => _m('Database backup (as stored in DB)'),
     'human' => _m('Human - dates converted to Y-m-d format, ...')
-    );
+];
 
 
-$format_arr     = array();
+$format_arr     = [];
 $format_classes = AA_Components::getClassNames('AA_Exporter_');
 foreach ($format_classes as $fclass) {
     $format_arr[$fclass] = substr($fclass,12);

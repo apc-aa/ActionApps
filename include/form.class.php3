@@ -67,7 +67,7 @@ class AA_Formrow extends AA_Storable {
         $f_arr  = $fields->getNameArray();
               // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
         $p = new AA_Property('rows', _m("Fields to show"),  'AA_Formrow_Field', true, false);
-        $w = new FormrowWidget(array('const_arr' => $f_arr));
+        $w = new FormrowWidget(['const_arr' => $f_arr]);
         //$w = new AA\Widget\MchWidget(array('columns'=>1,'const_arr' => $f_arr));
         $form->addRow(new AA_Formrow_Full($p, $w));  // use default widget for the field
     }
@@ -100,10 +100,10 @@ class AA_Formrow_Full extends AA_Formrow {
 
     /**      */
     static function getClassProperties() {
-        return array (                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
+        return [                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
             'property'       => new AA_Property( 'property',       _m("Property"),          'AA_Property', false, true),
             'widget'         => new AA_Property( 'widget',         _m("Widget"), 'AA\Widget\Widget',   false, true)
-            );
+        ];
     }
 }
 
@@ -120,7 +120,7 @@ class AA_Formrow_Field extends AA_Formrow {
     function getRowProperty() {
         $field  = $this->_getField();
         $widget = $field->getWidget();
-        return $field->getAaProperty(array('multiple'=>$widget->multiple()));
+        return $field->getAaProperty(['multiple'=>$widget->multiple()]);
     }
 
     function getWidget()      {
@@ -136,10 +136,10 @@ class AA_Formrow_Field extends AA_Formrow {
 
     /**      */
     static function getClassProperties() {
-        return array (                   //       id                   name               type        multi  persist validator, required, help, morehelp, example
+        return [                   //       id                   name               type        multi  persist validator, required, help, morehelp, example
             'field_id'       => new AA_Property( 'field_id',       _m("Field"),          'string', false, true),
             'slice_id'       => new AA_Property( 'slice_id',       _m("Slice ID"),       'string', false, true)
-            );
+        ];
     }
 }
 
@@ -169,9 +169,9 @@ class FormrowWidget extends Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     static function getClassProperties()  {
-        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+        return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)"))
-            );
+        ];
     }
 
 
@@ -193,7 +193,7 @@ class FormrowWidget extends Widget {
         $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $ser_values   = $content->getValuesArray($aa_property->getId());
-        $arr          = array();
+        $arr          = [];
         foreach ($ser_values as $ser_row) {
             $row   = unserialize($ser_row);
             $field = $row->getRowProperty();
@@ -208,7 +208,7 @@ class FormrowWidget extends Widget {
         $widget   .= $this->getSelectOptions( $options );
         $widget   .= "</select>";
 
-        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+        return ['html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired()];
     }
 
 }
@@ -221,7 +221,7 @@ class FormrowWidget extends Widget {
 class AA_Form extends AA_Object {
 
     /** @var AA_Formrow[] */
-    protected $rows = array();
+    protected $rows = [];
 
     public   $object_type  = '';  // for which object class is current form
     public   $object_id    = '';  // for which object is current form
@@ -234,10 +234,10 @@ class AA_Form extends AA_Object {
      *  AA_Object's method
      */
     static function getClassProperties() {
-        return array (          //           id       name       type        multi  persist validator, required, help, morehelp, example
+        return [          //           id       name       type        multi  persist validator, required, help, morehelp, example
             'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true),
             'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)
-            );
+        ];
     }
 
     // add default property's row(s)
@@ -277,7 +277,7 @@ class AA_Form extends AA_Object {
     function process($aa) {
         if ( !empty($aa) ) {
             // update or insert
-            $object = call_user_func_array(array($this->object_type, 'factoryFromForm'), array($this->object_owner, $this->object_type));
+            $object = call_user_func_array([$this->object_type, 'factoryFromForm'], [$this->object_owner, $this->object_type]);
             // @todo check permissions, validation, $store_mode state (see readFromForm)
 
             $object->save();
@@ -379,7 +379,7 @@ class AA_Form extends AA_Object {
             $content = new AA_Content();
             $content->setOwnerId($this->object_owner);
         } else {
-            $contents = AA_Object::getContent(array('class'=>$this->object_type), new zids($this->object_id));
+            $contents = AA_Object::getContent(['class'=>$this->object_type], new zids($this->object_id));
             $content = $contents[$this->object_id];
         }
         $content->setAaValue('aa_type', new AA_Value($this->object_type));

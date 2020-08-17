@@ -52,7 +52,7 @@ define( 'TOEXECUTE_USER_TASK_TIME', 2000000000);
  */
 class AA_Toexecute {
 
-    var $messages = array();
+    var $messages = [];
 
     /** Message function
     * @param $text
@@ -75,7 +75,7 @@ class AA_Toexecute {
     /** Clear report function - unsets all current messages  */
     function clear_report() {
         unset($this->messages);
-        $this->messages = array();
+        $this->messages = [];
     }
 
 
@@ -104,16 +104,17 @@ class AA_Toexecute {
      *           so we need to cancel all older "recount" tasks, since it will
      *           be dubled in the queue (we call cancel_all() method for it)
      */
-    function later( &$object, $params=array(), $selector='', $priority=100, $time=null ) {
+    function later( &$object, $params= [], $selector='', $priority=100, $time=null ) {
         global $auth;
-        $varset = new Cvarset(array( array('created'       , time()),
-                                     array('execute_after' , ((int)$time < time() ? time() : $time)),  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-                                     array('aa_user'       , $auth->auth['uid']),
-                                     array('priority'      , $priority),
-                                     array('selector'      , ($selector ?: get_class($object))),
-                                     array('object'        , serialize($object)),
-                                     array('params'        , serialize($params))
-                              ));
+        $varset = new Cvarset([
+            ['created'       , time()],
+                                     ['execute_after' , ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
+                                     ['aa_user'       , $auth->auth['uid']],
+                                     ['priority'      , $priority],
+                                     ['selector'      , ($selector ?: get_class($object))],
+                                     ['object'        , serialize($object)],
+                                     ['params'        , serialize($params)]
+        ]);
 
          // store the task in the queue (toexecute table)
          if ( !$varset->doInsert('toexecute') ) {
@@ -174,7 +175,7 @@ class AA_Toexecute {
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
-        $execute_times = array();
+        $execute_times = [];
         $this->clear_report();
         $execute_start = microtime(true);
         $count   = 0;
@@ -212,14 +213,14 @@ class AA_Toexecute {
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
-        $execute_times = array();
+        $execute_times = [];
         $this->clear_report();
         $execute_start = microtime(true);
         $count   = 0;
         $started = 0;
 
         foreach ($tasks as $task_id) {
-            $task  = DB_AA::select1('SELECT * FROM toexecute', '', array(array('id', $task_id, 'i')));
+            $task  = DB_AA::select1('SELECT * FROM toexecute', '', [['id', $task_id, 'i']]);
             ++$started;
             if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
                 ++$count;
@@ -239,7 +240,7 @@ class AA_Toexecute {
         if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
             return 0;
         }
-        $varset = new Cvarset( array( array('priority', max( $task['priority']-1, 0 ))));
+        $varset = new Cvarset( [['priority', max( $task['priority']-1, 0 )]]);
         $varset->addkey('id', 'number', $task['id']);
         // We lower the priority for this task before the execution, so
         // if the task is not able to finish, then other tasks with the same
@@ -271,7 +272,7 @@ class AA_Toexecute {
             return 'AA_Toexecute:execute_one: No object: '. serialize($object); // Error
         }
         set_time_limit(max(30,ini_get('max_execution_time')));   // 30 seconds (at least) for each task
-        return call_user_func(array($object, 'toexecutelater'), (array)$params);
+        return call_user_func([$object, 'toexecutelater'], (array)$params);
     }
 } // end of toexecute class
 

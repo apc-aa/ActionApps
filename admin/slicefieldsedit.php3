@@ -54,7 +54,7 @@ if ($encap) {  // do we use somewhere this ensap??? Honza 3/2009
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                             //       and REDIRECT_STRING_UNESCAPED - from url
 
-QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
+QuoteVars("post", ['encap'=>1]);  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
 
 // TODO: GetHidden is not so correct in current AA code
@@ -135,7 +135,7 @@ if ($edit) {
     // fill content array from item and content tables
     $content4id = $slice->get_dynamic_setting_content(true);
     if ( !$content4id ) {
-        $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
+        $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
         MsgPage(con_url(StateUrl(self_base() ."index.php3"), "slice_id=$slice_id"), $err);
         exit;
     }
@@ -146,13 +146,13 @@ if ($edit) {
 
 // print begin ---------------------------------------------------------------
 if (!$encap) {
-    $inputform_settings = array(
+    $inputform_settings = [
         'display_aa_begin_end' => true,
         'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName($slice_id).")",
-    );
+    ];
 }
 
-$inputform_settings['messages']            = array('err' => $err);
+$inputform_settings['messages']            = ['err' => $err];
 $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
                                              $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
@@ -161,9 +161,10 @@ $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
                                               ($return_url ? expand_return_url(1) :
                                               get_admin_url("index.php3?cancel=1&slice_id=$slice_id"))));
 
-$inputform_settings['hidden']              = array(
+$inputform_settings['hidden']              = [
                              'anonymous'   => (($free OR $anonymous) ? true : ""),
-                             'openervar'   => $openervar);  // id of variable in parent window (used for popup inputform)
+                             'openervar'   => $openervar
+];  // id of variable in parent window (used for popup inputform)
 
 if ($inputform_settings['form4update']) {
     $inputform_settings['hidden']['id']    = $id;

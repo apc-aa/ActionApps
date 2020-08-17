@@ -101,7 +101,7 @@ if ( $r_state['link_id'] ) {
 // common lookups -------------------------------------------------------------
 
 // lookup - all categories names
-$tmp_translate = DB_AA::select(array('id'=>'name'), 'SELECT id, name FROM `links_categories`', array(array('deleted', 'n')));
+$tmp_translate = DB_AA::select(['id'=>'name'], 'SELECT id, name FROM `links_categories`', [['deleted', 'n']]);
 array_walk($tmp_translate, function(&$val) { return myspecialchars($val); });
 
 // This link specific data -----------------------------------------------------
@@ -389,15 +389,17 @@ unset($r_err);
 unset($r_msg);
 
 
-$form_buttons = array ( "submit",
+$form_buttons = [
+    "submit",
                         "cancel",
-                        "senderUrl" => array('value' => "linkedit.php3"),
-                        "lid"       => array('value' => $r_state['link_id']) );
+                        "senderUrl" => ['value' => "linkedit.php3"],
+                        "lid"       => ['value' => $r_state['link_id']]
+];
 
 echo '
 <form name="f" method=post action="'. StateUrl("linkedit2.php3") .'">';
 $caption = _m('Link').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
-                                      array("before"=>"(", "text"=>"?", "after"=>")"));
+                                      ["before"=>"(", "text"=>"?", "after"=>")"]);
 FrmTabCaption($caption, $form_buttons);
 
 $bin_names = get_bin_names();
@@ -464,7 +466,7 @@ if ( !Links_IsPublic() ) {
 
 
     FrmTabSeparator(_m('Show in category') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "odkaz-dokategorii"),
-            array("before" => "(", "text" => "?", "after" => ")")));
+            ["before" => "(", "text" => "?", "after" => ")"]));
 echo '
       <tr>
        <td colspan="2">
@@ -510,7 +512,7 @@ echo      '</td>
 // the link is of special type
 if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        FrmTabSeparator(_m('Organization') . getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "kontakt"),
-               array("before" => "(", "text" => "?", "after" => ")")));
+               ["before" => "(", "text" => "?", "after" => ")"]));
        FrmInputText( 'org_city', _m('City'), $org_city,  250, 50, false);
        printChange( 'org_city', $org_city_change, $org_city );
        FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50, false);
@@ -527,7 +529,7 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
 
 
        FrmTabSeparator(_m('Regions and languages') .
-           getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk"), array("before" => "(", "text" => "?", "after" => ")")));
+           getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk"), ["before" => "(", "text" => "?", "after" => ")"]));
    echo '
       <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>

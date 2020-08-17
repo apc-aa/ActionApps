@@ -107,7 +107,7 @@ function ExitPage($msg='') {
  *
  */
 function StoreVariables( array $vars ) {
-    $state_vars = array();
+    $state_vars = [];
     foreach ($vars as $v) {
         $state_vars[$v] = $GLOBALS[$v];
     }

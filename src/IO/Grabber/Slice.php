@@ -35,8 +35,8 @@ class Slice extends \AA\IO\Grabber\AbstractGrabber {
         $this->set = $set;
         $this->restrict_zids = $restrict_zids;
         $this->restrict_fields = is_array($restrict_fields) ? $restrict_fields : false;
-        $this->_longids = array();
-        $this->_content_cache = array();
+        $this->_longids = [];
+        $this->_content_cache = [];
         $this->_index = 0;
     }
 
@@ -58,7 +58,7 @@ class Slice extends \AA\IO\Grabber\AbstractGrabber {
     function prepare() {
         $zids = $this->set->query($this->restrict_zids);
         $this->_longids = $zids->longids();
-        $this->_content_cache = array();
+        $this->_content_cache = [];
         $this->_index = 0;
         reset($this->_longids);   // go to first long id
     }
@@ -91,6 +91,6 @@ class Slice extends \AA\IO\Grabber\AbstractGrabber {
     }
 
     function finish() {
-        $this->_longids = array();
+        $this->_longids = [];
     }
 }

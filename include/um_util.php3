@@ -36,7 +36,7 @@ require_once AA_INC_PATH."constants.php3";
  */
 function SelectGU_ID($name, $arr, $selected="", $type="short") {
     if ( !is_array($arr)) {
-        $arr = array();
+        $arr = [];
     }
     array_walk($arr, function (&$v, $k) {$v = ((($userlogin = AA::$perm->getUserLoginName($k)) == $v['name']) OR !$userlogin) ? $v['name'] : $v['name']. " ($userlogin)";});
     echo getFrmSelectEasy($name, $arr, $selected, "id=\"$name\"". ($type=="short" ? '' : ' size=8'). ($arr ? '' : ' style="min-width:100px;"'), true);
@@ -67,7 +67,7 @@ function GetFiltered($type, $filter, $to_much, $none) {
  */
 function PrintModulePermModificator($selected_user) {
     $perm_slices = AA::$perm->getUserPerms($selected_user, "slice", 1);  // there are not only Slices, but other Modules too
-    $all_modules = DB_AA::select(array('unid'=>array()),'SELECT LOWER(HEX(`id`)) AS unid, name, type FROM module', '', array('type', 'name'));
+    $all_modules = DB_AA::select(['unid'=> []],'SELECT LOWER(HEX(`id`)) AS unid, name, type FROM module', '', ['type', 'name']);
     $i=0;
     $current_perm_table = '';
     foreach ( $all_modules as $mid => $mod ) {
@@ -281,7 +281,7 @@ function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
  */
 function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3) {
 
-    $userrecord = array();
+    $userrecord = [];
     ValidateInput("user_login", _m("Login name"), $user_login, $err, true, "login");
     ValidateInput("user_surname", _m("Surname"), $user_surname, $err, true, "text");
     ValidateInput("user_firstname", _m("First name"), $user_firstname, $err, true, "text");

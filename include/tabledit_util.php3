@@ -138,8 +138,8 @@ function ProcessFormData($getTableViewsFn, $val, &$cmd) {
  * @param $default_readonly
  */
 function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", $default_readonly=false, $primary="") {
-    $primary_aliases = array();
-    $tables          = array();
+    $primary_aliases = [];
+    $tables          = [];
 
     // set column defaults and find all tables used in $columns
     foreach ($columns as $colname => $foo) {
@@ -148,14 +148,14 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
         $column["field"]                = get_if($column["field"], $colname);
         $column["caption"]              = get_if($column["caption"], $colname);
         if (!is_array($column["view"])) {
-            $column["view"] = array();
+            $column["view"] = [];
         }
         $column["view"]["readonly"]     = get_if($column["view"]["readonly"], $default_readonly || $column["view"]["type"] == "userdef" || $column["view"]["type"] == "calculated");
         if ($column["view"]["type"] == "date") {
             $cols = strlen( date($column["view"]["format"], "31.12.1970") );
         }
         if (!is_array($column["view"]["size"])) {
-            $column["view"]["size"] = array();
+            $column["view"]["size"] = [];
         }
         $column["view"]["size"]["rows"] = get_if($column["view"]["size"]["rows"], 10);
         $column["view"]["html"]         = get_if($column["view"]["html"], false);
@@ -521,7 +521,7 @@ function ProoveVals($val, $columns) {
             }
             if ($column["validate_min"] && $column["validate"] == "number") {
                 if ($val[$colname] < $column["validate_min"] || $val[$colname] > $column["validate_max"]) {
-                    $err[$colname] = _m("Value of %1 should be between %2 and %3.", array($colname,$column["validate_min"],$column["validate_max"]));
+                    $err[$colname] = _m("Value of %1 should be between %2 and %3.", [$colname,$column["validate_min"],$column["validate_max"]]);
                     return false;
                 }
             }
@@ -655,7 +655,7 @@ function PrintJavaScript_Validate() {
             var val = txtfield.value;
             var err = '';
             if (val > maxval || val < minval)
-                err = '"._m("Wrong value: a number between %1 and %2 is expected.",array("'+minval+'","'+maxval+'"))."';
+                err = '"._m("Wrong value: a number between %1 and %2 is expected.", ["'+minval+'","'+maxval+'"])."';
             if (err != '') {
                 alert (err);
                 txtfield.focus();

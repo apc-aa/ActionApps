@@ -29,7 +29,7 @@ class HidWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return array();
+        return [];
     }
 
     /** Decorate widget in the standard AA form - start
@@ -63,7 +63,7 @@ class HidWidget extends \AA\Widget\Widget
         $input_value = myspecialchars($content->getValue($property_id));
         $widget      = "\n<input type=hidden name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
         
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /**

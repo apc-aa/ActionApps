@@ -71,7 +71,7 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
         return "$i<$start>$o$i</$end>";
     } elseif (is_object($v)) {
         //if ($debug) print "OBJECT";
-        if (is_callable(array($v,"xml_serialize"))) {
+        if (is_callable([$v,"xml_serialize"])) {
             return $v->xml_serialize($k,$i,$ii,$a);
         } else {
             print("ERROR: Can't serialize an Object");
@@ -106,9 +106,9 @@ class xml_unserializer {
      *
      */
     function __construct() {
-        $this->stack       = array();
-        $this->namestack   = array();
-        $this->codingstack = array();
+        $this->stack       = [];
+        $this->namestack   = [];
+        $this->codingstack = [];
         $this->chardata    = "";
         $this->top         = null;
         $this->coding      = "";

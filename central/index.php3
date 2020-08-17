@@ -43,7 +43,7 @@ require_once AA_BASE_PATH. "central/include/actions.php3";
 function CountItemsInBins() {
     $db = getDB();
 
-    $ret = array('folder1'=>0, 'folder2'=>0, 'folder3' => 0);
+    $ret = ['folder1'=>0, 'folder2'=>0, 'folder3' => 0];
     $db->query("SELECT status_code, count(*) as cnt FROM central_conf
                  GROUP BY status_code");
                  while ( $db->next_record() ) {
@@ -109,10 +109,11 @@ $manager->performActions();
 $r_state['bin_cnt'] = CountItemsInBins();
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
-$BIN_CONDS   = array( 'app'    => AA_BIN_APPROVED,
+$BIN_CONDS   = [
+    'app'    => AA_BIN_APPROVED,
                       'hold'   => AA_BIN_HOLDING,
                       'trash'  => AA_BIN_TRASH
-                    );
+];
 $zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
 $manager->displayPage($zids, 'central', $manager->getBin());

@@ -51,7 +51,7 @@ $back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_ur
 
 if ($update) {
     do {
-        $err = array();          // error array (Init - just for initializing variable
+        $err = [];          // error array (Init - just for initializing variable
         $new_group_id = stripslashes(str_replace(':','-',$new_group_id));  // we don't need ':'
                                                              // in id (parameter separator)
         ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
@@ -65,14 +65,14 @@ if ($update) {
             $err[] = _m('No constants specified');
             break;
         }
-        $constants2import = array();
+        $constants2import = [];
         foreach ($constants as $constant) {
             if ($delimiter) {
                 list($name,$value) = explode($delimiter, $constant);
             } else {
                 $name = $value = $constant;
             }
-            $constants2import[] = array('name' => $name, 'value' => $value);
+            $constants2import[] = ['name' => $name, 'value' => $value];
         }
 
         $ok = add_constant_group($new_group_id, $constants2import);
@@ -94,19 +94,23 @@ $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - Constants Import"));
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("update",
-                      "cancel"    => array("url"=> $back_url),
-                      "return_url"=> array("value"=>$return_url),
-                      "fid"       => array("value"=>$fid));
+$form_buttons = [
+    "update",
+                      "cancel"    => ["url"=> $back_url],
+                      "return_url"=> ["value"=>$return_url],
+                      "fid"       => ["value"=>$fid]
+];
 
 FrmTabCaption(_m("Constants"), $form_buttons);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);
-$delimiters = array(''   => '-none- (Name is the same as Value)',
+$delimiters = [
+    ''   => '-none- (Name is the same as Value)',
                     ';'  => 'semicolon ;',
                     ','  => 'comma ,',
                     '\t' => 'tabulator \t',
                     '|'  => 'pipe |',
-                    '~'  => 'tilde ~');
+                    '~'  => 'tilde ~'
+];
 FrmInputSelect('delimiter', _m('Name - Value delimiter'), $delimiters, '', true);
 FrmTextarea('constant_list', _m("Constants"), $constant_list, 25, 60, false, _m('write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)'));
 FrmTabEnd($form_buttons);

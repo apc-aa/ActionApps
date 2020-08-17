@@ -97,7 +97,7 @@ FrmSelectEasy("change_to", getReaderManagementSlices(), $collectionprop["slice_i
 
 if ($slice_set) {
     echo '<br><input type="checkbox" name="change_to_delete" checked> '
-        ._m("and delete the %1-specific fields from %2", array($collectionprop["name"], $slice_name));
+        ._m("and delete the %1-specific fields from %2", [$collectionprop["name"], $slice_name]);
 }
 
 echo '
@@ -112,7 +112,7 @@ echo '
 <table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
     <tr><td class=tabtxt>
     <h2>'._m("Add %1-specific fields to %2",
-             array ($collectionprop["name"], $slice_name)).'</h2>';
+             [$collectionprop["name"], $slice_name]).'</h2>';
 echo _m("Adds only fields the IDs of which don't yet exist in the slice.
     Refreshes the constant group containing selections if it already exists.");
 

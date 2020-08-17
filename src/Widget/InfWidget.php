@@ -29,7 +29,7 @@ class InfWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('code'));
+        return \AA\Widget\Widget::propertiesShop(['code']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -48,6 +48,6 @@ class InfWidget extends \AA\Widget\Widget
         $base_name = FormArray::getName4Form($property_id, $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $input_name = $base_name . "[0]";
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }

@@ -31,7 +31,7 @@ if ( $answer )    {
      exit;
 }
 
-$err = array();  // error array (just for initializing variable)
+$err = [];  // error array (just for initializing variable)
 
 // we allways sending link id - it prevent us of bug with 'Back' browser button
 if ( $lid ) {

@@ -53,7 +53,7 @@ class PwdWidget extends \AA\Widget\Widget
         $input_name = $base_name . "[pwd][new2]";
         $input_id = FormArray::formName2Id($input_name);
         $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required>";
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
 
@@ -67,10 +67,10 @@ class PwdWidget extends \AA\Widget\Widget
     {
         $flag = $data4field['flag'] & FLAG_HTML;
         if (is_array($data4field) AND isset($data4field['new1'])) {
-            return new AA_Value(ParamImplode(array('AA_PASSWD', $data4field['new1'], $data4field['new2'], $data4field['old'])), $flag);
+            return new AA_Value(ParamImplode(['AA_PASSWD', $data4field['new1'], $data4field['new2'], $data4field['old']]), $flag);
         }
         // older version without the possibility to provide old passwords
-        return new AA_Value(ParamImplode(array('AA_PASSWD', reset($data4field))), $flag);
+        return new AA_Value(ParamImplode(['AA_PASSWD', reset($data4field)]), $flag);
     }
 
     /** getClassProperties function of AA_Serializable
@@ -78,6 +78,6 @@ class PwdWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('width', 'change_label', 'retype_label', 'delete_label', 'change_hint', 'retype_hint'));
+        return \AA\Widget\Widget::propertiesShop(['width', 'change_label', 'retype_label', 'delete_label', 'change_hint', 'retype_hint']);
     }
 }

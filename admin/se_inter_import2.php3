@@ -71,18 +71,19 @@ foreach ($aa_rss['channels'] as $id => $foo) {
     $chan[$id] = $aa_rss['channels'][$id]['title'];
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 $apage = new AA_Adminpageutil('sliceadmin','n_import');
 $apage->setTitle(_m("Inter node import settings"));
-$apage->setForm(array('action'=>'se_inter_import3.php3'));
+$apage->setForm(['action'=>'se_inter_import3.php3']);
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("new_in_feed"      => array('type'=>'submit', 'value'=>_m("Choose slice")),
-                      "cancel"           => array('url'=>'se_inter_import.php3'),
-                      "remote_node_name" => array( 'type' => 'hidden', 'value' => $rem_nodes),
-                      "aa"               => array( 'type' => 'hidden', 'value' => myspecialchars(serialize($aa_rss)))
-                     );
+$form_buttons = [
+    "new_in_feed"      => ['type'=>'submit', 'value'=>_m("Choose slice")],
+                      "cancel"           => ['url'=>'se_inter_import.php3'],
+                      "remote_node_name" => ['type' => 'hidden', 'value' => $rem_nodes],
+                      "aa"               => ['type' => 'hidden', 'value' => myspecialchars(serialize($aa_rss))]
+];
 
 FrmTabCaption(_m("List of available slices from the node ") . "<b>$rem_nodes</b>", $form_buttons);
 FrmInputMultiSelect('f_slices[]', _m('Slice to import'), $chan, '', 5, false, true);

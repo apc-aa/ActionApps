@@ -31,13 +31,13 @@ class FldWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('max_characters', 'width'));
+        return \AA\Widget\Widget::propertiesShop(['max_characters', 'width']);
     }
 
     /** libs to run after the page DOM is loaded */
     function requireLibs($aa_property, $winfo)
     {
-        return ( count($aa_property->getTranslations())>1 ) ? array('aa-jslib@3') : array();
+        return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
     }
 
 
@@ -64,7 +64,7 @@ class FldWidget extends \AA\Widget\Widget
 
         $translations = $aa_property->getTranslations();
 
-        $attrs = array('type' => 'text');
+        $attrs = ['type' => 'text'];
         $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
 
         $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
@@ -90,7 +90,7 @@ class FldWidget extends \AA\Widget\Widget
         }
         $value->fixTranslations($translations);  // modify for tranclations if needed
 
-        $base = array();
+        $base = [];
         foreach ($value as $i => $val) {
             $input_name = $base_name . "[$i]";
             if ( !$base ) {
@@ -103,7 +103,7 @@ class FldWidget extends \AA\Widget\Widget
             $autofocus = '';
         }
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /**

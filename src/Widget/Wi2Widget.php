@@ -48,6 +48,6 @@ class Wi2Widget extends \AA\Widget\MchWidget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'row_count', 'offer_label', 'selected_label', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'add_form', 'additional_slice_pwd', 'const_arr'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'row_count', 'offer_label', 'selected_label', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'add_form', 'additional_slice_pwd', 'const_arr']);
     }
 }

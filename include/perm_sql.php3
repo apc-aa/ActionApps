@@ -60,14 +60,16 @@ function AddUser($user, $flags = 0) {
     if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
-    $varset = new CVarset(array(array('type'       , "User"),
-                                array('uid'        , $user["uid"]),
-                                array('mail'       , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])),
-                                array('name'       , $user["givenname"]." ".$user["sn"]),
-                                array('sn'         , $user["sn"]),
-                                array('givenname'  , $user["givenname"]),
-                                array('description', ''),
-                                array('password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]))));
+    $varset = new CVarset([
+        ['type'       , "User"],
+                                ['uid'        , $user["uid"]],
+                                ['mail'       , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
+                                ['name'       , $user["givenname"]." ".$user["sn"]],
+                                ['sn'         , $user["sn"]],
+                                ['givenname'  , $user["givenname"]],
+                                ['description', ''],
+                                ['password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"])]
+    ]);
     $varset->doInsert('users');
     return $varset->last_insert_id();
 }
@@ -84,14 +86,14 @@ function DelUser($user_id, $flags = 3) {
      // to this group
      if ($flags & 1) {
          // cancel this group's membership in other groups
-         DB_AA::delete('membership', array(array('memberid', $user_id)));
+         DB_AA::delete('membership', [['memberid', $user_id]]);
      }
      if ($flags & 2) {
          // cancel direct permissions
-         DB_AA::delete('perms', array(array('userid', $user_id)));
+         DB_AA::delete('perms', [['userid', $user_id]]);
      }
      // cancel the user
-     DB_AA::delete('users', array(array('id', $user_id)));
+     DB_AA::delete('users', [['id', $user_id]]);
      return true;
 }
 
@@ -102,12 +104,12 @@ function DelUser($user_id, $flags = 3) {
  * @return bool
  */
 function ChangeUser($user, $flags = 0) {
-    $varset = new CVarset(array(
-                                array('mail'     , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])),
-                                array('name'     , $user["givenname"]." ".$user["sn"]),
-                                array('sn'       , $user["sn"]),
-                                array('givenname', $user["givenname"])
-                                )
+    $varset = new CVarset([
+                                ['mail'     , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
+                                ['name'     , $user["givenname"]." ".$user["sn"]],
+                                ['sn'       , $user["sn"]],
+                                ['givenname', $user["givenname"]]
+        ]
                           );
     if ($user["userpassword"]) {
         $varset->add("password", "text", AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]));
@@ -127,14 +129,16 @@ function ChangeUser($user, $flags = 0) {
  */
 function AddGroup($group, $flags = 0) {
     // creates new person in permission system
-    $varset = new CVarset(array(array('type'       , 'Group'),
-                                array('uid'        , ''),
-                                array('mail'       , ''),
-                                array('name'       , $group['name']),
-                                array('sn'         , ''),
-                                array('givenname'  , ''),
-                                array('description', $group['description']),
-                                array('password'   , 'crypt will never return this')));
+    $varset = new CVarset([
+        ['type'       , 'Group'],
+                                ['uid'        , ''],
+                                ['mail'       , ''],
+                                ['name'       , $group['name']],
+                                ['sn'         , ''],
+                                ['givenname'  , ''],
+                                ['description', $group['description']],
+                                ['password'   , 'crypt will never return this']
+    ]);
     $varset->doInsert('users');
     return $varset->last_insert_id();
 }
@@ -147,20 +151,20 @@ function AddGroup($group, $flags = 0) {
  */
 function DelGroup($group_id, $flags = 3) {
      // cancel other people's membership in this group
-     DB_AA::delete('membership', array(array('groupid', $group_id)));
+     DB_AA::delete('membership', [['groupid', $group_id]]);
 
      // To keep integrity of AA we should also delete all references
      // to this group
      if ($flags & 1) {
          // cancel this group's membership in other groups
-         DB_AA::delete('membership', array(array('memberid', $group_id)));
+         DB_AA::delete('membership', [['memberid', $group_id]]);
      }
      if ($flags & 2) {
          // cancel direct permissions
-         DB_AA::delete('perms', array(array('userid', $group_id)));
+         DB_AA::delete('perms', [['userid', $group_id]]);
      }
      // cancel the group
-     DB_AA::delete('users', array(array('id', $group_id)));
+     DB_AA::delete('users', [['id', $group_id]]);
      return true;
 }
 
@@ -171,10 +175,10 @@ function DelGroup($group_id, $flags = 3) {
  * @return bool
  */
 function ChangeGroup($group, $flags = 0) {
-    $varset = new CVarset(array(
-                                array('name'       , $group["name"]),
-                                array('description', $group["description"])
-                                )
+    $varset = new CVarset([
+                                ['name'       , $group["name"]],
+                                ['description', $group["description"]]
+        ]
                           );
     $varset->addkey("id", "text", $group["uid"]);
     $varset->doUpdate('users', null, $group["uid"]);
@@ -190,7 +194,7 @@ function ChangeGroup($group, $flags = 0) {
 function AddGroupMember($group_id, $id, $flags = 0) {
     if ($group_id AND $id) {
         DelGroupMember($group_id, $id);
-        $varset = new CVarset(array(array('groupid',$group_id), array('memberid',$id)));
+        $varset = new CVarset([['groupid',$group_id], ['memberid',$id]]);
         $varset->doInsert('membership');
     }
 }
@@ -201,7 +205,7 @@ function AddGroupMember($group_id, $id, $flags = 0) {
  * @param $flags
  */
 function DelGroupMember($group_id, $id, $flags = 0) {
-    DB_AA::delete('membership', array(array('groupid', $group_id), array('memberid', $id)));
+    DB_AA::delete('membership', [['groupid', $group_id], ['memberid', $id]]);
 }
 
 // ----------------------------- PERMS -----------------------------------
@@ -241,10 +245,12 @@ function DelPermObject($objectID, $objectType, $flags = 0) {
  */
 function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
     DelPerm($id, $objectID, $object_type);
-    $varset = new CVarset(array(array('object_type',$object_type),
-                                array('objectid',$objectID),
-                                array('userid',$id),
-                                array('perm',$perm)));
+    $varset = new CVarset([
+        ['object_type',$object_type],
+                                ['objectid',$objectID],
+                                ['userid',$id],
+                                ['perm',$perm]
+    ]);
     return $varset->doInsert('perms');
 }
 
@@ -255,7 +261,7 @@ function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
  * @param $flags
  */
 function DelPerm($id, $objectID, $object_type, $flags = 0) {
-    DB_AA::delete('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('userid', $id)));
+    DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['userid', $id]]);
 }
 
 /** ChangePerm function
@@ -297,7 +303,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return false|string uid if user is authenticated, else false.
      */
     function authenticateUsername($username, $password) {
-        if ($user = DB_AA::select1('SELECT id, password FROM `users`', '', array(array(strpos($username, "@") ? 'mail' : 'uid', $username)))) {
+        if ($user = DB_AA::select1('SELECT id, password FROM `users`', '', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
             return AA_Perm::comparePwds($password, $user['password']) ? $user['id'] : false;
         }
         return false;
@@ -309,7 +315,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return bool
      */
     function isUsernameFree($username) {
-        return !(DB_AA::select1('SELECT uid FROM `users`', '', array(array('uid', $username))));
+        return !(DB_AA::select1('SELECT uid FROM `users`', '', [['uid', $username]]));
     }
 
     /** findUsernames function
@@ -318,7 +324,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function findUsernames($pattern) {
         $pattern = quote($pattern);
-        return DB_AA::select(array('id'=>array('name','mail')), "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users` WHERE ( name  LIKE '%$pattern%' OR mail LIKE '%$pattern%' OR uid LIKE '%$pattern%') AND ( type = '".quote(_m("User"))."' OR type = 'User')");
+        return DB_AA::select(['id'=> ['name','mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users` WHERE ( name  LIKE '%$pattern%' OR mail LIKE '%$pattern%' OR uid LIKE '%$pattern%') AND ( type = '".quote(_m("User"))."' OR type = 'User')");
     }
 
     /** findUserByLogin function
@@ -326,7 +332,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array|bool
      */
     function findUserByLogin($user_login) {
-        return DB_AA::select1("SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", array('id'=>array('name','mail')), array(array('uid', $user_login)));
+        return DB_AA::select1("SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", ['id'=> ['name','mail']], [['uid', $user_login]]);
     }
 
 
@@ -335,7 +341,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array - list of groups which corresponds to mask $pattern
      */
     function findGroups($pattern) {
-        return DB_AA::select(array('id'=>array('name')), "SELECT id, name FROM `users` WHERE name LIKE '%".quote($pattern)."%' AND (type = '".quote(_m("Group"))."' OR type = 'Group')");
+        return DB_AA::select(['id'=> ['name']], "SELECT id, name FROM `users` WHERE name LIKE '%".quote($pattern)."%' AND (type = '".quote(_m("Group"))."' OR type = 'Group')");
     }
 
     /** getGroup function
@@ -343,7 +349,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      *  @return array(uid, name, description) or false if not found
      */
     function getGroup($group_id) {
-        return DB_AA::select1('SELECT id AS uid, name, description FROM `users`', '', array(array('id', $group_id, 'i')));
+        return DB_AA::select1('SELECT id AS uid, name, description FROM `users`', '', [['id', $group_id, 'i']]);
     }
 
     /** getIDsInfo function
@@ -354,14 +360,14 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * array("mail" => $mail, "name" => $cn, "type" => "User" : "Group")
      */
     function getIDsInfo($id) {
-        if ($this->userIdFormatMatches($id) AND ($user = DB_AA::select1('SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', '', array(array('id', $id, 'i'))))) {
+        if ($this->userIdFormatMatches($id) AND ($user = DB_AA::select1('SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users`', '', [['id', $id, 'i']]))) {
             if ($user['type'] == _m("User") OR ($user['type'] == "User")) {
                 $user['type'] = 'User';
                 $user['name'] = $user['givenname']." ".$user['sn'];
             } else {
                 $user['type'] = 'Group';
             }
-            $user['mails'] = array($user['mail']);
+            $user['mails'] = [$user['mail']];
             return $user;
         }
         return false;
@@ -373,8 +379,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array
      */
     function getGroupMembers($group_id) {
-        $ret = array();
-        $ids = DB_AA::select('memberid', "SELECT memberid FROM `membership`", array(array('groupid', $group_id, 'i')));
+        $ret = [];
+        $ids = DB_AA::select('memberid', "SELECT memberid FROM `membership`", [['groupid', $group_id, 'i']]);
         foreach($ids as $id) {
             $ret[$id] = $this->getIDsInfo($id);
         }
@@ -389,11 +395,11 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     function getMembership($id, $flags = 0) {
 
         if (!ctype_digit((string)$id)) {
-            return array();
+            return [];
         }
 
-        $all_groups  = array();
-        $last_groups = array($id);
+        $all_groups  = [];
+        $last_groups = [$id];
 
         $deep_counter = 0;
 
@@ -401,9 +407,9 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             if ($deep_counter++ > MAX_GROUPS_DEEP) {
                 break;
             }
-            $groupids = DB_AA::select('groupid', "SELECT groupid FROM `membership`", array(array('memberid', $last_groups, 'i')));
+            $groupids = DB_AA::select('groupid', "SELECT groupid FROM `membership`", [['memberid', $last_groups, 'i']]);
 
-            $last_groups = array();  //get deeper groups to last_groups and groups
+            $last_groups = [];  //get deeper groups to last_groups and groups
             foreach ($groupids as $gid) {
                 // Realize that it has already checked a group and eliminate it.
 
@@ -425,13 +431,13 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array of sliceids and their permissions (for user $userid) counting all groups listed in third parameter
      * (the gorups could be also foreign - like from Reader Set, but permissions for such groups are stored here)
      */
-    function getJoinedPerms($uid, $objectType, $groups=array()) {
+    function getJoinedPerms($uid, $objectType, $groups= []) {
         $groups[] = $uid;
 
-        $db_perms = DB_AA::select(array(), "SELECT userid, objectid, perm FROM `perms`", array(array('object_type', $objectType), array('userid', $groups)));
+        $db_perms = DB_AA::select([], "SELECT userid, objectid, perm FROM `perms`", [['object_type', $objectType], ['userid', $groups]]);
 
-        $by_id      = array();
-        $user_perms = array();
+        $by_id      = [];
+        $user_perms = [];
         foreach ($db_perms as $perm) {
             if ( $user_perms[$perm['objectid']] ) {    // perms for user defined - stronger
                 continue;
@@ -455,7 +461,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      *  example: $arr["uid=honzam,dc=ecn,dc=apc,dc=org"] == 2
      */
     function getObjectsPerms($objectID, $objectType) {
-        return DB_AA::select(array('userid'=>'perm'), "SELECT userid, perm FROM `perms`", array(array('object_type', $objectType), array('objectid', $objectID)));
+        return DB_AA::select(['userid'=>'perm'], "SELECT userid, perm FROM `perms`", [['object_type', $objectType], ['objectid', $objectID]]);
     }
 }
 

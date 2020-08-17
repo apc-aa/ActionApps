@@ -37,7 +37,7 @@ if (!IfSlPerm(PS_FEEDING)) {
   exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $catVS       = new Cvarset();
 $expVS       = new Cvarset();
 
@@ -53,7 +53,7 @@ if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
 
 // ------------------------ Export --------------------------
 // feeding lookup
-$feedto = DB_AA::select(array('unid'=>true), "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", array(array('from_id',$slice_id,'l')));
+$feedto = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',$slice_id,'l']]);
 
 //$feedto["Init"] = false;  // create array
 //$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
@@ -91,7 +91,7 @@ do {
 // ------------------------ Import --------------------------
 // feeding lookup
 
-$feedfrom = DB_AA::select(array('unid'=>true), "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", array(array('to_id',$slice_id,'l')));
+$feedfrom = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',$slice_id,'l']]);
 
 do {
     if ( isset($I) AND is_array($I) ) {  // insert to categories

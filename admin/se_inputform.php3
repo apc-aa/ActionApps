@@ -41,18 +41,18 @@ require_once AA_INC_PATH."msgpage.php3";
 function EditConstantURL() {
     global $fld;
     if (substr($fld['id'],0,8)== "category") {
-        return get_admin_url('se_constant.php3', array('categ' => 1));
+        return get_admin_url('se_constant.php3', ['categ' => 1]);
     } else {
         // we are adding foo parameter in order we can add other parameters by
         // & in javascript (and do not care about '?' or '&'
-        return get_admin_url('se_constant.php3', array('foo' => 1));
+        return get_admin_url('se_constant.php3', ['foo' => 1]);
     }
 }
 
 if ($upd_edit) {
-    $back_admin_url = get_admin_url('se_inputform.php3', array('fid'=>$fid));
+    $back_admin_url = get_admin_url('se_inputform.php3', ['fid'=>$fid]);
 } else {
-    $back_admin_url = get_admin_url('se_fields.php3', (AA_Fields::isSliceField($fid) ? array('slice_fields'=>1) : array()));
+    $back_admin_url = get_admin_url('se_fields.php3', (AA_Fields::isSliceField($fid) ? ['slice_fields'=>1] : []));
 }
 
 if ($cancel) {
@@ -64,7 +64,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 
@@ -188,7 +188,7 @@ if ($update) {
             // for "Related Item Window" - because without it, the IDS are prefixed by x, y or z)
             if (substr($input_show_func_c_real,0,7)=='#sLiCe-') {
                 // allowed insert functions are ids, and both computed functions
-                if (!in_array($input_insert_func_f, array('ids','com','co2'))) {
+                if (!in_array($input_insert_func_f, ['ids','com','co2'])) {
                     $input_insert_func_f = 'ids';
                     $input_insert_func_p = '';
                 }
@@ -252,7 +252,7 @@ foreach ($g_modules as $k => $v) {
     }
 }
   // lookup fields
-if ( !($fld = DB_AA::select1('SELECT * FROM field', '', array(array('slice_id', $slice_id, 'l'), array('id',$fid))))) {
+if ( !($fld = DB_AA::select1('SELECT * FROM field', '', [['slice_id', $slice_id, 'l'], ['id',$fid]]))) {
     $Msg = MsgErr(_m("No fields defined for this slice"));
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
@@ -339,13 +339,14 @@ $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
-$form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
-                      "fid"      => array("type"=>"hidden", "value"=>$fid),
+$form_buttons = [
+    "update"   => ["type"=>"hidden","value"=>"1"],
+                      "fid"      => ["type"=>"hidden", "value"=>$fid],
                       "update",
-                      "upd_edit" => array("type"=>"submit", "value"=>_m("Update & Edit")),
-                      "cancel2"   => array('value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id))),
-                      "cancel"   => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
-                     );
+                      "upd_edit" => ["type"=>"submit", "value"=>_m("Update & Edit")],
+                      "cancel2"   => ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("F".AA_Fields::createShortId($fid).'@'.pack_id($slice_id))],
+                      "cancel"   => ["url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':'')]
+];
 
 FrmTabCaption(_m("Field properties") . ': ' . myspecialchars($fld['name'] . ' (' . $fld['id'] . ')'), $form_buttons);
 
@@ -427,7 +428,7 @@ echo "
          } else {
              $text_rows    = DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
              $numeric_rows = DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
-             FrmSelectEasy("text_stored", array('1'=>_m('Text'), '0'=>_m('Number')), $text_stored);
+             FrmSelectEasy("text_stored", ['1'=>_m('Text'), '0'=>_m('Number')], $text_stored);
              echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }
          echo "
@@ -465,7 +466,7 @@ echo "
       echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
      </tr>";
-FrmTabSeparator(_m("ALIASES used in views to print field content (%1)", array($fld['id'])));
+FrmTabSeparator(_m("ALIASES used in views to print field content (%1)", [$fld['id']]));
 
 
 $myarray = $FIELD_FUNCTIONS['items'];

@@ -54,15 +54,15 @@ function ShowCollectionAddOns() {
     FrmTabCaption(_m('Send now an example alert email to')) ;
 
     if ($example["go"]) {
-        $mail_count = send_emails($example["howoften"], array($collectionid),  array($example["email"]), false, "");
+        $mail_count = send_emails($example["howoften"], [$collectionid],  [$example["email"]], false, "");
     } elseif ($example["goreader"]) {
-        $mail_count = send_emails($example["howoftenr"], array($collectionid),  '', false, "", $example['reader']);
+        $mail_count = send_emails($example["howoftenr"], [$collectionid],  '', false, "", $example['reader']);
     }
 
     // send to supplied email
     FrmInputText("example[email]", _m('Email'), $example['email']);
     FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
-    FrmTabSeparator("", array('example[go]' => array('type' => 'submit', 'value' => _m("Go!"))));
+    FrmTabSeparator("", ['example[go]' => ['type' => 'submit', 'value' => _m("Go!")]]);
 
     // send to selected user
     $reader_mails = $collection->getReadersSelectArray();
@@ -70,7 +70,7 @@ function ShowCollectionAddOns() {
 
     FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"]);
     FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"]);
-    FrmTabEnd(array('example[goreader]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
+    FrmTabEnd(['example[goreader]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);
     echo '</form>';
 
     // SEND EMAILS
@@ -80,12 +80,12 @@ function ShowCollectionAddOns() {
     FrmTabCaption(_m('Send alerts'));
 
     if ($fire["fire"]) {
-        $mail_count = send_emails($fire["howoften"], array ($collectionid), "all", true, "");
+        $mail_count = send_emails($fire["howoften"], [$collectionid], "all", true, "");
     }
 
 
     FrmInputSelect("fire[howoften]",_m('Send now alerts to all users subscribed to '), get_howoften_options(), $fire["howoften"], _m("Warning: This is a real command!"));
-    FrmTabEnd(array('fire[fire]' => array('type'=> 'submit', 'value'=>_m("Go!"))));
+    FrmTabEnd(['fire[fire]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);
     echo '<br>';
 
     FrmTabCaption(_m("Last time the alerts were sent on:"));
@@ -99,7 +99,7 @@ function ShowCollectionAddOns() {
     echo "</form>\n";
 
     if ($fire["fire"] || $example["go"] || $example["goreader"]) {
-        echo "<br><b>"._m("%1 email(s) sent", array ($mail_count+0))."</b>\n";
+        echo "<br><b>"._m("%1 email(s) sent", [$mail_count+0])."</b>\n";
     }
 
 }

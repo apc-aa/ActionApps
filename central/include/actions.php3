@@ -58,8 +58,8 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
         if (count($item_zids)<1) {
             return false;                                     // OK - no error
         }
-        $results   = array();
-        $results[] = array('<b>'._m('AA (Organization)').'</b>', '<b>'._m('URL').'</b>', '<b>'._m('Status code').'</b>', '<b>'._m('Description').'</b>', '<b>'._m('Auth').'</b>');
+        $results   = [];
+        $results[] = ['<b>'._m('AA (Organization)').'</b>', '<b>'._m('URL').'</b>', '<b>'._m('Status code').'</b>', '<b>'._m('Description').'</b>', '<b>'._m('Auth').'</b>'];
         $linkcheck = new AA_Linkcheck;
 
         foreach ($item_zids as $aa_id) {
@@ -67,7 +67,7 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
             $url       = $aa->getComunicatorUrl();
             $status    = $linkcheck->check_url($url);
             $resp =     $aa->_authenticate();
-            $results[] = array($aa->getName(), $url, $status['code'], $status['comment'], print_r($resp,true));
+            $results[] = [$aa->getName(), $url, $status['code'], $status['comment'], print_r($resp,true)];
             // $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
         }
         return GetHtmlTable($results). "<br>";                                     // OK - no error
@@ -255,7 +255,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
         // it is specified in $item_arr - for security reasons - we can delete only
         // items in current slice and in trash
         $db->query("SELECT id FROM central_conf WHERE status_code=3 $wherein");
-        $items_to_delete = array();
+        $items_to_delete = [];
         while ( $db->next_record() ) {
             $items_to_delete[] = $db->f("id");
         }
@@ -346,7 +346,7 @@ class AA_Manageraction_Central_Optimize extends AA_Manageraction {
      * @return string
      */
     function perform($manager, $item_zids, $action_param) {
-        $ret    = array();
+        $ret    = [];
 
         foreach ($item_zids as $aa_id) {
             $aa = AA_Actionapps::getActionapps($aa_id);

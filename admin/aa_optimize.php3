@@ -51,8 +51,8 @@ if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0
     $Msg .= $optimizer->report();
 }
 
-$optimize_names        = array();
-$optimize_descriptions = array();
+$optimize_names        = [];
+$optimize_descriptions = [];
 
 foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     // call static class methods
@@ -81,7 +81,7 @@ $apage->setTitle(_m("Admin - Optimize a Repair ActionApps"));
 $apage->printHead($err, $Msg);
 
 //$form_buttons = array ("submit");
-$form_buttons   = array ();
+$form_buttons   = [];
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
 FrmTabCaption(_m('Optimalizations'), $form_buttons);

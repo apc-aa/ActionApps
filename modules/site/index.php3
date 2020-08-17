@@ -111,7 +111,7 @@ if ($addcond) {
     $varset     = new CVarset();
     $varset->add("content", "quoted", $content);
 
-    $db_id = DB_AA::select1('SELECT `id` FROM `site_spot`', 'id', array(array('site_id',$module_id,'l'), array('spot_id',$r_spot_id)));
+    $db_id = DB_AA::select1('SELECT `id` FROM `site_spot`', 'id', [['site_id',$module_id,'l'], ['spot_id',$r_spot_id]]);
     if ($db_id) {
         $varset->addkey("id", "number", $db_id);
         $varset->doUpdate('site_spot', null, "S.$db_id");
@@ -202,9 +202,11 @@ echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree
       <br>';
 
 // callback functions
-$functions = array ('spot'          => 'ModW_PrintSpotName_Start',
+$functions = [
+    'spot'          => 'ModW_PrintSpotName_Start',
                     'before_choice' => 'ModW_PrintChoice_Start',
-                    'after_choice'  => 'ModW_PrintChoice_End');
+                    'after_choice'  => 'ModW_PrintChoice_End'
+];
 
 $tree->walkTree($apc_state, 1, $functions, 'collapsed', 0);
 

@@ -78,7 +78,7 @@ class AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
-        $slice = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l')));
+        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id',$slobj->getId(), 'l']]);
         if (!$slice) {
             MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
@@ -101,7 +101,7 @@ class AA_Slice_Exporter {
 
         $slice["id"] = $uid;
 
-        $fields = DB_AA::select(array(), 'SELECT * FROM `field`', array(array('slice_id',$slobj->getId(), 'l')));
+        $fields = DB_AA::select([], 'SELECT * FROM `field`', [['slice_id',$slobj->getId(), 'l']]);
         foreach ($fields as $new) {
             $new["slice_id"] = $uid; // Use new id if set
 
@@ -143,7 +143,7 @@ class AA_Slice_Exporter {
 
     function exportOneSliceData($slobj, $temp_file) {
         if ($this->spec_date) {
-            $conds = array();
+            $conds = [];
             $conds[0]["operator"]         = "e:>=";
             $conds[0]["publish_date...."] = 1;
             $conds[0]['value']            = $this->from_date;
@@ -153,7 +153,7 @@ class AA_Slice_Exporter {
         } else {
             $conds="";
         }
-        $zids=QueryZids(array($slobj->getId()), $conds, "", "ALL");
+        $zids=QueryZids([$slobj->getId()], $conds, "", "ALL");
         if ($zids->count() == 0) {
             if ($this->spec_date) {
                 fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$this->from_date." to ".$this->to_date.").\n</comment>\n");
@@ -188,7 +188,7 @@ class AA_Slice_Exporter {
 
         if ($this->type != 'backup') {
             unset($export_slices);
-            $export_slices = array($slice_id);
+            $export_slices = [$slice_id];
         }
 
         fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
@@ -359,7 +359,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
-        $slice = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$slobj->getId(), 'l')));
+        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id',$slobj->getId(), 'l']]);
         if (!$slice) {
             MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
@@ -374,7 +374,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
         $slice["id"] = $uid;
         $slice_data = '<table><tr><th>'._m('Field').'</th><th>'._m('ID').'</th><th>'._m('Type').'</th><th>'._m('Hidden').'</th></tr>';
 
-        $fields = DB_AA::select(array(), 'SELECT * FROM `field`', array(array('slice_id',$slobj->getId(), 'l')), array('input_show-', 'input_pri'));
+        $fields = DB_AA::select([], 'SELECT * FROM `field`', [['slice_id',$slobj->getId(), 'l']], ['input_show-', 'input_pri']);
         foreach ($fields as $new) {
             $slice_data .= '<tr><th>'.$new['name'].'</th><td>'.$new['id'].'</td><td>'.Widget::factoryByString($new["input_show_func"])->name().'</td><td>'.($new['input_show'] ? '':_m('Hidden')).'</td></tr>';
 

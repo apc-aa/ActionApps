@@ -51,10 +51,10 @@ class OnPageChanger  {
             header("Content-type: application/json");
             if (!$additional_validity_check) {
                 if ($this->auth->is_user()) {
-                    echo json_encode(array('message'=>_m('No permission for current user.')));  // .print_r($auth, true)));
+                    echo json_encode(['message'=>_m('No permission for current user.')]);  // .print_r($auth, true)));
                 } else {
                     // @todo - show login
-                    echo json_encode(array('message'=>_m('No permission - no user is authenticated. Try to relogin, please.')));
+                    echo json_encode(['message'=>_m('No permission - no user is authenticated. Try to relogin, please.')]);
                 }
                 exit;
             }
@@ -71,7 +71,7 @@ class OnPageChanger  {
 
             }
             if (isset($_GET['aaedit'])) {
-                $this->sendPartsAndExit(array('aaedit'));
+                $this->sendPartsAndExit(['aaedit']);
             }
         }
     }

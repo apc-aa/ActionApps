@@ -41,25 +41,28 @@ require_once AA_INC_PATH."mgettext.php3";
 function get_aamenus() {
     global $r_slice_view_url, $auth, $slice_id;
 
-    $aamenus["view"] = array (
+    $aamenus["view"] = [
         "label" => _m("View site"),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
-        "level" => "main");
+        "level" => "main"
+    ];
 
-    $aamenus["codemanager"] = array (
+    $aamenus["codemanager"] = [
         "label" => _m("Code&nbsp Manager"),
         "title" => _m("Code&nbsp Manager"),
         "href"  => "modules/site/index.php3",
-        "level" => "main");
+        "level" => "main"
+    ];
 
-    $aamenus["modadmin"] = array (
+    $aamenus["modadmin"] = [
         "label" => _m("Module Settings"),
         "title" => _m("Module Settings"),
         "href"  => "modules/site/modedit.php3",
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
         "level" => "main",
-        "submenu"=>"modadmin_submenu");
+        "submenu"=>"modadmin_submenu"
+    ];
 
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu
@@ -76,14 +79,15 @@ function get_aamenus() {
     */
 
 
-    $aamenus["modadmin_submenu"] = array(
+    $aamenus["modadmin_submenu"] = [
         "bottom_td"=>200,
         "level"=>"submenu",
-        "items"=> array(
+        "items"=> [
         "header1"=>_m("Main settings"),
-        "main"   =>array ("cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/modedit.php3", "label"=>_m("Site")),
-        "aliases"=>array ("cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/aliases.php3", "label"=>_m("Aliases")),
-    ));
+        "main"   => ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/modedit.php3", "label"=>_m("Site")],
+        "aliases"=> ["cond"=>IfSlPerm(PS_MODW_SETTINGS), "href"=>"modules/site/aliases.php3", "label"=>_m("Aliases")],
+        ]
+    ];
     
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 

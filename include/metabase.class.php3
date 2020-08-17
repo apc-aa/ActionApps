@@ -66,7 +66,7 @@ class AA_MbC {
     var $c;
 
     function __construct($column) {
-        $this->c = array( $column['Field'], $column['Type'], $column['Null']=='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment'] );
+        $this->c = [$column['Field'], $column['Type'], $column['Null']=='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment']];
     }
 
     function isKey() {
@@ -84,7 +84,7 @@ class AA_MbC {
 
     /** it return max length of the field if we know it */
     public function getMaxLength() {
-        $part = array();
+        $part = [];
         return preg_match("/\(([0-9]*)\)/", $this->c[1], $part) ? (int)$part[1] : 0;
     }
 
@@ -233,7 +233,7 @@ class AA_MbC {
                 // MySQL > 4.1.x, because standard settings of any timestamp
                 // column is:
                 //     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            } elseif ( in_array(strtolower($this->c[4]), array('null','current_timestamp()')) ) {
+            } elseif ( in_array(strtolower($this->c[4]), ['null','current_timestamp()']) ) {
                 $SQL .= " default ". $this->c[4];     // default
             } else {
                 $SQL .= " default '". $this->c[4] ."'";     // default
@@ -280,7 +280,7 @@ class AA_MbC {
     }
 
     function getEmptyValue() {
-        return in_array($this->_getSearchType(), array('numeric','date')) ? 0 : '';
+        return in_array($this->_getSearchType(), ['numeric','date']) ? 0 : '';
     }
 }
 
@@ -298,15 +298,15 @@ class AA_MbI {
         $this->t = $table;
         $this->n = $name;
         $this->s = $sort;
-        $this->c = array();
+        $this->c = [];
     }
 
     function addColumn($position, $column, $sub_part='') {
-        $this->c[(int)$position] = $sub_part ? array($column, $sub_part) : $column;
+        $this->c[(int)$position] = $sub_part ? [$column, $sub_part] : $column;
     }
 
     function getCreateSql() {
-        $cols = array();
+        $cols = [];
         foreach ($this->c as $col) {
             $cols[] = is_array($col) ? '`'.$col[0].'`('.$col[1].')' : "`$col`";
         }
@@ -343,9 +343,9 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     // the indexes, generate sql_update script, ...
     function __construct($tablename, $columns, $indexes='') {
         $this->t = $tablename;
-        $this->c = array();
-        $this->k = array();
-        $this->i = array();
+        $this->c = [];
+        $this->k = [];
+        $this->i = [];
         foreach ($columns as $column) {
             $aa_column  = new AA_MbC($column);
             $this->c[$column['Field']] = new AA_MbC($column);
@@ -406,7 +406,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
     }
 
     function getCreateSql($prefix='') {
-        $sql_parts = array();
+        $sql_parts = [];
         foreach ($this->c as $column) {
             $sql_parts[] = $column->getCreateSql();
         }
@@ -418,7 +418,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
 
     /** returns database structure definition as PHP code (array) */
     function getDefinition() {
-        $defs = array();
+        $defs = [];
         foreach ($this->c as $column) {
             $defs[] = $column->getDefinition();
         }
@@ -463,7 +463,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
      *
      */
     function generateAliases() {
-        $aliases = array();
+        $aliases = [];
         foreach ($this->c as $column_name => $column) {
             // @todo - make alias field type aware
             $aliases["_#". substr(str_pad(strtoupper($column_name),8,'_'),0,8)] = $column->getAlias();
@@ -476,7 +476,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
      *
      */
     function getSearchArray() {
-        $fieldarr = array();
+        $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             // @todo - make alias field type aware
             $fieldarr[$column_name] = $column->getFieldDef();
@@ -497,7 +497,7 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
 
     /** returns asociative array of table fields filled with '' or 0 (based on column type) */
     function getEmptyRowArray() {
-        $fieldarr = array();
+        $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             $fieldarr[$column_name] = $column->getEmptyValue();
         }
@@ -527,7 +527,7 @@ class AA_Metabase {
      * @var AA_MbT[]
      * we can change it to protected, but then we need to regenerate the serialized string
      */
-    var $tables = array();
+    var $tables = [];
 
     /** AA_Metabase function - constructor
      *  Do not use it - use $metabase = AA::Metabase() instead
@@ -563,7 +563,7 @@ class AA_Metabase {
     /** Returns array of keys for given table */
     function getKeys($tablename) {
         $table = $this->tables[$tablename];
-        return is_object($table) ? $table->getKeys() : array();
+        return is_object($table) ? $table->getKeys() : [];
     }
 
     /** is the $columnname the key for given table */
@@ -575,7 +575,7 @@ class AA_Metabase {
     /** Returns array of all columns */
     function getColumnNames($tablename) {
         $table = $this->tables[$tablename];
-        return is_object($table) ? $table->getColumnNames() : array();
+        return is_object($table) ? $table->getColumnNames() : [];
     }
 
     /** Is the $columnname the column in the $tablename? */
@@ -651,7 +651,7 @@ class AA_Metabase {
 
     /** static method */
     static function getModuleFields() {
-        static $MODULE_KEYS = array(
+        static $MODULE_KEYS = [
             'alerts_collection'   => 'module_id',
             'constant_slice'      => 'slice_id',
             'ef_permissions'      => 'slice_id',
@@ -669,7 +669,7 @@ class AA_Metabase {
             'site_spot'           => 'site_id',
             'slice'               => 'id',
             'view'                => 'slice_id'
-        );
+        ];
         return $MODULE_KEYS;
     }
 
@@ -684,40 +684,40 @@ class AA_Metabase {
      *  @todo - convert to static class members for PHP5
      **/
     static function getPacked($tablename) {
-        static $PACKED = array(
-            'alerts_collection'   => array('module_id','slice_id'),
-            'constant'            => array('id','ancestors'), // ancestors are multiple - joined!
-            'constant_slice'      => array('slice_id'),
-            'content'             => array('item_id'),
-            'discussion'          => array('id','item_id'),
-            'ef_categories'       => array('category_id','target_category_id'),
-            'ef_permissions'      => array('slice_id'),
-            'email'               => array('owner_module_id'),
-            'email_notify'        => array('slice_id'),
-            'external_feeds'      => array('slice_id', 'remote_slice_id'),
-            'feedmap'             => array('from_slice_id', 'to_slice_id'),
-            'feedperms'           => array('from_id','to_id'),
-            'feeds'               => array('from_id','to_id','category_id','to_category_id'),
-            'field'               => array('slice_id'),
-            'hit_long_id'         => array('id'),
-            'item'                => array('id','slice_id'),  // slice_id is not part of key, here
-            'jump'                => array('slice_id', 'dest_slice_id'),
-            'links'               => array('id'),             // special meaning of first characters - category!!!
-            'module'              => array('id', 'owner'),
-            'offline'             => array('id'),
-            'polls'               => array('module_id'),
-            'polls_design'        => array('module_id'),
-            'profile'             => array('slice_id'),
-            'relation'            => array('source_id', 'destination_id'),
-            'rssfeeds'            => array('slice_id'),
-            'site'                => array('id'),
-            'site_spot'           => array('site_id'),
-            'slice'               => array('id', 'owner', 'mlxctrl'),
-            'slice_owner'         => array('id'),
-            'subscriptions'       => array('slice_owner'),
-            'view'                => array('slice_id')
-        );
-        return isset($PACKED[$tablename]) ? $PACKED[$tablename] : array();
+        static $PACKED = [
+            'alerts_collection'   => ['module_id','slice_id'],
+            'constant'            => ['id','ancestors'], // ancestors are multiple - joined!
+            'constant_slice'      => ['slice_id'],
+            'content'             => ['item_id'],
+            'discussion'          => ['id','item_id'],
+            'ef_categories'       => ['category_id','target_category_id'],
+            'ef_permissions'      => ['slice_id'],
+            'email'               => ['owner_module_id'],
+            'email_notify'        => ['slice_id'],
+            'external_feeds'      => ['slice_id', 'remote_slice_id'],
+            'feedmap'             => ['from_slice_id', 'to_slice_id'],
+            'feedperms'           => ['from_id','to_id'],
+            'feeds'               => ['from_id','to_id','category_id','to_category_id'],
+            'field'               => ['slice_id'],
+            'hit_long_id'         => ['id'],
+            'item'                => ['id','slice_id'],  // slice_id is not part of key, here
+            'jump'                => ['slice_id', 'dest_slice_id'],
+            'links'               => ['id'],             // special meaning of first characters - category!!!
+            'module'              => ['id', 'owner'],
+            'offline'             => ['id'],
+            'polls'               => ['module_id'],
+            'polls_design'        => ['module_id'],
+            'profile'             => ['slice_id'],
+            'relation'            => ['source_id', 'destination_id'],
+            'rssfeeds'            => ['slice_id'],
+            'site'                => ['id'],
+            'site_spot'           => ['site_id'],
+            'slice'               => ['id', 'owner', 'mlxctrl'],
+            'slice_owner'         => ['id'],
+            'subscriptions'       => ['slice_owner'],
+            'view'                => ['slice_id']
+        ];
+        return isset($PACKED[$tablename]) ? $PACKED[$tablename] : [];
     }
 
     /** static method
@@ -725,7 +725,7 @@ class AA_Metabase {
      *  @todo - convert to static class members for PHP5
      **/
     function &_getSupportedTables() {
-        static $SUPPORTED_TABLES = array(
+        static $SUPPORTED_TABLES = [
             // single keys
             'alerts_admin', 'alerts_collection', 'alerts_filter',
             'auth_log', 'auth_user', 'change', 'change_record',
@@ -743,7 +743,7 @@ class AA_Metabase {
             'field'
             // unsupported table using triple keys (slice_id,uid,`function`)
             // 'email_notify'
-        );
+        ];
         // search and replace should be done here
         // feeds from_id to_id
         // feedmap   from_slice_id, to_slice_id
@@ -757,13 +757,14 @@ class AA_Metabase {
      *  @todo - convert to static class members for PHP5
      **/
     function &_getUnsupportedTables() {
-        static $UNSUPPORTED_TABLES = array(
+        static $UNSUPPORTED_TABLES = [
             'alerts_collection_filter',
             'alerts_collection_howoften', 'auth_group', 'content',
             'ef_categories', 'ef_permissions', 'email_notify', 'feedmap', 'feedperms',
             'hit_archive', 'hit_long_id', 'hit_short_id', 'links_changes',
             'links_link_lang', 'links_link_reg', 'membership',
-            'perms', 'polls_ip_lock', 'relation', 'subscriptions');
+            'perms', 'polls_ip_lock', 'relation', 'subscriptions'
+        ];
         return $UNSUPPORTED_TABLES;
     }
 
@@ -887,8 +888,8 @@ class AA_Metabase {
     }
 
     function getCreateSql($tablename='', $prefix='') {
-        $sql_parts = array();
-        $tables = $tablename ? array($this->tables[$tablename]) : $this->tables;
+        $sql_parts = [];
+        $tables = $tablename ? [$this->tables[$tablename]] : $this->tables;
         foreach ($tables as $table) {
             if ( is_object($table) ) {
                 $sql_parts[] = $table->getCreateSql($prefix);
@@ -899,7 +900,7 @@ class AA_Metabase {
 
     /** returns database structure definition as PHP code (array) */
     function getDefinition() {
-        $defs = array();
+        $defs = [];
         foreach ($this->tables as $table) {
             $defs[]= $table->getDefinition();
         }
@@ -942,16 +943,16 @@ class AA_Metabase {
      *  @param  ids are always UNPACKED (as keys as well as in values)
      */
     function getModuleRows($tablename, $module_id) {
-        $JOIN = array(
+        $JOIN = [
             // @todo - do the 'constant' better - check the fields setting, and get all the constants used
-            'constant'   => array('scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'),
+            'constant'   => ['scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'],
 
-            'content'    => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
-            'discussion' => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
+            'content'    => ['scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'],
+            'discussion' => ['scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'],
 
-            'alerts_collection_filter'   => array('scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id'),
-            'alerts_collection_howoften' => array('scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id')
-        );
+            'alerts_collection_filter'   => ['scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id'],
+            'alerts_collection_howoften' => ['scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id']
+        ];
 
         $module_table = $tablename;
         $join_sql     = '';
@@ -991,7 +992,7 @@ class AA_Metabase {
 
         $ret            = GetTable2Array($SQL, $key_used, 'aa_fields');
         if (!is_array($ret)) {
-            $ret = array();
+            $ret = [];
         }
 
         $this->unpackIds($tablename, $ret);
@@ -1024,21 +1025,22 @@ class AA_Metabase {
      * @return array
      */
     function compare($metabase) {
-        $diffs = array();
+        $diffs = [];
 
         // for us are varchar and char the same - some tables are never converted
         // to char in some versions of MySQL, so the test is always false
-        $eq_vars   = array('varchar', " default '                '", " default '                                '", " default '0'", "timestamp NOT NULL", 'varbinary');
-        $eq_novars = array('char'   , '', '', '', 'timestamp', 'binary');
+        $eq_vars   = ['varchar', " default '                '", " default '                                '", " default '0'", "timestamp NOT NULL", 'varbinary'];
+        $eq_novars = ['char'   , '', '', '', 'timestamp', 'binary'];
 
         foreach ($this->tables as $tablename => $table) {
             $table_sql_1 = $table->getCreateSql();
             $table_sql_2 = $metabase->getCreateSql($tablename);
 
-            $diffs[$tablename] = array('equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) == str_replace($eq_vars, $eq_novars, $table_sql_2)),
+            $diffs[$tablename] = [
+                'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) == str_replace($eq_vars, $eq_novars, $table_sql_2)),
                 'table1' => $table_sql_1,
                 'table2' => $table_sql_2
-            );
+            ];
         }
         return $diffs;
     }
@@ -1057,8 +1059,8 @@ class AA_Metabase {
      * @static
      */
     function getContent($settings, $zids) {
-        $content = array();
-        $ret     = array();
+        $content = [];
+        $ret     = [];
 
         $tablename   = $settings['table'];
         $metabase    = AA::Metabase();
@@ -1122,7 +1124,7 @@ class AA_Metabase {
         $metabase    = AA::Metabase();
 
         $fields      = $metabase->getSearchArray($tablename);
-        $join_tables = array();   // not used in this function
+        $join_tables = [];   // not used in this function
 
         $keys        = $metabase->getKeys($tablename);
         if (count($keys) != 1) {
@@ -1148,7 +1150,7 @@ class AA_Metabase {
         $metabase    = AA::Metabase();
 
         $fields      = $metabase->getSearchArray($tablename);
-        $join_tables = array();   // not used in this function
+        $join_tables = [];   // not used in this function
 
         $SQL    = "SELECT count(*) as count FROM $tablename ";
         $where  = MakeSQLConditions($fields, $conds, $fields, $join_tables);
@@ -1160,7 +1162,7 @@ class AA_Metabase {
 
     /** Get tabledit cofiguration for easy edit and add to the table */
     function getTableditConf($tablename) {
-        $ret = array (
+        $ret = [
             "table"     => $tablename,
             "type"      => "edit",
 //          "mainmenu"  => "modadmin",
@@ -1170,17 +1172,18 @@ class AA_Metabase {
 //          "cond"      => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
 //          "title"     => $title,
 //          "caption"   => $title,
-            "attrs"     => array ("table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),
+            "attrs"     => ["table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"],
 //          "gotoview"  => "polls_designs_edit",
-        );
+        ];
 
         $table         = $this->tables[$tablename];
         $table_columns = $table->getColumnNames();
         foreach ($table_columns as $column_name) { // in priority order
             $field_type = 'text';    // @todo - get the type from field type
-            $ret['fields'][$column_name] = array('caption' => $column_name,
-                'view'    => array('type' => $field_type)
-            );
+            $ret['fields'][$column_name] = [
+                'caption' => $column_name,
+                'view'    => ['type' => $field_type]
+            ];
             // @todo - do better check - based on table setting
             if ($column_name = 'id') {
                 $ret['fields'][$column_name]['view']['readonly'] = true;
@@ -1197,7 +1200,7 @@ class AA_Metabase {
     /** AA_Propery array - for form generation */
     function getColumnProperties($tablename) {
         $table = $this->tables[$tablename];
-        $ret   = array();
+        $ret   = [];
         foreach ($table as $column) { // in priority order
             $ret[$column->getName()] = $column->getAsProperty();
         }
@@ -1215,21 +1218,21 @@ class AA_Metabase {
         $aliases       = $table->generateAliases();
         $search_fields = $this->getSearchfields($tablename);
 
-        $manager_settings = array(
+        $manager_settings = [
             'show'      =>  MGR_ALL & ~(MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM),
-            'searchbar' => array(
+            'searchbar' => [
                 'fields'               => $search_fields,
                 'search_row_count_min' => 1,
                 'order_row_count_min'  => 1,
                 'add_empty_search_row' => true,
                 'function'             => false  // name of function for aditional action hooked on standard filter action
-            ),
-            'scroller'  => array(
+            ],
+            'scroller'  => [
                 'listlen'              => 100
-            ),
-            'itemview'  => array(
+            ],
+            'itemview'  => [
                 'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-                'format'               => array(    // optionaly to manager_vid you can set format array
+                'format'               => [    // optionaly to manager_vid you can set format array
                     'compact_top'      => '<div class="aa-table aa-items-manager"><table>
                                             <tr>
                                               <th width="30">&nbsp;</td>
@@ -1250,19 +1253,19 @@ class AA_Metabase {
                                            ',
                     'compact_remove'   => "",
                     'compact_bottom'   => "</table></div><br>"
-                ),
+                ],
                 'fields'               => $search_fields,
                 'aliases'              => $aliases,
                 //    static class method               , first parameter to the method
-                'get_content_funct'    => array(array('AA_Metabase', 'getContent'), array('table'=>$tablename))
-            ),
+                'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table'=>$tablename]]
+            ],
             'actions'   => $actions,
             'switches'  => $switches,
             'bin'       => 'app',
-            'messages'  => array(
-                'title'       => _m('Manage %1', array($tablename))
-            )
-        );
+            'messages'  => [
+                'title'       => _m('Manage %1', [$tablename])
+            ]
+        ];
 
         return $manager_settings;
     }

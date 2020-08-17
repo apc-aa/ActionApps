@@ -160,7 +160,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** Set $value - value is normal (numeric) array or string value */
     function setValues($value) {
-        $this->val = is_array($value) ? $value : (is_null($value) ? array() : array($value));
+        $this->val = is_array($value) ? $value : (is_null($value) ? [] : [$value]);
         return $this;
     }
 
@@ -172,7 +172,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** clear function  */
     function clear() {
-        $this->val  = array();
+        $this->val  = [];
         $this->flag = 0;
     }
 
@@ -198,7 +198,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             }
 
             $first  = true;
-            $newval = array();
+            $newval = [];
             foreach($translations as $lang) {
                 $lang_id = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i=0; $i<=$maxindex; $i++) {
@@ -233,9 +233,9 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      *  Mainly for backward compatibility with old - array approach
      */
      function getArray() {
-         $ret = array();
+         $ret = [];
          foreach ($this->val as $k => $v) {
-             $ret[(int)$k] = array('value'=>$v, 'flag'=>$this->flag);
+             $ret[(int)$k] = ['value'=>$v, 'flag'=>$this->flag];
          }
          return $ret;
      }
@@ -307,7 +307,7 @@ class AA_Content {
 
     /** set object id based on id_field setting for this content */
     function addValue($field_id, $value) {
-        $this->content[$field_id][] = array('value'=>$value, 'flag'=>0);
+        $this->content[$field_id][] = ['value'=>$value, 'flag'=>0];
         return $this;
     }
 
@@ -419,11 +419,11 @@ class AA_Content {
      * @return array
      */
     function getValuesArray($field_id) {
-        return empty($this->content[$field_id]) ? array() : array_column($this->content[$field_id],'value');
+        return empty($this->content[$field_id]) ? [] : array_column($this->content[$field_id],'value');
     }
 
     function diff($object2compare) {
-        $changes = array();
+        $changes = [];
         foreach ($this->content as $fid => $a) {
             $b = $object2compare->getValuesArray($fid);
             if ($this->getValuesArray($fid) != $b) {
@@ -462,14 +462,14 @@ class AA_Content {
     /** translate displayed lang name to standardized language code - cz -> cs
      */
     static function getLangName2Code($lang) {
-        $LANGS = array('cz'=>'cs');
+        $LANGS = ['cz'=>'cs'];
         return $LANGS[$lang] ?: $lang;
     }
 
     /** translate displayed lang name to standardized language code - cz -> cs
      */
     static function getLangCode2Name($code) {
-        $LANGS = array('cs'=>'cz');
+        $LANGS = ['cs'=>'cz'];
         return $LANGS[$code] ?: $code;
     }
 
@@ -484,7 +484,7 @@ class AA_Content {
      *  Removes all fields, which do not have value
      */
     function removeEmptyFields() {
-        $new_content = array();
+        $new_content = [];
         foreach ($this->content as $fid => $a) {
             if ( array_filter(array_map('trim',$this->getValuesArray($fid)), 'strlen') ) {
                 $new_content[$fid] = $a;
@@ -627,7 +627,7 @@ class ItemContent extends AA_Content {
                 continue;
             }
 
-            if ($aacontent4id AND $aacontent4id->is_set($pri_field_id) AND (!in_array($pri_field_id, array('id..............','slice_id........')))) {
+            if ($aacontent4id AND $aacontent4id->is_set($pri_field_id) AND (!in_array($pri_field_id, ['id..............','slice_id........']))) {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }
@@ -755,7 +755,7 @@ class ItemContent extends AA_Content {
      *
      */
     function getFields() {
-        $fields = array();
+        $fields = [];
         if ( isset( $this->content ) AND is_array( $this->content ) ) {
             foreach ( $this->content as $field => $foo ) {
                 $fields[] = $field;
@@ -855,7 +855,7 @@ class ItemContent extends AA_Content {
     function validateReport($type='present') {
         $slice      = AA_Slice::getModule($this->getSliceID());
         $fields     = $slice->getFields();
-        $ret        = array();
+        $ret        = [];
         //$cur_fields = $this->getFields();
 
         foreach ($fields as $field_id => $field) {
@@ -913,7 +913,7 @@ class ItemContent extends AA_Content {
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
-                        AA_Log::write('M_FLDI_VLD', ParamImplode(array($slice_id,$fld)), ParamImplode(array($msg[0] . ' - ' . $msg[1], document_uri(), $_SERVER['HTTP_REFERER'])));
+                        AA_Log::write('M_FLDI_VLD', ParamImplode([$slice_id,$fld]), ParamImplode([$msg[0] . ' - ' . $msg[1], document_uri(), $_SERVER['HTTP_REFERER']]));
                     }
                     // drop to next case 'QUIET'
                 case 'QUIET':
@@ -946,7 +946,7 @@ class ItemContent extends AA_Content {
         $new_content->setSliceID($slice->getId());
         $this->content = $new_content->getContent();
         if ($status == SC_NO_BIN) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->auth["uid"])));  // set error code
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", [$auth->auth["uid"]]));  // set error code
             return false;
         }
         return true;
@@ -1051,7 +1051,7 @@ class ItemContent extends AA_Content {
      * @param string $context special parameter used for thumbnails
      * @return bool|mixed|string
      */
-    function storeItem( $mode, $flags = array(), $context='direct' ) {
+    function storeItem( $mode, $flags = [], $context='direct' ) {
         global $event;
 
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
@@ -1059,14 +1059,14 @@ class ItemContent extends AA_Content {
         if (! count($fields  = $slice->getFields()))            {return false;}
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
-        $function_params = array($mode, join('-',(array)$flags), $context);  // just for AA_Log
+        $function_params = [$mode, join('-',(array)$flags), $context];  // just for AA_Log
 
         if ($mode == 'update_filled') {
             $this->removeEmptyFields();
             // and from this point no difference from normal 'update'
         }
 
-        if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'))) {
+        if ( !in_array($mode, ['insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent', 'update/insert'])) {
             $mode = 'update';
         }
 
@@ -1094,12 +1094,12 @@ class ItemContent extends AA_Content {
             case 'insert':        $id = get_if($this->getItemID(), new_id());
                                   break;
             case 'insert_if_new': if (!$this->getItemID()) {
-                                      ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", array($this->getItemID(), $this->getValue('headline........'))));  // set error code
+                                      ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
                                       if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
                                       return false;
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
-                                      ItemContent::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", array($this->getItemID(), $this->getValue('headline........'))));  // set error code
+                                      ItemContent::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
                                       if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
                                       if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
                                       return false;
@@ -1117,7 +1117,7 @@ class ItemContent extends AA_Content {
         $throw_events    = isset($flags[2]) ? $flags[2] : !$silent;
 
         if (!$id) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", array($slice->name(),$id)));  // set error code
+            ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->name(),$id]));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
             return false;
         }
@@ -1129,7 +1129,7 @@ class ItemContent extends AA_Content {
         }
 
         // remove old content first (just in content table - item is updated)
-        if (in_array($mode, array('update', 'overwrite', 'add'))) {
+        if (in_array($mode, ['update', 'overwrite', 'add'])) {
             $oldItemContent = new ItemContent($id);
             if ($throw_events) {
                 $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
@@ -1142,7 +1142,7 @@ class ItemContent extends AA_Content {
 
         switch ($mode) {
         case 'overwrite':
-            DB_AA::delete('content', array(array('item_id', $id, 'l')));
+            DB_AA::delete('content', [['item_id', $id, 'l']]);
             break;
         case 'update':
             $this->_clean_updated_fields($id, $fields);
@@ -1312,7 +1312,7 @@ class ItemContent extends AA_Content {
                     $seo_charset      = ($slice_charset AND $slice_charset != 'utf-8') ? ":$slice_charset" : '';
 
                     // seo field is not filled or we "Insert as new" and teh seo is already used (probably we forgot to delete the value)
-                    if (!strlen($this->getValue($fid)) OR (($mode=='insert') AND strlen(str_replace(array($this->getItemID(), '-'), array('',''), StrExpand('AA_Stringexpand_Seo2ids', array('all', $this->getValue($fid)), array('item'=>GetItemFromContent($this))))))) {
+                    if (!strlen($this->getValue($fid)) OR (($mode=='insert') AND strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
                         $expand_string = '{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}';
                     } else {
                         continue 2;  // next field
@@ -1358,7 +1358,7 @@ class ItemContent extends AA_Content {
             // delete content just for this computed field
             // $this->_clean_updated_fields($id, $fields);
             if ($id AND $fid) {
-                DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', $fid)));
+                DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', $fid]]);
             }
 
             foreach($values as $varr) {
@@ -1424,12 +1424,12 @@ class ItemContent extends AA_Content {
      * @param AA_Fields $fields
      */
     function _clean_updated_fields($id, $fields) {
-        $in  = array();
+        $in  = [];
         foreach ($this->content as $fid => $cont) {
             if (!$fields->getProperty($fid, 'in_item_tbl')) {
                 // deal with translations. if only translated values are present, then delete just the specific translation
                 // however - if also basic 0-1000000 indexes are present, clear all the field content
-                $keys = (is_array($cont) AND $cont) ? array_keys($cont) : array(0); // sometimes we want delete field so no AA_Value is_a passed (delete file...)
+                $keys = (is_array($cont) AND $cont) ? array_keys($cont) : [0]; // sometimes we want delete field so no AA_Value is_a passed (delete file...)
                 foreach ($keys as $k) {
                     $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
                     if ($ind==0) {
@@ -1442,16 +1442,16 @@ class ItemContent extends AA_Content {
             // delete content just for displayed fields
             foreach($in as $lang => $field_arr) {
                 if ($lang==0) {
-                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr))));
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)]]);
                 } else {
                     //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<'))));
                     //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<'))));
                     //huhl($in);
                     //huhl(DB_AA::select(array(), 'SELECT * FROM content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)))));
                     //exit;
-                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<')));
-                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<')));
-                    DB_AA::delete('content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 'ISNULL')));
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', $lang*AA_Value::MAX_INDEX, '>='], ['number', ($lang+1)*AA_Value::MAX_INDEX, '<']]);
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 0, '>='], ['number', AA_Value::MAX_INDEX, '<']]);
+                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 'ISNULL']]);
                 }
             }
             // note extra images deleted in insert_fnc_fil if needed
@@ -1480,8 +1480,8 @@ class ItemContent extends AA_Content {
 
             if ( !is_a($inserter,'AA_Inserter_Nul')) {
                 // update content table or fill item_varset
-                $parameters = array();
-                $thumbnails = array();
+                $parameters = [];
+                $thumbnails = [];
 
                 foreach ($cont as $numkey => $v) {
 
@@ -1506,7 +1506,7 @@ class ItemContent extends AA_Content {
                             $thumbnails = $inserter->execute($field_writer, $id, $v, $parameters);
                         }
                     } else {
-                        $inserter->execute($field_writer, $id, $v, array('order'=>$numkey));
+                        $inserter->execute($field_writer, $id, $v, ['order'=>$numkey]);
                     }
                     // do not store multiple values if field is not marked as multiple
                     // ERRORNOUS
@@ -1567,7 +1567,7 @@ class ItemContent extends AA_Content {
  * @return bool
  */
 function itemIsDuplicate($item_id) {
-    return DB_AA::test('item', array(array('id', $item_id, 'l')));
+    return DB_AA::test('item', [['id', $item_id, 'l']]);
 }
 
 /** field_content is AA_Value object
@@ -1578,9 +1578,9 @@ function itemIsDuplicate($item_id) {
  * @param array $flags   =  // invalidate cache, feed, throw events
  * @return int
  */
-function UpdateField($item_id, $field_id, $field_content, $flags = array()) {
+function UpdateField($item_id, $field_id, $field_content, $flags = []) {
     if (!$flags) {
-        $flags = array(true, false, true);   // invalidate cache, not feed, throw events
+        $flags = [true, false, true];   // invalidate cache, not feed, throw events
     }
     $content4id = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password

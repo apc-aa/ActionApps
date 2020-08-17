@@ -54,11 +54,11 @@ if ($cancel) {
   go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Create New Slice / Module"));
-$apage->setForm(array('action'=>'slicedit.php3'));
+$apage->setForm(['action'=>'slicedit.php3']);
 $apage->printHead($err, $Msg);
 
 require_once AA_INC_PATH."sliceadd.php3";
@@ -83,7 +83,7 @@ FrmTabEnd();
 
 echo '<br><br>'. getTabStart();
 
-echo getFrmInputButtons(array("cancel" => array("url" => "aafinder.php3")), 'middle', true, COLOR_TABTITBG);
+echo getFrmInputButtons(["cancel" => ["url" => "aafinder.php3"]], 'middle', true, COLOR_TABTITBG);
 FrmTabEnd();
 
 $apage->printFoot();

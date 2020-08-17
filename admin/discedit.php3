@@ -62,7 +62,7 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 // get discussion content and tree
 $zids     = QueryDiscussionZIDs($item_id);
@@ -125,7 +125,7 @@ $script2run = '
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Admin - Discussion comments management"));
-$apage->setForm(array('action'=>'index.php3'));
+$apage->setForm(['action'=>'index.php3']);
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->printHead($err, $Msg);
 

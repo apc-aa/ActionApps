@@ -24,8 +24,10 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
-$LINKS_LANGUAGE_FILES = array( "en_links_lang.php3" => "en_links_lang.php3",
-                               "cz_links_lang.php3" => "cz_links_lang.php3");
+$LINKS_LANGUAGE_FILES = [
+    "en_links_lang.php3" => "en_links_lang.php3",
+                               "cz_links_lang.php3" => "cz_links_lang.php3"
+];
 
 
 if ($template['Links']) {
@@ -46,7 +48,7 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
@@ -215,9 +217,9 @@ if ( $superadmin ) {
 }
 
 if ( $template['Links'] ) {
-    FrmTabEnd( array( 'insert', 'template[Links]' => array( 'type'=>"hidden", 'value'=> $template['Links'])));
+    FrmTabEnd( ['insert', 'template[Links]' => ['type'=>"hidden", 'value'=> $template['Links']]]);
 } else {
-    FrmTabEnd( array( 'update', 'reset', 'cancel' ) );
+    FrmTabEnd( ['update', 'reset', 'cancel']);
 }
 
 $apage->printFoot();

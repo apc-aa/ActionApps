@@ -79,11 +79,12 @@ function store_vars() {
     global $shtml_page;
     if ($GLOBALS['debugfill']) huhl("post2html:store_vars:$shtml_page:");
 
-    $vars = array (
+    $vars = [
         "post"   => &$_POST,
         "get"    => &$_GET,
         "files"  => &$_FILES,
-        "cookie" => &$_COOKIE);
+        "cookie" => &$_COOKIE
+    ];
 
     foreach ($vars as $key => $foo) {
         $var = &$vars[$key];

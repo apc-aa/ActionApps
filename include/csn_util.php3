@@ -43,8 +43,10 @@ define("ERR_PASSWORD","Error 2");
 define( 'UNPACKED_AA_THE_SAME_CATE', unpack_id('AA_The_Same_Cate') );
 define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id('AA_Other_Categor') );
 
-$CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
-                         "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN);
+$CONTENT_FORMATS = [
+    "http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
+                         "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN
+];
 
 /** GetExternalCategories function
  *  Get categories from table ef_categories
@@ -59,23 +61,24 @@ $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-typ
  */
 function GetExternalCategories($feed_id, $add_other=false) {
     $db = getDB();
-    $ext_categs = array();
+    $ext_categs = [];
     $db->query("SELECT category_id, category, category_name, target_category_id, approved FROM ef_categories WHERE feed_id='$feed_id' ORDER BY category_name");
     while ($db->next_record()) {
-        $ext_categs[unpack_id($db->f('category_id'))] = array(
+        $ext_categs[unpack_id($db->f('category_id'))] = [
             "value"              => $db->f('category'),
             "name"               => $db->f('category_name'),
             "approved"           => $db->f('approved'),
-            "target_category_id" => unpack_id($db->f('target_category_id')));
+            "target_category_id" => unpack_id($db->f('target_category_id'))
+        ];
     }
     freeDB($db);
     if ( $add_other AND (count($ext_categs)>0) AND !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
-        $ext_categs[UNPACKED_AA_OTHER_CATEGOR] = array(
+        $ext_categs[UNPACKED_AA_OTHER_CATEGOR] = [
             "value"              => 'AA_Other_Categor',
             "name"               => _m('Other categories'),
             "approved"           => false,
             "target_category_id" => ''  // default is umpapped, not UNPACKED_AA_THE_SAME_CATE
-            );
+        ];
     }
     return $ext_categs;
 }
@@ -105,8 +108,8 @@ function UseAllCategoriesOption( &$ext_categs ) {
  * @return array
  */
  function GetExternalMapping($l_slice_id, $r_slice_id) {
-     $map_to   = array();
-     $map_from = array();
+     $map_to   = [];
+     $map_from = [];
 
      $db = getDB();
      $db->query("SELECT * FROM feedmap WHERE from_slice_id='".q_pack_id($r_slice_id)."' AND to_slice_id='".q_pack_id($l_slice_id)."' ORDER BY from_field_name");
@@ -122,10 +125,10 @@ function UseAllCategoriesOption( &$ext_categs ) {
              case FEEDMAP_FLAG_VALUE :  $v = $db->f('value'); break;
              case FEEDMAP_FLAG_EMPTY :  $v = ""; break;
          }
-         $map_from[$db->f('to_field_id')] = array("feedmap_flag"=>$f,"value"=>$v,"from_field_name"=>$db->f('from_field_name'));
+         $map_from[$db->f('to_field_id')] = ["feedmap_flag"=>$f,"value"=>$v,"from_field_name"=>$db->f('from_field_name')];
      }
      freeDB($db);
-     return array($map_to,$map_from);
+     return [$map_to,$map_from];
  }
 
 /** GetBaseFieldId function
@@ -156,7 +159,7 @@ function GetBaseFieldId( $fields, $ftype ) {
  * @return array|bool
  */
 function GetGroupConstants($slice_id) {
-    $cat_ids   = array();
+    $cat_ids   = [];
     $cat_group = GetCategoryGroup($slice_id);
     if (!$cat_group) {
         return false;
@@ -166,9 +169,11 @@ function GetGroupConstants($slice_id) {
     $SQL = "SELECT id, name, value, class FROM constant WHERE group_id = '$cat_group' ORDER BY pri";
     $db->query($SQL);         // get all categories
     while ($db->next_record()) {
-        $cat_ids[unpack_id($db->f('id'))] = array("name"     => $db->f('name'),
+        $cat_ids[unpack_id($db->f('id'))] = [
+            "name"     => $db->f('name'),
                                                      "value"    => $db->f('value'),
-                                                     "parent_id"=> $db->f('class'));
+                                                     "parent_id"=> $db->f('class')
+        ];
     }
     freeDB($db);
     return $cat_ids;
@@ -228,22 +233,22 @@ function iso8601_to_unixstamp($t) {
     return strtotime($t);
 }
 
-$DEFAULT_RSS_MAP = array (
+$DEFAULT_RSS_MAP = [
     // Note this matches code in xml_rssparse.php3 for parsing DC fields
     // Can change the names without affecting anything
-        "author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/creator",                                "from_field_name"=>"DC:creator"),
-        "abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
-        "publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name"=>"DC:date"),
-        "source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/source|CHANNEL/title",                   "from_field_name"=>"DC:source"),
-        "lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/language",                               "from_field_name"=>"DC:language"),
-        "source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/relation|CHANNEL/link",                  "from_field_name"=>"DC:relation"),
-        "place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/coverage",                               "from_field_name"=>"DC:coverage"),
-        "headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/title|ITEM/title",                       "from_field_name"=>"DC:title"),
-        "full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"),
-        "status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"),
-        "hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"),
-        "expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date")
-    );
+        "author.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/creator",                                "from_field_name"=>"DC:creator"],
+        "abstract........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"],
+        "publish_date...." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name"=>"DC:date"],
+        "source.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/source|CHANNEL/title",                   "from_field_name"=>"DC:source"],
+        "lang_code......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/language",                               "from_field_name"=>"DC:language"],
+        "source_href....." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/relation|CHANNEL/link",                  "from_field_name"=>"DC:relation"],
+        "place..........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/coverage",                               "from_field_name"=>"DC:coverage"],
+        "headline........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/title|ITEM/title",                       "from_field_name"=>"DC:title"],
+        "full_text......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"],
+        "status_code....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"],
+        "hl_href........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"],
+        "expiry_date....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date"]
+];
 
 /** attr2id function
  * @param $str
@@ -268,7 +273,7 @@ function attr2id($str) {
  * @return array
  */
 function name2rssfeed($slice_id,$name) {
-    $res = array();
+    $res = [];
     $db = getDB();
     $db->query("SELECT * FROM rssfeeds WHERE name='$name' AND slice_id = '".q_pack_id($slice_id)."'");
     if ($db->next_record()) {
@@ -291,7 +296,7 @@ function getFeedTypeName($type) {
 
 /** used as parameter for $itemview in generating item_id-lastedit pair */
 function GetXml_GetContent(&$zids) {
-    return GetItemContentMinimal($zids, array('id', 'last_edit'));
+    return GetItemContentMinimal($zids, ['id', 'last_edit']);
 }
 
 class LastEditList {
@@ -305,9 +310,11 @@ class LastEditList {
      */
     function setFromSlice($conds, &$slice) {
         ParseEasyConds($conds);
-        $zids    = QueryZids( array($slice->getId()), $conds, '', 'ALL');
-        $format  = array('odd_row_format' => '{id..............}-{last_edit.......}',
-                         'row_delimiter'  => ',');
+        $zids    = QueryZids( [$slice->getId()], $conds, '', 'ALL');
+        $format  = [
+            'odd_row_format' => '{id..............}-{last_edit.......}',
+                         'row_delimiter'  => ','
+        ];
         $itemview = new itemview($format, '', '', $zids,
                                            0,       // first item
                                            $zids->count(), // item count
@@ -339,7 +346,7 @@ class LastEditList {
      *
      */
     function getPairs() {
-        $ret = array();
+        $ret = [];
         foreach (explode(',', $this->lastlist) as $pair) {
             list($id,$time) = explode('-', $pair);
             if ($id) {

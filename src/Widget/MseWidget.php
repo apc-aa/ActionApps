@@ -34,6 +34,6 @@ class MseWidget extends \AA\Widget\MchWidget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'row_count', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'row_count', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 }

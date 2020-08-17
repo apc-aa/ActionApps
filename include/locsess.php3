@@ -48,7 +48,7 @@ require_once(AA_INC_PATH.'phplib/phplib.php');
 require_once __DIR__ . '/../vendor/autoload.php';
 
 spl_autoload_register(function ($class_name) {
-    $PAIRS = array(
+    $PAIRS = [
         'AA_Actionapps'                  => 'central/include/actionapps.class.php',
         'AA_Auth'                        => 'include/locauth.php3',
         'AA_Components'                  => 'include/statestore.php3',
@@ -75,14 +75,14 @@ spl_autoload_register(function ($class_name) {
         'ConvertCharset'                 => 'include/convert_charset.class.php3',
         'Files'                          => 'include/files.class.php3',
         'zids'                           => 'include/zids.php3'
-        );
+    ];
 
     if ($PAIRS[$class_name]) {
         require AA_BASE_PATH. $PAIRS[$class_name];
         return;
     }
 
-    $matches = array();
+    $matches = [];
     preg_match('/^aa_([a-z0-9]+)/', strtolower($class_name), $matches);
 
     // the core name of the class (like "widget" for "AA_Widget_Fld", ...)
@@ -161,9 +161,9 @@ spl_autoload_register(function ($class_name) {
             return;
       }
 
-    $CUSTOM_INC_FILES = array(
+    $CUSTOM_INC_FILES = [
         'AA_Responder'    => 'responder.php'
-        );
+    ];
 
     if (defined('AA_CUSTOM_DIR')) {
         foreach ($CUSTOM_INC_FILES as $inc_def => $inc_file) {
@@ -176,13 +176,13 @@ spl_autoload_register(function ($class_name) {
 
 class AA_Debug {
     protected $_starttime;
-    protected $_duration   = array();
-    protected $_tracestack = array();
-    protected $_calls      = array();
-    protected $_repeated   = array();
+    protected $_duration   = [];
+    protected $_tracestack = [];
+    protected $_calls      = [];
+    protected $_repeated   = [];
 
     function __construct() {
-        $this->_starttime = array('main' => microtime(true));
+        $this->_starttime = ['main' => microtime(true)];
     }
 
     // we return true, just to be able to write:
@@ -216,7 +216,7 @@ class AA_Debug {
         if ($func=='Query') {
             $this->_check_repeted($text);
         }
-        $this->_calls[]      = array(count($this->_tracestack), $func, DB_AA::$_instances_no.' '.$txt, strlen($text),microtime(true));
+        $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.$txt, strlen($text),microtime(true)];
         $this->_tracestack[] = count($this->_calls)-1;
     }
 
@@ -226,18 +226,18 @@ class AA_Debug {
         array_push($this->_calls[$indx], $time, substr($text,0,20), strlen($text));
 
         if (!is_array($this->_duration[$func])) {
-            $this->_duration[$func] = array();
+            $this->_duration[$func] = [];
         }
         $this->_duration[$func][] = $time-$this->_calls[$indx][4];
     }
 
     function tracepoint($func, $text='') {
-        $this->_calls[]      = array(count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0);
+        $this->_calls[]      = [count($this->_tracestack), $func, DB_AA::$_instances_no.' '.substr($text,0,200), strlen($text),microtime(true), microtime(true),'',0];
     }
 
     function duration_stat() {
 
-        $row    = array();
+        $row    = [];
         $sumsum = 0;
         foreach($this->_duration as $func => $times) {
             $sumsum += ($sum = 1000*array_sum($times));
@@ -248,7 +248,7 @@ class AA_Debug {
 
 
         // repeated queries;
-        $row    = array();
+        $row    = [];
         foreach($this->_repeated as $query => $times) {
             if ($times>1) {
                 $row['a' . sprintf('%09d', $times)] = '<tr><td>' . safe($times) . '</td><td>' . safe($query) . '</td></tr>';
@@ -261,7 +261,7 @@ class AA_Debug {
 
 
         // longest queries;
-        $row    = array();
+        $row    = [];
         foreach($this->_calls as $call) {
             if ($call[1]=="Query") {
                 $row['a' . sprintf('%012.5f',($call[5]-$call[4])*1000.0)] = '<tr><td>'.safe(($call[5]-$call[4])*1000.0) . '</td><td>' . safe($call[2]) . '</td><td>' . safe($call[6]) . '</td></tr>';
@@ -290,7 +290,7 @@ class AA_Debug {
         echo "<small><em>$time</em></small><br>\n";
 
         foreach ($params as $a) {
-            if (is_object($a) && is_callable(array($a,"__toString"))) {
+            if (is_object($a) && is_callable([$a,"__toString"])) {
                 print $a;
             } else {
                 print_r($a);
@@ -301,7 +301,7 @@ class AA_Debug {
 
     function _groupstart($group) {
         echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
-        $this->_do('log', array($group));
+        $this->_do('log', [$group]);
     }
 
     function _groupend($group) {
@@ -310,7 +310,7 @@ class AA_Debug {
 
     function _logtime($group) {
         $time = microtime(true) - $this->_starttime[$group];
-        $this->_do(($time > 1.0) ? 'warn' : 'log', array("$group time: $time"));
+        $this->_do(($time > 1.0) ? 'warn' : 'log', ["$group time: $time"]);
     }
 }
 
@@ -327,7 +327,7 @@ class AA {
     public  static $encoding;            // inner module's/slice's encoding (utf-8, ...)
     public  static $lang;                // two letters small caps - cz / es / en / ...
     public  static $langnum;             // array of prefered language numbers - > 10000000
-    public  static $headers = array();   // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
+    public  static $headers = [];   // [type=>xml|html,status=>404,encoding=>utf-8|windows-1250|...] - sent headers
     public  static $module_id;           // for admin pages - replace of older $slice_id
     /** @var  AA_Stringexpander $stringexpander */
     private static $stringexpander = null;
@@ -339,7 +339,7 @@ class AA {
     private static $metabase       = null;
 
     static function getHeaders() {
-        $ret = array();
+        $ret = [];
         $ret['type'] = 'Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: AA_Langs::getCharset());
         if (isset(AA::$headers['status'])) {
             $ret['status'] = AA::$headers['status'];
@@ -445,7 +445,7 @@ class DB_AA extends DB_Sql {
             } else {
                 $key = key($column);
                 $val = empty($column) ? $db->Record : array_intersect_key($db->Record, array_flip($column));
-                $ret = ctype_digit((string)$key) ? $val : array($db->Record[$key] => $val);
+                $ret = ctype_digit((string)$key) ? $val : [$db->Record[$key] => $val];
             }
         }
         freeDB($db);
@@ -481,7 +481,7 @@ class DB_AA extends DB_Sql {
 
         $db->query($query);
 
-        $ret = array();
+        $ret = [];
         if (!is_array($column)) {
             if (empty($column)) {
                 while ($db->next_record()) {
@@ -577,7 +577,7 @@ class DB_AA extends DB_Sql {
 
     /** check if Table exists */
     static function exists_table($table) {
-        return (false !== DB_AA::select1('SELECT table_schema FROM information_schema.tables', '', array(array('table_schema', DB_NAME), array('table_name', $table))));
+        return (false !== DB_AA::select1('SELECT table_schema FROM information_schema.tables', '', [['table_schema', DB_NAME], ['table_name', $table]]));
     }
 
     /** used as: DB_AA::update('slice', array(array('javascript',$_POST['javascript'])), array(array('id', $slice_id, 'l')));  */
@@ -645,12 +645,12 @@ class DB_AA extends DB_Sql {
      * @return string
      */
     static public function makeWhere($varlist) {
-        $where = array();
+        $where = [];
         foreach ( $varlist as $vardef) {
             // $vardef is array(varname, type, value)
             list($name, $value, $type) = $vardef;
             $type = (string)$type;
-            if (in_array($type, array('>','<','<=','>=', '<>', '!='))) {
+            if (in_array($type, ['>','<','<=','>=', '<>', '!='])) {
                 $operator = $type;
                 $type     = 'i';
             } elseif ( ($type == 'LIKE') OR ($type == 'NOT LIKE') ) {
@@ -697,7 +697,7 @@ class DB_AA extends DB_Sql {
                     default:  $arr = array_map('qquote',   $value);
                 }
                 switch (count($arr)) {
-                    case 0:  $where    = array("2=1"); break;
+                    case 0:  $where    = ["2=1"]; break;
                     case 1:  $where[]  = "$name $operator ". reset($arr); break;
                     default: $where[]  = "$name IN (". join(',', $arr) .")";
                 }
@@ -711,7 +711,7 @@ class DB_AA extends DB_Sql {
      * @return string
      */
     static protected function makeOrder($orderarr) {
-        $order = array();
+        $order = [];
         foreach ($orderarr as $sort) {
             switch ( substr($sort,-1) ) {    // last character
                 case '-':  $order[] = substr($sort,0,-1). ' DESC'; break;
@@ -788,7 +788,7 @@ class DB_AA extends DB_Sql {
 // to use
 // Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
 //
-$spareDBs     = array();
+$spareDBs     = [];
 /** getDB function
  *
  */

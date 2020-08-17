@@ -26,13 +26,13 @@ require_once AA_INC_PATH.     "msgpage.php3";
 
 function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
     // resulting array of all differences between selected slices
-    $differences = array();
+    $differences = [];
     if ( is_array($template_slice_defs) ) {
         foreach ( $template_slice_defs as $tmp_slice_name => $slice_def ) {
             $cmp_slice_name = $mapping[$tmp_slice_name];
-            $differences[$tmp_slice_name] = array();
+            $differences[$tmp_slice_name] = [];
             if ( empty($comp_slice_defs[$cmp_slice_name]) ) {
-                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m('Comparation slice (%1) does not exist', array($tmp_slice_name)));
+                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m('Comparation slice (%1) does not exist', [$tmp_slice_name]));
             }
             $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
         }
@@ -49,8 +49,8 @@ if (!IsSuperadmin()) {
 
 // ActionApps to synchronize
 $aas = AA_Actionapps::getArray();
-$slices4template = array();
-$slices2compare  = array();
+$slices4template = [];
+$slices2compare  = [];
 
 if ($_POST['compare']) {
 
@@ -81,13 +81,13 @@ if ($_POST['synchronize']) {
                 foreach ( $_POST['sync'] as $sync_action ) {
                     // plan the synchronization action to for execution via Task Manager
                     $sync_task = new AA_Task_Sync($sync_action, $aas[$dest_aa]);
-                    $toexecute->userQueue($sync_task, array(), 'AA_Task_Sync');
+                    $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');
                     ++$no_sync_tasks;
                 }
             }
         }
     }
-    echo _m("%1 synchronization actions planed. See", array($no_sync_tasks)). ' ';
+    echo _m("%1 synchronization actions planed. See", [$no_sync_tasks]). ' ';
     echo a_href(get_admin_url('se_taskmanager.php3'), _m('Task Manager'));
 }
 
@@ -97,7 +97,7 @@ $apage->addRequire('aa-jslib@1');
 $apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
-$aas_array = array();
+$aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
@@ -105,17 +105,20 @@ foreach ( $aas as $k => $aa ) {
 // slices to compare
 $template_slices = $aas[$_POST['template_aa']]->requestSlices();
 
-$form_buttons = array("synchronize"  => array( "type"      => "submit",
+$form_buttons = [
+    "synchronize"  => [
+        "type"      => "submit",
                                                "value"     => _m("Synchronize"),
-                                               "accesskey" => "S"),
-                      "template_aa"    => array( "value"     =>  $_POST['template_aa']),
-                      "comparation_aa" => array( "value"     =>  $_POST['comparation_aa'])
-                     );
+                                               "accesskey" => "S"
+    ],
+                      "template_aa"    => ["value"     =>  $_POST['template_aa']],
+                      "comparation_aa" => ["value"     =>  $_POST['comparation_aa']]
+];
 
-FrmTabCaption(_m('Slice Comparison - %1 x %2', array(
+FrmTabCaption(_m('Slice Comparison - %1 x %2', [
     $aas[$_POST['template_aa']]->getName(),
     $aas[$_POST['comparation_aa']]->getName()
-)), $form_buttons);
+]), $form_buttons);
 if ( isset($differences) ) {
     // and print diffs out
     foreach ($differences as $sid => $diffs) {

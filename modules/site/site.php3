@@ -109,15 +109,19 @@ if ( get_magic_quotes_gpc() ) {
 
 require_once AA_BASE_PATH."modules/site/router.class.php";
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 
 if (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) {
     $host2      = substr($host,4);
 } else {
     $host2      = 'www.'.$host;
 }
-$domain_arr = array("http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2");
-AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', array(array('type','W'),array('deleted','0','i'),array('slice_url', $domain_arr))));
+$domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
+AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', [
+    ['type','W'],
+    ['deleted','0','i'],
+    ['slice_url', $domain_arr]
+]));
 
 if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
     Die404();
@@ -234,7 +238,7 @@ require_once AA_INC_PATH."item.php3";
 if ($lang_file) {
     mgettext_bind(AA_Langs::getLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
-    AA::$langnum = array(AA_Content::getLangName2Num(AA::$lang));   // array of prefered languages in priority order.
+    AA::$langnum = [AA_Content::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
 }
 
 
@@ -272,7 +276,7 @@ $cacheentry->processPage(0);
 $slices4cache = AA_Module::getUsedModules();
 if (empty($slices4cache)) {    // can't be combined empty() and assignment = for php 5.3
     // probably not necessary
-    $slices4cache = array(AA::$site_id);
+    $slices4cache = [AA::$site_id];
 }
 
 // do not cache for logged users

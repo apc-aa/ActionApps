@@ -58,75 +58,83 @@ function get_aamenus() {
     $module_location = "modules/links/";
 
 
-    $aamenus["view"] = array (
+    $aamenus["view"] = [
         "label" => _m('View'),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
-        "level" => "main");
+        "level" => "main"
+    ];
 
-    $aamenus["addlink"] = array (
+    $aamenus["addlink"] = [
         "label" => ($linkedit ? _m('Edit Link') : _m('Add Link')),
         "title" => ($linkedit ? _m('Edit Link') : _m('Add new link')),
         "href"  => $module_location."linkedit.php3",
         "level" => "main",
-        "submenu" => "addlink_submenu");
+        "submenu" => "addlink_submenu"
+    ];
 
-    $aamenus["linkmanager"] = array (
+    $aamenus["linkmanager"] = [
         "label" => _m('Link Manager'),
         "title" => _m('Link Manager'),
         "href"  => $module_location."index.php3?Tab=app",
         "level" => "main",
-        "submenu" => "linkmanager_submenu");
+        "submenu" => "linkmanager_submenu"
+    ];
 
-    $aamenus["modadmin"] = array (
+    $aamenus["modadmin"] = [
         "label" => _m('Link Admin'),
         "title" => _m('Link Admin'),
         "href"  => $module_location."modedit.php3",
         "cond"  => IfSlPerm(PS_LINKS_SETTINGS),
         "level" => "main",
-        "submenu"=>"modadmin_submenu");
+        "submenu"=>"modadmin_submenu"
+    ];
 
-    $aamenus["linkmanager_submenu"] = array(
+    $aamenus["linkmanager_submenu"] = [
         "bottom_td"=>200,
         "level"=>"submenu",
-        "items"=> array(
+        "items"=> [
             "header1"=>_m('Folders').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"schranky"),"",_m("Folders with links, sorted by their status (active, changed, new, ...)"), true),
-            "app"=>array ("cond"=> $r_state['bin'] != "app",
+            "app"=> ["cond"=> $r_state['bin'] != "app",
                             "href"=>$module_location."index.php3?Tab=app",
-                            "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"),
-            "changed"=>array ("cond"=> $r_state['bin'] != "changed",
+                            "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"],
+            "changed"=> ["cond"=> $r_state['bin'] != "changed",
                             "href"=>$module_location."index.php3?Tab=changed",
-                            "label"=>_m('Changed Links')." (".$r_state['bin_cnt']['changed'].")"),
-            "new"=>array ("cond"=> $r_state['bin'] != "new",
+                            "label"=>_m('Changed Links')." (".$r_state['bin_cnt']['changed'].")"],
+            "new"=> ["cond"=> $r_state['bin'] != "new",
                             "href"=>$module_location."index.php3?Tab=new",
-                            "label"=>_m('New Links')." (".$r_state['bin_cnt']['new'].")"),
-            "folder2"=>array ("cond"=> $r_state['bin'] != "folder2",
+                            "label"=>_m('New Links')." (".$r_state['bin_cnt']['new'].")"],
+            "folder2"=> ["cond"=> $r_state['bin'] != "folder2",
                             "href"=>$module_location."index.php3?Tab=folder2",
-                            "label"=>_m('Holding bin')." (".$r_state['bin_cnt']['folder2'].")"),
-            "folder3"=>array ("cond"=> $r_state['bin'] != "folder3",
+                            "label"=>_m('Holding bin')." (".$r_state['bin_cnt']['folder2'].")"],
+            "folder3"=> ["cond"=> $r_state['bin'] != "folder3",
                             "href"=>$module_location."index.php3?Tab=folder3",
-                            "label"=>_m('Trash')." (".$r_state['bin_cnt']['folder3'].")"),
-            "unasigned"=>array ("cond"=> $r_state['bin'] != "unasigned",
+                            "label"=>_m('Trash')." (".$r_state['bin_cnt']['folder3'].")"],
+            "unasigned"=> ["cond"=> $r_state['bin'] != "unasigned",
                             "href"=>$module_location."index.php3?Tab=unasigned",
-                            "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"),
-            "unasigned3"=>array ("cond"=> $r_state['bin'] != "unasigned3",
+                            "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"],
+            "unasigned3"=> ["cond"=> $r_state['bin'] != "unasigned3",
                             "href"=>$module_location."index.php3?Tab=unasigned3",
-                            "label"=>_m('Unasigned - Trash')." (".$r_state['bin_cnt']['unasigned3'].")"),
+                            "label"=>_m('Unasigned - Trash')." (".$r_state['bin_cnt']['unasigned3'].")"],
             "line1"               => '',
-            "empty_trash"=>array ("cond"=>IsSuperadmin(),
+            "empty_trash"=> ["cond"=>IsSuperadmin(),
                             "hide"=>!IsSuperadmin(),
                             "href"=>$module_location."index.php3?DeleteTrash=1",
                             "label"=>"<img src='../../images/empty_trash.gif' border=0>"._m("Empty trash"),
-                            "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
-            "debug"=>array ("cond"=>IsSuperadmin(),
+                            "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"],
+            "debug"=> ["cond"=>IsSuperadmin(),
                             "hide"=>!IsSuperadmin(),
                             "js"=>"ToggleCookie('aa_debug','1')",
-                            "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
-            "header2" => _m('Bookmarks').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)));
+                            "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))],
+            "header2" => _m('Bookmarks').getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)
+        ]
+    ];
     foreach ( (array) $bookmarks as $bookid => $bookname ) {
         $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] =
-            array( "href"=>$module_location."index.php3?GoBookmark=$bookid",
-                   "label"=>$bookname);
+            [
+                "href"=>$module_location."index.php3?GoBookmark=$bookid",
+                   "label"=>$bookname
+            ];
     }
 /*    $aamenus['linkmanager_submenu']['items']['header3'] = _m('Misc');
     $aamenus['linkmanager_submenu']['items']['item6'] =  array (
@@ -134,29 +142,37 @@ function get_aamenus() {
                             "href"=>$module_location."index.php3?Delete=trash",
                             "label"=>"<img src='../../images/empty_trash.gif' border=0>"._m('Empty trash')); */
 
-    $aamenus["addlink_submenu"] = array (
+    $aamenus["addlink_submenu"] = [
         "bottom_td"=>200,
         "level"=>"submenu",
-        "items" => array(),);
+        "items" => [],
+    ];
 
-    $aamenus["modadmin_submenu"] = array(
+    $aamenus["modadmin_submenu"] = [
         "bottom_td"=>200,
         "level"=>"submenu",
-        "items"=> array(
+        "items"=> [
         "header1"=>_m('Main settings'),
-        "main"=>array ("cond"      => IfSlPerm(PS_LINKS_SETTINGS),
+        "main"=> ["cond"      => IfSlPerm(PS_LINKS_SETTINGS),
                        "href"      => $module_location."modedit.php3",
-                       "label"     => _m('Links')),
+                       "label"     => _m('Links')],
         "header2" => _m("Design"),
-        "views"=>array('function'  => 'CreateMenu4Views',
-                       'func_param'=> ''),
-        "newcatview" =>  array ("cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
+        "views"=> [
+            'function'  => 'CreateMenu4Views',
+                       'func_param'=> ''
+        ],
+        "newcatview" =>  [
+            "cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
                                 "href"  => 'admin/se_view.php3?new=1&view_type=categories',
-                                "label" => _m('New Category View')),
-        "newlinkview" => array ("cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
+                                "label" => _m('New Category View')
+        ],
+        "newlinkview" => [
+            "cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
                                 "href"  => 'admin/se_view.php3?new=1&view_type=links',
-                                "label" => _m('New Link View'))
-        ));
+                                "label" => _m('New Link View')
+        ]
+        ]
+    ];
 
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu

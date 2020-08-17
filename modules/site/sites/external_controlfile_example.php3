@@ -98,7 +98,7 @@ function new_state(&$new_state, $x, $p, $d, $t, $scrl) {
  */
 function ApcStr2Arr($varnames, $str, $strdef, $reg) {
     if (!$str) { $str = $strdef; }
-    $varout = array();
+    $varout = [];
     $reg    = '`'.str_replace('`','\`',$reg).'`';
     if (!(preg_match($reg, $str, $vars))) {
         if (!(preg_match($reg, $strdef, $vars))) {
@@ -153,17 +153,18 @@ new_state($apc_state, $x, $p, $d, $t, $scrl);
 $apc_state['state'] = ApcArr2Str($apc_varnames, $apc_state);
 $apc_state['root'] = 'https://example.org/test';
 
-$slices4cache = array(
+$slices4cache = [
     "c76cf3e44aa9da1d240c8b4cb37fba47", // Example slice - items'
     "e0709c24784078117368db404422249d", // Example slice - projects'
     "1c82a8e092b826208abcf4676dd737f8", // Example slice - links
-);
+];
 
 $url  =  'https://example.org/apc-aa/modules/site/site.php3?';
-$url .= http_build_query( array( 'apc_state'    => $apc_state,
+$url .= http_build_query( [
+    'apc_state'    => $apc_state,
                                  'slices4cache' => $slices4cache,
                                  'site_id'      => '9d87891f6eff3f7406cf55f66e1e16da'
-                                ));
+]);
 
 readfile($url);
 exit;

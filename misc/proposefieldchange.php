@@ -50,9 +50,9 @@ class AA_V {
 }
 
 /** field_content is AA_Value object */
-function UpdateFieldContent($item_id, $field_id, $field_content, $flags = array()) {
+function UpdateFieldContent($item_id, $field_id, $field_content, $flags = []) {
     $changes       = new ChangesMonitor();
-    $changes->addHistory(new ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
+    $changes->addHistory(new ChangeProposal($item_id, $field_id, [GetRepreValue($item_id, $field_id)]));
 
     UpdateField($item_id, $field_id, $field_content, $flags);
 }
@@ -72,7 +72,7 @@ class AbstractGrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     var $_index;              /**  */
 
     function __construct() {
-        $this->_items = array();
+        $this->_items = [];
     }
 
     /** Name of the grabber - used for grabber selection box */
@@ -124,7 +124,7 @@ class AbstractGrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     }
 
     function finish() {
-        $this->_items = array();
+        $this->_items = [];
     }
 }
 
@@ -144,7 +144,7 @@ if ( AA_V::P('bsc') == 1 ) {
             }
             // we do not use special field now - we just assign the SA and
             // Aktivity as normal (but form foreign plan)
-            UpdateFieldContent($item_id, 'relation........', $field_content, array(false,false,false));
+            UpdateFieldContent($item_id, 'relation........', $field_content, [false,false,false]);
             ++$updated;
         }
     }
@@ -230,7 +230,7 @@ elseif (AA_V::P('item_id') AND AA_V::P('field_id')) {
     $text = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
 
     $changes = new ChangesMonitor();
-    $changes->addProposal(new ChangeProposal(AA_V::P('item_id'), AA_V::P('field_id'), array($text)));
+    $changes->addProposal(new ChangeProposal(AA_V::P('item_id'), AA_V::P('field_id'), [$text]));
     echo $encoder->Convert($text, 'windows-1250', 'utf-8');
 }
 elseif (AA_V::P('change_id')) {

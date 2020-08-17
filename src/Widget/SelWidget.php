@@ -29,7 +29,7 @@ class SelWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw'));
+        return \AA\Widget\Widget::propertiesShop(['const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw']);
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -66,7 +66,7 @@ class SelWidget extends \AA\Widget\Widget
         $widget .= $this->getSelectOptions($options);
         $widget .= "</select>";
 
-        return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
 

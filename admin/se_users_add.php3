@@ -55,9 +55,13 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
     echo "</tr>\n";
 }
 
-$form_buttons = array("back" => array("type" => "submit",
+$form_buttons = [
+    "back" => [
+        "type" => "submit",
                                       "name" => "back",
-                                      "value" => _m("Back")));
+                                      "value" => _m("Back")
+    ]
+];
 
 ?>
 <form method="post" action="<?php echo StateUrl() ?>">
@@ -128,5 +132,5 @@ if ($GrpSrch || $UsrSrch) {
 FrmTabEnd($form_buttons);
 
 ?>
-<br><br><small><?php echo _m("List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query", array(MAX_ENTRIES_SHOWN)) ?></small>
+<br><br><small><?php echo _m("List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query", [MAX_ENTRIES_SHOWN]) ?></small>
 </form>

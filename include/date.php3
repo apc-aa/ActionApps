@@ -29,7 +29,7 @@
  *  @return array month names
  */
 function monthNames() {
-    return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'), _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
+    return [1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'), _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December')];
 }
 
 
@@ -116,7 +116,7 @@ class datectrl {
      */
     function setdate_int($date) {
         if (!$date) {
-            $d = array('year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0);
+            $d = ['year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0];
         } else {
             $d = datectrl::isTimestamp($date) ? getdate($date) : getdate();
         }

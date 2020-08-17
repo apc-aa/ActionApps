@@ -28,6 +28,6 @@ class TprWidget extends \AA\Widget\TxtWidget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(array('rows', 'cols', 'const', 'const_arr'));
+        return \AA\Widget\Widget::propertiesShop(['rows', 'cols', 'const', 'const_arr']);
     }
 }

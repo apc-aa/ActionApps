@@ -75,7 +75,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
         // AA::$debug = 255;
 
         $sid = $manager->getModuleId();
-        $changes_to_apply = DB_AA::select('id', 'SELECT change.id FROM `change`, `item`', array(array('item.id', 'UNHEX(change.resource_id)', 'j'), array('change.id', $item_zids->longids()), array('slice_id', $sid, 'l')));
+        $changes_to_apply = DB_AA::select('id', 'SELECT change.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $item_zids->longids()], ['slice_id', $sid, 'l']]);
 
         $changes = GetHistoryContent(new zids($changes_to_apply,'l'));
 
@@ -93,7 +93,7 @@ class AA_Manageraction_History_Apply extends AA_Manageraction {
                 }
             }
             // huhl($newcontent4id);
-            if ($doit AND $newcontent4id->storeItem( 'update', array(false, false, true))) {
+            if ($doit AND $newcontent4id->storeItem( 'update', [false, false, true])) {
                 $updated_items = 1;
             }
         }
@@ -139,7 +139,7 @@ function GetHistoryFields() {  // function - we need trnslate _m() on use (not a
  * @return array
  */
 function GetHistoryAliases() {  // function - we need trnslate _m() on use (not at include time)
-    return array(
+    return [
     "_#HI_CH_ID" => GetAliasDef( "f_1", "id",  _m('Change ID')),
 //    "_#HI_FIELD" => GetAliasDef( "f_t", "selector",   _m('Field selector')),
 //    "_#HI_VALUE" => GetAliasDef( "f_t", "value",      _m('Value')),
@@ -148,7 +148,7 @@ function GetHistoryAliases() {  // function - we need trnslate _m() on use (not 
     "_#HI_USER_" => GetAliasDef( "f_1", "user",        _m('User')),
     "_#HI_UNAME" => GetAliasDef( "f_t:{userinfo:{_#HI_USER_}}", "user",        _m('User')),
     "_#HI_ITEM_" => GetAliasDef( "f_1", "resource_id", _m('Item ID')),
-    );
+    ];
 }
 
 /**
@@ -162,7 +162,7 @@ function GetHistoryAliases() {  // function - we need trnslate _m() on use (not 
  */
 function GetHistoryContent($zids) {
     if (!$zids OR $zids->count()<1) {
-        return array();
+        return [];
     }
 
     // construct WHERE clausule
@@ -171,12 +171,12 @@ function GetHistoryContent($zids) {
     // get history data
     $SQL = "SELECT * FROM `change` WHERE id $sel_in";
 
-    $content = array();
+    $content = [];
     StoreTable2Content($content, $SQL, '', 'id');
 
-    $additional = DB_AA::select(array(), 'SELECT * FROM `change_record`', array(array('change_id', $zids->longids())));
+    $additional = DB_AA::select([], 'SELECT * FROM `change_record`', [['change_id', $zids->longids()]]);
     foreach ($additional as $chrec) {
-        $content[$chrec['change_id']][$chrec['selector']][$chrec['priority']] = array('value' => $chrec['value']);
+        $content[$chrec['change_id']][$chrec['selector']][$chrec['priority']] = ['value' => $chrec['value']];
     }
     return $content;
 }
@@ -219,23 +219,23 @@ $actions   = new AA_Manageractions;
 $actions->addAction(new AA_Manageraction_History_Apply('ApplyHistory'));
 
 
-$manager_settings = array(
+$manager_settings = [
      'module_id' => $slice_id,
      'show'      =>  MGR_ALL, //  & ~MGR_ACTIONS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
-     'searchbar' => array(
+     'searchbar' => [
          'fields'               => GetHistoryFields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
          'function'             => false,  // name of function for aditional action hooked on standard filter action
-         'default_sort'         =>  array( 0 => array('time' => 'd'))
-                         ),
-     'scroller'  => array(
+         'default_sort'         =>  [0 => ['time' => 'd']]
+     ],
+     'scroller'  => [
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
-                         ),
-     'itemview'  => array(
+     ],
+     'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-         'format'               => array(                           // optionaly to manager_vid you can set format array
+         'format'               => [                           // optionaly to manager_vid you can set format array
              'compact_top'      => '<table border=0 cellspacing=0 cellpadding=5>
                                       <tr class=tabtit"><th width="30"></th><th>Item</th><th>Item ID</th><th>User</th><th>Change time</th></tr>',
              'category_sort'    => false,
@@ -249,17 +249,18 @@ $manager_settings = array(
              ',
              'compact_remove'   => '',
              'compact_bottom'   => "</table>",
-             'id'               => $slice_id ),
+             'id'               => $slice_id
+         ],
          'fields'               => '',
          'aliases'              => GetHistoryAliases(),
          'get_content_funct'    => 'GetHistoryContent'
-                         ),
+     ],
      'actions'   => $actions,
-     'switches'  => array(),
-     'messages'  => array(
+     'switches'  => [],
+     'messages'  => [
          'title'       => _m('ActionApps - History Manager')
-                         )
-         );
+     ]
+];
 
 $manager = new AA_Manager('history'.$slice_id, $manager_settings);
 $manager->performActions();

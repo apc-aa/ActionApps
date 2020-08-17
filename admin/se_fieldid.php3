@@ -45,7 +45,7 @@ set_time_limit(600);
 
 //$debug = 1;
 
-$reserved_ids = array (
+$reserved_ids = [
   "disc_app........",
   "disc_count......",
   "display_count...",
@@ -58,14 +58,15 @@ $reserved_ids = array (
   "post_date.......",
   "publish_date....",
   "slice_id........",
-  "status_code.....");
+  "status_code....."
+];
 
-$maintain_fields = array (
-    "slice" => array (
+$maintain_fields = [
+    "slice" => [
             "primary" => "id",  // primary key
             "primary_type" => "text", // key type (text / number)
             "slice_id" => "id", // slice_id key
-            "fields" => array (     // fields to be changed
+            "fields" => [     // fields to be changed
                 "fulltext_format_top",
                 "fulltext_format",
                 "fulltext_format_bottom",
@@ -80,21 +81,25 @@ $maintain_fields = array (
                 "admin_format",
                 "admin_format_bottom",
                 "aditional",
-                "javascript")),
-    "field" => array (
+                "javascript"
+            ]
+    ],
+    "field" => [
             "primary_part" => "id", // the whole key is (id,slice_id)
             "primary_type" => "text",
             "slice_id" => "slice_id",
-            "fields" => array (
+            "fields" => [
                 "id",
                 "alias1_func",
                 "alias2_func",
-                "alias3_func")),
-    "view" => array (
+                "alias3_func"
+            ]
+    ],
+    "view" => [
             "primary" => "id",
             "primary_type" => "number",
             "slice_id" => "slice_id",
-            "fields" => array (
+            "fields" => [
                 "before",
                 "even",
                 "odd",
@@ -116,13 +121,17 @@ $maintain_fields = array (
                 "group_bottom",
                 "field1",
                 "field2",
-                "field3")));
+                "field3"
+            ]
+    ]
+];
 
 $xslice_id = xpack_id($slice_id);
 
-$maintain_sql = array (
+$maintain_sql = [
     "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id" ,
-    "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id");
+    "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id"
+];
 
 
 if ($cancel) {
@@ -135,7 +144,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$err = array();          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 /** ChangefieldID function
@@ -276,8 +285,10 @@ for ($i = 1; $i <= 9999; ++$i) {
     echo "<option>$i</option>";
 }
 echo "</select><br><br>";
-FrmTabSeparator(_m("Fields"), array("update" => array("type" => "hidden", "value" => "1"),
-    "update", "cancel" => array("url" => "se_fields.php3")), $slice_id);
+FrmTabSeparator(_m("Fields"), [
+    "update" => ["type" => "hidden", "value" => "1"],
+    "update", "cancel" => ["url" => "se_fields.php3"]
+], $slice_id);
 /*
     <input type=hidden name=\"update\" value=1>
     <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;

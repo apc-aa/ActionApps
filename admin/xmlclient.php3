@@ -195,25 +195,25 @@ if ($feed_id) {          // just one specified APC feed
 } else {                 // all RSS and APC and general feeds
     $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
     $aafeeds      = GetTable2Array('SELECT feed_id FROM external_feeds', 'NoCoLuMn', 'feed_id');
-    $generalfeeds = AA_Object::getNameArray('AA_Feed', array(AA_ID));
+    $generalfeeds = AA_Object::getNameArray('AA_Feed', [AA_ID]);
 
     // we put all the feeds into an array and then we shuffle it
     // that makes the feeding in random order, so broken feeds do not stale
     // whole feeding
-    $todo_feed = array();
+    $todo_feed = [];
     if ( is_array($rssfeeds) ) {
         foreach ( $rssfeeds as $v ) {
-            $todo_feed[] = array('type'=>'rss', 'id'=>$v);
+            $todo_feed[] = ['type'=>'rss', 'id'=>$v];
         }
     }
     if ( is_array($aafeeds) ) {
         foreach ( $aafeeds as $v ) {
-            $todo_feed[] = array('type'=>'aarss', 'id'=>$v);
+            $todo_feed[] = ['type'=>'aarss', 'id'=>$v];
         }
     }
     if ( is_array($generalfeeds) ) {
         foreach ( $generalfeeds as $id => $name ) {
-            $todo_feed[] = array('type'=>'general', 'id'=>$id);
+            $todo_feed[] = ['type'=>'general', 'id'=>$id];
         }
     }
 
