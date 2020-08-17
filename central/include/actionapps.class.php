@@ -402,14 +402,14 @@ class AA_Module_Definition_Chunk {
                 foreach ($keys[$table] as $col) {
                     $ident[] = $data[$col];
                 }
-                huhl($table, $col, $ident, $ident, $data, '--------------------');
+                //huhl($table, $col, $ident, $ident, $data, '--------------------');
 
                 if ($res = $metabase->doInsert($table, $data, 'nohalt')) {
                     $msgs['ok'][$table][] = $ident;
                 } else {
                     $msgs['err'][$table][] = $ident;
                 }
-                huhl($res, '--------------------');
+                //huhl($res, '--------------------');
 
             }
         }
