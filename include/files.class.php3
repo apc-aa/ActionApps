@@ -752,7 +752,7 @@ class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
      * @param $url
      * @param $info
      */
-    function __construct($url, &$info) {
+    function __construct($url, $info) {
         parent::__construct($url, $info);
         $this->setDefaultPort(443);
         $this->setDefaultHost('ssl://localhost');
@@ -844,7 +844,7 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper {
         if (!preg_match('/(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)/', $line, $matches)) {
             return false;
         }
-        list($tmp, $h1, $h2, $h3, $h4, $p1, $p2) = $matches;
+        list(, $h1, $h2, $h3, $h4, $p1, $p2) = $matches;
 
         $host = "$h1.$h2.$h3.$h4";
         $port = ($p1 << 8) + $p2;

@@ -129,8 +129,8 @@ if (! $admin_email) {
     $admin_email = $me["mail"];
 }
 /** caption function
- * @param $s
- * @return $s in <b> and spaces are replaced by "&nbsp;"
+ * @param string $s
+ * @return string - $s in <b> and spaces are replaced by "&nbsp;"
  */
 function caption($s) {
     return "<b>".str_replace (" ","&nbsp;",$s)."&nbsp;*</b>";

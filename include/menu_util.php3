@@ -171,7 +171,8 @@ function PrintModuleSelection() {
             if ( $mymodule['deleted'] ) {
                 $name = "&times;&times;&times; $name &times;&times;&times;";
             }
-            $modules[$order][$mymodule['unpackid']] = ($mymodule['deleted'] ? '&times;&times;&times; '.$mymodule['name']. ' &times;&times;&times;' : $mymodule['name']);
+           // $modules[$order][$mymodule['unpackid']] = ($mymodule['deleted'] ? '&times;&times;&times; '.$mymodule['name']. ' &times;&times;&times;' : $mymodule['name']);
+           $modules[$order][$mymodule['unpackid']] = $name;;
         }
 
         // count($modules) - count of module types
@@ -205,7 +206,7 @@ function PrintModuleSelection() {
             $options .= '<option value="new" selected>'. _m("New slice");
         }
 
-        $type = AA_Module::getModuleType(AA::$module_id);
+        //$type = AA_Module::getModuleType(AA::$module_id);
 
         $ret  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
         $ret .= '<select name=sel_module onChange="if (this.value != \'\') document.location=this.value">';

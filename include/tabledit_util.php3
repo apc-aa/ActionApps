@@ -577,7 +577,7 @@ function GetKeyFromRecord($primary, $columns, $record) {
  * @param $columns
  * @param $auto_increment ... include auto increment fields
  */
-function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true)
+function AddKeyValues($varset, $val, $primary, $columns, $auto_increment = true)
 {
     if (!is_array($primary)) {
         echo "error in AddKeyValues";

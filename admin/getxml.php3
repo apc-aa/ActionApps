@@ -18,8 +18,8 @@
  * along with this program (LICENSE); if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @version   $Id$
- * @author    Honza Malik <honza.malik@ecn.cz>
+ * @param $value
+ * @return array|string
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
@@ -36,6 +36,8 @@
  *    $start_timestamp     - a timestamp which indicates the creation time of the first item to be sent.
  *                           (www.w3.org/TR/NOTE-datetime format)
  *    $categories          - a list of local categories ids separated by space (can be empty)
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
  */
 
 // ----- input variables normalization - start --------------------------------
@@ -45,7 +47,16 @@
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
+/**
+ * @param $value
+ * @return array|string
+ */
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+
+/**
+ * @param $value
+ * @return array|string
+ */
 function StripslashesDeep($value) { return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value); }
 
 if ( get_magic_quotes_gpc() ) {
@@ -171,11 +182,12 @@ function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
 }
 
 /** GetXMLFields function
+ * modified vars $xml_fields_refs, $xml_fields
+ *
  * @param $slice_id
  * @param $slice_fields[]
  * @param $xml_fields_refs (by link)
  * @param $xml_fields (by link)
- * @return modified vars above
  */
 function GetXMLFields( $slice_id, $slice_fields, &$xml_fields_refs, &$xml_fields) {
     $xml_fields_refs.="\t<aa:fields><rdf:Bag>\n";
@@ -228,7 +240,7 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
  * @param $time
  * @return string - xml <channel>
  */
-function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs, $time) {
+function GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs, $xml_items_refs, $time) {
     $slice = AA_Slice::getModule($slice_id);
     return "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
                    "\t\t<title>".code($slice->getProperty('name'))."</title>\n".
@@ -294,7 +306,7 @@ function GetXMLFieldData($slice_id, $field_id, $content4id) {
  * @param $item_id
  * @param $content4id (by link)
  * @param $slice_fields (by link)
- * @return $xml_items
+ * @return string xml_items
  */
 function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     global $FORMATS, $MAP_DC2AA;
@@ -389,23 +401,27 @@ function GetXMLItem($slice_id, $item_id, $content4id, $slice_fields) {
     return $xml_items;
 }
 /** CreateXMLItems function
+ * prints a result of the GetXMLItem() function for all items
+ *
  * @param $slice_id
  * @param $items_ids (by link)
  * @param $content (by link)
  * @param $slice_fields (by link)
- * @return prints a result of the GetXMLItem() function for all items
+ *
  *
  */
-function CreateXMLItems($slice_id, &$items_ids, &$content, $slice_fields) {
+function CreateXMLItems($slice_id, $items_ids, $content, $slice_fields) {
     foreach ($items_ids as $id)  {
         echo GetXMLItem($slice_id, $id, $content[$id], $slice_fields);
     }
 }
+
 /** GetXMLItemsRefs function
- * @param $item_ids (by link)
- * @return string - prints <items> and <rdf> tags for each item
+ * prints <items> and <rdf> tags for each item
+ * @param string[] $items_ids
+ * @return string
  */
-function GetXMLItemsRefs(&$items_ids) {
+function GetXMLItemsRefs(array $items_ids): string {
     $out ="\t<items><rdf:Seq>\n";
     foreach ( $items_ids as $id) {
         $out .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."items/$id\"/>\n";

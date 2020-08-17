@@ -486,7 +486,7 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     // zarazeno v kategorii
     $out = "";
     if ( $links_zids->count() != 0 ) {
-        $itemview = new itemview($format_strings, '', GetLinkAliases(), $links_zids, 0, 100, '', '', 'Links_GetLinkContent' );
+        $itemview = new itemview($format_strings, GetLinkAliases(), $links_zids, 0, 100, '', '', 'Links_GetLinkContent');
         $out = $itemview->get_output("view");
     }
     return $out;

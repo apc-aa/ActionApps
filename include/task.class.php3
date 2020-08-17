@@ -128,7 +128,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Util\LaterInterface
      */
-    public function toexecutelater($params= []) {
+    public function toexecutelater($params= []): string {
         $ret = $this->task;
         AA::$slice_id = $this->getOwnerId();
         if (is_long_id($this->item_id)) {
@@ -149,7 +149,11 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
         return $ret;
     }
 
-    static function toexecuteSelector($id) {
+    /**
+     * @param string $id
+     * @return string
+     */
+    static function toexecuteSelector($id): string {
         return "Plannedtask_$id";
     }
 

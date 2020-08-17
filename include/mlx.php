@@ -227,7 +227,7 @@ class MLX {
     var $slice = 0;
     var $langSlice = 0;
 //public:
-    function __construct(&$slice) {
+    function __construct($slice) {
         $this->slice = $slice;
         $this->langSlice  = MLXSlice($this->slice);
         $this->ctrlFields = AA_Slice::getModule($this->langSlice)->fields('record');
@@ -249,7 +249,7 @@ class MLX {
      *   @param $mlxl        - language of current item
      *   @param $mlxid       - id of control item in MLX control slice
      */
-    function update(&$content4id, $cntitemid, $action, $mlxl, $mlxid) {
+    function update($content4id, $cntitemid, $action, $mlxl, $mlxid) {
 
         $content4mlxid    = [];
         $oldcontent4mlxid = [];
@@ -435,7 +435,7 @@ class MLX {
      * @param $content4mlxid
      * @return bool|string
      */
-    function getLangItem($lang, &$content4id, &$content4mlxid) {
+    function getLangItem($lang, $content4id, &$content4mlxid) {
         if (is_array($content4id)) {
             $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']);
         } else {
@@ -469,7 +469,7 @@ class MLX {
      * @param $params
      * @return string
      */
-    function getparamstring(&$params)
+    function getparamstring($params)
     {
         foreach($params as $k => $v) {
             $mlx_url .= "$k=";
@@ -579,7 +579,7 @@ class MLXView {
      * @param $nocache
      * @param $cachekeyextra
      */
-    function postQueryZIDs(&$zidsObj, $ctrlSliceID, $slice_id) {
+    function postQueryZIDs($zidsObj, $ctrlSliceID, $slice_id) {
         global $QueryIDsCount;
 
         if($this->mode != "MLX") {
@@ -819,7 +819,7 @@ class MLXEvents {
      * @param $item_ids
      * @param $slice_id
      */
-    function itemsBeforeDelete(&$item_ids,$slice_id) {
+    function itemsBeforeDelete($item_ids, $slice_id) {
 
         if (empty($item_ids)) {
             return;
@@ -925,9 +925,9 @@ class MLXGetText
     /** addslice function
      * @param $args
      */
-    function addslice(&$args) {
+    function addslice($args) {
         //xdebug_start_profiling();
-        list(,$slice2add,$lang,$domain,$mode) = $args;
+        [,$slice2add,$lang,$domain,$mode] = $args;
         $scda = [$domain];
         $this->setdomain($scda);
         if($this->currentDomainRef['slices'][$slice2add]) {
@@ -974,7 +974,7 @@ class MLXGetText
                 ."))";
             $db->query($sql);
         while( $db->next_record() ) {
-            list($item_id,$field_id,$text) = $db->Record;
+            [$item_id,$field_id,$text] = $db->Record;
             $item_id  = unpack_id($item_id);
             $refSlice = &$this->currentDomainRef[$lang];
             if($field_id == 'headline........') {
@@ -1011,7 +1011,7 @@ class MLXGetText
     /** setdomain function
      * @param $args
      */
-    function setdomain(&$args) {
+    function setdomain($args) {
         if( $args[1] ) { // make sure we stay in a domain
             $this->currentDomain = $args[1];
         }
@@ -1022,7 +1022,7 @@ class MLXGetText
      *  set the current language in case we are not in a view
      * @param $args
      */
-    function setlang(&$args) {
+    function setlang($args) {
         $this->currentLang = strtoupper($args[1]);
         if($GLOBALS['mlxdbg']) {
             huhl("MLX setting language to <b>".$this->currentLang."</b>");
@@ -1041,7 +1041,7 @@ class MLXGetText
      *  this could also be used for manually adding items
      * @param $args
      */
-    function addtext(&$args) {
+    function addtext($args) {
         __mlx_dbg($this->domains);
         __mlx_dbg($args,__function__);
         $old_varset = $GLOBALS['varset'];
@@ -1068,9 +1068,8 @@ class MLXGetText
 /** stringexpand_m function
  *
  */
-function stringexpand__m() { //the second _ is not pretty here, but is in {_:
+function stringexpand__m(...$arg_list) { //the second _ is not pretty here, but is in {_:
     global $errcheck;
-    $arg_list = func_get_args();
     if(!$GLOBALS['mlxGetText']) {
         if($errcheck) {
             huhl("mlxGetText not initialised");
@@ -1092,9 +1091,8 @@ function stringexpand__m() { //the second _ is not pretty here, but is in {_:
 /** stringexpand_mlx function
  *
  */
-function stringexpand_mlx() {
+function stringexpand_mlx(...$arg_list) {
     global $errcheck;
-    $arg_list = func_get_args();
     if(!$GLOBALS['mlxGetText']) {
         $GLOBALS['mlxGetText'] = new MLXGetText;
     }

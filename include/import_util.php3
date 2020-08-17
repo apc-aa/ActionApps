@@ -57,7 +57,7 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"') {
  * @param $addParams
  * @return array
  */
-function createFieldNames($fileName,&$addParams) {
+function createFieldNames($fileName, $addParams) {
     $handle = fopen($fileName,"r");
     $fn = getCSV($handle,$addParams['delimiter'],$addParams['enclosure']);
     fclose($handle);
@@ -277,7 +277,7 @@ class Action {
      * @param $fvalues
      * @return string
      */
-    function transform(&$itemContent, $from, &$globalParams, &$fvalues ) {
+    function transform($itemContent, $from, $globalParams, &$fvalues ) {
         switch ( $this->action) {
             case "store": {
                 $fvalues[]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?

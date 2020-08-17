@@ -320,7 +320,7 @@ function AddNotification($type, $class, $selector, $reaction, $params) {
  * @param $foo2
  * @return bool
  */
-function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $foo2 ) {
+function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $foo2 ) {
 
     $emails = GetNotifications($type, $slice_type, $item_id);
 
@@ -405,7 +405,7 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
  * @param             $foo2
  * @return bool
  */
-function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
+function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ) {
 
     $item_id = $itemContent->getItemID();
     AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );
@@ -445,7 +445,7 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
  * @param             $foo2
  * @return bool
  */
-function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
+function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ) {
     $item_id = $itemContent->getItemID();
     // Delete reader from Auth tables because if the username changes,
     // AA_Mysqlauth::updateReaders can not recognize it.
@@ -498,7 +498,7 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $fo
  * @param $new_status
  * @param $foo2
  */
-function Event_ItemsMoved( $type, $slice_id, $slice_type, &$item_ids, $new_status, $foo2 ) {
+function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status, $foo2 ) {
     AA_Mysqlauth::updateReaders( $item_ids, $slice_id );
     $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles( $slice_id );
 }
@@ -526,7 +526,7 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
  * @param $oldvalue
  * @param string $constant_id Unpacked ID of constant from the constant table.
  */
-function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
+function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id ) {
     AA_Mysqlauth::changeGroups($constant_id, $oldvalue, $newvalue);
     $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::constantsChanged( $constant_id, $oldvalue, $newvalue );
 }
@@ -799,7 +799,7 @@ function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret
  * @param $foo2
  * @return bool
  */
-function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ) {
     $short_id   = $ret_params->getValue('short_id........');              // item's short_id is in params
 
     if (!$ret_params->getValue('switch.........2')) {
@@ -830,7 +830,7 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
  * @param $foo2
  * @return bool
  */
-function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $ekis_id  = $ret_params->getValue('relation.......1');              // item's short_id is in params
 

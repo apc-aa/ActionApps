@@ -192,7 +192,7 @@ function SetCheckboxContent(&$content, $d_id, $cnt) {
  * @param $showimages
  * @param $imgtags
  */
-function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
+function SetImagesContent(&$content, $d_id, $images, $showimages, $imgtags) {
     if ($showimages) {
         foreach($images as $img) {
             $imgs.= $imgtags[$img];
@@ -230,7 +230,7 @@ function GetDiscussionAliases() {
  * @param $view_info
  * @return mixed
  */
-function GetDiscussionFormat(&$view_info) {
+function GetDiscussionFormat($view_info) {
     $VIEW_TYPES_INFO = getViewTypesInfo();
 
     $format['d_name']       = $view_info['name'];
@@ -263,7 +263,7 @@ function GetDiscussionFormat(&$view_info) {
  * @param $d_content
  * @return bool
  */
-function GetDiscussionTree(&$d_content) {
+function GetDiscussionTree($d_content) {
     if (!$d_content) {
         return false;
     }
@@ -342,7 +342,7 @@ function DeleteTree(&$tree, $d_id) {
  * @param $d_id
  * @return bool|int|string
  */
-function GetParent(&$tree, $d_id) {
+function GetParent($tree, $d_id) {
     if (!$tree) {
         return false;
     }
@@ -362,7 +362,7 @@ function GetParent(&$tree, $d_id) {
  * @param $d_content
  * @param $d_id
  */
-function DeleteNode(&$tree, &$d_content, $d_id) {
+function DeleteNode($tree, $d_content, $d_id) {
     DB_AA::delete('discussion', [['id', $d_id, 'l']]);
     if (!$tree[$d_id]) {
         return;
@@ -454,7 +454,7 @@ function send2mailList($d_item_id, $new_id) {
                  AND field.name = 'DiscussionMailList'");
     if ($db->next_record()) {
         $item_params = split_escaped(":", $db->f("text"), "#:");
-        list($vid, $maillist) = $item_params;
+        [$vid, $maillist] = $item_params;
         // Don't do this if there is a field, but no vid in it
         if ($vid) {
             // get discussion item content

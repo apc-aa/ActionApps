@@ -67,15 +67,14 @@ if ( $group_id ) {
 }
 
 /** ShowConstant function
- * @param $id
- * @param $name
- * @param $value
- * @param $cid
- * @param $pri
- * @return
- *
+ * @param      $id
+ * @param      $name
+ * @param      $value
+ * @param      $cid
+ * @param      $pri
+ * @param null|array $using_slices_arr
  */
-function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
+function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=null) {
     $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
 
     $count = '';

@@ -67,7 +67,7 @@ class mgettext_writer_php extends mgettext_writer {
     }
 
     /** Write language constructs */
-    function write_pair(&$pair) {
+    function write_pair($pair) {
         $text = "";
         if ($pair['comments']) {
             foreach ( $pair['comments'] as $comment ) {
@@ -124,7 +124,7 @@ class mgettext_writer_po extends mgettext_writer {
     }
 
     /** Write language constructs */
-    function write_pair(&$pair) {
+    function write_pair($pair) {
         $text = "";
         if ($pair['comments']) {
             foreach ( $pair['comments'] as $comment ) {

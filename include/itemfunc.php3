@@ -852,7 +852,7 @@ class AA_Field_Writer {
  * @param $profile
  * @return bool
  */
-function IsEditable($fieldcontent, $field, &$profile) {
+function IsEditable($fieldcontent, $field, $profile) {
     return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
         AND $field["input_show"]
         AND !$profile->getProperty('hide',$field['id'])

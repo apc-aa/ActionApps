@@ -433,13 +433,13 @@ function now($step=false) {
 
 /** debug function
  *  variable count of variables
+ * @param mixed ...$messages
  */
-function debug() {
+function debug(...$messages) {
     // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
     if ( $_COOKIE['aa_debug'] != 1 ) {
         return;
     }
-    $messages = func_get_args();
     foreach ( $messages as $msg ) {
         AA::$dbg->log($msg);
     }
@@ -460,10 +460,10 @@ function warn($msg) {
  * Use to catch cases in the code which shouldn't exist, but are handled anyway.
  * @param $var1, ...
  */
-function huhe() {
+function huhe(...$arg_list) {
     global $errcheck;
     if ($errcheck) {
-        call_user_func_array('huhl', func_get_args());
+        call_user_func_array('huhl', $arg_list);
     }
 }
 
@@ -479,8 +479,7 @@ function timestartdiff() {
 /** huhl function
  * Debug function to print debug messages recursively - handles arrays
  */
-function huhl() {
-    $vars = func_get_args();
+function huhl(...$vars) {
     foreach ($vars as $var) {
         AA::$dbg->log($var);
     }
@@ -974,7 +973,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
  * @param $column
  * @return array
  */
-function GrabConstantColumn(&$db, $column) {
+function GrabConstantColumn($db, $column) {
     switch ($column) {
         case "name":        return ["value"=> $db->f("name")];
         case "value":       return ["value"=> $db->f("value"), "flag" => FLAG_HTML];

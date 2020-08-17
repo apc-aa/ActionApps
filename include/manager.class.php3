@@ -150,15 +150,7 @@ class AA_Manager extends AA_Storable {
         // modify $format_strings and $aliases (passed by reference)
         $this->setDesign($format_strings, $aliases, $manager_vid);
 
-        $this->itemview = new itemview( $format_strings,
-                                        '',
-                                        $aliases,
-                                        false,   // no item ids yet
-                                        0,       // first item
-                                        $this->scroller->getListlen(),
-                                        '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
-                                        '',      // no discussion settings
-                                        $settings['itemview']['get_content_funct']);
+        $this->itemview = new itemview($format_strings, $aliases, false, 0, $this->scroller->getListlen(), '', '', $settings['itemview']['get_content_funct']);
 
         // r_state array holds all configuration of Manager
         // the configuration then could be Bookmarked

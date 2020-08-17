@@ -441,7 +441,7 @@ class htmlMimeMail {
 /**
 * Adds a text subpart to a mime_part object
 */
-    function &_addTextPart(&$obj, $text)
+    function &_addTextPart($obj, $text)
     {
         $params['content_type'] = 'text/plain';
         $params['encoding']     = $this->build_params['text_encoding'];
@@ -458,7 +458,7 @@ class htmlMimeMail {
 /**
 * Adds a html subpart to a mime_part object
 */
-    function &_addHtmlPart(&$obj)
+    function &_addHtmlPart($obj)
     {
         $params['content_type'] = 'text/html';
         $params['encoding']     = $this->build_params['html_encoding'];
@@ -486,7 +486,7 @@ class htmlMimeMail {
 /**
 * Adds an alternative part to a mime_part object
 */
-    function &_addAlternativePart(&$obj)
+    function &_addAlternativePart($obj)
     {
         $params['content_type'] = 'multipart/alternative';
         if (is_object($obj)) {
@@ -501,7 +501,7 @@ class htmlMimeMail {
 /**
 * Adds a html subpart to a mime_part object
 */
-    function &_addRelatedPart(&$obj)
+    function &_addRelatedPart($obj)
     {
         $params['content_type'] = 'multipart/related';
         if (is_object($obj)) {
@@ -516,7 +516,7 @@ class htmlMimeMail {
 /**
 * Adds an html image subpart to a mime_part object
 */
-    function _addHtmlImagePart(&$obj, $value)
+    function _addHtmlImagePart($obj, $value)
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = 'base64';
@@ -529,7 +529,7 @@ class htmlMimeMail {
 /**
 * Adds an attachment subpart to a mime_part object
 */
-    function _addAttachmentPart(&$obj, $value)
+    function _addAttachmentPart($obj, $value)
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = $value['encoding'];

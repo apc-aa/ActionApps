@@ -21,7 +21,7 @@ https://www.apc.org/
 
 /** Removes empty positions and normalizes keys to be from 0 to x with step of 1
 */
-function normalize_arr(&$arr) {
+function normalize_arr($arr) {
     $ret = false;
     if ( isset($arr) AND is_array($arr) ) {
         foreach ($arr as $v) {
@@ -106,12 +106,12 @@ class spot {
         $this->f  = $flag;
     }
 
-    function addInSequence(&$spot) {
+    function addInSequence($spot) {
         $this->po[] = $spot->Id();
         $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
-    function addChoice(&$spot) {
+    function addChoice($spot) {
         $this->ch[] = $spot->Id();
         $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
@@ -240,7 +240,7 @@ class spot {
     function set_translated($what, $value) { $this->$what = $value; }
     function set($what,$value)             { $this->set_translated($GLOBALS['SPOT_VAR_NAMES'][$what], $value); }
 
-    function conditionMatches(&$state) {
+    function conditionMatches($state) {
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
                 $value = ($var[0]=='{') ? AA::Stringexpander()->unalias($var, '', $state['item']) : $state[$var];

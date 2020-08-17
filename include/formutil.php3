@@ -892,7 +892,7 @@ class AA_Inputfield {
                 // //                      get_if($this->param[2],'class')); // type
                 //            $GLOBALS['list_fnc_edt'][] = $this->varname();
                 //            break;
-                case 'sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
+                case 'sel': [,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
                             }
@@ -913,7 +913,7 @@ class AA_Inputfield {
                 //            $this->varname_modify('[]');         // use slightly modified varname
                 //            $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
                 //            break;
-                case 'mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
+                case 'mse': [,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
                             }
@@ -922,20 +922,20 @@ class AA_Inputfield {
                             $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
                             $this->inputMultiSelect($rows);
                             break;
-                case 'fil': list($accepts, $text, $hlp) = $this->param;
+                case 'fil': [$accepts, $text, $hlp] = $this->param;
                             $this->inputFile($accepts, $text, $hlp);
                             break;
                 case 'dte': if ( strstr($this->param[0], "'")) {     // old format
                                 $this->param = explode("'",$this->param[0]);
                             }
-                            list($y_range_minus, $y_range_plus, $from_now, $display_type) = $this->param;
+                            [$y_range_minus, $y_range_plus, $from_now, $display_type] = $this->param;
                             if ($display_type == 2) {
                                 $this->inputWidget($item, $slice_id);  // new form of input type
                             } else {
                                 $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_type);
                             }
                             break;
-                case 'pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param) = $this->param;
+                case 'pre': [, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
                             // add2constant is used in insert_fnc_qte - adds new value to constant table
                             if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
                             $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
@@ -944,7 +944,7 @@ class AA_Inputfield {
                 case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
                                                      get_if($this->param[2],60));  // cols
                             break;
-                case 'iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field) = $this->param;
+                case 'iso': [, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field] = $this->param;
                             $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                             $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
                             $tagprefix = ( isset($GLOBALS['TPS'][$tp])              ? $GLOBALS['TPS'][$tp] :
@@ -958,11 +958,11 @@ class AA_Inputfield {
                             //$sid = (substr($this->param[0],0,7) == "#sLiCe-") ? substr($this->param[0], 7) : '';
                             $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field);
                             break;
-                case 'hco': list($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
+                case 'hco': [$constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames] = $this->param;
                             $this->varname_modify('[]');         // use slightly modified varname
                             $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                             break;
-                case 'wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd) = $this->param;
+                case 'wi2': [$constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd] = $this->param;
                             if ( !is_null($item) ) {
                                 $conds_str = $item->unalias($conds_str);
                             }
@@ -970,11 +970,11 @@ class AA_Inputfield {
                             $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
                             break;
                 case 'pwd':  // handled in passwordModify
-                            list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
+                            [$fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help] = $this->param;
                             $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
                             break;
                             //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
-                case 'lup': list($url) = $this->param;
+                case 'lup': [$url] = $this->param;
                             $this->inputLocalURLPick($url);
                             break;
                             //END// Local URL Picker | Omar/Jaime | 11-06-2005
@@ -1180,7 +1180,7 @@ class AA_Inputfield {
      * @param string $labeladd
      * @return string
      */
-    function getRadioButtonTag(&$k, &$v, $add='', $labeladd='') {
+    function getRadioButtonTag($k, $v, $add='', $labeladd='') {
         $name  = $this->varname();
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
         $ret   = "<label $labeladd><input type=radio name='$name' value='". myspecialchars($k) ."' $add $triggers";
@@ -1216,7 +1216,7 @@ class AA_Inputfield {
      * @param $colspan
      */
     function inputChBox($changeorder=false, $colspan=1){
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
 
         $this->field_tr();
         if ( !$changeorder ) {
@@ -1240,7 +1240,7 @@ class AA_Inputfield {
      * @param $display_time
      */
     function dateSelect($y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false) {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
 
         $datectrl = new datectrl($this->varname(), $y_range_minus, $y_range_plus, $from_now, $display_time, $this->required);
         $datectrl->setdate_int($val);
@@ -1268,7 +1268,7 @@ class AA_Inputfield {
      * @param string $pattern
      */
     function inputText($maxsize=255, $size=25, $type="text", $placeholder='', $pattern='') {
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
 
         $attrs = ['type'=>'text'];
         if (is_object($validator = AA_Validate::factoryByString($this->valid))) {
@@ -1358,7 +1358,7 @@ class AA_Inputfield {
     * @param $type
     */
     function staticText($safing=true, $type='first') {
-        list($name,$val,$add) = $this->prepareVars($type);
+        [$name,$val,$add] = $this->prepareVars($type);
         if ( $safing ) $val   = myspecialchars($val);
         $this->field_name('plus');
         $this->echovar( $val );
@@ -1371,7 +1371,7 @@ class AA_Inputfield {
     * @param $safing
     */
     function hidden($safing=true) {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
         if ( $safing ) {
             $val=myspecialchars($val);
         }
@@ -1395,7 +1395,7 @@ class AA_Inputfield {
     function textarea($rows = 4, $cols = 60, $single = false, $showrich_href = true, $showhtmlarea = false, $maxlength = 0)
     {
 
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
         // make the textarea bigger, if already filled with long text
 
         $maxlen   = ($maxlength = (int)$maxlength) ? " maxlength=$maxlength" : '';
@@ -1476,7 +1476,7 @@ class AA_Inputfield {
      * @param bool $move_right
      */
     function inputRadio($ncols=0, $move_right=true) {
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
         $records = [];
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getRadioButtonTag($k, $v, $add);
@@ -1535,7 +1535,7 @@ class AA_Inputfield {
      * @param $do_not_select
      * @return string
      */
-    function get_options( &$arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
+    function get_options( $arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
         $selectedused  = false;
         $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
@@ -1597,7 +1597,7 @@ class AA_Inputfield {
      * @param $rows
      */
     function inputMultiSelect($rows=6) {
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
@@ -1638,7 +1638,7 @@ class AA_Inputfield {
      * @param string $slice_field
      */
     function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="", $slice_field='') {
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
         $actions              = get_if($actions, 'DR');
         $actions              = str_replace(['0','1'], ['DR','MDR'],(string)$actions);
@@ -1808,7 +1808,7 @@ class AA_Inputfield {
     function hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $levelNames="") {
         static $hcid = 0;
         $hcid++;   // this is hc identifier
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
         $levelCount           = get_if( $levelCount, 3 );
         $rows                 = get_if( $rows      , 5 );
 
@@ -1827,7 +1827,7 @@ class AA_Inputfield {
         $aa_onchange_exist = strstr($triggers,'aa_onChange(');
         $delete_button_trigger = "";
         if( $aa_onchange_exist ){
-            list($aux1,$fieldid,$aux2) = explode("'",$aa_onchange_exist,3);
+            [,$fieldid,] = explode("'",$aa_onchange_exist,3);
             $delete_button_trigger = 'aa_onChange("'.$fieldid.'"); ';
         }
 
@@ -1863,7 +1863,7 @@ class AA_Inputfield {
     * @param $usevalue
     */
     function inputSelect($usevalue=false) {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("select", $name, "") : '';
 
@@ -1913,7 +1913,7 @@ class AA_Inputfield {
     * @param $hlp
     */
     function inputFile($accepts="*/*", $text="", $hlp="") {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
         if ( !$accepts ) {
             $accepts = '*/*';
         }
@@ -1944,7 +1944,7 @@ class AA_Inputfield {
     * @param $usevalue
     */
     function inputPreSelect($maxsize=254, $size=25, $adding=0, $secondfield="", $usevalue=false) {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
 
         $val=safe($val);
@@ -1976,7 +1976,7 @@ class AA_Inputfield {
      * @param $cols
      */
     function textareaPreSelect($rows=4, $cols=60) {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
         $this->fill_const_arr();
         $val=safe($val);
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
@@ -2004,7 +2004,7 @@ class AA_Inputfield {
      * @param bool   $add_slice_pwd
      */
     function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
-        list($name,$val,$add) = $this->prepareVars('multi');
+        [$name,$val,$add] = $this->prepareVars('multi');
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
@@ -2085,7 +2085,7 @@ class AA_Inputfield {
      * @param $retype_pwd_help
      */
     function passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) {
-        list($name,$val,$add) = $this->prepareVars();
+        [$name,$val,$add] = $this->prepareVars();
         $change_pwd_label = get_if($change_pwd_label, _m("Change Password"));
         $retype_pwd_label = get_if($retype_pwd_label, _m("Retype Password"));
         $delete_pwd_label = get_if($delete_pwd_label, _m("Delete Password"));
@@ -2130,7 +2130,7 @@ class AA_Inputfield {
      * @param $url
      */
     function inputLocalURLPick($url) {
-        list($name,$val) = $this->prepareVars();
+        [$name,$val] = $this->prepareVars();
         $this->field_name('plus');
         $triggers  = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
         $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".myspecialchars($val)."\" $triggers>";
@@ -2623,9 +2623,8 @@ function FrmTabCaption($caption = '', $buttons = '') {
  * @param        $subtitle
  * @param string $buttons
  * @param string $valign
- * @param bool   $no_hidden - prints all $buttons except the hidden fields
  */
-function FrmTabSeparator($subtitle, $buttons = '', $valign = 'middle', $no_hidden = false) {
+function FrmTabSeparator($subtitle, $buttons = '', $valign = 'middle') {
     echo '</table>';
     if ($buttons) {
         echo getTabStart();
@@ -3071,7 +3070,7 @@ function FrmItemGroupSelect( &$items, $searchbar, $list_type, $messages, $additi
  * @param AA_Searchbar $searchbar
  * @return zids
  */
-function getZidsFromGroupSelect($group, &$items, &$searchbar) {
+function getZidsFromGroupSelect($group, &$items, $searchbar) {
     global $slice_id;
     if ( (string)$group == 'sel_item' ) {  // user specified users
         $zids = with(new zids())->setFromItemArr($items);
@@ -3103,10 +3102,10 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
  *  Lists selected items to special form - used by manager.min.js to show items
  * @param $items
  */
-function FrmItemListForm(&$items) {
+function FrmItemListForm($items) {
     $out = '<form name="itform" method="post">';
     if (is_array($items)) {
-        foreach ($items as $key=>$it) {
+        foreach ($items as $key=> $it) {
             $out .= '<input type="hidden" name="items['.$key.']" value="">';
         }
     }
@@ -3136,13 +3135,12 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
 
 /** PrintAliasHelp function
  *  Prints alias names as help for fulltext and compact format page
- * @param $aliases
- * @param bool $fields
- * @param bool $endtable
+ * @param        $aliases
+ * @param bool   $fields
+ * @param bool   $endtable
  * @param string $buttons
- * @param string $slice_id
  */
- function PrintAliasHelp($aliases, $fields = false, $endtable = true, $buttons = '', $slice_id = '') {
+ function PrintAliasHelp($aliases, $fields = false, $endtable = true, $buttons = '') {
      FrmTabSeparator(_m("Use these aliases for database fields"), $buttons);
 
      if (is_array($aliases)) {

@@ -33,7 +33,7 @@ require_once AA_BASE_PATH."modules/alerts/alerts_sending.php3";
 /** Sends welcome e-mail to newly subscribed readers, which means new
 *   "items" appearing in a Reader Management Slice.
 */
-function AlertsSendWelcome( $slice_id, &$itemContent ) {
+function AlertsSendWelcome( $slice_id, $itemContent ) {
     $mydb = getDB();
 
     $mydb->query("SELECT alerts_collection.id, slice_url, emailid_welcome

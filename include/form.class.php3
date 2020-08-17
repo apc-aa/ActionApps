@@ -190,7 +190,7 @@ class FormrowWidget extends Widget {
         $base_name   = FormArray::getName4Form($aa_property->getId(), $content);
         $input_name  = $base_name ."[]";
         $base_id     = FormArray::formName2Id($base_name);
-        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        // $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $ser_values   = $content->getValuesArray($aa_property->getId());
         $arr          = [];
@@ -393,7 +393,7 @@ class AA_Form extends AA_Object {
         // we expect just one form - no need to loop through contents
         $content    = $grabber->getContent();
         // while ($content = $grabber->getContent())
-        $store_mode = $grabber->getStoreMode();        // add | update | insert
+        // $store_mode = $grabber->getStoreMode();        // add | update | insert
         $grabber->finish();    // maybe some finalization in grabber
 
         // specific part for form

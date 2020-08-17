@@ -232,7 +232,7 @@ class AA_Condition extends AA_Object {
      * @param $itemcontent
      * @return bool
      */
-    function matches(&$itemcontent) {
+    function matches($itemcontent) {
         foreach ($this->fields as $field) {
             foreach ((array)$itemcontent->getValues($field) as $val) {
                 if ( $this->_compare($val['value']) ) {

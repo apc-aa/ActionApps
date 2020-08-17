@@ -306,7 +306,7 @@ class AA_Csv_Importer {
 
         $slice = AA_Slice::getModule($this->slice_id);
 
-        list($slice_fields, $prifields) =  $slice->fields();
+        [$slice_fields, $prifields] =  $slice->fields();
 
         foreach ( $prifields as $v ) {
             if ($v != "slice_id........") {
@@ -378,7 +378,7 @@ class AA_Csv_Importer {
                    echo "</tr>\n";
                }
                FrmTabSeparator(_m("Import options"));
-               ?>
+        ?>
 
                <tr><td class="tabtxt" colspan="2">Setting item id:</td><tr>
 

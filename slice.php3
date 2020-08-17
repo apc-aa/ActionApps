@@ -362,7 +362,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
     }
 
     if (!isset($hideFulltext)) {
-        $itemview = new itemview($slice_info, '', $aliases, $zid, 0, 1, MyUrl($encap, $scr_url));
+        $itemview = new itemview($slice_info, $aliases, $zid, 0, 1, MyUrl($encap, $scr_url));
         echo $itemview->get_output_cached("fulltext");
     }
 
@@ -389,7 +389,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format  = GetDiscussionFormat($view_info);
             $format['id'] = q_pack_id($slice_id);                  // set slice_id because of caching
 
-            $itemview = new itemview($format, '', $aliases, null,"", "", MyUrl($encap, $scr_url), $disc);
+            $itemview = new itemview($format, $aliases, null, "", "", MyUrl($encap, $scr_url), $disc);
             echo $itemview->get_output("discussion");
             // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice
@@ -408,7 +408,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
         $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
     $zids     = new zids($ids,"l");
-    $itemview = new itemview($slice_info, '', $aliases, $zids, 0,$zids->count(), MyUrl($encap, $scr_url));
+    $itemview = new itemview($slice_info, $aliases, $zids, 0, $zids->count(), MyUrl($encap, $scr_url));
     ExitPage($itemview->get_output_cached("itemlist"));
 }
 
@@ -585,9 +585,7 @@ if ( !$srch AND !$encap AND !$easy_query ) {
 
 if ($zids->count() > 0) {
 
-    $itemview = new itemview($slice_info, '', $aliases, $zids, $scr->metapage * ($scr->current - 1),
-                             ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
-                             MyUrl($encap, $scr_url) );
+    $itemview = new itemview($slice_info, $aliases, $zids, $scr->metapage * ($scr->current - 1), ($group_n ? -$group_n : $scr->metapage), MyUrl($encap, $scr_url));
 
     echo $itemview->get_output_cached("view");
 

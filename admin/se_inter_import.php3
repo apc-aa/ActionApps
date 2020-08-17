@@ -91,7 +91,13 @@ $form_buttons = [
 ];
   FrmTabCaption(_m("Existing remote imports into the slice") . " <b>" . AA_Slice::getModuleName($slice_id) . "</b>");
   FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));
-  FrmTabSeparator(_m("All remote nodes"), ["delete" => ['value' => _m("Delete"), 'type' => 'button', 'add' => 'onClick="Delete()"']]);
+  FrmTabSeparator(_m("All remote nodes"), [
+      "delete" => [
+          'value' => _m("Delete"),
+          'type'  => 'button',
+          'add'   => 'onClick="Delete()"'
+      ]
+  ]);
   FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, false, true);
   FrmTabEnd($form_buttons);
 ?>

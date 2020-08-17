@@ -132,7 +132,7 @@ if ( $slice_id!="" ) {  // set variables from database - allways
     }
 }
 
-$headcode = <<<'EOT'
+$headcode = <<<'JS'
 <script>
     function Defaults() {
       document.f.group_by.selectIndex = -1;
@@ -155,7 +155,7 @@ $headcode = <<<'EOT'
       [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), function(e) { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
     }
 </script>
-EOT;
+JS;
 
 
 $script2run = ' 
@@ -235,7 +235,7 @@ FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, fal
            .'<br>'.AA_View::getViewJumpLinks($category_bottom), '', 1);
 
 $slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $slice_id);
+PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons);
 
 FrmTabEnd();
 

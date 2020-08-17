@@ -102,7 +102,7 @@ if ( $r_state['link_id'] ) {
 
 // lookup - all categories names
 $tmp_translate = DB_AA::select(['id'=>'name'], 'SELECT id, name FROM `links_categories`', [['deleted', 'n']]);
-array_walk($tmp_translate, function(&$val) { return myspecialchars($val); });
+$tmp_translate = array_map('myspecialchars', $tmp_translate);
 
 // This link specific data -----------------------------------------------------
 
@@ -529,7 +529,11 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
 
 
        FrmTabSeparator(_m('Regions and languages') .
-           getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk"), ["before" => "(", "text" => "?", "after" => ")"]));
+           getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk"), [
+               "before" => "(",
+               "text"   => "?",
+               "after"  => ")"
+           ]));
    echo '
       <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>

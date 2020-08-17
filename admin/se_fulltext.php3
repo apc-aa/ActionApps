@@ -191,7 +191,7 @@ if ($discus_vids) {
 };
 
 $slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons, $slice_id);
+PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons);
 
 FrmTabEnd();
 

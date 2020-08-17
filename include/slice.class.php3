@@ -299,14 +299,9 @@ class AA_Module {
 
         $user_id =  $auth->auth["uid"];
 
-        $ret = [];
-        foreach($all_modules as $mid => $mname) {
-            if (CheckPerms( $user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS)) {
-                $ret[$mid] = $mname;
-            }
-        }
-
-        return $ret;
+        return array_filter($all_modules, function ($mid) use ($user_id) {
+            return CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS);
+        }, ARRAY_FILTER_USE_KEY);
     }
 
     /**

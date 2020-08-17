@@ -192,8 +192,7 @@ class AA_Debug {
     function warn()     {$v=func_get_args(); $this->tracepoint('warn',    $v[0]); $this->_do('warn',    $v); return true;}
     function error()    {$v=func_get_args(); $this->tracepoint('error',   $v[0]); $this->_do('error',   $v); return true;}
 
-    function group()    {
-        $v     = func_get_args();
+    function group(...$v)    {
         $group = array_shift($v);
         $this->_starttime[$group] = microtime(true);
         $this->_groupstart($group);
@@ -201,8 +200,7 @@ class AA_Debug {
         return true;
     }
 
-    function groupend() {
-        $v     = func_get_args();
+    function groupend(...$v) {
         $group = array_shift($v);
         $this->_do('log', $v);
         $this->_logtime($group);

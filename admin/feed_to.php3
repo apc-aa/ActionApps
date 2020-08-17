@@ -32,7 +32,7 @@ require_once AA_INC_PATH."formutil.php3";
  * @param $sname
  * @param $sid
  * @param $odd
- * @return prints a row of HTML radios
+ * @return void
  */
 function PrintExportRow( $sname, $sid, $odd) {
     global $auth;

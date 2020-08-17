@@ -65,18 +65,17 @@ class itemview {
                            // - filed by parameter() method
   private $_content;       // stores item contents to be used for display
 
-  /** itemview function
-   * @param $slice_info
-   * @param $fields   // not used
-   * @param $aliases
-   * @param $zids
-   * @param $from
-   * @param $number
-   * @param $clean_url
-   * @param $disc
-   * @param $get_content_funct
-   */
-  function __construct( $slice_info, $not_used_fields, $aliases, $zids, $from, $number, $clean_url, $disc="", $get_content_funct='GetItemContent') {
+    /** itemview function
+     * @param        $slice_info
+     * @param        $aliases
+     * @param        $zids
+     * @param        $from
+     * @param        $number
+     * @param        $clean_url
+     * @param string $disc
+     * @param string $get_content_funct
+     */
+  function __construct($slice_info, $aliases, $zids, $from, $number, $clean_url, $disc = "", $get_content_funct = 'GetItemContent') {
 
       $this->slice_info = $slice_info;  // $slice_info is array with this fields:
                                       //      - print_view() function:
@@ -306,7 +305,7 @@ class itemview {
       $out.= "</form>";
 
       // create a javascript code for getting selected ids and sending them to a script
-      list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
+      [$script_loc,] = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
 
     $out .= "
       <script>
@@ -486,7 +485,7 @@ class itemview {
         }
         $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
-      list( $random, $rweight ) = explode( ":", $this->from_record);
+      [ $random, $rweight ] = explode( ":", $this->from_record);
       if ( !$rweight ) {
         $foo_ids = [];
         // not weighted, we can select random id(s)

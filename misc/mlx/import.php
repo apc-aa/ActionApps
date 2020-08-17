@@ -90,7 +90,7 @@ class MLXImport {
     ///@param $data (array) data to import, see test below for structure
     ///TODO support for $action='update'
     ///TODO support for $action='replace' and unique fields
-    function import(&$data,$action = 'insert') {
+    function import($data, $action = 'insert') {
         $defaults["display_count..."][0]['value'] = 0;
         $defaults["status_code....."][0]['value'] = 1;
         $defaults["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
@@ -150,7 +150,7 @@ class MLXImport {
     function forget_added() {
         unset($this->added);
     }
-    function find(&$content) { // in "content" format
+    function find($content) { // in "content" format
         foreach($content as $field=>$arVal) {
             $conds[$field] = $arVal[0]['value'];
         }

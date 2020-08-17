@@ -439,7 +439,7 @@ class AA_Searchbar extends AA_Storable {
     /** setFromProfile function
      * @param AA_Profile $profile
      */
-    function setFromProfile(&$profile) {
+    function setFromProfile($profile) {
         // admin_order is in 'publish_date....+' format
         $set        = new AA_Set;
         $orderstrings = $profile->get('admin_order', '*');

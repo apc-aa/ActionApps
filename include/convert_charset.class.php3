@@ -579,10 +579,8 @@ class ConvertCharset {
         /**
          * This is second case. We are encoding from multibyte char string.
          **/
-        elseif($FromCharset == "utf-8") {
+        elseif ($FromCharset == "utf-8") {
 
-            $HexChar = "";
-            $UnicodeHexChar = "";
             $CharsetTable = $this->MakeConvertTable($ToCharset);
             foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar) {
 

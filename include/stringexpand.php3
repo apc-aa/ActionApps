@@ -192,8 +192,7 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercache {
     /**
      * @return string|void
      */
-    function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         if (AA::$encoding AND (AA::$encoding != 'utf-8')) {
             $arg_list = ConvertEncodingDeep($arg_list, AA::$encoding, 'utf-8');
         }
@@ -246,8 +245,7 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
     /** expand function
      * @params string - first parameter is filename, second is hints on where to find it
      */
-    function expand() {
-        $twos      = func_get_args();   // must be asssigned to the variable
+    function expand(...$twos) {
         $condition = array_shift($twos);
         $i         = 0;
         $twoscount = count($twos);
@@ -375,10 +373,10 @@ class AA_Stringexpand_Internal extends AA_Stringexpand_Nevercache {
     }
 
     /** expand function
-     * @param $text
+     * @param string $class_name
      * @return mixed|string
      */
-    function expand($class_name='',$info='') {
+    function expand($class_name='') {
         //$params = func_get_args();
         $item = $this ? $this->item : null;
         if (!is_object($item) OR !is_a($item, 'AA_Item') OR !class_exists($class_name, false) OR !method_exists($class_name, 'internal_expand')) {
@@ -431,8 +429,7 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
     /** expand function
      *
      */
-    function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         // replace inputform field
         // destroy all aliases, since the content of the variables could contain
         // aliases, but we don't want to unalias them. The _AA_ReMoVe_ string
@@ -508,7 +505,7 @@ class AA_Stringexpand_Formbreak extends AA_Stringexpand {
     /** expand function
      *
      */
-    function expand($part_names='') {
+    function expand(...$part_names) {
         $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
 
         if (empty($GLOBALS['g_formpart_pos'])) {
@@ -517,7 +514,6 @@ class AA_Stringexpand_Formbreak extends AA_Stringexpand {
 
         // You can specify also the names for next tabs (separated by ':'), which is
         // usefull mainly for last tab (for which you do not have formbrake, of course
-        $part_names = func_get_args();
         $i = 0;
         foreach ($part_names as $name) {  // remember part name
             // the formparts are numbered backward
@@ -3814,8 +3810,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return mixed
      */
-    function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         $etalon   = trim(array_shift($arg_list));
         $ret      = false;
         $i        = 0;
@@ -3856,8 +3851,7 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
      * @param $else_text
      * @return mixed
      */
-    function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         $etalon   = (float)str_replace(',', '.', trim(array_shift($arg_list)));
         switch (array_shift($arg_list)) {
             case '=' :
@@ -4053,8 +4047,7 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
      * @param $strings ...
      * @return string
      */
-    function expand() {
-        $arg_list  = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         $delimiter = array_shift($arg_list);
         $ret       = array_filter($arg_list, function($str) {return strlen(trim($str))>0;});
         return ($delimiter=='json') ? json_encode($ret) : join($delimiter, $ret);
@@ -4538,8 +4531,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
      * @param ...
      * @return string
      */
-    function expand() {
-        $arg_list              = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         if (!is_long_id($template_long_item_id = array_shift($arg_list))) {
             return '';
         }
@@ -4629,8 +4621,7 @@ class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
      * @param ...
      * @return string
      */
-    function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         $zid      = new zids(array_shift($arg_list), 'l');
 
         if ( !is_object($item = AA_Items::getItem($zid)) ) { warn(_m('No item ID')); return ''; }
@@ -7192,8 +7183,9 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Qss extends AA_Stringexpand_Qs {
 
-    function expand($variable_name='', $delimiter=null) {
-        return myspecialchars(call_user_func_array('parent::' . __FUNCTION__, func_get_args()),false);
+    //  expand($variable_name='', $delimiter=null) {
+    function expand(...$arg_list) {
+        return myspecialchars(call_user_func_array('parent::' . __FUNCTION__, $arg_list),false);
     }
 }
 
@@ -7269,11 +7261,10 @@ class AA_Stringexpand__ extends AA_Stringexpand {
     /**
      * @return string|void
      */
-    function expand() {
+    function expand(...$arg_list) {
         static $saliases = [];
         static $smodules = null;
 
-        $arg_list = func_get_args();   // must be asssigned to the variable
         $name     = array_shift($arg_list);
 
         if ( isset($GLOBALS['STRINGEXPAND_SHORTCUTS'][$name]) ) { // old deprecated listing of aliases in custom file
@@ -8784,8 +8775,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
      * @param $text
      * @return mixed|string
      */
-    function expand() {
-        $arg_list = func_get_args();   // must be asssigned to the variable
+    function expand(...$arg_list) {
         $text = array_shift($arg_list);
         if (!is_null($text) AND strlen($text)) {
             if ($site = AA_Module_Site::getModule(AA::$site_id)) {

@@ -39,7 +39,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
      * @param $feed
      * @param $fire
      */
-    function __construct($feed_id, &$feed, $fire) {
+    function __construct($feed_id, $feed, $fire) {
 
         /** Process one feed and returns parsed RSS (both AA and other)
          *  in $this->aa_rss */

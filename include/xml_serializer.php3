@@ -49,7 +49,7 @@
  * @param $a
  * @return string
  */
-function xml_serialize($k,&$v,$i,$ii,$a=null) {
+function xml_serialize($k, $v, $i, $ii, $a=null) {
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
     $end   = (isset($a) ? "$k" : "t");
     if (is_null($v)) {

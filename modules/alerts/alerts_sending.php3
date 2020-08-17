@@ -529,7 +529,7 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
         if (! $item_url) {
             $item_url = "You didn't set the item URL in the view $vid settings!";
         }
-        $itemview   = new itemview($set["format"], '', $set["aliases"], $zids, 0, $set["info"]->f("listlen"), $item_url);
+        $itemview   = new itemview($set["format"], $set["aliases"], $zids, 0, $set["info"]->f("listlen"), $item_url);
         $items_text = $itemview->get_output ("view");
         //if (! strstr ($filter_settings, ","))
         $cached_filter_outputs[$filter_settings] = $items_text;

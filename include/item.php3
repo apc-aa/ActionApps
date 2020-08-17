@@ -1097,7 +1097,7 @@ class AA_Item {
 
             $title       = $this->RSS_restrict( $db->f('name'), 100);
             $link        = $this->RSS_restrict( $db->f('slice_url'), 500);
-            $name        = $db->f('name');
+            //$name        = $db->f('name');
             $q_owner     = addslashes($db->f('owner'));
             //$language  = RSS_restrict( strtolower($db->f(lang_file)), 2);
         }

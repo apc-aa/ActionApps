@@ -145,7 +145,7 @@ class AA_Exporter_Csv extends AA_Exporter {
             $index++;
 
             $this->_outputItemFile($temp_file, $item);
-            $old_item = $item;
+            // $old_item = $item;
         }
         return $temp_file;
     }

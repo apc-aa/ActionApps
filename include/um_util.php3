@@ -320,7 +320,7 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
  * @param $perms_roles
  * @param $um_uedit_no_go_url
  */
-function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um_uedit_no_go_url) {
+function NewUserData( &$err, $uid, &$userrecord, $user_super, $perms_roles, $um_uedit_no_go_url) {
     $userrecord["uid"] = $uid;
     if (!($newuserid = AddUser($userrecord))) {
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
@@ -342,7 +342,7 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um
  * @param $user_super
  * @param $perms_roles
  */
-function ChangeUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles) {
+function ChangeUserData( &$err, $uid, &$userrecord, $user_super, $perms_roles) {
       $userrecord["uid"] = $uid;
       if (!ChangeUser($userrecord)) {
           $err["LDAP"] = MsgErr( _m("Can't change user") );

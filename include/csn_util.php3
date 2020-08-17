@@ -89,7 +89,7 @@ function GetExternalCategories($feed_id, $add_other=false) {
  * @param $ext_categs (by link)
  * @return bool
  */
-function UseAllCategoriesOption( &$ext_categs ) {
+function UseAllCategoriesOption( $ext_categs ) {
     foreach ( $ext_categs as $k => $v ) {
         if ( $v['target_category_id'] AND ($k != UNPACKED_AA_OTHER_CATEGOR) ) {
             return false;
@@ -295,7 +295,7 @@ function getFeedTypeName($type) {
 }
 
 /** used as parameter for $itemview in generating item_id-lastedit pair */
-function GetXml_GetContent(&$zids) {
+function GetXml_GetContent($zids) {
     return GetItemContentMinimal($zids, ['id', 'last_edit']);
 }
 
@@ -308,19 +308,14 @@ class LastEditList {
      *  @param $conds
      *  @param $slice (by link)
      */
-    function setFromSlice($conds, &$slice) {
+    function setFromSlice($conds, $slice) {
         ParseEasyConds($conds);
         $zids    = QueryZids( [$slice->getId()], $conds, '', 'ALL');
         $format  = [
             'odd_row_format' => '{id..............}-{last_edit.......}',
                          'row_delimiter'  => ','
         ];
-        $itemview = new itemview($format, '', '', $zids,
-                                           0,       // first item
-                                           $zids->count(), // item count
-                                           '',      // not necessary
-                                           '',      // no discussion settings
-                                           'GetXml_GetContent');
+        $itemview = new itemview($format, '', $zids, 0, $zids->count(), '', '', 'GetXml_GetContent');
         $this->lastlist = $itemview->get_output("view");
     }
     /** setList function

@@ -102,7 +102,7 @@ function http_fetch($url, $d=null) {
  * @param $all_categories
  * @return array
  */
-function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs, $all_categories) {
+function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, $ext_categs, $l_categs, $all_categories) {
 
     // we have set mapping for this category
     $ext_category_id = ( (!$all_categories AND isset($ext_categs[$remote_cat_id])) ?
@@ -188,7 +188,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
  * @param $cat_refs
  * @param $categs
  */
- function updateCategories($feed_id, &$l_categs, &$ext_categs,&$cat_refs, &$categs) {
+ function updateCategories($feed_id, &$l_categs, $ext_categs, $cat_refs, $categs) {
      global $debugfeed;
      $db = getDB();
      // add new categories or update categories' fields
@@ -237,7 +237,7 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
  * @param $field_refs
  * @param $fields
  */
-function updateFieldsMapping($l_slice_id, $r_slice_id, &$field_refs, &$fields) {
+function updateFieldsMapping($l_slice_id, $r_slice_id, $field_refs, $fields) {
     global $debugfeed;
 
     list($ext_map,$field_map) = GetExternalMapping($l_slice_id, $r_slice_id);

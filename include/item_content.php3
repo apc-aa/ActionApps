@@ -484,13 +484,9 @@ class AA_Content {
      *  Removes all fields, which do not have value
      */
     function removeEmptyFields() {
-        $new_content = [];
-        foreach ($this->content as $fid => $a) {
-            if ( array_filter(array_map('trim',$this->getValuesArray($fid)), 'strlen') ) {
-                $new_content[$fid] = $a;
-            }
-        }
-        $this->content = $new_content;
+        $this->content = array_filter($this->content, function ($fid) {
+            return array_filter(array_map('trim', $this->getValuesArray($fid)), 'strlen');
+        }, ARRAY_FILTER_USE_KEY);
     }
 }
 
@@ -575,7 +571,7 @@ class ItemContent extends AA_Content {
     /** setFromArray function
      * @param $content4id
      */
-    function setFromArray(&$content4id) {
+    function setFromArray($content4id) {
         $this->content = $content4id;
     }
 
@@ -747,7 +743,7 @@ class ItemContent extends AA_Content {
      * @param $conditions
      * @return
      */
-    function matches(&$conditions) {
+    function matches($conditions) {
         return $conditions->matches($this);
     }
 
@@ -1327,7 +1323,7 @@ class ItemContent extends AA_Content {
                     unset($expand_insert,$expand_update,$expand_delimiter, $recompute);
                     break;
                 case 'co2':
-                    list($expand_insert,$expand_update,$expand_delimiter,$recompute) = ParamExplode($fnc["param"]);
+                    [$expand_insert,$expand_update,$expand_delimiter,$recompute] = ParamExplode($fnc["param"]);
                     $expand_string = $update ? $expand_update : $expand_insert;
                     break;
                 default:
@@ -1535,7 +1531,7 @@ class ItemContent extends AA_Content {
      * @param $slf
      * @param $tr_att
      */
-    function showAsRowInTable(&$slf, $tr_att="") {
+    function showAsRowInTable($slf, $tr_att="") {
         echo "<tr ".$tr_att." >";
         foreach ( $slf as $k => $foo) {
             if (!($v = $this->content[$k])) {

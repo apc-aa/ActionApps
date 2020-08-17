@@ -28,6 +28,7 @@ https://www.apc.org/
 
 /** Checks if the field is 'link description field' and not field used for
  *  relation, which is not allowed for 'unasigned' liks type
+ * @noinspection PhpUnused
  */
 function IsFieldSupported($field_info, $v, $param) {
     $field = $field_info['field'];

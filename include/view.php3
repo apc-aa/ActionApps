@@ -615,7 +615,7 @@ class AA_Showview {
                     $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
                 }
 
-                $itemview = new itemview($format,'',$aliases,null,"","",$durl, $disc);
+                $itemview = new itemview($format, $aliases, null, "", "", $durl, $disc);
                 $ret      = $itemview->get_output("discussion");
                 break;
 
@@ -645,10 +645,10 @@ class AA_Showview {
                     $content_function = 'Links_GetCategoryContent';
                 }
 
-                list( $listlen, $list_from ) = GetListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids->count(), $random);
+                [ $listlen, $list_from ] = GetListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids->count(), $random);
 
-                $itemview = new itemview( $format, '', $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
-                $itemview->parameter('category_id', $category_id);
+                $itemview = new itemview( $format, $aliases, $zids, $list_from, $listlen, shtml_url(), "", $content_function);
+            $itemview->parameter('category_id', $category_id);
                 $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
 
                 if ( !isset($zids) || $zids->count() <= 0) {
@@ -678,7 +678,7 @@ class AA_Showview {
                             $zids->a    = $zids3->a;
                             $zids->type = $zids3->type;
                         }
-                        $itemview = new itemview($format, '', $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
+                        $itemview = new itemview($format, $slice->aliases($als), $zids, 0, 1, shtml_url(), "");
                         $ret      = $itemview->get_output("view");
                         break;
                     }
@@ -770,11 +770,11 @@ class AA_Showview {
                     $format['g2_direction'] = $view_info['g2_direction'];
                 }
 
-                list($listlen, $list_from) = GetListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids2->count(), $random);
+                [$listlen, $list_from] = GetListLength($listlen, $this->_view_param["to"], $this->_view_param["from"], $list_page, $zids2->count(), $random);
 
-                $itemview = new itemview( $format, '', $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
+                $itemview = new itemview( $format, $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
-                if (isset($zids2) && ($zids2->count() > $list_from)) {
+            if (isset($zids2) && ($zids2->count() > $list_from)) {
                     $ret = $itemview->get_output(($view_info['type'] == 'calendar') ? 'calendar' : 'view');
                 } else {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);

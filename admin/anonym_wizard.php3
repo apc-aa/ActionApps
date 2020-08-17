@@ -42,7 +42,7 @@ require_once AA_INC_PATH."itemfunc.php3";
  * @param $show_result
  * @return string
  */
-function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_show_result, $show_result) {
+function GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show_result, $show_result) {
 
     // we do not want anonymous form to use sessions at all
     $sess_bck = $GLOBALS['sess'];

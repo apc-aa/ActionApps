@@ -104,7 +104,7 @@ class AA_Toexecute {
      *           so we need to cancel all older "recount" tasks, since it will
      *           be dubled in the queue (we call cancel_all() method for it)
      */
-    function later( &$object, $params= [], $selector='', $priority=100, $time=null ) {
+    function later( $object, $params= [], $selector='', $priority=100, $time=null ) {
         global $auth;
         $varset = new Cvarset([
             ['created'       , time()],

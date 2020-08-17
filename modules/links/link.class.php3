@@ -28,13 +28,15 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function problem_report() {
-    return func_get_args();
+/**
+ * @param mixed ...$problems
+ * @return array
+ */
+function problem_report(...$problems) {
+    return $problems;
 }
 
 function print_problem($problem) {
-    global $prblms;
-    $prblms[$problem]++;
     echo "<div class=\"problem\">$problem</div>";
 }
 
@@ -985,47 +987,6 @@ class linkobj {
         freeDB($db);
         return $this->lid;
     }
-
-/*
-    function old_printobj($type='long', $class='linkobj') {
-        //  $this->load();
-        echo "<div class=\"$class\">";
-        if ( isset($this->data) AND is_array($this->data) ) {
-            if ( $type=='long' ) {
-                echo '<span title="folder" '.(Links_IsGlobalCategory($this->data['type']) ? 'class="general"': '').'>'.$this->data['folder'].' </span>';
-                foreach ( $this->data as $k => $v ) {
-                    echo "<span title=\"$k\" nowrap>$v</span>";
-                }
-            } else {
-                echo "<span title=\"lid\">".$this->lid."</span>";
-                echo "<span title=\"name\">".$this->data['name']."</span>";
-            }
-        }
-        if ( ($type=='long') AND isset($this->language) AND is_array($this->language) ) {
-            echo "<span title=\"language\">";
-            foreach ( $this->language as $k => $v ) {
-                echo "$k<br>";
-            }
-            echo "</span>";
-        }
-        if ( ($type=='long') AND isset($this->region) AND is_array($this->region) ) {
-            echo "<span title=\"language\">";
-            foreach ( $this->region as $k => $v ) {
-                echo "$k<br>";
-            }
-            echo "</span>";
-        }
-        echo "</div>\n";
-        if ( $type=='long' ) {
-            foreach ( (array)$this->assignments as $ass ) {
-                $ass->printobj($type,$class."ass");
-            }
-        }
-        foreach ( (array)$this->changes as $chang ) {
-            $chang['link']->printobj($type,$class."change");
-        }
-    }
-*/
 
     /**      */
     function check_problems() {

@@ -596,8 +596,7 @@ function ParamExplode($param) {
     return explode('##Sx', str_replace(['#:', 'tp://', 'tps://', ':', '~@|_'], ['~@|_', 'tp~@|_//', 'tps~@|_//', '##Sx', ':'], $param));
 }
 
-function get_hash() {
-    $arg_list = func_get_args();   // must be asssigned to the variable
+function get_hash(...$arg_list) {
     // return md5(json_encode($arg_list));
     // return md5(var_export($arg_list, true));
     // return md5(serialize($arg_list));
@@ -605,8 +604,7 @@ function get_hash() {
 }
 
 /** shortest possible hash which uses only url, DOM and JS identifier safe characters. Contains only a-zA-Z0-9, starts with character. */
-function get_short_hash() {
-    $arg_list = func_get_args();   // must be asssigned to the variable
+function get_short_hash(...$arg_list) {
     // we do not need '-' - it is bad for DOM identifiers, '+' is bad for urls, '/' and even '_' has some problems in Dropzone, so we remove it as well.
     // We use Q as escape, so we replace Q as well to be able to convert back, if needed
     $hash = str_replace(['Q','+','/'], ['QA','QB','QC'], rtrim(base64_encode(hash('crc32b', serialize($arg_list), true)), '='));
@@ -685,7 +683,7 @@ function sqlin( $column, $values, $long=false ) {
  * @param $str
  * @return null
  */
-function id_t2l(&$str) {
+function id_t2l($str) {
     if (!$str) {
         warn("Warning: zids:id_t2l:converting empty string");
         return null;

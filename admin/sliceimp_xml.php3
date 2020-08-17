@@ -224,7 +224,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
  * @param $slvs (by link)
  * @param $slice_id_new
  */
-function import_views(&$slvs, $slice_id_new) {
+function import_views($slvs, $slice_id_new) {
     global $dry_run;
 
     if ( $dry_run ) {

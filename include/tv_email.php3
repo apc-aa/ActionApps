@@ -268,6 +268,7 @@ function GetEmailWhere() {
 
 /** EmailAfterInsert function
  * @param $varset
+ * @noinspection PhpUnused
  */
 function EmailAfterInsert($varset) {
     ShowRefreshWizardJavaScript();

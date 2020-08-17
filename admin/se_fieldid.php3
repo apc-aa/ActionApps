@@ -287,7 +287,8 @@ for ($i = 1; $i <= 9999; ++$i) {
 echo "</select><br><br>";
 FrmTabSeparator(_m("Fields"), [
     "update" => ["type" => "hidden", "value" => "1"],
-    "update", "cancel" => ["url" => "se_fields.php3"]
+    "update",
+    "cancel" => ["url" => "se_fields.php3"]
 ], $slice_id);
 /*
     <input type=hidden name=\"update\" value=1>

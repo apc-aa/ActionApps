@@ -106,7 +106,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
     $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
     $add_button_trigger = "";
     if( $aa_onchange_exist ){
-       list($aux1,$fieldid,$aux2) = explode("'",$aa_onchange_exist,3);
+       list(,$fieldid,) = explode("'",$aa_onchange_exist,3);
        $add_button_trigger = "aa_onChange('".$fieldid."'); ";
     }
 
