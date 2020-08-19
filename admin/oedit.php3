@@ -67,8 +67,8 @@ if ($oid) {
     $oowner = $old_obj->getOwnerId();
     $otype  = $old_obj->getObjectType();
 }
-if (!$oowner) { $oowner = $slice_id; }           // for new of incorrect object in db
-if (!$otype)  { $otype  = $_REQUEST['otype']; }  // for new of incorrect object in db
+if (!$oowner) { $oowner = $slice_id; }           // for new or incorrect object in db
+if (!$otype)  { $otype  = $_REQUEST['otype']; }  // for new or incorrect object in db
 
 if ($cancel) {
     go_url(get_admin_url($ret_url));

@@ -5,8 +5,8 @@
  *
  * (C) Copyright 1999-2000 Stefan Sels phplib@sels.com
  *
- * based on db_oracle.inc by Luis Francisco Gonzalez Hernandez
- * contains metadata() from db_oracle.inc 1.10
+ * based on db_oracle.php by Luis Francisco Gonzalez Hernandez
+ * contains metadata() from db_oracle.php 1.10
  *
  * $Id$
  *

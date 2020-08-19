@@ -5,7 +5,7 @@
  * Copyright (c) 1998-2000 NetUSE AG
  *                    Boris Erdmann, Kristian Koehntopp
  *
- * Adapted from db_mysql.inc by Sascha Schumann <sascha@schumann.cx>
+ * Adapted from db_mysql.php by Sascha Schumann <sascha@schumann.cx>
  *
  * metadata() contributed by Adelino Monteiro <adelino@infologia.pt>
  *

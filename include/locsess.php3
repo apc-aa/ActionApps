@@ -57,7 +57,7 @@ if (!defined('AA_BASE_PATH')) {
 
 
 /* Change this to match your database. */
-require_once __DIR__."/phplib/". ( (defined("DB_TYPE") AND (DB_TYPE != 'db_mysqli')) ? DB_TYPE .".inc" : "db_mysql.inc");
+require_once __DIR__."/phplib/". ( (defined("DB_TYPE") AND (DB_TYPE != 'db_mysqli')) ? DB_TYPE .".php" : "db_mysql.php");
 require_once __DIR__."/phplib/phplib.php";
 require_once __DIR__."/../vendor/autoload.php";
 
