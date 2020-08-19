@@ -2,7 +2,7 @@
 /**
  * Class ItemContent.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
 
-require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
-require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."itemfunc.php3";
+require_once __DIR__."/locsess.php3";    // DB_AA object definition
+require_once __DIR__."/feeding.php3";
+require_once __DIR__."/itemfunc.php3";
 
 /**
  * AA_Value - Holds information about one value - could be multiple,
@@ -521,7 +521,7 @@ class ItemContent extends AA_Content {
         if ($content4id) {
             if ( is_array($content4id) ) {
                 $this->setFromArray($content4id);
-            } elseif ( $content4id ) {
+            } else {
                 $this->setByItemID($content4id );
             }
         }

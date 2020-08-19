@@ -25,11 +25,11 @@ https://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-require_once __DIR__. "/../../include/init_page.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."constedit_util.php3";
-require_once AA_BASE_PATH."modules/alerts/util.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/util.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../include/constedit_util.php3";
+require_once __DIR__."/../../modules/alerts/util.php3";
 
 // -------------------------------------------------------------------
 /** Returns $alerts_specific_fields with keys updated to the values needed.

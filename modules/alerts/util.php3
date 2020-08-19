@@ -19,8 +19,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once AA_INC_PATH."mail.php3";
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/../../include/mail.php3";
+require_once __DIR__."/../../include/mgettext.php3";
 
 // we tried to remove all global $db, so let's try to comment out following global object
 // honza 2015-12-30
@@ -98,7 +98,7 @@ function alerts_con_url($Url,$Params){
  */
 function confirm_email($slice_id, $aw) {
 
-    require_once AA_INC_PATH."itemfunc.php3";
+    require_once __DIR__."/../../include/itemfunc.php3";
 
     $set  = new AA_Set($slice_id, new AA_Condition(FIELDID_ACCESS_CODE, '=', '"'.$aw.'"'));
     $zids = $set->query();
@@ -115,7 +115,7 @@ function confirm_email($slice_id, $aw) {
  */
 function unsubscribe_reader($slice_id, $au, $c) {
 
-    require_once AA_INC_PATH."itemfunc.php3";
+    require_once __DIR__."/../../include/itemfunc.php3";
     $db = getDB();
     $db->query (
         "SELECT item.id FROM content INNER JOIN item

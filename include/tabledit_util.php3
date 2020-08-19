@@ -5,7 +5,7 @@
  *                @link doc/tabledit_developer.html,
  *                @link doc/tableview.html
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
  * @copyright Copyright (c) 2002-3 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
-require_once AA_INC_PATH."varset.php3";
+require_once __DIR__."/varset.php3";
 
 // -----------------------------------------------------------------------------------
 
@@ -217,7 +217,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="", 
                         echo "Define only the child (left) fields for join tables! Wrong alias: $alias";
                         exit;
                     }
-                    else if ($cprop["view"]["type"] == "ignore") {
+                    elseif ($cprop["view"]["type"] == "ignore") {
                         echo "<h2>Column type for a primary key part must not be IGNORE.</h2>";
                         exit;
                     }

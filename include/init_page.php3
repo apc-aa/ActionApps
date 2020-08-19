@@ -14,7 +14,7 @@
  *          hold id of any module. The name slice_id comes from
  *          history, when there was no other module than slice.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,25 +64,15 @@ if ($encap == "false") {   // used in itemedit for anonymous form
     $encap = false;        // it must be here, because the variable is rewriten
 }                          // if the get_magic_quotes_gpc()==false (see above)
 
-require_once __DIR__. "/config.php3";
-require_once AA_INC_PATH."mgettext.php3";
-
-// should be set in config.php3
-if (!defined(AA_INSTAL_PATH)) {
-    $url_components = parse_url(AA_INSTAL_URL);
-    define('AA_INSTAL_PATH', $url_components['path']);
-}
-// should be set in config.php3
-if (!defined('AA_BASE_PATH')) {
-    define('AA_BASE_PATH', substr(AA_INC_PATH, 0, -8));
-}
+require_once __DIR__."/config.php3";
+require_once __DIR__."/mgettext.php3";
 
 if ($free) {
     // message for locauth.php3 to not display loginform
     $nobody = true;
 }
 
-require_once AA_INC_PATH. "locauth.php3";
+require_once __DIR__."/locauth.php3";
 
 // Save before getting the session stored variables
 // Now it should not be in session so mayby the $pass_sliceid is not necessary and we van use just slice_id
@@ -118,8 +108,8 @@ if ( $no_slice_id ) {
     AA::$module_id = null; // unset is_a not allowed for static variables
 }
 
-require_once AA_INC_PATH. "util.php3";  // must be after language include because of lang constants in util.php3
-require_once AA_INC_PATH. "event.class.php3";
+require_once __DIR__."/util.php3";  // must be after language include because of lang constants in util.php3
+require_once __DIR__."/event.class.php3";
 
 /* It is not a good idea to store $slice_id, it made some damage in AA
    installations already. But for historical reasons before somebody ensures
@@ -207,7 +197,7 @@ if (!$no_slice_id) {
 //*/
 //    if ( $module_type_changed && !$jumping ) {
 //        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
-//        $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
+//        $hdd_dir = "../".$MODULES[$module_type]['directory'];
 //        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
 //        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') ) {
 //            $page = "index.php3";
@@ -222,7 +212,7 @@ if (!$no_slice_id) {
 }
 
 $mgettext_file    = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
-bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
+bind_mgettext_domain($mgettext_file);
 AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
 AA::$langnum      = [AA_Content::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.
 AA::$slice_id     = AA::$module_id;

@@ -2,7 +2,7 @@
 /**
  * A class for manipulating polls
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
  * @link      https://www.apc.org/ APC
 */
 
-require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
+require_once __DIR__."/../../../include/zids.php3"; // Pack and unpack ids
 
 class AA_Poll {
     var $name;         // The name of the poll
@@ -308,27 +308,15 @@ class AA_Poll {
     }
 }
 
+/**
+ * Class AA_Polls
+ * @method  static AA_Polls singleton()
+ */
 class AA_Polls {
-    var $a = [];     // Array poll_id -> AA_Poll object
 
-    /** AA_Polls constructor  */
-    function __construct() {
-        $this->a = [];
-    }
+    use \AA\Util\SingletonTrait;
 
-    /** singleton
-     *  called from getPoll method
-     *  This function makes sure, there is just ONE static instance if the class
-     *  @todo  convert to static class variable (after migration to PHP5)
-     */
-    static function singleton() {
-        static $instance = null;
-        if (is_null($instance)) {
-            // Now create the AA_Polls object
-            $instance = new AA_Polls;
-        }
-        return $instance;
-    }
+    protected $a = [];     // Array poll_id -> AA_Poll object
 
     /** getPoll function
      *  main factory  method

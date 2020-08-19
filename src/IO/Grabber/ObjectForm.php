@@ -52,7 +52,7 @@ class ObjectForm extends \AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Name of the grabber - used for grabber selection box */
-    function name() {
+    public function name(): string {
         return _m('Form');
     }
 

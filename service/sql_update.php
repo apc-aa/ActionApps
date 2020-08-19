@@ -134,10 +134,8 @@ if ( get_magic_quotes_gpc() ) {
 }
 
 // need config.php3 to set db access, and phplib, and probably other stuff
-define ('AA_INC_PATH', "../include/");
-
-require_once AA_INC_PATH."config.php3";
-require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";   // DB_AA definition
 
 /** Helper functions
  *  We are implementing all the functions here again, altrough you will be able

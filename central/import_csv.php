@@ -20,9 +20,9 @@ https://www.apc.org/
 */
 
 
-require_once __DIR__. "/include/init_central.php";
-require_once AA_INC_PATH.     'formutil.php3';
-require_once AA_INC_PATH.     "msgpage.php3";
+require_once __DIR__."/include/init_central.php";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 pageOpen();
 

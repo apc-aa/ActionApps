@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,7 @@
  *
 */
 
-// $convert_tables_path could be specified also before including this script
-// it is usen in /misc/charset/convert.php3 script, where config.php3
-// is not used (so we can't use AA_INC_PATH
-if ( !$convert_tables_path ) {
-    $convert_tables_path = AA_INC_PATH."ConvertTables/";
-}
-
-define ('CONVERT_TABLES_DIR', $convert_tables_path);
+define ('CONVERT_TABLES_DIR', __DIR__."/ConvertTables/");
 define ('DEBUG_MODE', -1);
 
 /**

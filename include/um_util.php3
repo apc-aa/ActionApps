@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
  *
 */
 
-require_once AA_INC_PATH."constants.php3";
+require_once __DIR__."/constants.php3";
 
 /** SelectGU_ID function
  * Prints html tag <select ..
@@ -174,7 +174,7 @@ function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
             if ( $role == 'REVOKE' ) {
                 DelPerm($selected_user, $mid, 'slice');
             }
-            elseif( AA_Perm::compare($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' ) {
+            elseif ( AA_Perm::compare($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' ) {
                 ChangePerm($selected_user, $mid, 'slice', $perms_roles[$role]['id']);
             }
         }

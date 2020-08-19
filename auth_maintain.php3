@@ -8,7 +8,7 @@
  * @copyright (c) 2002-3 Association for Progressive Communications 
  */
 
-require_once "include/auth.php3";
+require_once __DIR__."/include/auth.php3";
 
 if ($maintain_auth) {
     AA_Mysqlauth::maintenance();

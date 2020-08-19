@@ -282,7 +282,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
             }
         }
 
-        list(, $map) = GetExternalMapping($this->slice_id, $this->r_slice_id);
+        [, $map] = GetExternalMapping($this->slice_id, $this->r_slice_id);
         if ($debugfeed >= 7) {
             print("\n<br>Mapping: $map, $this->slice_id, $this->r_slice_id");
         }

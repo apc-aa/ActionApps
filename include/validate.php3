@@ -3,7 +3,7 @@
  * Class AA_Validate
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,8 +62,8 @@ define('VALIDATE_ERROR_NOT_FILLED',       410);
 
 /** AA user input validation class
  *  usage (for standard validators):
- *      if ( AA_Validate::validate($variable, 'int') ) {...};
- *      if ( AA_Validate::validate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
+ *      if ( AA_Validate::doValidate($variable, 'int') ) {...};
+ *      if ( AA_Validate::doValidate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
  */
 class AA_Validate extends AA_Serializable {
 
@@ -120,14 +120,14 @@ class AA_Validate extends AA_Serializable {
 
     /** validate function
      *  static class function
-     *      if ( AA_Validate::validate($variable, 'email') ) {...};
-     *      if ( AA_Validate::validate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
+     *      if ( AA_Validate::doValidate($variable, 'email') ) {...};
+     *      if ( AA_Validate::doValidate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
      * @param $var
      * @param $type
      * @param $default
      * @return bool
      */
-    function validate(&$var, $type, $default='AA_noDefault') {
+    public static function doValidate(&$var, $type, $default='AA_noDefault') {
         $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
             return self::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]), $default);
@@ -142,15 +142,22 @@ class AA_Validate extends AA_Serializable {
      * @param $type
      * @return array
      */
-    static function filter($vararray, $type) {
+    public static function filter($vararray, $type) {
         return array_filter((array)$vararray, [self::factoryCached($type),'validate']);
     }
+
+    /** validate function
+     * @param string $var
+     * @param string $default
+     * @return bool
+     */
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool { return true; }
 
     /** checks if the variable is empty
      * @param $var
      * @return bool
      */
-    function varempty($var) {
+    function varempty($var) : bool {
         return strlen(trim($var))==0;
     }
 
@@ -162,7 +169,7 @@ class AA_Validate extends AA_Serializable {
      * @param $default
      * @return bool
      */
-    function bad(&$var, $err_id, $err_msg, $default) {
+    protected function bad(&$var, $err_id, $err_msg, $default) : bool {
         self::lastErr($err_id, $err_msg);
         if ( $default != 'AA_noDefault' ) {
             $var = $default;
@@ -171,7 +178,7 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some more attributtes (like min, max, step, pattern, ...) */
-    function getHtmlInputAttr() {
+    public function getHtmlInputAttr() {
         return [];
     }
 
@@ -196,29 +203,29 @@ class AA_Validate_Signed extends AA_Validate {
      *  Used parameter format (in fields.input_validate table)
      *  copied from $VALIDATE_TYPES
      */
-    static function getClassProperties()  {
+    static function getClassProperties() {
         return [
-                 //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'min'  => new AA_Property( 'min',  _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
-            'max'  => new AA_Property( 'max',  _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
-            'step' => new AA_Property( 'step', _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
+            //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'min'  => new AA_Property('min', _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'max'  => new AA_Property('max', _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
+            'step' => new AA_Property('step', _m("Step"), 'int', false, true, 'int', false, _m(""), '', 1),
         ];
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         if (!IsSigInt($var)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value')."'$var'", $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'", $default);
         }
         $var = (int)$var;
-        if ( IsSigInt($this->max) AND ($var > $this->max) ) {
+        if (IsSigInt($this->max) and ($var > $this->max)) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
         }
-        if ( IsSigInt($this->min) AND ($var < $this->min) ) {
+        if (IsSigInt($this->min) and ($var < $this->min)) {
             return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
@@ -228,10 +235,16 @@ class AA_Validate_Signed extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        $ret = ['type'=>'number', 'pattern'=>'-?[0-9]*'];
-        if (IsSigInt($this->min))                        { $ret['min']  = $this->min; }
-        if (IsSigInt($this->max))                        { $ret['max']  = $this->max; }
-        if (IsSigInt($this->step) AND ($this->step > 1)) { $ret['step'] = $this->step; }
+        $ret = ['type' => 'number', 'pattern' => '-?[0-9]*'];
+        if (IsSigInt($this->min)) {
+            $ret['min'] = $this->min;
+        }
+        if (IsSigInt($this->max)) {
+            $ret['max'] = $this->max;
+        }
+        if (IsSigInt($this->step) and ($this->step > 1)) {
+            $ret['step'] = $this->step;
+        }
         return $ret;
     }
 }
@@ -293,11 +306,11 @@ class AA_Validate_Regexp extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
         }
@@ -307,7 +320,11 @@ class AA_Validate_Regexp extends AA_Validate {
         return  preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
     }
 
-    function varempty($var) {
+    /** checks if the variable is empty
+     * @param $var
+     * @return bool
+     */
+    public function varempty($var) : bool {
         return preg_match($this->empty_expression, $var);
     }
 
@@ -369,11 +386,11 @@ class AA_Validate_Id extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         if (!is_long_id($var)) {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $default);
         }
@@ -400,11 +417,11 @@ class AA_Validate_Float extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         if ( !is_float($var) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $default);
         }
@@ -430,11 +447,11 @@ class AA_Validate_Enum extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $default);
     }
 }
@@ -443,11 +460,11 @@ class AA_Validate_Enum extends AA_Validate {
 class AA_Validate_Login extends AA_Validate {
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         $len = strlen($var);
         if ( $len<3 ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
@@ -470,11 +487,11 @@ class AA_Validate_Login extends AA_Validate {
 class AA_Validate_Pwd extends AA_Validate {
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         $len = strlen($var);
         if ( $len<5 ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
@@ -521,11 +538,11 @@ class AA_Validate_Unique extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
 
         switch ($this->scope) {  // for older approach - presented in field setting
             case '0': $this->scope = 'username';  break;
@@ -590,12 +607,12 @@ class AA_Validate_Eunique extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
-        if ( !AA_Validate::validate($var, 'email', $default) ) {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+        if ( !AA_Validate::doValidate($var, 'email', $default) ) {
             return false;
         }
         $validator = new AA_Validate_Unique(['field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id]);
@@ -622,11 +639,11 @@ class AA_Validate_Text extends AA_Validate {
     }
 
     /** validate function
-     * @param $var
-     * @param $default
+     * @param string $var
+     * @param string $default
      * @return bool
      */
-    function validate(&$var, $default='AA_noDefault') {
+    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
         }
@@ -690,7 +707,7 @@ function get_javascript_field_validation() {
        type = validation type
        add = is it an "add" form, i.e. showing a new item?
     */
-    return "
+    return /** @lang JavaScript */ "
         function validate (myform, txtfield, type, required, add) {
             var ble;
             var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
@@ -699,42 +716,37 @@ function get_javascript_field_validation() {
             if (type == 'pwd') {
                 myfield = myform[txtfield+'a'];
                 myfield2 = myform[txtfield+'b'];
-            } else
+            } else {
                 myfield = myform[txtfield];
+            }
 
-            if (myfield == null)
+            if (myfield == null) {
                 return true;
+            }
 
             var val = myfield.value;
             var err = '';
 
             if (val == '' && required && (type != 'pwd' || add == 1)) {
-                if (type == 'pwd')
-                     err = '"._m("This field is required.")."';
-                else err = '"._m("This field is required (marked by *).")."';
-            }
-
-            else if (val == '')
+                err = (type == 'pwd') ? '" . _m("This field is required.") . "' : '" . _m("This field is required (marked by *).") . "';
+            } else if (val == '') { 
                 return true;
-
-            else switch (type) {
-                case 'number':
-                    if (!val.match (/^[0-9]+$/))
-                        err = '"._m("Not a valid integer number.")."';
-                    break;
-                case 'filename':
-                    if (!val.match (/^[0-9a-zA-Z_]+$/))
-                        err = '"._m("Not a valid file name.")."';
-                    break;
-                case 'email':
-                case 'e-mail':
-                    if (val.match(invalid_email) || !val.match(valid_email))
-                        err = '"._m("Not a valid email address.")."';
-                    break;
-                case 'pwd':
-                    if (val && val != myfield2.value)
-                        err = '"._m("The two password copies differ.")."';
-                    break;
+            }
+            
+            switch (type) {
+            case 'number':
+                if (!val.match (/^[0-9]+$/))        { err = '" . _m("Not a valid integer number.") . "'; }
+                break;
+            case 'filename':
+                if (!val.match (/^[0-9a-zA-Z_]+$/)) { err = '" . _m("Not a valid file name.") . "';  }
+                break;
+            case 'email':
+            case 'e-mail':
+                if (val.match(invalid_email) || !val.match(valid_email)) { err = '" . _m("Not a valid email address.") . "'; }
+                break;
+            case 'pwd':
+                if (val && val != myfield2.value)   { err = '" . _m("The two password copies differ.") . "';  }
+                break;
             }
 
             if (err != '') {
@@ -742,7 +754,7 @@ function get_javascript_field_validation() {
                 myfield.focus();
                 return false;
             }
-            else return true;
+            return true;
         }";
 }
 

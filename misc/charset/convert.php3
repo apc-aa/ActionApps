@@ -32,9 +32,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// must be defined before include of convert_charset.class.php3
-$convert_tables_path = "../../include/ConvertTables/";
-require_once "../../include/convert_charset.class.php3";
+require_once __DIR__."/../../include/convert_charset.class.php3";
 
 $from   = ($_REQUEST['from'] ? $_REQUEST['from'] : 'iso-8859-1');
 $to     = ($_REQUEST['to']   ? $_REQUEST['to']   : 'utf-8');

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -280,9 +280,9 @@ function preProcess($toks) {
                     $val["type"] = TOKEN_TYPE_STRING;
                 }
             }
-            //        else if ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
+            //        elseif ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
             //            if ( $val['value'] == "+" ) $val['value'] = "and";
-            //            else if ( $val['value'] == "-" ) $val['value'] = "not";
+            //            elseif ( $val['value'] == "-" ) $val['value'] = "not";
             //        }
             $newtoks[] = $val;
         }
@@ -476,7 +476,7 @@ class Syntax {
             }
             $val = " or " . $val . $foo;
         }
-        else if ( ($la == TOKEN_TYPE_RIGHT_PARENTHESIS) || ($la == TOKEN_TYPE_EOF) ) { // E' -> lambda
+        elseif ( ($la == TOKEN_TYPE_RIGHT_PARENTHESIS) || ($la == TOKEN_TYPE_EOF) ) { // E' -> lambda
 //            echo("Eap-><BR>\n");//debug
             $val = "";
         }
@@ -531,7 +531,7 @@ class Syntax {
             }
             $val = " and " . $val . $foo;
         }
-        else if ( ($la == TOKEN_TYPE_OPERATOR_OR) ||
+        elseif ( ($la == TOKEN_TYPE_OPERATOR_OR) ||
                   ($la == TOKEN_TYPE_RIGHT_PARENTHESIS) ||
                   ($la == TOKEN_TYPE_EOF) ) {                // T' -> lambda
 //            echo("Tap-><br>\n");//debug
@@ -595,7 +595,7 @@ class Syntax {
             }
             $val .= SYNTAX_RIGHT_PAR;
         }
-        else if ( $la == TOKEN_TYPE_STRING ) {    // G -> string
+        elseif ( $la == TOKEN_TYPE_STRING ) {    // G -> string
 //            echo("G->string<BR>\n");//debug
             $val = $this->column . " " . $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
             if ( ($err = $this->tList->match(TOKEN_TYPE_STRING) )) {

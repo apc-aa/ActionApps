@@ -1,7 +1,7 @@
 <?php
 /** expected $slice_id for edit slice, nothing for adding slice
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,13 @@
 
 use AA\Widget\Widget;
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once AA_INC_PATH."constants_param_wizard.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/constants_param_wizard.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 /** EditConstantURL function
  * @return string - result of the con_url function

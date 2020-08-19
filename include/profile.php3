@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
  * @link      https://www.apc.org/ APC
  *
 */
-require_once AA_INC_PATH."constants_param_wizard.php3";
+require_once __DIR__."/constants_param_wizard.php3";
 
 class AA_Profile_Rule {
 

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 use AA\FormArray;
 use AA\Util\ChangesMonitor;
 
-require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
+require_once __DIR__."/perm_core.php3";    // needed for GetAuthData();
 
 /**
  * Class AA_Aliasfunc for storing functions like {_:Message_box:Update successfull:green}
@@ -92,7 +92,7 @@ class AA_Aliasfunc extends AA_Object {
 
 
 if (defined('AA_CUSTOM_DIR')) {
-    include_once(AA_INC_PATH. 'custom/'. AA_CUSTOM_DIR. '/stringexpand.php');
+    include_once ("custom/". AA_CUSTOM_DIR. '/stringexpand.php');
 }
 
 // we need it for preg_replace_callback when unalias sometimes gives empty results (empty spots in site, ...)
@@ -312,10 +312,8 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                     return 'editor';
                 } elseif ( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
                     return 'author';
-                } else {
-                    return 'undefined';
                 }
-                break;
+                return 'undefined';
             default:
                 // $auth_user_info caches user's informations
                 if ( !isset(AA_Stringexpand_User::$auth_user_info[$auth_user]) ) {
@@ -2636,8 +2634,8 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($pid='', $params=null) {
-        require_once AA_BASE_PATH."modules/polls/include/util.php3";
-        require_once AA_BASE_PATH."modules/polls/include/stringexpand.php3";
+        require_once __DIR__."/../modules/polls/include/util.php3";
+        require_once __DIR__."/../modules/polls/include/stringexpand.php3";
 
         $request = [];
         if ($params) {
@@ -3001,9 +2999,9 @@ class AA_Treecache {
     }
 
     /**
-     * @param $item_id
-     * @param $expression
-     * @return mixed
+     * @param string $item_id
+     * @param string $expression
+     * @return string
      */
     function _get_item($item_id, $expression) {
         // cached subtree
@@ -3011,7 +3009,8 @@ class AA_Treecache {
             return $this->_cache[$item_id];
         }
 
-        return reset(AA_Items::getFormatted(new zids($item_id), $expression));
+        $array = AA_Items::getFormatted(new zids($item_id), $expression);
+        return reset($array);
     }
 }
 
@@ -5384,14 +5383,14 @@ class AA_Unalias_Callback {
                 return QuoteColons($this->item->$fce($parts[1], $parts[3]));
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-            elseif( aa_substr($out, 0, 5) == "math(" ) {
+            elseif ( aa_substr($out, 0, 5) == "math(" ) {
                 // replace math
                 return QuoteColons( parseMath(DeQuoteColons(AA::Stringexpander()->unalias(aa_substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
-            elseif( aa_substr($out, 0, 5) == "list:" ) {       // like AA_Stringexpand_List
+            elseif ( aa_substr($out, 0, 5) == "list:" ) {       // like AA_Stringexpand_List
                 return QuoteColons(parseLoop($out, $this->item));
             }
-            elseif( aa_substr($out, 0, 8) == "include(" ) {
+            elseif ( aa_substr($out, 0, 8) == "include(" ) {
                 // include file
                 if ( !($pos = aa_strpos($out,')')) ) {
                     return "";
@@ -7081,7 +7080,7 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($module_id='') {
-        require_once AA_BASE_PATH."modules/alerts/util.php3";
+        require_once __DIR__."/../modules/alerts/util.php3";
 
         // we need just reader slice id
         $collectionprop = GetCollection($module_id);
@@ -7225,7 +7224,7 @@ class AA_Stringexpand_Randomstring extends AA_Stringexpand_Nevercache {
 }
 
 if (defined('STRINGEXPAND_INC')) {
-    require_once AA_INC_PATH.'custom/'.STRINGEXPAND_INC. '/stringexpand.php';
+    require_once __DIR__."/custom/".STRINGEXPAND_INC. '/stringexpand.php';
 }
 
 
@@ -7356,38 +7355,41 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
         if (false !== ($ret = AA\Util\Crypt::decryptAesGcm($text,$key))) {
             return $ret;
         }
+        return '';
+
         // if we fail with the decryption, we try, is the string wasn't encrypted in older AA version, which used mcrypt
         // However this approach will work just for PHP <= 7.1, so users will need to reencrypt the texts, if they need
         // to use old crypted texts
-        return self::_encryptdecrypt_legacy(false,(($output_type=='url') ? url2bin($text) : $text), $key);
+
+        // return self::_encryptdecrypt_legacy(false,(($output_type=='url') ? url2bin($text) : $text), $key);
     }
 
-    /**
-     * Old legacy en/de-crypt function which uses mcrypt - the results are completely incompatible with other cryptolibs
-     * @param $mode_encrypt
-     * @param $text
-     * @param $key
-     * @return string
-     */
-    protected function _encryptdecrypt_legacy($mode_encrypt, $text, $key) {
-        if (!function_exists('mcrypt_module_open')) {
-            return '';
-        }
-        /* Open module, and create IV */
-        $td      = mcrypt_module_open('des', '', 'ecb', '');
-        $key     = substr($key, 0, mcrypt_enc_get_key_size($td));
-        $iv_size = mcrypt_enc_get_iv_size($td);
-        $iv      = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-
-        $ret = '';
-        /* Initialize encryption handle */
-        if (mcrypt_generic_init($td, $key, $iv) != -1) {
-            $ret = $mode_encrypt ? mcrypt_generic($td, $text) : mdecrypt_generic($td, $text);
-            mcrypt_generic_deinit($td);
-            mcrypt_module_close($td);
-        }
-        return $ret;
-    }
+    //    /**
+    //     * Old legacy en/de-crypt function which uses mcrypt - the results are completely incompatible with other cryptolibs
+    //     * @param $mode_encrypt
+    //     * @param $text
+    //     * @param $key
+    //     * @return string
+    //     */
+    //    protected function _encryptdecrypt_legacy($mode_encrypt, $text, $key) {
+    //        if (!function_exists('mcrypt_module_open')) {
+    //            return '';
+    //        }
+    //        /* Open module, and create IV */
+    //        $td      = mcrypt_module_open('des', '', 'ecb', '');
+    //        $key     = substr($key, 0, mcrypt_enc_get_key_size($td));
+    //        $iv_size = mcrypt_enc_get_iv_size($td);
+    //        $iv      = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+    //
+    //        $ret = '';
+    //        /* Initialize encryption handle */
+    //        if (mcrypt_generic_init($td, $key, $iv) != -1) {
+    //            $ret = $mode_encrypt ? mcrypt_generic($td, $text) : mdecrypt_generic($td, $text);
+    //            mcrypt_generic_deinit($td);
+    //            mcrypt_module_close($td);
+    //        }
+    //        return $ret;
+    //    }
 }
 
 /** Generates JWT (JSON Web Token) for user identified by <username> and <password>
@@ -7751,11 +7753,11 @@ class AA_Password_Manager_Reader {
      */
     static function askForMail($user, $slice_id, $from_email) {
         if ( !trim($user) ) {
-            return self::_bad(_m("Unable to find user - please check if it has been misspelled."));
+            return self::bad(_m("Unable to find user - please check if it has been misspelled."));
         }
         if (!($user_id = AA_Reader::name2Id($user, [$slice_id]))) {
             if (!($user_id = AA_Reader::email2Id($user, [$slice_id]))) {
-                return self::_bad(_m("Unable to find user - please check if it has been misspelled."));
+                return self::bad(_m("Unable to find user - please check if it has been misspelled."));
             }
         }
         $user_info = GetAuthData($user_id);
@@ -7790,7 +7792,7 @@ class AA_Password_Manager_Reader {
             $mail->send([$email]);
         }
 
-        return self::_ok(_m('E-mail with a key to change the password has just been sent to the e-mail address: %1', [$email]));
+        return self::ok(_m('E-mail with a key to change the password has just been sent to the e-mail address: %1', [$email]));
     }
 
     /**
@@ -7800,7 +7802,7 @@ class AA_Password_Manager_Reader {
      */
     static function getChangeForm($key, $user) {
         if (!self::isValidKey($key, $user)) {
-            return self::_bad(_m("Bad or expired key."));  // @todo get messages from somewhere
+            return self::bad(_m("Bad or expired key."));  // @todo get messages from somewhere
         }
         return '
         <form name="pwdmanagerchangeform" method="post" action="" class="aapwdmanagerchangeform">
@@ -7828,27 +7830,22 @@ class AA_Password_Manager_Reader {
      */
     static function changePassword($pwd1, $pwd2, $key, $user, $from_email) {
         if (!self::isValidKey($key, $user)) {
-            return self::_bad(_m("Bad or expired key."));  // @todo get messages from somewhere
+            return self::bad(_m("Bad or expired key."));  // @todo get messages from somewhere
         }
         if ($pwd1 != $pwd2) {
-            return self::_bad(_m("Passwords do not match - please try again."));  // @todo get messages from somewhere
+            return self::bad(_m("Passwords do not match - please try again."));  // @todo get messages from somewhere
         }
         if (strlen($pwd1) < 6) {
-            return self::_bad(_m("The password must be at least 6 characters long."));  // @todo get messages from somewhere
+            return self::bad(_m("The password must be at least 6 characters long."));  // @todo get messages from somewhere
         }
 
         if (UpdateField($user, 'password........', new AA_Value(ParamImplode(['AA_PASSWD',$pwd1])))) {
-            return self::_ok(_m("Password changed."));
+            return self::ok(_m("Password changed."));
         }
-        return self::_ok(_m("An error occurred during password change - please contact: %1.", [$from_email]));
+        return self::ok(_m("An error occurred during password change - please contact: %1.", [$from_email]));
     }
 
-    /**
-     * @param $key
-     * @param $user_id
-     * @return bool
-     */
-    function isValidKey($key, $user_id) {
+    private static function isValidKey($key, $user_id) : bool {
         if (!$key OR !$user_id) {
             return false;
         }
@@ -7866,11 +7863,7 @@ class AA_Password_Manager_Reader {
         return false;
     }
 
-    /**
-     * @param $text
-     * @return string
-     */
-    function _bad($text) {
+    private static function bad($text) : string {
         return '<div class="aa-err">'.$text.'</div>'.AA_Password_Manager_Reader::getFirstForm();
     }
 
@@ -7878,12 +7871,12 @@ class AA_Password_Manager_Reader {
      * @param $text
      * @return string
      */
-    function _ok($text) {
+    private static function ok($text) :string {
         return '<div class="aa-ok">'.$text.'</div>';
     }
 
     /** we need to check, if the text answer means OK or Bad */
-    public static function is_ok($text) {
+    public static function is_ok($text) : bool {
         return strpos($text, '<div class="aa-ok">') === 0;
     }
 }

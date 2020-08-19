@@ -72,14 +72,14 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 // ----- input variables normalization - end ----------------------------------
 
 
-require_once "./include/config.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."view.php3";
-require_once AA_INC_PATH."discussion.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
+require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/include/util.php3";
+require_once __DIR__."/include/item.php3";
+require_once __DIR__."/include/view.php3";
+require_once __DIR__."/include/discussion.php3";
+require_once __DIR__."/include/pagecache.php3";
+require_once __DIR__."/include/searchlib.php3";
+require_once __DIR__."/include/locsess.php3";    // DB_AA object definition
 
 add_vars();
 

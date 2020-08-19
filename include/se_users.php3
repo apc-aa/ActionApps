@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ function ChangeRole() {
             AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
             AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
         }
-    } elseif( $UsrDel ) {
+    } elseif ( $UsrDel ) {
         if ( CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, $perms_roles["AUTHOR"]['perm']) ) { // smallest permission
             DelPerm($UsrDel, $slice_id, "slice");
         }

@@ -31,10 +31,10 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once "../../include/config.php3";
-require_once AA_BASE_PATH."misc/mgettext/xmgettext.php3";
-require_once AA_BASE_PATH."misc/mgettext/translate.php3";
-require_once AA_BASE_PATH."misc/mgettext/createlogs.php3";
+require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../misc/mgettext/xmgettext.php3";
+require_once __DIR__."/../../misc/mgettext/translate.php3";
+require_once __DIR__."/../../misc/mgettext/createlogs.php3";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
 $lang_list = [

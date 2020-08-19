@@ -24,7 +24,7 @@ if ($_REQUEST['free']) {   // can't be just POST - we use it in live Tags, which
     $nobody = true;
 }
 
-require_once __DIR__. "/include/init_central.php";
+require_once __DIR__."/include/init_central.php";
 
 /** AA_Responder base class - defines some useful common methods
  */
@@ -406,7 +406,7 @@ if ( empty($responder) ) {
 }
 
 if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(), $auth->auth["uid"]]), 101);  // error code > 0
+    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder->name(),$auth->auth["uid"]]), 101);  // error code > 0
     exit;
 }
 

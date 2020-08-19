@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 use AA\Widget\Widget;
 
 /** for AA_Generator_*   */
-require_once AA_INC_PATH."itemfunc.php3";
+require_once __DIR__."/itemfunc.php3";
 
 class AA_Field {
 

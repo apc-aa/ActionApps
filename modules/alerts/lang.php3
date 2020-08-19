@@ -22,18 +22,18 @@ https://www.apc.org/
 // includes for alerts files
 
 if (!defined ("AA_ID")) {
-    require_once "../../include/config.php3";
+    require_once __DIR__."/../../include/config.php3";
 }
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."varset.php3";
+require_once __DIR__."/../../include/locsess.php3";
+require_once __DIR__."/../../include/util.php3";
+require_once __DIR__."/../../include/varset.php3";
 // mini gettext language environment (the _m() function)
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/../../include/mgettext.php3";
 
 if (!$lang) {
     $lang = "en";
 }
 mgettext_bind($lang, 'alerts');
 
-require_once "util.php3";
+require_once __DIR__."/util.php3";
 

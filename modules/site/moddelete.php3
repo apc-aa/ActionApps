@@ -20,9 +20,9 @@ https://www.apc.org/
 */
 // expected $del - unpacked id of module to delete
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH . "msgpage.php3";
-require_once AA_INC_PATH . "modutils.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/msgpage.php3";
+require_once __DIR__."/../../include/modutils.php3";
 
 
 if ($cancel)

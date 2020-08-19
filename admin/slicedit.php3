@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,13 @@
 */
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."date.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/date.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
 // add mlx functions
-require_once AA_INC_PATH."mlx.php";
+require_once __DIR__."/../include/mlx.php";
 
 $PERMS_STATE = [
     "0" => _m("Not allowed"),
@@ -70,7 +70,7 @@ $superadmin  = IsSuperadmin();
 
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
-require_once AA_INC_PATH."slicedit.php3";
+require_once __DIR__."/../include/slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
 

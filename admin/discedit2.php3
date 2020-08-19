@@ -1,6 +1,6 @@
 <?php
  /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@
 //             $d_id
 // optionaly   $update
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
 
 if ($cancel) {
     go_url(StateUrl(self_base() . "discedit.php3?item_id=".$item_id));
@@ -41,9 +41,9 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."discussion.php3";
-require_once AA_INC_PATH."item.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/discussion.php3";
+require_once __DIR__."/../include/item.php3";
 
 $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();

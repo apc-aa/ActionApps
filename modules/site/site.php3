@@ -20,11 +20,11 @@ https://www.apc.org/
 */
 
 // APC AA site Module main administration page
-require_once "../../include/config.php3";
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."zids.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."locauth.php3";
+require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../include/locsess.php3";
+require_once __DIR__."/../../include/zids.php3";
+require_once __DIR__."/../../include/pagecache.php3";
+require_once __DIR__."/../../include/locauth.php3";
 
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] AND !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
@@ -65,7 +65,7 @@ if ($cacheentry = $GLOBALS['pagecache']->getPage($cache_key,$site_nocache)) {
 
 // -- /CACHE ------------------------------------------------------------------
 
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/../../include/util.php3";
 
 /**
  * @param $domain
@@ -107,7 +107,7 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
-require_once AA_BASE_PATH."modules/site/router.class.php";
+require_once __DIR__."/../../modules/site/router.class.php";
 
 $err = [];          // error array (Init - just for initializing variable
 
@@ -213,12 +213,12 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
         }
         // else - older behavior - site cares
     }
-    //    } elseif( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
+    //    } elseif ( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
 } elseif ( $module->getProperty('state_file') ) {
     // in the following file we should define apc_state variable
-    require_once __DIR__.'/legacy_util.php';
-    require_once AA_BASE_PATH."modules/site/sites/site_".$module->getProperty('state_file');
+    require_once "legacy_util.php";
+    require_once __DIR__."/sites/site_".$module->getProperty('state_file');
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
 }
@@ -228,12 +228,12 @@ if ( !isset($apc_state) )  {
     exit;
 }
 
-require_once AA_BASE_PATH."modules/site/util.php3";                      // module specific utils
-require_once AA_BASE_PATH."modules/site/sitetree.php3";
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."view.php3";
-require_once AA_INC_PATH."discussion.php3";
-require_once AA_INC_PATH."item.php3";
+require_once __DIR__."/../../modules/site/util.php3";                      // module specific utils
+require_once __DIR__."/../../modules/site/sitetree.php3";
+require_once __DIR__."/../../include/searchlib.php3";
+require_once __DIR__."/../../include/view.php3";
+require_once __DIR__."/../../include/discussion.php3";
+require_once __DIR__."/../../include/item.php3";
 
 if ($lang_file) {
     mgettext_bind(AA_Langs::getLang($lang_file), 'output');

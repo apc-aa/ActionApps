@@ -215,7 +215,7 @@ function Links_SliceID2Category($sl_id) {
  */
 function Links_GetLinkContent($zids) {
     if (!$zids OR $zids->count()<1) {
-        return false;
+        return [];
     }
 
     $db = getDB();

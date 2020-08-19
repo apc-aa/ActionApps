@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 // Message page with menu. Can't be in util.php3 since of the menu usage.
 //
 
-require_once AA_INC_PATH."constants.php3";
+require_once __DIR__."/constants.php3";
 
 /** MsgPageMenu function
  *  Displays page with message and link to $url
@@ -42,7 +42,7 @@ function MsgPageMenu($url, $msg, $mode, $menu="") {
     global $sess;
 
     if ( !isset($sess) ) {
-        require_once AA_INC_PATH . "locauth.php3";
+        require_once __DIR__."/locauth.php3";
         pageOpen();
     }
 

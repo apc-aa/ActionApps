@@ -4,7 +4,7 @@
  * See include/lang/readme.html for more info, and misc/mgettext for scripts
  * used to maintain the language files.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ function get_mgettext_lang() {
 
 /** bind_mgettext_domain function
  *  Reads language constants from given file/
- *   @param string $filename  full path
+ *   @param string $filename  in include/lang directory
  *   @param bool $cache     Should the old language constants remain in memory?
  *                     You will need this behaviour only when using a script which
  *                     several times changes the language,
@@ -53,6 +53,8 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;     //    $mgettext_lang must be here for some reason... hm-2020-08-10
 
     static $_m_backup = [];
+
+    $filename = __DIR__.'/lang/'.$filename;
 
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
@@ -80,7 +82,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
 }
 
 function mgettext_bind($lang, $section, $cache=false) {
-    bind_mgettext_domain(AA_INC_PATH.'lang/'.$lang.'_'.$section.'_lang.php3', $cache, $lang);
+    bind_mgettext_domain( $lang.'_'.$section.'_lang.php3', $cache, $lang);
 }
 
 /** _m function

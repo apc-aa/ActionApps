@@ -9,7 +9,7 @@
  *   $fileName        - file in upload directory
  *   $addParamsSerial - serialized additional parameters (file type specific)
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,12 +33,12 @@
  *
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."import_util.php3";
-require_once AA_INC_PATH."constants_param_wizard.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."feeding.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/import_util.php3";
+require_once __DIR__."/../include/constants_param_wizard.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/feeding.php3";
 
 /** findNearestText function
  * Returns key of the $array, which value is most similar to given $text

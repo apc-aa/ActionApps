@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ class AA_Jstriggers {
 
         if (preg_match('/^v[0-9a-f]+$/', $unpacked_fieldid)) {
             $fieldid = pack_id(substr($unpacked_fieldid,1));
-        } elseif(preg_match('/^[0-9a-f]+$/', $unpacked_fieldid)) {
+        } elseif (preg_match('/^[0-9a-f]+$/', $unpacked_fieldid)) {
             $fieldid = pack_id($unpacked_fieldid);
         } else {
             $fieldid = $unpacked_fieldid;

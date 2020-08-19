@@ -5,7 +5,7 @@
  *
  * Should be included to other scripts (as /admin/itemedit.php3)
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,13 +36,13 @@ use AA\Widget\Widget;
 * Form utility functions
 */
 
-require_once AA_INC_PATH."constedit_util.php3";
-require_once AA_INC_PATH."itemfunc.php3";
-require_once AA_INC_PATH."stringexpand.php3";
-require_once AA_INC_PATH."validate.php3";
+require_once __DIR__."/constedit_util.php3";
+require_once __DIR__."/itemfunc.php3";
+require_once __DIR__."/stringexpand.php3";
+require_once __DIR__."/validate.php3";
 
 // IsUserNameFree() function definition here
-require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
+require_once __DIR__."/perm_" . PERM_LIB . ".php3";
 
 define('AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
 define('AA_WIDTHTOR_SHORT', '<option value="wIdThTor">&nbsp;</option>');

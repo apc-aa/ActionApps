@@ -6,7 +6,7 @@
  * into a table, if any handler waits for the event. If so, all matched
  * handlers are called.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,10 @@
 */
 
 
-require_once AA_INC_PATH."mail.php3";
-require_once AA_BASE_PATH."modules/alerts/event.php3";
+require_once __DIR__."/mail.php3";
+require_once __DIR__."/../modules/alerts/event.php3";
 //mimo add
-require_once AA_INC_PATH."mlx.php";
+require_once __DIR__."/mlx.php";
 
 
 /**
@@ -329,7 +329,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
     $content4id  = reset($content4ids);  // get first element
 
     // send e-mail also to author of the item
-    if ( AA_Validate::validate($content4id['e_posted_by.....'][0]['value'], 'email')) {
+    if ( AA_Validate::doValidate($content4id['e_posted_by.....'][0]['value'], 'email')) {
         $emails[] = $content4id['e_posted_by.....'][0]['value'];
     }
     if ( count($emails) < 1 ) {

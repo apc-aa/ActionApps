@@ -4,7 +4,7 @@
  *   optionaly $import_id for selected imported slice
  *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@
 */
 
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."csn_util.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/csn_util.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));

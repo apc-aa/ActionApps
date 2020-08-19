@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,12 +142,13 @@ class Actions {
                      // case "display_count..." : $v = 0; break;
                      case 'status_code.....' : $done = 1; $fieldVal[]['value'] = 1; break; // todo
                      case 'flags...........' : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
+                     case 'post_date.......':
+                     case 'last_edit.......':
                      case 'publish_date....' : $done = 1; $fieldVal[]['value'] = time(); break;
-                     case 'post_date.......' : $done = 1; $fieldVal[]['value'] = time(); break;
-                     case 'last_edit.......' : $done = 1; $fieldVal[]['value'] = time(); break;
                      case 'expiry_date.....' : $done = 1; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
+                     case 'edited_by.......':
                      case 'posted_by.......' : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
-                     case 'edited_by.......' : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
+                     // todo
                      case 'id..............' : $done = 1; $fieldVal[]['value'] = new_id(); break;
                      default :
                          if ( $action['from'] && ($action['from'] != '__empty__')) {

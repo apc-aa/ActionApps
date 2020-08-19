@@ -17,7 +17,7 @@
  *   You just need to define the appropriate array structure in constants_param_wizard.php3.
  *   See se_inputform and the JavaScript callParamWizard function for an example how to call the wizard.
  *
- *  PHP versions 4 and 5
+ *  PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,9 @@
 
 use AA\Widget\Widget;
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once AA_INC_PATH . "constants_param_wizard.php3";
+require_once __DIR__."/../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

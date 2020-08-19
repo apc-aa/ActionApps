@@ -8,7 +8,7 @@
  *    Function "showHierConstInitJavaScript (group_id)" prints JavaScript definitions needed for the editor
  *    Function "hcUpdate" deletes and updates all things in Admin panel
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

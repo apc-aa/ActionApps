@@ -2,7 +2,7 @@
 /**
  * A class for manipulating slices
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 
 use AA\Widget\Widget;
 
-require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
+require_once __DIR__."/zids.php3"; // Pack and unpack ids
 
 class AA_Module {
     /** define, which class is used for module setting - like AA_Modulesettings_Slice */
@@ -218,7 +218,7 @@ class AA_Module {
         return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
     }
 
-    static public function processModuleObject($module_id) {
+    public static function processModuleObject($module_id) {
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
             // make sure the slicesettings object for this slice exists
@@ -234,7 +234,7 @@ class AA_Module {
         }
     }
 
-    static public function getModuleObjectForm($module_id) {
+    public static function getModuleObjectForm($module_id) {
         $class = static::SETTING_CLASS;
         if ($module_id AND !empty($class)) {
             return AA_Form::factoryForm($class, string2id($class.$module_id), $module_id)->getObjectEditHtml();

@@ -4,7 +4,7 @@
  * Event handlers and maintenance.
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
  *
 */
 
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/util.php3";
 
 // we tried to remove all global $db, so let's try to comment out following global object
 // honza 2015-12-30

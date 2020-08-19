@@ -95,26 +95,26 @@ if ( !$apc ) {
     }
     $apc .= substr('zzvx--',-( 6-strlen($apc) ));
   }
-  elseif( IsInDomain('zpravodajstvi.ecn.cz') ) $apc = 'zzvx--';
-  elseif( IsInDomain('enviro.ecn.cz') ) $apc = 'zzzx--';
-  elseif( IsInDomain('soc.ecn.cz') ) $apc = 'zzsx--';
-  elseif( IsInDomain('lprava.ecn.cz') ) $apc = 'zzlx--';
-  elseif( IsInDomain('kultura.ecn.cz') ) $apc = 'zzkx--';
-  elseif( IsInDomain('gender.ecn.cz') ) $apc = 'zzgx--';
-  elseif( IsInDomain('regiony.ecn.cz') ) $apc = 'zzrx--';
-  elseif( IsInDomain('internet.ecn.cz') ) $apc = 'zzix--';
-  elseif( IsInDomain('econnect.ecn.cz') ) $apc = 'e31x1--';
-  elseif( IsInDomain('nno.ecn.cz') ) $apc = 'nN1x--';
-  elseif( IsInDomain('fundraising.ecn.cz') ) $apc = 'nF1x--';
-  elseif( IsInDomain('granty.ecn.cz') ) $apc = 'nF2x--';
-  elseif( IsInDomain('prace.ecn.cz') ) $apc = 'nJ1x--';
-  elseif( IsInDomain('joblist.ecn.cz') ) $apc = 'nJ1x--';
-  elseif( IsInDomain('legislativa.ecn.cz') ) $apc = 'nP1x--';
-  elseif( IsInDomain('kauzy.ecn.cz') ) $apc = 'nP2x1--';
-  elseif( IsInDomain('podpora.ecn.cz') ) $apc = 'e61x1-73165';
-  elseif( IsInDomain('sluzby.ecn.cz') ) $apc = 'e71x1--';
-  elseif( IsInDomain('objednavka.ecn.cz') ) $apc = 'e81x1-88866';
-  elseif( IsInDomain('cenik.ecn.cz') ) $apc = 'e91x1--';
+  elseif ( IsInDomain('zpravodajstvi.ecn.cz') ) $apc = 'zzvx--';
+  elseif ( IsInDomain('enviro.ecn.cz') ) $apc = 'zzzx--';
+  elseif ( IsInDomain('soc.ecn.cz') ) $apc = 'zzsx--';
+  elseif ( IsInDomain('lprava.ecn.cz') ) $apc = 'zzlx--';
+  elseif ( IsInDomain('kultura.ecn.cz') ) $apc = 'zzkx--';
+  elseif ( IsInDomain('gender.ecn.cz') ) $apc = 'zzgx--';
+  elseif ( IsInDomain('regiony.ecn.cz') ) $apc = 'zzrx--';
+  elseif ( IsInDomain('internet.ecn.cz') ) $apc = 'zzix--';
+  elseif ( IsInDomain('econnect.ecn.cz') ) $apc = 'e31x1--';
+  elseif ( IsInDomain('nno.ecn.cz') ) $apc = 'nN1x--';
+  elseif ( IsInDomain('fundraising.ecn.cz') ) $apc = 'nF1x--';
+  elseif ( IsInDomain('granty.ecn.cz') ) $apc = 'nF2x--';
+  elseif ( IsInDomain('prace.ecn.cz') ) $apc = 'nJ1x--';
+  elseif ( IsInDomain('joblist.ecn.cz') ) $apc = 'nJ1x--';
+  elseif ( IsInDomain('legislativa.ecn.cz') ) $apc = 'nP1x--';
+  elseif ( IsInDomain('kauzy.ecn.cz') ) $apc = 'nP2x1--';
+  elseif ( IsInDomain('podpora.ecn.cz') ) $apc = 'e61x1-73165';
+  elseif ( IsInDomain('sluzby.ecn.cz') ) $apc = 'e71x1--';
+  elseif ( IsInDomain('objednavka.ecn.cz') ) $apc = 'e81x1-88866';
+  elseif ( IsInDomain('cenik.ecn.cz') ) $apc = 'e91x1--';
   else $apc = 'zzvx--';
 }
 
@@ -140,7 +140,7 @@ if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy 
 
 if ( isset($f) ) {$old_f=$f; $old_x='';$old_p='1';}    // f stands for FILTER (like zivotni protredi - z, kultura - k) - used only on zpravodajsvi page yet
 if ( isset($r) ) {
-  if ( isset($r) and is_array($r)) {
+  if ( is_array($r)) {
     foreach ($r as $k => $foo) {
         $max_index = max($max_index, $k);
     }

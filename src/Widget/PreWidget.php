@@ -33,6 +33,6 @@ class PreWidget extends \AA\Widget\FldWidget
 
     /** @inheritDoc */
     public function description(): string {
-        // TODO: Implement description() method.
+        return ''; // TODO: Implement description() method.
     }
 }

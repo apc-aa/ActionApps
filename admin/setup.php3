@@ -1,7 +1,7 @@
 <?php
 // $Id$
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,15 +52,15 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 }
 // ----- input variables normalization - end ----------------------------------
 
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";
+require_once __DIR__."/../include/perm_core.php3";
+require_once __DIR__."/../include/perm_" . PERM_LIB . ".php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/mgettext.php3";
+bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
-require_once "../include/config.php3";
-require_once AA_INC_PATH. "locsess.php3";
-require_once AA_INC_PATH. "perm_core.php3";
-require_once AA_INC_PATH. "perm_" . PERM_LIB . ".php3";
-require_once AA_INC_PATH. "util.php3";
-require_once AA_INC_PATH. "formutil.php3";
-require_once AA_INC_PATH. "mgettext.php3";
-bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
 /** HtmlStart function
  * @return prints title,body,h1
  */

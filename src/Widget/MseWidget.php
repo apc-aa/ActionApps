@@ -25,7 +25,7 @@ class MseWidget extends \AA\Widget\MchWidget
 
     /** @inheritDoc */
     public function description(): string {
-        // TODO: Implement description() method.
+        return ''; // TODO: Implement description() method.
     }
 
     /** returns if the widget handles multivalue or just single value   */

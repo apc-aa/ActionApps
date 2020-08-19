@@ -1,7 +1,7 @@
 <?php
  /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     /** \AA\Util\NamedInterface function */
     public function description(): string  {}
 
-    function test()         {}
-    function repair()       {}
+    public function test() : bool     {}
+    public function repair() : bool   {}
 
     /** implemented actions within this class */
     function actions()      { return ['test','repair']; }
@@ -136,7 +136,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $duplicates = $this->_check_table();
 
         if (count($duplicates)==0) {
@@ -149,7 +149,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
         return false;
     }
 
-    function repair() {
+    public function repair() : bool {
         $varset = new Cvarset;
         // $varset->setDebug();
 
@@ -235,7 +235,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     /** Test function
     * @return string - a message
     */
-    function test() {
+    public function test() : bool {
         $template_metabase = AA::Metabase();
         $this_metabase     = new AA_Metabase;
         $this_metabase->loadFromDb();
@@ -259,7 +259,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $template_metabase = AA::Metabase();
         $this_metabase     = new AA_Metabase;
         $this_metabase->loadFromDb();
@@ -276,7 +276,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
             $this->query($template_metabase->getCreateSql($tablename, 'tmp_'));
 
             // create new tables that do not exist in database
-            // (we need it for next data copy, else if ends up with db error)
+            // (we need it for next data copy, else it ends up with db error)
             $this->message(_m('Creating "old" data table %1 if not exists.', [$tablename]));
             $this->query($template_metabase->getCreateSql($tablename));
 
@@ -327,7 +327,7 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         // Code-pages
@@ -364,7 +364,7 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
 
 
         $this->message(_m('Deleting Code-pages, Languge Constants, AA Bins constants and APC-wide categories'));
@@ -553,7 +553,7 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='News_EN_tmpl....'", "aa_first", 'count');
@@ -567,7 +567,7 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
 
         $now         = time();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
@@ -645,7 +645,7 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='ReaderManagement'", "aa_first", 'count');
@@ -659,7 +659,7 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
 
         $now         = time();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
@@ -728,7 +728,7 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='noticias-es.....'", "aa_first", 'count');
@@ -742,7 +742,7 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
 
         $now         = time();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
@@ -822,7 +822,7 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."'", "aa_first", 'count');
@@ -836,7 +836,7 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $this->message(_m('Deleting the view template "%1"', [$this->_viewType()]));
         $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."' ");
 
@@ -859,7 +859,7 @@ class AA_Optimize_Redefine_View_Const_Templates extends AA_Optimize_Redefine_Vie
      * @inheritDoc
      */
     public function description(): string {
-        // TODO: Implement description() method.
+        return ''; // TODO: Implement description() method.
     }
 }
 
@@ -868,7 +868,7 @@ class AA_Optimize_Redefine_View_Javascript_Templates extends AA_Optimize_Redefin
 
     public function name(): string { return _m("Redefine javascript template view"); }
     function _viewType()       { return 'javascript'; }
-    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Javascript ...', type='javascript', `before`='/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', even=NULL, odd='document.write(\"_#HEADLINE\");', even_odd_differ=NULL, after='// script end ', remove_string=NULL, group_title=NULL, order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=8, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'"; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Javascript ...', type='javascript', `before`='/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". AA_INSTAL_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', even=NULL, odd='document.write(\"_#HEADLINE\");', even_odd_differ=NULL, after='// script end ', remove_string=NULL, group_title=NULL, order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=8, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - rss**/
@@ -945,7 +945,7 @@ class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='SiteTemplate....'", "aa_first", 'count');
@@ -957,7 +957,7 @@ class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $now = time();
         $this->message(_m('Replacing module definition'));
@@ -994,7 +994,7 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/alerts/alerts.php3'", "aa_first", 'count');
@@ -1006,7 +1006,7 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $this->message(_m('Deleting AA Cron entry for Alerts Sending'));
         $this->query("DELETE FROM cron WHERE script='modules/alerts/alerts.php3'");
@@ -1037,7 +1037,7 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='admin/xmlclient.php3'", "aa_first", 'count');
@@ -1049,7 +1049,7 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $this->message(_m('Deleting AA Cron entry for Feeding'));
         $this->query("DELETE FROM cron WHERE script='admin/xmlclient.php3'");
@@ -1080,7 +1080,7 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='misc/optimize.php3'", "aa_first", 'count');
@@ -1092,7 +1092,7 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $this->message(_m('Deleting AA Cron entry for Database Optimalization'));
         $this->query("DELETE FROM cron WHERE script='misc/optimize.php3'");
@@ -1123,7 +1123,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/links/linkcheck.php3'", "aa_first", 'count');
@@ -1135,7 +1135,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $this->message(_m('Deleting AA Cron entry for Checking link stutus in Links module'));
         $this->query("DELETE FROM cron WHERE script='modules/links/linkcheck.php3'");
@@ -1166,7 +1166,7 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='misc/toexecute.php3'", "aa_first", 'count');
@@ -1178,7 +1178,7 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $this->message(_m('Deleting AA Cron entry for Toexecute queue execution'));
         $this->query("DELETE FROM cron WHERE script='misc/toexecute.php3'");
@@ -1211,7 +1211,7 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM email WHERE type='alerts welcome'", "aa_first", 'count');
@@ -1223,7 +1223,7 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $this->message(_m('Replacing the e-mail templates'));
         $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Welcome', 'Welcome to Econnect Alerts', 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'somebody@haha.cz', '', '', '', 'cz', 1, 'alerts welcome');");
@@ -1254,7 +1254,7 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
 
 
     /** Test function @return bool */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id LIKE '1Links%'", "aa_first", 'count');
@@ -1266,7 +1266,7 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
     }
 
     /** Main update function @return bool */
-    function repair() {
+    public function repair() : bool {
 
         $now = time();
         $this->message(_m('Replacing module definition'));
@@ -1360,7 +1360,7 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
     /** Test function
     * @return string - a message
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM module WHERE id='PollsTemplate...'", "aa_first", 'count');
@@ -1375,7 +1375,7 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
 
         $metabase = AA::Metabase();
         $this->query("DROP TABLE IF EXISTS `polls`");
@@ -1433,7 +1433,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='headline' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
@@ -1448,7 +1448,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
 
         $now         = time();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
@@ -1578,7 +1578,7 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='".$this->_fieldType()."' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
@@ -1593,7 +1593,7 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $this->message(_m('Recreate "%1" field definition', [$this->_fieldType()]));
         $this->query($this->_fieldDefinition());
         $this->message(_m('New "%1" field template added', [$this->_fieldType()]));
@@ -1820,7 +1820,7 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     /** Test function
     * @return string - a message
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $bck_exists = GetTable2Array("SHOW TABLES LIKE 'bck_content'", "aa_first");
@@ -1834,7 +1834,7 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $metabase   = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 
@@ -1883,7 +1883,7 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $metabase   = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 
@@ -1900,7 +1900,7 @@ class AA_Optimize_Backup_Tables extends AA_Optimize {
             $this->query("CREATE TABLE `bck_$tablename` LIKE `$tablename`");
 
             // create new tables that do not exist in database
-            // (we need it for next data copy, else if ends up with db error)
+            // (we need it for next data copy, else it ends up with db error)
             $this->message(_m('Copy data from %1 to bck_%1.', [$tablename]));
             $this->query("INSERT INTO `bck_$tablename` SELECT * FROM `$tablename`");
 
@@ -1936,7 +1936,7 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
     function isType($type)  { return in_array($type, ['sql_update']); }
 
     /** Test function @return a message  */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='".$this->_field()."') WHERE field.id IS NULL AND slice.id <> 'AA_Core_Fields..'", "aa_first", 'count');
@@ -1951,7 +1951,7 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $this->message(_m('Fixing missing %1 fields in slices', [$this->_field()]));
 
         $slices_to_fix = GetTable2Array("SELECT slice.id as sid FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='".$this->_field()."') WHERE field.id IS NULL", "", 'sid');
@@ -2029,7 +2029,7 @@ class AA_Optimize_Generate_Metabase extends AA_Optimize {
     /** Name function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $metabase  = new AA_Metabase;
         $metabase->loadFromDb();
         echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';

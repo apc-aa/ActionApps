@@ -1,7 +1,7 @@
 <?php
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_BASE_PATH. "modules/links/constants.php3";
-require_once AA_BASE_PATH. "modules/links/util.php3";
+require_once __DIR__."/../../include/searchlib.php3";
+require_once __DIR__."/../../modules/links/constants.php3";
+require_once __DIR__."/../../modules/links/util.php3";
 
 //$Id$
 /*

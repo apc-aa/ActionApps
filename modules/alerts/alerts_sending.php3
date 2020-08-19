@@ -26,13 +26,13 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."view.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."mail.php3";
-require_once AA_INC_PATH."item_content.php3";
-require_once AA_BASE_PATH."modules/alerts/util.php3";
+require_once __DIR__."/../../include/item.php3";
+require_once __DIR__."/../../include/view.php3";
+require_once __DIR__."/../../include/pagecache.php3";
+require_once __DIR__."/../../include/searchlib.php3";
+require_once __DIR__."/../../include/mail.php3";
+require_once __DIR__."/../../include/item_content.php3";
+require_once __DIR__."/../../modules/alerts/util.php3";
 
 //$debug = 1;
 
@@ -372,7 +372,7 @@ class AA_Collection {
                 if ($last_fprop["sort"]) {
                     parse_str( $last_fprop["sort"], $dbconds_arr);
                     $sort      = $dbconds_arr['sort'];
-                    $set       = &get_view_settings_cached($last_fprop["vid"]);
+                    $set       = get_view_settings_cached($last_fprop["vid"]);
                     $user_zids = QueryZids([unpack_id($set["info"]->f("slice_id"))], "", $sort, "ACTIVE", 0, $user_zids);
                 }
 
@@ -519,7 +519,7 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
         return "";
     }
     if ( !isset($cached_filter_outputs[$filter_settings])) {
-        $set = &get_view_settings_cached($vid);
+        $set = get_view_settings_cached($vid);
         // set language
         mgettext_bind($set["lang"], 'alerts', true);
 

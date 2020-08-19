@@ -1,13 +1,13 @@
 <?php
 //$Id$
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_BASE_PATH."modules/links/constants.php3";
-require_once AA_BASE_PATH."modules/links/util.php3";           // module specific utils
-require_once AA_BASE_PATH."modules/links/cattree.php3";        // for event handler Event_LinkNew
-require_once AA_BASE_PATH."modules/links/link.class.php3";     // link object
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../modules/links/constants.php3";
+require_once __DIR__."/../../modules/links/util.php3";           // module specific utils
+require_once __DIR__."/../../modules/links/cattree.php3";        // for event handler Event_LinkNew
+require_once __DIR__."/../../modules/links/link.class.php3";     // link object
 
 unset($r_state['linkedit']);
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input

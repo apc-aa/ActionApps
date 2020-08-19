@@ -26,14 +26,14 @@ https://www.apc.org/
 
 $no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for init_page.php3
 
-require_once "../../include/init_page.php3";
-//require_once AA_INC_PATH."en_site_lang.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."date.php3";
-require_once AA_INC_PATH."modutils.php3";
-require_once AA_BASE_PATH."modules/site/util.php3";
+require_once __DIR__."/../../include/init_page.php3";
+//require_once __DIR__."/../../include/en_site_lang.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/pagecache.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../include/date.php3";
+require_once __DIR__."/../../include/modutils.php3";
+require_once __DIR__."/../../modules/site/util.php3";
 
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
 

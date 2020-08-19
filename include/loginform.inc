@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
  *
 */
 
-bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
-require_once AA_INC_PATH."util.php3";
+bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
+require_once __DIR__."/util.php3";
 
 HtmlPageBegin();
 

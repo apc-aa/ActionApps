@@ -25,10 +25,10 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once AA_INC_PATH."mail.php3";
-require_once AA_INC_PATH."mgettext.php3";
-require_once AA_BASE_PATH."modules/alerts/util.php3";
-require_once AA_BASE_PATH."modules/alerts/alerts_sending.php3";
+require_once __DIR__."/../../include/mail.php3";
+require_once __DIR__."/../../include/mgettext.php3";
+require_once __DIR__."/../../modules/alerts/util.php3";
+require_once __DIR__."/../../modules/alerts/alerts_sending.php3";
 
 /** Sends welcome e-mail to newly subscribed readers, which means new
 *   "items" appearing in a Reader Management Slice.

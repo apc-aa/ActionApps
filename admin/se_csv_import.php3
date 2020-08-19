@@ -27,7 +27,7 @@
  *  $upfile   - applied when $dataType == "file"
  *  $text     - applied when $dataType == "text"
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,8 @@
 
 // todo - work with global variable $err??
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH. 'import_util.php3';
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/import_util.php3";
 
 define("FILE_PREFIX", 'importdata');
 
@@ -135,7 +135,7 @@ if ($upload) {
     go_url(StateUrl(self_base()."se_csv_import2.php3"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .bin2url(serialize($addParams)));
 }
 
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');

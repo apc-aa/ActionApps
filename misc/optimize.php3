@@ -34,11 +34,9 @@ https://www.apc.org/
 */
 
 // need config.php3 to set db access, and phplib, and probably other stuff
-define ('AA_INC_PATH', "../include/");
-
-require_once AA_INC_PATH."config.php3";
-require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";   // DB_AA definition
+require_once __DIR__."/../include/util.php3";
 
 set_time_limit(160);
 

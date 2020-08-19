@@ -7,10 +7,10 @@
 
 // Edit Link Page
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_BASE_PATH."modules/links/cattree.php3";
-require_once AA_BASE_PATH."modules/links/util.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../modules/links/cattree.php3";
+require_once __DIR__."/../../modules/links/util.php3";
 
 if (!$cid) {
     $cid = $r_state['cat_id'];

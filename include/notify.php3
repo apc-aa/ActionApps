@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@
 // utility for notifying people of events by email
 //
 
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."view.php3";
-require_once AA_INC_PATH."mail.php3";
+require_once __DIR__."/item.php3";
+require_once __DIR__."/view.php3";
+require_once __DIR__."/mail.php3";
 
 /** email_notify function
  *  notify users of an event

@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,13 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH . "varset.php3";
-require_once AA_INC_PATH . "formutil.php3";
-require_once AA_INC_PATH . "pagecache.php3";
-require_once AA_INC_PATH . "item.php3";
-require_once AA_BASE_PATH. "central/include/actionapps.class.php";
-require_once AA_BASE_PATH. "central/include/actions.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/item.php3";
+require_once __DIR__."/../central/include/actionapps.class.php";
+require_once __DIR__."/../central/include/actions.php3";
 
 /**
  * @return int[]

@@ -27,10 +27,10 @@ https://www.apc.org/
 */
 
 $require_default_lang = true;      // do not use module specific language file
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."varset.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/pagecache.php3";
+require_once __DIR__."/../../include/varset.php3";
 
 // create the $jumps array:
 $jumps = DB_AA::select(['jid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);

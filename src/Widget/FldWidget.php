@@ -7,8 +7,8 @@
  */
 
 namespace AA\Widget;
-use AA_Content;
 use AA\FormArray;
+use AA_Content;
 
 
 /** Text Field widget */
@@ -135,6 +135,6 @@ class FldWidget extends \AA\Widget\Widget
 
     /** @inheritDoc */
     public function description(): string {
-// TODO: Implement description() method.
+return ''; // TODO: Implement description() method.
     }
 }

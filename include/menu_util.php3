@@ -3,7 +3,7 @@
  *   by the function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,7 +240,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
     if ($menu_require = AA_Module::getModuleInfo('menu', AA::$module_id)) {
 
         if (!function_exists('get_aamenus')) {
-            require_once AA_BASE_PATH . $menu_require;
+            require_once __DIR__."/../" . $menu_require;
         }
         // @todo
         // Menu functions are defined in include/menu.php3 or modules/*/menu.php3

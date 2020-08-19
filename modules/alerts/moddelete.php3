@@ -7,4 +7,4 @@
  * @author Jakub Ad�mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
-    require_once "../../admin/slicedel2.php3";
+    require_once __DIR__."/../../admin/slicedel2.php3";

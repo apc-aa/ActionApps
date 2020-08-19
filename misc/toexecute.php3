@@ -31,17 +31,14 @@ https://www.apc.org/
 */
 
 /** APC-AA configuration file */
-require_once "../include/config.php3";
+require_once __DIR__."/../include/config.php3";
 /** Main include file for using session management function on page */
-require_once AA_INC_PATH."locsess.php3";
-/** Defines class for inserting and updating database fields */
-require_once AA_INC_PATH."varset.php3";
-/** */
-require_once AA_INC_PATH."util.php3";
-
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH.  "mail.php3";
-require_once AA_BASE_PATH. "modules/links/cattree.php3";
+require_once __DIR__."/../include/locsess.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/mail.php3";
+require_once __DIR__."/../modules/links/cattree.php3";
 
 /** This script is possible to run from commandline (so also from cron). The
  * benefit is, that the script then can run as long as you want - it is not

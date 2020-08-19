@@ -3,7 +3,7 @@
  * edit, download, rename a file here
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
         }
     }
 }
-else if ($filetype == _m("Image file"))
+elseif ($filetype == _m("Image file"))
     echo "<img src='$fe_wwwpath$fe_filename' border=\"0\">";
 else
     echo _m("This is a file of type")." $filetype. "._m("I can't view it. If you want to view or edit it, change it's extension.");

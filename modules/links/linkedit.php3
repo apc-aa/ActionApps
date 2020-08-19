@@ -17,12 +17,12 @@
 
 // Edit Link Page
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_BASE_PATH."modules/links/constants.php3";
-require_once AA_BASE_PATH."modules/links/cattree.php3";
-require_once AA_BASE_PATH."modules/links/util.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/util.php3";
+require_once __DIR__."/../../modules/links/constants.php3";
+require_once __DIR__."/../../modules/links/cattree.php3";
+require_once __DIR__."/../../modules/links/util.php3";
 
 function printChange($field, $change_arr, $original_value="") {
     global $created_by_change; // used for display of initiator of the change
@@ -53,7 +53,7 @@ $select_start = get_if( (int)$_GET['select_start'], (int)$links_info['select_sta
 $select_depth = substr_count(Links_GetCategoryColumn( $select_start, 'path' ), ',');  // count tree start category depth
 
 // load right langfile, if it is not loaded
-bind_mgettext_domain(AA_INC_PATH."lang/".$r_lang_file);
+bind_mgettext_domain($r_lang_file);
 
 // r_err and r_msg - passes messages between scripts
 if ( !isset($r_err) ) {

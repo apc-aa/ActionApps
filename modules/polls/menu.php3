@@ -2,7 +2,7 @@
 /**
 * Polls module is based on Till Gerken's phpPolls version 1.0.3. Thanks!
 *
-* PHP versions 4 and 5
+* PHP version 7.2+
 *
 * LICENSE: This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,9 @@
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-require_once AA_INC_PATH."menu_util.php3";
-require_once AA_INC_PATH."perm_core.php3";
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/../../include/menu_util.php3";
+require_once __DIR__."/../../include/perm_core.php3";
+require_once __DIR__."/../../include/mgettext.php3";
 //mgettext_bind(substr(LANG_FILE,0,2), 'news');
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().

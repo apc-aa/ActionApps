@@ -3,7 +3,7 @@
  * Form displayed in popup window allowing search and replace item content
  * for specified items
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@
  *
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH. "formutil.php3";
-require_once AA_INC_PATH. "varset.php3";
-require_once AA_INC_PATH. "transformation.class.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/transformation.class.php3";
 
 define('SEARCH_REPLACE_PREFIX', 'transform');
 
@@ -50,27 +50,26 @@ if ( !$fill ) {               // for the first time - directly from item manager
     // init variable settings goes here
 } else {
     $items     = $r_sr_state['items'];  // session variable holds selected items from item manager
-    if ( $fill ) {    // we really want to fill fields
-        $zids          = new zids;
-        $updated_items = 0;
-        if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
-            $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
-            $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
+    // we really want to fill fields
+    $zids          = new zids;
+    $updated_items = 0;
+    if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
+        $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
+        $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
-            $transformator  = new AA_Transformator;
-            $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent);
-        }
-
-        $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", [$zids->count(), $updated_items]));
-        if ((string)$group == (string)"sel_item") {
-            $sel = "LIST";
-        } elseif ((string)$group == (string)"testitemgroup") {
-            $sel = "TEST";
-        } else {
-            $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
-        }
-        AA_Log::write("ITEM_FIELD_FILLED", $sel, [$zids->count(), $updated_items]);
+        $transformator  = new AA_Transformator;
+        $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent);
     }
+
+    $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", [$zids->count(), $updated_items]));
+    if ((string)$group == (string)"sel_item") {
+        $sel = "LIST";
+    } elseif ((string)$group == (string)"testitemgroup") {
+        $sel = "TEST";
+    } else {
+        $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
+    }
+    AA_Log::write("ITEM_FIELD_FILLED", $sel, [$zids->count(), $updated_items]);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

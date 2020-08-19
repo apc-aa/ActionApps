@@ -2,7 +2,7 @@
 
 /** Shows a Table View, allowing to edit, delete, update fields of a table
    @param $set_tview -- required, name of the table view
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,15 @@ use AA\Util\ChangesMonitor;
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."date.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."tabledit.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/date.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/tabledit.php3";
 //require_once menu_include();      //show navigation column depending on $show
-require_once AA_INC_PATH."mgettext.php3";
-require_once AA_BASE_PATH."modules/alerts/util.php3";
+require_once __DIR__."/../include/mgettext.php3";
+require_once __DIR__."/../modules/alerts/util.php3";
 
 if (!IsSuperadmin()) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do search."), "admin");
@@ -48,11 +48,9 @@ if (!IsSuperadmin()) {
 function AdminLink($table, $row)
 {
     switch ($table) {
-        case 'item':
-            return AafinderItemLink($row['iid'], $row['sid']);
         case 'content':
-            return AafinderItemLink($row['iid'], $row['sid']);
         case 'discussion':
+        case 'item':
             return AafinderItemLink($row['iid'], $row['sid']);
         case 'view':
             return AafinderViewLink($row['iid'], $row['sid']);

@@ -128,8 +128,7 @@ class linkassignment {
         if ( !$cattree->exists($this->category) ) {
             $problem[] = problem_report('assigned_cat_not_exist',$this->category);
         }
-        if ( ($this->state == 'hidden') AND ( !$base OR
-                                              ($base AND ($base->getState() != 'hidden') AND !$base->isProposal() ))) {
+        if ( ($this->state == 'hidden') AND ( !$base OR (($base->getState() != 'hidden') AND !$base->isProposal() ))) {
             $problem[] = problem_report($base ? 'hidden_when_base_is_approved': 'hidden_and_no_base',$this->category);
             //DoSQL("UPDATE links_link_cat SET state='visible' WHERE a_id='".$this->id."'");
             DB_AA::update('links_link_cat', [['state', 'visible']], [['a_id',$this->id]]);

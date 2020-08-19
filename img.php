@@ -10,7 +10,7 @@
 //                                                         ///
 //////////////////////////////////////////////////////////////
 
-require_once "./include/config.php3";
+require_once __DIR__."/./include/config.php3";
 
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
@@ -110,9 +110,9 @@ function RedirectToCachedFile() {
 // instantiate a new phpThumb() object
 ob_start();
 //if (!include_once(__DIR__.'/phpthumb.class.php')) {
-if (!include_once(AA_PHPTHUMB_PATH.'phpthumb.class.php')) {  // Honza AA Change
+if (!include_once(__DIR__."/misc/phpThumb/phpthumb.class.php")) {  // Honza AA Change
     ob_end_flush();
-    die('failed to include_once("'.realpath(__DIR__.'/phpthumb.class.php').'")');
+    die('failed to include_once("'.__DIR__.'/misc/phpThumb/phpthumb.class.php")');
 }
 ob_end_clean();
 $phpThumb = new phpThumb();
@@ -126,7 +126,7 @@ if (!phpthumb_functions::FunctionIsDisabled('set_time_limit')) {
 // phpThumbDebug[0] used to be here, but may reveal too much
 // info when high_security_mode should be enabled (not set yet)
 ob_start();
-include_once AA_PHPTHUMB_PATH.'phpthumb.config.php';  // Honza AA Change
+include_once __DIR__."/misc/phpThumb/phpthumb.config.php";  // Honza AA Change
 ob_end_clean();
 
 if (!empty($PHPTHUMB_CONFIG)) {

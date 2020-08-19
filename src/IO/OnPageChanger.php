@@ -28,11 +28,6 @@
 namespace AA\IO;
 
 use AA;
-use AA_Condition;
-use AA\IO\Grabber\AbstractGrabber;
-use AA_Set;
-use AA_Transformation;
-use ItemContent;
 
 /** OnPageChanger class - reacts to AJAX calls on page and changes page parts
  */
@@ -63,7 +58,7 @@ class OnPageChanger  {
                 $grabber = new AA\IO\Grabber\Form();
                 $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
                 // $saver - > check Perms @todo
-                list($saved_ok,$saved_err) = $saver->run();
+                [$saved_ok,$saved_err] = $saver->run();
 
                 $err_msg = $saved_err ? $saver->report() : '';
 

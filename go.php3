@@ -60,11 +60,11 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 
 
 /** APC-AA configuration file */
-require_once "./include/config.php3";
+require_once __DIR__."/./include/config.php3";
 /** Set of useful functions used on most pages */
-require_once AA_INC_PATH. "util.php3";
+require_once __DIR__."/include/util.php3";
 /** Main include file for using session management function on a page */
-require_once AA_INC_PATH. "locsess.php3";
+require_once __DIR__."/include/locsess.php3";
 
 if ( !$sh_itm ) {
     exit;

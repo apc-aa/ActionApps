@@ -198,7 +198,7 @@ class DB_OCI8 {
       if ($this->Debug) {
         printf("<br>ID: %d, Rows: %d<br>\n", $this->Link_ID, $this->num_rows());
       }
-      $this->Row += 1;
+      ++$this->Row;
 
       $errno = ocierror($this->Parse);
       if (1403 == $errno) { # 1043 means no more records found

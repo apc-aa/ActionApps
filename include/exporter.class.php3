@@ -6,7 +6,7 @@ use AA\IO\Grabber\Slice;
 
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ use AA\IO\Grabber\Slice;
  *
 */
 
-//require_once AA_INC_PATH."PHPExcel/PHPExcel.php";
-//require_once AA_INC_PATH."PHPExcel/PHPExcel/Writer/Excel5.php";
+//require_once __DIR__."/PHPExcel/PHPExcel.php";
+//require_once __DIR__."/PHPExcel/PHPExcel/Writer/Excel5.php";
 
 class AA_Exporter extends AA_Object {
     var $field_set;
@@ -216,7 +216,7 @@ class AA_Exporter_Excel extends AA_Exporter {
         $ret = '';
         if (ctype_digit((string)$value)) {
             $ret = pack("sssss", 0x203, 14, $row, $col, 0x0) . pack("d", $value);
-        } elseif(is_string($value)) {
+        } elseif (is_string($value)) {
             $value = UTF8toBIFF8UnicodeShortchr(255).chr(254).mb_convert_encoding( $value, 'UTF-16LE', 'UTF-8');
             $len = mb_strlen($value);
             $ret = pack("ssssss", 0x204, 8 + $len, $row, $col, 0x0, $len) . $value;

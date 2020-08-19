@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
-require_once AA_INC_PATH."sql_parser.php3";
-require_once AA_INC_PATH."zids.php3";
-require_once AA_INC_PATH."pagecache.php3";
+require_once __DIR__."/sql_parser.php3";
+require_once __DIR__."/zids.php3";
+require_once __DIR__."/pagecache.php3";
 
 define('AA_REGEXP_MAIL', '[a-z0-9!#$%&1*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&1*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)');
 

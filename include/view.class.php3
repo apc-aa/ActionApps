@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -318,28 +318,14 @@ class AA_View {
     }
 }
 
-/** usualy called as $view = AA_Views::getView($vid); */
+/** usualy called as $view = AA_Views::getView($vid);
+ * @method  static AA_Views singleton()
+ */
 class AA_Views {
-    var $a = [];
 
-    /** AA_Views function  */
-    function __construct() {
-        $this->a = [];
-    }
+    use \AA\Util\SingletonTrait;
 
-    /** singleton function
-     *  called as AA_Views::singleton() from getView() method;
-     *  This function makes sure, there is global instance of the class
-     *  @todo  convert to static class variable (after migration to PHP5)
-     */
-    static function singleton() {
-        static $instance = null;
-        if (is_null($instance)) {
-            // Now create the AA_Views object
-            $instance = new AA_Views;
-        }
-        return $instance;
-    }
+    protected $a = [];
 
     /** xml_serialize function
      * @param $t
@@ -357,7 +343,7 @@ class AA_Views {
      * @param int $vid
      * @return AA_View
      */
-    static function getViewNumeric($vid) {
+    static function getViewNumeric($vid) : AA_View {
         $views = AA_Views::singleton();
         return $views->_getView($vid);
     }
@@ -386,6 +372,7 @@ class AA_Views {
      * @return null
      */
     static function getViewField($vid, $field) {
+        /** @var AA_Views $views */
         $views = AA_Views::singleton();
         $view  = $views->_getView($vid);
         return $view ? $view->f($field) : null;
@@ -395,7 +382,7 @@ class AA_Views {
      * @param int $vid
      * @return AA_View
      */
-    function _getView($vid) {
+    function _getView($vid) : AA_View {
         if (!isset($this->a[$vid])) {
             $this->a[$vid] = new AA_View($vid);
         }

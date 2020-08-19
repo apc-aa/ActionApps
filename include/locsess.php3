@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* PHP versions 4 and 5
+* PHP version 7.2+
 *
 * LICENSE: This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@
 * @link      https://www.apc.org/ APC
 *
 */
+
+
+
 /** This file is included to all scripts, so let's set there the main environment */
 
 // set timezone - just for date() speedup
@@ -42,10 +45,21 @@ if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
     }
 }
 
+// should be set in config.php3
+if (!defined(AA_INSTAL_PATH)) {
+    $url_components = parse_url(AA_INSTAL_URL);
+    define('AA_INSTAL_PATH', $url_components['path']);
+}
+// now it is not neccessay to have this constant in config.php3 - we count it from current file paht
+if (!defined('AA_BASE_PATH')) {
+    define('AA_BASE_PATH', substr(__DIR__, 0, -7));
+}
+
+
 /* Change this to match your database. */
-require_once(AA_INC_PATH.'phplib/'. ( (defined("DB_TYPE") AND (DB_TYPE != 'db_mysqli')) ? DB_TYPE .".inc" : "db_mysql.inc"));
-require_once(AA_INC_PATH.'phplib/phplib.php');
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__."/phplib/". ( (defined("DB_TYPE") AND (DB_TYPE != 'db_mysqli')) ? DB_TYPE .".inc" : "db_mysql.inc");
+require_once __DIR__."/phplib/phplib.php";
+require_once __DIR__."/../vendor/autoload.php";
 
 spl_autoload_register(function ($class_name) {
     $PAIRS = [
@@ -78,7 +92,7 @@ spl_autoload_register(function ($class_name) {
     ];
 
     if ($PAIRS[$class_name]) {
-        require AA_BASE_PATH. $PAIRS[$class_name];
+        require (__DIR__ . '/../' . $PAIRS[$class_name]);
         return;
     }
 
@@ -280,7 +294,7 @@ class AA_Debug {
     }
 
     function _check_repeted($txt) {
-        $this->_repeated[$txt] += 1;
+        ++$this->_repeated[$txt];
     }
 
     function _do($func, $params) {

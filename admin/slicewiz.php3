@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@
 $no_slice_id          = true;
 $require_default_lang = true;
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 // the parts used by the slice wizard are in the included file
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -42,7 +42,7 @@ $wizard = 1;
 $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
 if ($add) {
-    require_once AA_INC_PATH."slicedit.php3";
+    require_once __DIR__."/../include/slicedit.php3";
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -54,7 +54,7 @@ $apage->setForm(['action'=>'slicedit.php3']);
 $apage->printHead($err, $Msg);
 
 $display_views_constants = true;
-require_once AA_INC_PATH."sliceadd.php3";
+require_once __DIR__."/../include/sliceadd.php3";
 
 FrmTabCaption(_m("[Optional] Create New User"));
 

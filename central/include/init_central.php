@@ -52,13 +52,10 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-require_once __DIR__. "/../../include/config.php3";
-
-define('AA_CENTRAL_PATH', AA_BASE_PATH. "central/include/");
-
-require_once AA_INC_PATH.     "mgettext.php3";
-require_once AA_INC_PATH.     "locauth.php3";
-require_once AA_CENTRAL_PATH. 'actionapps.class.php';
+require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../include/mgettext.php3";
+require_once __DIR__."/../../include/locauth.php3";
+require_once __DIR__."/actionapps.class.php";
 
 if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
     AA::$module_id = '';

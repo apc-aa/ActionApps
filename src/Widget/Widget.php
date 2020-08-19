@@ -9,13 +9,12 @@
 namespace AA\Widget;
 
 use AA;
+use AA\FormArray;
 use AA\Util\NamedInterface;
 use AA_Components;
 use AA_Condition;
 use AA_Content;
 use AA_Credentials;
-use AA\FormArray;
-use AA_Item;
 use AA_Items;
 use AA_Object;
 use AA_Property;

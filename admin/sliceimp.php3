@@ -1,7 +1,7 @@
 <?php
 /**  Imports the slice definition and data, exported from toolkit
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,14 +28,14 @@
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."itemfunc.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."notify.php3";
-require_once AA_INC_PATH."mgettext.php3";
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/itemfunc.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/feeding.php3";
+require_once __DIR__."/../include/notify.php3";
+require_once __DIR__."/../include/mgettext.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
     MsgPage(StateUrl(self_base())."index.php3", _m("You are not allowed to export / import slices"));
@@ -250,7 +250,7 @@ $slice_def_bck  = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
 
 // insert xml parser
-require_once AA_BASE_PATH."admin/sliceimp_xml.php3";
+require_once "sliceimp_xml.php3";
 
 // import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
@@ -264,7 +264,7 @@ if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
     if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
         if ( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) {
             echo _m("Can't upload Import file") . "to $dirname$dest_file";
-        } else if ($perms) {
+        } elseif ($perms) {
             chmod ($dirname.$dest_file, $perms);
         }
     }

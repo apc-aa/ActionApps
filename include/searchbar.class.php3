@@ -7,7 +7,7 @@
  *
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@
  * @link      https://www.apc.org/ APC
 */
 
-require_once AA_INC_PATH. "formutil.php3";
+require_once __DIR__."/formutil.php3";
 
 /** searchlib for AA_Condition definition, ... */
-require_once AA_INC_PATH. "searchlib.php3";
+require_once __DIR__."/searchlib.php3";
 
 /** searchfields_cmp function
  *  Helper function to sort search fields
@@ -312,7 +312,8 @@ class AA_Searchbar extends AA_Storable {
     function setFromBookmark($key) {
         if ( $this->bookmarks->is_defined($key) ) {
             $this->resetSearchAndOrder();
-            $this->setFromState($this->bookmarks->get($key));
+            $state = $this->bookmarks->get($key);
+            $this->setFromState($state);
             $this->bookmarks->setLastUsed($key);
         }
     }
@@ -700,11 +701,11 @@ class AA_Bookmarks {
     /** get function
      *  Get searchbar state for bookmark number $key.
      *  See AA_Storable in statestore.php3 for more info about 'state'
-     * @param $param key
-     * @return bool
+     * @param string $param key
+     * @return array
      */
-    function get($key) {
-        return $this->is_defined($key) ? $this->bookmarks[$key]['state'] : false;
+    function get($key) : array {
+        return $this->is_defined($key) ? $this->bookmarks[$key]['state'] : [];
     }
 
     /** getKeeyName function

@@ -1,7 +1,7 @@
 <?php
 // Open this file two or more times in a browser and look at output.txt.
 
-require_once "../../include/file_lock.php3";
+require_once __DIR__."/../../include/file_lock.php3";
 
 $lock = new FileLock ("file_lock");
 for ($i=1; $i < 1000; $i++) {

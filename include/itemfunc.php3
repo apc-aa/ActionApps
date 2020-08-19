@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,13 @@
  *
 */
 
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."notify.php3";
-require_once AA_INC_PATH."imagefunc.php3";
-require_once AA_INC_PATH."date.php3";
-require_once AA_INC_PATH."item_content.php3";
-require_once AA_INC_PATH."event.class.php3";
+require_once __DIR__."/varset.php3";
+require_once __DIR__."/pagecache.php3";
+require_once __DIR__."/notify.php3";
+require_once __DIR__."/imagefunc.php3";
+require_once __DIR__."/date.php3";
+require_once __DIR__."/item_content.php3";
+require_once __DIR__."/event.class.php3";
 
 if ( !is_object($event) ) {
     $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
@@ -245,6 +245,7 @@ class AA_Generator_Mul extends AA_Generator {
  *
  *  Usage: $aa_value = AA_Generator::factoryByString('dte:5000')->generate();
  *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
+ * @method  static AA_Inserter factoryByString($string)
  */
 abstract class AA_Inserter extends AA_Serializable {
 
@@ -260,7 +261,7 @@ abstract class AA_Inserter extends AA_Serializable {
      * @param AA_Field $field
      * @return AA_Inserter
      */
-    public static function factoryByField($field) {
+    public static function factoryByField($field) : AA_Inserter {
         $definition = $field->getProperty('input_insert_func');
         $inserter = AA_Inserter::factoryByString($definition);
         if (!$inserter) {
@@ -684,14 +685,14 @@ class AA_Inserter_Fil extends AA_Inserter {
             $slice = AA_Slice::getModule($sid);
             if (!is_object($slice) OR !$slice->isValid()) {
                 $err[$fid] = _m("Slice with id '%1' is not valid.", [$sid]);
-                return;
+                return [];
             }
 
             $dest_file = Files::uploadFile($up_file, Files::destinationDir($slice), $this->type, $this->replacemethod);
 
             if ($dest_file === false) {   // error
                 $err[$fid] = Files::lastErrMsg();
-                return;
+                return [];
             }
 
             // ---------------------------------------------------------------------
@@ -704,7 +705,7 @@ class AA_Inserter_Fil extends AA_Inserter {
 
             if ($e = ResampleImage($dest_file, $dest_file, $this->width, $this->height, $this->exact)) {
                 $err[$fid] = $e;
-                return;
+                return [];
             }
             if ($this->otherfield != "") {
                 // get ids of field store thumbnails
@@ -720,7 +721,7 @@ class AA_Inserter_Fil extends AA_Inserter {
 
                     if ($e = ResampleImage($dest_file,$dest_file_tmb, $thumb_params[1],$thumb_params[2],$thumb_params[5])) {
                         $err[$fid] = $e;
-                        return;
+                        return [];
                     }
 
                     // store link to thumbnail

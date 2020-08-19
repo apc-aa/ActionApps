@@ -27,11 +27,11 @@
   Shows all the help to all the list items (i.e. all alias functions, all field types)
  */
 
-require_once "../include/config.php3";
-require_once "../include/util.php3";
-require_once "../include/mgettext.php3";
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/mgettext.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once "../include/constants_param_wizard.php3";
+require_once __DIR__."/../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>" . _m("Param Wizard Summary") . "</TITLE>";

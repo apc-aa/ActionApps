@@ -159,7 +159,7 @@ class DB_Oracle {
             printf("<br>next_record(): ID: %d,Rows: %d<br>\n",
             $this->Query_ID,$this->num_rows());
           }
-          $this->Row	+=1;
+          ++$this->Row;
 
           $errno=ora_errorcode($this->Query_ID);
           if(1403 == $errno) { # 1043 means no more records found

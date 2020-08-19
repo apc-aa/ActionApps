@@ -36,7 +36,7 @@ https://www.apc.org/
 */
 
 // include config in order we can define AA_Config variables for javascript
-require_once "../include/config.php3";
+require_once __DIR__."/../include/config.php3";
 
 // headers copied from include/extsess.php3 file
 $allowcache_expire = 24*3600; // 1 day

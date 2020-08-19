@@ -21,15 +21,14 @@ https://www.apc.org/
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
 
-require_once "../include/config.php3";
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."util.php3";
-
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."view.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."itemfunc.php3";
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/item.php3";
+require_once __DIR__."/../include/view.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/locsess.php3";
+require_once __DIR__."/../include/itemfunc.php3";
 
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);

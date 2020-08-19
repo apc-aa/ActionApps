@@ -8,7 +8,7 @@
  *    The fields for each slice are one member of the
  *    slice array, in the form of a third-level associative array.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@
 
 use AA\Widget\Widget;
 
-require_once AA_INC_PATH . "searchlib.php3";
-require_once AA_INC_PATH . "xml_serializer.php3";
+require_once __DIR__."/../include/searchlib.php3";
+require_once __DIR__."/../include/xml_serializer.php3";
 
 class AA_Slice_Exporter {
     var $type;

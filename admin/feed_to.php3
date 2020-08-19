@@ -2,7 +2,7 @@
 /**
  * Form displayed in popup window used for feeding selected items
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 /** PrintExportRow function
  * Print one row with one 'sliceexport' radiobuttons

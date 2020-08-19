@@ -33,9 +33,9 @@ https://www.apc.org/
 
 if ( $editor_page ) {
     $nb_context = _m("Code Manager");
-} elseif( $settings_page ) {
+} elseif ( $settings_page ) {
     $nb_context = _m("Module Settings");
-} elseif( $usermng_page ) {
+} elseif ( $usermng_page ) {
     $nb_context = _m("Users");
 }
 

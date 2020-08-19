@@ -1,5 +1,5 @@
 <?php
-/** PHP versions 4 and 5
+/** PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
  *
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."tabledit.php3";
-require_once AA_INC_PATH."tv_common.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/tabledit.php3";
+require_once __DIR__."/../include/tv_common.php3";
 
 // ----------------------------------------------------------------------------------------
 /** tv_field_value function

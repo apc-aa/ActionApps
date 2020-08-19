@@ -86,11 +86,11 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 
 
 /** APC-AA configuration file */
-require_once "include/config.php3";
+require_once __DIR__."/include/config.php3";
 /** Main include file for using session management function on a page */
-require_once AA_INC_PATH."locsess.php3";
+require_once __DIR__."/include/locsess.php3";
 /** Set of useful functions used on most pages */
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/include/util.php3";
 
 // not sure if the line bellow works...
 $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
@@ -117,18 +117,18 @@ if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     }
 }
 
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/include/formutil.php3";
 /** Defines class for inserting and updating database fields */
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."itemfunc.php3";
+require_once __DIR__."/include/varset.php3";
+require_once __DIR__."/include/itemfunc.php3";
 /** utility for notifying people of events by email */
-require_once AA_INC_PATH."notify.php3";
+require_once __DIR__."/include/notify.php3";
 /** defines PageCache class used for caching informations into database */
-require_once AA_INC_PATH."pagecache.php3";
+require_once __DIR__."/include/pagecache.php3";
 /** date helper functions */
-require_once AA_INC_PATH."date.php3";
-require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."zids.php3";
+require_once __DIR__."/include/date.php3";
+require_once __DIR__."/include/feeding.php3";
+require_once __DIR__."/include/zids.php3";
 
 
 function UseShowResult($txt,$url) {
@@ -139,7 +139,7 @@ function UseShowResult($txt,$url) {
     if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
     $GLOBALS["shtml_page"] = $url;
     if ($GLOBALS['debugfill']) huhl("Filler:UseShowResult");
-    require_once "post2shtml.php3"; // Beware this doesn't just define functions!
+    require_once __DIR__."/post2shtml.php3"; // Beware this doesn't just define functions!
     exit;
 }
 
@@ -281,7 +281,7 @@ function SendOkPage($txt, $new_ids = []) {
 
 
 
-bind_mgettext_domain(AA_INC_PATH.'lang/'.DEFAULT_LANG_INCLUDE);
+bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
 // trap field for spammer bots
 if ( $_REQUEST['answer'] )    {
@@ -311,7 +311,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     // elseif ($_COOKIE['AA_Sess']) {
         // old unused approach
 
-        // require_once AA_BASE_PATH."modules/site/router.class.php";
+        // require_once __DIR__."modules/site/router.class.php";
         // $options = array(
         //     'aa_url'          => AA_INSTAL_URL,
         //     'cookie_lifetime' => 60*60*24*365  // one year

@@ -32,9 +32,9 @@ https://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-require_once AA_INC_PATH."menu_util.php3";
-require_once AA_INC_PATH."perm_core.php3";
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/../../include/menu_util.php3";
+require_once __DIR__."/../../include/perm_core.php3";
+require_once __DIR__."/../../include/mgettext.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 

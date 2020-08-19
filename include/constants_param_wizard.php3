@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
         "params"=>the params in the internal format (divided by :)
 */
 
-// require_once AA_BASE_PATH."modules/alerts/reader_field_ids.php3";
+// require_once __DIR__."/../modules/alerts/reader_field_ids.php3";
 
 $INSERT_TYPES["name"] = _m("Insert Function");
 $INSERT_TYPES["items"]["qte"] =

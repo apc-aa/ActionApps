@@ -6,7 +6,7 @@
  *   mode expected - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
  *   design expected - boolean - use standard or admin design
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +33,17 @@
 
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH . "varset.php3";
-require_once AA_INC_PATH . "view.php3";
-require_once AA_INC_PATH . "pagecache.php3";
-require_once AA_INC_PATH . "item.php3";
-require_once AA_INC_PATH . "feeding.php3";
-require_once AA_INC_PATH . "itemfunc.php3";
-require_once AA_INC_PATH . "notify.php3";
-require_once AA_INC_PATH . "searchlib.php3";
-require_once AA_INC_PATH . "formutil.php3";
-require_once AA_INC_PATH . "util.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/view.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/item.php3";
+require_once __DIR__."/../include/feeding.php3";
+require_once __DIR__."/../include/itemfunc.php3";
+require_once __DIR__."/../include/notify.php3";
+require_once __DIR__."/../include/searchlib.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/util.php3";
 
 
 /** RELATED SELECTION WINDOW - managed by MANAGER CLASS */

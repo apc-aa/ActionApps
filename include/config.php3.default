@@ -11,7 +11,7 @@
  *        define("name", "value);
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -258,12 +258,8 @@ $USE_SHORT_URL = true;
 // Following section just prepares some constants
 // You probably do not need to change this
 
-define('AA_BASE_PATH',     AA_SITE_PATH. AA_BASE_DIR);        // do not change
-define('AA_INC_PATH' ,     AA_BASE_PATH. "include/");         // do not change
-define('AA_PHPTHUMB_PATH', AA_BASE_PATH. "misc/phpThumb/");   // do not change
-
-if ( !defined('AA_BASE_PATH') OR (strlen(AA_BASE_PATH) < 1)) {
-    echo "you must set AA_INC_PATH and other variables in config.php3 !";
+if ( !defined('AA_SITE_PATH') OR (strlen(AA_SITE_PATH) < 1)) {
+    echo "you must set AA_SITE_PATH and other variables in config.php3 !";
 }
 
 /** URL of aa instalation */

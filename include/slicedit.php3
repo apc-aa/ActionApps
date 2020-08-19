@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,12 @@
  * @link      https://www.apc.org/ APC
 */
 
-require_once AA_INC_PATH."se_users.php3";
-require_once AA_INC_PATH."mail.php3";
+require_once __DIR__."/se_users.php3";
+require_once __DIR__."/mail.php3";
 
 // add mlx functions
-require_once AA_INC_PATH."mlx.php";
-require_once AA_INC_PATH."um_util.php3";
+require_once __DIR__."/mlx.php";
+require_once __DIR__."/um_util.php3";
 
 $SLICE_FIELDS_TEXT = [
     "id", "name", "owner", "created_by", "created_at",

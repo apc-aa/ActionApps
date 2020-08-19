@@ -9,7 +9,7 @@
 * AA CVS: $Id$
 */
 
-require_once(__DIR__ . '/mimePart.php');
+require_once __DIR__."/mimePart.php";
 
 class htmlMimeMail {
     /**
@@ -678,10 +678,10 @@ class htmlMimeMail {
             if (!empty($_SERVER['HTTP_HOST'])) {
                 $hostname = $_SERVER['HTTP_HOST'];
 
-            } else if (!empty($_SERVER['SERVER_NAME'])) {
+            } elseif (!empty($_SERVER['SERVER_NAME'])) {
                 $hostname = $_SERVER['SERVER_NAME'];
 
-            } else if (!empty($_ENV['HOSTNAME'])) {
+            } elseif (!empty($_ENV['HOSTNAME'])) {
                 $hostname = $_ENV['HOSTNAME'];
 
             } else {

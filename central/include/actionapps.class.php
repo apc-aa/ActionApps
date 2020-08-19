@@ -134,19 +134,19 @@ class AA_Actionapps {
     }
 
 
-    /** @return all slice names form remote AA
+    /** @return array - all slice names form remote AA
      *  mention, that the slices are identified by !name! not id for synchronization
      */
-    function requestSlices() {
+    function requestSlices() : array {
         return $this->requestModules(['S']);
     }
 
     /** @return array - all module names form remote AA
      *  @param $types array of requested module types (A|Alerts|J|Lins|P|S|W)
      */
-    function requestModules($types) {
+    function requestModules(array $types) : array {
         $response = $this->getResponse( new AA_Request('Get_Modules', ['types'=>$types]) );
-        return ($response->isError()) ? [] : $response->getResponse();
+        return ($response->isError()) ? [] : (array)$response->getResponse();
     }
 
     /** @return array - structure which define all the definition of the slice

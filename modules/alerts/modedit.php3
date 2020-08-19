@@ -12,4 +12,4 @@
     $cmd[$set_tview]["show_new"] = 1;
     $no_slice_id                 = true;
 
-    require_once "tabledit.php3";
+    require_once __DIR__."/tabledit.php3";

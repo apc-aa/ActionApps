@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@
 */
 // expected $del - unpacked id of slice to delete
 
-require_once __DIR__. "/../include/init_page.php3";
-require_once AA_INC_PATH . "feeding.php3";
-require_once AA_INC_PATH . "msgpage.php3";
-require_once AA_INC_PATH . "modutils.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/feeding.php3";
+require_once __DIR__."/../include/msgpage.php3";
+require_once __DIR__."/../include/modutils.php3";
 
 
 if ($cancel) {

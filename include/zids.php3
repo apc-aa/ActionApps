@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@
  *
  */
 
-//require_once AA_INC_PATH."util.php3";  // quote
+//require_once __DIR__."/util.php3";  // quote
 
 class zids implements Iterator, ArrayAccess, Countable {
     var $a;     // Array of ids of type specified in $t

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
  *
 */
 
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."itemview.php3";
-require_once AA_INC_PATH."item.php3";
+require_once __DIR__."/searchlib.php3";
+require_once __DIR__."/itemview.php3";
+require_once __DIR__."/item.php3";
 
 define("HTML", 0);
 define("PLAIN",1);
@@ -208,14 +208,14 @@ function MapDefaultCategory(&$categories, $value, $parent_id) {
  * @return string
  */
 function unixstamp_to_iso8601($t) {
-    $tz=date("Z", $t)/60;
-    $tm=$tz % 60;
-    $tz=$tz/60;
+    $tz = date("Z", $t)/60;
+    $tm = $tz % 60;
+    $tz /= 60;
     if ($tz<0) {
-        $ts="-";
-        $tz=-$tz;
+        $ts = "-";
+        $tz = -$tz;
     } else {
-        $ts="+";
+        $ts = "+";
     }
     $tz=substr("0" . $tz, -2);
     $tm=substr("0" . $tm, -2);

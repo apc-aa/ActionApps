@@ -30,7 +30,7 @@ https://www.apc.org/
 // (c) Econnect, Jakub Adamek, December 2002
 
 
-require_once "alerts_sending.php3";
+require_once __DIR__."/alerts_sending.php3";
 
 function ShowCollectionAddOns() {
     global $example, $fire, $auth, $collectionid;

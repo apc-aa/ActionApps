@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
-require_once AA_BASE_PATH."modules/alerts/util.php3";
+require_once __DIR__."/../modules/alerts/util.php3";
 
 
 /** get_email_types function

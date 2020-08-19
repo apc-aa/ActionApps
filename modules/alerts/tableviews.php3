@@ -24,9 +24,9 @@ https://www.apc.org/
 
 // Settings for Alerts-related table views
 
-require_once "util.php3";
-require_once AA_INC_PATH."tv_email.php3";
-require_once AA_INC_PATH."locauth.php3";
+require_once __DIR__."/util.php3";
+require_once __DIR__."/../../include/tv_email.php3";
+require_once __DIR__."/../../include/locauth.php3";
 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
 function GetAlertsTableView ($viewID, $processForm = false) {

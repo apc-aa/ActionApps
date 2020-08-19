@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
-require_once AA_INC_PATH."tv_email.php3";
+require_once __DIR__."/tv_email.php3";
 
 // Settings for miscellaneous table views (see doc/tabledit.html for more info)
 /** GetMiscTableView function

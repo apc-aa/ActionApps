@@ -153,7 +153,7 @@ class DB_ODBC {
     }
 
     $this->Record = array();
-    $this->Row   += 1;
+    ++$this->Row;
     $stat = odbc_fetch_row($this->Query_ID, $this->Row);
     $this->Errno = 0;
     $this->Error = "";
@@ -558,7 +558,7 @@ The function halt()s if a lock cannot be obtained.
         $return[$i]["table_name"]      = odbc_result($h, 3);
         $return[$i]["tablespace_name"] = odbc_result($h, 1);
         $return[$i]["database"]        = odbc_result($h, 1);
-        $i += 1;
+        ++$i;
       }
     }
     odbc_free_result($h);

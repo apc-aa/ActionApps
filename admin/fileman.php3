@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,13 +43,13 @@
  *   AA admins may go to the upper level.
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."date.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."fileman.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/date.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/fileman.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
 if (!FilemanPerms($slice_id)) {
@@ -86,7 +86,7 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_script = StateUrl("fileman.php3");
     $fe_wwwpath = FILEMAN_BASE_URL;
     // NOTE require_once outputs text, its not just defining functions
-    require_once AA_INC_PATH."filedit.php3";
+    require_once __DIR__."/../include/filedit.php3";
     page_close ();
     exit;
 }
@@ -135,7 +135,7 @@ function fileAction($name,$value) {
  *   @param string $act - the HTML for the action element
  *   @return string two columns of input and action, can flip and table
  */
-function uilr($inp,$act) {
+function uilr($inp,$act) : string {
     return ("<tr><td class=\"tabtxt\">$inp</td><td class=\"tabtxt\">$act</td></tr>\n");
 }
 
@@ -143,9 +143,9 @@ function uilr($inp,$act) {
  * Creates a input box and action, uses uilr and fileAction which vary
  * @param string $name - the name of the javascript command
  * @param string $value - the internationalized string to display
- * @return two
+ * @return string two
  */
-function inputplusaction($name,$value) {
+function inputplusaction($name,$value) :string {
     return uilr("<input name=\"arg[$name]\">", fileAction($name,$value));
 }
 

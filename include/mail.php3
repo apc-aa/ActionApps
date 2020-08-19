@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@
 
 // (c) Jakub Adamek, Econnect, December 2002
 
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."item_content.php3";
-require_once AA_INC_PATH."stringexpand.php3";
-require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
-require_once AA_INC_PATH."validate.php3";
+require_once __DIR__."/item.php3";
+require_once __DIR__."/item_content.php3";
+require_once __DIR__."/stringexpand.php3";
+require_once __DIR__."/htmlMimeMail/htmlMimeMail.php";
+require_once __DIR__."/validate.php3";
 
 
 class AA_Mailtemplate implements AA_iEditable {

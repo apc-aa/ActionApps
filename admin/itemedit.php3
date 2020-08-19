@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,18 +49,18 @@ if ($edit OR $add) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
-require_once "../include/init_page.php3";     // This pays attention to $change_id
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."itemfunc.php3";
-require_once AA_INC_PATH."notify.php3";
+require_once __DIR__."/../include/init_page.php3";     // This pays attention to $change_id
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/feeding.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/itemfunc.php3";
+require_once __DIR__."/../include/notify.php3";
 //mimo include mlx functions
-require_once AA_INC_PATH."mlx.php";
+require_once __DIR__."/../include/mlx.php";
 
-if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
-    require_once AA_INC_PATH."usr_validate.php3";
+if ( file_exists( "../include/usr_validate.php3" ) ) {
+    require_once __DIR__."/../include/usr_validate.php3";
 }
 
 /** Function for extracting variables from $r_hidden session field */
@@ -302,7 +302,7 @@ if ($edit) {
         MsgPage(con_url(StateUrl(self_base() ."index.php3")), $err);
         exit;
     }
-} elseif(!is_object($content4id)) {  // form is submitted
+} elseif (!is_object($content4id)) {  // form is submitted
     // we need the $content4id to be object (for getForm, at least)
     $content4id = new ItemContent;
 

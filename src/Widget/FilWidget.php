@@ -9,7 +9,6 @@
 namespace AA\Widget;
 use AA;
 use AA\FormArray;
-use AA_Item;
 use AA_Property;
 use AA_Validate;
 use AA_Value;
@@ -205,7 +204,7 @@ class FilWidget extends \AA\Widget\Widget
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
         $url = $content->getValue($aa_property->getId());
 
-        if ($url AND AA_Validate::validate($url, 'url')) {
+        if ($url AND AA_Validate::doValidate($url, 'url')) {
             $link = '&nbsp;' . a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));
         };
 
@@ -231,6 +230,6 @@ class FilWidget extends \AA\Widget\Widget
 
     /** @inheritDoc */
     public function description(): string {
-        // TODO: Implement description() method.
+        return ''; // TODO: Implement description() method.
     }
 }

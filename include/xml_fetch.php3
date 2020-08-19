@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@
 // Cross-Server Networking - xml_aa_rss fetch function
 //
 
-require_once AA_INC_PATH."logs.php3";
-require_once AA_INC_PATH."csn_util.php3";
-require_once AA_INC_PATH."xml_rssparse.php3";
+require_once __DIR__."/logs.php3";
+require_once __DIR__."/csn_util.php3";
+require_once __DIR__."/xml_rssparse.php3";
 
 
 /**  xml_fetch function

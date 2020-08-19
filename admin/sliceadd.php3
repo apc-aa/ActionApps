@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 $no_slice_id          = true;
 $require_default_lang = true;
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 /** GetModuleTemplateSelecbox function
  * @param $type
  * @param $g_modules
@@ -61,7 +61,7 @@ $apage->setTitle(_m("Create New Slice / Module"));
 $apage->setForm(['action'=>'slicedit.php3']);
 $apage->printHead($err, $Msg);
 
-require_once AA_INC_PATH."sliceadd.php3";
+require_once __DIR__."/../include/sliceadd.php3";
 
 FrmTabCaption(_m("Modules"));
 foreach ($MODULES as $type => $module) {

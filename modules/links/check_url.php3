@@ -5,12 +5,12 @@
  */
  //$Id$
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."itemview.php3";
-require_once AA_INC_PATH."item.php3";
-require_once AA_BASE_PATH."modules/links/util.php3";
-require_once AA_BASE_PATH."modules/links/linksearch.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/itemview.php3";
+require_once __DIR__."/../../include/item.php3";
+require_once __DIR__."/../../modules/links/util.php3";
+require_once __DIR__."/../../modules/links/linksearch.php3";
 
 // HTML page start
 HtmlPageBegin();

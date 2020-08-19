@@ -157,7 +157,7 @@ class DB_Sql {
             return 0;
         }
 
-        $this->Row   += 1;
+        ++$this->Row;
         if (is_null($this->Record = @mysqli_fetch_assoc($this->Query_ID))) {
             $this->Errno  = mysqli_errno($this->Link_ID);
             $this->Error  = mysqli_error($this->Link_ID);

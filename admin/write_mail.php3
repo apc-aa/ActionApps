@@ -4,7 +4,7 @@
  *
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@
  * @param $chb[] - array of selected users (in reader management slice)
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH. "formutil.php3";
-require_once AA_BASE_PATH."modules/alerts/util.php3";
-require_once AA_INC_PATH. "varset.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../modules/alerts/util.php3";
+require_once __DIR__."/../include/varset.php3";
 
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items     = $chb;
@@ -55,101 +55,100 @@ if ( !$send ) {               // for the first time - directly from item manager
     $html = 1;
 } else {
     $items     = $r_wm_state['items'];  // session variable holds selected items fmom item manager
-    if ( $send ) {    // we really want to send email - so store template
-        do {
-            // --- write the e-mail template to the table ---
-            $varset = new Cvarset();
-            $owner_module_id = q_pack_id($slice_id);
-            $description     = date('Y-m-d H:i:s'). ', '. $auth->auth['uid'];
-            $type            = 'bulk email';
-            ValidateInput("subject",     _m("Subject"),            $subject,     $err, true,  "text");
-            ValidateInput("body",        _m("Body"),               $body,        $err, true,  "text");
-            ValidateInput("header_from", _m("From (email)"),       $header_from, $err, true,  "text");
-            ValidateInput("reply_to",    _m("Reply to (email)"),   $reply_to,    $err, false, "text");
-            ValidateInput("errors_to",   _m("Errors to (email)"),  $errors_to,   $err, false, "text");
-            ValidateInput("sender",      _m("Sender (email)"),     $sender,      $err, false, "text");
-            ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
-            ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
-            ValidateInput("template_id", _m("Email template"),     $template_id, $err, false, "number");
+    // we really want to send email - so store template
+    do {
+        // --- write the e-mail template to the table ---
+        $varset = new Cvarset();
+        $owner_module_id = q_pack_id($slice_id);
+        $description     = date('Y-m-d H:i:s'). ', '. $auth->auth['uid'];
+        $type            = 'bulk email';
+        ValidateInput("subject",     _m("Subject"),            $subject,     $err, true,  "text");
+        ValidateInput("body",        _m("Body"),               $body,        $err, true,  "text");
+        ValidateInput("header_from", _m("From (email)"),       $header_from, $err, true,  "text");
+        ValidateInput("reply_to",    _m("Reply to (email)"),   $reply_to,    $err, false, "text");
+        ValidateInput("errors_to",   _m("Errors to (email)"),  $errors_to,   $err, false, "text");
+        ValidateInput("sender",      _m("Sender (email)"),     $sender,      $err, false, "text");
+        ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
+        ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
+        ValidateInput("template_id", _m("Email template"),     $template_id, $err, false, "number");
 
-            foreach (['attachment1', 'attachment2', 'attachment3'] as $attach) {
-                $uploadvar = $attach.'x';
-                if ( $_FILES[$uploadvar]['name'] != '' ) {
-                    $dest_file = Files::uploadFile($uploadvar, Files::destinationDir($slice));
+        foreach (['attachment1', 'attachment2', 'attachment3'] as $attach) {
+            $uploadvar = $attach.'x';
+            if ( $_FILES[$uploadvar]['name'] != '' ) {
+                $dest_file = Files::uploadFile($uploadvar, Files::destinationDir($slice));
 
-                    if ($dest_file === false) {   // error
-                        $err[] = Files::lastErrMsg();
-                    } else {
-                        $$attach = $dest_file;
-                    }
-                }
-                if ($$attach) {
-                    $attachs[] = $$attach;
+                if ($dest_file === false) {   // error
+                    $err[] = Files::lastErrMsg();
+                } else {
+                    $$attach = $dest_file;
                 }
             }
-
-            $attachments = ParamImplode($attachs);
-
-            if ( count($err)) {
-                break;
+            if ($$attach) {
+                $attachs[] = $$attach;
             }
+        }
 
-            $varset->addglobals( [
-                'description', 'subject',
-                                       'header_from', 'reply_to', 'errors_to', 'sender',
-                                       'lang', 'owner_module_id', 'type', 'attachments'
-            ],
-                                 'quoted');
+        $attachments = ParamImplode($attachs);
 
-            if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
-                $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
-            } else {
-                $varset->add('body', 'quoted', $body);
-            }
-            $varset->add('html', 'number', $html);
+        if ( count($err)) {
+            break;
+        }
 
-            $varset->doINSERT('email');
-            $mail_id = $varset->last_insert_id();  // get mail template id
+        $varset->addglobals( [
+            'description', 'subject',
+                                   'header_from', 'reply_to', 'errors_to', 'sender',
+                                   'lang', 'owner_module_id', 'type', 'attachments'
+        ],
+                             'quoted');
 
-            if ( !ctype_digit((string)$mail_id) )  {
-                $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );
-                break;
-            }
+        if ($template_id AND ($mailtemplate = AA_Mail::getTemplate((int)$template_id))) {
+            $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
+        } else {
+            $varset->add('body', 'quoted', $body);
+        }
+        $varset->add('html', 'number', $html);
 
-            // --- send emails
-            if ( $group == 'testuser') {
-                $mails_to    = explode(',',$testemail);
-                $mails_sent  = AA_Mail::sendTemplate($mail_id, $mails_to);
-                $users_count = count($mails_to);
-            } else {
-                // get reader's zids
-                $zids = getZidsFromGroupSelect($group, $items, $searchbar);
-                // following functionality could be extend by adding third
-                // parameter $recipient (for testing e-mail)
-                $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
-                $users_count = $zids->count();
-            }
-            $Msg = MsgOk(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
+        $varset->doINSERT('email');
+        $mail_id = $varset->last_insert_id();  // get mail template id
 
-            if ((string)$group == (string)"sel_item") {
-                $sel = "LIST";
-                $description .= ' - '. _m('Manualy selected');
-            } elseif ((string)$group == (string)"testuser") {
-                $sel = "TEST";
-                $description .= " - ($testemail)";
-            } else {
-                $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
-                $description .= ' - '. _m('Filter'). " $sel";
-            }
-            AA_Log::write("EMAIL_SENT", $sel, [$mail_id, $users_count, $mails_sent]);
-            // remove temporary email template from database
-            $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
-            if ( !$db->query($SQL)) {
-                $err["DB"] = MsgErr( _m("Can't update email template") );
-                break;    // not necessary - we have set the halt_on_error
-            }
-        } while (false);
-    }
+        if ( !ctype_digit((string)$mail_id) )  {
+            $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );
+            break;
+        }
+
+        // --- send emails
+        if ( $group == 'testuser') {
+            $mails_to    = explode(',',$testemail);
+            $mails_sent  = AA_Mail::sendTemplate($mail_id, $mails_to);
+            $users_count = count($mails_to);
+        } else {
+            // get reader's zids
+            $zids = getZidsFromGroupSelect($group, $items, $searchbar);
+            // following functionality could be extend by adding third
+            // parameter $recipient (for testing e-mail)
+            $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
+            $users_count = $zids->count();
+        }
+        $Msg = MsgOk(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
+
+        if ((string)$group == (string)"sel_item") {
+            $sel = "LIST";
+            $description .= ' - '. _m('Manualy selected');
+        } elseif ((string)$group == (string)"testuser") {
+            $sel = "TEST";
+            $description .= " - ($testemail)";
+        } else {
+            $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
+            $description .= ' - '. _m('Filter'). " $sel";
+        }
+        AA_Log::write("EMAIL_SENT", $sel, [$mail_id, $users_count, $mails_sent]);
+        // remove temporary email template from database
+        $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
+        if ( !$db->query($SQL)) {
+            $err["DB"] = MsgErr( _m("Can't update email template") );
+            break;    // not necessary - we have set the halt_on_error
+        }
+    } while (false);
 }
 
 $apage = new AA_Adminpageutil();

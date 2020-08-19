@@ -8,7 +8,7 @@
  *
  *    To show the exported text the page sliceexp_text.php3 is called.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,10 @@
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_BASE_PATH."admin/sliceexp_text.php3";
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../admin/sliceexp_text.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 // Make sure you have permissions to do this
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {

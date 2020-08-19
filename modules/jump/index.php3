@@ -23,10 +23,10 @@ https://www.apc.org/
 
 // used in init_page.php3 script to include config.php3 from the right directory
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH . "varset.php3";
-require_once AA_INC_PATH . "view.php3";
-require_once AA_INC_PATH . "pagecache.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../include/view.php3";
+require_once __DIR__."/../../include/pagecache.php3";
 
 is_object( $db ) || ($db = getDB());
 $db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");

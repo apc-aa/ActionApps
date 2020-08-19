@@ -14,13 +14,26 @@
         }
   ],
   "require": {
-    "php": ">=5.3.0",
+    "php": ">=7.2",
     "ext-json": "*",
     "ext-ctype": "*",
     "firebase/php-jwt": "v5.0.0",
     "mobiledetect/mobiledetectlib": "2.8.33",
     "jan-swiecki/simple-annotations": "0.3.1",
-    "phpgangsta/googleauthenticator": "dev-master"
+    "phpgangsta/googleauthenticator": "dev-master",
+    "ext-iconv": "*",
+    "ext-zlib": "*",
+    "ext-gd": "*",
+    "ext-mbstring": "*",
+    "ext-ldap": "*",
+    "ext-dom": "*",
+    "ext-xsl": "*",
+    "ext-simplexml": "*",
+    "ext-xml": "*",
+    "ext-openssl": "*"
+  },
+  "suggest": {
+    "ext-apache": "*"
   },
   "autoload": {
     "psr-4": {

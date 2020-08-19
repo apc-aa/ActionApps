@@ -1,6 +1,6 @@
 <?php
  /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,10 @@
 
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH . "item.php3";
-require_once AA_INC_PATH . "itemfunc.php3";
-require_once AA_INC_PATH . "formutil.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/item.php3";
+require_once __DIR__."/../include/itemfunc.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 $module_id   = $slice_id; // get from session
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database

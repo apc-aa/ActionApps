@@ -55,7 +55,7 @@ class AA_Http {
      *                      we do not want to try it, when database connection
      *                      error ocures, for example
      **/
-    function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
+    public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true) {
         global $sess;
 
         if (is_object($sess) AND $sess_close) {
@@ -85,7 +85,7 @@ class AA_Http {
     /** Move (redirect) to page $url using javascript
      *  static function
      */
-    function _goJs($url, $parameters='') {
+    protected static function _goJs($url, $parameters='') {
         $url = get_url( $url, $parameters);
         echo '
         <script>
@@ -103,7 +103,7 @@ class AA_Http {
      * @return false|array $result[]
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
-    function postRequest($url, $data = [], $headers= []) {
+    public static function postRequest($url, $data = [], $headers= []) {
 
         if (empty($data)) {
             $fp = @fopen($url, 'rb', false);
@@ -140,48 +140,56 @@ class AA_Http {
 }
 
 class AA_Response {
-    var $response;
-    var $error;
+
+    protected $response;
+
+    /** @var int */
+    protected $error;
 
     static $Response_type = 'serialize';
 
-    function __construct($response = null, $error = 0) {
+    public function __construct($response = null, int $error = 0) {
         $this->response = $response;
-        $this->error    = $error;
+        $this->error = $error;
     }
 
     function getResponse() {
         return $this->response;
     }
 
-    function getError() {
+    /**
+     * @return int
+     */
+    function getError() : int  {
         return $this->error;
     }
 
-    function isError() {
-        return $this->error;
+    /** @return bool   */
+    function isError() : bool {
+        return ($this->error > 0);
     }
 
     function respond() {
-        switch(AA_Response::$Response_type) {
-          case 'serialize': echo serialize($this);
-                            break;
-          case 'html':      if ($this->isError()) {
-                                echo "Error $this->error: ". $this->response;
-                            } else {
-                                echo is_scalar($this->response) ? $this->response : _m('Array returned');
-                            }
+        switch (AA_Response::$Response_type) {
+            case 'serialize':
+                echo serialize($this);
+                break;
+            case 'html':
+                if ($this->isError()) {
+                    echo "Error $this->error: " . $this->response;
+                } else {
+                    echo is_scalar($this->response) ? $this->response : _m('Array returned');
+                }
         }
-        return;
     }
 
     /// Static functions
-    function error($err) {
-        $response = new AA_Response(null, $err);
+    public static function error($err, int $err_code = 1) {
+        $response = new AA_Response($err, $err_code);
         $response->respond();
     }
 
-    function ok($ret) {
+    public static function ok($ret) {
         $response = new AA_Response($ret);
         $response->respond();
     }
@@ -200,7 +208,7 @@ class AA_Request {
         return serialize($this);
     }
 
-    function _requestArr() {
+    function _requestArr() : array {
         return ['request' => $this->_requestVal()];
     }
 
@@ -211,7 +219,7 @@ class AA_Request {
     /** static member function called like:
      *     $request = AA_Request::decode($_POST['request']);
      **/
-    function decode($posted_data) {
+    public static function decode(string $posted_data) {
         return unserialize($posted_data);
     }
 

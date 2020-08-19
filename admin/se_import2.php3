@@ -3,7 +3,7 @@
  *   expected $slice_id for edit slice
  *            $I[] with ids of imported slices
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@
  *
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."logs.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/logs.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
   MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");

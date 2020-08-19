@@ -2,7 +2,7 @@
 /**
  * Class ItemContent.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ class AA_Hitcounter {
             $toexecute        = new AA_Toexecute;
             $toexecute->laterOnce($display_counter, [], 'AA_Hitcounter_Update', 100, time() + 300);  // run it once in 5 minutes
 
-            require_once AA_INC_PATH.  "task.class.php3";
+            require_once __DIR__."/task.class.php3";
 
             $planned_task_scheduler = new AA_Plannedtask_Schedule();
             $toexecute->laterOnce($planned_task_scheduler, [], 'AA_Plannedtask_Schedule', 100, time() + 120);  // run it once in 2 minutes

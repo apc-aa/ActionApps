@@ -3,7 +3,7 @@
  *
  * File Utilities.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -346,7 +346,7 @@ class Files {
      * @param $perms
      * @return boolean true if the new folder is created, false otherwise.
      */
-    function createFolder($newFolder, $perms=0777) {
+    static function createFolder($newFolder, $perms=0777) {
         mkdir($newFolder, $perms);
         return chmod($newFolder, $perms);
     }
@@ -367,7 +367,7 @@ class Files {
      * @param string $file file to be deleted
      * @return boolean true if deleted, false otherwise.
      */
-    function delFile($file) {
+    static function delFile($file) {
         return @is_file($file) ? @unlink($file) : false;
     }
 
@@ -1003,7 +1003,7 @@ class AA_Directory_Wrapper {
                             $this->subdir_names[] = $file_name;
                         }
                     }
-                    elseif(is_file($this->url . $file_name)) {
+                    elseif (is_file($this->url . $file_name)) {
                         $this->file_names[] = $file_name;
                     }
                 }
@@ -1126,12 +1126,10 @@ class AA_Directory_Wrapper {
                     $return_array[] = $this->url . $subdir_name;
                 }
                 return $return_array;
-            } else {
-                return $this->subdir_names;
             }
-        } else {
-            return false;
+            return $this->subdir_names;
         }
+        return [];
     }
 
     /**

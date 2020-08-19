@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -306,7 +306,7 @@ class AA_Property extends AA_Storable {
         if ($empty AND $this->isRequired()) {
             return [VALIDATE_ERROR_NOT_FILLED, _m("Not filled")];
         }
-        return $valid ? [] : [$validator->lastErr(), $validator->lastErrMsg()];
+        return $valid ? [] : [get_class($validator)::lastErr(), get_class($validator)::lastErrMsg()];
     }
 
     /** isObject function */

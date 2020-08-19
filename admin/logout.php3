@@ -3,7 +3,7 @@
  * Logout
  *  safely destroys current session information from database
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
  *
 */
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 
 $sess->delete();
 

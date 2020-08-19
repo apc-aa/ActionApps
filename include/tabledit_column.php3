@@ -6,7 +6,7 @@
  *                @link doc/tabledit_developer.html,
  *                @link doc/tableview.html
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

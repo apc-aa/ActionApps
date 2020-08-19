@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +38,13 @@
  *  @example https://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77&name=Jane
  */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."discussion.php3";
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
-require_once AA_INC_PATH."exporter.class.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/item.php3";
+require_once __DIR__."/../include/discussion.php3";
+require_once __DIR__."/../include/searchlib.php3";
+require_once __DIR__."/../include/locsess.php3";    // DB_AA object definition
+require_once __DIR__."/../include/exporter.class.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to export"));

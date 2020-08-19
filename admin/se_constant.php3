@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,12 @@
 // Parameters: group_id - identifier of constant group
 //             as_new - if we want to create new category group based on an existing (id of "template" group)
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."constedit_util.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/constedit_util.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
@@ -285,7 +285,7 @@ $form_buttons = [
 
 // load the HIERARCHICAL EDITOR
 if ($hierarch) {
-    require_once AA_INC_PATH."constedit.php3";
+    require_once __DIR__."/../include/constedit.php3";
     // it exits here
 }
 
@@ -330,7 +330,7 @@ echo "
 if (!$constant_info["owner_id"] || !$group_id) {
     echo _m("Whoever first updates values becomes owner.");
 }
-elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
+elseif ($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     // display the select box to change group owner if requested ($chown)
     echo "<select name=\"new_owner_id\">";
     foreach ($g_modules as $k => $v) {

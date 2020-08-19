@@ -5,7 +5,7 @@
  *    optionaly $from_slice_id for selected imported slice
  *    optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,15 +30,15 @@
 */
 
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
 
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."csn_util.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/csn_util.php3";
 
 
 $err = [];          // error array (Init - just for initializing variable

@@ -4,7 +4,7 @@
  *   (typicaly: Category update successful)
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@
  *
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."se_users.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/se_users.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 if (!IfSlPerm(PS_USERS)) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
@@ -72,11 +72,11 @@ function PrintUser($perm, $usr_id, $editor_perm) {
 
     if (      IsPerm($perm,$perms_roles["SUPER"]['id']) ) {
         $role = 4;
-    } elseif( IsPerm($perm,$perms_roles["ADMINISTRATOR"]['id'] ) ) {
+    } elseif (IsPerm($perm,$perms_roles["ADMINISTRATOR"]['id'] ) ) {
         $role = 3;
-    } elseif( IsPerm($perm,$perms_roles["EDITOR"]['id'] ) ) {
+    } elseif (IsPerm($perm,$perms_roles["EDITOR"]['id'] ) ) {
         $role = 2;
-    } elseif( IsPerm($perm,$perms_roles["AUTHOR"]['id'] ) ) {
+    } elseif (IsPerm($perm,$perms_roles["AUTHOR"]['id'] ) ) {
         $role = 1;
     }
 
@@ -126,7 +126,7 @@ $continue=true;
 
 if ( $show_adduser ) {
     include "./se_users_add.php3";
-} elseif( $UsrAdd || $UsrDel) {
+} elseif ( $UsrAdd || $UsrDel) {
     ChangeRole(); // in include/se_users.php3
 }
 if ( $continue ) {

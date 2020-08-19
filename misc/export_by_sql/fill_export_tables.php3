@@ -3,8 +3,8 @@
  * @deprecated should be converted fo optimize actions, if needed. Honza 2018-03-13
  */
 
-require_once __DIR__. "/../../include/init_page.php3";
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/util.php3";
 
 if (!IsSuperadmin()) {
   echo "This script is intended for super admins only.";

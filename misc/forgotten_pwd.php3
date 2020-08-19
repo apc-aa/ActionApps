@@ -1,10 +1,10 @@
 <?php
-require_once "./../include/config.php3";
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."mail.php3";
-require_once AA_INC_PATH."itemfunc.php3";
+require_once __DIR__."/./../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/searchlib.php3";
+require_once __DIR__."/../include/mail.php3";
+require_once __DIR__."/../include/itemfunc.php3";
 
 $KeyVal = 90;  // generated key validity in minutes
 $script_path = AA_INSTAL_PATH."misc/forgotten_pwd.php3";

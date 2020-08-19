@@ -22,12 +22,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in initpage.php3 script to include config.php3 from the right directory
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH ."varset.php3";
-require_once AA_INC_PATH ."formutil.php3";
-require_once AA_INC_PATH ."pagecache.php3";
-require_once AA_BASE_PATH."modules/site/util.php3";   // module specific utils
-require_once AA_BASE_PATH."modules/site/sitetree.php3";   // module specific utils
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/pagecache.php3";
+require_once __DIR__."/../../modules/site/util.php3";   // module specific utils
+require_once __DIR__."/../../modules/site/sitetree.php3";   // module specific utils
 
 // ----------------- function definition end -----------------------------------
 
@@ -101,13 +101,13 @@ switch( $akce ) {
 
 if ($addcond) {
     $tree->addCondition($r_spot_id, $addcondvar, $addcond, $addcondop);
-} elseif($addvar) {
+} elseif ($addvar) {
     $tree->addVariable($r_spot_id, $addvar);
-} elseif($delvar) {
+} elseif ($delvar) {
     $tree->removeVariable($r_spot_id, $delvar);
-} elseif($delcond) {
+} elseif ($delcond) {
     $tree->removeCondition($r_spot_id, $delcond);
-} elseif($content OR $name) {
+} elseif ($content OR $name) {
     $varset     = new CVarset();
     $varset->add("content", "quoted", $content);
 

@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,11 +74,11 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 // ----- input variables normalization - end ----------------------------------
 
 
-require_once "../include/config.php3";
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."csn_util.php3";
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/csn_util.php3";
 
 //-------------------------- Constants -----------------------------------------
 
@@ -603,7 +603,7 @@ echo GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs,$xml_items
 echo $xml_fields;
 echo $xml_categories;
 
-if ($slice_id && $ids) {        // feeding mode
+if ($ids) {        // feeding mode
     CreateXMLItems($slice_id, $ids, $content, $slice->fields('record'));
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__. "/request.class.php";
+require_once __DIR__."/request.class.php";
 
 $options = [
     'aa_url'          => 'https://example.org/apc-aa/',

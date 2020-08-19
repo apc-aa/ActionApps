@@ -67,10 +67,10 @@ https://www.apc.org/
 // post2shtml could be include from other files, where config.php3 is already
 // required (and probably is on another path)
 if ( !defined('DB_NAME') ) {
-    require_once "./include/config.php3";
+    require_once __DIR__."/./include/config.php3";
 }
-require_once AA_INC_PATH."locsess.php3";
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/include/locsess.php3";
+require_once __DIR__."/include/util.php3";
 
 store_vars();
 

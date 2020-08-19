@@ -113,7 +113,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
     private function fileUploadToNewItem(array &$aa) {
         $i = 0;
         foreach ($aa as $type => $file) {
-            list($letter, $sid) = explode('_', $type);
+            [$letter, $sid] = explode('_', $type);
             if ($letter{0} == 'f') {
                 unset($aa[$type]);   // remove old form and add new one
                 if (is_array($file['file']['fil']['var']) AND ($s = AA_Slice::getModule($sid)) AND ($fid = $s->getDefaultUploadField())) {

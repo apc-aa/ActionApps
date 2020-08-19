@@ -3,7 +3,7 @@
  * MLX MultiLingual eXtension for APC ActionApps
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,10 +183,11 @@ class MLXCtrl {
     function getDefLangName() {
         return key($this->translations[0]);
     }
+
     /** getFirstNonEmpty function
      *
      */
-    function &getFirstNonEmpty() {
+    function getFirstNonEmpty() {
         foreach ($this->translations as $v) {
             if ((list($itemid,)=array_values($v)) && $itemid) {
                 return $v;
@@ -446,7 +447,7 @@ class MLX {
             return false;
         }
         //__mlx_dbg($mlxid,"mlxid");
-        if (empty($content4mlxid) && (isset($mlxid))) {
+        if (empty($content4mlxid)) {
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
@@ -889,7 +890,7 @@ class MLXGetText
             && ($lang == $this->currentDomainRef['defaultLang'])) {
             if($retval == MLX_NOTRANSLATION) {
                 $retval = $args[0];
-            } else if(!$retval) {
+            } elseif (!$retval) {
                 $this->addtext($args);
                 $this->currentDomainRef[$lang][$args[0]] = MLX_NOTRANSLATION;
             }
@@ -988,7 +989,7 @@ class MLXGetText
                         $refSlice[$item_id] = $text;
                     }
                 }
-            } else if($field_id == $langField) {
+            } elseif ($field_id == $langField) {
                 if($refSlice[$item_id]) {
                     if($isModeActive) {
                         $refSlice[$refSlice[$item_id]] = $text;
@@ -1048,7 +1049,8 @@ class MLXGetText
         if(!is_callable('StoreItem')) {
             require_once('itemfunc.php3');
         }
-        $sliceid = end(array_keys($this->currentDomainRef['slices']));
+        $array = array_keys($this->currentDomainRef['slices']);  // variable is neccessary - end() need call by reference
+        $sliceid = end($array);
         if(!$sliceid) {
             return;
         }

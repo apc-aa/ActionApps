@@ -16,7 +16,7 @@
  *   III) prepare to write the form (select from the database)
  *    IV) write the form (HTML output)
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@
 // I) Standard initialization and sanity checks
 ////////////////////////////////////////////////////////////////////
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
 /** save_notify2db function
  * @param $slice_id
  * @param $function
@@ -61,7 +61,7 @@ function save_notify2db($slice_id, $function, $emails) {
     $arr = explode("\n", $emails);
     foreach ($arr as $uid) {
         $uid = trim($uid);
-        if ( AA_Validate::validate($uid, 'email')) {
+        if ( AA_Validate::doValidate($uid, 'email')) {
             $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', '$p_slice_id', $function)";
             $db->query($SQL);
         }

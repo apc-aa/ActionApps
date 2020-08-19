@@ -227,7 +227,7 @@ class DB_Sql {
     if ($this->Debug) echo ".";
 
     $this->Record = $this->sth->fetch();
-    $this->Row   += 1;
+    ++$this->Row;
     $this->getErrorInfo();
 
     $stat = is_array($this->Record);

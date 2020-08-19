@@ -3,7 +3,7 @@
  *  se_admin.php3 - assigns html format for administation item view (index.php3)
  *  optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@
 */
 
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/msgpage.php3";
 
 define('DEFAULT_ADMIN_TOP','<tr>\n  <th></th>\n  <th>www</th>\n  <th>name</th>\n</tr>');
 define('DEFAULT_ADMIN_HTML','<tr>\n  <td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td>\n  <td><a href=\"_#SEO_URL_\">&nbsp;&raquo;&nbsp;</a></td>\n  <td><a href=\"_#EDITITEM\">_#HEADLINE</a><br><small>_#SEO_URL_</small></td>\n</tr>');

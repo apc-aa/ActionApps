@@ -2,7 +2,7 @@
 /**
 * Polls module is based on Till Gerken's phpPolls version 1.0.3. Thanks!
 *
-* PHP versions 4 and 5
+* PHP version 7.2+
 *
 * LICENSE: This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@
  // used in init_page.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH. "varset.php3";
-require_once AA_INC_PATH. "formutil.php3";
-require_once AA_INC_PATH. "varset.php3";
-require_once AA_INC_PATH. "mgettext.php3";
-require_once AA_INC_PATH. "msgpage.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../include/varset.php3";
+require_once __DIR__."/../../include/mgettext.php3";
+require_once __DIR__."/../../include/msgpage.php3";
 
 // id of the editted module
 $module_id = $slice_id;               // id in long form (32-digit hexadecimal

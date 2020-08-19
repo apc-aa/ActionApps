@@ -1,5 +1,5 @@
 <?php
-/** PHP versions 4 and 5
+/** PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,13 @@
 // expected $view_type for both - new and edit
 // expected $view_id for editing specified view or $new
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_INC_PATH."varset.php3";
-require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."discussion.php3";  // GetDiscussionAliases funct def
-require_once AA_INC_PATH."msgpage.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/varset.php3";
+require_once __DIR__."/../include/item.php3";     // GetAliasesFromField funct def
+require_once __DIR__."/../include/pagecache.php3";
+require_once __DIR__."/../include/discussion.php3";  // GetDiscussionAliases funct def
+require_once __DIR__."/../include/msgpage.php3";
 
 // ----------------------------------------------------------------------------
 /** get_row_count function
@@ -315,13 +315,13 @@ if ( !$update ) {  // set variables from database
     if ( $view_id ) {
         // edit specified view data
         $vw_data = DB_AA::select1('SELECT * FROM view','', [['id',$view_id,'i']]);
-    } elseif( $new_templ AND $view_view) {
+    } elseif ( $new_templ AND $view_view) {
         // new view from template
         $vw_data = DB_AA::select1('SELECT * FROM view','', [['id',$view_view,'i']]);
-    } elseif( $view_type == 'inputform') {
+    } elseif ( $view_type == 'inputform') {
         // new view - inputform
         $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
-    } elseif( $view_type ) {
+    } elseif ( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
         $vw_data = DB_AA::select1('SELECT * FROM view','', [['type',$view_type]], ['id']);

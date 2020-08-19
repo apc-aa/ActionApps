@@ -1,7 +1,7 @@
 <?php
  /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
  * @link      https://www.apc.org/ APC
 */
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH. 'formutil.php3';
-require_once AA_INC_PATH. 'optimize.class.php3';
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/formutil.php3";
+require_once __DIR__."/../include/optimize.class.php3";
 
 if (!IsSuperadmin()) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You don't have permissions to do optimize tests."), "admin");

@@ -6,11 +6,11 @@
 
 // Edit Link Page
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_BASE_PATH."modules/links/cattree.php3";
-require_once AA_BASE_PATH."modules/links/constants.php3";
-require_once AA_BASE_PATH."modules/links/util.php3";
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../modules/links/cattree.php3";
+require_once __DIR__."/../../modules/links/constants.php3";
+require_once __DIR__."/../../modules/links/util.php3";
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id  = $slice_id;

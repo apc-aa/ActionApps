@@ -107,6 +107,6 @@ class ChbWidget extends \AA\Widget\Widget
      * @inheritDoc
      */
     public function description(): string {
-        // TODO: Implement description() method.
+        return ''; // TODO: Implement description() method.
     }
 }

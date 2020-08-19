@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,23 +27,17 @@
 */
 
 /** APC-AA configuration file */
-require_once "../../include/config.php3";
+require_once __DIR__."/../../include/config.php3";
 /** APC-AA constant definitions */
-require_once AA_INC_PATH."constants.php3";
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/../../include/constants.php3";
+require_once __DIR__."/../../include/mgettext.php3";
 
 mgettext_bind(AA_Langs::getLang($lang_file), 'news');
 
-/** Main include file for using session management function on a page */
-//require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
-require_once AA_INC_PATH."util.php3";
-//require_once AA_INC_PATH."formutil.php3";
-//require_once AA_INC_PATH."itemfunc.php3";
+require_once __DIR__."/../../include/util.php3";
 
-
-bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
-require_once AA_INC_PATH."util.php3";
+bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
 HtmlPageBegin();
 

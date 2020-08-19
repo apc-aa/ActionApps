@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* PHP versions 4 and 5
+* PHP version 7.2+
 *
 * LICENSE: This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@
 *
 */
 
-require_once(AA_INC_PATH. "locsess.php3");
-require_once(AA_INC_PATH. "perm_core.php3"); // allways included!
+require_once __DIR__."/locsess.php3";
+require_once __DIR__."/perm_core.php3"; // allways included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
-require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
+require_once __DIR__."/perm_" . PERM_LIB . ".php3";
 
 class AA_Auth extends Auth {
 
@@ -72,7 +72,7 @@ class AA_Auth extends Auth {
             $login_msg .= '<div>'. _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", [ERROR_REPORTING_EMAIL]) .'</div>';
         }
 
-        require_once (AA_INC_PATH . "loginform.inc");
+        require_once __DIR__."/loginform.inc";
     }
     /** auth_validatelogin function
      *  @return string uid

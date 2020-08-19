@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -434,9 +434,9 @@ function perm_username( $user_id ) {
     return empty($userinfo) ? $user_id : $userinfo['name'];
 }
 
-require_once AA_INC_PATH ."util.php3";          // for getDB()
-require_once AA_INC_PATH ."searchlib.php3";     // for queryzids()
-require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
+require_once __DIR__."/util.php3";          // for getDB()
+require_once __DIR__."/searchlib.php3";     // for queryzids()
+require_once __DIR__."/item_content.php3";  // for ItemContent class
 
 
 /** main AA permissions */
@@ -499,7 +499,7 @@ class AA_Perm {
             $new_users = $perm_sys->findUsernames($pattern);
             if (is_array($new_users) AND count($new_users)) {
                 // + operator preserves the numeric keys (used in SQL perm), which is crucial
-                $users = $users + $new_users;
+                $users += $new_users;
             }
         }
         return $users;
@@ -520,7 +520,7 @@ class AA_Perm {
             $new_groups = $perm_sys->findGroups($pattern);
             if (is_array($new_groups) AND count($new_groups)) {
                 // + operator preserves the numeric keys (used in SQL perm), which is crucial
-                $groups = $groups + $new_groups;
+                $groups += $new_groups;
             }
         }
         return $groups;
@@ -678,17 +678,15 @@ class AA_Perm {
      * @return bool|string
      */
     public static function cryptPwd($password) {
-        if (function_exists('password_hash')) { // php 5.5
-            return password_hash($password, PASSWORD_DEFAULT);
-        }
+        return password_hash($password, PASSWORD_DEFAULT);
         // remove whole code below for php7 - in php 7.2 the mcrypt is no longer works anyway
-        if (function_exists('mcrypt_create_iv')) {
-            // password_hash implementation using mcrypt
-            return crypt( $password, '$2y$10$'. str_replace('+', '.', base64_encode(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM))) .'$' );
-        }
-        // legacy - compatible with old AA on old php < 5.5
-        $ret  = crypt($password, '$2y$14$'.gensalt(22));
-        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
+        //        if (function_exists('mcrypt_create_iv')) {
+        //            // password_hash implementation using mcrypt
+        //            return crypt( $password, '$2y$10$'. str_replace('+', '.', base64_encode(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM))) .'$' );
+        //        }
+        //        // legacy - compatible with old AA on old php < 5.5
+        //        $ret  = crypt($password, '$2y$14$'.gensalt(22));
+        //        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
     }
 
     /**

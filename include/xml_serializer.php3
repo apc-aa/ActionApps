@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -244,8 +244,8 @@ class xml_unserializer {
  * Testing
  */
 /*function test_xmlserializer() {
-    require_once "config.php3";
-    require_once "AA_INC_PATH"."zids.php3";
+    require_once __DIR__."/config.php3";
+    require_once __DIR__."/zids.php3";
     $aa = new zids("12345678901234567890123456789012");
     print_r($a);
     //$a = array(" one");

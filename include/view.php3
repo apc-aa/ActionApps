@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,13 @@
  * @link      https://www.apc.org/ APC
  *
 */
-require_once AA_INC_PATH . "mgettext.php3";
-require_once AA_INC_PATH . "itemview.php3";
-require_once AA_INC_PATH . "searchlib.php3";
-require_once AA_BASE_PATH. "modules/links/util.php3";
-require_once AA_BASE_PATH. "modules/links/linksearch.php3";
+require_once __DIR__."/mgettext.php3";
+require_once __DIR__."/itemview.php3";
+require_once __DIR__."/searchlib.php3";
+require_once __DIR__."/../modules/links/util.php3";
+require_once __DIR__."/../modules/links/linksearch.php3";
 // add mlx functions
-require_once AA_INC_PATH . "mlx.php";
+require_once __DIR__."/mlx.php";
 
 
 // ----------------------------------------------------------------------------
@@ -472,7 +472,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
         } else {
             // second parameter is not specified - take listlen parameter
             // we can also specify both - page and from, which means from the item xy on the page p
-            $list_from   = $listlen * ($page-1) + $list_from;
+            $list_from += $listlen * ($page - 1);
         }
     }
     return [$listlen, $random ?: ($list_from ?: 0)];

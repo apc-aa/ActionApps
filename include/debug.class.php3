@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* PHP versions 4 and 5
+* PHP version 7.2+
 *
 * LICENSE: This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ class AA_Debug_Firephp extends AA_Debug {
         define('INSIGHT_AUTHKEYS', '*');
         define('INSIGHT_PATHS', __DIR__);
         define('INSIGHT_SERVER_PATH', '/aaa/test.php3');
-        require_once(AA_BASE_PATH. 'misc/firephp/lib/FirePHP/Init.php');
+        require_once(__DIR__."/../misc/firephp/lib/FirePHP/Init.php");
         $inspector = FirePHP::to('page');
         $this->_console = $inspector->console();
         $this->_console->log('ActionApps - console initiated');
@@ -317,7 +317,7 @@ class PhpConsole {
                                         if(is_object($arg)) {
                                                 $args[] = get_class($arg);
                                         }
-                                        elseif(is_array($arg)) {
+                                        elseif (is_array($arg)) {
                                                 $args[] = 'Array';
                                         }
                                         else {

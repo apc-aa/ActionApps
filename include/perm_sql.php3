@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
  *
 */
 
-require_once AA_INC_PATH."perm_core.php3";
+require_once __DIR__."/perm_core.php3";
 
 //php_sql - functions for working with permissions with SQL
 

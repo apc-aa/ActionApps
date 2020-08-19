@@ -22,11 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php3 script to include config.php3 from the right directory
 
-require_once "../../include/init_page.php3";
-require_once AA_INC_PATH."formutil.php3";
-require_once AA_BASE_PATH."modules/links/constants.php3";
-require_once AA_BASE_PATH."modules/links/cattree.php3";
-require_once AA_BASE_PATH."modules/links/util.php3";      // module specific utils
+require_once __DIR__."/../../include/init_page.php3";
+require_once __DIR__."/../../include/formutil.php3";
+require_once __DIR__."/../../modules/links/constants.php3";
+require_once __DIR__."/../../modules/links/cattree.php3";
+require_once __DIR__."/../../modules/links/util.php3";      // module specific utils
 
 function PrintCategory( $id, $name, $base, $state, $parent, $level ) {
     echo "<br>";

@@ -13,7 +13,7 @@
  *  @param $akce_param additional parameter for the action - not used here
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@
  *
 */
 
-require_once AA_INC_PATH."linkcheck.class.php3";
-require_once AA_INC_PATH."optimize.class.php3";
+require_once __DIR__."/../../include/linkcheck.class.php3";
+require_once __DIR__."/../../include/optimize.class.php3";
 
 /** AA_Manageraction_Central_Linkcheck - checks if the AA are acessible */
 class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {

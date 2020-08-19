@@ -2,7 +2,7 @@
 /**
  * Class TableEdit definition.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,9 @@
  * @link      https://www.apc.org/ APC
 */
 
-require_once AA_INC_PATH."tabledit_column.php3";
-require_once AA_INC_PATH."tabledit_util.php3";
-require_once AA_INC_PATH."formutil.php3";
+require_once __DIR__."/tabledit_column.php3";
+require_once __DIR__."/tabledit_util.php3";
+require_once __DIR__."/formutil.php3";
 
 /// identifies new record
 $new_key = "__new__";
@@ -335,7 +335,7 @@ class tabledit {
             }
             //echo "</TABLE>";
         }
-        else if ($this->type == "browse") {
+        elseif ($this->type == "browse") {
             $this->ShowButtons(false, "", "", "", 0, "down", [], $record_count);
             // scroller
             if ($scroll->pageCount() > 1) {

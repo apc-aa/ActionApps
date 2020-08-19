@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1435,33 +1435,17 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
 }
 
 /**
-* Use as
-*   $credentials = AA_Credentials::singleton();
-*   $credentials->loadFromSlice($slice_id);
-*/
-
+ * Use as
+ *   $credentials = AA_Credentials::singleton();
+ *   $credentials->loadFromSlice($slice_id);
+ * @method  static AA_Credentials singleton()
+ *
+ */
 class AA_Credentials {
-    var $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
-    /** AA_Credentials function
-     */
-    function __construct() {
-        $this->_pwd = [];
-    }
+    use \AA\Util\SingletonTrait;
 
-    /** singleton
-     *  called from getSlice method
-     *  This function makes sure, there is just ONE static instance if the class
-     *  @todo  convert to static class variable (after migration to PHP5)
-     */
-    static function singleton() {
-        static $instance = null;
-        if (is_null($instance)) {
-            // Now create the AA_Credentials object
-            $instance = new AA_Credentials;
-        }
-        return $instance;
-    }
+    protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
     /** main method for checking the slice_pwd */
     function checkSlice($slice_id, $crypted_additional_slice_pwd=null) {

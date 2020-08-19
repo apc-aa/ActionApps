@@ -2,7 +2,7 @@
 /**
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,9 @@
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-require_once AA_INC_PATH."menu_util.php3";
-require_once AA_INC_PATH."perm_core.php3";
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/menu_util.php3";
+require_once __DIR__."/perm_core.php3";
+require_once __DIR__."/mgettext.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 

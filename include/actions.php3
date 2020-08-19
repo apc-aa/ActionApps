@@ -13,7 +13,7 @@
  *  @param $akce_param additional parameter for the action - not used here
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -428,7 +428,9 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         }
 
         // mimo enabled -- problem?
-        $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete->longids());
+
+        $longids = $items_to_delete->longids(); // we need variable because of pass by reference
+        $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $longids);
 
         // delete content of all fields
         AA_Items::deleteItems($items_to_delete);

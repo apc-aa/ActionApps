@@ -4,7 +4,7 @@
  *     Params:
  *         $set_tview -- required, name of the table view
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
-require_once "../include/init_page.php3";
-require_once AA_INC_PATH."tabledit.php3";
+require_once __DIR__."/../include/init_page.php3";
+require_once __DIR__."/../include/tabledit.php3";
 
 // ----------------------------------------------------------------------------------------
 
@@ -48,8 +48,8 @@ if ( !IsSuperadmin() ) {
 $sess->register("tview");
 $tview = 'centraledit';
 
-//require_once AA_INC_PATH."tv_common.php3";
-//require_once AA_INC_PATH."tv_misc.php3";
+//require_once __DIR__."/../include/tv_common.php3";
+//require_once __DIR__."/../include/tv_misc.php3";
 
 $tableview = GetCentalEditTableView();
 

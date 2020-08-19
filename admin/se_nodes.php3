@@ -9,7 +9,7 @@
  *                 $old_node_name
  *                 $sel_node_name
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,14 +33,14 @@
  *
 */
 
-require_once "../include/init_page.php3";
+require_once __DIR__."/../include/init_page.php3";
 
 if ( !IsSuperadmin() ) {
     MsgPage(StateUrl(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
     exit;
 }
 $err = [];
-require_once AA_INC_PATH . "formutil.php3";
+require_once __DIR__."/../include/formutil.php3";
 
 if ($mode == "edit") {
     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");

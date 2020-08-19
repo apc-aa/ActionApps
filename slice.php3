@@ -129,18 +129,18 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 
 $encap = ( ($encap=="false") ? false : true );
 
-require_once "./include/config.php3";
-require_once AA_INC_PATH."util.php3";
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."view.php3";
-require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."discussion.php3";
-require_once AA_INC_PATH."mgettext.php3";
+require_once __DIR__."/./include/config.php3";
+require_once __DIR__."/include/util.php3";
+require_once __DIR__."/include/item.php3";
+require_once __DIR__."/include/view.php3";
+require_once __DIR__."/include/pagecache.php3";
+require_once __DIR__."/include/searchlib.php3";
+require_once __DIR__."/include/discussion.php3";
+require_once __DIR__."/include/mgettext.php3";
 // function definitions:
-require_once AA_INC_PATH."slice.php3";
+require_once __DIR__."/include/slice.php3";
 
-require_once AA_INC_PATH."locsess.php3";
+require_once __DIR__."/include/locsess.php3";
 
 /** MyUrl function - was in sessions before, but now it is used just in this script, so moved here and rewritten to handle encap (=shtml)/not encap version
  *  rewriten to return URL of shtml page that includes this script instead to return self url of this script.
@@ -188,7 +188,7 @@ function MyUrl($encap, $scr_url) {  //sliceID is here just for compatibility wit
 
 
 //MLX stuff
-require_once AA_INC_PATH."mlx.php";
+require_once __DIR__."/include/mlx.php";
 
 // session is not working right now with PHP5 style sessions. It should not be
 // needed. We are testing the code, and if all will be OK, we remove sessions
@@ -254,7 +254,7 @@ if (!$slice_id AND is_array($slices)) {
 // (or other variables) could contain \n. Should be fixed more generaly -
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
 $slice_id   = trim($slice_id);
-require_once AA_INC_PATH."javascript.php3";
+require_once __DIR__."/include/javascript.php3";
 
 is_object( $db ) || ($db = getDB());
 

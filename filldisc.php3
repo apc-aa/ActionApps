@@ -67,23 +67,23 @@ if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
 
 
 /** APC-AA configuration file */
-require_once "./include/config.php3";
+require_once __DIR__."/./include/config.php3";
 /** Main include file for using session management function on a page */
-require_once AA_INC_PATH."locsess.php3";
+require_once __DIR__."/include/locsess.php3";
 /** Set of useful functions used on most pages */
-require_once AA_INC_PATH."util.php3";
+require_once __DIR__."/include/util.php3";
 /** Defines class for inserting and updating database fields */
-require_once AA_INC_PATH."varset.php3";
+require_once __DIR__."/include/varset.php3";
 /** discussion utility functions */
-require_once AA_INC_PATH."discussion.php3";
+require_once __DIR__."/include/discussion.php3";
 /** defines PageCache class used for caching informations into database */
-require_once AA_INC_PATH."pagecache.php3";
+require_once __DIR__."/include/pagecache.php3";
 /** defines class that prints the items (news, discussions, calendar...) */
-require_once AA_INC_PATH."itemview.php3";
+require_once __DIR__."/include/itemview.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."event.class.php3";
-require_once AA_INC_PATH."validate.php3";
+require_once __DIR__."/include/item.php3";
+require_once __DIR__."/include/event.class.php3";
+require_once __DIR__."/include/validate.php3";
 
 $err = [];       // error array (Init - just for initializing variable)
 
@@ -219,7 +219,7 @@ $event->comes('ITEM_NEW_COMMENT', $d_item_id, 'Item', $new_id );
 
 send2mailList($d_item_id, $new_id);
 
-if ($_REQUEST['send_reactions'] AND AA_Validate::validate($d_e_mail, 'email')) {
+if ($_REQUEST['send_reactions'] AND AA_Validate::doValidate($d_e_mail, 'email')) {
     AddNotification('ITEM_NEW_COMMENT', 'Item', $d_item_id, 'email', $d_e_mail);
 }
 

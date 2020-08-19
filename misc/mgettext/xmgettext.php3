@@ -34,7 +34,7 @@ class mgettext_writer {
     }
 
     function write_header($lang)     {}
-    function write_pair(&$pair)      {}
+    function write_pair($pair)       {}
     function write_footer()          {}
     function write_comment($comment) {}
     /** Prepares a string to be printed in double quotes into a file. */

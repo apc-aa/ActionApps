@@ -89,7 +89,7 @@ class DB_msql {
 
   function next_record() {
     $this->Record = msql_fetch_array($this->Query_ID);
-    $this->Row   += 1;
+    ++$this->Row;
     $this->Error = msql_error();
 
     if (is_array($this->Record)) {

@@ -3,7 +3,7 @@
  *   This module generates a human readable output page that summarizes the slices on a system
  *   Feel free to modify it - but please talk to Mitra about any changes.
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@
  *
 */
 
-require_once "../include/init_page.php3"; // Loads variables etc
-require_once AA_INC_PATH."formutil.php3";  // for FrmJavascriptCached()
+require_once __DIR__."/../include/init_page.php3"; // Loads variables etc
+require_once __DIR__."/../include/formutil.php3";  // for FrmJavascriptCached()
 
 //$debug = 1;
 

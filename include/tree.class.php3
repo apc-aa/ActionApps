@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,36 +241,25 @@ class AA_Supertree_Reverse extends AA_Supertree {
 }
 
 
+/**
+ * Class AA_Trees
+ * @method  static AA_Trees singleton()
+ */
 class AA_Trees {
+
+    use \AA\Util\SingletonTrait;
+
     /** parent->child trees */
-    var $a   = [];
+    protected $a   = [];
 
     /** reverse - child->parent trees */
-    var $rev = [];
-
-    /** Constructor  */
-    function __construct() {
-        $this->a   = [];
-    }
-
-    /** singleton function
-     *  called as AA_Trees::singleton() from getTree() method;
-     *  This function makes sure, there is global instance of the class
-     *  @todo  convert to static class variable (after migration to PHP5)
-     */
-    function singleton() {
-        static $instance = null;
-        if (is_null($instance)) {
-            // Now create the AA_Trees object
-            $instance = new AA_Trees;
-        }
-        return $instance;
-    }
+    protected $rev = [];
 
     /** getTree function
      *  main factory static method
      * @param $id
      * @return
+     * @noinspection PhpUnused
      */
     function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
         $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);

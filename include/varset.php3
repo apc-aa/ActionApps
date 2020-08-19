@@ -3,7 +3,7 @@
  * Class Cvariable, Cvarset
  *
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -654,5 +654,5 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
 // then will require varset, but for now we will use this approach
 
 if (!class_exists('AA_Metabase')) {
-    require_once AA_INC_PATH . "metabase.class.php3";
+    require_once __DIR__."/metabase.class.php3";
 }
