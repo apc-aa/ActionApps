@@ -132,7 +132,7 @@ if ( $slice_id!="" ) {  // set variables from database - allways
     }
 }
 
-$headcode = <<<'JS'
+$headcode = <<<'HTML'
 <script>
     function Defaults() {
       document.f.group_by.selectIndex = -1;
@@ -155,7 +155,7 @@ $headcode = <<<'JS'
       [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), function(e) { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
     }
 </script>
-JS;
+HTML;
 
 
 $script2run = ' 

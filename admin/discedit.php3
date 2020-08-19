@@ -41,9 +41,9 @@ require_once __DIR__."/../include/msgpage.php3";
  * @param $content4id
  * @return string headline
  */
-function getHeadline($content4id) {
+function getHeadline($content4id): string {
     if (!$content4id) {
-        return;
+        return '';
     }
     if ($content4id["headline........"]) {
         return $content4id["headline........"][0]['value'];
@@ -54,6 +54,7 @@ function getHeadline($content4id) {
             return $content4id["headline.......".$i][0]['value'];
         }
     }
+    return '';
 }
 
 // check permission to edit discussion - you must be Editor, at least

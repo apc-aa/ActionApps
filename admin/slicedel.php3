@@ -44,7 +44,7 @@ if (!IsSuperadmin()) {
  * @param $id
  * @param $name
  * @param $type
- * @return prints a table row with a checkbox and a link
+ * Prints a table row with a checkbox and a link
  */
 function PrintSlice($id, $name, $type) {
     global $MODULES;

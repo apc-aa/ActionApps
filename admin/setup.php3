@@ -62,7 +62,7 @@ require_once __DIR__."/../include/mgettext.php3";
 bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
 /** HtmlStart function
- * @return prints title,body,h1
+ *  Prints title,body,h1
  */
 function HtmlStart() {
     HtmlPageBegin();
@@ -71,23 +71,25 @@ function HtmlStart() {
     echo "<center>\n";
     echo "<h1>" . _m("ActionApps Setup") . "</h1>\n";
 }
+
 /** NoAction function
- * @return prints a message
+ *  Prints a message
  */
 function NoAction() {
     echo _m("This script can't be used on a configured system.");
 }
 /** PrintErr function
  * @param $err
- * @return prints every value in $err
+ * Prints every value in $err
  */
 function PrintErr($err) {
     foreach($err as $value) {
         echo $value;
     }
 }
+
 /** SuperForm function
- * @return prints a form
+ *  Prints a form
  */
 function SuperForm() {
   global $login, $password1, $password2, $fname, $lname, $email;
@@ -117,7 +119,7 @@ function SuperForm() {
   <?php
 }
 /** InitForm function
- * @return prints two messages and a form
+ * Prints two messages and a form
  */
 function InitForm() {
    echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
@@ -130,8 +132,9 @@ function InitForm() {
    </form>
    <?php
 }
+
 /** HtmlEnd function
- * @return prints end of html tags
+ *  Prints end of html tags
  */
 function HtmlEnd() {
    echo "</center></body></html>";

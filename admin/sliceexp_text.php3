@@ -74,7 +74,7 @@ class AA_Slice_Exporter {
      * @param $slobj
      * @param $new_slice_id
      * @param $temp_file
-     * @return writes to file
+     * Writes to file
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
@@ -398,7 +398,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      *  Export each view
      * @param $slobj
      * @param $temp_file
-     * @return writes to file
+     * Writes to file
      */
     function exportOneSliceViews($slobj, $temp_file) {}
 

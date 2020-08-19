@@ -45,6 +45,11 @@ if (!IsSuperadmin()) {
 }
 // ----------------------------------------------------------------------------------------
 
+
+function AafinderFieldLink($field_id, $slice_id) {
+    return a_href( get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
+}
+
 function AdminLink($table, $row)
 {
     switch ($table) {
@@ -65,12 +70,8 @@ function AdminLink($table, $row)
         case 'object_float':
             return AafinderObjectLink($row['iid']);
     }
-}
 
-function AafinderFieldLink($field_id, $slice_id) {
-    return a_href( get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
 }
-
 function AafinderObjectLink($object_id) {
     if ($obj = AA_Object::load($object_id)) {
         print_r($obj)    ;

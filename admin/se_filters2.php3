@@ -48,11 +48,12 @@ if (!IfSlPerm(PS_FEEDING)) {
  * @param $app (by link)
  * @return string parsed
  */
-function ParseIdA($param,&$app) {
+function ParseIdA($param,&$app): string {
    if (preg_match("/([0-9a-f]{1,32}|0)-([01])/i", $param, $parse)) {  // slice_id or 0
       $app = $parse[2];
       return $parse[1];
    }
+   return '';
 }
 
 $err = [];       // error array (Init - just for initializing variable)

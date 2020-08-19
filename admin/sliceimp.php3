@@ -183,6 +183,7 @@ function import_slice(&$slice){
         }
         $Cancel = "OHYES";
     }
+    return true;
 }
 
 /** import_slice_data function

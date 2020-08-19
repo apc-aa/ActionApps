@@ -47,7 +47,7 @@ function get_row_count($s, $cols, $maxrows) {
 }
 
 /** show_digest_filters function
- *  @return Shows the top part of the Alerts Selection Set view
+ *  Shows the top part of the Alerts Selection Set view
  */
 function show_digest_filters() {
     global $view_id;
