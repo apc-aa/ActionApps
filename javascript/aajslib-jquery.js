@@ -612,9 +612,12 @@ function AA_WindowUnloadQ(e) {
     e.returnValue = "Changes are not saved. Do you really want to exit this page?";
 }
 
-function AA_SiteUpdate(item, field, value) {
+function AA_SiteUpdate(item, field, value, action) {
+    if (['u','a','r'].indexOf(action) == -1) {
+       action = 'u';
+    }
     var params = {};
-    params['aa[u'+item+']['+field+'][0]'] = value;
+    params['aa['+action+item+']['+field+'][0]'] = value;
     AA__doChange(params);
 }
 
