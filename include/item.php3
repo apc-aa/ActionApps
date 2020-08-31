@@ -28,7 +28,7 @@
 use AA\Util\ChangesMonitor;
 
 require_once __DIR__."/stringexpand.php3";
-if ( file_exists( "usr_aliasfnc.php3" ) ) {
+if ( file_exists( __DIR__."/usr_aliasfnc.php3" ) ) {
   require_once __DIR__."/usr_aliasfnc.php3";
 }
 

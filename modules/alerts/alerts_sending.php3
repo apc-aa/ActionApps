@@ -104,7 +104,17 @@ class AA_Collection {
         return $ret;
     }
 
-    function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
+    /**
+     * @param string        $ho = how often
+     * @param string|array  $emails (email, email, ...)
+     *                              If set to "all", all Alerts users are processed.
+     * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
+     *                        i.e. whether this is only a debug trial or the real life
+     * @param string $item_id
+     * @param null   $reader_id
+     * @return int - count of emails sent
+     */
+    public function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
 
         // allow to access Reader data (and the data of all the slices with the same password)
         AA_Credentials::singleton()->loadFromSlice($this->_get('reader_slice_id'));
@@ -407,8 +417,8 @@ class AA_Collection {
  *            If set to "all", all collections are processed.
  * @param array  $emails (email, email, ...)
  *            If set to "all", all Alerts users are processed.
- * @param        $update
- * @param        $item_id
+ * @param bool   $update
+ * @param string $item_id
  * @param null   $reader_id
  * @return int - count of emails sent
  */
