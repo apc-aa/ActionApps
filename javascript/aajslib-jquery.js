@@ -613,7 +613,7 @@ function AA_WindowUnloadQ(e) {
 }
 
 function AA_SiteUpdate(item, field, value, action) {
-    if (['u','a','r'].indexOf(action) == -1) {
+    if (['u','i','r'].indexOf(action) == -1) {
        action = 'u';
     }
     var params = {};
