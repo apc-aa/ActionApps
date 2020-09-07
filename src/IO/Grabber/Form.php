@@ -28,6 +28,8 @@ use zids;
  *                           of item is untouched)
  *          'i'+long_item_id when item is edited (the value is added to current
  *                           value of the field, rest of item is untouched)
+ *          'r'+long_item_id when item is edited (the value is removed from current
+ *                           value of the field, rest of item is untouched)
  *          'n<number>_long_slice_id' if you want to add the item to slice_id
  *                                    <number> is used to add more than one
  *                                    item at the time
@@ -95,7 +97,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
         $ret = [];
         foreach ($files as $type => $items) {
             foreach ($items as $item => $fields) {
-                foreach ($fields as $field => $f) {
+                foreach ($fields as $field => $f) {                                                                     
                     foreach ((array)$f['fil']['var'] as $k => $value) {
                         $arr = [$item => [$field => ['fil' => ['var' => ["_$k" => [$type => $value]]]]]];
                         $ret = array_merge_recursive($ret, $arr);
@@ -200,13 +202,13 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
             if ($store_mode = $UPDATE_MODES[$dirty_item_id{0}]) {
                 $item_id = substr($dirty_item_id, 1);
                 $item = AA_Item::getItem($item_id);
-                $item_fields['slice_id________'] = pack_id($item->getSliceID());
+                $item_fields['slice_id________'] = [pack_id($item->getSliceID())];
             } // new items
             else {
                 $item_id = $id_trans_table['_#' . $dirty_item_id];
                 $store_mode = 'new';
 
-                //grabb slice_id of new item
+                //grab slice_id of new item
                 $item_slice_id = substr($dirty_item_id, strpos($dirty_item_id, '_') + 1);
                 // and add slice_id field to the item
                 $item_fields['slice_id________'] = [pack_id($item_slice_id)];
@@ -238,7 +240,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
                 $aa_value = Widget::getValue($val_array);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
-                if ($dirty_item_id{0} == 'r') {
+                if ( ($dirty_item_id{0} == 'r') AND ($field_id != 'slice_id........') ) {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);
