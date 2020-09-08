@@ -1,7 +1,7 @@
 <?php
  /**
  *
- * PHP versions 4 and 5
+ * PHP version 7.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@
  * @author    Honza Malik <honza.malik@ecn.cz>
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      http://www.apc.org/ APC
+ * @link      https://www.apc.org/ APC
 */
 
-require_once AA_BASE_PATH."service/update.optimize.class.php";
+require_once __DIR__."/../service/update.optimize.class.php";
 
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
@@ -35,25 +35,25 @@ class AA_Optimize_Category_Sort2group_By extends AA_Optimize {
     /** Name function
     * @return string - name
     */
-    function name() {
+    public function name(): string {
         return _m("Convert slice.category_sort to slice.group_by");
     }
 
     /** Description function
     * @return string - description
     */
-    function description() {
+    public function description(): string {
         return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted.");
     }
 
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $SQL         = "SELECT name FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slice_names = GetTable2Array($SQL, '', 'name');
         if ($slice_names AND (count($slice_names) > 0)) {
-            $this->message( _m('%1 slices are not converted', array(count($slice_names))). '<br> &nbsp; '. join('<br> &nbsp; ',$slice_names));
+            $this->message( _m('%1 slices are not converted', [count($slice_names)]). '<br> &nbsp; '. join('<br> &nbsp; ',$slice_names));
             return false;
         }
         $this->message(_m('All slices are already converted'));
@@ -64,7 +64,7 @@ class AA_Optimize_Category_Sort2group_By extends AA_Optimize {
     * runs a series of SQL commands
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db     = getDb();
         $SQL    = "SELECT id FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slices = GetTable2Array($SQL, '', 'id');
@@ -97,14 +97,14 @@ class AA_Optimize_Db_Relation_Dups extends AA_Optimize {
     /** Name function
     * @return string - name
     */
-    function name() {
+    public function name(): string {
         return _m("Relation table duplicate records");
     }
 
     /** Description function
     * @return string - description
     */
-    function description() {
+    public function description(): string {
         return _m("Testing if relation table contain records, where values in both columns are identical (which was bug fixed in Jan 2006)");
     }
 
@@ -112,11 +112,11 @@ class AA_Optimize_Db_Relation_Dups extends AA_Optimize {
     * tests for duplicate entries
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $SQL       = 'SELECT count(*) as err_count FROM `relation` WHERE `source_id`=`destination_id`';
         $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
         if ($err_count > 0) {
-            $this->message( _m('%1 duplicates found', array($err_count)) );
+            $this->message( _m('%1 duplicates found', [$err_count]) );
             return false;
         }
         $this->message(_m('No duplicates found'));
@@ -126,7 +126,7 @@ class AA_Optimize_Db_Relation_Dups extends AA_Optimize {
     /** Name function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
         $SQL = 'DELETE FROM `relation` WHERE `source_id`=`destination_id`';
         $db->query($SQL);
@@ -143,14 +143,14 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Feeds table inconsistent records");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Testing if feeds table do not contain relations to non existant slices (after slice deletion)");
     }
 
@@ -158,7 +158,7 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
     * tests for duplicate entries
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         // test wrong destination slices
@@ -167,7 +167,7 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $from_id => $to_id) {
-                $this->message( _m('Wrong destination slice id: %1 -> %2', array(AA_Slice::getModuleName($from_id), $to_id)));
+                $this->message( _m('Wrong destination slice id: %1 -> %2', [AA_Slice::getModuleName($from_id), $to_id]));
             }
             $ret = false;
         }
@@ -178,7 +178,7 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $from_id => $to_id) {
-                $this->message( _m('Wrong source slice id: %1 -> %2', array($from_id, AA_Slice::getModuleName($to_id))));
+                $this->message( _m('Wrong source slice id: %1 -> %2', [$from_id, AA_Slice::getModuleName($to_id)]));
             }
             $ret = false;
         }
@@ -191,7 +191,7 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
     /** Name function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
 
         // test wrong destination slices
@@ -229,14 +229,14 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Check database consistency");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Test content table for records without item table reference, test discussion for the same, ...");
     }
 
@@ -244,7 +244,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
     * tests for duplicate entries
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
 
@@ -253,7 +253,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, '', "unpack:slice_id");
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $s_id) {
-                $this->message( _m('Wrong slice id in item table: %1', array($s_id)));
+                $this->message( _m('Wrong slice id in item table: %1', [$s_id]));
             }
             $ret = false;
         }
@@ -263,7 +263,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, "unpack:item_id", 'text');
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $item_id => $text) {
-                $this->message( _m('Wrong item id in content table: %1 -> %2', array($item_id, $text)));
+                $this->message( _m('Wrong item id in content table: %1 -> %2', [$item_id, $text]));
             }
             $ret = false;
         }
@@ -273,7 +273,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
         $err = GetTable2Array($SQL, "unpack:item_id", 'subject');
         if (is_array($err) AND count($err) > 0) {
             foreach ($err as $item_id => $text) {
-                $this->message( _m('Wrong item id in discussion table: %1 -> %2', array($item_id, $text)));
+                $this->message( _m('Wrong item id in discussion table: %1 -> %2', [$item_id, $text]));
             }
             $ret = false;
         }
@@ -286,7 +286,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
     /** Name function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
 
         // test wrong content records
@@ -296,7 +296,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
             foreach ($err as $s_id) {
                 $SQL = 'DELETE FROM `item` WHERE `slice_id`=\''.q_pack_id($s_id).'\'';
                 $db->query($SQL);
-                $this->message( _m('Data for slice id %1 in item table deleted', array($s_id)));
+                $this->message( _m('Data for slice id %1 in item table deleted', [$s_id]));
             }
         }
 
@@ -307,7 +307,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
             foreach ($err as $item_id) {
                 $SQL = 'DELETE FROM `content` WHERE `item_id`=\''.q_pack_id($item_id).'\'';
                 $db->query($SQL);
-                $this->message( _m('Data for item id %1 in content table deleted', array($item_id)));
+                $this->message( _m('Data for item id %1 in content table deleted', [$item_id]));
             }
         }
 
@@ -318,7 +318,7 @@ class AA_Optimize_Db_Inconsistency extends AA_Optimize {
             foreach ($err as $item_id) {
                 $SQL = 'DELETE FROM `discussion` WHERE `item_id`=\''.q_pack_id($item_id).'\'';
                 $db->query($SQL);
-                $this->message( _m('Data for item id %1 in discussion table deleted', array($item_id)));
+                $this->message( _m('Data for item id %1 in discussion table deleted', [$item_id]));
             }
         }
 
@@ -337,24 +337,24 @@ class AA_Optimize_Db_Binary_Trailing_Zeros extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Fix user login problem, constants editing problem, ...");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Test function
     * @return true
     */
-    function test() {
+    public function test() : bool {
         return true;
     }
 
@@ -362,7 +362,7 @@ class AA_Optimize_Db_Binary_Trailing_Zeros extends AA_Optimize {
     * repairs tables
     * @return true
     */
-    function repair() {
+    public function repair() : bool {
         $this->_fixTable('change',            'id',                    "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change',            'resource_id',           "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change_record',     'change_id',             "varbinary(32)  NOT NULL default ''");
@@ -515,21 +515,21 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Convert Readers login to reader id");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("There was change in Reader management functionality in AA v2.8.1, so readers are not internaly identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerfull - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\".");
     }
 
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $this->clear_report();
         $ret = true;  // which means OK
 
@@ -538,12 +538,12 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
         $readers         = $perm_reader->findUsernames('');
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         if (count($posted_by_found) > 0) {
-            $this->message(_m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', array(count($posted_by_found))));
+            $this->message(_m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', [count($posted_by_found)]));
             $ret = false;
         }
         $edited_by_found = $this->_test_field($readers, 'edited_by');
         if (count($edited_by_found) > 0) {
-            $this->message(_m('%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', array(count($edited_by_found))));
+            $this->message(_m('%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', [count($edited_by_found)]));
             $ret = false;
         }
         return $ret;
@@ -553,11 +553,11 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
      *  by login name (instead of item_id)
      *  @return array of such users
      */
-    function _test_field(&$readers, $item_field) {
+    function _test_field($readers, $item_field) {
         // get posted_by, edit_by, ... array:  posted_by => 1
         $SQL     = "SELECT DISTINCT $item_field FROM item";
         $editors = GetTable2Array($SQL, $item_field, 'aa_mark');
-        $ret     = array();
+        $ret     = [];
         foreach ( $readers as $r_id => $reader ) {
             if ($reader['name'] AND isset($editors[$reader['name']])) {
                 $ret[$r_id] = $reader['name'];
@@ -569,7 +569,7 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
     /** Repair function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $this->clear_report();
 
         // get all readers in array: id => arrary( name => ...)
@@ -582,14 +582,14 @@ class AA_Optimize_Readers_Login2id extends AA_Optimize {
             foreach ($posted_by_found as $r_id => $r_login ) {
                 $SQL = "UPDATE item SET posted_by = '$r_id' WHERE posted_by = '$r_login'";
                 $db->query($SQL);
-                $this->message(_m('Column item.posted_by updated for %1 (id: %2).', array($r_login, $r_id)));
+                $this->message(_m('Column item.posted_by updated for %1 (id: %2).', [$r_login, $r_id]));
             }
         }
         if (count($edited_by_found) > 0) {
             foreach ($edited_by_found as $r_id => $r_login ) {
                 $SQL = "UPDATE item SET edited_by = '$r_id' WHERE edited_by = '$r_login'";
                 $db->query($SQL);
-                $this->message(_m('Column item.edited_by updated for %1 (id: %2).', array($r_login, $r_id)));
+                $this->message(_m('Column item.edited_by updated for %1 (id: %2).', [$r_login, $r_id]));
             }
         }
         return true;
@@ -602,21 +602,21 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Checks if all tables have right columns and indexes");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("We are time to time add new table or column to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
     }
 
     /** Name function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $this->clear_report();
         $ret = true;  // which means OK
 
@@ -636,7 +636,7 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
     /** Repair function
     * @return bool
     */
-    function repair() {}
+    public function repair() : bool { return true; }
 }
 
 
@@ -646,24 +646,24 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Clear Pagecache");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Whole pagecache will be invalidated and deleted");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $this->message(_m('There is nothing to test.'));
         return true;
     }
@@ -672,7 +672,7 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
         $db->query('CREATE TABLE IF NOT EXISTS pagecache_new LIKE pagecache');
         $this->message(_m('Table pagecache_new created'));
@@ -697,31 +697,31 @@ class AA_Optimize_Fix_Pagecache extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Fix inconcistency in pagecache");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Delete not existant keys in pagecache_str2find table");
     }
 
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $row_count   = GetTable2Array("SELECT count(*) as count FROM pagecache_str2find", "aa_first", 'count');
         // $wrong_count = GetTable2Array("SELECT count(*) as count FROM pagecache_str2find LEFT JOIN pagecache ON pagecache_str2find.pagecache_id = pagecache.id WHERE pagecache.stored IS NULL", "aa_first", 'count');
         $bad_rows    = GetTable2Array("SELECT * FROM pagecache_str2find LEFT JOIN pagecache ON pagecache_str2find.pagecache_id = pagecache.id WHERE pagecache.stored IS NULL", "");
         if (!is_array($bad_rows)) {
-            $bad_rows = array();
+            $bad_rows = [];
         }
         foreach ($bad_rows as $row) {
-            $this->message(_m('id: %1, pagecache_id: %2, str2find: %3', array($row['id'], $row['pagecache_id'], $row['str2find'])));
+            $this->message(_m('id: %1, pagecache_id: %2, str2find: %3', [$row['id'], $row['pagecache_id'], $row['str2find']]));
         }
-        $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array(count($bad_rows), $row_count)));
+        $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', [count($bad_rows), $row_count]));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
         return true;
     }
@@ -730,7 +730,7 @@ class AA_Optimize_Fix_Pagecache extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
         $db->query('DELETE pagecache_str2find FROM pagecache_str2find LEFT JOIN pagecache ON pagecache_str2find.pagecache_id = pagecache.id WHERE pagecache.stored IS NULL');
         $this->message(_m('Inconsistent rows in pagecache_str2find removed'));
@@ -745,24 +745,24 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Copy Content Table");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think.");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Test function
     * @return string - a message
     */
-    function test() {
+    public function test() : bool {
         $this->message(_m('There is nothing to test.'));
         return true;
     }
@@ -771,7 +771,7 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
 
         $SQL = "INSERT INTO content2 SELECT content.* FROM content
@@ -810,24 +810,24 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Create upload directory for current slice");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("see IMG_UPLOAD_PATH parameter in config.php3 file");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Test function
     * @return string - a message
     */
-    function test() {
+    public function test() : bool {
         $this->message(_m('There is nothing to test.'));
         return true;
     }
@@ -835,9 +835,9 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         if ($path = Files::destinationDir(AA_Slice::getModule($GLOBALS['slice_id']))) {
-            $this->message(_m('OK, %1 created', array($path)));
+            $this->message(_m('OK, %1 created', [$path]));
             return true;
         }
         $this->message(Files::lastErr());
@@ -854,30 +854,63 @@ class AA_Optimize_Generate_Metabase_Row extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Generate metabase PHP row");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("prints out the metabase row for include/metabase.class.php3 file (used by AA developers to update database definition tempate)");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $metabase  = new AA_Metabase;
         $metabase->loadFromDb();
         echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
         exit;
     }
 }
+
+/** Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN
+ *  (used by AA developers to update js libs in AA)"
+ **/
+class AA_Optimize_Generate_Jslibs_Array extends AA_Optimize {
+
+    /** Name function
+     * @return string message
+     */
+    public function name(): string {
+        return _m("Generate JS Library definition array");
+    }
+
+    /** Description function
+     * @return string message
+     */
+    public function description(): string {
+        return _m("Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)");
+    }
+
+    /** implemented actions within this class */
+    function actions()      { return ['repair']; }
+
+    /** Main update function
+     *  @return bool
+     */
+    public function repair() : bool {
+        $libupdater = new \AA\Util\LibUpdater();
+        $this->message($libupdater->getUpdatedsystemDefinitions());
+        return true;
+    }
+}
+
 
 /** Set flag FLAG_TEXT_STORED for all content, where field is marked as text
  *  field, and reset it for numer fields
@@ -887,41 +920,41 @@ class AA_Optimize_Fix_Content_Column extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Set right content column for field");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for numer fields");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('test','repair'); }
+    function actions()      { return ['test','repair']; }
 
     /** Test function
     * @return string - a message
     */
-    function test() {
+    public function test() : bool {
         $bad_rows = GetTable2Array("SELECT content.item_id, content.field_id, slice.id, slice.name FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0",'');
         if (empty($bad_rows)) {
              $this->message(_m('No problem found, hurray'));
              return true;
         }
-        $statistic = array();
+        $statistic = [];
         foreach ($bad_rows as $index => $row) {
             $statistic[$row['name'].' '.$row['field_id']]++;
 
             if ($index < 240) {
-                $this->message(_m('slice %1: field_id: %2 item_id: %3', array(unpack_id($row['name'], $row['item_id']), $row['field_id'])));
+                $this->message(_m('slice %1: field_id: %2 item_id: %3', [unpack_id($row['name'], $row['item_id']), $row['field_id']]));
             }
             if ($index == 240) {
                  $this->message(_m('and more...'));
             }
         }
-        $this->message(_m('We found %1 inconsistent rows in content table', array(count($bad_rows))));
+        $this->message(_m('We found %1 inconsistent rows in content table', [count($bad_rows)]));
         foreach ($statistic as $field => $count) {
             $this->message("$field: $count problems");
         }
@@ -932,18 +965,18 @@ class AA_Optimize_Fix_Content_Column extends AA_Optimize {
     /** Main update function
      *  @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
         $bad_rows = GetTable2Array("SELECT content.item_id, content.field_id FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0",'');
         foreach ($bad_rows as $index => $row) {
             $SQL = "UPDATE content SET flag = flag | 64 WHERE item_id = '".quote($row['item_id'])."' AND field_id = '".quote($row['field_id'])."'";
             $db->query($SQL);
-            $this->message(_m('fixed (id-field): %1 - %2 (%3)', array(unpack_id($row['item_id']), $row['field_id'], $SQL)));
+            $this->message(_m('fixed (id-field): %1 - %2 (%3)', [unpack_id($row['item_id']), $row['field_id'], $SQL]));
             if ($index > 240) {
                  $this->message(_m('and more...'));
             }
         }
-        $this->message(_m('We fixed %1 inconsistent rows in content table', array(count($bad_rows))));
+        $this->message(_m('We fixed %1 inconsistent rows in content table', [count($bad_rows)]));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
         freeDb($db);
         return true;
@@ -958,14 +991,14 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Delete discussion comments for not existing items");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("");
     }
 
@@ -973,7 +1006,7 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
     * tests for duplicate entries
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $SQL      = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
         $problems = GetTable2Array($SQL, "unpack:item_id", 'disc_count');
         if ($problems == false) {
@@ -981,7 +1014,7 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
             return true;
         }
         foreach ($problems as $item_id => $disc_count) {
-            $this->message(_m('Problem for item %1 - %2 comments found', array($item_id, $disc_count)));
+            $this->message(_m('Problem for item %1 - %2 comments found', [$item_id, $disc_count]));
         }
         return false;
     }
@@ -989,7 +1022,7 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
     /** Repair the problem
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db       = getDb();
         $SQL      = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
         $problems = GetTable2Array($SQL, "", 'item_id');
@@ -1001,7 +1034,7 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
         $db->query($SQL);
         $SQL = "DELETE FROM `discussion` WHERE item_id = ''";
         $db->query($SQL);
-        $this->message(_m('%1 problems solved', array(count($problems))));
+        $this->message(_m('%1 problems solved', [count($problems)]));
         freeDb($db);
         return true;
     }
@@ -1014,14 +1047,14 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Multivalue Duplicates");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Removes duplicate values in multivalue text fields");
     }
 
@@ -1029,16 +1062,16 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     * tests for duplicate entries
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $ret = true;
 
         $SQL      = "SELECT `item_id`, `field_id`, `text`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) GROUP BY `item_id`, `field_id`, `text`, `number` HAVING `cnt` >1";
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_text) AND count($err_text) > 0) {
-            $this->message( _m('%1 duplicates found in text fields', array(count($err_text))));
+            $this->message( _m('%1 duplicates found in text fields', [count($err_text)]));
             foreach ($err_text as $wrong) {
-                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['text'],$wrong['cnt'])));
+                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', [unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['text'],$wrong['cnt']]));
             }
             $ret = false;
         }
@@ -1047,9 +1080,9 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
         $err_num  = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_num) AND count($err_num) > 0) {
-            $this->message( _m('%1 duplicates found in numeric fields', array(count($err_num))));
+            $this->message( _m('%1 duplicates found in numeric fields', [count($err_num)]));
             foreach ($err_num as $wrong) {
-                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3 - numeric', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['number'],$wrong['cnt'])));
+                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3 - numeric', [unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['number'],$wrong['cnt']]));
             }
             $ret = false;
         }
@@ -1063,7 +1096,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     /** Name function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
 
         $ret = true;
@@ -1072,7 +1105,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_text) AND count($err_text) > 0) {
-            $this->message( _m('%1 duplicates found in text fields', array(count($err_text))));
+            $this->message( _m('%1 duplicates found in text fields', [count($err_text)]));
             foreach ($err_text as $wrong) {
                 $SQL = "DELETE FROM `content` WHERE item_id='".quote($wrong['item_id'])."' AND field_id='".quote($wrong['field_id'])."' AND text='".quote($wrong['text'])."' LIMIT ".($wrong['cnt']-1);
                 $db->query($SQL);
@@ -1085,7 +1118,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
         $err_num  = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_num) AND count($err_num) > 0) {
-            $this->message( _m('%1 duplicates found in numeric fields', array(count($err_num))));
+            $this->message( _m('%1 duplicates found in numeric fields', [count($err_num)]));
             foreach ($err_num as $wrong) {
                 $SQL = "DELETE FROM `content` WHERE item_id='".quote($wrong['item_id'])."' AND field_id='".quote($wrong['field_id'])."' AND number='".quote($wrong['number'])."' LIMIT ".($wrong['cnt']-1);
                 $db->query($SQL);
@@ -1109,14 +1142,14 @@ class AA_Optimize_Db_Relation_Startsxy extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Slices relation started by x or y records");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Testing if relation between slices are OK (without x or y chars on the begining)");
     }
 
@@ -1124,11 +1157,11 @@ class AA_Optimize_Db_Relation_Startsxy extends AA_Optimize {
     * tests for x or y starts
     * @return bool
     */
-    function test() {
+    public function test() : bool {
         $SQL       = 'SELECT count(*) as err_count FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
         $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
         if ($err_count > 0) {
-            $this->message( _m('%1 bad relation records found', array($err_count)) );
+            $this->message( _m('%1 bad relation records found', [$err_count]) );
             return false;
         }
         $this->message(_m('No bad relation records found'));
@@ -1138,12 +1171,12 @@ class AA_Optimize_Db_Relation_Startsxy extends AA_Optimize {
     /** Name function
     * @return bool
     */
-    function repair() {
+    public function repair() : bool {
         $db       = getDb();
         $SQL       = 'SELECT `content`.item_id, `content`.`text` FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
         $err_text = GetTable2Array($SQL, "", 'aa_fields');
         if (is_array($err_text) AND count($err_text) > 0) {
-            $this->message( _m('%1 bad relation records found', array(count($err_text))));
+            $this->message( _m('%1 bad relation records found', [count($err_text)]));
             foreach ($err_text as $wrong) {
                 $SQL = "repair value: ".quote(substr($wrong['text'],1))." with item_id:".quote($wrong['item_id'])."<br>";
                 $this->message($SQL);
@@ -1166,27 +1199,27 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Set Expiry date to maximum value");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Set Expiry date to maximum value for items in slices, where expiry_date..... field is not shown. It also sets the field's default to that value.<br><b>Is it really what you want?</b>");
     }
 
     /** Test function
     * @return bool
     */
-    function test() {
+    public function test() : bool {
 
         $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
         foreach ($slices as $sid => $default) {
-            $this->message(_m('slice id: %1 (%2), default value for expiry_date.....: %3', array($sid, AA_Slice::getModuleName($sid), $default)));
+            $this->message(_m('slice id: %1 (%2), default value for expiry_date.....: %3', [$sid, AA_Slice::getModuleName($sid), $default]));
         }
-        $this->message(_m('We found %1 hidden exipry_date..... fields', array(count($slices))));
+        $this->message(_m('We found %1 hidden exipry_date..... fields', [count($slices)]));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
         return true;
     }
@@ -1195,17 +1228,17 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
         $db  = getDb();
         $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
         foreach ($slices as $sid => $default) {
             $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
             //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
-            $this->message(_m('items changed: %1 in slice: %2 (%3)', array($db->affected_rows(), $sid, AA_Slice::getModuleName($sid))));
+            $this->message(_m('items changed: %1 in slice: %2 (%3)', [$db->affected_rows(), $sid, AA_Slice::getModuleName($sid)]));
 
             $db->query("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
             //huhl("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
-            $this->message(_m('field default changed for expiry_date..... in %1 (%2)', array($sid, AA_Slice::getModuleName($sid))));
+            $this->message(_m('field default changed for expiry_date..... in %1 (%2)', [$sid, AA_Slice::getModuleName($sid)]));
         }
         freeDb($db);
         return true;
@@ -1220,22 +1253,22 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Convert database engine to InnoDB");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Converts older MyISAM database storage engine to InnoDB for all tables");
     }
 
     /** Test function
     * @return bool
     */
-    function test() {
-        $metabase = AA::Metabase();
+    public function test() : bool {
+        //$metabase = AA::Metabase();
         //$tables   = $metabase->getTableNames();
         $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
         $count    = 0;
@@ -1243,10 +1276,10 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
             if (substr($tablename,0,4) == 'bck_') {
                 continue;
             }
-            $this->message(_m('engine for %1 slice is %2', array($tablename, $engine)));
+            $this->message(_m('engine for %1 slice is %2', [$tablename, $engine]));
             $count++;
         }
-        $this->message(_m('We found %1 tables which needs to be converted', array($count)));
+        $this->message(_m('We found %1 tables which needs to be converted', [$count]));
         return true;
     }
 
@@ -1254,7 +1287,7 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    function repair() {
+    public function repair() : bool {
         //$tables   = $metabase->getTableNames();
         $engines  = GetTable2Array("SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = '".DB_NAME."' AND ENGINE  IS NOT NULL AND ENGINE<>'InnoDB'", "TABLE_NAME", 'ENGINE');
         $converted = 0;
@@ -1262,11 +1295,11 @@ class AA_Optimize_Convert2innodb extends AA_Optimize {
             if (substr($tablename,0,4) == 'bck_') {
                 continue;
             }
-            $this->message(_m('Convert table %1 (%2) to InnoDB', array($tablename, $engine)));
+            $this->message(_m('Convert table %1 (%2) to InnoDB', [$tablename, $engine]));
             $this->query("ALTER TABLE `$tablename` ENGINE=InnoDB");
             $converted++;
         }
-        $this->message(_m('Converted %1 tables', array($converted)));
+        $this->message(_m('Converted %1 tables', [$converted]));
         return true;
     }
 }
@@ -1280,24 +1313,24 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
     /** Name function
     * @return string - a name
     */
-    function name() {
+    public function name(): string {
         return _m("Change current module ID to new one");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('repair'); }
+    function actions()      { return ['repair']; }
 
     /** Test function
     * @return true
     */
-    function test() {
+    public function test() : bool {
         $this->message(_m('Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!'));
         return true;
     }
@@ -1306,7 +1339,7 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
     * repairs tables
     * @return true
     */
-    function repair() {
+    public function repair() : bool {
         $module_fields = AA_Metabase::getModuleFields();
 
         // additional fields to change
@@ -1318,7 +1351,7 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
         $new_id       = new_id();
         $p_new_id     = xpack_id($new_id);
 
-        $this->message(_m('Going to change module_id %1 -> %2 (%3 -> %4)', array($current_id, $new_id, $p_current_id, $p_new_id)));
+        $this->message(_m('Going to change module_id %1 -> %2 (%3 -> %4)', [$current_id, $new_id, $p_current_id, $p_new_id]));
         $converted = 0;
         foreach($module_fields as $table => $field) {
             if (AA_Metabase::isPacked($table, $field)) {
@@ -1326,7 +1359,7 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
             } else {
                 $SQL = "UPDATE `$table` SET $field='$new_id' WHERE $field='$current_id'";
             }
-            $this->message(_m('Changing ID for table %1 (%2)', array($table, $field)));
+            $this->message(_m('Changing ID for table %1 (%2)', [$table, $field]));
             $this->message($SQL);
             $this->query($SQL);
             $converted++;
@@ -1337,7 +1370,7 @@ class AA_Optimize_Change_Module_Id extends AA_Optimize {
        //$this->query($SQL);
        //$converted++;
 
-        $this->message(_m('Converted %1 tables', array($converted)));
+        $this->message(_m('Converted %1 tables', [$converted]));
         return true;
     }
 }
@@ -1351,30 +1384,29 @@ class AA_Optimize_Required_Checboxes extends AA_Optimize {
     /** Name function
     * @return string - a name
      */
-    function name() {
+    public function name(): string {
         return _m("List Checkbox fields marked as required");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("AA are now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be problem if you acidentaly have it set in history. This test just list all of such fields, in order you can check it.");
     }
 
     /** implemented actions within this class */
-    function actions()      { return array('test'); }
+    function actions()      { return ['test']; }
 
     /** Test function
      * @return bool
      */
-    function test()
-    {
-        $metabase = AA::Metabase();
-        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', array(array('required', 1, 'i'), array('input_show_func', 'chb:%', 'LIKE')))) {
-            $this->message(_m('We found required checkbox %1 fields:', array(count($fields))));
+    public function test() : bool {
+        //$metabase = AA::Metabase();
+        if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', [['required', 1, 'i'], ['input_show_func', 'chb:%', 'LIKE']])) {
+            $this->message(_m('We found required checkbox %1 fields:', [count($fields)]));
             foreach ($fields as $field) {
-                $this->message(_m('%1 - %2 (%3) Show: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show'])));
+                $this->message(_m('%1 - %2 (%3) Show: %4', [$field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show']]));
             }
         } else {
             $this->message(_m('OK - There is no required checkbox field'));
@@ -1383,7 +1415,46 @@ class AA_Optimize_Required_Checboxes extends AA_Optimize {
     }
 }
 
-/** List Checkbox fields marked as required
+/**
+ *
+ */
+class AA_Optimize_Seo_Duplicates extends AA_Optimize {
+
+    /** Name function
+     * @return string message
+     */
+    public function name(): string {
+        return _m("SEO name duplicates");
+    }
+
+    /** Description function
+     * @return string message
+     */
+    public function description(): string {
+        return _m("Check items for duplicate SEO name inside sitemodule");
+    }
+
+    /** implemented actions within this class */
+    function actions()      { return ['test']; }
+
+    /** Test function
+     * @return bool
+     */
+    public function test() : bool {
+        AA_Module::getUserModules();
+        if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', [['required', 1, 'i'], ['input_show_func', 'chb:%', 'LIKE']])) {
+            $this->message(_m('We found required checkbox %1 fields:', [count($fields)]));
+            foreach ($fields as $field) {
+                $this->message(_m('%1 - %2 (%3) Show: %4', [$field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show']]));
+            }
+        } else {
+            $this->message(_m('OK - There is no required checkbox field'));
+        }
+        return true;
+    }
+}
+
+/** Fix older format of date widget parameters
  *
  */
 class AA_Optimize_Fix_Datewidget extends AA_Optimize {
@@ -1391,27 +1462,27 @@ class AA_Optimize_Fix_Datewidget extends AA_Optimize {
     /** Name function
     * @return string - a name
      */
-    function name() {
+    public function name(): string {
         return _m("Fix older format of date widget parameters");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionaly it is equal.");
     }
 
     /** Test function
      * @return bool
      */
-    function test()
+    public function test() : bool
     {
-        $metabase = AA::Metabase();
-        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show_func` FROM `field`', array(array('input_show_func', "dte:%'%", 'LIKE')))) {
-            $this->message(_m('We found %1 old delimiters:', array(count($fields))));
+        //$metabase = AA::Metabase();
+        if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show_func` FROM `field`', [['input_show_func', "dte:%'%", 'LIKE']])) {
+            $this->message(_m('We found %1 old delimiters:', [count($fields)]));
             foreach ($fields as $field) {
-                $this->message(_m('%1 - %2 (%3) Params: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show_func'])));
+                $this->message(_m('%1 - %2 (%3) Params: %4', [$field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_show_func']]));
             }
         } else {
             $this->message(_m('OK - There is no old delimiters'));
@@ -1422,17 +1493,17 @@ class AA_Optimize_Fix_Datewidget extends AA_Optimize {
     /** Repair function
      * @return bool
      */
-    function repair()
+    public function repair() : bool
     {
-        $metabase = AA::Metabase();
-        $changed = DB_AA::sql("UPDATE field SET input_show_func=REPLACE(input_show_func, \"'\", ':')", array(array('input_show_func', "dte:%'%", 'LIKE')));
-        $this->message(_m('Fixed %1 fields', array($changed)));
+        //$metabase = AA::Metabase();
+        $changed = DB_AA::sql("UPDATE field SET input_show_func=REPLACE(input_show_func, \"'\", ':')", [['input_show_func', "dte:%'%", 'LIKE']]);
+        $this->message(_m('Fixed %1 fields', [$changed]));
         return true;
     }
-    
+
 }
 
-/** List Checkbox fields marked as required
+/** Remove _#UNDEFINE alias and default help.html for more help text in field
  *
  */
 class AA_Optimize_Remove_Undefine_Alias extends AA_Optimize {
@@ -1440,36 +1511,36 @@ class AA_Optimize_Remove_Undefine_Alias extends AA_Optimize {
     /** Name function
     * @return string - a name
      */
-    function name() {
+    public function name(): string {
         return _m("Remove _#UNDEFINE alias and default help.html for more help text in field");
     }
 
     /** Description function
     * @return string - a description
     */
-    function description() {
+    public function description(): string {
         return _m("AA used to use _#UNDEFINE alias and some preset help text for field, which make litle sense for real fields in real project. The help text and alias weill be removed.");
     }
 
     /** Test function
      * @return bool
      */
-    function test()
+    public function test() : bool
     {
-        $metabase = AA::Metabase();
-        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `alias1` FROM `field`', array(array('alias1', "_#UNDEFINE")))) {
-            $this->message(_m('We found %1 old _#UNDEFINE aliases:', array(count($fields))));
+        //$metabase = AA::Metabase();
+        if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `alias1` FROM `field`', [['alias1', "_#UNDEFINE"]])) {
+            $this->message(_m('We found %1 old _#UNDEFINE aliases:', [count($fields)]));
             foreach ($fields as $field) {
-                $this->message(_m('%1 - %2 (%3) Params: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['alias1'])));
+                $this->message(_m('%1 - %2 (%3) Params: %4', [$field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['alias1']]));
             }
         } else {
             $this->message(_m('OK - There is no _#UNDEFINE alias'));
         }
-        
-        if ($fields = DB_AA::select(array(), 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_morehlp` FROM `field`', array(array('input_morehlp', "%/help.html", 'LIKE')))) {
-            $this->message(_m('We found %1 old help.html help link:', array(count($fields))));
+
+        if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_morehlp` FROM `field`', [['input_morehlp', "%/help.html", 'LIKE']])) {
+            $this->message(_m('We found %1 old help.html help link:', [count($fields)]));
             foreach ($fields as $field) {
-                $this->message(_m('%1 - %2 (%3) Params: %4', array($field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_morehlp'])));
+                $this->message(_m('%1 - %2 (%3) Params: %4', [$field['id'], $field['name'], AA_Slice::getModuleName($field['uslice_id']), $field['input_morehlp']]));
             }
         } else {
             $this->message(_m('OK - There is no old help.html help link'));
@@ -1480,17 +1551,17 @@ class AA_Optimize_Remove_Undefine_Alias extends AA_Optimize {
     /** Repair function
      * @return bool
      */
-    function repair()
+    public function repair() : bool
     {
-        $metabase = AA::Metabase();
-        $changed = DB_AA::sql("UPDATE field SET alias1='', alias1_help=''", array(array('alias1', "_#UNDEFINE")));
-        $this->message(_m('Removed %1 _#UNDEFINE aliases', array($changed)));
-        
-        $changed = DB_AA::sql("UPDATE field SET input_morehlp=''", array(array('input_morehlp', "%/help.html", 'LIKE')));
-        $this->message(_m('Removed %1 old help links', array($changed)));
+        //$metabase = AA::Metabase();
+        $changed = DB_AA::sql("UPDATE field SET alias1='', alias1_help=''", [['alias1', "_#UNDEFINE"]]);
+        $this->message(_m('Removed %1 _#UNDEFINE aliases', [$changed]));
+
+        $changed = DB_AA::sql("UPDATE field SET input_morehlp=''", [['input_morehlp', "%/help.html", 'LIKE']]);
+        $this->message(_m('Removed %1 old help links', [$changed]));
         return true;
     }
-    
+
 }
 
 
