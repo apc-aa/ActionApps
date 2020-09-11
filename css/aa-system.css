@@ -526,7 +526,7 @@ i.ico.aa-tool-edit:hover {
 .aa-rim footer article {
     margin: 0;
 }
-.aa-rim input, .aa-rim select {
+.aa-rim input:not([type="button"]), .aa-rim input:not([type="submit"]), .aa-rim select {
     margin: 3px 5px 3px 0;
     max-width: 99%;
     background-color: white;
@@ -595,7 +595,7 @@ i.ico.aa-tool-edit:hover {
 }
 
 /* ---chovani policek--- */
-.aa-field label span {
+.aa-field label:first-child > span {
     text-transform: uppercase;
     font-size: 9px;
     margin: 0 0 3px;
