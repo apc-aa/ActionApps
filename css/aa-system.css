@@ -526,7 +526,7 @@ i.ico.aa-tool-edit:hover {
 .aa-rim footer article {
     margin: 0;
 }
-.aa-rim input:not([type="button"]), .aa-rim input:not([type="submit"]), .aa-rim select {
+.aa-rim input:not([type="button"]):not([type="submit"]), .aa-rim select {
     margin: 3px 5px 3px 0;
     max-width: 99%;
     background-color: white;
