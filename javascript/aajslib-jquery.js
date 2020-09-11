@@ -255,7 +255,7 @@ function displayInput(valdivid, item_id, fid) {
             var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
             if (width>200) {
-                data = data.replace('class="ajax_widget aa-ajax-open"', 'class="ajax_widget aa-ajax-open" style="width:'+width+'px;"');
+                data = data.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
             }
             $(valdiv).html(data);
             var aa_input = $(valdiv).find('select,textarea,input').first();
