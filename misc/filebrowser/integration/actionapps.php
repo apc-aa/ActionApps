@@ -13,7 +13,7 @@
   */
 
 
-require_once __DIR__."/../../include/config.php3";
+require_once __DIR__."/../../../include/config.php3";
 require_once __DIR__."/../../../include/locsess.php3";
 require_once __DIR__."/../../../include/locauth.php3";
 
