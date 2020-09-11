@@ -291,24 +291,46 @@ $VALIDATE_TYPES["items"]["e-mail"] = [
     "name"=>_m("E-mail")
 ];
 $VALIDATE_TYPES["items"]["number"] = [
-    "name"=>_m("Number = integer number"),
+    "name"=>_m("Number = positive integer number"),
     "params"=> [
         [
             "name"=>_m("Min"),
-              "desc"=>_m("Alloved minimum value"),
-              "type"=>"INT",
-              "example"=>1
+            "desc"=>_m("Alloved minimum value"),
+            "type"=>"INT",
+            "example"=>1
         ],
         [
             "name"=>_m("Max"),
-              "desc"=>_m("Alloved maximum value"),
-              "type"=>"INT",
-              "example"=>12
+            "desc"=>_m("Alloved maximum value"),
+            "type"=>"INT",
+            "example"=>12
         ],
         [
             "name"=>_m("Step"),
-              "type"=>"INT",
-              "example"=>1
+            "type"=>"INT",
+            "example"=>1
+        ]
+    ]
+];
+$VALIDATE_TYPES["items"]["signed"] = [
+    "name"=>_m("Number = (signed) integer number"),
+    "params"=> [
+        [
+            "name"=>_m("Min"),
+            "desc"=>_m("Alloved minimum value"),
+            "type"=>"INT",
+            "example"=>1
+        ],
+        [
+            "name"=>_m("Max"),
+            "desc"=>_m("Alloved maximum value"),
+            "type"=>"INT",
+            "example"=>12
+        ],
+        [
+            "name"=>_m("Step"),
+            "type"=>"INT",
+            "example"=>1
         ]
     ]
 ];
