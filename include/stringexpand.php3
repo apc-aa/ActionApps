@@ -467,22 +467,39 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
 }
 
 /** Prints defined named expression. Used with conjunction {define:..}
+ *  Could be also used for defining and printing the variable
+ *  @usage  {var:myvar}           - prints variable defined by {define:myvar:some text} or {var:myvar:some text}
+ *  @usage  {var:myvar:some text} - the same as {define:myvar:some text} but the content is printed
+ *  @usage  {ifset:{var:my-items:{ids:535343732367227239}:{({foreach:{var:my-items}:...)}} - expression, where we define the variable and the content we directly use
  *  @see AA_Stringexpand_Define for more info
  *  @param $parameters - field id and other modifiers to the field
  */
 class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
+    /** Do not trim all parameters (maybe we can?) */
+    static function doTrimParams() { return false; }
+
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
 
     /**
      * @param string $name
-     * @return false|void
+     * @return string
      */
-    function expand($name='') {
-        // replace inputform field
-        $expression = AA::Contentcache()->get("define:$name");
-        // @todo - replace parameters
+    function expand($name='', $expression='') {
+        if (!strlen($name = trim($name))) {
+            return '';
+        }
+        if ( count(func_get_args())==2 ) {
+            // going to define var
 
+            AA::Contentcache()->set("define:$name", $expression);
+        } else {
+            // going to print var
+
+            // replace inputform field
+            $expression = AA::Contentcache()->get("define:$name");
+            // @todo - replace parameters
+        }
         return $expression;
     }
 }
