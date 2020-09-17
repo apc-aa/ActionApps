@@ -237,7 +237,7 @@ function AA_AjaxSendForm(form_id, url) {
 }
 
 
-function displayInput(valdivid, item_id, fid) {
+function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     var valdiv = jqid(valdivid);
 
     // already editing ?
@@ -251,7 +251,7 @@ function displayInput(valdivid, item_id, fid) {
     var width = $(valdivid).width();
     $(valdiv).html(AA_GetConf('loader'));
 
-    AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(data) {
+    AA_Response('Get_Widget', { field_id: fid, item_id: item_id, widget_type: widget_type, widget_properties: widget_properties }, function(data) {
             var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
             if (width>200) {
