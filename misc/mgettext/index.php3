@@ -122,8 +122,7 @@ $lang_groups ["output"] =
 $lang_groups ["param_wizard"] =
     [
         "admin/param_wizard.php3",
-           "include/constants_param_wizard.php3",
-           "doc/param_wizard_list.php3"
+           "include/constants_param_wizard.php3"
     ];
 
 /* ----------------------------------------------------------------------------

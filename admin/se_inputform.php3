@@ -395,7 +395,7 @@ echo "
         if ($input_default_f == 'qte') {
             $input_default_f = 'txt';
         }
-        FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES), $input_default_f);
+        FrmSelectEasy("input_default_f", AA_Components::getClassArray('AA_Generator_'), $input_default_f);
       echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
             <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
                 <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
@@ -440,7 +440,7 @@ echo "
      <tr>
          <td class=tabtxt><b>". _m("Insert") ."</b></td>
          <td class=tabtxt>";
-         FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard($INSERT_TYPES), $input_insert_func_f);
+         FrmSelectEasy("input_insert_func_f", AA_Components::getClassArray('AA_Inserter_'), $input_insert_func_f);
          echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
          <table border=0 cellpadding=0 cellspacing=0 width=\"100%\">
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>

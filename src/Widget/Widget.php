@@ -11,6 +11,7 @@ namespace AA\Widget;
 use AA;
 use AA\FormArray;
 use AA\Util\NamedInterface;
+use AA\Util\Paramwizard;
 use AA_Components;
 use AA_Condition;
 use AA_Content;
@@ -716,33 +717,6 @@ class Widget extends AA_Object implements NamedInterface {
                 case 'class_type':
                     $ret[$pid] = new AA_Property($pid, _m("Class prefix"), 'string', false, true, 'string', false, _m("Component idetifier to select from"), '', 'Widget');
                     break;
-            }
-        }
-        return $ret;
-    }
-
-    /** getParamWizardArr - get array for ParamWizard from widgets
-     *  (replaces array in constants_param_wizard.php3)
-     *  called as AA\Widget\Widget::getParamWizardArr('fld');
-     */
-    public static function getParamWizardArr($type) {
-        $ret = [];
-        if (class_exists($widget_class = Widget::constructClassName($type))) {
-            $ret['name'] = $widget_class::name();
-            $ret['desc'] = $widget_class::description();
-            $ret['params'] = [];
-
-            $props = $widget_class::getClassProperties();
-            if (key($props) == 'const') { // const or slice is not presented in popup
-                array_shift($props);
-            }
-            foreach ($props as $prop) {
-                $ret['params'][] = [
-                    'name'    => $prop->getName(),
-                    'desc'    => $prop->getHelp(),
-                    'type'    => $prop->getType(),
-                    'example' => $prop->getExample(),
-                ];
             }
         }
         return $ret;

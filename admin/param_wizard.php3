@@ -42,8 +42,6 @@
  *
  */
 
-use AA\Widget\Widget;
-
 require_once __DIR__."/../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once __DIR__."/../include/constants_param_wizard.php3";
@@ -112,8 +110,15 @@ function GetWizardRow($name, $param) {
     return $ret;
 }
 
-if ($_GET['list']=='INPUT_TYPES') {
-    $desc = Widget::getParamWizardArr($item);
+$CLASS_WIZARDS = [
+    'INPUT_TYPES'         => 'AA\Widget\Widget',
+    'INSERT_TYPES'        => 'AA_Inserter_',
+    'DEFAULT_VALUE_TYPES' => 'AA_Generator_',
+];
+
+if ($_GET['list'] AND $CLASS_WIZARDS[$_GET['list']]) {
+    $pw = new \AA\Util\Paramwizard();
+    $desc = $pw->getParamWizardArr($item, $CLASS_WIZARDS[$_GET['list']]);
 } else {
     $desc = $$list;
     $desc = $desc['items'][$item];

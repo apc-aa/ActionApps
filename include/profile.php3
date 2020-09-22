@@ -73,8 +73,8 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
  * @param $rule
  */
 function PrintRule($rule, $fields) {
-    global $PROPERTY_TYPES, $SORTORDER_TYPES, $DEFAULT_VALUE_TYPES;
-    $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
+    global $PROPERTY_TYPES, $SORTORDER_TYPES;
+    $INPUT_DEFAULT_TYPES = AA_Components::getClassArray('AA_Generator_');
 
     $prop = $rule['property'];
     $rid  = $rule['id'];
@@ -129,10 +129,10 @@ function PrintRule($rule, $fields) {
  * @param $n       int rule row number
  * @param $rule    string id of rule as in $PROPERTY_TYPES
  * @param $sfld    bool|array - should we show field selectbox or other selectbox?
- * @param $func    bool - should we show html checkbox?
- * @param $sparam
- * @param $shtml
- * @param $desc
+ * @param $func    array - for Function selectbox
+ * @param $sparam  bool - show param
+ * @param $shtml   bool - show HTML checkbox
+ * @param $desc    string - description
  */
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     global $PROPERTY_TYPES, $lookup_fields;
