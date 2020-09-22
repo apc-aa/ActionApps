@@ -194,6 +194,9 @@ class AA_Adminpageutil {
         // unset($r_err);
         // unset($r_msg);
         if ($this->form) {
+            // to remember the page scroll position in order we can return back
+            AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
+            AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
             $frm = "\n<form";
             foreach ($this->form as $k => $v) {
                 if ($k == 'action') {
