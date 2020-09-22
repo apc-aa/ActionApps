@@ -9,6 +9,7 @@
 namespace AA\Widget;
 use AA;
 use AA\FormArray;
+use AA_Formatters;
 use AA_Value;
 
 /** Multiple Text Field widget */
@@ -29,7 +30,7 @@ class MflWidget extends \AA\Widget\Widget
     }
 
     /** @inheritDoc */
-    public function description(): string {}
+    public function description(): string { return ''; }
 
     // inherited from \AA\Widget\Widget
     function requireLibs($aa_property, $winfo)
@@ -88,7 +89,7 @@ class MflWidget extends \AA\Widget\Widget
         $def_rows = (int)$this->getProperty('rows', 1);
         //$show_buttons  = $this->getProperty('show_buttons', 'MDAC');
 
-        $type = ($def_rows > 1) ? 'textarea' : 'textfield';
+        $inputtype = ($def_rows > 1) ? 'textarea' : 'textfield';
 
         $value = $content->getAaValue($aa_property->getId());
 
@@ -96,11 +97,11 @@ class MflWidget extends \AA\Widget\Widget
         $widget_add2     = '';
         $widget_onchange = '';
 
-        if ($type == 'textfield') {
+        if ($inputtype == 'textfield') {
             $attrs = ['type' => 'text'];
             $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
             $attrs['size'] = get_if($this->getProperty('width'), $attrs['size'], 60);
-            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], ($type == 'textarea') ? '' : 255);
+            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], ($inputtype == 'textarea') ? '' : 255);
             $attr_string = join(' ', array_map(function ($k, $v) {
                 return "$k=\"$v\"";
             }, array_keys($attrs), $attrs));
@@ -116,6 +117,7 @@ class MflWidget extends \AA\Widget\Widget
         }
 
         $widget = '';
+        $widget .= ($type == 'normal') ? AA_Formatters::getFormattersRadio($base_name, $aa_property, $value) : AA_Formatters::getHiddenFormatters($base_name, $aa_property, $value); // ajax, live
         // display at least one option
         for ($i = 0, $ino = max(1, $row_count, $value->count()); $i < $ino; ++$i) {
             $input_name = $base_name_add . "[$i]";
@@ -124,7 +126,7 @@ class MflWidget extends \AA\Widget\Widget
             $rows = (($my_rows = substr_count($input_value, "\n")) > $def_rows) ? min($my_rows + 2, 30) : $def_rows;
             $required = ($aa_property->isRequired() AND ($i == 0)) ? 'required' : '';
 
-            if ($type == 'textarea') {
+            if ($inputtype == 'textarea') {
                 if ($i > 0) {
                     $widget .= '<br>';
                 }
@@ -142,7 +144,7 @@ class MflWidget extends \AA\Widget\Widget
         $attr_string     = str_replace('"', '&quot;', $attr_string);
         $widget_add      = str_replace(['"',"'"], ['&quot;',"\'"], $widget_add);
         $widget_onchange = str_replace(['"',"'"], ['&quot;',"\'"], $widget_onchange);
-        if ($type == 'textarea') {
+        if ($inputtype == 'textarea') {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_add $widget_onchange></textarea>'; document.getElementById('allrows$base_id').appendChild(el); CodeMirror.fromTextArea(el.querySelector('textarea'), { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: &quot;htmlmixed&quot; }); return false;\">$img</a>";
         } else {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_add $widget_onchange>'; document.getElementById('allrows$base_id').appendChild(el); return false;\">$img</a>";
