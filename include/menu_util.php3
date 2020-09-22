@@ -266,11 +266,11 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
         // Show the Alerts and Reader management images in the header
         switch ( $GLOBALS["g_modules"][$slice_id]["type"] ) {
             case 'Alerts':
-                $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
+                $title_img = a_href(AA_INSTAL_PATH . 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
                 break;
             case 'S':
                 if (AA_Slice::getModuleProperty($slice_id,'type') == "ReaderManagement") {
-                    $title_img = a_href(AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
+                    $title_img = a_href(AA_INSTAL_PATH . 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
                 break;
         }

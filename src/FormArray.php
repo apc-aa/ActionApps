@@ -38,21 +38,25 @@ class FormArray
      *                           of item is untouched)
      *          'i'+long_item_id when item is edited (the value is added to current
      *                           value of the field, rest of item is untouched)
+     *          'r'+long_item_id when item is edited (the value is removed from current
+     *                           value of the field, rest of item is untouched)
      *          'n<number>_long_slice_id' if you want to add the item to slice_id
      *                                    <number> is used to add more than one
      *                                    item at the time
+     *          'f_long_slice_id' new item from file upload to slice
      *      modified_field_id is field_id, where all dots are replaced by '_'
      *      we always add [] at the end, so it becames array at the end
      *   Example:
      *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
      *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
+     *       aa[r63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
      *
-     * @return string
-     * @throws Exception
      * @param $property_id string
      * @param $content AA_Item
      * @param $item_index int
+     *@return string
+     * @throws Exception
      */
     static public function getName4Form($property_id, $content, $item_index = 1)
     {

@@ -54,10 +54,10 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param $value
      * @param $flag  FLAG_HTML | FLAG_FEED | FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE | FLAG_TEXT_STORED
      */
-    function __construct($value=null, $flag=null) {
+    function __construct($value = null, $flag = null) {
         $this->clear();
         $this->addValue($value);
-        $this->setFlag(!is_null($flag) ? $flag : ( (is_array($value) AND is_array($value[0])) ? $value[0]['flag'] : 0));
+        $this->setFlag(!is_null($flag) ? $flag : ((is_array($value) and is_array($value[0])) ? $value[0]['flag'] : 0));
     }
 
     /** For creating value from any value
@@ -83,7 +83,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      */
     static function factoryFromJson($json) {
         $aav = new AA_Value();
-        if (($json[0] == '[') AND (!is_null($arr = json_decode($json, true)))) {
+        if (($json[0] == '[') and (!is_null($arr = json_decode($json, true)))) {
             $aav->setValues(array_values($arr));
         } else {
             $aav->setValues($json);
@@ -98,11 +98,11 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     static function factoryFromContent($arr) {
         $aav = new AA_Value();
         // preserves keys - necessary for translated values
-        foreach($arr as $key => $val) {
+        foreach ($arr as $key => $val) {
             $aav->val[(int)$key] = $val['value'];
         }
         $first = reset($arr);
-        return $aav->setFlag( $first['flag'] );
+        return $aav->setFlag($first['flag']);
     }
 
 
@@ -112,7 +112,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
      * @param $i
      * @return
      */
-    function getValue($i=0) {
+    function getValue($i = 0) {
         return $this->val[$i];
     }
 
@@ -125,8 +125,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     }
 
     /** Returns the value for a field. If it is a multi-value
-    *   field, this is the first value. */
-    function getFlag($i=0) {
+     *   field, this is the first value. */
+    function getFlag($i = 0) {
         return $this->flag;
     }
 
@@ -142,18 +142,22 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             // in AA_ItemContent - [0]['value'] = ..
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
-            foreach($value as $key => $val) {
+            foreach ($value as $key => $val) {
                 $this->val[(int)$key] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
                 // @todo check, if $val->getSomething is callable
             }
-        } elseif ( !is_null($value) ) {
+        } elseif (!is_null($value)) {
             $this->val[] = $value;
         }
         return $this->removeDuplicates();
     }
 
+    public function containValue(string $txt): bool {
+        return in_array($txt, $this->val);
+    }
+
     /** Remove Value */
-    function removeValues($remove) {
+    function removeValues(array $remove) {
         $this->val = array_diff($this->val, $remove);
         return $this;
     }
@@ -172,15 +176,15 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** clear function  */
     function clear() {
-        $this->val  = [];
+        $this->val = [];
         $this->flag = 0;
     }
 
     /** Replaces the strings in all values  */
     function replaceInValues($search, $replace) {
-         foreach ($this->val as $k => $v) {
-             $this->val[$k] = str_replace($search, $replace, $v);
-         }
+        foreach ($this->val as $k => $v) {
+            $this->val[$k] = str_replace($search, $replace, $v);
+        }
     }
 
     /** Makes sure the value contains all the translations.
@@ -197,13 +201,13 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
                 }
             }
 
-            $first  = true;
+            $first = true;
             $newval = [];
-            foreach($translations as $lang) {
+            foreach ($translations as $lang) {
                 $lang_id = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
-                for ($i=0; $i<=$maxindex; $i++) {
+                for ($i = 0; $i <= $maxindex; $i++) {
                     $value = isset($this->val[$lang_id + $i]) ? $this->val[$lang_id + $i] : '';
-                    if ( !strlen($value) AND $first AND isset($this->val[$i])) {
+                    if (!strlen($value) and $first and isset($this->val[$i])) {
                         // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
                         $value = $this->val[$i];
                     }
@@ -220,41 +224,48 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     function removeDuplicates() {
         reset($this->val);
         if (key($this->val) < AA_Value::MAX_INDEX) {  // do not remove for multilingual
-            $this->val = array_values( array_unique($this->val) );
+            $this->val = array_values(array_unique($this->val));
         }
         return $this;
     }
 
     /** getArray function
-     *  @return array - clasic $content value array - [0]['value'] = ..
+     * @return array - clasic $content value array - [0]['value'] = ..
      *                                                   ['flag']  = ..
      *                                                [1]['value'] = ..
      *          the values are not quoted, ...
      *  Mainly for backward compatibility with old - array approach
      */
-     function getArray() {
-         $ret = [];
-         foreach ($this->val as $k => $v) {
-             $ret[(int)$k] = ['value'=>$v, 'flag'=>$this->flag];
-         }
-         return $ret;
-     }
+    function getArray() {
+        $ret = [];
+        foreach ($this->val as $k => $v) {
+            $ret[(int)$k] = ['value' => $v, 'flag' => $this->flag];
+        }
+        return $ret;
+    }
 
     /** Iterator interface */
-    public function rewind()  { reset($this->val);                        }
-    public function current() { return current($this->val);               }
-    public function key()     { return key($this->val);                   }
-    public function next()    { next($this->val);                         }
-    public function valid()   { return (current($this->val) !== false);   }
+    public function rewind() { reset($this->val); }
+
+    public function current() { return current($this->val); }
+
+    public function key() { return key($this->val); }
+
+    public function next() { next($this->val); }
+
+    public function valid() { return (current($this->val) !== false); }
 
     /** Countable interface - Returns number of values  */
-    public function count()   { return count($this->val);                 }
+    public function count() { return count($this->val); }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->val[$offset] = $value;      }
-    public function offsetExists($offset)      { return isset($this->val[$offset]); }
-    public function offsetUnset($offset)       { unset($this->val[$offset]);        }
-    public function offsetGet($offset)         { return isset($this->val[$offset]) ? $this->val[$offset] : null; }
+    public function offsetSet($offset, $value) { $this->val[$offset] = $value; }
+
+    public function offsetExists($offset) { return isset($this->val[$offset]); }
+
+    public function offsetUnset($offset) { unset($this->val[$offset]); }
+
+    public function offsetGet($offset) { return isset($this->val[$offset]) ? $this->val[$offset] : null; }
 }
 
 
@@ -407,11 +418,11 @@ class AA_Content {
     }
 
     /** getValues function
-     * @param $field_id
-     * @return bool
+     * @param string $field_id
+     * @return array
      */
-    function getValues($field_id) {
-        return ( is_array($a = $this->content[$field_id]) ? $a : false );
+    function getValues($field_id): array {
+        return ( is_array($a = $this->content[$field_id]) ? $a : [] );
     }
 
     /** getValuesArray function

@@ -1918,7 +1918,7 @@ class AA_Inputfield {
             $accepts = '*/*';
         }
         $val  = myspecialchars($val);
-        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', true) : '';
+        $link = $val ? a_href($val, GetAAImage('external-link.png', _m('Show'), 16, 16), '', ['target'=>'_blank']) : '';
         $triggers   = $this->use_triggers ? AA_Jstriggers::get("input", $name, "") : '';
 
         $this->field_name('plus');
@@ -2855,13 +2855,13 @@ function FrmTabs( $tabs, $tabsId ) {
 
 /** GetHtmlTable function
  * Returns table based on config array
- * @param        $content
- * @param string $mode = td | th | key
- * @param string $caption
- * @param bool   $clasic
+ * @param string[] $content
+ * @param string   $mode = td | th | key
+ * @param string   $caption
+ * @param bool     $clasic
  * @return string
  */
-function GetHtmlTable( $content, $mode='td', $caption='', $clasic=false ) {
+function GetHtmlTable( array $content, $mode='td', $caption='', $clasic=false ) {
     if ( !(isset($content) AND is_array($content)) ) {
         return "";
     }
@@ -2869,7 +2869,7 @@ function GetHtmlTable( $content, $mode='td', $caption='', $clasic=false ) {
         array_unshift($content,array_keys(reset($content)));
         $mode = 'th';
     }
-    $ret = getFrmTabCaption($caption, $clasic ? '' : 'class="aa-table"');
+    $ret = getFrmTabCaption($caption, [], $clasic ? '' : 'class="aa-table"');
     $first = true;
     foreach ($content as $row) {
         $ret .= getFrmTabRow( $row , ($mode=='th' AND $first) ? 'th' : 'td');

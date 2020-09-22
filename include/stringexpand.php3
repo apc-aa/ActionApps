@@ -1106,7 +1106,7 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
 /** Creates <div> with clickable options corresponding previously filled form values by the user
  *   - max 5 saved searches are stored (using localStore)
  *   - must be inside the form
- *  {formsaver[:<container>]}
+ *  {formsaver[:<container>][:<label>]}
  *       {formsaver}               - whole form is saved (the one in which is the {formsaver})
  *       {formsaver:.my_subform}   - only the subform is saved
  *       {formsaver::Fill&nbsp;by} - prefix the searches buttons with the label (HTML could be used)
@@ -4397,7 +4397,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
- *  {ajax::number..........::_#ANSWER__:sel:{"const_arr":{"0":"no","1":"yes"}}}
+ *  {ajax::number..........::_#ANSWER__::sel:{"const_arr":{"0":"no","1":"yes"}}}
  **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)

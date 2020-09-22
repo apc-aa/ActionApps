@@ -265,7 +265,7 @@ class AA_Validate_Number extends AA_Validate_Signed {
      */
     function getHtmlInputAttr() {
         $ret = parent::getHtmlInputAttr();
-        $ret['pattern']='[0-9]*';
+        $ret['pattern']='?[0-9]*';
         return $ret;
     }
 }

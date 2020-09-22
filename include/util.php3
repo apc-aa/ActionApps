@@ -45,13 +45,15 @@ function with($object) {
 
 /** a_href function
  *  Get <a href> tag
- * @param $url
- * @param $txt
+ * @param        $url
+ * @param        $txt
+ * @param string $class
+ * @param array  $attr    ['onclick' => "return confirm('Are you sure?')"]
  * @return string
  */
-function a_href($url, $txt, $class='', $blank=false) {
+function a_href($url, $txt, $class='', array $attr=[]) {
     $add  = $class ? " class=\"$class\"" : '';
-    $add .= $blank ? ' target=_blank' : '';
+    $add .= array_reduce( array_keys($attr), function ($str, $key) use ($attr) { return $str . ' ' . $key . '="' . myspecialchars( $attr[$key] ) . '"'; });
     return '<a href="'.myspecialchars($url) ."\"$add>$txt</a>";
 }
 

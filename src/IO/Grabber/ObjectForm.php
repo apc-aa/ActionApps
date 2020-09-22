@@ -24,6 +24,8 @@ use AA_Content;
  *                             of object is untouched)
  *          'i'+long_object_id when object is edited (the value is added to current
  *                           value of the field, rest of object is untouched)
+ *          'r'+long_item_id when item is edited (the value is removed from current
+ *                           value of the field, rest of item is untouched)
  *          'n<number>_long_owner_id' if you want to add the object for an owner
  *                                    (slice_id) <number> is used to add more
  *                                    than one object at the time

@@ -47,7 +47,7 @@ if (!IsSuperadmin()) {
 
 
 function AafinderFieldLink($field_id, $slice_id) {
-    return a_href( get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
+    return a_href(get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id", '', true), "$field_id"). ' ('.AA_Slice::getModuleName($slice_id).')';
 }
 
 function AdminLink($table, $row)
@@ -75,7 +75,12 @@ function AdminLink($table, $row)
 function AafinderObjectLink($object_id) {
     if ($obj = AA_Object::load($object_id)) {
         print_r($obj)    ;
-        return a_href( get_admin_url('oedit.php3', ['module_id'=>$obj->getOwnerId(), 'oid' => $object_id, 'otype' => $obj->getObjectType(), 'ret_url' => document_uri()]), "$object_id");
+        return a_href(get_admin_url('oedit.php3', [
+            'module_id' => $obj->getOwnerId(),
+            'oid'       => $object_id,
+            'otype'     => $obj->getObjectType(),
+            'ret_url'   => document_uri()
+        ]), "$object_id");
     }
     return '';
 }
@@ -86,15 +91,15 @@ function AafinderItemLink($item_id, $slice_id='') {
     } else {
         return '';
     }
-    return a_href( get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1",'',true), "$item_id"). ' ('. AA_Slice::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink($item_id);
+    return a_href(get_admin_url("itemedit.php3?id=$item_id&change_id=$slice_id&edit=1", '', true), "$item_id"). ' ('. AA_Slice::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink($item_id);
 }
 
 function AafinderSliceLink($slice_id) {
-    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id"). ' ('. AA_Module::getModuleName($slice_id) .')  &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
+    return a_href(get_admin_url("index.php3?change_id=$slice_id", '', true), "$slice_id"). ' ('. AA_Module::getModuleName($slice_id) .')  &nbsp; '. ChangesMonitor::getHistoryLink($slice_id);
 }
 
 function AafinderSiteLink($spot_id, $slice_id) {
-    return a_href( get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id"). ' ('. AA_Module_Site::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
+    return a_href(get_aa_url("modules/site/index.php3?slice_id=$slice_id&module_id=$slice_id&spot_id=$spot_id&go_sid=$spot_id"), "$spot_id"). ' ('. AA_Module_Site::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("S.$spot_id");
 }
 
 function AafinderViewLink($view_id, $slice_id) {

@@ -905,7 +905,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     protected static function getManagerRowHtml($fields, $aliases, $links) {
         return '
             <tr>
-              <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.a_href($links['Delete'], _m('Delete'), 'aa-button-delete'). '</td>
+              <td style="white-space:nowrap;">'. a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]). '</td>          
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
             </tr>
             ';
@@ -1040,7 +1040,7 @@ class AA_Components {
 
 
     /** getClassNames function
-     *  Return names of all known AA classes, which begins with $mask
+     *  Return names of all known AA classes, which begins with $mask with "type" as key
      *  static function
      * @param $mask
      * @return array
@@ -1069,9 +1069,14 @@ class AA_Components {
             return $right_classes;
         } else {
             $mask_length = strlen($mask);
-            return array_filter(get_declared_classes(), function ($classname) use ($mask_length, $mask) {
+            $right_class_names = array_filter(get_declared_classes(), function ($classname) use ($mask_length, $mask) {
                 return substr($classname, 0, $mask_length) == $mask;
             });
+            $right_classes = [];
+            foreach ($right_class_names as $classname) {
+                $right_classes[strtolower(substr($classname, $mask_length))] = $classname;
+            }
+            return $right_classes;
         }
     }
 
@@ -1092,6 +1097,7 @@ class AA_Components {
     static function getClassArray($mask) {
         $classes = self::getClassNames($mask);
         $arr = array_map(function($v) {return $v::name();}, $classes);
+        $arr = array_filter($arr, 'trim');  // remove all with empty name()
         asort($arr);
         return $arr;
     }

@@ -504,53 +504,49 @@ class DB_AA extends DB_Sql {
                     $ret[] = $db->Record[$column];
                 }
             }
+        } elseif (empty($column)) {
+            while ($db->next_record()) {
+                $ret[] = $db->Record;
+            }
         } else {
-            if (empty($column)) {
-                while ($db->next_record()) {
-                    $ret[] = $db->Record;
+            $key      = key($column);
+            $values   = reset($column);
+            if (ctype_digit((string)$key) OR empty($key)) {
+                if (!is_array($values)) {
+                    while ($db->next_record()) {
+                         $ret[] = $db->Record[$values];
+                    }
+                } else {
+                    $col_keys = array_flip($values);
+                    while ($db->next_record()) {
+                        $ret[] = array_intersect_key($db->Record, $col_keys);
+                    }
                 }
-            } else {
-                $key      = key($column);
-                $values   = reset($column);
-                if (ctype_digit((string)$key) OR empty($key)) {
-                    if (!is_array($values)) {
+            } elseif (empty($values)) {
+                while ($db->next_record()) {
+                     $ret[$db->Record[$key]] = $db->Record;
+                }
+            } elseif (!is_array($values)) {
+                if (is_string($values)) {
+                    if ($values[0] == '+') {                              // array('id'=>'+other')
+                        $values = substr($values,1);
                         while ($db->next_record()) {
-                             $ret[] = $db->Record[$values];
+                             $ret[$db->Record[$key]][] = $db->Record[$values];
                         }
-                    } else {
-                        $col_keys = array_flip($values);
+                    } else {                                              // array('id'=>'other')  - we do not expect multivalues
                         while ($db->next_record()) {
-                            $ret[] = array_intersect_key($db->Record, $col_keys);
+                             $ret[$db->Record[$key]] = $db->Record[$values];
                         }
                     }
                 } else {
-                    if (empty($values)) {
-                        while ($db->next_record()) {
-                             $ret[$db->Record[$key]] = $db->Record;
-                        }
-                    } elseif (!is_array($values)) {
-                        if (is_string($values)) {
-                            if ($values[0] == '+') {                              // array('id'=>'+other')
-                                $values = substr($values,1);
-                                while ($db->next_record()) {
-                                     $ret[$db->Record[$key]][] = $db->Record[$values];
-                                }
-                            } else {                                              // array('id'=>'other')  - we do not expect multivalues
-                                while ($db->next_record()) {
-                                     $ret[$db->Record[$key]] = $db->Record[$values];
-                                }
-                            }
-                        } else {
-                            while ($db->next_record()) {                          // array('id'=>1)
-                                 $ret[$db->Record[$key]] = $values;
-                            }
-                        }
-                    } else {
-                        $col_keys = array_flip($values);
-                        while ($db->next_record()) {
-                            $ret[$db->Record[$key]] = array_intersect_key($db->Record, $col_keys);
-                        }
+                    while ($db->next_record()) {                          // array('id'=>1)
+                         $ret[$db->Record[$key]] = $values;
                     }
+                }
+            } else {
+                $col_keys = array_flip($values);
+                while ($db->next_record()) {
+                    $ret[$db->Record[$key]] = array_intersect_key($db->Record, $col_keys);
                 }
             }
         }
@@ -620,7 +616,7 @@ class DB_AA extends DB_Sql {
         return $ret;
     }
 
-    /** used as: DB_AA::test('perms', array(array('object_type', $object_type), array('objectid', $objectID), array('flag', REL_FLAG_FEED, 'i')));
+    /** used as: DB_AA::test('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
      * @return bool - true if the record exist
      */

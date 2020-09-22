@@ -778,9 +778,9 @@ class AA_Metabase {
         return false;
     }
 
-    /** The best (most safe) low-level approach to store date in the AA table - the data are checked before storing against database schema
+    /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
-     *  usage: AA::Metabase()->doInsert('log', array('time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params));
+     *  usage: AA::Metabase()->doInsert('log', ['time'=>time(), 'user'=>$auth->auth['uid'], 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param      $tablename table, where to store data
      * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
      * @param  string $nohalt  'nohalt' - do not halt on database error

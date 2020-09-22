@@ -442,7 +442,10 @@ class AA_Formatters {
     const STANDARD_FORMATTERS = 1;   // default  0 | 1 -  TEXT2HTML | RAW | ... (will be increased up to 65535 after adding 128 - TEXY, ....)
 
 
-    protected static function getFromatters() {
+    /**
+     * @return array[]
+     */
+    protected static function getFormatters(): array {
         static $formatters = null;
         if (is_null($formatters)) {
             $formatters = [
@@ -464,7 +467,7 @@ class AA_Formatters {
         if (!($contenttypes = $aa_property->getContentTypeSwitches())) {
             return self::getHiddenFormatters($basevarname, $aa_property, $value);
         }
-        $formatters = self::getFromatters();
+        $formatters = self::getFormatters();
         $flag_frmtr = self::getCurrentFormatter($value, $aa_property);
 
         $ret  = '<div class=aa-formatters>';

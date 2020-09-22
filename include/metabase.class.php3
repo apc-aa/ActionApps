@@ -636,7 +636,31 @@ class AA_Metabase {
 
     /** static method */
     function isTableKeysSupported($tablename) {
-        return in_array($tablename, AA_Metabase::_getSupportedTables());
+        static $SUPPORTED_TABLES = [
+            // single keys
+            'alerts_admin', 'alerts_collection', 'alerts_filter',
+            'auth_log', 'auth_user', 'change', 'change_record',
+            'central_conf', 'constant', 'constant_slice', 'cron',
+            'db_sequence', 'discussion', 'email', 'email_auto_user',
+            'event', 'external_feeds', 'groups', 'item', 'jump', 'links',
+            'links_cat_cat', 'links_categories', 'links_languages',
+            'links_link_cat', 'links_links', 'links_regions', 'log',
+            'module', 'nodes', 'offline', 'object_float', 'object_integer', 'object_text',
+            'pagecache', 'pagecache_str2find', 'polls', 'polls_answer', 'polls_design',
+            'polls_log', 'post2shtml', 'profile', 'rssfeeds', 'searchlog',
+            'site', 'site_spot', 'slice', 'slice_owner', 'toexecute',
+            'users', 'view', 'wizard_template', 'wizard_welcome',
+            // supported table using double keys (slice_id,id)
+            'field'
+            // unsupported table using triple keys (slice_id,uid,`function`)
+            // 'email_notify'
+        ];
+        // search and replace should be done here
+        // feeds from_id to_id
+        // feedmap   from_slice_id, to_slice_id
+        // feedperms from_id,       to_id
+        // relation  source_id,     destination_id
+        return in_array($tablename, $SUPPORTED_TABLES);
     }
 
     /** static method */
@@ -720,60 +744,12 @@ class AA_Metabase {
         return isset($PACKED[$tablename]) ? $PACKED[$tablename] : [];
     }
 
-    /** static method
-     *  @todo - would be probably better to move it to AA_MbT
-     *  @todo - convert to static class members for PHP5
-     **/
-    function &_getSupportedTables() {
-        static $SUPPORTED_TABLES = [
-            // single keys
-            'alerts_admin', 'alerts_collection', 'alerts_filter',
-            'auth_log', 'auth_user', 'change', 'change_record',
-            'central_conf', 'constant', 'constant_slice', 'cron',
-            'db_sequence', 'discussion', 'email', 'email_auto_user',
-            'event', 'external_feeds', 'groups', 'item', 'jump', 'links',
-            'links_cat_cat', 'links_categories', 'links_languages',
-            'links_link_cat', 'links_links', 'links_regions', 'log',
-            'module', 'nodes', 'offline', 'object_float', 'object_integer', 'object_text',
-            'pagecache', 'pagecache_str2find', 'polls', 'polls_answer', 'polls_design',
-            'polls_log', 'post2shtml', 'profile', 'rssfeeds', 'searchlog',
-            'site', 'site_spot', 'slice', 'slice_owner', 'toexecute',
-            'users', 'view', 'wizard_template', 'wizard_welcome',
-            // supported table using double keys (slice_id,id)
-            'field'
-            // unsupported table using triple keys (slice_id,uid,`function`)
-            // 'email_notify'
-        ];
-        // search and replace should be done here
-        // feeds from_id to_id
-        // feedmap   from_slice_id, to_slice_id
-        // feedperms from_id,       to_id
-        // relation  source_id,     destination_id
-        return $SUPPORTED_TABLES;
-    }
-
-    /** static method
-     *  @todo - would be probably better to move it to AA_MbT
-     *  @todo - convert to static class members for PHP5
-     **/
-    function &_getUnsupportedTables() {
-        static $UNSUPPORTED_TABLES = [
-            'alerts_collection_filter',
-            'alerts_collection_howoften', 'auth_group', 'content',
-            'ef_categories', 'ef_permissions', 'email_notify', 'feedmap', 'feedperms',
-            'hit_archive', 'hit_long_id', 'hit_short_id', 'links_changes',
-            'links_link_lang', 'links_link_reg', 'membership',
-            'perms', 'polls_ip_lock', 'relation', 'subscriptions'
-        ];
-        return $UNSUPPORTED_TABLES;
-    }
-
     /** The best (most safe) low-level approach to update data in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
      *  For now, the table keys must be provided - we are not able to update multiple records. Could be changed in future
      *  usage: AA::Metabase()->doUpdate(...);
-     * @param      $tablename table, where to store data
-     * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
+     * @param  string   $tablename table, where to store data
+     * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
      * @return bool|int   0|false on error
      */
     function doUpdate($tablename, $data) {
@@ -786,9 +762,9 @@ class AA_Metabase {
     /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
      *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
      * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
-     * @param      $tablename table, where to store data
-     * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
-     * @param  string $nohalt  'nohalt' - do not halt on database error
+     * @param  string   $tablename - table, where to store data
+     * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
+     * @param  string   $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
     function doInsert($tablename, $data, $nohalt=null) {
@@ -798,13 +774,28 @@ class AA_Metabase {
         return false;
     }
 
+    /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
+     *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
+     * @usage AA::Metabase()->doReplace('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
+     * @param  string   $tablename - table, where to store data
+     * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
+     * @param  string   $nohalt  'nohalt' - do not halt on database error
+     * @return bool|int   0|false on error
+     */
+    function doReplace($tablename, $data, $nohalt=null) {
+        if ( ($varset = $this->getVarset4Data($tablename, $data)) AND $this->isKeysFilled($tablename, $varset)) {
+            return $varset->doTrueReplace($tablename, $nohalt);
+        }
+        return false;
+    }
+
     /** The same as doInsert, but for multiple similar inserts
      * @usage AA::Metabase()->doInsert('log', [['time'=>time(),'user'=>$uid1, 'type'=>$event, 'selector'=>$selector, 'params'=>$params],
      *                                         ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
      * @see AA_Metabase::doInsert()
-     * @param      $tablename table, where to store data
-     * @param      $data[][]  data rows - all data unpacked. The values are converted to correct ones
-     * @param  string $nohalt  'nohalt' - do not halt on database error
+     * @param  string   $tablename table, where to store data
+     * @param  string[] $data[][]  data rows - all data unpacked. The values are converted to correct ones
+     * @param  string   $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      * @todo   process it as one SQL insert statement
      */
@@ -819,11 +810,11 @@ class AA_Metabase {
     /** The best (most safe) low-level approach to delete data in the AA table
      *  - the packed keys are packesd automaticaly, the integer data are typecasted to numbers, ...
      *  usage: AA::Metabase()->doDelete(...);
-     * @param $tablename
-     * @param $keydata
+     * @param string   $tablename
+     * @param string[] $keydata
      * @return bool|int   0|false on error
      */
-    function doDelete($tablename, $keydata) {
+    function doDelete(string $tablename, array $keydata) {
         if ( ($varset = $this->getVarset4Data($tablename, $keydata)) AND $this->isKeysFilled($tablename, $varset)) {
             return $varset->doDelete($tablename);
         }
@@ -832,11 +823,11 @@ class AA_Metabase {
 
     /** Prepare Cvarset for given data array (set right types/values/...)
      *
-     * @param      $tablename table to work with
-     * @param      $data[]    data array - all data unpacked. The values are converted to correct ones
+     * @param  string   $tablename table to work with
+     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
-    private function getVarset4Data($tablename, $data) {
+    private function getVarset4Data(string $tablename, array $data) {
         if ( !($cols = $this->getColumns($tablename))) {
             return null;
         }
@@ -861,8 +852,8 @@ class AA_Metabase {
     }
 
     /** Check is all keys for current table are filled in Cvarset
-     * @param $tablename
-     * @param $varset
+     * @param string  $tablename
+     * @param Cvarset $varset
      * @return bool
      */
     private function isKeysFilled($tablename, $varset) {
