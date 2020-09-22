@@ -255,7 +255,7 @@ class AA_Responder_Get_Fields extends AA_Responder {
 
             // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
             // and we do not want to list it as option for normal fields
-            $current_types = DB_AA::select(['id' => 'name'], 'SELECT `id`, `name` FROM `field`', [['slice_id', $this->slice_id, 'l'], ['id', '\_%', 'NOT LIKE'], ['in_item_tbl', '']], ['name']);
+            $current_types = DB_AA::select(['id' => 'name'], 'SELECT `id`, `name` FROM `field`', [['slice_id', $this->slice_id, 'l'], ['id', '\_%', 'NOT LIKE'], ['in_item_tbl', ['',0]]], ['name']);
             $ret = "\n <select name=\"ftype\">";
             foreach ($current_types as $k => $v) {
                 $ret .= "\n  <option value=\"" . $this->slice_id . '-' . myspecialchars($k) . '"> ' . myspecialchars($v) . " </option>";

@@ -1217,7 +1217,7 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
 
         $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
         foreach ($slices as $sid => $default) {
-            $this->message(_m('slice id: %1 (%2), default value for expiry_date.....: %3', [$sid, AA_Slice::getModuleName($sid), $default]));
+            $this->message([_m('Slice ID')=>$sid, _m('Slice Name')=>AA_Slice::getModuleName($sid), _m('default value for expiry_date.....')=>$default]);
         }
         $this->message(_m('We found %1 hidden exipry_date..... fields', [count($slices)]));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
@@ -1236,7 +1236,7 @@ class AA_Optimize_Set_Expirydate extends AA_Optimize {
             //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
             $this->message(_m('items changed: %1 in slice: %2 (%3)', [$db->affected_rows(), $sid, AA_Slice::getModuleName($sid)]));
 
-            $db->query("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
+            $db->query("UPDATE field SET input_default='never:' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
             //huhl("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
             $this->message(_m('field default changed for expiry_date..... in %1 (%2)', [$sid, AA_Slice::getModuleName($sid)]));
         }

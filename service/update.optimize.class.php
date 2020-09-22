@@ -27,8 +27,8 @@
 
 /** @todo this class should be abstract after we switch to PHP5 */
 class AA_Optimize implements \AA\Util\NamedInterface {
-    var $messages = [];
-    var $db;
+    protected $messages = [];
+    protected $db;
 
     /** \AA\Util\NamedInterface function */
     public function name(): string         {}
@@ -48,10 +48,10 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     function priority()     { return 100; }
 
     /** Message function
-    * @param $text
+    * @param string|array $row
     */
-    function message($text) {
-        $this->messages[] = $text;
+    function message($row) {
+        $this->messages[] = is_array($row) ? $row : ['txt' => $row];
     }
 
     /** This function stores global state for all optimizations.
@@ -71,7 +71,7 @@ class AA_Optimize implements \AA\Util\NamedInterface {
         return $just_print;
     }
 
-    /** $db->query wrapper - allws us to not execute the command and just
+    /** $db->query wrapper - always use it to not execute the command and just
      *  display it, ...
      */
     function query($SQL) {
@@ -90,10 +90,10 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     }
 
     /** Report function
-    * @return string - messages separated by <br>
+    * @return string - messages in table
     */
     function report()       {
-        return join('<br>', $this->messages);
+        return GetHtmlTable($this->messages, 'key');
     }
 
     /** Clear report function
@@ -1441,6 +1441,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
             $this->message(_m('teplate fields are not prenent'));
             $ret = false;
         }
+
         return $ret;
     }
 
@@ -1461,7 +1462,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
         $this->query("REPLACE INTO slice_owner (id, name, email) VALUES ('AA_Core.........', 'Action Aplications System', '".ERROR_REPORTING_EMAIL."')");
 
         $this->message(_m('Make sure "ActionApps Core" slice exists and reset to defaults'));
-        $this->query("REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, slice_url, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript) VALUES ('AA_Core_Fields..', 'ActionApps Core', 'AA_Core_Fields..', 0, '', $now, 0, 'AA_Core_Fields..', 0, '', '',       '',                     '',             '',              0,               '',          '',             '',           '',              '',              1,             '". AA_HTTP_DOMAIN ."', 10000, 'en_news_lang.php3', '()', '()', 1, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, '', 0, 0, NULL, NULL, NULL, NULL,'')");
+        $this->query("REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, slice_url, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript, auth_field_group, mailman_field_lists, reading_password, mlxctrl) VALUES ('AA_Core_Fields..', 'ActionApps Core', 'AA_Core_Fields..', 0, '', $now, 0, 'AA_Core_Fields..', 0, '', '',       '',                     '',             '',              0,               '',          '',             '',           '',              '',              1,             '". AA_HTTP_DOMAIN ."', 10000, 'en-utf8_news_lang.php3.php3', '()', '()', 1, 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, '', 0, 0, NULL, NULL, NULL, NULL,'','','','','')");
         $this->query("REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('AA_Core_Fields..', 'ActionApps Core', 0, 'S', '', 'en_news_lang.php3', $now, '', 'AA_Core.........', 0)");
 
         $this->message(_m('Recreate field definitions'));
@@ -1470,7 +1471,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'full_text',        '', 'AA_Core_Fields..', 'Fulltext',            '300', '', '', 'txt', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'hl_href',          '', 'AA_Core_Fields..', 'Headline URL',       '1655', 'Link for the headline (for external links)', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', 'f_f:link_only.......', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'url', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'link_only',        '', 'AA_Core_Fields..', 'External item',      '1755', 'Use External link instead of fulltext?', '', 'txt', '0', '0', '0', 'chb', '', '100', '', '', '', '', '0', '0', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'bool', 'boo', '1', '1')");
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'place',            '', 'AA_Core_Fields..', 'Locality',           '2155', 'Item locality', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
+        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'place',            '', 'AA_Core_Fields..', 'Place',              '2155', 'Item locality', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'source',           '', 'AA_Core_Fields..', 'Source',             '1955', 'Source of the item', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'source_href',      '', 'AA_Core_Fields..', 'Source URL',         '2055', 'URL of the source', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', 'f_s:javascript: window.alert(\'No source url specified\')', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'url', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'lang_code',        '', 'AA_Core_Fields..', 'Language Code',      '1700', 'Code of used language', '', 'txt:EN', '0', '0', '0', 'sel:lt_languages', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
@@ -1515,33 +1516,42 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'password',         '', 'AA_Core_Fields..', 'Password',           '2055', 'Password which user must know if (s)he want to edit item on public site', '', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '', 'f_i', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'relation',         '', 'AA_Core_Fields..', 'Relation',           '2055', '', '', 'txt:', '0', '0', '1', 'mse:#sLiCe-4e6577735f454e5f746d706c2e2e2e2e:', '', '100', '', '', '', '', '1', '1', '1', '', 'f_v:vid=243&cmd[243]=x-243-_#this', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')");
         // Jakub added auth_group and mail_lists on 6.3.2003
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('auth_group......', '', 'AA_Core_Fields..', 'Auth Group',         '350', 'Sets permissions for web sections', '', 'txt:', 0, 0, 0, 'sel:', '', 100, '', '', '', '', 1, 1, 1, '_#AUTGROUP', 'f_h:', 'Auth Group (membership type)', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);");
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('mail_lists......', '', 'AA_Core_Fields..', 'Mailing Lists',      '1000', 'Select mailing lists which you read', '', 'txt:', 0, 0, 1, 'mch::3:1', '', 100, '', '', '', '', 1, 1, 1, '_#MAILLIST', 'f_h:;&nbsp', 'Mailing Lists', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);");
+        with (new AA_Optimize_Add_Auth_Group_Field_Template())->repair();
+        with (new AA_Optimize_Add_Mail_Lists_Field_Template())->repair();
         // mimo added mlxctrl on 4.10.2004
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', '6000', '', 'http://mimo.gn.apc.org/mlx/', 'txt:', 1, 0, 1, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 0, 1);");
+          //with (new AA_Optimize_Add_Mlxctrl_Field_Template())->repair();   // MLX feature is not maintained, so we do not create the field as default. You can still add it individually
         // mimo added 2005-03-02
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'integer',  '', 'AA_Core_Fields..', 'Integer',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'num', '1', '0')");
+        with (new AA_Optimize_Add_Integer_Field_Template())->repair();
         // honzam added 2005-08-15 (based on Philip King and Antonin Slejska suggestions)
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'name',        '', 'AA_Core_Fields..', 'Name',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // name
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'phone',       '', 'AA_Core_Fields..', 'Phone',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // phone
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'fax',         '', 'AA_Core_Fields..', 'Fax',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // fax
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'address',     '', 'AA_Core_Fields..', 'Address',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // address
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'location',    '', 'AA_Core_Fields..', 'Location',        '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // location
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'city',        '', 'AA_Core_Fields..', 'City',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // city
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'country',     '', 'AA_Core_Fields..', 'Country',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // country
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'range',       '', 'AA_Core_Fields..', 'Range',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // range
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'real',        '', 'AA_Core_Fields..', 'Real number',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // real
+        with (new AA_Optimize_Add_Name_Field_Template())->repair();
+        with (new AA_Optimize_Add_Phone_Field_Template())->repair();
+        with (new AA_Optimize_Add_Fax_Field_Template())->repair();
+        with (new AA_Optimize_Add_Address_Field_Template())->repair();
+        with (new AA_Optimize_Add_Location_Field_Template())->repair();
+        with (new AA_Optimize_Add_City_Field_Template())->repair();
+        with (new AA_Optimize_Add_Country_Field_Template())->repair();
+        with (new AA_Optimize_Add_Range_Field_Template())->repair();
+        with (new AA_Optimize_Add_Real_Field_Template())->repair();
         // honzam added 2005-08-26 - computed fields templates
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'computed_num','', 'AA_Core_Fields..', 'Computed number', '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'com', '1', '0')"); // computed_num
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'computed_txt','', 'AA_Core_Fields..', 'Computed text',   '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'com', '1', '1')"); // computed_txt
+        with (new AA_Optimize_Add_Computed_Num_Field_Template())->repair();
+        with (new AA_Optimize_Add_Computed_Txt_Field_Template())->repair();
         // honzam added 2007-11-21 - _upload_url..... - slice field for setting the name of upload directory
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( '_upload_url', '', 'AA_Core_Fields..', 'Upload URL',      '100', 'If you want to have your files stored in your domain, then you can create symbolic link from http://yourdomain.org/upload -> http://your.actionapps.org/IMG_UPLOAD_PATH and fill there \"http://yourdomain.org/upload\". The url stored in AA will be changed (The file is stored still on the same place).', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')");
+        with (new AA_Optimize_Add__Ip_Banned_Field_Template())->repair();
+        with (new AA_Optimize_Add__Msg_Banned_Field_Template())->repair();
+        with (new AA_Optimize_Add__Msg_Spam_Field_Template())->repair();
+        with (new AA_Optimize_Add__Upload_Url_Field_Template())->repair();
         // honzam added 2008-07-15 - seo field for seo optimalization
-        $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'seo',         '', 'AA_Core_Fields..', 'SEO',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')");
+        with (new AA_Optimize_Add_Seo_Field_Template())->repair();
         // honzam added 2008-11-20 - hit_1, hit_7, hit_30 - count hits
-        $this->query("INSERT INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_1', '', 'AA_Core_Fields..', 'Hits last day', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)");     // hit_1
-        $this->query("INSERT INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_7', '', 'AA_Core_Fields..', 'Hits last week', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)");    // hit_7
-        $this->query("INSERT INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_30', '', 'AA_Core_Fields..', 'Hits last month', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)");  // hit_30
+        with (new AA_Optimize_Add_Hit_1_Field_Template())->repair();
+        with (new AA_Optimize_Add_Hit_7_Field_Template())->repair();
+        with (new AA_Optimize_Add_Hit_30_Field_Template())->repair();
+        // honzam added 2020-09-09 - mainly for 2FA, but also adding most missing fields
+        with (new AA_Optimize_Add_Secret_Field_Template())->repair();
+        with (new AA_Optimize_Add_Ip_Field_Template())->repair();
+        with (new AA_Optimize_Add_Code_Field_Template())->repair();
+        with (new AA_Optimize_Add_Date_Field_Template())->repair();
+
 
         // UPDATE ALSO AA_Optimize_Add_New_Field_Templates class
 
@@ -1568,9 +1578,59 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
         return _m("Updates field templates (in ActionApps Core slice) - redefine the field template");
     }
 
-    function _fieldType()       { return 'seo'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('seo',         '', 'AA_Core_Fields..', 'SEO',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string  { return 'seo'; }
 
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array  {
+        return [];
+    }
+
+    /** @return array - whole field definition - merged standard fields and special setting  */
+    protected function fieldDefinition(): array {
+        $field_standard = ['id'                => $this->fieldType(),
+                           'type'              => '',
+                           'slice_id'          => '41415f436f72655f4669656c64732e2e',   // AA_Core_Fields..
+                           'name'              => mb_strtoupper(mb_substr($this->fieldType(), 0, 1)) . mb_substr($this->fieldType(), 1),
+                           'input_pri'         => '100',
+                           'input_help'        => '',
+                           'input_morehlp'     => '',
+                           'input_default'     => 'txt',
+                           'required'          => '0',
+                           'feed'              => '0',
+                           'multiple'          => '0',
+                           'input_show_func'   => 'fld',
+                           'content_id'        => '',
+                           'search_pri'        => '100',
+                           'search_type'       => '',
+                           'search_help'       => '',
+                           'search_before'     => '',
+                           'search_more_help'  => '',
+                           'search_show'       => '1',
+                           'search_ft_show'    => '1',
+                           'search_ft_default' => '1',
+                           'alias1'            => '',
+                           'alias1_func'       => '',
+                           'alias1_help'       => '',
+                           'alias2'            => '',
+                           'alias2_func'       => '',
+                           'alias2_help'       => '',
+                           'alias3'            => '',
+                           'alias3_func'       => '',
+                           'alias3_help'       => '',
+                           'input_before'      => '',
+                           'aditional'         => '',
+                           'content_edit'      => '',
+                           'html_default'      => '0',
+                           'html_show'         => '0',
+                           'in_item_tbl'       => '0',
+                           'input_validate'    => 'text',
+                           'input_insert_func' => 'qte',
+                           'input_show'        => '1',
+                           'text_stored'       => '1'
+        ];
+        return array_merge($field_standard, $this->fieldSpecialSetting());
+    }
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
     function isType($type)  { return in_array($type, ['sql_update']); }
 
@@ -1580,11 +1640,11 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
     */
     public function test() : bool {
         $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='".$this->_fieldType()."' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('The "%1" field template missing', [$this->_fieldType()]));
+        if ( !DB_AA::test('field', [['id', $this->fieldType()], ['slice_id', 'AA_Core_Fields..']]) ) {
+            $this->message(_m('The "%1" field template missing', [$this->fieldType()]));
             $ret = false;
+        } else {
+            $this->message(_m('OK - The "%1" field template found', [$this->fieldType()]));
         }
         return $ret;
     }
@@ -1594,9 +1654,10 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
      *  @return bool
      */
     public function repair() : bool {
-        $this->message(_m('Recreate "%1" field definition', [$this->_fieldType()]));
-        $this->query($this->_fieldDefinition());
-        $this->message(_m('New "%1" field template added', [$this->_fieldType()]));
+        $this->message(_m('Recreate "%1" field definition', [$this->fieldType()]));
+        huhl($this->fieldDefinition());
+        AA::Metabase()->doReplace('field', $this->fieldDefinition());
+        $this->message(_m('New "%1" field template added', [$this->fieldType()]));
         return true;
     }
 }
@@ -1604,193 +1665,393 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Auth_Group_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
-    public function name(): string             { return _m("Add auth_group...... field template"); }
-    function _fieldType()       { return 'auth_group......'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('auth_group......', '', 'AA_Core_Fields..', 'Auth Group',         '350', 'Sets permissions for web sections', '', 'txt:', 0, 0, 0, 'sel:', '', 100, '', '', '', '', 1, 1, 1, '_#AUTGROUP', 'f_h:', 'Auth Group (membership type)', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);"; }
+    public function name(): string { return _m("Add auth_group...... field template"); }
+
+    /** the field identifier  */
+    protected function fieldType(): string { return 'auth_group'; }
+
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [
+            'name'              => 'Auth Group',
+            'input_pri'         => '350',
+            'input_help'        => 'Sets permissions for web sections',
+            'input_show_func'   => 'sel:',
+            'alias1'            => '_#AUTGROUP',
+            'alias1_func'       => 'f_h:',
+            'alias1_help'       => 'Auth Group (membership type)'
+        ];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Mail_Lists_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add mail_lists field template"); }
-    function _fieldType()       { return 'mail_lists......'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('mail_lists......', '', 'AA_Core_Fields..', 'Mailing Lists',      '1000', 'Select mailing lists which you read', '', 'txt:', 0, 0, 1, 'mch::3:1', '', 100, '', '', '', '', 1, 1, 1, '_#MAILLIST', 'f_h:;&nbsp', 'Mailing Lists', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'mail_lists'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Mailing Lists',
+                'input_pri'         => '1000',
+                'input_help'        => 'Select mailing lists which you read',
+                'multiple'          => '1',
+                'input_show_func'   => 'mch::3:1',
+                'alias1'            => '_#MAILLIST',
+                'alias1_func'       => 'f_h:&nbsp;',
+                'alias1_help'       => 'Mailing Lists'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Mlxctrl_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add mlxctrl field template"); }
-    function _fieldType()       { return 'mlxctrl'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', '6000', '', 'http://mimo.gn.apc.org/mlx/', 'txt:', 1, 0, 1, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 0, 1);"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'mlxctrl'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'MLX Control',
+                'input_pri'         => '6000',
+                'input_morehlp'     => 'http://mimo.gn.apc.org/mlx/',
+                'required'          => '1',
+                'multiple'          => '1',
+                'input_show'        => '0'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Integer_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add integer field template"); }
-    function _fieldType()       { return 'integer'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('integer',  '', 'AA_Core_Fields..', 'Integer',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'num', '1', '0')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'integer'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['html_default'      => '0',
+                'input_validate'    => 'number',
+                'input_insert_func' => 'num',
+                'text_stored'       => '0'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Name_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add name field template"); }
-    function _fieldType()       { return 'name'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('name',        '', 'AA_Core_Fields..', 'Name',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // name
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'name'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Phone_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add phone field template"); }
-    function _fieldType()       { return 'phone'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('phone',       '', 'AA_Core_Fields..', 'Phone',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // phone
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'phone'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Fax_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add fax field template"); }
-    function _fieldType()       { return 'fax'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('fax',         '', 'AA_Core_Fields..', 'Fax',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // fax
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'fax'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Address_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add address field template"); }
-    function _fieldType()       { return 'address'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('address',     '', 'AA_Core_Fields..', 'Address',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // address
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'address'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Location_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add location field template"); }
-    function _fieldType()       { return 'location'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('location',    '', 'AA_Core_Fields..', 'Location',        '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // location
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'location'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_City_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add city field template"); }
-    function _fieldType()       { return 'city'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('city',        '', 'AA_Core_Fields..', 'City',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // city
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'city'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Country_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add country field template"); }
-    function _fieldType()       { return 'country'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('country',     '', 'AA_Core_Fields..', 'Country',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // country
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'country'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Range_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add range field template"); }
-    function _fieldType()       { return 'range'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('range',       '', 'AA_Core_Fields..', 'Range',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // range
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'range'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return [];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Real_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add real field template"); }
-    function _fieldType()       { return 'real'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('real',        '', 'AA_Core_Fields..', 'Real number',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // real
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'real'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Real number'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Computed_Num_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add computed_num field template"); }
-    function _fieldType()       { return 'computed_num'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('computed_num','', 'AA_Core_Fields..', 'Computed number', '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'com', '1', '0')"; } // computed_num
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'computed_num'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Computed number',
+                'input_show_func'   => 'nul',
+                'html_default'      => '0',
+                'input_validate'    => 'number',
+                'input_insert_func' => 'com',
+                'text_stored'       => '0'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Computed_Txt_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add computed_txt field template"); }
-    function _fieldType()       { return 'computed_txt'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('computed_txt','', 'AA_Core_Fields..', 'Computed text',   '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'com', '1', '1')"; } // computed_txt
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'computed_txt'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Computed text',
+                'input_show_func'   => 'nul'
+        ];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Upload_Url_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add _upload_url field template"); }
-    function _fieldType()       { return '_upload_url'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_upload_url', '', 'AA_Core_Fields..', 'Upload URL',      '100', 'If you want to have your files stored in your domain, then you can create symbolic link from http://yourdomain.org/upload -> http://your.actionapps.org/IMG_UPLOAD_PATH and fill there \"http://yourdomain.org/upload\". The url stored in AA will be changed (The file is stored still on the same place).', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return '_upload_url'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Upload URL',
+                'input_pri'         => '100',
+                'input_help'        => 'If you want to have your files stored in your domain, then you can create symbolic link from https://yourdomain.org/upload -> https://your.actionapps.org/IMG_UPLOAD_PATH and fill there "https://yourdomain.org/upload". The url stored in AA will be changed (The file is stored still on the same place).'
+        ];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Hit_1_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add hit_1 field template"); }
-    function _fieldType()       { return 'hit_1'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_1', '', 'AA_Core_Fields..', 'Hits last day', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }     // hit_1
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'hit_1'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Hits last day',
+                'input_default'     => 'qte',
+                'required'          => '1',
+                'html_default'      => '0',
+                'input_validate'    => 'number',
+                'input_insert_func' => 'num',
+                'text_stored'       => '0'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Hit_7_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add hit_7 field template"); }
-    function _fieldType()       { return 'hit_7'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_7', '', 'AA_Core_Fields..', 'Hits last week', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }    // hit_7
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'hit_7'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Hits last week',
+                'input_default'     => 'qte',
+                'required'          => '1',
+                'html_default'      => '0',
+                'input_validate'    => 'number',
+                'input_insert_func' => 'num',
+                'text_stored'       => '0'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Hit_30_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add hit_30 field template"); }
-    function _fieldType()       { return 'hit_30'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_30', '', 'AA_Core_Fields..', 'Hits last month', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }  // hit_30
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'hit_30'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Hits last month',
+                'input_default'     => 'qte',
+                'required'          => '1',
+                'html_default'      => '0',
+                'input_validate'    => 'number',
+                'input_insert_func' => 'num',
+                'text_stored'       => '0'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add_Ip_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add ip field template"); }
-    function _fieldType()       { return 'ip'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('ip', '', 'AA_Core_Fields..', 'IP address',      '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'ip'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'IP address'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Ip_Banned_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add _ip_banned field template"); }
-    function _fieldType()       { return '_ip_banned'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_ip_banned', '', 'AA_Core_Fields..', 'Banned IPs slice ID',      '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return '_ip_banned'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Banned IPs slice ID'];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Msg_Banned_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add _msg_banned field template"); }
-    function _fieldType()       { return '_msg_banned'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_msg_banned', '', 'AA_Core_Fields..', 'Message Banned',      '100', 'Message shown to user, when the IP address of the comment sender is on list of banned IP addresses', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return '_msg_banned'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Message Banned',
+                'input_help'        => 'Message shown to user, when the IP address of the comment sender is on list of banned IP addresses'
+        ];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Msg_Spam_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add _msg_spam field template"); }
-    function _fieldType()       { return '_msg_spam'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_msg_spam', '', 'AA_Core_Fields..', 'Message Spam',      '100', 'Message shown to user, when the SPAM detection filter in the comments decides the post is spam', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return '_msg_spam'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Message Spam',
+                'input_help'        => 'Message shown to user, when the SPAM detection filter in the comments decides the post is spam'
+        ];
+    }
 }
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
 class AA_Optimize_Add__Url_Preview_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
     public function name(): string             { return _m("Add _url_preview field template"); }
-    function _fieldType()       { return '_url_preview'; }
-    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_url_preview', '', 'AA_Core_Fields..', 'Preview Url',      '100', 'Url for item previw - could contain AA Expressions', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')"; }
+    /** the field identifier  */
+    protected function fieldType(): string       { return '_url_preview'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['name'              => 'Preview Url',
+                'input_help'        => 'Url for item previw - could contain AA Expressions'
+        ];
+    }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Secret_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    public function name(): string             { return _m("Add secret field template"); }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'secret'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['input_help'        => 'Secret key for 2FA - encrypted, not acessible as normal field',
+                'input_pri'         => '2056',
+        ];
+    }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Date_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    public function name(): string             { return _m("Add date field template"); }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'date'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['input_default'     => 'now',
+                'input_show_func'   => 'dte::::2',
+                'alias1_func'       => 'f_d:m/d/Y',
+                'html_default'      => '0',
+                'input_validate'    => 'date',
+                'input_insert_func' => 'dte',
+                'text_stored'       => '0'
+        ];
+    }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Code_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    public function name(): string             { return _m("Add code field template"); }
+    /** the field identifier  */
+    protected function fieldType(): string       { return 'code'; }
+    /** field settings different from standard field setting  */
+    protected function fieldSpecialSetting(): array {
+        return ['input_show_func'   => 'cod'];
+    }
 }
 
 /** Restore Data from Backup Tables

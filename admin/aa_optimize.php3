@@ -40,6 +40,7 @@ $Msg = '';
 
 // php4 returns class names in lower case, so we need itin lower case
 if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
+    /** @var AA_Optimize $optimizer */
     $optimizer = AA_Serializable::factory($_GET['test']);
     $optimizer->test();
     $Msg .= $optimizer->report();
@@ -64,10 +65,10 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     <div>
       <div style=\"float: right;\">";
     if (in_array('test', $actions)) {
-        $row .= "<a href=\"". StateUrl("?test=$optimize_class") ."\">". _m('Test'). "</a> ";
+        $row .= "<a href=\"". StateUrl("?test=$optimize_class") ."\" class=aa-button-test>". _m('Test'). "</a> ";
     }
     if (in_array('repair', $actions)) {
-        $row .= "<a href=\"". StateUrl("?repair=$optimize_class") ."\">". _m('Repair'). "</a> ";
+        $row .= "<a href=\"". StateUrl("?repair=$optimize_class") ."\" class=aa-button-run>". _m('Repair'). "</a> ";
     }
 
     $optimize_descriptions[] = $row ."
@@ -84,7 +85,7 @@ $apage->printHead($err, $Msg);
 $form_buttons   = [];
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
-FrmTabCaption(_m('Optimalizations'), $form_buttons);
+echo getFrmTabCaption(_m('Optimalizations'), $form_buttons, 'class="aa-table"');
 foreach ( $optimize_names as $i => $name ) {
     FrmStaticText($name, $optimize_descriptions[$i], '', '', false);
 }
