@@ -21,6 +21,8 @@
     "mobiledetect/mobiledetectlib": "2.8.33",
     "jan-swiecki/simple-annotations": "0.3.1",
     "phpgangsta/googleauthenticator": "dev-master",
+    "chillerlan/php-qrcode": "^3.3",
+    "chillerlan/php-authenticator": "^3.0",
     "ext-iconv": "*",
     "ext-zlib": "*",
     "ext-gd": "*",

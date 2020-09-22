@@ -7,6 +7,12 @@ namespace Composer\Autoload;
 class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
 {
     public static $prefixLengthsPsr4 = array (
+        'c' => 
+        array (
+            'chillerlan\\Settings\\' => 20,
+            'chillerlan\\QRCode\\' => 18,
+            'chillerlan\\Authenticator\\' => 25,
+        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
@@ -18,6 +24,18 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixDirsPsr4 = array (
+        'chillerlan\\Settings\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/chillerlan/php-settings-container/src',
+        ),
+        'chillerlan\\QRCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/chillerlan/php-qrcode/src',
+        ),
+        'chillerlan\\Authenticator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/chillerlan/php-authenticator/src',
+        ),
         'Firebase\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
