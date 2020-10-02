@@ -397,7 +397,7 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
 
     /** expand function
      * @param $user
-     * @return name|string
+     * @return string name|logintime|logintimes
      */
     function expand($user='', $property='') {
         if (!$user) {
@@ -1603,7 +1603,6 @@ function getConstantValue($group, $what, $field_name) {
     }
 }
 
-
 /** How unaliasing and QuoteColons() works
  *
  *  The unaliasing works this way:
@@ -2297,7 +2296,7 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Escape apostrophs and convert HTML entities
+/** Escape apostrophes and convert HTML entities
  *  If you want to put the JS code in HTML: tag attribute, consider using onclick="{safe:{javascript:code...}}"
  */
 class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
@@ -2313,6 +2312,18 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
      */
     function expand($text='') {
         return str_replace(["'","\r\n", "\r", "\n"], ["\'", " ", " ", " "], $text);
+    }
+}
+
+/** Normalizes utf-8 string - replaces combined characters 'a' + accent to 'á'...
+ */
+class AA_Stringexpand_Utfnormalize extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $text
+     * @return mixed
+     */
+    function expand($text='') {
+        return Normalizer::normalize($text);
     }
 }
 
@@ -2425,7 +2436,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Converts the content of the field to html better than standard {text............} comand would do
+/** Converts the content of the field to html better than standard {text............} command would do
  *  (makes html links from urls...)Checks the text for urls and make it clickable
  */
 class AA_Stringexpand_Field2html extends AA_Stringexpand_Text2html {
