@@ -207,6 +207,7 @@ class Widget extends AA_Object implements NamedInterface {
      */
     public function getOptions($selected = null, $content = null, $use_name = false, $testval = false, $add_empty = 0) {
         $selectedused = false;
+        $empty_present = false;
 
         $already_selected = [];     // array where we mark selected values
         $pair_used = [];     // array where we mark used pairs
@@ -240,6 +241,9 @@ class Widget extends AA_Object implements NamedInterface {
                 $selectedused = true;
                 $already_selected[(string)$select_val] = true;  // flag
             }
+            if ($k==='') {
+                $empty_present = true;
+            }
             $ret[] = ['k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false];
         }
 
@@ -259,10 +263,10 @@ class Widget extends AA_Object implements NamedInterface {
             }
         }
 
-        if ($add_empty == 1) {
+        if (($add_empty == 1) AND !$empty_present) {
             // put empty option to the front
             array_unshift($ret, ['k' => '', 'v' => '', 'selected' => !$selectedused, 'mis' => false]);
-        } elseif (($add_empty == 2) and !$selectedused) {
+        } elseif (($add_empty == 2) AND !$selectedused AND !$empty_present) {
             array_unshift($ret, ['k' => '', 'v' => '', 'selected' => true, 'mis' => false, 'justdefault' => true]);
         }
         return $ret;
