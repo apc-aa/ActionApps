@@ -53,9 +53,21 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
+// Create new module
+// If we want to create new site, then $_POST['create']['W'] is set and $_POST['template']['W'] contains template site id
 
-/* do not know, where  $create comes from - Trying to disable this code - Honza 11.9.2019  */
-// foreach ($MODULES as $type => $module) {
+if (is_array($create = $_POST['create'])) {
+    reset($create);
+    if ($type = key($create)) {
+        $url = StateUrl(AA_INSTAL_PATH. $MODULES[$type]["directory"] . "modedit.php3?no_slice_id=1");
+        if ( $_POST['template'][$type] ) {
+            $url = get_url( $url, "template%5B$type%5D=". $_POST['template'][$type]);
+        }
+        go_url( $url );
+    }
+}
+
+//foreach ($MODULES as $type => $module) {
 //     if ($create[$type]) {
 //         $url = StateUrl(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
 //         if ( $template[$type] ) {
@@ -63,7 +75,7 @@ if ($cancel) {
 //         }
 //         go_url( $url );
 //     }
-// }
+//}
 
 $err = [];          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();
