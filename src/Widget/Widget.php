@@ -175,7 +175,10 @@ class Widget extends AA_Object implements NamedInterface {
      *  This method is rewritten if_selected() method form formutil.php3
      */
     public function ifSelected($option, $ret_val) {
-        return (strlen($option) and $this->_selected[(string)$option]) ? $ret_val : '';
+        if (!strlen($option)) {
+            return empty($this->_selected) ? $ret_val : '';
+        }
+        return $this->_selected[(string)$option] ? $ret_val : '';
     }
 
     /**
@@ -241,7 +244,7 @@ class Widget extends AA_Object implements NamedInterface {
                 $selectedused = true;
                 $already_selected[(string)$select_val] = true;  // flag
             }
-            if ($k==='') {
+            if ($select_val==='') {
                 $empty_present = true;
             }
             $ret[] = ['k' => $k, 'v' => $v, 'selected' => ($selected ? true : false), 'mis' => false];

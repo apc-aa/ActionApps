@@ -115,18 +115,18 @@ class TxtWidget extends \AA\Widget\Widget
     }
 
     /**
-     * @param $input_name
+     * @param string $input_name
      * @param $i
-     * @param $val
-     * @param $attrs
-     * @param $widget_add
-     * @param $widget_add2
-     * @param $required
-     * @param $no_htmleditor
-     * @param $base
+     * @param string $val
+     * @param array $attrs
+     * @param string $widget_add
+     * @param string $widget_add2
+     * @param string $required
+     * @param bool $no_htmleditor_link
+     * @param array $base
      * @return string
      */
-    protected function getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor, $base)
+    protected function getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor_link, $base)
     {
 
         $showhtmlarea = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
@@ -150,7 +150,7 @@ class TxtWidget extends \AA\Widget\Widget
             // arr this textarea to the list for CKEditor creation
             $this->ids_4_editor[] = '#'.$input_id;
             // $attrs['class'] = 'ckeditor';
-        } elseif (!$no_htmleditor) {
+        } elseif (!$no_htmleditor_link) {
             $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
             // conversions menu
             //$convertor   = $convert ? $this->get_convertors() : false;
