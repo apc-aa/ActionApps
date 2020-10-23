@@ -6376,7 +6376,7 @@ class AA_Requires {
             'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.7.2/dist/min/dropzone.min.js', 'sha256-VBW6wgQ/wqxKuy5M87Uhn5bvzBmeXgWVQiwAqPLUjfo=', ['_css-dropzone@5']),
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js', 'sha256-vjFnliBY8DzX9jsgU/z1/mOuQxk7erhiP0Iw35fVhTU=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
-            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.1.0/sortable.min.js', 'sha256-V8PMckul3Ye9uzgIf40mKseZiUXv1441jN3YBTHdDGA='),
+            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.min.js', 'sha256-GlPhZO8lQvwvtQjl1rtmm7K+ZG0ef9p11ONp989d2Ig=', ['_css-sortable@1']),
             'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.10.21/js/jquery.dataTables.min.js', 'sha256-s+IGOQWIhMyylwPABPBE89mzWrAmYL7J+XDfd8OFGkw=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js?ver='.AA_JS_VERSION,'',false), '', ['deserialize@2']),
             'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0-rc1/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
@@ -6401,6 +6401,7 @@ class AA_Requires {
             '_css-select2@3'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.css', 'sha256-YxoY/Ov8dU2zQTW3WNFp25v+U1SBgVrOkiB8w3rupb4='),
             '_css-lightgallery@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css', 'sha256-gU66VAEd73/e6tBq5c+WSiRcNH0PSXLnHMPeFIKxtHM='),
             '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css', 'sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM='),
+            '_css-sortable@1'             => new AA_Req_Css('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.css', 'sha256-TNKOtdeH1MmRdsujDukp9lYyndNf5qPvBHbWfKWGoX8='),
             'css-aa-system@1'             => new AA_Req_Css(get_aa_url('css/aa-system.css?v='.AA_JS_VERSION,'',false)),
             'css-normalize@7'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
             'css-normalize@8'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css', 'sha256-WAgYcAck1C1/zEl5sBl5cfyhxtLgKGdpI3oKyJffVRI='),
@@ -9072,7 +9073,7 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
     function expand($element='', $html='') {
         if ($element AND $html) {
             AA::Stringexpander()->addRequire('tippy');
-            $selector = (stripos('abcdefghijklmnopqrstuvwxyz', $element[0]) === false ) ? $element : '#'.$element;
+            $selector = preg_match('/[^A-Za-z0-9_-]/', $element) ? $element : '#'.$element;
             $script2run = "tippy('".escape4js($selector)."', {html: function() { el = document.createElement('div'); el.innerHTML='".escape4js($html)."'; return el; } }); \n";
             AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
             AA::Stringexpander()->addRequire('AA_Stringexpand_Tooltip::getBottomCode', 'AA_Req_Htm');
@@ -9090,6 +9091,7 @@ class AA_Stringexpand_Tooltip extends AA_Stringexpand {
   tippy.defaults.size = "small";
   tippy.defaults.duration = 50;
   tippy.defaults.theme = "aa";
+  tippy.defaults.interactive = true;
 </script>
 <style>
   .tippy-popper[x-placement^=\'top\'] .tippy-tooltip.aa-theme .tippy-arrow {  border-top: 7px solid #FFFED8;  border-right: 7px solid transparent;  border-left: 7px solid transparent; }
