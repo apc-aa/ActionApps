@@ -93,13 +93,14 @@ class AA_Log {
     }
 
     static function warn($selector) {
-        AA_Log::write('AA_WARN', $selector, AA_Log::backtrack());
+        AA_Log::write('AA_WARN', $selector, AA_Log::backtrack(2));
     }
 
-    static function backtrack() {
+    static function backtrack($remove_steps=1) {
         $ret = explode("\n", str_replace(AA_BASE_PATH, '', with( new Exception() )->getTraceAsString()));
-        array_shift($ret);
-        array_shift($ret);
+        for (; $remove_steps>0; --$remove_steps) {
+            array_shift($ret);
+        }
         return join("\n", $ret);
     }
 

@@ -73,11 +73,6 @@ class AA_Poll {
         return $this->_sum;
     }
 
-    /** name function  */
-    public function name(): string {
-        return $this->getProperty('name');
-    }
-
     /** get id of poll */
     function id() {
         return $this->poll_id; // Return a 32 character id

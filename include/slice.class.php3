@@ -248,7 +248,18 @@ class AA_Module {
     }
 
     function getName() {
-        return $this->_getModuleTableProperty('name');
+        $name = $this->_getModuleTableProperty('name');
+        return $this->deleted() ? "&times;&times;&times; $name &times;&times;&times;" : $name;
+    }
+
+    /** Checks, if the module_id is OK and the slice is not deleted */
+    function isValid() {
+        return !$this->deleted();
+    }
+
+    /** Checks, if the module_id is OK and the slice is not deleted  */
+    function deleted() {
+        return $this->_getModuleTableProperty('deleted');
     }
 
     function getProperty($prop) {
@@ -365,7 +376,7 @@ class AA_Slice extends AA_Module {
             $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
             $content4id[$db->f("field_id")][] = [
                 "value" => $db->f($db_field),
-                                                       "flag"  => $db->f("flag")
+                "flag"  => $db->f("flag")
             ];
         }
         freeDB($db);
@@ -396,30 +407,11 @@ class AA_Slice extends AA_Module {
         return $this->fields->isField($fname);
     }
 
-    /** name function
-     *
-     */
-    public function name(): string {
-        return $this->getProperty('name');
-    }
-
-    /** Checks, if the module_id is OK and the slice is not deleted */
-    function isValid() {
-        return !$this->deleted();
-    }
-
     /** jumpLink function
      * @return string
      */
     function jumpLink() {
-        return "<a href=\"".get_admin_url("index.php3?change_id=".$this->getId()). "\">".$this->name()."</a>";
-    }
-
-    /** deleted function
-     *
-     */
-    function deleted() {
-        return $this->getProperty('deleted');
+        return "<a href=\"".get_admin_url("index.php3?change_id=".$this->getId()). "\">".$this->getName()."</a>";
     }
 
     /** type function
@@ -504,9 +496,10 @@ class AA_Slice extends AA_Module {
     }
 
     /** getFields function
-     *  @return AA_Fields
+     * @param bool $dynamic_fields
+     * @return AA_Fields
      */
-    function & getFields($dynamic_fields = false) {
+    function getFields($dynamic_fields = false): AA_Fields {
         return $dynamic_fields ? $this->dynamic_fields : $this->fields;
     }
 
@@ -559,8 +552,6 @@ class AA_Slice extends AA_Module {
         $fields = $slice_fields ? $this->dynamic_fields : $this->fields;
 
         switch ( $return_type ) {
-            // record - deprecated
-            case 'record':  return $fields->getRecordArray();    // array of field definitions where field_id is key
             case 'pri':     return $fields->getPriorityArray();  // array of field definitions sorted by priority - integer key
             case 'name':    return $fields->getNameArray();
 
@@ -719,7 +710,7 @@ class AA_Slice extends AA_Module {
         $profile = AA_Profile::getProfile($auth->auth["uid"], $this->getId()); // current user settings
 
         // get slice fields and its priorities in inputform
-        list( $fields, $prifields) = $this->fields(null, $slice_fields);
+        [ $fields, $prifields] = $this->fields(null, $slice_fields);
         if (!is_array($prifields)) {
             return '';
         }
@@ -741,7 +732,7 @@ class AA_Slice extends AA_Module {
             }
             $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
 
-            list($validate) = explode(":", $f["input_validate"]);
+            [$validate] = explode(":", $f["input_validate"]);
             if ($validate == 'e-unique') {
                 $validate = "email";
             }
@@ -759,7 +750,7 @@ class AA_Slice extends AA_Module {
                 // fill show_func_used array - used on several places
                 // to destinguish, which javascripts we should include and
                 // if we have to use form multipart or not
-                list($show_func) = explode(":", $f["input_show_func"], 2);
+                [$show_func] = explode(":", $f["input_show_func"], 2);
                 $this->show_func_used[$show_func] = true;
                 if ($show_func == 'fil') {
                     continue;

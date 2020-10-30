@@ -197,7 +197,7 @@ class AARSS extends \AA\IO\Grabber\AbstractGrabber {
         $slice = AA_Slice::getModule($this->slice_id);
         $feed_debug_name = 'Feed #' . $this->feed_id . ' (' . getFeedTypeName($feed_type) . '): ' .
             $this->feed['name'] . ' : ' . $this->feed['remote_slice_name'] .
-            ' -> ' . $slice->name();
+            ' -> ' . $slice->getName();
         // Get XML Data
         if ($debugfeed >= 1) {
             print("\n<br>$feed_debug_name");
