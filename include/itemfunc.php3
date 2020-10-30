@@ -275,7 +275,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
         $definition = $field->getProperty('input_insert_func');
         $inserter = AA_Inserter::factoryByString($definition);
         if (!$inserter) {
-            AA::$dbg->warn("Can't create AA_Inserter from <b>$definition</b>");
+            warn("Can't create AA_Inserter from <b>$definition</b>");
             $inserter = AA_Inserter::factoryByString('nul');
         }
         $inserter->setField($field);

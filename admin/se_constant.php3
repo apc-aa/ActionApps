@@ -311,15 +311,11 @@ echo "\n     </td>\n</tr>";
 
 // Find slices, where the constant group is used
 if ($group_id) {
-    $using_slices_arr = GetTable2Array("SELECT slice.id as psid, slice.name as sname, field.id as fid, field.name as fname FROM slice, field WHERE slice.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')",'');
-
-    if ( !is_array($using_slices_arr) ) {
-         $using_slices_arr = [];
-    }
+    $using_slices_arr =  DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
 
     echo "
       <tr><td><b>"._m("Constants used in slice")."</b></td>
-        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return $arr['sname']." <small>[".unpack_id($arr['psid'])."]</small> (".$arr['fname']." <small>[".$arr['fid']."]</small>)";}, $using_slices_arr)) ."</td>
+        <td colspan=\"3\">". join('<br>', array_map(function($arr) {return ($arr['deleted'] ? "&times;&times;&times; ".$arr['sname']." &times;&times;&times;" : $arr['sname'])." <small>[".$arr['unpackid']."]</small> (".$arr['fname']." <small>[".$arr['fid']."]</small>)";}, $using_slices_arr)) ."</td>
       </tr>";
 }
 

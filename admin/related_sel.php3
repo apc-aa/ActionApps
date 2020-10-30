@@ -142,7 +142,7 @@ $manager_settings = [
      'itemview'  => [
          'manager_vid'          => $manager_vid,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
-         'fields'               => $slice->fields('record'),
+         'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => $aliases,
          'get_content_funct'    => 'GetItemContent'
      ],
@@ -189,10 +189,7 @@ $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 FrmJavascriptFile('javascript/js_lib.min.js?v='.AA_JS_VERSION);
 FrmJavascriptFile('javascript/inputform.min.js?v='.AA_JS_VERSION);  // for SelectRelations() function
 
-$conds = $manager->getConds();
-$sort  = $manager->getSort();
-
-$zids = QueryZids([$related_sid], $conds, $sort, $frombins);
+$zids = $manager->getSet()->setBins($frombins)->query();
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

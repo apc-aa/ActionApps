@@ -495,7 +495,7 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'disc2mail':   PrintAliasHelp(GetDiscussion2MailAliases(), false, false, $form_buttons);
     case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons);
                         break;
-    case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']), $slice->fields('record'), false, $form_buttons);
+    case 'field':       PrintAliasHelp($slice->aliases($VIEW_TYPES_INFO[$view_type]['aliases_additional']), $slice->getFields()->getRecordArray(), false, $form_buttons);
                         break;
     case 'justids':     PrintAliasHelp($slice->aliases(false, 'justids'), false, false, $form_buttons);
                         break;

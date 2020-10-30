@@ -231,7 +231,7 @@ class MLX {
     function __construct($slice) {
         $this->slice = $slice;
         $this->langSlice  = MLXSlice($this->slice);
-        $this->ctrlFields = AA_Slice::getModule($this->langSlice)->fields('record');
+        $this->ctrlFields = AA_Slice::getModule($this->langSlice)->getFields()->getRecordArray();
     }
     /** getCtrlFields function
      *
@@ -343,7 +343,7 @@ class MLX {
                     $tritemid    = unpack_id(array_shift($defCntId));
                     $itemcontent = GetItemContent($tritemid);
                     $content4form = $itemcontent[$tritemid];
-                    foreach ($this->slice->fields('record') as $slfield) {
+                    foreach ($this->slice->getFields()->getRecordArray() as $slfield) {
                         $kstr = 'v'.unpack_id($slfield['id']);
                         unset($GLOBALS[$kstr]);
                         unset($GLOBALS[$kstr."html"]);
@@ -770,7 +770,7 @@ class MLXView {
         if($GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID]) {
             return $GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID];
         }
-        $fields        = AA_Slice::getModule($ctrlSliceID)->fields('record');
+        $fields        = AA_Slice::getModule($ctrlSliceID)->getFields()->getRecordArray();
         $translations  = [];
         if(!is_array($fields)) {
             return $translations;
@@ -938,7 +938,7 @@ class MLXGetText
         $isModeActive = ($mode && 1);
         $this->currentDomainRef['mode'] = $mode;
         $this->currentDomainRef['slices'][$slice2add] = [];
-        $fields = AA_Slice::getModule($slice2add)->fields('record');
+        $fields = AA_Slice::getModule($slice2add)->getFields()->getRecordArray();
         //__mlx_dbg($fields);
         $lang = strtoupper($lang);
         foreach($fields as $fname=>$fdata) {

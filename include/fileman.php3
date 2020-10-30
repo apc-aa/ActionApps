@@ -397,9 +397,6 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
                 $err[] = _m("Unable to open file for writing")." ($filename).";
             }
             else {
-                if (get_magic_quotes_gpc()) {
-                    $arg = stripslashes ($arg);
-                }
                 $bytes = fwrite ($filedes, $arg);
                 if ($bytes == -1) {
                     $err[] = _m("Error writing to file")." $filename.";
@@ -497,7 +494,6 @@ function fileman_copy_template($srcdir, $dstdir) {
                 foreach ($aliases as $alias => $replace) {
                     $frow = str_replace ($alias, $replace, $frow);
                 }
-                //if (get_magic_quotes_gpc()) $frow = stripslashes ($frow);
                 fwrite ($fd, $frow);
             }
         } else {

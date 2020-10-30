@@ -45,7 +45,6 @@ $apage->setTitle(_m("ActionApps Cosole"));
 $apage->printHead($err, $Msg);
 
 if ($code) {
-    $code = get_magic_quotes_gpc() ? stripslashes($code) : $code;
     eval($code);
 }
 

@@ -189,7 +189,7 @@ function shtml_query_string() {
                         stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
                         stripslashes($_SERVER['QUERY_STRING_UNESCAPED']) );
     // get off magic quotes
-    return magic_strip($ret_string);
+    return $ret_string;
 }
 
 /** check, if the script was called as ajax call */
@@ -271,7 +271,7 @@ function add_vars($query_string="", $where='GLOBALS') {
 
     // we do not want to replace sess variable, since we use it for sessions
     unset($aa_query_arr['sess']);
-    $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
+    $aa_query_arr = NormalizeArrayIndex($aa_query_arr);
     if (is_array($aa_query_arr) ) {
         // use of $$where do not work for some reason
         switch ($where) {
@@ -360,13 +360,10 @@ function StripslashesArray($value) {
  * @param $skip
  */
 function QuoteVars($method="get", $skip='') {
-
-    if ( !get_magic_quotes_gpc() ) {
-        $arr = ($method == "get") ? $_GET : $_POST;
-        foreach ($arr as $k => $v) {
-            if ( !is_array($skip) OR !isset($skip[$k]) ) {
-                $GLOBALS[$k] = AddslashesArray($v);
-            }
+    $arr = ($method == "get") ? $_GET : $_POST;
+    foreach ($arr as $k => $v) {
+        if ( !is_array($skip) OR !isset($skip[$k]) ) {
+            $GLOBALS[$k] = AddslashesArray($v);
         }
     }
 }
@@ -482,6 +479,7 @@ function timestartdiff() {
  * Debug function to print debug messages recursively - handles arrays
  */
 function huhl(...$vars) {
+    AA::$dbg->log(AA_Log::backtrack());
     foreach ($vars as $var) {
         AA::$dbg->log($var);
     }
@@ -521,21 +519,6 @@ function MsgOk($txt){
  */
 function MsgErr($txt){
     return "<div class=\"err\">$txt</div>";
-}
-
-/** UnpackFieldsToArray function
- * function for unpacking string in edit_fields and needed_fields in database to array
- * @param $packed
- * @param $fields
- * @return array
- */
-function UnpackFieldsToArray($packed, $fields) {
-    $i=0;
-    $arr = [];
-    foreach ($fields as $field => $foo) {
-        $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
-    }
-    return $arr;
 }
 
 /** GetConstants function
@@ -1102,7 +1085,7 @@ function myspecialchars( $var='', $double_encode=true) {
  * @return string - html safe code (used for preparing variable to print in form)
  */
 function safe( $var ) {
-    return htmlspecialchars( magic_strip($var), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
+    return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');  // stripslashes function added because of quote varibles sended to form before
 }
 
 /** Base64url version of base64
@@ -1326,23 +1309,6 @@ function join_and_quote( $pattern, $strings ) {
         $retval .= addslashes($string);
     }
     return $retval;
-}
-
-/** magic_strip function
- *  stripslashes if magic quotes are set
- * @param $val
- * @return array|string
- */
-function magic_strip($val) {
-    return get_magic_quotes_gpc() ? StripslashesArray($val) : $val;
-}
-
-/** magic_add function
- * @param $str
- * @return string
- */
-function magic_add($str) {
-    return (get_magic_quotes_gpc() ? $str : addslashes($str));
 }
 
 function ReadFileSafe($url) {

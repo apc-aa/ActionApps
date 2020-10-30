@@ -115,7 +115,7 @@ $manager_settings = [
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $slice->get_format_strings(),   // optionaly to manager_vid you can set format array
-         'fields'               => $slice->fields('record'),
+         'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => $slice->aliases(),
          'get_content_funct'    => 'GetItemContent'
      ],
@@ -123,7 +123,7 @@ $manager_settings = [
      'switches'  => $switches,
      'bin'       => 'app',
      'messages'  => [
-         'title'       => $slice->name(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager'))
+         'title'       => $slice->getName(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager'))
      ]
 ];
 

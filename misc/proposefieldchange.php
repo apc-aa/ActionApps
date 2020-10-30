@@ -30,15 +30,6 @@ require_once __DIR__."/../include/pagecache.php3";
 require_once __DIR__."/../include/locsess.php3";
 require_once __DIR__."/../include/itemfunc.php3";
 
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
-}
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
 
 /** not quoted, G() will also return paramaters from SSI, it should do also input checks in future */
 class AA_V {

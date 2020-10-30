@@ -110,19 +110,9 @@ function add2sort(&$sort, $sarr) {
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
-function StripslashesDeep($value) { return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value); }
 
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-}
-
-if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
-    foreach ($_REQUEST as $k => $v) {
-        $$k = AddslashesDeep($v);
-    }
+foreach ($_REQUEST as $k => $v) {
+    $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
 
@@ -477,10 +467,14 @@ if (is_array($conds)) {
 *  (add minus sign for descending order (like "headline.......1-")
 *  (add number before the field if you want to group limit (limit number of items of the same value))
 */
+
+$sort_tmp = [];
+
 if ($order) {
     $set = new AA_Set;
     $set->addSortFromString($order);
-    $orderarr       = reset($set->getSort());  // get the first from array
+    $sort_tmp       = $set->getSort();
+    $orderarr       = reset($sort_tmp);  // get the first from array
     $orderdirection = reset($orderarr);
     $order          = key($orderarr);
 }
@@ -489,7 +483,6 @@ if ($debug) {
     echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
 }
 
-$sort_tmp = [];
 if ($group_by) {
     $set = new AA_Set;
     $set->addSortFromString($group_by);

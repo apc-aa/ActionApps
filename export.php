@@ -37,21 +37,6 @@
  *  you will be able to call it like /apc-aa/export.php?id=5357...&year=2012)
  *  */
 
-/**
- * Handle with PHP magic quotes - quote the variables if quoting is set off
- * @param mixed $value the variable or array to quote (add slashes)
- * @return mixed the quoted variables (with added slashes)
- */
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
-}
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
-
 require_once __DIR__."/./include/config.php3";
 require_once __DIR__."/include/util.php3";
 require_once __DIR__."/include/item.php3";

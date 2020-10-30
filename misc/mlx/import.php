@@ -38,7 +38,7 @@ class MLXImport {
 
         $this->sliceObj = AA_Slice::getModule($slice_id);
 
-        $this->fields = $this->sliceObj->fields('record');
+        $this->fields = $this->sliceObj->getFields()->getRecordArray();
         //do sanity checks
         $this->ctrlSlice = MLXSlice($this->sliceObj);
         if(!$this->ctrlSlice)

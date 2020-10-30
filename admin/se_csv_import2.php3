@@ -212,7 +212,7 @@ class AA_Csv_Importer {
         }
 
         while ($csvRec = getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure'])) {
-            $err = convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice->fields('record'), $itemContent);
+            $err = convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice->getFields()->getRecordArray(), $itemContent);
             $numProcessed++;
             $msg .= _m("Item:").$numProcessed .":";
 
@@ -264,7 +264,7 @@ class AA_Csv_Importer {
 
         // Create list of fields from the first row of csv data
         $fieldNames    = createFieldNames($this->fileName,$this->addParams);
-        $slice_fields  = $slice->fields('record');
+        $slice_fields  = $slice->getFields()->getRecordArray();
 
         $slf['unpacked_id.....'] = "Item id";
         foreach ( $slice_fields as $k => $v ) {

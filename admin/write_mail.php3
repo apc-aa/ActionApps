@@ -173,7 +173,7 @@ echo '
   <form name="mailform" method="post" enctype="multipart/form-data">';
 
 
-FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ") . $slice->name())));
+FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ") . $slice->getName())));
 
 $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');

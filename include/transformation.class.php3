@@ -87,7 +87,7 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
         foreach ($_REQUEST as $varname => $varvalue) {
             if (strpos($varname, $prefix) === 0) {
                 // filter out the prefix
-                $ret[substr($varname,strlen($prefix))] = magic_strip($varvalue);
+                $ret[substr($varname,strlen($prefix))] = $varvalue;
             }
         }
         return $ret;

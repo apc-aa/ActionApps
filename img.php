@@ -199,20 +199,6 @@ if (isset($_GET['phpThumbDebug']) && ($_GET['phpThumbDebug'] == '0')) {
 }
 ////////////////////////////////////////////////////////////////
 
-// returned the fixed string if the evil "magic_quotes_gpc" setting is on
-if (get_magic_quotes_gpc()) {
-    // deprecated: 'err', 'file', 'goto',
-    $RequestVarsToStripSlashes = ['src', 'wmf', 'down'];
-    foreach ($RequestVarsToStripSlashes as $key) {
-        if (isset($_GET[$key])) {
-            if (is_string($_GET[$key])) {
-                $_GET[$key] = stripslashes($_GET[$key]);
-            } else {
-                unset($_GET[$key]);
-            }
-        }
-    }
-}
 
 if (empty($_SERVER['PATH_INFO']) && empty($_SERVER['QUERY_STRING'])) {
     $phpThumb->config_disable_debug = false; // otherwise error message won't print

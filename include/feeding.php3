@@ -221,7 +221,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     }
 
     $id          = new_id();
-    $fields_to   = $destination->fields('record');
+    $fields_to   = $destination->getFields()->getRecordArray();
 
     // prepare new4id array before call StoreItem function
     foreach ($fields_to as $newfld => $newfldname) {

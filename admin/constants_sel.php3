@@ -38,9 +38,7 @@ require_once __DIR__."/../include/itemfunc.php3";
 require_once __DIR__."/../include/formutil.php3";
 
 $module_id   = $slice_id; // get from session
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slice::getModule($module_id);
-$fields      = $slice->fields('record');
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.min.js javascript library

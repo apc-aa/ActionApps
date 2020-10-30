@@ -53,23 +53,8 @@
  */
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
-/**
- * @param $value
- * @return array|string
- */
-function StripslashesDeep($value) { return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value); }
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-}
-
-if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
-    foreach ($_REQUEST as $k => $v) {
-        $$k = AddslashesDeep($v);
-    }
+foreach ($_REQUEST as $k => $v) {
+    $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
 
@@ -185,17 +170,17 @@ function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
  * modified vars $xml_fields_refs, $xml_fields
  *
  * @param $slice_id
- * @param $slice_fields[]
+ * @param AA_Fields $slice_fields[]
  * @param $xml_fields_refs (by link)
  * @param $xml_fields (by link)
  */
-function GetXMLFields( $slice_id, $slice_fields, &$xml_fields_refs, &$xml_fields) {
+function GetXMLFields( $slice_id, AA_Fields $slice_fields, &$xml_fields_refs, &$xml_fields) {
     $xml_fields_refs.="\t<aa:fields><rdf:Bag>\n";
 
     foreach ( $slice_fields as $k =>$v) {
         $xml_fields_refs.="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."field/$slice_id/$k\"/>\n";
         $xml_fields .= "<aa:field rdf:about=\"".AA_INSTAL_URL."field/$slice_id/$k\">\n".
-                          "\t<aa:name>".code($v['name'])."</aa:name>\n".
+                          "\t<aa:name>".code($v->getName())."</aa:name>\n".
                           "\t<aa:id>$k</aa:id>\n".
                        "</aa:field>\n";
     }
@@ -497,7 +482,7 @@ if (!$slice_id) {
     foreach ($slice_ids as $sl_id) {
         $sl = AA_Slice::getModule($sl_id);
         $GLOBALS['g_slice_encoding'] = $sl->getCharset();
-        $slice_fields                = $sl->fields('record');
+        $slice_fields                = $sl->getFields();
         $xml_categories_refs         = $xml_fields_refs = "";      // clear fields and categories for this channel
         GetXMLFields(     $sl_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields
         GetXMLCategories( $sl_id, $xml_categories_refs, $xml_categories ); //get categories
@@ -595,7 +580,7 @@ if ($ids) {
 }
 
 echo $XML_BEGIN;
-GetXMLFields(     $slice_id, $slice->fields('record'), $xml_fields_refs,  $xml_fields);   // get fields and fields refs
+GetXMLFields(     $slice_id, $slice->getFields(), $xml_fields_refs,  $xml_fields);   // get fields and fields refs
 GetXMLCategories( $slice_id, $xml_categories_refs, $xml_categories ); //get categories and cat refs
 echo GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs,$xml_items_refs,$time); // echo channel
 
@@ -604,7 +589,7 @@ echo $xml_fields;
 echo $xml_categories;
 
 if ($ids) {        // feeding mode
-    CreateXMLItems($slice_id, $ids, $content, $slice->fields('record'));
+    CreateXMLItems($slice_id, $ids, $content, $slice->getFields()->getRecordArray());
 }
 
 echo "</rdf:RDF>";

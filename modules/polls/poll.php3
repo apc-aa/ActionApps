@@ -52,22 +52,6 @@ require_once __DIR__."/../../include/itemview.php3";
 require_once __DIR__."/../../modules/polls/include/util.php3";
 require_once __DIR__."/../../modules/polls/include/stringexpand.php3";
 
-/**
- * Handle with PHP magic quotes - quote the variables if quoting is set off
- * @param mixed $value the variable or array to quote (add slashes)
- * @return mixed the quoted variables (with added slashes)
- */
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
-}
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
-
 // special case - if we want something like view for polls, so we want to be
 // constant and not to react to URL parameters, then we add &lock=1 as parameter
 // to SSI include

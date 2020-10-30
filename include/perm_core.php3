@@ -933,7 +933,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             // user id is the id of the item in the Reader Management slice
             return $user_id;
         }
-        return false;
+        return false;       
     }
 
     /** true, if the hash is in old format and needs to be updated with new hash */
@@ -960,7 +960,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         return AA_Reader::name2Id($username, null, AA_BIN_ALL) ? false : true;
     }
 
-    /** true, if the Group can accept members by direst write - AddMember, .. (Readder group and ReaderSet are not writable, for example) */
+    /** true, if the Group can accept members by direst write - AddMember, .. (Reader group and ReaderSet are not writable, for example) */
     function isGroupWritable() {
         return false;
     }

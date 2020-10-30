@@ -37,24 +37,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----- input variables normalization - start --------------------------------
 
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, taht
+// It make us sure, that
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
-function StripslashesDeep($value) { return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value); }
 
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-}
-
-if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
-    foreach ($_REQUEST as $k => $v) {
-        $$k = AddslashesDeep($v);
-    }
+foreach ($_REQUEST as $k => $v) {
+    $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
 

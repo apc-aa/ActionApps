@@ -68,19 +68,9 @@ $debugfill=$_REQUEST['debugfill'];
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
-function StripslashesDeep($value) { return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value); }
 
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-}
-
-if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
-    foreach ($_REQUEST as $k => $v) {
-        $$k = AddslashesDeep($v);
-    }
+foreach ($_REQUEST as $k => $v) {
+    $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
 
@@ -333,11 +323,8 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
 
 // global variables should be quoted (since old AA code rely on that fact),
 // however the new code should use $_POST, which are NOT quoted
-if (!get_magic_quotes_gpc()) {
-    // Overrides GPC variables
-    foreach ($_REQUEST as $k => $v) {
-        $$k = AddslashesDeep($v);
-    }
+foreach ($_REQUEST as $k => $v) {
+    $$k = AddslashesDeep($v);
 }
 
 //$debugfill=1;

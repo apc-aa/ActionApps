@@ -53,7 +53,7 @@ class FormArray
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
      *
      * @param $property_id string
-     * @param $content AA_Item
+     * @param $content \AA_Content
      * @param $item_index int
      *@return string
      * @throws Exception

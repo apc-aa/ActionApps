@@ -235,7 +235,7 @@ FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, fal
            .'<br>'.AA_View::getViewJumpLinks($category_bottom), '', 1);
 
 $slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons);
+PrintAliasHelp($slice->aliases(), $slice->getFields()->getRecordArray(), false, $form_buttons);
 
 FrmTabEnd();
 

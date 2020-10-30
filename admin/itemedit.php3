@@ -326,7 +326,7 @@ if ($lang_control) {
 if ( !$encap ) {
     $inputform_settings = [
         'display_aa_begin_end' => true,
-        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($slice->name()).")",
+        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($slice->getName()).")",
         'formheading'          => $mlx_formheading
     ]; //added MLX
 }

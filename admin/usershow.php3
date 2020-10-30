@@ -94,7 +94,7 @@ $manager_settings = [
      'itemview'  => [
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
-         'fields'               => $slice->fields('record'),
+         'fields'               => $slice->getFields()->getRecordArray(),
          'aliases'              => $slice->aliases(),
          'get_content_funct'    => 'GetItemContent'
      ],

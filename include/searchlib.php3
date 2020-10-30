@@ -414,25 +414,27 @@ class AA_Set extends AA_Object {
     /** clear function
      *
      */
-    function clear() {
+    function clear(): AA_Set {
         $this->conds  = [];
         $this->sort   = [];
         $this->slices = [];
         $this->bins   = AA_BIN_ACTIVE;
+        return $this;
     }
 
     /** set the bins - like Holding Bin, Approved, Trash, ...
      *  @param $bins bitfield
      *  AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
      */
-    function setBins($bins) {
+    function setBins($bins): AA_Set {
         $this->bins = $bins;
+        return $this;
     }
 
     /** set the slices/modules
      *  @param $slices array of slice ids
      */
-    function setModules($slices) {
+    function setModules($slices): AA_Set {
         if (is_array($slices)) {
             $this->slices = $slices;
         } elseif (is_string($slices)) {
@@ -440,24 +442,27 @@ class AA_Set extends AA_Object {
         } else {
             $this->slices = [];
         }
+        return $this;
     }
 
     /** addCondition function
      * @param $condition
      */
-    function addCondition($condition) {
+    function addCondition($condition): AA_Set {
         if ( $condition ) {
             $this->conds[] = $condition;
         }
+        return $this;
     }
 
     /** addSortorder function
      * @param $sortorder
      */
-    function addSortorder($sortorder) {
+    function addSortorder($sortorder): AA_Set {
         if ( $sortorder ) {
             $this->sort[] = $sortorder;
         }
+        return $this;
     }
 
     /** addCondsFromString function
@@ -486,7 +491,7 @@ class AA_Set extends AA_Object {
         parse_str($conds_string, $aa_query_arr);
         // we also need PHP to think a['key'] is the same as a[key], that's why we
         // call NormalizeArrayIndex()
-        $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
+        $aa_query_arr = NormalizeArrayIndex($aa_query_arr);
         $this->addCondsFromArray($aa_query_arr['conds'], $defaultCondsOperator);
     }
 
@@ -1068,7 +1073,7 @@ function ProoveFieldNames($slices, $conds) {
     global $CONDS_NOT_FIELD_NAMES;
     foreach ($slices as $slice_id) {
         if (!($slice = AA_Slice::getModule($slice_id))) {
-            AA::$dbg->warn("Slice <b>$slice_id</b> do not exist");
+            warn("Slice <b>$slice_id</b> do not exist");
             continue;
         }
         foreach ($conds as $cond) {
@@ -1078,7 +1083,7 @@ function ProoveFieldNames($slices, $conds) {
             foreach ($cond as $key => $foo) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
                 if (!$CONDS_NOT_FIELD_NAMES[$key] AND !strpos($key, '@') AND !$slice->isField($key)) {
-                    AA::$dbg->warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").");
+                    warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").");
                 }
             }
         }

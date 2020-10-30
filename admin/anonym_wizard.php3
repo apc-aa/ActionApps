@@ -146,7 +146,7 @@ elseif ($slice->getProperty('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_ALLOW
 }
 
 if ($show_form) {
-    $fields = $slice->fields('record');
+    $fields = $slice->getFields();
     foreach ($fields as $fid => $foo) {
         if (substr ($fid,0,13) == "password.....") {
             if ($show[$fid] && $slice->getProperty('permit_anonymous_edit') != ANONYMOUS_EDIT_PASSWORD) {

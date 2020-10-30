@@ -255,7 +255,6 @@ class Session {
     *
     */
     function freeze() {
-        // If register_globals is off -> store session variables values
         foreach ($_SESSION as $key => $foo) {
             $_SESSION[$key] = $GLOBALS[$key];
         }

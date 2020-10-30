@@ -76,14 +76,6 @@ function IsInDomain( $domain ) {
 }
 
 /**
- * @param $value
- * @return array|string
- */
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
-}
-
-/**
  * @param null $page
  */
 function Die404($page=null) {
@@ -99,13 +91,6 @@ function Die404($page=null) {
 
 // change the state
 add_vars();                 // get variables pased to stm page
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
 
 require_once __DIR__."/../../modules/site/router.class.php";
 

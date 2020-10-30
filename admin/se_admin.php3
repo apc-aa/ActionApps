@@ -159,7 +159,7 @@ FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
              _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
 $slice = AA_Slice::getModule($slice_id);
-PrintAliasHelp($slice->aliases(), $slice->fields('record'), false, $form_buttons);
+PrintAliasHelp($slice->aliases(), $slice->getFields()->getRecordArray(), false, $form_buttons);
 FrmTabEnd();
 
 $apage->printFoot();

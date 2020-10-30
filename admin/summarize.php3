@@ -98,7 +98,7 @@ function ignored_slice($si) {
      foreach ($sao as $si => $so) {
          //if ($debugsummarize) huhl("Slice Obj",$so);
          if (!$ign || !ignored_slice($si)) {
-             $n = $so->name();
+             $n = $so->getName();
              print("<tr><td><a href=\"#$si\">$si</a></td><td>$n</td><td>" .
                  ($so->deleted() ? "Deleted " : "") .
                  editslicefields($si) . " " . comparewith($si) .
@@ -164,7 +164,7 @@ function mapslice() {
     if ($nearest) {
         $sno = $sao[$nearest];
         huhl($sno, $nearest, $slice_id, $sid, $so);
-        print("<a name=\"$sid\"></a><font color=purple>$sid: '" . $so->name() . "'</font> closest to <font color=red><a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'</font><br>".editslicefields($sid));
+        print("<a name=\"$sid\"></a><font color=purple>$sid: '" . $so->getName() . "'</font> closest to <font color=red><a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'</font><br>".editslicefields($sid));
         // Here is where we do any actions that change things, before doing
         // a comparisom
         if ($GLOBALS["copyfield"]) {
@@ -229,7 +229,7 @@ function mapslices() {
             if ($pm) {   // first time round no model
                 $nearest = nearestSlice($so,$pm);
                 $sno = $sao[$nearest];
-                print("<li><a name=\"$sid\"></a>$sid: '" . $so->name() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
+                print("<li><a name=\"$sid\"></a>$sid: '" . $so->getName() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
                 compareSlices($so,$sno,1);
                 print("</li>");
             }
@@ -357,12 +357,12 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         . "&change_id=" . $st->getId()
         . $fixert ."\">Fix this slice</a>");
         if ($pre == "Added") {
-            print("<li>Or add field to ".$sm->name(). " by hand</a>");
+            print("<li>Or add field to ".$sm->getName(). " by hand</a>");
         } else {
           if (!ignored_slice($sm->getId())) {
             print("<li>or <a href=\"" . $u1
             . "&change_id=" . $sm->getId()
-            . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
+            . $fixerm ."\">Fix slice '". $sm->getName() . "'</a>");
           }
         }
         print("</li></ul>\n");
@@ -430,7 +430,7 @@ function compareSliceTableFields($st,$sm,$pr) {
 //        if (!ignored_slice($sm->getId())) {
 //            print("<li>or <a href=\"" . $u1
 //            . "&change_id=" . $sm->getId()
-//            . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
+//            . $fixerm ."\">Fix slice '". $sm->getName() . "'</a>");
 //        }
         print("</ul></li>\n");
       }

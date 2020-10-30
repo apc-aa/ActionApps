@@ -577,7 +577,7 @@ class AA_Exportsetings extends AA_Object {
             exit;
         }
 
-        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', [$slice->name(), '',$slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
+        $filename = $this->filename ? AA::Stringexpander()->unalias($this->filename) : date("ymd").'-'.StrExpand('AA_Stringexpand_Seoname', [$slice->getName(), '', $slice->getCharset()]). (($this->grabber_type== 'AA\IO\Grabber\Discussion') ? '-Disc' : ''). '.'.$exporter->getExtension();
 
         $exporter->sendFile($filename);
     }

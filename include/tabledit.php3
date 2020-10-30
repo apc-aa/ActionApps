@@ -292,7 +292,7 @@ class tabledit {
             $irow = 0;
             foreach ($records as $record) {
                 $new_record = $record == "new";
-                list(,$key) = each($all_keys);
+                [,$key] = each($all_keys);
                 // row number helps to use different CSS styles for even and odd rows
                 $irow ++;
                 // show new record in row 1 color always
@@ -539,14 +539,14 @@ class tabledit {
         if ($srch["where"]) {
             // care user can't add another SQL command with this field
             $srch["where"] = str_replace(";", "", $srch["where"]);
-            $where .= " AND (". magic_strip($srch["where"]) .") ";
+            $where .= " AND (". $srch["where"] . ") ";
             unset($srch['value']);
             unset($srch["field"]);
         } elseif ($srch['value'] || $srch['value'] == "0") {
             if (is_field_type_numerical($this->cols[$srch["field"]]["type"])) {
                 $where .= " AND ".$srch['field']." = ".$srch['value']." ";
             } else {
-                $where .= " AND ".$srch['field']." LIKE '%". magic_add($srch['value']) ."%' ";
+                $where .= " AND ".$srch['field']." LIKE '%". addslashes($srch['value']) ."%' ";
             }
         }
 
@@ -586,7 +586,7 @@ class tabledit {
         $srch = $this->cmd["search"];
         FrmSelectEasy("cmd[".$this->viewID."][search][field]", $options, $srch["field"]);
         echo "&nbsp;<input name=\"cmd[".$this->viewID."][search][value]\" type=\"text\" size=\"30\" "
-                ."value=\"". magic_strip($srch['value'])."\">$tdd"
+                ."value=\"". $srch['value'] . "\">$tdd"
             ."$td".$searchimage.$tdd."</tr>";
         echo "</form></table>";
     }

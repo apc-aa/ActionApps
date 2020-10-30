@@ -102,7 +102,7 @@ if ( !IsSuperadmin() ) {
 
 // create field_select array for field selection
 $field_select['no_field'] = _m('Select field...');
-$fields                   = $slice->fields('record');
+$fields                   = $slice->getFields()->getRecordArray();
 foreach ($fields as $fld_id => $fld) {
     if ( !$restricted_fields[$fld_id] ) {
         $field_select[$fld_id] = $fld['name']. ' ('. $fld_id. ')';
@@ -119,7 +119,7 @@ $params = [
                 'field_select'   => $field_select
 ];
 
-FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $slice->name())));
+FrmTabCaption((is_array($items) ? _m("Items") : (_m("Stored searches for ") . $slice->getName())));
 
 $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');

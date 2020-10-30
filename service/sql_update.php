@@ -116,23 +116,6 @@ if ( (strlen($_GET['acccode'])<10) OR ($_GET['acccode']!=constant('ACCESS_CODE')
     exit;
 }
 
-
-/**
- * Handle with PHP magic quotes - quote the variables if quoting is set off
- * @param mixed $value the variable or array to quote (add slashes)
- * @return mixed the quoted variables (with added slashes)
- */
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
-}
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_REQUEST = StripslashesDeep($_REQUEST);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
-
 // need config.php3 to set db access, and phplib, and probably other stuff
 require_once __DIR__."/../include/config.php3";
 require_once __DIR__."/../include/locsess.php3";   // DB_AA definition

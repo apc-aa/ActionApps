@@ -386,9 +386,6 @@ function hcUpdate()
 
     global $hcalldata, $varset;
     if ($hcalldata) {
-        if (get_magic_quotes_gpc()) {
-            $hcalldata = stripslashes($hcalldata);
-        }
         $hcalldata = str_replace("\\'","'",$hcalldata);
         $hcalldata = str_replace("\\:", "--$--", $hcalldata);
         $hcalldata = str_replace("\\~", "--$$--", $hcalldata);
