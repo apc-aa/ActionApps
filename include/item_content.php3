@@ -491,7 +491,7 @@ class AA_Content {
         return $this->content;
     }
 
-    /** Special function for specific usseag in storeItem with update_filled
+    /** Special function for specific usage in storeItem with update_filled
      *  Removes all fields, which do not have value
      */
     function removeEmptyFields() {
@@ -849,7 +849,7 @@ class ItemContent extends AA_Content {
                 continue;
             }
             $property    = $field->getAaProperty();
-            if ($validreport = $property->validateDetailed($this->getValuesArray($field_id))) {
+            if ($validreport = $property->validateDetailed($this)) {
                 // if the inserter generates the content itself, it is not necessary to have it filled
                 if ($validreport[0] == VALIDATE_ERROR_NOT_FILLED) {
                     if (AA_Inserter::factoryByField($field)->isContentSelfGenerated()) {
@@ -911,7 +911,7 @@ class ItemContent extends AA_Content {
 
         foreach ($fields as $field_id => $field) {
             $property = $field->getAaProperty();
-            $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
+            $new_content->setAaValue($field_id, $property->completeProperty4Insert($this, $profile));
         }
 
         // normalize - set id and well as unpacked_id
@@ -1100,7 +1100,7 @@ class ItemContent extends AA_Content {
         $throw_events    = isset($flags[2]) ? $flags[2] : !$silent;
 
         if (!$id) {
-            ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->name(),$id]));  // set error code
+            ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
             return false;
         }

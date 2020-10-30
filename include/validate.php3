@@ -124,13 +124,12 @@ class AA_Validate extends AA_Serializable {
      *      if ( AA_Validate::doValidate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
      * @param $var
      * @param $type
-     * @param $default
      * @return bool
      */
-    public static function doValidate(&$var, $type, $default='AA_noDefault') {
+    public static function doValidate(&$var, $type) {
         $validator = self::factoryCached($type);
         if ( is_null( $validator ) ) {
-            return self::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]), $default);
+            return self::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
         }
         return $validator->validate($var);
     }
@@ -147,11 +146,11 @@ class AA_Validate extends AA_Serializable {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool { return true; }
+    public function validate(string &$var, AA_Content $content_context = null): bool { return true; }
 
     /** checks if the variable is empty
      * @param $var
@@ -163,17 +162,12 @@ class AA_Validate extends AA_Serializable {
 
     /** bad function
      *  Protected static method - used only from AA_Validate_* objects
-     * @param $var
      * @param $err_id
      * @param $err_msg
-     * @param $default
      * @return bool
      */
-    protected function bad(&$var, $err_id, $err_msg, $default) : bool {
+    protected function bad($err_id, $err_msg) : bool {
         self::lastErr($err_id, $err_msg);
-        if ( $default != 'AA_noDefault' ) {
-            $var = $default;
-        }
         return false;
     }
 
@@ -213,20 +207,20 @@ class AA_Validate_Signed extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         if (!IsSigInt($var)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'", $default);
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'");
         }
         $var = (int)$var;
         if (IsSigInt($this->max) and ($var > $this->max)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'));
         }
         if (IsSigInt($this->min) and ($var < $this->min)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'));
         }
         return true;
     }
@@ -306,18 +300,18 @@ class AA_Validate_Regexp extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
         }
         if ( strlen($this->pattern) < 3 ) {
             return true;
         }
-        return  preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
+        return  preg_match($this->pattern, $var) ? true : AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'));
     }
 
     /** checks if the variable is empty
@@ -386,13 +380,13 @@ class AA_Validate_Id extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         if (!is_long_id($var)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'));
         }
         return true;
     }
@@ -417,20 +411,20 @@ class AA_Validate_Float extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         if ( !is_float($var) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'));
         }
         $var = (float)$var;
         if ( !is_null($this->f_max) AND ($var > $this->f_max) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'));
         }
         if ( !is_null($this->f_min) AND ($var < $this->f_min) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'));
         }
         return true;
     }
@@ -447,12 +441,12 @@ class AA_Validate_Enum extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
-        return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $default);
+    public function validate(string &$var, AA_Content $content_context = null): bool {
+        return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'));
     }
 }
 
@@ -460,19 +454,19 @@ class AA_Validate_Enum extends AA_Validate {
 class AA_Validate_Login extends AA_Validate {
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         $len = strlen($var);
         if ( $len<3 ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'));
         }
         if ( $len>32 ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
         }
-        return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"), $default);
+        return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad(VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"));
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
@@ -487,17 +481,17 @@ class AA_Validate_Login extends AA_Validate {
 class AA_Validate_Pwd extends AA_Validate {
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         $len = strlen($var);
         if ( $len<5 ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'));
         }
         if ( $len>255 ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
         }
         return true;
     }
@@ -513,7 +507,7 @@ class AA_Validate_Pwd extends AA_Validate {
 /** Test for unique value in slice/database
  *  @param   $field_id
  *  @param   $scope       - username | slice | allslices
- *  @param   $item_id     - current item ID
+ *  @param   $item_id     - current item ID (most probably is passed by content_context, instead of this param)
  */
 class AA_Validate_Unique extends AA_Validate {
     /** Search in which field */
@@ -538,11 +532,11 @@ class AA_Validate_Unique extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
 
         switch ($this->scope) {  // for older approach - presented in field setting
             case '0': $this->scope = 'username';  break;
@@ -552,7 +546,7 @@ class AA_Validate_Unique extends AA_Validate {
 
         if ( $this->scope == 'username') {
             if ( !AA::$perm->isUsernameFree($var) AND ( !$this->item_id OR (AA_Reader::name2Id($var) != $this->item_id))) {
-                return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $default);
+                return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'));
             }
             return true;
         }
@@ -562,17 +556,19 @@ class AA_Validate_Unique extends AA_Validate {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
             if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($this->field_id) ) {
-                return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
+                return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'));
             }
             $conds[] = ['item.slice_id', $slice_id, 'l'];
         }
         $conds[] = ['content.field_id', $this->field_id];
         $conds[] = ['content.text', $var];
-        if ($this->item_id) {
-            $conds[] = ['item.id', $this->item_id, 'l<>'];
+
+        $iid = $this->item_id ?: ($content_context ? $content_context->getId() : '');
+        if ($iid) {
+            $conds[] = ['item.id', $iid, 'l<>'];
         }
         if (DB_AA::test($tables, $conds)) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'));
         }
         return true;
     }
@@ -607,16 +603,16 @@ class AA_Validate_Eunique extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
-        if ( !AA_Validate::doValidate($var, 'email', $default) ) {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
+        if ( !AA_Validate::doValidate($var, 'email') ) {
             return false;
         }
         $validator = new AA_Validate_Unique(['field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id]);
-        return $validator->validate($var, $default);
+        return $validator->validate($var, $content_context);
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
@@ -639,13 +635,13 @@ class AA_Validate_Text extends AA_Validate {
     }
 
     /** validate function
-     * @param string $var
-     * @param string $default
+     * @param string          $var
+     * @param AA_Content|null $content_context
      * @return bool
      */
-    public function validate(string &$var, string $default = 'AA_noDefault'): bool {
+    public function validate(string &$var, AA_Content $content_context = null): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+            return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
         }
         return true;
     }
@@ -780,7 +776,7 @@ function NEW_checkEmail($email) {
     // checks proper syntax
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         // gets domain name
-        list($username,$domain)=explode('@',$email);
+        [$username,$domain]=explode('@',$email);
         // checks for if MX records in the DNS
         if ( getmxrr($domain,$smtphosts,$mx_weight) or (gethostbyname($domain) != $domain) ) {
             if ( $smtphosts ) {

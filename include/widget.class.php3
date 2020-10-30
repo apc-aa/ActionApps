@@ -199,17 +199,23 @@ class AA_Property extends AA_Storable {
         $this->_validator = new AA_Validate_Enum(['possible_values'=>array_keys($this->const_arr)]);
     }
 
-    /** called before StoreItem to fill the field with correct data */
-    function complete4Insert($new_value, $profile) {
+    /** called before StoreItem to fill the field with correct data
+     * @param AA_Content $context_content   // we apss here whole AA_Content in order we know the context - Item_id (for Unique, ...)
+     * @param AA_Profile $profile
+     * @return mixed|null
+     */
+    function completeProperty4Insert(AA_Content $context_content, AA_Profile $profile) {
         $fid           = $this->getId();
         $profile_value = $profile->getProperty('hide&fill',$fid) ?: $profile->getProperty('fill',$fid);
-        if ($profile_value) {
+        if ($profile_value !== false) {
             $new_value = $profile->parseContentProperty($profile_value);
+        } else {
+            $new_value = $context_content->getAaValue($fid);
         }
 
 //      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
 //      if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues()) ) {  // HM 2016-10-14
-        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues()) || $new_value->isEmpty()) {  // not valid values we replace with default here. However, it should already be validated, so we should not reach this
+        if ($profile->getProperty('hide',$fid) || !$this->isValid($context_content) || $new_value->isEmpty()) {  // not valid values we replace with default here. However, it should already be validated, so we should not reach this
             return $this->default;
         }
         return $new_value;
@@ -279,27 +285,29 @@ class AA_Property extends AA_Storable {
     }
 
     /**
-     * @param $value_arr
+     * @param AA_Content $context_content
      * @return bool
      */
-    function validate($value_arr) {
-        return !$this->validateDetailed($value_arr);
+    function isValid(AA_Content $context_content) {
+        return !$this->validateDetailed($context_content);
     }
 
     /**
-     * @param $value_arr
+     * @param AA_Content $context_content
      * @return array  - empty array means OK - valid
      */
-    function validateDetailed($value_arr) {
+    function validateDetailed(AA_Content $context_content) {
+        $aa_val    = $context_content->getAaValue($this->getId());
+
         $valid     = true;
         $validator = $this->getValidator();
         $empty     = true;
-        foreach ($value_arr as $v) {
+        foreach ($aa_val as $v) {
             if ($validator->varempty($v)) {
                 continue;
             }
             $empty = false;
-            if (!($valid = $validator->validate($v))) {
+            if (!($valid = $validator->validate($v, $context_content))) {
                 break;
             }
         }
