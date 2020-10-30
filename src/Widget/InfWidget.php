@@ -43,8 +43,13 @@ class InfWidget extends \AA\Widget\Widget
     function _getRawHtml($aa_property, $content, $type = 'normal')
     {
         $property_id = $aa_property->getId();
+        $item_id     = $content->getId();
         $code = $this->getProperty('code', '{' . $property_id . '}');
-        $widget = myspecialchars($content->unalias($code));
+        if ($item_id) {
+            $widget = \AA_Items::getItem(new \zids($item_id))->unalias($code);
+        } else {
+            $widget = $content->unalias($code);
+        }
         $base_name = FormArray::getName4Form($property_id, $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $input_name = $base_name . "[0]";
