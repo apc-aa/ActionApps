@@ -86,27 +86,37 @@ function ShowField($slice_id, $id, $name, $pri, $required, $show, $type, $alias,
 
     if ($analyze AND ($type!='in_item_tbl')) {
         $items       = DB_AA::select1('SELECT count(*) as cnt FROM item','cnt', [['item.slice_id',$slice_id, 'l']]);
-        $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content INNER JOIN item ON content.item_id = item.id','', [
+        $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item','', [
+            ['content.item_id','item.id', 'j'],
             ['item.slice_id',$slice_id, 'l'],
             ['field_id',$id]
         ]);
-        $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', [
+        $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content, item' ,'cnt', [
+            ['content.item_id','item.id', 'j'],
             ['item.slice_id',$slice_id, 'l'],
             ['field_id',$id],
             ['(content.flag & 64)',64,'i']
         ]);
-        $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', [
+        $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
+            ['content.item_id','item.id', 'j'],
             ['item.slice_id',$slice_id, 'l'],
             ['field_id',$id],
             ['(content.flag & 64)',0,'i']
         ]);
-        $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id = item.id','cnt', [
+        $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
+            ['content.item_id','item.id', 'j'],
             ['item.slice_id',$slice_id, 'l'],
             ['field_id',$id],
             ['text','']
         ]);
         $empty_text    = (($items_field['cnt']==$empty) AND ($items>0)) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
-        $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>,num:$items_field[cntnum]" : "text:$items_field[cntval],<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
+
+        $text_vals = '';
+        if ($items_field['cntval'] < 5) {
+            $arr = DB_AA::select('txt', 'SELECT `text`, SUBSTRING(text,1,12) as txt FROM content, item '. DB_AA::makeWhere([['content.item_id','item.id', 'j'], ['item.slice_id',$slice_id, 'l'],['field_id',$id]]). ' GROUP BY `text`');
+            $text_vals = ' ('. join(', ', array_map( function ($str) { return '"'. ((strlen($str) == 12) ? substr($str,0,11).'…' : $str). '"'; }, $arr)). ')';
+        }
+        $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
         $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
         echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small></td></tr>";
     }

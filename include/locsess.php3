@@ -441,6 +441,7 @@ class DB_AA extends DB_Sql {
      *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
      *           $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
      *                    DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, array('last_edit-'))
+     *                    DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
      **/
     static function select1($query, $column=false, $where=null, $order=null) {
         $db = getDB();
@@ -469,15 +470,15 @@ class DB_AA extends DB_Sql {
      *  written with speed in mind - so all the loops are condition free
      *  used as: $chid = DB_AA::select('id', 'SELECT id FROM `change` WHERE ...');                   -> [id1, id2, ...]
      *                   DB_AA::select('',   'SELECT id, other FROM `change` WHERE ...');            -> [id1, id2, ...]
-     *                   DB_AA::select(array(), 'SELECT id FROM `change`');                          -> [[id=>id1], [id=>id2], ...]
-     *                   DB_AA::select(array(), 'SELECT id,other FROM `change`');                    -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
-     *                   DB_AA::select(array('id'=>1), 'SELECT id FROM `change`');                   -> [[id1=>1], [id2=>1], ...]
-     *                   DB_AA::select(array('id'=>'other'), 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
-     *   $slice_owners = DB_AA::select(array('unpackid'=>'name'), 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
-     *                   DB_AA::select(array('id'=>'+other'), 'SELECT id,other FROM `change`');      -> [[id1=>[other1a,other1b], [id2=>[other2]], ...]  // good for multivalues
-     *                   DB_AA::select(array('id'=>array()), 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
-     *                   DB_AA::select(array('id'=>array(other)), 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
-     *                   DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'i'))));
+     *                   DB_AA::select([], 'SELECT id FROM `change`');                          -> [[id=>id1], [id=>id2], ...]
+     *                   DB_AA::select([], 'SELECT id,other FROM `change`');                    -> [[id=>id1,other=>other1], [id=>id2,other=>other2], ...]
+     *                   DB_AA::select(['id'=>1], 'SELECT id FROM `change`');                   -> [[id1=>1], [id2=>1], ...]
+     *                   DB_AA::select(['id'=>'other'], 'SELECT id,other FROM `change`');       -> [[id1=>other1], [id2=>other2], ...]
+     *   $slice_owners = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
+     *                   DB_AA::select(['id'=>'+other'], 'SELECT id,other FROM `change`');      -> [[id1=>[other1a,other1b], [id2=>[other2]], ...]  // good for multivalues
+     *                   DB_AA::select(['id'=>[]], 'SELECT id,other FROM `change`');       -> [[id1=>[id=>id1,other=>other1]], [id2=>[id=>id2,other=>other2]], ...]
+     *                   DB_AA::select(['id'=>['other']], 'SELECT id,other FROM `change`');  -> [[id1=>[other=>other1]], [id2=>[other=>other2]], ...]
+     *                   DB_AA::select('', 'SELECT source_id FROM relation', [['destination_id', $item_id, 'l'], ['flag', REL_FLAG_FEED, 'i']]);
      * @param        $column
      * @param        $query
      * @param array? $where
@@ -628,26 +629,26 @@ class DB_AA extends DB_Sql {
     /** makeWhere function
      *  [[field_name, value, type], ...]
      *     type                         used operator    value              example
-     *     s        - string (default)  =                single or array    array('field_id',$id)
-     *     i        - integer           =                single or array    array('id', $task_id, 'i')
-     *     l        - longid            =                single or array    array('item_id', $ids_arr, 'l')
-     *     set      - flag is set       fld & val = val  single             array('flag', REL_FLAG_FEED, 'set') - good for bitfields
-     *     unset    - flag is not set   fld & val = 0    single             array('flag', 64, 'unset') - good for bitfields
-     *     j        - JOIN              =                single             array('slice.id', 'module.id', 'j') - for table join  (SELECT ... FROM `slice`, `module`', '', array(array('slice.id', 'module.id', 'j'), a..
-     *     >        - integer           >                single             array('date', 1478547854, '>')
-     *     <        - integer           <                single             array('date', 1478547854, '<')
-     *     >=       - integer           >=               single             array('date', 1478547854, '>=')
-     *     <=       - integer           <=               single             array('date', 1478547854, '<=')
-     *     <>       - integer           <>               single             array('date', 1478547854, '<>')
-     *     s<>      - string            <>               single             array('name', $name, 's<>')
-     *     l<>      - longid            <>               single             array('id', $slice_id, 'l<>')
-     *     !=       - integer           <>               single             array('date', 1478547854, '!=')   // the same as above - "<>"
-     *     ISNULL   -                   IS NULL                             array('number', 'ISNULL')
-     *     NOTNULL  -                   IS NOT NULL                         array('number', 'NOTNULL')
-     *     LIKE     -                   LIKE             single             array('id', '\_%', 'LIKE')
-     *     RLIKE    -                   LIKE             single             array('selector', $item_id, 'RLIKE')
-     *     NOT LIKE -                   NOT LIKE         single             array('id', '\_%', 'NOT LIKE')
-     *     FILLED   -                   > ''             single             array('field3', 'FILLED')         // not null, not empty, not any whitespace character(s)
+     *     s        - string (default)  =                single or array    ['field_id',$id]
+     *     i        - integer           =                single or array    ['id', $task_id, 'i']
+     *     l        - longid            =                single or array    ['item_id', $ids_arr, 'l']
+     *     set      - flag is set       fld & val = val  single             ['flag', REL_FLAG_FEED, 'set'] - good for bitfields
+     *     unset    - flag is not set   fld & val = 0    single             ['flag', 64, 'unset'] - good for bitfields
+     *     j        - JOIN              =                single             ['slice.id', 'module.id', 'j'] - for table join  (SELECT ... FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], a..
+     *     >        - integer           >                single             ['date', 1478547854, '>']
+     *     <        - integer           <                single             ['date', 1478547854, '<']
+     *     >=       - integer           >=               single             ['date', 1478547854, '>=']
+     *     <=       - integer           <=               single             ['date', 1478547854, '<=']
+     *     <>       - integer           <>               single             ['date', 1478547854, '<>']
+     *     s<>      - string            <>               single             ['name', $name, 's<>']
+     *     l<>      - longid            <>               single             ['id', $slice_id, 'l<>']
+     *     !=       - integer           <>               single             ['date', 1478547854, '!=']   // the same as above - "<>"
+     *     ISNULL   -                   IS NULL                             ['number', 'ISNULL']
+     *     NOTNULL  -                   IS NOT NULL                         ['number', 'NOTNULL']
+     *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
+     *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
+     *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
+     *     FILLED   -                   > ''             single             ['field3', 'FILLED']         // not null, not empty, not any whitespace character(s)
      *
      * @param $tablename
      * @return string
