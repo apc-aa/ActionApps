@@ -792,11 +792,15 @@ function AA_WindowUnloadQ(e) {
     e.returnValue = "Changes are not saved. Do you really want to exit this page?";
 }
 
-function AA_SiteUpdate(item, field, value) {
+function AA_SiteUpdate(item, field, value, action) {
+  if (['u','i','r'].indexOf(action) == -1) {
+    action = 'u';
+  }
   var params = {};
-  params['aa[u'+item+']['+field+'][0]'] = value;
-    AA__doChange(params);
+  params['aa['+action+item+']['+field+'][0]'] = value;
+  AA__doChange(params);
 }
+                                                
 /* template not implemented, field and values pairs could be multiple field, value, field, value, ... */
 function AA_SiteNewitem(slice, template, field, value) {
   var params = {};
@@ -818,6 +822,24 @@ function AA__doChange(params) {
             }
       }
   });
+}
+
+function AA_Translate(input_id, text, from, to) {
+    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl="+from+"&tl="+to+"&dt=t&q="+ encodeURIComponent(text);
+
+    new Ajax.Request(url, {
+        requestHeaders: {Accept: 'application/json'},
+        onSuccess: function(transport) {
+            var ret='';
+            var textarr = transport.responseJSON[0];
+            if (textarr) {
+                for ( var i=0; i < textarr.length; i++ ) {
+                    ret += textarr[i][0];
+                }
+            }
+            $(input_id).setValue(ret);
+        }
+    });
 }
 
 /* Cookies */
