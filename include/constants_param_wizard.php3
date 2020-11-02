@@ -216,6 +216,10 @@ $FIELD_FUNCTIONS = [
        ]
    ]
 ],
+"f__"=> [
+    "name"=>_m("just code"),
+    "desc"=>_m("prints the code in parameter - _#this could be used - easier than f_t (no aditional parameter)")
+],
 "f_0"=> [
     "name"=>_m("null function"),
     "desc"=>_m("prints nothing")
@@ -223,6 +227,10 @@ $FIELD_FUNCTIONS = [
 "f_1"=> [
     "name"=>_m("first value"),
     "desc"=>_m("prints first value, even if the field is multivalue")
+],
+"f_2"=> [
+    "name"=>_m("translated"),
+    "desc"=>_m("prints translated field based on currently selected language")
 ],
 "f_a"=> [
     "name"=>_m("abstract"),
@@ -438,19 +446,6 @@ $FIELD_FUNCTIONS = [
         ]
     ]
 ],
-
-"f_y"=> [
-    "name"=>_m("expanded string"),
-    "desc"=>_m("expands the string in the parameter"),
-    "params"=> [
-        [
-            "name"=>_m("string to expand"),
-        "desc"=>_m("if specified then this string is expanded, if not specified then expands the contents of the field"),
-        "type"=>"STR",
-        "example"=>"{switch({href_url.........}).+:{href_url.........}}"
-        ]
-    ]
-],
 "f_j"=> [
     "name"=>_m("substring with case change"),
     "desc"=>_m("prints a part of <i>the field</i>"),
@@ -536,6 +531,10 @@ $FIELD_FUNCTIONS = [
         ]
     ]
 ],
+"f_n"=> [
+    "name"=>_m("id"),
+    "desc"=>_m("prints unpacked id (use it, if you watn to show 'item id' or 'slice id')")
+],
 "f_o"=> [
     "name"=>_m("'New' sign"),
     "desc"=>_m("prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."),
@@ -559,10 +558,6 @@ $FIELD_FUNCTIONS = [
         "example"=>_m("")
         ]
     ]
-],
-"f_n"=> [
-    "name"=>_m("id"),
-    "desc"=>_m("prints unpacked id (use it, if you watn to show 'item id' or 'slice id')")
 ],
 "f_q"=> [
     "name"=>_m("text (blurb) from another slice"),
@@ -635,6 +630,40 @@ $FIELD_FUNCTIONS = [
         "example"=>_m("")
         ]
     ]
+],
+"f_u"=> [
+    "name"=>_m("user function"),
+    "desc"=>_m("calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"),
+    "params"=> [
+        [
+            "name"=>_m("function"),
+            "desc"=>_m("name of the function in the include/usr_aliasfnc.php3 file"),
+            "type"=>"STR",
+            "example"=>_m("usr_start_end_date_cz")
+        ],
+        [
+            "name"=>_m("parameter"),
+            "desc"=>_m("a parameter passed to the function"),
+            "type"=>"STR",
+            "example"=>"1"
+        ]
+    ]
+],
+"f_v"=> [
+    "name"=>_m("view"),
+    "desc"=>_m("allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."),
+    "params"=> [
+        [
+            "name"=>_m("complex parameter"),
+            "desc"=>_m("this parameter is the same as we use in view.php3 url parameter - see the FAQ"),
+            "type"=>"STR",
+            "example"=>_m("vid=4&amp;cmd[23]=v-25")
+        ]
+    ]
+],
+"f_w"=> [
+    "name"=>_m("image width"),
+    "desc"=>_m("An old-style function. Prints <i>the field</i> as image width value (\<img width=...\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". ")
 ],
 "f_x"=> [
     "name"=>_m("transformation"),
@@ -768,39 +797,17 @@ $FIELD_FUNCTIONS = [
         ]
     ]
 ],
-"f_u"=> [
-    "name"=>_m("user function"),
-    "desc"=>_m("calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"),
+"f_y"=> [
+    "name"=>_m("expanded string"),
+    "desc"=>_m("expands the string in the parameter"),
     "params"=> [
         [
-            "name"=>_m("function"),
-        "desc"=>_m("name of the function in the include/usr_aliasfnc.php3 file"),
-        "type"=>"STR",
-        "example"=>_m("usr_start_end_date_cz")
-        ],
-        [
-            "name"=>_m("parameter"),
-        "desc"=>_m("a parameter passed to the function"),
-        "type"=>"STR",
-        "example"=>"1"
+            "name"=>_m("string to expand"),
+            "desc"=>_m("if specified then this string is expanded, if not specified then expands the contents of the field"),
+            "type"=>"STR",
+            "example"=>"{switch({href_url.........}).+:{href_url.........}}"
         ]
     ]
-],
-"f_v"=> [
-    "name"=>_m("view"),
-    "desc"=>_m("allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."),
-    "params"=> [
-        [
-            "name"=>_m("complex parameter"),
-        "desc"=>_m("this parameter is the same as we use in view.php3 url parameter - see the FAQ"),
-        "type"=>"STR",
-        "example"=>_m("vid=4&amp;cmd[23]=v-25")
-        ]
-    ]
-],
-"f_w"=> [
-    "name"=>_m("image width"),
-    "desc"=>_m("An old-style function. Prints <i>the field</i> as image width value (\<img width=...\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". ")
 ]
 ]
 ];

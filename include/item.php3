@@ -701,6 +701,18 @@ class AA_Item {
 
     // --------------- functions called for alias substitution -------------------
 
+    /** f__ function - just code
+     *  prints the code in parameter (no implicit output of the content of the field)
+     *   - _#this could be used
+     *   - easier than f_t (no additional parameter)")
+     * @param $col
+     * @param $param string to be printed (like <img src="{img_src........1}"></img>
+     * @return bool|mixed|null|string|string[]
+     */
+    function f__($col, $param="") {
+        return $this->subst_alias($param);
+    }
+
     /** f_0 function
      * null function
      * param: 0
@@ -741,6 +753,7 @@ class AA_Item {
         }
         return $this->text2Html($txt, $this->getFlag($col));
     }
+
 
     /** Prints the parameter - it is shortcut for f_t:<text>:asis
      *  Internal function - used just for addTextAlias()
