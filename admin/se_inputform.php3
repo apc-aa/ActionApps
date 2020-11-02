@@ -132,18 +132,25 @@ if ($update) {
         QValidateInput("input_default",   _m("Default"),             $input_default,     $err, false, "text");
         QValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
 
-        $alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
+        $alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>.");
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
             $alias_var = "alias".$iAlias;
-            if ($$alias_var == "_#") {
-                $$alias_var = "";
-            }
-            QValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
+            $alias_name = $_POST[$alias_var] ? (($_POST[$alias_var.'_disable'] == 1) ? 'X#' : '_#').$_POST[$alias_var] : '';
+
+            QValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $alias_name, $err, false, "alias");
             $alias_var = "alias".$iAlias."_help";
             QValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
             $alias_var = "alias".$iAlias."_func";
             QValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
+
+            Qvarsetadd("alias".$iAlias, "quoted", $alias_name);
+            Qvarsetadd("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
+            Qvarsetadd("alias".$iAlias."_func", "quoted",
+                ($onlyupdate ? $GLOBALS["alias".$iAlias."_func"]
+                    : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
         }
+
+        
 
         if (count($err)) {
             break;
@@ -165,14 +172,6 @@ if ($update) {
         // Honza, 2014-03-24
         $widget_class = Widget::constructClassName($input_show_func_f);
         Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0))));
-
-        for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-            Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
-            Qvarsetadd("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
-            Qvarsetadd("alias".$iAlias."_func", "quoted",
-                ($onlyupdate ? $GLOBALS["alias".$iAlias."_func"]
-                : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
-        }
 
         // setting input show function
 
@@ -263,8 +262,9 @@ if ( !$update ) {      // load defaults
     $input_morehlp = $fld['input_morehlp'];
 
     for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-        $GLOBALS["alias".$iAlias]         = $fld["alias".$iAlias];
-        $GLOBALS["alias".$iAlias."_help"] = $fld["alias".$iAlias."_help"];
+        $GLOBALS["alias".$iAlias]            = substr($fld["alias".$iAlias],2);
+        $GLOBALS["alias".$iAlias."_disable"] = (substr($fld["alias".$iAlias],0,2)=='X#');
+        $GLOBALS["alias".$iAlias."_help"]    = $fld["alias".$iAlias."_help"];
         get_params($fld["alias".$iAlias."_func"], $GLOBALS["alias".$iAlias."_func_f"], $GLOBALS["alias".$iAlias."_func"]);
     }
 
@@ -473,16 +473,20 @@ $myarray = $FIELD_FUNCTIONS['items'];
 foreach ($myarray as $key => $val) {
     $func_types[$key] = $key." - ".$val['name'];
 }
-asort($func_types);
+//asort($func_types);
 
 for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_name    = "alias$iAlias";
     $alias_func_f  = $alias_name. "_func_f";
     $alias_func    = $alias_name. "_func";
     $alias_help    = $alias_name. "_help";
-    $alias_value   = $$alias_name ?: '_#';
+    $alias_disable = $alias_name. "_disable";
+    $alias_value   = $$alias_name;
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
-    FrmInputText($alias_name, _m("Alias")." $iAlias", $alias_value, 10, 20, false, _m("_# + 8 UPPERCASE letters or _"));
+    $disbled_chb   = FrmChBoxEasyCode($alias_disable, $$alias_disable, '', 1);
+    $aname_row     = "_#<input name=\"$alias_name\" type=text size=9 maxlength=8 value=\"$alias_value\" pattern='[A-Z0-9_]{8}'> <label>"._m('Disabled')."$disbled_chb</label>";
+
+    FrmStaticText(_m("Alias")." $iAlias", $aname_row,"&nbsp; &nbsp; &nbsp; ". _m("8 UPPERCASE letters or _"),"", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
     FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php3?'.$$alias_func)); // added for f_v parameters
     FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
