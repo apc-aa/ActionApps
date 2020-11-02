@@ -75,10 +75,6 @@ add_vars();
 
 pageOpen('noauth');   // just to start $sess with right parameters
 
-// we tried to remove all global $db, so let's try to comment out following global object
-// honza 2015-12-30
-// is_object( $db ) || ($db = getDB());
-
 if (ctype_digit((string)$time_limit)) {
     @set_time_limit((int)$time_limit);
 }
@@ -124,12 +120,12 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     AA::$debug&2 && AA::$dbg->log("view not found in cache");
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
-    $cache_sid    = $showview->lastUsedSliceId();
+    $cache_sids   = $showview->lastUsedSliceIds();
     $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage(0);
 
-    if (!$nocache AND $cache_sid) {
-        $str2find = new CacheStr2find($cache_sid);
+    if (!$nocache AND $cache_sids) {
+        $str2find = new CacheStr2find($cache_sids);
         AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
     }
 }

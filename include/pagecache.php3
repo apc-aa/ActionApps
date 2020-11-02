@@ -382,8 +382,8 @@ class CacheStr2find {
     protected $strings = [];
 
     /** CacheStr2find function
-     * @param $ids
-     * @param $type
+     * @param string[]|null   $strings
+     * @param string $type
      */
     function __construct( $strings=null, $type='M') {   // it was $type=slice_id, but for cache it is better to use shorter - M
         $this->strings = [];
@@ -392,8 +392,8 @@ class CacheStr2find {
 
     /** add function
      *  Add ids (array) of specified type (common to all added ids)
-     * @param $ids
-     * @param $type
+     * @param string[] $strings
+     * @param string   $type
      */
     function add($strings, $type='M') {    // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
         if ( !$strings ) {

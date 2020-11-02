@@ -2911,7 +2911,7 @@ function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ) {
     $key  = get_hash('jscache', $jscode);
 
     if (!AA::Pagecache()->getById($key)) {     // not in cache, yet
-        $str2find = new CacheStr2find($name, 'js');
+        $str2find = new CacheStr2find([$name], 'js');
         AA::Pagecache()->store($key, $jscode, $str2find, true);
     }
     return getFrmJavascriptFile( 'cached.php3?keystr='.$key, $loadtype );

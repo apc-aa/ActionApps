@@ -101,13 +101,13 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
 } else {
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
-    $cache_sid    = $showview->lastUsedSliceId();
+    $cache_sids   = $showview->lastUsedSliceIds();
 
     $cacheentry = new AA_Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage(0);
 
     if (!$nocache) {
-        $str2find = new CacheStr2find($cache_sid);
+        $str2find = new CacheStr2find($cache_sids);
         AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
     }
 }

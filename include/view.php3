@@ -481,9 +481,9 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 
 
 class AA_Showview {
-    protected $_view_param    = [];
-    protected $_used_slice_id = null;
-    protected $_hit_id        = null;
+    protected $_view_param     = [];
+    protected $_used_slice_ids = [];
+    protected $_hit_id         = null;
 
     function __construct($view_param) {
         $this->_view_param = $view_param;
@@ -568,7 +568,9 @@ class AA_Showview {
         // At this point, view_info["slice_id"] = $slice_id
         // and view_param[slice_id] is empty or same
 
-        $this->_used_slice_id = $slice_id;     // pass back to GetView (passed by reference)
+        // collect used slices for cache invalidation
+        $this->_used_slice_ids = is_array($slices) ? array_merge([$slice_id], $slices) : [$slice_id];
+
         if (!AA::$site_id AND !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
             AA::$slice_id = $slice_id;
         }
@@ -812,7 +814,10 @@ class AA_Showview {
         return $ret;
     }
 
-    public function lastUsedSliceId() {
-        return $this->_used_slice_id;
+    /**
+     * @return array
+     */
+    public function lastUsedSliceIds(): array {
+        return $this->_used_slice_ids;
     }
 }

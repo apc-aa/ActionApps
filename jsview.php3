@@ -106,7 +106,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
 } else {
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
-    $cache_sid    = $showview->lastUsedSliceId();
+    $cache_sids   = $showview->lastUsedSliceIds();
 
     // special for jsview - print it as javascript!!!
     // backslash quotes, remove newlines, escape </script, which will make the code broken
@@ -116,7 +116,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache)) {
     $cacheentry->processPage(0);
 
     if (!$nocache) {
-        $str2find = new CacheStr2find($cache_sid);
+        $str2find = new CacheStr2find($cache_sids);
         AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
     }
 }
