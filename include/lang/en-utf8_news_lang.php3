@@ -597,7 +597,7 @@ $_m["ALIASES used in views to print field content (%1)"]
  = "";
 
 // admin/se_inputform.php3, row 475
-$_m["_# + 8 UPPERCASE letters or _"]
+$_m["8 UPPERCASE letters or _"]
  = "";
 
 // admin/se_inputform.php3, row 478

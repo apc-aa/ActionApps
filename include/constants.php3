@@ -90,6 +90,20 @@ class AA_Alias {
         $this->hlp         = $hlp;
     }
 
+    /** conditional create
+     * @param string|null $alias
+     * @param string|null $field_id
+     * @param string|null $funct
+     * @param string|null $hlp
+     * @return AA_Alias|null
+     */
+    public static function factory(?string $alias, ?string $field_id, ?string $funct, ?string $hlp='') {
+        if ($alias AND (substr($alias,0,2)=='_#')) {
+            return new AA_Alias($alias, $field_id, $funct, $hlp);
+        }
+        return null;
+    }
+
     /** getArray function
      * @return array
      */
@@ -107,6 +121,11 @@ class AA_Alias {
 }
 
 class AA_Aliases {
+
+    /**
+     * @var AA_Alias[]
+     */
+
     private $aliases;
     /** AA_Aliases function
      *
@@ -114,12 +133,16 @@ class AA_Aliases {
     function __construct() {
         $this->aliases = [];
     }
+
     /** addAlias function
-     * @param $alias AA_Alias
+     * @param AA_Alias|null $alias
      */
-    function addAlias($alias) {
-        $this->aliases[] = $alias;
+    function addAlias(?AA_Alias $alias) {
+        if ($alias) {
+            $this->aliases[] = $alias;
+        }
     }
+
     /** addTextAlias
      * @param $alias_name
      * @param $text
@@ -389,6 +412,10 @@ define( "REL_FLAG_SOURCE",        4 );  // item is derived from other item ({new
 
 /** view table flags */
 define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after the view
+define( "VIEW_FLAG_LOG", 2 );         // write every use to database
+define( "VIEW_FLAG_DISABLE", 4 );     // view is disabled - no content showed
+
+
 /** inputFeedModes function
  * @return array
  */

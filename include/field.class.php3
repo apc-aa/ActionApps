@@ -262,22 +262,17 @@ class AA_Field {
      *
      */
     function getAliases() {
-        // maybe filled here in previous call, or filled in constructor for item definned fields
+        // maybe filled here in previous call, or filled in constructor for item defined fields
         if ($this->aliases) {
             return $this->aliases->getArray();
         }
         $this->aliases = new AA_Aliases;
         $f = $this->data;
-        if ($f['alias1']) {
-            // fld used in PrintAliasHelp to point to alias editing page
-            $this->aliases->addAlias(new AA_Alias($f['alias1'], $f['id'], $f['alias1_func'], $f['alias1_help']));
-        }
-        if ($this->data['alias2']) {
-            $this->aliases->addAlias(new AA_Alias($f['alias2'], $f['id'], $f['alias2_func'], $f['alias2_help']));
-        }
-        if ($this->data['alias3']) {
-            $this->aliases->addAlias(new AA_Alias($f['alias3'], $f['id'], $f['alias3_func'], $f['alias3_help']));
-        }
+
+        // fld used in PrintAliasHelp to point to alias editing page
+        $this->aliases->addAlias(AA_Alias::factory($f['alias1'], $f['id'], $f['alias1_func'], $f['alias1_help']));
+        $this->aliases->addAlias(AA_Alias::factory($f['alias2'], $f['id'], $f['alias2_func'], $f['alias2_help']));
+        $this->aliases->addAlias(AA_Alias::factory($f['alias3'], $f['id'], $f['alias3_func'], $f['alias3_help']));
         return $this->aliases->getArray();
     }
 
