@@ -28,6 +28,7 @@
 namespace AA\IO;
 
 use AA;
+use ConvertCharset;
 
 /** OnPageChanger class - reacts to AJAX calls on page and changes page parts
  */
