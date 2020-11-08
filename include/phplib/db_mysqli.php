@@ -1,1 +1,0 @@
-db_mysqli no longer used - MySQLi functions are used in db_mysql.inc - use that one

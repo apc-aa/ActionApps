@@ -115,6 +115,10 @@ QuoteVars("post", ['encap'=>1]);  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
 AA::setEncoding(AA_Langs::getCharset());
 
+$insert  = false;
+$update  = false;
+$preview = false;
+$go_edit = false;
 if ($_POST['insert'])      { $insert = true;                                               }
 if ($_POST['ins_preview']) { $insert = true;                 $preview=true;                }
 if ($_POST['ins_edit'])    { $insert = true;                                $go_edit=true; }
@@ -122,7 +126,7 @@ if ($_POST['update'])      {                 $update = true;                    
 if ($_POST['upd_preview']) {                 $update = true; $preview=true;                }
 if ($_POST['upd_edit'])    {                 $update = true;                $go_edit=true; }
 
-$cancel = $_GET['cancel'];
+$cancel = (bool)$_GET['cancel'];
 
 $add = !( $update OR $cancel OR $insert OR $edit );
 
@@ -201,7 +205,8 @@ $lang_control = MLXSlice($slice);
 if ( ($insert || $update) AND count($fields) ) {
 
     // prepare content4id array before call StoreItem function
-    $content4id = new ItemContent;
+    $content4id    = new ItemContent;
+    $oldcontent4id = [];
 
     // it is needed to call IsEditable() function and GetContentFromForm()
     if ( $action == "update" ) {

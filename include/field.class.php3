@@ -25,6 +25,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Widget\Widget;
 
 /** for AA_Generator_*   */
@@ -32,26 +33,27 @@ require_once __DIR__."/itemfunc.php3";
 
 class AA_Field {
 
-    /** asociative array of field data as defined in field table
+    /** associative array of field data as defined in field table
      *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
      */
-    var $data;
+    protected $data;
 
     /** asociative array of aliases
      * @var AA_Aliases
      */
     protected $aliases = null;
 
-    /** class and properties for slice deffined fields (replaces input_show_func functionality)  */
-    var $widget_params;
+    /** class and properties for slice defined fields (replaces input_show_func functionality)  */
+    protected $widget_params;
 
     /** cache array of all used widgets for this field
      *  @var Widget[]
      */
-    var $widget = [];
+    protected $widget = [];
 
     /** AA_Field function
-     *  @param $data
+     * @param array|AA_Item $data
+     * @param string|null   $sli_id slice id
      */
     function __construct($data, $sli_id=null) {
         $this->data          = [];
@@ -112,9 +114,10 @@ class AA_Field {
     }
 
     /** getProperty function
-     *  @return mixed - field data
+     * @param string $property
+     * @return mixed - field data
      */
-    function getProperty($property) {
+    function getProperty(string $property) {
         return $this->data[$property];
     }
 
@@ -140,7 +143,7 @@ class AA_Field {
     }
 
     /** required function
-     * @return boolean value if the field is requierd  (must be filled)
+     * @return boolean value if the field is required  (must be filled)
      */
     function required() {
         return (bool) $this->getProperty('required');
@@ -149,7 +152,7 @@ class AA_Field {
     /** getWidget function
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
-     *                       usualy not used
+     *                       usually not used
      * @param $properties - array of properties to redefine for $widget_type
      * @return Widget|mixed
      */
@@ -186,8 +189,12 @@ class AA_Field {
 
 
     /** getDefault function
+     * @param bool $with_profile
+     * @return AA_Value
      */
     function getDefault( $with_profile=false ) {
+
+        /** @var Auth $auth */
         global $auth;
 
         if ($with_profile) {
@@ -203,11 +210,11 @@ class AA_Field {
     }
 
     /**
-     * @param $oldcontent4id
-     * @param  bool $insert
+     * @param array $oldcontent4id
+     * @param bool  $insert
      * @return AA_Value|null
      */
-    function readValueFromOldtypeForm($oldcontent4id, $insert) {
+    function readValueFromOldtypeForm(array $oldcontent4id, bool $insert) {
 
         $fid = $this->getId();
         // "v" prefix - database field var
@@ -216,8 +223,8 @@ class AA_Field {
         $var = $_REQUEST[$varname];
         $ret = null;
 
-        list($validate_type) = explode(":", $this->getProperty('input_validate'), 2);
-        list($insert_type)   = explode(":", $this->getProperty('input_insert_func'), 2);
+        [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
+        [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
 
         if ( $validate_type == 'date' ) {
             $datectrl  = new datectrl($varname);
@@ -229,7 +236,8 @@ class AA_Field {
                 $ret = new AA_Value($var, FLAG_HTML);
             }
         } elseif ($insert_type == 'boo') {
-            $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);
+            // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
+            $ret = new AA_Value(($var ? 1 : 0), FLAG_HTML);
         } elseif ($insert_type == 'pwd') {
             $change_var   = $_REQUEST[$varname.'a'];
             $retype_var   = $_REQUEST[$varname.'b'];
@@ -281,7 +289,7 @@ class AA_Field {
      */
     function getConstantGroup() {
         // does this field use constants? Isn't it slice?
-        list($field_type, $field_add) = $this->getSearchType();
+        [$field_type, $field_add] = $this->getSearchType();
         return ( $field_type == 'constants' ) ? $field_add : false;
     }
 
@@ -323,7 +331,6 @@ class AA_Field {
 
     /** getAaProperty function
      * @param array $widget_properties ['multiple'=> , 'required'=> , 'name'=> , 'input_help'=> , 'html_show' => , 'html_default' => ]
-     * @param $required - not usual, but sometimes we want to redefine it required for ajax...
      * @return AA_Property
      */
     function getAaProperty($widget_properties= []) {
@@ -357,7 +364,7 @@ class AA_Field {
      * @param $widget_type - wi2|sel|...
      *                       used, when we want to use another widget, than the default one
      * @param $widget_properties - array of properties to redefine for $widget_type - array('columns' => 1)
-     * @return
+     * @return string
      */
     function getWidgetAjaxHtml($item_id, $required=null, $function=null, $widget_type=null, $widget_properties= []) {
         return $this->_getWidget('getAjaxHtml', $item_id, $required, $function, $widget_type, $widget_properties);
@@ -365,12 +372,12 @@ class AA_Field {
 
     protected function _getWidget($type, $item_id, $required, $function, $widget_type, $widget_properties) {
         $widget      = $this->getWidget($widget_type, $widget_properties);
-        $item        = AA_Items::getItem($item_id);
+        $itemcontent = new ItemContent($item_id);
         $widget_properties['multiple'] =  $widget->multiple();
         $widget_properties['required'] =  $required;
         //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
         $aa_property = $this->getAaProperty($widget_properties);
-        return $widget->$type($aa_property, $item, $function);
+        return $widget->$type($aa_property, $itemcontent, $function);
     }
 
     /** getWidgetNewHtml function
@@ -380,8 +387,8 @@ class AA_Field {
      *                       used, when we want to use another widget, than the default one
      *                       usualy not used - right now we use it just for constants_sel.php3
      * @param array $widget_properties - array of properties to redefine for $widget_type
-     * @param AA_Value $preset_value
-     * @param int         $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
+     * @param AA_Value|null $preset_value
+     * @param int|null      $item_index - used to identify number of the item - aa[n1_...], aa[n2_...]
      * @param bool  $widget_only
      *
      * Usage: $field->getWidgetNewHtml(null, null, 'mch', array('columns' => 1));
@@ -390,7 +397,7 @@ class AA_Field {
      */
     function getWidgetNewHtml($required=null, $function=null, $widget_type=null, $widget_properties= [], $preset_value=null, $item_index=null, $widget_only=false) {
         $widget  = $this->getWidget($widget_type, $widget_properties);
-        if ($item_index) {
+        if (!is_null($item_index)) {
             $widget->setIndex($item_index);
         }
         $content = new AA_Content();
@@ -627,7 +634,7 @@ class AA_Fields implements Iterator, Countable {
         $searchfields = new AA\Util\Searchfields();
         foreach ( $this->fields as $field_id => $field ) { // in priority order
             $field_name = $field->getProperty('name');
-            list($field_type, $values_slice_or_const) = $field->getSearchType();
+            [$field_type, $values_slice_or_const] = $field->getSearchType();
             if ($field_type=='relation') {
                 $field_type = 'constants';
                 if ($related_cnt) {
@@ -718,8 +725,9 @@ class AA_Fields implements Iterator, Countable {
 
     /** createFieldId function
      *  Create field id from type and number
-     * @param $ftype
-     * @param $no
+     * @param        $ftype
+     * @param string $no
+     * @param string $id_type  '.' | '_'
      * @return string
      */
     static function createFieldId($ftype, $no="0", $id_type='.') {
@@ -737,7 +745,7 @@ class AA_Fields implements Iterator, Countable {
      * @param $fid string
      * @return string
      */
-    static function createShortId($fid) {
+    static function createShortId(string $fid) {
         return preg_replace("/\.+/", ".", $fid);
     }
 

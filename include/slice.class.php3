@@ -34,6 +34,7 @@
 // A design goal is to use lazy-evaluation wherever possible, i.e. to only
 // go to the database when something is needed.
 
+use AA\IO\DB\DB_AA;
 use AA\Widget\Widget;
 
 require_once __DIR__."/zids.php3"; // Pack and unpack ids
@@ -329,10 +330,10 @@ class AA_Module {
 }
 
 class AA_Slice extends AA_Module {
-    var $name;            // The name of the slice
-    var $fields;          // 2 member array( $fields, $prifields)
-    var $dynamic_fields;  // 2 member array( $fields, $prifields)
-    var $dynamic_setting; // dynamic slice setting fields stored in content table
+    protected $name;                   // The name of the slice
+    protected $fields;                 // 2 member array( $fields, $prifields)
+    protected $dynamic_fields;         // 2 member array( $fields, $prifields)
+    protected $dynamic_setting = null; // dynamic slice setting fields stored in content table
 
     const SETTING_CLASS = 'AA_Modulesettings_Slice';
     const SETTING_TABLE = 'slice';
@@ -364,7 +365,7 @@ class AA_Slice extends AA_Module {
      * @param $force
      */
     function loadsettingfields($force=false) {
-        if ( !$force AND isset($this->dynamic_setting) AND is_array($this->dynamic_setting) ) {
+        if ( !$force AND is_object($this->dynamic_setting) ) {
             return;
         }
         $db = getDB();
@@ -569,7 +570,7 @@ class AA_Slice extends AA_Module {
     /** get_dynamic_setting_content function
      *  Returns slice setting field content in ItemContent object
      * @param $ignore_reading_password
-     * @return bool
+     * @return null|ItemContent
      */
     function get_dynamic_setting_content($ignore_reading_password = false) {
         if (!$ignore_reading_password) {
@@ -577,7 +578,7 @@ class AA_Slice extends AA_Module {
                 if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
                     huhe(_m("Error: Missing Reading Password"));
                 }
-                return false;
+                return null;
             }
         }
         $this->loadsettingfields();
