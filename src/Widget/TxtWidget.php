@@ -45,23 +45,10 @@ class TxtWidget extends \AA\Widget\Widget
         return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
     }
 
-    /** script to run after the page DOM is loaded */
-    function requireRun($aa_property, $winfo)
-    {
-        $ret = '';
-        // are there some textareas not converted to CodeMirror?
-        if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) ."\").forEach( function(el) { CKEDITOR.replace( el ).on('change', function(e) { e.editor.updateElement(); });} );";  // in order we can use AA_SendWidgetAjax() for sending bu ajax. Could be replaced by some custom event called from AA_SendWidgetAjax()
-            // clean the list - all textareas are converted
-            $this->ids_4_editor = [];
-        }
-        return $ret;
-    }
-
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      * @param $aa_property AA_Property
-     * @param $content AA_Item
+     * @param AA_Content $content
      * @param string $type
      * @return array
      * @throws Exception
@@ -129,7 +116,9 @@ class TxtWidget extends \AA\Widget\Widget
     protected function getOneInput($input_name, $i, $val, $attrs, $widget_add, $widget_add2, $required, $no_htmleditor_link, $base)
     {
 
-        $showhtmlarea = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
+        $showhtmlarea   = strpos(get_class($this), 'AA\Widget\EdtWidget') !== false;
+
+        $showcodeeditor = strpos(get_class($this), 'AA\Widget\CodWidget') !== false;
         //if ( $showhtmlarea ) {
         // $this->html_radio($showhtmlarea ? false : 'convertors');
 
@@ -146,8 +135,8 @@ class TxtWidget extends \AA\Widget\Widget
         $areaclass = '';
         $htmlareaedit = '';
 
-        if ($showhtmlarea) {
-            // arr this textarea to the list for CKEditor creation
+        if ($showhtmlarea OR $showcodeeditor) {
+            // arr this textarea to the list for CKEditor creation or CodeMirror
             $this->ids_4_editor[] = '#'.$input_id;
             // $attrs['class'] = 'ckeditor';
         } elseif (!$no_htmleditor_link) {
@@ -166,7 +155,13 @@ class TxtWidget extends \AA\Widget\Widget
         $ret = "$htmlareaedit<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $widget_add $areaclass>$input_value</textarea>$widget_add2";
         if ($lang = AA_Content::getLangNum2Name($i)) {
             $langcode  =  AA_Content::getLangName2Code( $lang );
-            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '.AA_Content::getLangCode2Name($base['langcode']). "</span>";
+            $translate = '';
+
+            // the AA_Translate do not work on CKEditor nor CodeMirror, yet
+            // @todo meke AA_Translate work on CKEditor and CodeMirror
+            if (!$showhtmlarea AND !$showcodeeditor AND ($langcode != $base['langcode'])) {
+                $translate =  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . AA_Content::getLangCode2Name($base['langcode']) . "</span>";
+            }
             $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$translate $ret</span>";
         }
         return $ret;

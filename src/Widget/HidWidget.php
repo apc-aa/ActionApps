@@ -8,6 +8,8 @@
 
 namespace AA\Widget;
 use AA\FormArray;
+use AA_Content;
+use AA_Property;
 
 /** Hidden field widget */
 class HidWidget extends \AA\Widget\Widget

@@ -10,20 +10,18 @@ namespace AA\Widget;
 use AA\FormArray;
 
 /** Code editor */
-class CodWidget extends \AA\Widget\Widget
+class CodWidget extends \AA\Widget\TxtWidget
 {
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
 
     /** widget name  */
-    public function name(): string
-    {
+    public function name(): string {
         return _m('Code editor');
     }
 
-    function requireLibs($aa_property, $winfo)
-    {
-        return ['codemirror@5'];
+    function requireLibs($aa_property, $winfo) {
+        return array_merge(['codemirror@5'], parent::requireLibs($aa_property, $winfo));
     }
 
     /** script to run after the page DOM is loaded */
@@ -48,41 +46,34 @@ class CodWidget extends \AA\Widget\Widget
         return \AA\Widget\Widget::propertiesShop(['rows']);
     }
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
-     *  or normal decorations (added by _finalize*Html)
-     *  @param \AA_Property $aa_property
-     *  @param \AA_Content  $content
-     *  @param string       $type  normal|live|ajax
-     *  @return array
-     *  @throws \Exception
-     */
-    function _getRawHtml($aa_property, $content, $type = 'normal')
-    {
-        $property_id = $aa_property->getId();
-        $base_name = FormArray::getName4Form($property_id, $content, $this->item_index);
-        $base_id = FormArray::formName2Id($base_name);
-        $input_name = $base_name . "[0]";
-        $input_flag = $base_name . "[flag]";
-        $value = $content->getAaValue($aa_property->getId());
-        $input_value = myspecialchars($value->getValue(0));
-        $rows = $this->getProperty('rows', min(substr_count($value[0], "\n") + 4, 60));
-
-
-        //$ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
-        $widget = "<textarea id=\"$base_id\" name=\"$input_name\" rows=\"$rows\" data-editor=html>$input_value</textarea>";
-        $this->ids_4_editor[] = '#'.$base_id;
-
-        $widget .= "<input type=hidden name=\"$input_flag\" value=\"" . FLAG_HTML . "\">";
-
-        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function description(): string {
-        return ''; // TODO: Implement description() method.
-    }
+    //    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    //     *  or normal decorations (added by _finalize*Html)
+    //     *  @param \AA_Property $aa_property
+    //     *  @param \AA_Content  $content
+    //     *  @param string       $type  normal|live|ajax
+    //     *  @return array
+    //     *  @throws \Exception
+    //     */
+    //    function _getRawHtml($aa_property, $content, $type = 'normal')
+    //    {
+    //        $property_id = $aa_property->getId();
+    //        $base_name = FormArray::getName4Form($property_id, $content, $this->item_index);
+    //        $base_id = FormArray::formName2Id($base_name);
+    //        $input_name = $base_name . "[0]";
+    //        $input_flag = $base_name . "[flag]";
+    //        $value = $content->getAaValue($aa_property->getId());
+    //        $input_value = myspecialchars($value->getValue(0));
+    //        $rows = $this->getProperty('rows', min(substr_count($value[0], "\n") + 4, 60));
+    //
+    //
+    //        //$ret = "<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$rows\"$maxlength $required $widget_add>$input_value</textarea>$widget_add2";
+    //        $widget = "<textarea id=\"$base_id\" name=\"$input_name\" rows=\"$rows\" data-editor=html>$input_value</textarea>";
+    //        $this->ids_4_editor[] = '#'.$base_id;
+    //
+    //        $widget .= "<input type=hidden name=\"$input_flag\" value=\"" . FLAG_HTML . "\">";
+    //
+    //        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+    //    }
 }
 
 // AA\Widget\Widget class should implement some interface (in php5), so it is possible

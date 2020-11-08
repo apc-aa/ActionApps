@@ -11,13 +11,7 @@ namespace AA\Widget;
 /** Rich Edit Text Area widget */
 class EdtWidget extends \AA\Widget\TxtWidget
 {
-
-    /** - static member functions
-     *  used as simulation of static class variables (not present in php4)
-     */
-    /** name function
-     *
-     */
+    /** name function  */
     public function name(): string
     {
         return _m('Rich Edit Text Area');   // widget name
@@ -33,11 +27,19 @@ class EdtWidget extends \AA\Widget\TxtWidget
 
     function requireLibs($aa_property, $winfo)
     {
-        return ['ckeditor'];
+        return array_merge(['ckeditor'], parent::requireLibs($aa_property, $winfo));
     }
 
-    /** @inheritDoc */
-    public function description(): string {
-        return ''; // TODO: Implement description() method.
+    /** script to run after the page DOM is loaded */
+    function requireRun($aa_property, $winfo)
+    {
+        $ret = '';
+        // are there some textareas not converted to CodeMirror?
+        if ($this->ids_4_editor) {
+            $ret .= "\n  document.querySelectorAll(\"". join(',',$this->ids_4_editor) ."\").forEach( function(el) { CKEDITOR.replace( el ).on('change', function(e) { e.editor.updateElement(); });} );";  // in order we can use AA_SendWidgetAjax() for sending bu ajax. Could be replaced by some custom event called from AA_SendWidgetAjax()
+            // clean the list - all textareas are converted
+            $this->ids_4_editor = [];
+        }
+        return $ret;
     }
 }
