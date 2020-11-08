@@ -54,7 +54,7 @@ $manager->performActions();
 
 $aa_set = $manager->getSet();
 //$aa_set->setModules($module_id);
-//$aa_set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+//$aa_set->addCondition(new AA_Condition('aa_user',       '==', $auth->auth['uid']));
 
 $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
 

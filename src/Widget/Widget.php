@@ -599,7 +599,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Slice password"), 'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure');
                     break;
                 case 'filter_conds_rw':
-                    $ret[$pid] = new AA_Property($pid, _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-source..........-RLIKE-Econnect");
+                    $ret[$pid] = new AA_Property($pid, _m("Filtering conditions - changeable"), 'string', false, true, 'string', false, _m("Conditions for filtering items. This conds site admin change through widget_property parameter."), '', "d-source..........-BEGIN-Econnect");
                     break;
                 case 'columns':
                     $ret[$pid] = new AA_Property($pid, _m("Columns"), 'int', false, true, 'int', false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3);

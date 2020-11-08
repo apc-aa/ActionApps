@@ -29,6 +29,9 @@ https://www.apc.org/
 */
 
 /** For Links_QueryZids() - called also from /misc/toexecute.php3 */
+
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../modules/links/linksearch.php3";
 
 

@@ -26,6 +26,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../include/item.php3";
 require_once __DIR__."/../../include/view.php3";
 require_once __DIR__."/../../include/pagecache.php3";
@@ -85,9 +87,9 @@ class AA_Collection {
         };
         $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
 
-        $aa_set         = new AA_Set($slice->getId(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '=', 1));
+        $aa_set         = new AA_Set($slice->getId(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
         if ( !is_null( $how_often ) ) {
-            $aa_set->addCondition(new AA_Condition($field_howoften, '=', $how_often));
+            $aa_set->addCondition(new AA_Condition($field_howoften, '==', $how_often));
         }
 
         return $aa_set->query();

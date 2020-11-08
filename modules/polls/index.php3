@@ -91,23 +91,23 @@ $aa_set->addCondition(new AA_Condition('module_id', '==', $p_module_id));
 
 $now = now();
 $bin_sets['app'] = clone($aa_set);
-$bin_sets['app']->addCondition(new AA_Condition('status_code', '=', '1'));
+$bin_sets['app']->addCondition(new AA_Condition('status_code', '==', '1'));
 $bin_sets['app']->addCondition(new AA_Condition('expiry_date', '>=', $now));
 $bin_sets['app']->addCondition(new AA_Condition('publish_date', '<=', $now));
 
 $bin_sets['appb'] = clone($aa_set);
-$bin_sets['appb']->addCondition(new AA_Condition('status_code', '=', '1'));
+$bin_sets['appb']->addCondition(new AA_Condition('status_code', '==', '1'));
 $bin_sets['appb']->addCondition(new AA_Condition('publish_date', '>', $now));
 
 $bin_sets['appc'] = clone($aa_set);
-$bin_sets['appc']->addCondition(new AA_Condition('status_code', '=', '1'));
+$bin_sets['appc']->addCondition(new AA_Condition('status_code', '==', '1'));
 $bin_sets['appc']->addCondition(new AA_Condition('expiry_date', '<', $now));
 
 $bin_sets['folder2'] = clone($aa_set);
-$bin_sets['folder2']->addCondition(new AA_Condition('status_code', '=', '2'));
+$bin_sets['folder2']->addCondition(new AA_Condition('status_code', '==', '2'));
 
 $bin_sets['folder3'] = clone($aa_set);
-$bin_sets['folder3']->addCondition(new AA_Condition('status_code', '=', '3'));
+$bin_sets['folder3']->addCondition(new AA_Condition('status_code', '==', '3'));
 
 $r_state['bin_cnt']['app']     = AA_Metabase::queryCount(['table'=>'polls'], $bin_sets['app']);
 $r_state['bin_cnt']['appb']    = AA_Metabase::queryCount(['table'=>'polls'], $bin_sets['appb']);

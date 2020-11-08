@@ -165,7 +165,7 @@ class Saver implements AA\Util\LaterInterface {
                         $set = new AA_Set([$this->slice_id]);
                         if (($id_mode[0] == '[') AND is_array($flds = json_decode($id_mode))) {
                             foreach ($flds as $fld) {
-                                $set->addCondition(new AA_Condition($fld, '=', $content4id->getValue($fld)));
+                                $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                             }
                             $zids = $set->query(null, 1);
                             if (!$fire) {

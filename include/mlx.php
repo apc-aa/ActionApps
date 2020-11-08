@@ -622,16 +622,11 @@ class MLXView {
                 ." c2.item_id=c1.text )"
                 ." WHERE (c1.item_id='".quote($upContId)."'"
                 ." AND c1.field_id='".MLX_CTRLIDFIELD."'"
-                ." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') LIMIT ".count($translations);
+                ." AND c2.field_id LIKE '".MLX_LANG2ID_TYPE."%') LIMIT ".count($translations);
             $db->query($sql);
             unset($aMlxCtrl);
             while( $db->next_record() ) { //get all translations
-                $aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
-                /*
-                $GLOBALS['MLX_ALT'][(string)unpack_id($db->Record[1])] = array(
-                'lang' => array_search((string)$db->Record[0],$translations),
-                'id' => (string)unpack_id($upContId));
-                */
+                $aMlxCtrl[(string)$db->record(0)] = $db->record(1);
             }
             //__mlx_dbg($aMlxCtrl,"aMlxCtrl");
             $bFound = false;
@@ -687,21 +682,21 @@ class MLXView {
             ." c2.item_id=c1.text )"
             ." WHERE (c1.item_id='".quote($p_itemid)."'"
             ." AND c1.field_id='".MLX_CTRLIDFIELD."'"
-            ." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') ";/*LIMIT ".count($translations);*/
+            ." AND c2.field_id LIKE '".MLX_LANG2ID_TYPE."%') ";/*LIMIT ".count($translations);*/
         $db->query($sql);
         $o   = "";
         $cnt = 0;
         while( $db->next_record() ) { //get all translations
-            if($db->Record[0] == $p_itemid) {
+            if($db->record(0) == $p_itemid) {
                 continue;
             }
             if($cnt++ > 0) {
                 $o .= "-";
             }
-            $o .= array_search((string)$db->Record[1],$translations)."=";
-            $o .= unpack_id($db->Record[0]);
-            //__mlx_dbg($db->Record);
-            //__mlx_dbg(unpack_id($db->Record[1]));
+            $o .= array_search((string)$db->record(1),$translations)."=";
+            $o .= unpack_id($db->record(0));
+            //__mlx_dbg($db->record());
+            //__mlx_dbg(unpack_id($db->record(1)));
         }
         return $o;
     }
@@ -739,7 +734,7 @@ class MLXView {
             ." c2.item_id=c1.text )"
             ." WHERE (c1.item_id='".quote($p_itemid)."'"
             ." AND c1.field_id='".MLX_CTRLIDFIELD."'"
-            ." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') LIMIT ".count($translations);
+            ." AND c2.field_id LIKE '".MLX_LANG2ID_TYPE."%') LIMIT ".count($translations);
         $db->query($sql);
         $o    = "";
         $tmpl = $params[0];
@@ -747,16 +742,16 @@ class MLXView {
             return "mlx_view: forgot the view template..";
         }
         while( $db->next_record() ) { //get all translations
-            if($db->Record[0] == $p_itemid) {
+            if($db->record(0) == $p_itemid) {
                 continue;
             }
-            //$o .= array_search((string)$db->Record[1],$translations)."=";
-            //$o .= unpack_id($db->Record[0]);
-            $lang    = array_search((string)$db->Record[1],$translations);
-            $itemid  = unpack_id($db->Record[0]);
+            //$o .= array_search((string)$db->record(1),$translations)."=";
+            //$o .= unpack_id($db->record(0));
+            $lang    = array_search((string)$db->record(1),$translations);
+            $itemid  = unpack_id($db->record(0));
             $o      .= str_replace(["%lang","%itemid"], [$lang,"$itemid"],
                 $tmpl);
-            //__mlx_dbg($db->Record);
+            //__mlx_dbg($db->record());
         }
         return $o;
     }
@@ -836,20 +831,20 @@ class MLXEvents {
         $db         = getDB();
         foreach($item_ids as $itemid) {
             $db->query("SELECT item_id FROM content WHERE ( `field_id` "
-                    ."RLIKE '".MLX_LANG2ID_TYPE."' AND "
+                    ."LIKE '".MLX_LANG2ID_TYPE."%' AND "
                     ."`text`='".quote($itemid)."')");
             while( $db->next_record() ) {
                 $rm_itemids[] = $db->f("item_id");
             }
             $db->query("DELETE FROM content WHERE ( `field_id` "
-                    ."RLIKE '".MLX_LANG2ID_TYPE."' AND "
+                    ."LIKE '".MLX_LANG2ID_TYPE."%' AND "
                     ."`text`='".quote($itemid)."')");
             }
         foreach($rm_itemids as $itemid) {
             $db->query("SELECT * FROM content WHERE ("
                 ." `item_id`='".quote($itemid)."' "
                 ." AND `field_id` "
-                ."RLIKE '".MLX_LANG2ID_TYPE."')");
+                ."LIKE '".MLX_LANG2ID_TYPE."%')");
             if($db->num_rows() === 0) {
                 $db->query("DELETE FROM content WHERE "
                     ." `item_id`='".quote($itemid)."' ");
@@ -975,7 +970,7 @@ class MLXGetText
                 ."))";
             $db->query($sql);
         while( $db->next_record() ) {
-            [$item_id,$field_id,$text] = $db->Record;
+            [$item_id,$field_id,$text] = $db->record();
             $item_id  = unpack_id($item_id);
             $refSlice = &$this->currentDomainRef[$lang];
             if($field_id == 'headline........') {

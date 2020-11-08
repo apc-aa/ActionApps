@@ -150,7 +150,7 @@ $aa_set = $manager->getSet();  // do not use $set variable name, since it confus
 
 $perm_set_id = $profile->getProperty('admin_perm');
 
-// permissions could be diffined in user profiles through Item Set conditions
+// permissions could be defined in user profiles through Item Set conditions
 if ($perm_set_id) {
     $profile_set = AA_Object::load($perm_set_id, 'AA_Set');     /** @var AA_Set $profile_set */
     if ( is_null($profile_set)) {
@@ -166,7 +166,7 @@ if ($perm_set_id) {
 
 // authors have only permission to edit its own items
 if (!$perm_edit_all AND !$perm_set_id) {
-    $aa_set->addCondition(new AA_Condition('posted_by.......', '=', $auth->auth['uid']));
+    $aa_set->addCondition(new AA_Condition('posted_by.......', '==', $auth->auth['uid']));
 }
 
 

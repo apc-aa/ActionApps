@@ -81,7 +81,7 @@ class PohodaStocks extends \AA\IO\Grabber\AbstractGrabber {
         }
         next($this->_items);
 
-        $set = new AA_Set('3c121c4f40ded336375a6206c85baf1e', new AA_Condition('number.........1', '=', '"' . $polozka->stk_PLU . '"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+        $set = new AA_Set('3c121c4f40ded336375a6206c85baf1e', new AA_Condition('number.........1', '==', $polozka->stk_PLU), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
         $zids = $set->query();
 
         $item = new ItemContent();

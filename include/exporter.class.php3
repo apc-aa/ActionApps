@@ -96,7 +96,9 @@ class AA_Exporter extends AA_Object {
             $old_item = $item;
         }
 
-        fwrite($temp_file, $this->_outputEnd($old_item));
+        if ($index > 0) {
+            fwrite($temp_file, $this->_outputEnd($old_item));
+        }
         return $temp_file;
     }
 
@@ -503,7 +505,7 @@ class AA_Exportsetings extends AA_Object {
             'bins'         => $bins,
             'fields'       => new AA_Property( 'fields',   _m("Fields"),        'string', true,  true, '', false, _m('you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>for export all the fields, letf this field blank')),
             'filename'     => new AA_Property( 'filename', _m("Filename"),      'string', false, true, '', false, _m('save as...')),
-            'conds'        => new AA_Property( 'conds',    _m("Conditions"),    'text'  , false, true, '', false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)')),  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+            'conds'        => new AA_Property( 'conds',    _m("Conditions"),    'text'  , false, true, '', false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)')),  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
             'sort'         => new AA_Property( 'sort',     _m("Sort"),          'string', false, true, '', false, _m('like: publish_date....-'))  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
         ];
     }

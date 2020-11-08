@@ -73,8 +73,8 @@ $manager = new AA_Manager('task'.$auth->auth['uid'],  $manager_settings);
 $manager->performActions();
 
 $set  = $manager->getSet();
-$set->addCondition(new AA_Condition('execute_after', '=', TOEXECUTE_USER_TASK_TIME));
-$set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+$set->addCondition(new AA_Condition('execute_after', '==', TOEXECUTE_USER_TASK_TIME));
+$set->addCondition(new AA_Condition('aa_user',       '==', $auth->auth['uid']));
 $zids = AA_Metabase::queryZids(['table'=>'toexecute'], $set);
 
 $manager->displayPage($zids, 'sliceadmin', 'taskmanager');
