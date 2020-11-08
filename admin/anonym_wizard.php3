@@ -25,6 +25,8 @@
  *  @copyright (C) 1999-2003 Association for Progressive Communications
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";

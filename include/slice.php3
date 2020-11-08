@@ -24,6 +24,8 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
+
 /** Page_HTML_Begin function
  * @param $title
  */

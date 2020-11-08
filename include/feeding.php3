@@ -30,6 +30,8 @@
 // Functions for feeding
 //
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/stringexpand.php3"; // for translateString()
 
 /** GetFieldMapping function

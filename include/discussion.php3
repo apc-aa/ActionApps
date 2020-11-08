@@ -27,6 +27,8 @@
 
 // discussion.php3 - discussion utility functions
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/mail.php3";
 
 // discussion images
@@ -481,7 +483,7 @@ function send2mailList($d_item_id, $new_id) {
             }
             $db->query("SELECT * FROM view WHERE id=$vid");
             if ($db->next_record()) {
-                $view_info = $db->Record;
+                $view_info = $db->record();
 
                 $html = $view_info['flag'] & DISCUS_HTML_FORMAT;
 

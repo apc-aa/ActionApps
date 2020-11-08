@@ -25,6 +25,9 @@ https://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/util.php3";
 require_once __DIR__."/../../include/varset.php3";

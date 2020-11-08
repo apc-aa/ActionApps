@@ -40,6 +40,8 @@
   "autoload": {
     "psr-4": {
       "AA\\": "src/"
-    }
+    },
+    "classmap": ["include/"],
+    "exclude-from-classmap": ["include/custom/"]
   }
 }

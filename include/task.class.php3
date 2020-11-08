@@ -29,6 +29,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 
 /** Task executed at planed time
  */
@@ -189,7 +191,7 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
     static public function executeForEvent($module_id, $event_id, $item_id ) {
         $aa_set = new AA_Set();
         $aa_set->setModules($module_id);
-        $aa_set->addCondition(new AA_Condition('event', '=', $event_id));
+        $aa_set->addCondition(new AA_Condition('event', '==', $event_id));
 
         $zids  = AA_Object::querySet('AA_Plannedtask', $aa_set);
 

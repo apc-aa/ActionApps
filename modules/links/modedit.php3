@@ -128,7 +128,7 @@ if ( ($insert AND $superadmin) OR $update ) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($db->Record);
+            $varset->setFromArray($db->record());
             $varset->set("id", $module_id, "unpacked");
             $varset->set("start_id", $start_id, "number");
             $varset->set("tree_start", $tree_start, "number");
@@ -170,7 +170,7 @@ $SQL= " SELECT * FROM links WHERE id='$p_source_id'";
 
 $db->query($SQL);
 if ($db->next_record()) {
-    RestoreVariables($db->Record);
+    RestoreVariables($db->record());
 }
 $id = unpack_id($db->f("id"));  // correct ids
 

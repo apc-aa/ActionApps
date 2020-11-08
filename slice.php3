@@ -363,7 +363,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
         $db->query("SELECT view.*, slice.flag FROM view, slice
                      WHERE slice.id='".q_pack_id($slice_id)."' AND view.id=$discussion_vid");
         if ($db->next_record()) {
-            $view_info = $db->Record;
+            $view_info = $db->record();
 
             // create array of parameters
             $disc = [

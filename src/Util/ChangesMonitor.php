@@ -8,6 +8,8 @@
 
 namespace AA\Util;
 
+use AA\IO\DB\DB_AA;
+
 class ChangesMonitor {
 
     /** singleton
@@ -113,21 +115,21 @@ class ChangesMonitor {
     // array of unpacked ids
     static public function deleteChanges($resources_long_ids) {
         // it is qucker to split it into two deletes because of index type_resource_time
-        $changes_ids = \DB_AA::select('id', 'SELECT id FROM `change`', [
+        $changes_ids = DB_AA::select('id', 'SELECT id FROM `change`', [
             ['type', 'h'],
             ['resource_id', $resources_long_ids]
         ]);
-        $changes_ids = array_merge($changes_ids, \DB_AA::select('id', 'SELECT id FROM `change`', [
+        $changes_ids = array_merge($changes_ids, DB_AA::select('id', 'SELECT id FROM `change`', [
             [
                 'type',
                 'p'
             ],
             ['resource_id', $resources_long_ids]
         ]));
-        \DB_AA::delete_low_priority('change_record', [['change_id', $changes_ids]]);
+        DB_AA::delete_low_priority('change_record', [['change_id', $changes_ids]]);
 
-        \DB_AA::delete_low_priority('change', [['type', 'h'], ['resource_id', $resources_long_ids]]);
-        \DB_AA::delete_low_priority('change', [['type', 'p'], ['resource_id', $resources_long_ids]]);
+        DB_AA::delete_low_priority('change', [['type', 'h'], ['resource_id', $resources_long_ids]]);
+        DB_AA::delete_low_priority('change', [['type', 'p'], ['resource_id', $resources_long_ids]]);
         return true;
     }
 
@@ -145,7 +147,7 @@ class ChangesMonitor {
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChanged($resource_id) {
 
-        $chid = \DB_AA::select1("SELECT id FROM `change`", 'id', [['resource_id', $resource_id], ['type', 'h']], ['time-']);  // false if not found
+        $chid = DB_AA::select1("SELECT id FROM `change`", 'id', [['resource_id', $resource_id], ['type', 'h']], ['time-']);  // false if not found
         $ret = '';
         if ($chid) {
             $changes_arr = $this->getProposalByID($chid);
@@ -161,12 +163,12 @@ class ChangesMonitor {
      * @return array
      */
     static function getChangeList($resource_id) {
-        return \DB_AA::select(['id'=> ['time', 'user']], 'SELECT `id`, `time`, `user` from `change`', [['resource_id',$resource_id], ['type','h']], ['time-']);
+        return DB_AA::select(['id'=> ['time', 'user']], 'SELECT `id`, `time`, `user` from `change`', [['resource_id',$resource_id], ['type','h']], ['time-']);
     }
 
     /** timestamp of last change */
     function lastChangeDate($resource_id, $selector) {
-        $time = \DB_AA::select1("SELECT time FROM `change`, `change_record`", 'time', [['change.id', 'change_record.change_id' , 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector',$selector]], ['time-']);
+        $time = DB_AA::select1("SELECT time FROM `change`, `change_record`", 'time', [['change.id', 'change_record.change_id' , 'j'], ['change.resource_id', $resource_id], ['change.type', 'h'], ['change_record.selector',$selector]], ['time-']);
         return $time ? $time : 0;
     }
 
@@ -242,7 +244,7 @@ class ChangesMonitor {
             return [];
         }
 
-        if ($arr = \DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
+        if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
                                 FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
             echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>priority</th><th>type</th><th>resource</th></tr>";
             $chid = '';

@@ -114,7 +114,7 @@ FrmInputSelect('format', _m("Output Format"),    $format_arr, $format, true);
 FrmInputSelect('type', _m("Type"),    $types_arr, $type, true);
 FrmInputSelect('bins', _m("Bins"),      $bins_arr, $bins, true);
 FrmInputText("filename",  _m("Filename"), $filename, 255, 60, false, _m('save as...'));
-FrmInputText("conds",  _m("Conditions"), $conds, 255, 60, false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+FrmInputText("conds",  _m("Conditions"), $conds, 255, 60, false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
 FrmInputText("sort",   _m("Sort"),       $sort, 255,  60, false, _m('like: publish_date....-'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
 
 FrmTabEnd($form_buttons);
@@ -134,7 +134,7 @@ $manager->performActions();
 
 $aa_set = $manager->getSet();
 $aa_set->setModules($module_id);
-//$aa_set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+//$aa_set->addCondition(new AA_Condition('aa_user',       '==', $auth->auth['uid']));
 
 $zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
 

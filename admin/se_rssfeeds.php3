@@ -33,6 +33,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
@@ -55,7 +57,7 @@ if ($mode == "map") {
 if ($mode == "edit" || $mode == "test") {
     $db->query("SELECT * FROM rssfeeds WHERE name='$sel_rssfeed_name' AND slice_id = '$qp_slice_id'");
     if ($db->next_record()) {
-        $testfeed              = $db->Record;
+        $testfeed              = $db->record();
         $testfeed["feed_type"] = FEEDTYPE_RSS;
         $old_rssfeed_name      = $sel_rssfeed_name;
         $rssfeed_name          = $db->f('name');

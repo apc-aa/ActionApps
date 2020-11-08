@@ -26,6 +26,8 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\IO\DB\DB_AA;
+
 $require_default_lang = true;      // do not use module specific language file
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/formutil.php3";

@@ -25,6 +25,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/constants.php3";
 
 /** SelectGU_ID function

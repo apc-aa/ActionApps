@@ -34,6 +34,7 @@
 // Code by Mitra based on code in existing other files
 
 use AA\FormArray;
+use AA\IO\DB\DB_AA;
 use AA\Util\ChangesMonitor;
 
 require_once __DIR__."/perm_core.php3";    // needed for GetAuthData();
@@ -1094,7 +1095,7 @@ class AA_Stringexpand_Livesearch extends AA_Stringexpand_Nevercache {
                   <input type=search class=itemsearch name=itemsearch oninput=\"AA__liveSearch('$id', '$view_param', '$default')\" placeholder=\"$placeholder\"><i class=aa-utiltag></i>
                 </form>
               </header>
-              <section class=itemgroup>";
+              <section class=itemgroup onkeydown=AA__Keynavigate>";
         $ret .= AA::Stringexpander()->unalias("{view.php3?vid=". str_replace('AA_LS_QUERY', $default, $view_param). "}");
         $ret .= "      </section>
             </article>";
@@ -1807,6 +1808,7 @@ class AA_Stringexpand_Removeids extends AA_Stringexpand {
  *   {date:Y}                                   current year
  *   {date:m/d/Y:{math:{_#PUB_DATE}+(24*3600)}} day after publish date
  *   {date}                                     current timestamp
+ *   {date:j.n.Y:_#this:--}
  *
  *   @param $format      - format - the same as PHP date() function
  *   @param $timestamp   - timestamp of the date (if not specified, current time
@@ -3167,7 +3169,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
 
 /** returns ids of items based on conds d-...
  *  {ids:<slices>:[<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]]}
- *  {ids:6a435236626262738348478463536272:d-category.......1-RLIKE-Bio-switch.........1-=-1:headine........-}
+ *  {ids:6a435236626262738348478463536272:d-category.......1-BEGIN-Bio-switch.........1-=-1:headine........-}
  *  returns dash separated long ids of items in selected slice where category
  *  begins with Bio and switch is 1 ordered by headline - descending
  */
@@ -3552,7 +3554,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
 
         $bins = $bins ? $bins : AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING;
 
-        $set  = new AA_Set($sarr, new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, $bins);
+        $set  = new AA_Set($sarr, new AA_Condition('seo.............', '==', $seo_string), null, $bins);
         $zids = $set->query();
         return join($zids->longids(), '-');
         // added expiry date in order we can get ids also for expired items
@@ -3635,7 +3637,7 @@ class AA_Stringexpand_Finduniq extends AA_Stringexpand {
         $add = '';
         if ( !empty($slices) ) {
             for ($i=2; $i < 100000; $i++) {
-                $set  = new AA_Set($slices, new AA_Condition($field_id, '=', '"'.$string.$add.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+                $set  = new AA_Set($slices, new AA_Condition($field_id, '==', $string.$add), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
                 $zids = $set->query();
                 if (!$zids->count() OR in_array($ignore_item_id, $zids->longids())) {
                     break;   // we found unique seo-name
@@ -3665,7 +3667,7 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
      *                            or any AA expression using constant aliases
      *                            _#NAME###_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_,
      *                            _#COUNTER_, _#CONST_ID, _#SHORT_ID, _#DESCRIPT, _#LEVEL##_
-     * @param $value_delimiter - value delimiter - used just form translating multiple constants at once
+     * @param $value_delimiter - value delimiter - used just for translating multiple constants at once
      * @param $output_delimiter - resulting output delimiter - ', ' is default for multiple constants
      * @return bool|mixed|null|string|string[]
      */
@@ -8620,7 +8622,6 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($slices='', $field=null, $item_id=null, $code=null, $conds=null, $sort=null, $mode=null, $edit_code=null) {
-
         $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $slices_arr = explode_ids($slices);
 

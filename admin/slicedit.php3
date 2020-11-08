@@ -25,6 +25,8 @@
 */
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/date.php3";

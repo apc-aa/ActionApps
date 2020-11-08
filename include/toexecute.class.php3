@@ -28,6 +28,9 @@
 /** User's tasks are planed for that time (2033-05-18 05:33:20) - it is never
  *  executed from cron
  **/
+
+use AA\IO\DB\DB_AA;
+
 define( 'TOEXECUTE_USER_TASK_TIME', 2000000000);
 
 /** AA_Toexecute class - used for many short tasks, such as sending an e-mail for
@@ -85,7 +88,7 @@ class AA_Toexecute {
      */
     function global_instance() {
         if ( !isset($GLOBALS['toexecute']) ) {
-            $GLOBALS['toexecute'] = new toexecute;
+            $GLOBALS['toexecute'] = new AA_Toexecute;
         }
     }
 

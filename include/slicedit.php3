@@ -24,6 +24,8 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/se_users.php3";
 require_once __DIR__."/mail.php3";
 

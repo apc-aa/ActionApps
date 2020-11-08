@@ -90,7 +90,7 @@ if ($update) {
 $SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
 $db->query($SQL);
 if ($db->next_record()) {
-    RestoreVariables($db->Record);
+    RestoreVariables($db->record());
 }
 
 $apage = new AA_Adminpageutil();

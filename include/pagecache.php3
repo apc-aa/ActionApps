@@ -39,6 +39,8 @@
  *   );
  */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/varset.php3";
 
 class AA_Cacheentry {

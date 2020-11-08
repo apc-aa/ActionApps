@@ -7,11 +7,14 @@
  *	  Modified by Cameron Just     (C.Just@its.uq.edu.au)	 
  *
  * $Id$
- */ 
+ */
 
-//  Commented out - unmaintained code - use mysql db functions incompatible with php >= 7.0
+namespace AA\IO\DB;
+
+class DB_MSSQL extends AbstractDB {}
+
+//  Commented out - unmaintained code - uses mssql db functions incompatible with php >= 7.0
 //  (Honza 2020-08-18)
-//
 //
 //class DB_MSSQL {
 //  var $Host     = "";
@@ -21,21 +24,20 @@
 //
 //  var $Link_ID  = 0;
 //  var $Query_ID = 0;
-//  var $Record   = array();
 //  var $Row      = 0;
 //
-//  var $Errno    = 0;
-//  var $Error    = "";
-//  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 //
 //  var $PConnect  = 0;     ## Set to 1 to persistent database connections
 //
-//
-//  /* public: constructor */
-//  function __construct($query = "") {
-//    if($query) {
-//      $this->query($query);
-//    }
+//  /**
+//   * DB_MSSQL constructor.
+//   * @param array $connection
+//   */
+//  function __construct(array $connection) {
+//      $this->Database = $connection['database'] ?? '';
+//      $this->Host     = $connection['host'] ?? '';
+//      $this->User     = $connection['user'] ?? '';
+//      $this->Password = $connection['password'] ?? '';
 //  }
 //
 //  function connect() {
@@ -53,7 +55,7 @@
 //        }
 //    }
 //  }
-//  function connect_failed($message) {
+//  function connect_failed($message='') {
 //    $this->Halt_On_Error = "yes";
 //    $this->halt($message);
 //  }
@@ -112,7 +114,7 @@
 //  	$this->Row = $pos;
 //  }
 //
-//  function metadata($table) {
+//  function metadata($table = "", $full = false) {
 //    $count = 0;
 //    $id    = 0;
 //    $res   = array();
@@ -154,20 +156,8 @@
 //    return mssql_num_fields($this->Query_ID);
 //  }
 //
-//  function nf() {
-//    return $this->num_rows();
-//  }
-//
-//  function np() {
-//    print $this->num_rows();
-//  }
-//
 //  function f($Field_Name) {
 //    return $this->Record[strtolower($Field_Name)];
-//  }
-//
-//  function p($Field_Name) {
-//    print $this->f($Field_Name);
 //  }
 //
 //  function halt($msg) {

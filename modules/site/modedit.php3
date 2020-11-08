@@ -24,6 +24,8 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\IO\DB\DB_AA;
+
 $no_slice_id   = $_REQUEST['template']['W'] ? true : false;       // message for init_page.php3
 
 require_once __DIR__."/../../include/init_page.php3";
@@ -172,7 +174,7 @@ list($name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners) 
 $SQL= " SELECT * FROM site WHERE id='$p_source_id'";
 $db->query($SQL);
 if ($db->next_record()) {
-    RestoreVariables($db->Record);
+    RestoreVariables($db->record());
 }
 $id     = unpack_id($db->f("id"));  // correct ids
 $router = $db->f("flag");           // router is stored as flag

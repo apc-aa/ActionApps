@@ -33,6 +33,9 @@ https://www.apc.org/
  *  It is recommended to delete the access code after you finish your setup, to
  *  disable access code guessing from attackers.
  */
+
+use AA\IO\DB\DB_AA;
+
 define('ACCESS_CODE','');
 
 
@@ -133,7 +136,7 @@ if (!is_callable('getDB')) {
     function getDB() {
         global $spareDBs;
         if (!($db = array_pop($spareDBs))) {
-            $db = new DB_AA;
+            $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
         }
         return $db;
     }
@@ -179,15 +182,15 @@ if (!is_callable('GetTable2Array')) {
         $db->query($SQL);
         while ($db->next_record()) {
             if ($values == 'aa_all') {
-                $val = $db->Record;
+                $val = $db->record();
             } elseif ($values == 'aa_mark') {
                 $val = true;
             } elseif (substr($values,0,7) == 'unpack:') {
                 $val = unpack_id($db->f(substr($values,7)));
-            } elseif (is_string($values) AND isset( $db->Record[$values] )) {
-                $val = $db->Record[$values];
+            } elseif (is_string($values) AND isset( $db->record($values) )) {
+                $val = $db->record($values);
             } else {  // true or 'aa_fields'
-                $val = $db->Record;
+                $val = $db->record();
             }
 
             if ( $key == 'aa_first' ) {

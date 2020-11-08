@@ -18,6 +18,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
 
@@ -146,8 +147,8 @@ elseif ( AA_V::P('assignment') == 1 ) {
     if (AA_V::P('assourceplan') AND AA_V::P('asdestplan')) {
 
         $set = new AA_Set('de6a767322ed6040d4b745f5c16a7683');
-        $set->addCondition(new AA_Condition('relation.......2', '=', AA_V::P('assourceplan')));
-        $set->addCondition(new AA_Condition('relation.......3', '=', AA_V::P('asdestplan')));
+        $set->addCondition(new AA_Condition('relation.......2', '==', AA_V::P('assourceplan')));
+        $set->addCondition(new AA_Condition('relation.......3', '==', AA_V::P('asdestplan')));
         $zids = $set->query();
 
         if ($zids->count() > 0) {

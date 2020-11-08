@@ -23,6 +23,9 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
+
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/sql_parser.php3";
 require_once __DIR__."/zids.php3";
 require_once __DIR__."/pagecache.php3";
@@ -207,7 +210,7 @@ class AA_Condition extends AA_Object {
 
     /** getAsLongString function
      * @param $condition_number
-     * @return string conditions in long form  conds[0][operator]=RLIKE&conds[0][headline........]=1&conds[0][value]=Action...
+     * @return string conditions in long form  conds[0][operator]=BEGIN&conds[0][headline........]=1&conds[0][value]=Action...
      */
     function getAsLongString($condition_number=0) {
         $ret = [];
@@ -1346,7 +1349,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
             $gfield   =  $group_limit['field'];  // shortcut - just for possible speedup
             while ($db->next_record()) {
 
-                AA::$debug&2 && AA::$dbg->log("result", $db->Record);
+                AA::$debug&2 && AA::$dbg->log("result", $db->record());
 
                 if (++$groups[$db->f($gfield)] <= $glimit) {
                     $arr[]      = $db->f($col);

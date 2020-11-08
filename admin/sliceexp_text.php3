@@ -33,6 +33,7 @@
 */
 
 
+use AA\IO\DB\DB_AA;
 use AA\Widget\Widget;
 
 require_once __DIR__."/../include/searchlib.php3";

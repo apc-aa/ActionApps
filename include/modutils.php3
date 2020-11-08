@@ -27,6 +27,7 @@
 */
 
 // Misc functions used with modules
+use AA\IO\DB\DB_AA;
 
 /** CreateNewOwner function
  *  Adds new owner to database

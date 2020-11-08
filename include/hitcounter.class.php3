@@ -27,6 +27,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 
 /**
  * Hits logged to two temporary tables - hit_short_id (for short item ids) and

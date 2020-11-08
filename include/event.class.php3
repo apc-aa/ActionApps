@@ -564,7 +564,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
                AND value='$name'";
     $db->query($SQL);
     if ( $db->next_record() ) {
-        $general_cat = $db->Record;
+        $general_cat = $db->record();
     } else {
         freeDB($db);
         return false;    // not general category - do not modify category set

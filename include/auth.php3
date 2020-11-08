@@ -29,6 +29,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/util.php3";
 
 // we tried to remove all global $db, so let's try to comment out following global object

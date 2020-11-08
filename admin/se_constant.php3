@@ -27,6 +27,8 @@
 // Parameters: group_id - identifier of constant group
 //             as_new - if we want to create new category group based on an existing (id of "template" group)
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/formutil.php3";
 require_once __DIR__."/../include/varset.php3";
@@ -81,7 +83,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=n
     if (is_array($using_slices_arr) AND count($using_slices_arr)) {
         $count = 0;
         foreach ($using_slices_arr as $arr) {
-            $set = new AA_Set([unpack_id($arr['psid'])], new AA_Condition($arr['fid'], '=', '"'.$value.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+            $set = new AA_Set([unpack_id($arr['psid'])], new AA_Condition($arr['fid'], '==', $value), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
             $count += count($set->query());
         }
     }

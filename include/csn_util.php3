@@ -277,7 +277,7 @@ function name2rssfeed($slice_id,$name) {
     $db = getDB();
     $db->query("SELECT * FROM rssfeeds WHERE name='$name' AND slice_id = '".q_pack_id($slice_id)."'");
     if ($db->next_record()) {
-      $res = $db->Record;
+      $res = $db->record();
       $res["feed_type"] = FEEDTYPE_RSS;
       $res["remote_slice_id"] = attr2id($db->f('server_url'));
     }

@@ -26,6 +26,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/perm_core.php3";
 
 //php_sql - functions for working with permissions with SQL

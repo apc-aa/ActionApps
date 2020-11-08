@@ -1,4 +1,7 @@
 <?php
+
+use AA\IO\DB\DB_AA;
+
 /** linkcheck class - link validation for links module
  *
  *  functions:

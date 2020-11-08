@@ -25,6 +25,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\ChangesMonitor;
 
 require_once __DIR__."/stringexpand.php3";
@@ -385,10 +386,20 @@ class AA_Item {
     /** getValues function
      * shortcut for ItemContent->getValues()
      * @param $field_id
-     * @return bool
+     * @return array
      */
     function getValues($field_id) {
         return $this->content4id->getValues($field_id);
+    }
+
+    /** getValues function
+     * shortcut for ItemContent->getValues()
+     * @param string $field_id
+     * @param int    $idx
+     * @return string | false
+     */
+    function getValue($field_id) {
+        return $this->content4id->getValue($field_id);
     }
 
     /** getValues function

@@ -29,6 +29,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/util.php3";
 
 class AA_Mailman {

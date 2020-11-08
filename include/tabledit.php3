@@ -278,8 +278,8 @@ class tabledit {
             }
 
             while ($db->next_record()) {
-                $records[] = $db->Record;
-                $all_keys[] = GetKeyFromRecord($this->primary_aliases[$this->view["table"]], $this->cols, $db->Record);
+                $records[] = $db->record();
+                $all_keys[] = GetKeyFromRecord($this->primary_aliases[$this->view["table"]], $this->cols, $db->record());
             }
             // if $show_new is enabled, show empty record as last one
             if ($this->show_new) {

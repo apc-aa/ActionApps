@@ -33,6 +33,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 
 if ( !IsSuperadmin() ) {

@@ -37,6 +37,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../include/linkcheck.class.php3";
 require_once __DIR__."/../../include/optimize.class.php3";
 

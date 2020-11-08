@@ -30,6 +30,7 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 
 /** allows serialize objects */

@@ -17,6 +17,8 @@
 
 // Edit Link Page
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../include/init_page.php3";
 require_once __DIR__."/../../include/formutil.php3";
 require_once __DIR__."/../../include/util.php3";

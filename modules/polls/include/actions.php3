@@ -37,6 +37,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 /** AA_Manageraction - Item manager actions. Just create new class and assign
  *  it to your manager
  */

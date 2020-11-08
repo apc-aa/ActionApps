@@ -226,7 +226,7 @@ class AA_Manager extends AA_Storable {
      *  initial manager setting from user's profile
      * @param AA_Profile $profile
      */
-    function setFromProfile(&$profile) {
+    function setFromProfile($profile) {
 
         // set default admin interface settings from user's profile
 
@@ -427,7 +427,8 @@ class AA_Manager extends AA_Storable {
     /** Displays the manager. This function joins together some common method
      *  calls, which was separate. We should use display, now. We plan to move
      *  even more methods here
-     **/
+     * @param zids $zids
+     */
     function display($zids) {
         global $r_err, $r_msg;          // @todo - check if it is still needed
 
@@ -461,7 +462,8 @@ class AA_Manager extends AA_Storable {
             huhl($form);
             echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
-            $this->display($zids);
+            $this->
+            display($zids);
         }
 
         $r_state['manager']    = $this->getState();

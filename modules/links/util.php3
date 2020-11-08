@@ -2,6 +2,7 @@
 //$Id$
 
 // Miscellaneous utility functions ---------------------------------------------
+use AA\IO\DB\DB_AA;
 
 /** Counts links in all categories */
 function Links_CountAllLinks() {
@@ -158,7 +159,7 @@ function GetProfileInfo($uid) {
     $db = getDB();
     $db->query("SELECT * FROM links_profiles WHERE uid = '$uid'");
     if ($db->next_record()) {
-        $ret = $db->Record;
+        $ret = $db->record();
         freeDB($db);
         return $ret;
     }
@@ -166,7 +167,7 @@ function GetProfileInfo($uid) {
     // if user not exist - get nobody's settings
     $db->query("SELECT * FROM links_profiles WHERE uid = 'nobody'");
     if ($db->next_record()) {
-        $ret = $db->Record;
+        $ret = $db->record();
         freeDB($db);
         return $ret;
     }
@@ -241,7 +242,8 @@ function Links_GetLinkContent($zids) {
     $db->query($SQL);
     while ( $db->next_record() ) {
         $foo_id = $db->f('id');
-        foreach ($db->Record as  $key => $val ) {
+        $rec = $db->record();
+        foreach ($rec as $key => $val ) {
             if ( $changes_map[$foo_id] ) {    // this link is just change-link
                 $content[$changes_map[$foo_id]]["change_$key"][] = ['value' => $val];
             } else {

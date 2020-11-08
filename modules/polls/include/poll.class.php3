@@ -25,6 +25,8 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../../include/zids.php3"; // Pack and unpack ids
 
 class AA_Poll {
@@ -243,7 +245,7 @@ class AA_Poll {
         }
 
         $now = now();
-        $set->addCondition(new AA_Condition('status_code', '=', '1'));
+        $set->addCondition(new AA_Condition('status_code', '==', '1'));
         if (!$ignore_expirydate) {
             $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
         }

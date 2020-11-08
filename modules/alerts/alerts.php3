@@ -29,6 +29,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
+
 if (!defined ("AA_ID")) {
     require_once __DIR__."/../../include/config.php3";
 }
@@ -84,8 +86,7 @@ $frequency['twoweeks']  = 14 * $frequency['daily'];
 $frequency['monthly']   = 31 * $frequency['daily'];
 //$frequency['irregular']  = ...;   // not specified - used for irregular sending - see AA_Response('Alertitem', ...
 
-
-if (!is_object($db)) $db = new DB_AA;
+if (!is_object($db)) $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
 
 $howoften_options = get_howoften_options();
 

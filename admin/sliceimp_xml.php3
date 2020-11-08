@@ -49,6 +49,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/xml_serializer.php3";
 
 //$dry_run = 1;

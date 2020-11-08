@@ -1,4 +1,7 @@
 <?php
+
+use AA\IO\DB\DB_AA;
+
 /** This script shows the top menu (navigation bar) and second level menu (left bar)
  *   by the function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
  *

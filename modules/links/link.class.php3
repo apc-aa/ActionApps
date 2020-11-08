@@ -28,6 +28,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
+
 /**
  * @param mixed ...$problems
  * @return array
@@ -719,7 +721,7 @@ class linkobj {
         $SQL= "SELECT proposal_link_id, rejected FROM links_changes WHERE changed_link_id='$lid'";
         $db->query($SQL);
         while ($db->next_record()) {
-            debug('changes Record:', $db->Record);
+            debug('changes Record:', $db->record());
             $ch_link = new linkobj($db->f('proposal_link_id'));
             $ch_link->load();
             $this->changes[] = [

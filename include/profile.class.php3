@@ -30,6 +30,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/locauth.php3";  // for getMembership()
 
 /** AA_Profile class - used for storing specific custom settings of loged user

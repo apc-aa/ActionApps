@@ -27,6 +27,9 @@
  * @link      https://www.apc.org/ APC
  *
 */
+
+use AA\IO\DB\DB_AA;
+
 /** ValidateInput function
  *  Validate users input. Error is reported in $err array
  * @param $variableName

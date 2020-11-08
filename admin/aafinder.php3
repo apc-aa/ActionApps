@@ -25,6 +25,7 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\ChangesMonitor;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -404,9 +405,9 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
         echo "<b>comments</b> <small>(".$db->num_rows()." matching found)</small><br>";
         while ($db->next_record()) {
             if (!$head) {
-                echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->Record)).'</td></tr>');
+                echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->record())).'</td></tr>');
             }
-            $print = $db->Record;
+            $print = $db->record();
             $print['slice_id'] = unpack_id($print['slice_id']);
             $print['id'] = unpack_id($print['id']);
             $print['parent']  = unpack_id($print['parent']);

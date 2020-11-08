@@ -19,6 +19,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../include/mail.php3";
 require_once __DIR__."/../../include/mgettext.php3";
 
@@ -100,7 +102,7 @@ function confirm_email($slice_id, $aw) {
 
     require_once __DIR__."/../../include/itemfunc.php3";
 
-    $set  = new AA_Set($slice_id, new AA_Condition(FIELDID_ACCESS_CODE, '=', '"'.$aw.'"'));
+    $set  = new AA_Set($slice_id, new AA_Condition(FIELDID_ACCESS_CODE, '==', $aw));
     $zids = $set->query();
 
     if ($zids->count() != 1) {

@@ -25,6 +25,8 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../service/update.optimize.class.php";
 
 /** Testing if relation table contain records, where values in both columns are

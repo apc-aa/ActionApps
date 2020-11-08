@@ -24,7 +24,9 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
-if ( $template['P'] ) {
+use AA\IO\DB\DB_AA;
+
+if ($template['P'] ) {
     $no_slice_id = true;       // message for init_page.php3
 }
 
@@ -124,7 +126,7 @@ if ( $insert || $update ) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->setFromArray($db->Record);
+            $varset->setFromArray($db->record());
             $varset->set("id",             new_id(),        "quoted");
             $varset->set("module_id",      $module_id,      "unpacked");
             $varset->set("logging",        $logging,        "number");
@@ -143,7 +145,7 @@ if ( $insert || $update ) {
             $SQL = "SELECT * FROM polls_design WHERE module_id='$p_template_id'";
             $db->query($SQL);
             while ( $db->next_record() ) {
-                $varset->resetFromRecord($db->Record);
+                $varset->resetFromRecord($db->record());
                 $varset->set("module_id", $module_id, "unpacked" );
                 $varset->set('id',        new_id(),   'quoted');
                 $varset->doInsert('polls_design');

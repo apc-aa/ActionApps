@@ -28,6 +28,8 @@
 // Miscellaneous utility functions
 //
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__. '/locsess.php3';
 require_once __DIR__. '/constants.php3';
 require_once __DIR__. '/mgettext.php3';
@@ -776,7 +778,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     while ( $db->next_record() ) {
 
-        $row = $db->Record;
+        $row = $db->record();
 
         // proove permissions for password-read-protected slices
         $unpack_id                  = unpack_id($row['id']);
@@ -865,7 +867,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
         while ( $db->next_record() ) {
 
-            $row       = $db->Record;
+            $row       = $db->record();
             $unpack_id = unpack_id($row['item_id']);
 
             if ( $unpermitted[$unpack_id] ) {

@@ -20,6 +20,8 @@ https://www.apc.org/
 */
 
 // APC AA site Module main administration page
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../../include/config.php3";
 require_once __DIR__."/../../include/locsess.php3";
 require_once __DIR__."/../../include/zids.php3";

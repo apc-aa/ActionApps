@@ -25,6 +25,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/varset.php3";
 require_once __DIR__."/pagecache.php3";
 require_once __DIR__."/notify.php3";

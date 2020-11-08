@@ -27,6 +27,8 @@
 //             $slice_id
 // optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {

@@ -157,7 +157,7 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
  FROM slice WHERE id='".q_pack_id($slice_id)."'";
 $db->query($SQL);
 if ($db->next_record()) {
-    RestoreVariables($db->Record);
+    RestoreVariables($db->record());
 }
 
 // grab variables from email_notify
@@ -166,11 +166,11 @@ $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e
 
 $result = $db->query($SQL);
 while ($db->next_record()) {
-    switch ($db->Record['function']) {
-        case 1: $notify_holding_item_e      .= $db->Record['uid'] . "\n"; break;
-        case 2: $notify_holding_item_edit_e .= $db->Record['uid'] . "\n"; break;
-        case 3: $notify_active_item_e       .= $db->Record['uid'] . "\n"; break;
-        case 4: $notify_active_item_edit_e  .= $db->Record['uid'] . "\n"; break;
+    switch ($db->record('function')) {
+        case 1: $notify_holding_item_e      .= $db->record('uid') . "\n"; break;
+        case 2: $notify_holding_item_edit_e .= $db->record('uid') . "\n"; break;
+        case 3: $notify_active_item_e       .= $db->record('uid') . "\n"; break;
+        case 4: $notify_active_item_edit_e  .= $db->record('uid') . "\n"; break;
     }
 }
 

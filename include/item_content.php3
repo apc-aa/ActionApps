@@ -27,6 +27,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
 
@@ -52,7 +53,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
 
     /** AA_Value function
      * @param $value
-     * @param $flag  FLAG_HTML | FLAG_FEED | FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE | FLAG_TEXT_STORED
+     * @param null|int $flag  FLAG_HTML | FLAG_FEED | FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE | FLAG_TEXT_STORED
      */
     function __construct($value = null, $flag = null) {
         $this->clear();
@@ -63,6 +64,8 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     /** For creating value from any value
      *  Called as
      *     AA_Value::factory($val);
+     * @param $val
+     * @return AA_Value
      */
     static function factory($val) {
         if (is_object($val)) {
@@ -274,7 +277,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
  *  data from the form
  */
 class AA_Content {
-    protected $content;
+    protected $content      = [];
     protected $id_field     = 'aa_id';
     protected $owner_field  = 'aa_owner';
 
@@ -387,9 +390,9 @@ class AA_Content {
     /** getValue function
      *  Returns the value for a field. If it is a multi-value
      *   field, this is the first value.
-     * @param $field_id
-     * @param $what
-     * @return bool
+     * @param string $field_id
+     * @param int    $idx
+     * @return string | false
      */
     function getValue($field_id, $idx=0) {
         return (($index = $this->getIndex($field_id, $idx)) === false ) ? false : $this->content[$field_id][$index]['value'];
@@ -422,7 +425,7 @@ class AA_Content {
      * @return array
      */
     function getValues($field_id): array {
-        return ( is_array($a = $this->content[$field_id]) ? $a : [] );
+        return is_array($a = $this->content[$field_id]) ? $a : [] ;
     }
 
     /** getValuesArray function
@@ -556,9 +559,9 @@ class ItemContent extends AA_Content {
     }
 
     /** setFromArray function
-     * @param $content4id
+     * @param array $content4id
      */
-    function setFromArray($content4id) {
+    function setFromArray(array $content4id) {
         $this->content = $content4id;
     }
 
@@ -574,14 +577,14 @@ class ItemContent extends AA_Content {
         }
         $zid           = is_object($item_id) ? $item_id : new zids($item_id);
         $content       = GetItemContent($zid, false, $ignore_reading_password);
-        $this->content = is_array($content) ? reset($content) : null;
+        $this->content = is_array($content) ? reset($content) : [];
     }
 
     /** setFieldsFromForm function
      *  Functions tries to fill all the fields from the form. It do not add any
      *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
-     * @param string     $oldcontent4id
+     * @param array     $oldcontent4id
      * @param bool       $insert
      * @param AA_Fields  $fields
      * @param AA_Profile $profile
@@ -649,13 +652,13 @@ class ItemContent extends AA_Content {
     /** setFromForm function
      *  Fills content4id - values in content4id are NOT quoted (addslashes)
      *  (new version of previous GetContentFromForm() function)
-     * @param $slice
-     * @param $id  - item/slice id or empty if item insert
-     * @param $oldcontent4id
-     * @param $insert
+     * @param string $slice
+     * @param string $id  - item/slice id or empty if item insert
+     * @param array $oldcontent4id
+     * @param bool $insert
      * @return bool
      */
-    function setFromForm($slice, $id, $oldcontent4id="", $insert=true, $slice_fields=false) {
+    function setFromForm($slice, $id, $oldcontent4id=[], $insert=true, $slice_fields=false) {
         global $auth;
 
         $fields  = $slice->getFields($slice_fields);
@@ -688,13 +691,14 @@ class ItemContent extends AA_Content {
         }                             // it is posted as 'id' and not as standard 'v'.unpack_id('id..............')
                                       // from historical reasons. We probably change it in next versions - TODO
         $this->setSliceID($slice->getId());
+        return true;
     }
 
     /** isEmpty function
      *
      */
     function isEmpty() {
-        return !is_array($this->content);
+        return !$this->content;
     }
 
     /** is_set function
@@ -739,10 +743,8 @@ class ItemContent extends AA_Content {
      */
     function getFields() {
         $fields = [];
-        if ( isset( $this->content ) AND is_array( $this->content ) ) {
-            foreach ( $this->content as $field => $foo ) {
-                $fields[] = $field;
-            }
+        foreach ( $this->content as $field => $foo ) {
+            $fields[] = $field;
         }
         return $fields;
     }

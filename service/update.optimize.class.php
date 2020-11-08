@@ -25,6 +25,8 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\IO\DB\DB_AA;
+
 /** @todo this class should be abstract after we switch to PHP5 */
 class AA_Optimize implements \AA\Util\NamedInterface {
     protected $messages = [];
@@ -1655,7 +1657,6 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
      */
     public function repair() : bool {
         $this->message(_m('Recreate "%1" field definition', [$this->fieldType()]));
-        huhl($this->fieldDefinition());
         AA::Metabase()->doReplace('field', $this->fieldDefinition());
         $this->message(_m('New "%1" field template added', [$this->fieldType()]));
         return true;

@@ -27,6 +27,9 @@
  * @link      https://www.apc.org/ APC
  *
 */
+
+use AA\IO\DB\DB_AA;
+
 /** Cvarset - class for storing variables
  *          - simplifies database manipulation (by Cvarset class below)
  */
@@ -267,7 +270,7 @@ class Cvarset {
     }
 
     /** resetFromRecord function
-     *  Fills varset with data grabed from database ($db->Record)
+     *  Fills varset with data grabed from database ($db->record())
      * @param $record
      */
     function resetFromRecord($record) {
@@ -407,7 +410,7 @@ class Cvarset {
             return "Error using doUpdate: " . $this->last_used_db->num_rows(). " rows match the query";
         }
         $this->last_used_db->next_record();
-        $data = $this->last_used_db->Record;
+        $data = $this->last_used_db->record();
         $packed = AA_Metabase::getPacked($tablename);
         foreach ($packed as $col) {
            $data[$col] = unpack_id($data[$col]);

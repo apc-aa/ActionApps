@@ -42,6 +42,9 @@ https://www.apc.org/
 */
 
 /** APC-AA configuration file */
+
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/./include/config.php3";
 /** Main include file for using session management function on page */
 require_once __DIR__."/include/locsess.php3";

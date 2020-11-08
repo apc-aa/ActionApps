@@ -58,7 +58,9 @@ https://www.apc.org/
  * @return mixed the quoted variables (with added slashes)
  */
 
-$debugfill=$_REQUEST['debugfill'];
+use AA\IO\DB\DB_AA;
+
+$debugfill= $_REQUEST['debugfill'];
 
 // ----- input variables normalization - start --------------------------------
 
