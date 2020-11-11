@@ -140,20 +140,7 @@ function Error($str) {
  * @return array of unpacked slice ids
  */
 function GetFeedingSlices( $node_name, $user) {
-    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM ef_permissions", [
-        [
-            'node',
-            [$node_name,'']
-        ],
-        ['user', [$user,'']]
-    ]);
-//    $db = getDB();
-//    $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='') AND (user='$user' OR user='')");
-//    while ($db->next_record()) {
-//        $slices[] = unpack_id($db->f('slice_id'));
-//    }
-//    freeDB($db);
-//    return $slices;
+    return DB_AA::select('', "SELECT LOWER(HEX(`slice_id`)) AS unpackid FROM ef_permissions", [['node',[$node_name,'']],['user', [$user,'']] ]);
 }
 
 /** CheckFeedingPermissions function
@@ -165,7 +152,7 @@ function GetFeedingSlices( $node_name, $user) {
   * @return bool next_record from db of permissions
   */
 function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
-    return (bool)DB_AA::select1("SELECT slice_id FROM ef_permissions WHERE slice_id='".q_pack_id($slice_id)."' AND (node='$node_name' OR node='') AND (user='$user' OR user='')", 'slice_id');
+    return (bool)DB_AA::select1("SELECT slice_id FROM ef_permissions", 'slice_id', [['slice_id',$slice_id, 'l'],['node',[$node_name,'']],['user', [$user,'']]]);
 }
 
 /** GetXMLFields function
@@ -200,23 +187,21 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
         return;
     }
 
-    $db = getDB();
-    $SQL = "SELECT id, name, value, class FROM constant WHERE group_id='$group_id'";
-    $db->query($SQL);
+    $cats = DB_AA::select([], "SELECT id, name, value, class FROM constant", [['group_id',$group_id]]);
 
     $xml_categories_refs.="\t<aa:categories><rdf:Bag>\n";
-    while ($db->next_record()) {
-        $id = unpack_id($db->f('id'));
+
+    foreach ($cats as $c) {
+        $id = unpack_id($c['id']);
         $xml_categories .= "<aa:category rdf:about=\"".AA_INSTAL_URL."cat/$id\">\n".
-                              "\t<aa:name>".code($db->f('name'))."</aa:name>\n".
-                              "\t<aa:value>".code($db->f('value'))."</aa:value>\n".
+                              "\t<aa:name>".code($c['name'])."</aa:name>\n".
+                              "\t<aa:value>".code($c['value'])."</aa:value>\n".
                               "\t<aa:id>$id</aa:id>\n".
-                              "\t<aa:catparent>".code($db->f('class'))."</aa:catparent>\n".
+                              "\t<aa:catparent>".code($c['class'])."</aa:catparent>\n".
                            "</aa:category>\n";
         $xml_categories_refs .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."cat/$id\"/>\n";
     }
     $xml_categories_refs.="\t</rdf:Bag></aa:categories>\n";
-    freeDB($db);
 }
 
 /** GetXMLChannel function
