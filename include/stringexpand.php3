@@ -4387,6 +4387,7 @@ class AA_Stringexpand_Editfull extends AA_Stringexpand_Edit {
  *                  is sumbitted
  *   <widget_type> which widget to show
  *  {live::number..........:::sel:{"const_arr":{"0":"no","1":"yes"}}}
+ *  {live:{_#ITEM_ID_}:relation........::function() { location.reload(); } }
  */
 class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
 
