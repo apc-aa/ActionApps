@@ -1016,17 +1016,19 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         $setdefault = $action == "add"
                 || !$f["input_show"]
                 || $profile->getProperty('hide',$pri_field_id)
-                || ($action == "insert" && $notshown [$varname]);
+                || ($action == "insert" && $notshown[$varname]);
 
         list($validate_type) = explode(":", $f["input_validate"], 2);
         list($insert_type)   = explode(":", $f["input_insert_func"], 2);
 
         if ($setdefault) {
             $default = $field->getDefault();
+
             // modify the value to be compatible with $_GET[] array - we use
             // slashed variables (this will be changed in future) - TODO
             $$varname     = ($default->count() > 1) ? array_map('addslashes',$default->getValues()) : addslashes($default->getValue());
             $$htmlvarname = $default->getFlag();
+
         } elseif ($validate_type=='date') {
             $default = $field->getDefault();
             // we do not know at this moment, if we have to use default

@@ -399,8 +399,12 @@ class browser extends uploader {
             !isset($_POST['file']) ||
             !$this->checkFilename($_POST['file']) ||
             (false === ($file = "$dir/{$_POST['file']}")) ||
+            !file_exists($file) || !is_readable($file) || !file::isWritable($file)
+/*
+### zrusene mazani natvrdo - Jirkar
             !file_exists($file) || !is_readable($file) || !file::isWritable($file) ||
             !@unlink($file)
+*/
         )
             $this->errorMsg("Unknown error.");
 

@@ -70,7 +70,7 @@ return array(
 
 // DISABLE / ENABLE SETTINGS
 
-    'denyZipDownload' => false,
+    'denyZipDownload' => true,  // Jirkar change 28.4.2020 (mkc mizi zip soubory)
     'denyUpdateCheck' => true,      // Honza change
     'denyExtensionRename' => false,
 
@@ -84,7 +84,7 @@ return array(
 
         'files' => array(
             'upload' => true,
-            'delete' => true,
+            'delete' => false,  // Jirkar change 28.4.2020 (mkc mizi zip soubory)
             'copy'   => true,
             'move'   => true,
             'rename' => true
@@ -92,7 +92,7 @@ return array(
 
         'dirs' => array(
             'create' => true,
-            'delete' => true,
+            'delete' => false,  // Jirkar change 28.4.2020 (mkc mizi zip soubory)
             'rename' => true
         )
     ),

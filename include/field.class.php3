@@ -180,7 +180,8 @@ class AA_Field implements ArrayAccess {
         // "v" prefix - database field var
         $varname     = 'v'. unpack_id($fid);
         $htmlvarname = $varname."html";
-        $var = $_REQUEST[$varname];
+        // GLOBAL - used for default field value set by ValidateContent4Id()
+        $var = isset($_REQUEST[$varname]) ? $_REQUEST[$varname] : $GLOBALS[$varname];
         $ret = null;
 
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);

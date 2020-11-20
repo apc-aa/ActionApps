@@ -871,7 +871,7 @@ class AA_Inputfield {
 
                 case 'nul': break;
                 case 'chb': $this->inputChBox();       break;
-                // case 'hid': $this->hidden();           break;
+                case 'hid': $this->hidden();           break;
                 case 'fld': if (!$this->translations) {
                                 // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
                                 $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0)); // maxlength, fieldsize
@@ -1004,7 +1004,7 @@ class AA_Inputfield {
                 case 'edt':
                 case 'mch':
                 case 'mng': // Manager
-                case 'hid':
+                //case 'hid': // not prepared yet - the field name and help is visible in inputWidget
                 //case 'pwd':
                 //case 'txt':
                 //case 'fld':

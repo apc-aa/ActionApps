@@ -262,10 +262,10 @@ class AA_MbC {
         switch ($this->c[0]) {
             case 'created':
             case 'execute_after':
-            case 'time': return GetAliasDef( "f_d:Y-m-d H:i", $this->c[0], $this->c[0]);
+            case 'time': return GetAliasDef( "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
         }
         switch ($this->_getBaseType()) {
-            case 'timestamp' : return GetAliasDef( "f_d:Y-m-d H:i", $this->c[0], $this->c[0]);
+            case 'timestamp' : return GetAliasDef( "f_d:Y-m-d H:i:s", $this->c[0], $this->c[0]);
             case 'mediumtext':
             case 'mediumblob':
             case 'longblob':
