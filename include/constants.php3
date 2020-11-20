@@ -285,6 +285,7 @@ class AA_Langs {
         }
         return $arr;
     }
+
     public static function getNames() {
         return array_map( function($l) { return $l[1]; }, self::$LANGS);
     }
@@ -292,7 +293,7 @@ class AA_Langs {
     /** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $lang_file or from default
      */
     public static function getLang($lang_file) {
-        $lang_code = substr($lang_file, 0, strpos($lang_file,'_'));
+        $lang_code = substr($lang_file.'_', 0, strpos($lang_file,'_'));
         return isset(self::$LANGS[$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
     }
 
@@ -306,12 +307,45 @@ class AA_Langs {
         }
         return $ret[0];
     }
+
+    /** translate displayed lang name to standardized language code - cs -> cz
+     */
+    public static function getLangCode2Name($code) {
+        $LANGS = ['cs' => 'cz'];
+        return $LANGS[$code] ?: $code;
+    }
+
+    /** converts two letter lang code into number used for translation fields in $content4id array
+     *  cz -> 78000000, en -> 118000000, ...
+     *  you can use any two (smallcaps) letter for language
+     */
+    public static function getLangName2Num($lang) {
+        return strlen($lang) ? AA_Value::MAX_INDEX * ((ord($lang{0}) - 97) * 26 + (ord($lang{1}) - 97 + 1)) : 0;
+    }
+
+    /** reverse function to getLangNumber
+     *  78000000 -> cz, 78000001 -> cz, 118000000 -> en...
+     */
+    public static function getLangNum2Name($langnumber) {
+        if ($langnumber < AA_Value::MAX_INDEX) {
+            return '';
+        }
+        $num = $langnumber / AA_Value::MAX_INDEX - 1;
+        return chr(intval($num / 26) + 97) . chr(($num % 26) + 97);
+    }
+
+    /** translate displayed lang name to standardized language code - cz -> cs
+     */
+    public static function getLangName2Code($lang) {
+        $LANGS = ['cz' => 'cs'];
+        return $LANGS[$lang] ?: $lang;
+    }
 }
 
 /** any string - used as parameter to included JS files in order browser can
  *  use newer version of JS libs. Feel free to increase it
  */
-define('AA_JS_VERSION', 6);
+define('AA_JS_VERSION', 7);
 
 /** API url used for JS libs updates */
 define('JS_UPDATE_API_URL', 'https://data.jsdelivr.com/v1/package/');
@@ -324,6 +358,10 @@ define ("FIELDID_MAIL_CONFIRMED","switch..........");
 define ("FIELDID_ACCESS_CODE",   "text...........3");
 define ("FIELDID_HOWOFTEN",      "alerts1");
 define ("FIELDID_FILTERS",       "alerts2");
+
+/** field id for slice-defined fields  */
+define ("FIELDID_DYNAMIC_ID",    "source..........");
+
 
 /** Translate sort codes from views to slice
  *  (we use numbers in views from historical reason)

@@ -206,6 +206,6 @@ if (!$no_slice_id) {
 $mgettext_file    = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 bind_mgettext_domain($mgettext_file);
 AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
-AA::$langnum      = [AA_Content::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.
+AA::$langnum      = [AA_Langs::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.
 AA::$slice_id     = AA::$module_id;
 $_SESSION['r_last_module_id'] = AA::$module_id; // we need it only in filebrowser of CKEditor

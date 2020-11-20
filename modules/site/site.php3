@@ -225,7 +225,7 @@ require_once __DIR__."/../../include/item.php3";
 if ($lang_file) {
     mgettext_bind(AA_Langs::getLang($lang_file), 'output');
     AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
-    AA::$langnum = [AA_Content::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
+    AA::$langnum = [AA_Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
 }
 
 

@@ -9,6 +9,7 @@
 namespace AA\Widget;
 use AA\FormArray;
 use AA_Content;
+use AA_Langs;
 
 
 /** Text Field widget */
@@ -95,7 +96,7 @@ class FldWidget extends \AA\Widget\Widget
             $input_name = $base_name . "[$i]";
             if ( !$base ) {
                 $base['id']       = FormArray::formName2Id($input_name);
-                $base['langcode'] =  AA_Content::getLangName2Code( AA_Content::getLangNum2Name($i));
+                $base['langcode'] = AA_Langs::getLangName2Code(AA_Langs::getLangNum2Name($i));
             }
             $widget .= $delim . $this->getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required, $base);
             $delim = "\n<br />";
@@ -125,9 +126,9 @@ class FldWidget extends \AA\Widget\Widget
         $input_value = myspecialchars($val);
         $link = ((substr($input_value, 0, 7) === 'http://') OR (substr($input_value, 0, 8) === 'https://')) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type == 'live'); //, 'right', $link ? 16 : 0);
-        if ($lang = AA_Content::getLangNum2Name($i)) {
-            $langcode  =  AA_Content::getLangName2Code( $lang );
-            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '.AA_Content::getLangCode2Name($base['langcode']). "</span>";
+        if ($lang = AA_Langs::getLangNum2Name($i)) {
+            $langcode  = AA_Langs::getLangName2Code($lang);
+            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode');\">". _m("translate from"). ' '. AA_Langs::getLangCode2Name($base['langcode']) . "</span>";
             $ret = "<span class=\"aa-langtrans $lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</span>";
         }
         return $ret;

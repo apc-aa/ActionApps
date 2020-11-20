@@ -229,6 +229,9 @@ class inputform {
             $html_end = "{generate:FOOT}</body></html>";
         }
 
+        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
+        AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+
         // print the inputform
         $out        = AA::Stringexpander()->unalias($form, $remove_string, GetItemFromContent($content4id));
         $out        = AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
@@ -1308,7 +1311,7 @@ class AA_Inputfield {
             $parts = [];
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
-                $lang_id           = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id           = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = myspecialchars($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
@@ -1429,7 +1432,7 @@ class AA_Inputfield {
             $parts = [];
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
-                $lang_id           = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id           = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 $value             = myspecialchars($val[$lang_id]['value']);
                 if ( !strlen($value) AND $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)

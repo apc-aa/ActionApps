@@ -43,6 +43,8 @@ if (typeof window.AA_GetConf === 'undefined') {
                 return AA_GetConf.aa_install_path;
             case 'loader':
                 return '<img src="' + AA_GetConf.aa_install_path + 'images/loader.gif" border=0 width=16 height=16>';
+            case 'lang':
+                return document.documentElement.lang.substring(0,2);
         }
     }
 }
@@ -236,7 +238,6 @@ function AA_AjaxSendForm(form_id, url) {
     });
 }
 
-
 function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     var valdiv = jqid(valdivid);
 
@@ -251,10 +252,11 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties) {
     var width = $(valdivid).width();
     $(valdiv).html(AA_GetConf('loader'));
 
-    AA_Response('Get_Widget', { field_id: fid, item_id: item_id, widget_type: widget_type, widget_properties: widget_properties }, function(data) {
+    var lang = AA_GetConf('lang');
+    AA_Response('Get_Widget', { field_id: fid, item_id: item_id, widget_type: widget_type, widget_properties: widget_properties, lang: lang}, function(data) {
             var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
-            if (width>200) {
+            if (width>200) {   
                 data = data.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
             }
             $(valdiv).html(data);
@@ -304,7 +306,7 @@ function jqid(s) {
 }
 
 /** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
+ *  The main change is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
 function AA_SendWidgetAjax(base_id) {
@@ -447,6 +449,19 @@ function AA__liveSearch(id, viewparam, deflt) {
        AA__liveSearch.timer = setTimeout(fnc,200, $(jqid(id)+ ' .itemgroup')[0], viewparam, val);
        AA__liveSearch.searchval = val;
     }
+}
+
+/** used with conjunction with livesearch for arrows navigation */
+function AA__Keynavigate(e) {
+    if (e.keyCode == 40) {
+        $("a:focus").closest('li').next().find('a.move').focus();
+    }
+
+    // Up key
+    if (e.keyCode == 38) {
+        $(".move:focus").closest('li').prev().find('a.move').focus();
+    }
+    
 }
 
 /* text - string or url (begins with '/')

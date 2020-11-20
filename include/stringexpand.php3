@@ -80,10 +80,10 @@ class AA_Aliasfunc extends AA_Object {
      */
     static function getClassProperties() {
         return [          //           id       name       type        multi   persist validator, required, help, morehelp, example
-            'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string',  false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
-            'code'   => new AA_Property( 'code',   _m("Code"),           'text',    false, true, '', true,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
-            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',    false, true, '', false),
-            'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string', true,  true, '', false, '', '', '{_:Message_box:Update successfull:green}')
+            'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
+            'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', false,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
+            'desc'   => new AA_Property( 'desc',   _m("Description"),    'text',   false, true, '', false),
+            'ussage' => new AA_Property( 'ussage', _m("Usage example"), 'string',  true,  true, '', false, '', '', '{_:Message_box:Update successfull:green}')
         ];
     }
 
@@ -239,7 +239,7 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
         if (empty($params)) {
             return [];
         }
-        list($condition,$rest) = explode(')', $params, 2);
+        [$condition,$rest] = explode(')', $params, 2);
         return array_map('DeQuoteColons', array_merge([$condition], ParamExplode($rest)));
     }
 
@@ -1462,7 +1462,7 @@ function parseLoop($out, $item) {
         // get field name
         $field = aa_substr($out, 1, aa_strpos($out, ":") - aa_strpos($out, "@")-1);
         // parameters - first is separator, second is format string
-        list($separator,$format_str) = ParamExplode(aa_substr($out,aa_strpos($out,":")+1));
+        [$separator,$format_str] = ParamExplode(aa_substr($out,aa_strpos($out,":")+1));
 
         if (aa_strpos($field, "(") !== false) { // if we have special parameters - in () after field name
             // get this special parameters
@@ -2382,7 +2382,7 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercache {
         $match = [];
 
         while (preg_match($rexUrlLinker, $text, $match, PREG_OFFSET_CAPTURE, $position)) {
-            list($url, $urlPosition) = $match[0];
+            [$url, $urlPosition] = $match[0];
 
             // Add the text leading up to the URL.
             if ($escape) {
@@ -4328,11 +4328,11 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
     protected function _getWidget($type, $item_id, $field_id, $required, $function, $widget_type, $widget_properties) {
         $ret = '';
         if ( $field_id) {
-            $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
-            if (!empty($item) AND !$item->isEmpty() AND ($slice = AA_Slice::getModule($item->getSliceId()))) {
+            $itemcontent = $item_id ? new ItemContent($item_id) : ($this->item ? $this->item->getItemContent() : null );
+            if (!empty($itemcontent) AND !$itemcontent->isEmpty() AND ($slice = AA_Slice::getModule($itemcontent->getSliceId()))) {
 
                 // Use right language (from slice settings) - languages are used for button texts, ...
-                mgettext_bind($slice->getLang(), 'output');
+                mgettext_bind(AA::$lang, 'output');
 
                 if ( !($field = $slice->getField($field_id)) ) {
                     return '';
@@ -4346,7 +4346,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 }
                 //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
                 $aa_property = $field->getAaProperty($widget_prop);
-                $ret         = $widget->$type($aa_property, $item->getItemContent(), $function);
+                $ret         = $widget->$type($aa_property, $itemcontent, $function);
                 // $widget->registerRequires(); // now in _finalizeHtml
                 AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
             }
@@ -4597,7 +4597,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
         $grabber = new AA\IO\Grabber\Slice(new AA_Set($slices,null,null,AA_BIN_ALL), new zids($template_long_item_id,'l'));
         // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
         $saver   = new AA\IO\Saver($grabber, $transformations, null, 'insert_if_new', 'new');
-        list($ok,$err) = $saver->run();
+        [$ok,$err] = $saver->run();
         $err && warn('Saver run err '. $err. ': '. $saver->report());
         return join('-',$saver->changedIds());
     }
@@ -5073,7 +5073,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         $kw_item = GetFormatedItems($set->query(), $format);
 
         foreach ( $kw_item as $kw_string ) {
-            list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
+            [$keywords, $link] = explode('_AA_DeLiM_', $kw_string,2);
             $kw_array              = explode('##', $keywords);
             foreach ( (array)$kw_array as $kw ) {
                 if (!strlen($kw)) {
@@ -6884,7 +6884,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!$image) {
             return '';
         }
-        list($img_url,$img_short) = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
+        [$img_url,$img_short] = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
 
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
             return $img_short;
@@ -7182,7 +7182,7 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
             if (strpos($qstring, $variable_name) !== false) {
                 $qarr = explode('&', $qstring);
                 foreach ($qarr as $vardef) {
-                    list($var,$val) = explode('=',$vardef);
+                    [$var,$val] = explode('=',$vardef);
                     if ($var == $variable_name) {
                         $ret = urldecode($val);
                         break;
@@ -7489,7 +7489,7 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
 
         // Get header Authorization
         if (strlen($key) AND ($auth_header = get_authorization_header())) {
-            list($type, $jwt) = explode(" ", $auth_header, 2);
+            [$type, $jwt] = explode(" ", $auth_header, 2);
 
             if (strcasecmp($type, "Bearer") == 0) {
                 try {
@@ -7932,7 +7932,7 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
         if (isset($_POST['aapwd3'])) {    // CHange Password
             return AA_Password_Manager_Reader::changePassword($_POST['aapwd3'], $_POST['aapwd3b'], $_POST['aakey'], $_POST['aauser'],$from_email);
         } elseif (isset($_GET['aapwd2'])) {
-            list($key, $user) = explode('-',$_GET['aapwd2']);
+            [$key, $user] = explode('-',$_GET['aapwd2']);
             return AA_Password_Manager_Reader::getChangeForm($key, $user);
         } elseif (isset($_REQUEST['aapwd1'])) {        // CHeck User
             return AA_Password_Manager_Reader::askForMail($_REQUEST['aapwd1'], $reader_slice_id, $from_email);
@@ -8539,7 +8539,7 @@ class AA_Stringexpand_Index extends AA_Stringexpand_Nevercache {
      */
     function expand($field_id='', $index=0, $item_id='', $lang='') {
         $item = $item_id ? AA_Items::getItem(new zids($item_id)) : ($this ? $this->item : null);
-        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? AA_Content::getLangName2Num($lang) : 0)) : '';
+        return is_object($item) ? $item->getval($field_id, (int)$index + ($lang ? AA_Langs::getLangName2Num($lang) : 0)) : '';
     }
 }
 
@@ -8814,7 +8814,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     $translations = AA_Slice::getModuleProperty($translate_slice,'translations');
 
                     $ic = new ItemContent();
-                    $ic->setValue('headline........', $text, AA_Content::getLangName2Num($translations[0]));
+                    $ic->setValue('headline........', $text, AA_Langs::getLangName2Num($translations[0]));
                     $ic->setSliceID($translate_slice);
                     //$ic->complete4Insert();
 

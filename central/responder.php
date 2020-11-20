@@ -164,16 +164,18 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
 
 /** @return html widget for the field of item */
 class AA_Responder_Get_Widget extends AA_Responder {
-    var $field_id;
-    var $item_id;
-    var $widget_type;
-    var $widget_properties;
+    protected $field_id;
+    protected $item_id;
+    protected $widget_type;
+    protected $widget_properties;
+    protected $lang;
 
     function __construct($param=null) {
         $this->field_id             = $param['field_id'];
         $this->item_id              = $param['item_id'];
         $this->widget_type          = $param['widget_type'];
         $this->widget_properties    = $param['widget_properties'];
+        $this->lang                 = $param['lang'];
     }
 
     function isPerm() { return true; }  //return true;
@@ -185,10 +187,10 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $slice        = AA_Slice::getModule($item->getSliceID());
 
         // Use right language (from slice settings) - languages are used for button texts, ...
-        $lang         = $slice->getLang();
+        $lang         = $this->lang ? AA_Langs::getLang(AA_Langs::getLangCode2Name($this->lang).'-utf8') : $slice->getLang();
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum  = [AA_Content::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
+        AA::$langnum  = [AA_Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         AA::setEncoding(AA_Langs::getCharset($lang));
 
         $field = $slice->getField($this->field_id);

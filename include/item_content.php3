@@ -207,7 +207,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
             $first = true;
             $newval = [];
             foreach ($translations as $lang) {
-                $lang_id = AA_Content::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
+                $lang_id = AA_Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
                 for ($i = 0; $i <= $maxindex; $i++) {
                     $value = isset($this->val[$lang_id + $i]) ? $this->val[$lang_id + $i] : '';
                     if (!strlen($value) and $first and isset($this->val[$i])) {
@@ -409,7 +409,7 @@ class AA_Content {
         } else {
             $def_lang = AA_Module::getModule($this->getOwnerId())->getDefaultLang() ?: strtolower(substr(DEFAULT_LANG_INCLUDE,0,2));      // actual language - two letter shortcut cz / es / en
         }
-        return ($def_lang_num = AA_Content::getLangName2Num($def_lang)); // array of prefered languages in priority order.
+        return ($def_lang_num = AA_Langs::getLangName2Num($def_lang)); // array of prefered languages in priority order.
     }
 
     function getFlag($field_id) {
@@ -452,39 +452,6 @@ class AA_Content {
             }
         }
         return $changes;
-    }
-
-    /** converts two letter lang code into number used for translation fields in $content4id array
-     *  cz -> 78000000, en -> 118000000, ...
-     *  you can use any two (smallcaps) letter for language
-     */
-    static function getLangName2Num($lang) {
-        return strlen($lang) ? AA_Value::MAX_INDEX*((ord($lang{0})-97)*26+(ord($lang{1})-97+1)) : 0;
-    }
-
-    /** reverse function to getLangNumber
-     *  78000000 -> cz, 78000001 -> cz, 118000000 -> en...
-     */
-    static function getLangNum2Name($langnumber) {
-        if ($langnumber<AA_Value::MAX_INDEX) {
-            return '';
-        }
-        $num = $langnumber/AA_Value::MAX_INDEX-1;
-        return chr(intval($num / 26) + 97) . chr(($num % 26)+97);
-    }
-
-    /** translate displayed lang name to standardized language code - cz -> cs
-     */
-    static function getLangName2Code($lang) {
-        $LANGS = ['cz'=>'cs'];
-        return $LANGS[$lang] ?: $lang;
-    }
-
-    /** translate displayed lang name to standardized language code - cz -> cs
-     */
-    static function getLangCode2Name($code) {
-        $LANGS = ['cs'=>'cz'];
-        return $LANGS[$code] ?: $code;
     }
 
     /** @return array - Abstract Data Structure of current object
