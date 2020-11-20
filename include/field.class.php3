@@ -31,7 +31,7 @@ use AA\Widget\Widget;
 /** for AA_Generator_*   */
 require_once __DIR__."/itemfunc.php3";
 
-class AA_Field {
+class AA_Field implements ArrayAccess {
 
     /** associative array of field data as defined in field table
      *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
@@ -44,7 +44,7 @@ class AA_Field {
     protected $aliases = null;
 
     /** class and properties for slice defined fields (replaces input_show_func functionality)  */
-    protected $widget_params;
+    protected $widget_params = [];
 
     /** cache array of all used widgets for this field
      *  @var Widget[]
@@ -55,48 +55,8 @@ class AA_Field {
      * @param array|AA_Item $data
      * @param string|null   $sli_id slice id
      */
-    function __construct($data, $sli_id=null) {
-        $this->data          = [];
-        $this->widget_params = [];
-        $this->widget        = [];
-
-        if (is_array($data)) {
-            $this->data = $data;
-        } elseif ($data instanceof AA_Item) {
-            $this->data = AA::Metabase()->getEmptyRowArray('field');  // preset all data values (empty)
-
-            $fid = $data->get_alias_subst('_#FLD_ID__');
-            if ( (strlen($fid)!=16) OR (strpos($fid,'text..')!==0) ) {
-                return;
-            }
-
-
-            $this->data['id']                = $fid;
-            $this->data['name']              = ( ($fname = $data->get_alias_subst('_#FLD_NAME','AA_NULL'))=='AA_NULL' ) ? $data->get_alias_subst('_#HEADLINE',$fid) : $fname;
-            $this->data['slice_id']          = pack_id($sli_id);
-            $this->data['input_pri']         = (int)$data->get_alias_subst('_#FLD_PRI_',100) ?: 100;
-            $this->data['input_help']        =      $data->get_alias_subst('_#FLD_HELP','');
-            $this->data['input_default']     =      $data->get_alias_subst('_#FLD_DEFA','');  // txt
-            $this->data['required']          = (int)$data->get_alias_subst('_#FLD_REQ_',0) ? 1 : 0;
-            $this->data['multiple']          = (int)$data->get_alias_subst('_#FLD_MULT',0);  // 0-2
-            $this->data['input_show_func']   = '';
-            $this->widget_params             = json_decode($data->get_alias_subst('_#FLD_PARM',''),true);
-            $this->widget_params['class']    = Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE','fld') ?: 'fld');
-            $this->data['search_pri']        = $this->data['input_pri'];
-            $this->data['html_default']      = 1;
-            $this->data['input_validate']    =      $data->get_alias_subst('_#FLD_VALI','');
-            $this->data['input_insert_func'] =      $data->get_alias_subst('_#FLD_INS_','qte');
-            $this->data['input_show']        = (int)$data->get_alias_subst('_#FLD_SHOW',1) ? 1 : 0;
-            $this->data['text_stored']       = (int)$data->get_alias_subst('_#FLD_STOR',1) ? 1 : 0;
-
-            $this->aliases = new AA_Aliases;
-            $field_aliases = array_filter( $data->getAliasNames(), function ($name) { return (0 === strpos($name,'_#FLD_AN')); } );   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
-            foreach ($field_aliases as $al) {
-                if ( IsAlias($als = '_#'.$data->get_alias_subst($al,''))) {
-                    $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), $fid, 'f_t:'.$data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al))));
-                }
-            }
-        }
+    function __construct($data) {
+        $this->data = $data;
     }
 
     /** storageColumn function
@@ -335,7 +295,6 @@ class AA_Field {
      */
     function getAaProperty($widget_properties= []) {
 
-        // huhl($this->getName(), $widget_properties);
         $translations = $this->getTranslations();
 
         // AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null, $translations=null) {
@@ -441,7 +400,152 @@ class AA_Field {
         $new->data['id']=$id;
         return $new;
     }
+
+    /** prints admin row for the field in AA UI
+     * @param bool $analyze
+     */
+    public function showFieldAdminRow($analyze) {
+        $slice_id    = $this->getSliceId();
+        $id          = $this->getId();
+        $name        = $this->getName();
+        $pri         = $this->getProperty('input_pri');
+        $required    = $this->required();
+        $show        = $this->getProperty('input_show');
+        $aliases     = [$this->getProperty('alias1'),$this->getProperty('alias2'),$this->getProperty('alias3')];
+        $separate    = (strpos($this->getProperty('input_before'),'{formbreak') !== false);
+        $text_stored = $this->getProperty('text_stored');
+        $type        = $this->getProperty('in_item_tbl') ? "in_item_tbl" : "";
+
+        $name = safe($name); $pri=safe($pri);
+
+        $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
+        if ( $separate ) {
+            $rowclass .= ' separator';
+        }
+        echo "<tr class=\"$rowclass\">
+      <td><input type=\"Text\" name=\"name[$id]\" size=50 maxlength=254 value=\"$name\"></td>";
+        echo "<td>$id</td>";
+        echo "
+        <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
+        <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
+        <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
+        echo "<td><a href=\"". StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
+        if ( $type=="in_item_tbl" ) {
+            echo "<td>". _m("Delete") ."</td>";
+        } else {
+            echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
+        }
+        $alias_list = join(array_map(function($a) { return (substr($a,0,2)=='X#') ? "<span class=disabled>$a</span>" : $a; }, $aliases),' ');
+        echo "<td class=\"tabhlp\">$alias_list</td>";
+        echo "</tr>\n";
+
+        if ($analyze AND ($type!='in_item_tbl')) {
+            $items       = DB_AA::select1('SELECT count(*) as cnt FROM item','cnt', [['item.slice_id',$slice_id, 'l']]);
+            $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item','', [
+                ['content.item_id','item.id', 'j'],
+                ['item.slice_id',$slice_id, 'l'],
+                ['field_id',$id]
+            ]);
+            $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content, item' ,'cnt', [
+                ['content.item_id','item.id', 'j'],
+                ['item.slice_id',$slice_id, 'l'],
+                ['field_id',$id],
+                ['(content.flag & 64)',64,'i']
+            ]);
+            $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
+                ['content.item_id','item.id', 'j'],
+                ['item.slice_id',$slice_id, 'l'],
+                ['field_id',$id],
+                ['(content.flag & 64)',0,'i']
+            ]);
+            $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
+                ['content.item_id','item.id', 'j'],
+                ['item.slice_id',$slice_id, 'l'],
+                ['field_id',$id],
+                ['text','']
+            ]);
+            $empty_text    = (($items_field['cnt']==$empty) AND ($items>0)) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
+
+            $text_vals = '';
+            if ($items_field['cntval'] < 5) {
+                $arr = DB_AA::select('txt', 'SELECT `text`, SUBSTRING(text,1,12) as txt FROM content, item '. DB_AA::makeWhere([['content.item_id','item.id', 'j'], ['item.slice_id',$slice_id, 'l'],['field_id',$id]]). ' GROUP BY `text`');
+                $text_vals = ' ('. join(', ', array_map( function ($str) { return '"'. ((strlen($str) == 12) ? substr($str,0,11).'…' : $str). '"'; }, $arr)). ')';
+            }
+            $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
+            $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
+            echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small></td></tr>";
+        }
+    }
+
+    // Array Access implementation --------------------------
+    /** implements ArrayAccess */
+    public function offsetSet($offset, $value) {
+        if ($offset) {
+            $this->data[$offset] = $value;
+        }
+    }
+    /** implements ArrayAccess */
+    public function offsetExists($offset) {
+        return isset($this->data[$offset]);
+    }
+    /** implements ArrayAccess */
+    public function offsetUnset($offset) {
+        unset($this->data[$offset]);
+    }
+    /** implements ArrayAccess */
+    public function offsetGet($offset) {
+        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+    }
 }
+
+/** AA_Field defined by slice */
+class AA_Field_Slicedef extends AA_Field {
+
+    function __construct(zids $zid, string $sli_id) {
+
+        $this->data = AA::Metabase()->getEmptyRowArray('field');  // preset all data values (empty)
+
+        // $fid = $data->get_alias_subst('_#FLD_ID__'); now by parameter
+        if (!($data = AA_Items::getItem($zid))) {
+            return;
+        }
+        $fid = AA_Fields::createFieldId('text',$data->getval(FIELDID_DYNAMIC_ID));
+
+        $this->data['id'] = $fid;
+        $this->data['name'] = (($fname = $data->get_alias_subst('_#FLD_NAME', 'AA_NULL')) == 'AA_NULL') ? $data->get_alias_subst('_#HEADLINE', $fid) : $fname;
+        $this->data['slice_id'] = pack_id($sli_id);
+        $this->data['input_pri'] = (int)$data->get_alias_subst('_#FLD_PRI_', 100) ?: 100;
+        $this->data['input_help'] = $data->get_alias_subst('_#FLD_HELP', '');
+        $this->data['input_default'] = $data->get_alias_subst('_#FLD_DEFA', '');  // txt
+        $this->data['required'] = (int)$data->get_alias_subst('_#FLD_REQ_', 0) ? 1 : 0;
+        $this->data['multiple'] = (int)$data->get_alias_subst('_#FLD_MULT', 0);  // 0-2
+        $this->data['input_show_func'] = '';
+        $this->widget_params = json_decode($data->get_alias_subst('_#FLD_PARM', ''), true);
+        $this->widget_params['class'] = Widget::constructClassName($data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld');
+        $this->data['search_pri'] = $this->data['input_pri'];
+        $this->data['html_default'] = 1;
+        $this->data['input_validate'] = $data->get_alias_subst('_#FLD_VALI', '');
+        $this->data['input_insert_func'] = $data->get_alias_subst('_#FLD_INS_', 'qte');
+        $this->data['input_show'] = (int)$data->get_alias_subst('_#FLD_SHOW', 1) ? 1 : 0;
+        $this->data['text_stored'] = (int)$data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
+
+        $this->aliases = new AA_Aliases;
+        $field_aliases = array_filter($data->getAliasNames(), function ($name) { return (0 === strpos($name, '_#FLD_AN')); });   // $filtered_array = array_filter($array, function ($element) use ($my_value) { return ($element != $my_value); } );
+        foreach ($field_aliases as $al) {
+            if (IsAlias($als = '_#' . $data->get_alias_subst($al, ''))) {
+                $this->aliases->addAlias(new AA_Alias($data->get_alias_subst($als), $fid, 'f_t:' . $data->get_alias_subst(str_replace('_#FLD_AN', '_#FLD_AV', $al))));
+            }
+        }
+    }
+
+    /** prints admin row for the field in AA UI
+     * @param bool $analyze
+     */
+    public function showFieldAdminRow($analyze) {  // do nothing - this field is not editable this way (at least now)
+    }
+}
+
+
 
 class AA_Fields implements Iterator, Countable {
 
@@ -460,25 +564,52 @@ class AA_Fields implements Iterator, Countable {
 
     /** Array of aliases - for caching purposes */
     var $aliases;
+
+    protected $loaded_all;
+    protected $lazy_loaded_no;
+
     /** AA_Fields function
      * @param $master_id
      * @param $collection
      */
     function __construct($master_id, $collection = 0) {
-        $this->master_id  = $master_id;
-        $this->fields     = null;
-        $this->collection = $collection;
-        $this->aliases    = null;
+        $this->master_id      = $master_id;
+        $this->fields         = [];
+        $this->collection     = $collection;
+        $this->aliases        = null;
+        $this->loaded_all     = false;
+        $this->lazy_loaded_no = 0;
     }
 
-     /** load function
-      * @param $force
-      */
-    function load($force=false) {
-        if ( !$force AND !is_null($this->fields) ) {
+    /** load function
+     * @param string $fid
+     */
+    function loadField(string $fid) {
+        if ( $this->loaded_all or !is_null($this->fields[$fid]) ) {
             return;
         }
 
+        if (++$this->lazy_loaded_no > 9) {   // if we are asking for more that 9 times, we should probably load all the fields
+           $this->load();
+           return;
+        }
+
+        if ( (strpos($fid,'text..') === 0) AND is_long_id($fields_slice = AA_Slice::getModuleProperty($this->master_id, 'fieldslice')) ) {
+            $set = new AA_Set([$fields_slice], new AA_Condition(FIELDID_DYNAMIC_ID, '==', AA_Fields::getFieldNo($fid)));     // FIELDID_DYNAMIC_ID = 'source..........'
+            $zids = $set->query();
+            $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
+        } else {
+            $data = DB_AA::select1('SELECT * FROM `field`', '', [['slice_id', $this->master_id, 'l'], ['id', $fid]]);
+            $this->fields[$fid] = $data ? new AA_Field($data) : '';
+        }
+    }
+
+
+    /** load all fields function  */
+    function load() {
+        if ( $this->loaded_all ) {
+            return;
+        }
         $this->fields = [];
         $a = DB_AA::select(['id'=> []], 'SELECT * FROM `field`', [['slice_id', $this->master_id, 'l'], ['id', '\_%', ($this->collection == 0) ? 'NOT LIKE' : 'LIKE']], ['input_pri']);
         foreach ($a as $fid => $data) {
@@ -490,29 +621,33 @@ class AA_Fields implements Iterator, Countable {
             $zids = $set->query();
             AA_Items::preload($zids);
             foreach ($zids as $zid) {
-                $field = new AA_Field(AA_Items::getItem($zid), $this->master_id);
+                $field = new AA_Field_Slicedef(new zids($zid), $this->master_id);
                 $this->fields[$field->getId()] = $field;
             }
         }
+
+        $this->loaded_all = true;
     }
+
+
 
     /** getField function
      *  @return AA_Field - the field (copy - just because of syntax - it is not possible
      *  to return null in &function())
      * @param $field_id
      */
-    function getField($field_id) {
-        $this->load();
-        return isset($this->fields[$field_id]) ? $this->fields[$field_id] : null;
+    function getField(string $field_id) {
+        $this->loadField($field_id);
+        return is_object($this->fields[$field_id]) ? $this->fields[$field_id] : null;
     }
 
     /** isField function
      *  @return bool - if the field exists
      *  @param $field_id
      */
-    function isField($field_id) {
-        $this->load();
-        return isset($this->fields[$field_id]);
+    function isField(string $field_id) {
+        $this->loadField($field_id);
+        return is_object($this->fields[$field_id]);
     }
 
     /** getProperty function
@@ -520,9 +655,9 @@ class AA_Fields implements Iterator, Countable {
      * @param $property
      * @return mixed|null
      */
-    function getProperty($field_id, $property) {
-        $this->load();
-        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getProperty($property) : null;
+    function getProperty(string $field_id, $property) {
+        $this->loadField($field_id);
+        return is_object($this->fields[$field_id]) ? $this->fields[$field_id]->getProperty($property) : null;
     }
 
     /** getAliases function
@@ -807,32 +942,32 @@ class AA_Fields implements Iterator, Countable {
      * @link https://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
-    public function rewind()  { if (is_null($this->fields)) {$this->load();} return reset($this->fields);                         }
+    public function rewind()  { $this->loaded_all || $this->load(); return reset($this->fields);                         }
 
     /** Return the current element
      *  @link https://php.net/manual/en/iterator.current.php
      *  @return AA_Field
      */
-    public function current() { if (is_null($this->fields)) {$this->load();} return current($this->fields); }
+    public function current() { $this->loaded_all || $this->load(); return current($this->fields); }
 
     /**
      * Return the key of the current element
      * @link https://php.net/manual/en/iterator.key.php
      * @return string|null scalar on success, or null on failure.
      */
-    public function key()     { if (is_null($this->fields)) {$this->load();} return key($this->fields);                }
+    public function key()     { $this->loaded_all || $this->load(); return key($this->fields);                }
 
     /** Move forward to next element
      *  @link https://php.net/manual/en/iterator.next.php
      *  @return void Any returned value is ignored.
      */
-    public function next()    { if (is_null($this->fields)) {$this->load();} return next($this->fields);                   }
+    public function next()    { $this->loaded_all || $this->load(); return next($this->fields);                   }
 
     /** Checks if current position is valid
      *  @link https://php.net/manual/en/iterator.valid.php
      *  @return bool The return value will be casted to boolean and then evaluated. Returns true on success or false on failure.
      */
-    public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->fields) !== false);    }
+    public function valid()   { $this->loaded_all || $this->load(); return (current($this->fields) !== false);    }
 
     // ----- Countable interface --------------
 
@@ -840,5 +975,5 @@ class AA_Fields implements Iterator, Countable {
      *  @link https://php.net/manual/en/countable.count.php
      *  @return int The custom count as an integer. The return value is cast to an integer.
      */
-    public function count()   { if (is_null($this->fields)) {$this->load();} return count($this->fields);                     }
+    public function count()   { $this->loaded_all || $this->load(); return count($this->fields);                     }
 }

@@ -41,88 +41,15 @@ if ($cancel) {
     go_url( StateUrl(self_base() . "index.php3"));
 }
 
-if (!IfSlPerm(PS_FIELDS)) {
+$slice = AA_Slice::getModule($slice_id);
+
+if (!IfSlPerm(PS_FIELDS) OR !$slice) {
     MsgPageMenu(StateUrl(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
     exit;
 }
 
 $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
-
-/** ShowField function
- * @param $slice_id
- * @param $id
- * @param $name
- * @param $pri
- * @param $required
- * @param $show
- * @param string $type
- * @param string[] $alias
- * @param bool $separate
- * @param $text_stored
- * @param $analyze
- */
-function ShowField($slice_id, $id, $name, $pri, $required, $show, $type, $alias, $separate, $text_stored, $analyze) {
-    $name = safe($name); $pri=safe($pri);
-
-    $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
-    if ( $separate ) {
-        $rowclass .= ' separator';
-    }
-    echo "<tr class=\"$rowclass\">
-      <td><input type=\"Text\" name=\"name[$id]\" size=50 maxlength=254 value=\"$name\"></td>";
-    echo "<td>$id</td>";
-    echo "
-        <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
-        <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
-        <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-    echo "<td><a href=\"". StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
-    if ( $type=="in_item_tbl" ) {
-        echo "<td>". _m("Delete") ."</td>";
-    } else {
-        echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
-    }
-    $alias_list = (is_array($alias) ? join($alias," ") : '');
-    echo "<td class=\"tabhlp\">$alias_list</td>";
-    echo "</tr>\n";
-
-    if ($analyze AND ($type!='in_item_tbl')) {
-        $items       = DB_AA::select1('SELECT count(*) as cnt FROM item','cnt', [['item.slice_id',$slice_id, 'l']]);
-        $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item','', [
-            ['content.item_id','item.id', 'j'],
-            ['item.slice_id',$slice_id, 'l'],
-            ['field_id',$id]
-        ]);
-        $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content, item' ,'cnt', [
-            ['content.item_id','item.id', 'j'],
-            ['item.slice_id',$slice_id, 'l'],
-            ['field_id',$id],
-            ['(content.flag & 64)',64,'i']
-        ]);
-        $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
-            ['content.item_id','item.id', 'j'],
-            ['item.slice_id',$slice_id, 'l'],
-            ['field_id',$id],
-            ['(content.flag & 64)',0,'i']
-        ]);
-        $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
-            ['content.item_id','item.id', 'j'],
-            ['item.slice_id',$slice_id, 'l'],
-            ['field_id',$id],
-            ['text','']
-        ]);
-        $empty_text    = (($items_field['cnt']==$empty) AND ($items>0)) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
-
-        $text_vals = '';
-        if ($items_field['cntval'] < 5) {
-            $arr = DB_AA::select('txt', 'SELECT `text`, SUBSTRING(text,1,12) as txt FROM content, item '. DB_AA::makeWhere([['content.item_id','item.id', 'j'], ['item.slice_id',$slice_id, 'l'],['field_id',$id]]). ' GROUP BY `text`');
-            $text_vals = ' ('. join(', ', array_map( function ($str) { return '"'. ((strlen($str) == 12) ? substr($str,0,11).'…' : $str). '"'; }, $arr)). ')';
-        }
-        $distinct_val  = ($text_stored == 1) ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]" : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
-        $distinct_text = (($items_field['cntitm']==$items) AND ($items_field[$text_stored==1 ? 'cntval':'cntnum']==1) AND ($items>1)) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct values</b>:$distinct_val":"Distinct values:$distinct_val";
-        echo "<tr><td colspan=8><small title=\"Items\">Items:$items</small> / <small title=\"Items with field\">Fields:$items_field[cnt]</small> / <small>$distinct_text</small> / <small title=\"Distinct Items with field\">Distinct Items with field:$items_field[cntitm]</small> / <small title=\"Text fields\">Text fields:$text_rows</small> / <small title=\"Numeric fields\">Numeric fields:$num_rows</small> / <small title=\"Empty fields\">$empty_text:$empty</small></td></tr>";
-    }
-}
 
 /** ShowNewField function
  */
@@ -262,7 +189,7 @@ if ($update) {
 // slice_fields are begins with underscore
 // slice fields are the fields, which we do not use for items in the slice, but
 // rather for setting parameters of the slice
-$s_fields = DB_AA::select([], 'SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias1_func, alias2, alias2_func, alias3, alias3_func, input_before, multiple, in_item_tbl, html_default, html_show, text_stored FROM field', [['slice_id', $slice_id, 'l'], ['id', '\_%', $slice_fields ? 'LIKE' : 'NOT LIKE']], ['input_pri']);
+$s_fields = $slice->getFields((bool)$slice_fields);
 
 // check duplicated aliases
 $all_aliasses = [];
@@ -335,16 +262,8 @@ FrmTabCaption(_m("Fields"), $form_buttons);
 </tr>
 <tr><td colspan="8"><hr></td></tr>
 <?php
-if ( isset($s_fields) and is_array($s_fields)) {
-    foreach ( $s_fields as $v) {
-        $type = ( $v['in_item_tbl'] ? "in_item_tbl" : "" );
-
-        if ( $update ) { // get values from form
-            ShowField($slice_id, $v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, [$v['alias1'], $v['alias2'], $v['alias3']], strpos($v['input_before'],'{formbreak')!==false, $v['text_stored'], $_REQUEST['analyze'] OR $_REQUEST['fix']);
-        } else {
-            ShowField($slice_id, $v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, [$v['alias1'], $v['alias2'], $v['alias3']], strpos($v['input_before'],'{formbreak')!==false, $v['text_stored'], $_REQUEST['analyze'] OR $_REQUEST['fix']);
-        }
-    }
+foreach ( $s_fields as $fld) {
+    $fld->showFieldAdminRow($_REQUEST['analyze'] OR $_REQUEST['fix']);
 }
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 

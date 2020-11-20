@@ -294,18 +294,32 @@ function GetItemFromContent($content) {
     if ( !is_object($content) ) {
         return null;
     }
-    // reuse slice, if possible
-    $slice = AA_Slice::getModule($content->getSliceID());
-    return new AA_Item($content, $slice ? $slice->aliases() : '');
+    return new AA_Item($content, new AA_Aliasgenerator_Slice($content->getSliceID()));
 }
+
+class AA_Aliasgenerator_Slice {
+    protected $slice_id;
+
+    public function __construct(string $slice_id) {
+        $this->slice_id = $slice_id;
+    }
+
+    public function getAliases() {
+        $slice = AA_Slice::getModule($this->slice_id);
+        return $slice ? $slice->aliases() : [];
+    }
+}
+
+
 
 class AA_Item {
     /** @var ItemContent  */
-    var $content4id;     // ItemContent array for this Item (like from GetItemContent)
-    var $format;         // format string with aliases
-    var $remove;         // remove string
-    var $aliases;        // array of usable aliases
-    var $parameters;     // optional additional parameters - copied from itemview->parameters
+    var $content4id;        // ItemContent array for this Item (like from GetItemContent)
+    var $format;            // format string with aliases
+    var $remove;            // remove string
+    var $aliases;           // array of usable aliases
+    protected $aliases_gen; // alias generator for alias lazy load
+    var $parameters;        // optional additional parameters - copied from itemview->parameters
 
     /** item function
      *  Constructor
@@ -321,7 +335,13 @@ class AA_Item {
      */
     function __construct($content4id='', $aliases='', $format='', $remove='', $param=false){
         $this->set_data($content4id);
-        $this->aliases      = $aliases;
+        if (is_object($aliases)) {
+            $this->aliases = null;
+            $this->aliases_gen = $aliases;
+        } else {
+            $this->aliases = $aliases;
+            $this->aliases_gen = null;
+        }
         $this->format       = $format;
         $this->remove       = $remove;
         $this->parameters   = ( $param ? $param : []);
@@ -553,10 +573,17 @@ class AA_Item {
         return con_url( $this->getbaseurl($redirect, $no_sess), $url_param );
     }
 
+    protected function loadAliases() {
+        if (is_null($this->aliases)) {
+            $this->aliases = $this->aliases_gen ? $this->aliases_gen->getAliases() : [];
+        }
+    }
+
     /**
      *  get array of alias names
      */
     public function getAliasNames() {
+        is_null($this->aliases) && $this->loadAliases();
         return array_keys($this->aliases);
     }
 
@@ -602,6 +629,8 @@ class AA_Item {
      * @return if|mixed|null
      */
     function get_alias_subst( $alias, $default=null, $use_field="" ) {
+        is_null($this->aliases) && $this->loadAliases();
+
         // use_field is for expanding aliases with loop - prefix {@
         $ali_arr = $this->aliases[$alias];
         // is this realy alias?
@@ -754,10 +783,10 @@ class AA_Item {
      */
     function f_2($col, $param="") {
         // first_child try translation to right language
-        if (!strlen($txt = $this->getval($col, AA_Content::getLangName2Num(AA::$lang)))) {
+        if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num(AA::$lang)))) {
             // if not present - translate to default language of the slice
             $translations = AA_Slice::getModuleProperty($this->getSliceID(),'translations');
-            if (!strlen($txt = $this->getval($col, AA_Content::getLangName2Num($translations[0])))) {
+            if (!strlen($txt = $this->getval($col, AA_Langs::getLangName2Num($translations[0])))) {
                 // last try the 0 index (if the field was not set to translation)
                 $txt = $this->getval($col);
             }
