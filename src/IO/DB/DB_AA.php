@@ -58,6 +58,19 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
         }
     }
 
+
+    /**
+     * @deprecated Used just as compatibility layer for external scripts calling $db->Record['name']
+     * @param $name
+     * @return array|mixed
+     */
+    public function __get($name) {
+        if ($name == 'Record') {
+            return $this->record();
+        }
+    }
+
+
     /**
      *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
      *           $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
