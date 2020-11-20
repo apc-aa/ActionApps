@@ -293,7 +293,7 @@ class AA_Langs {
     /** returns lang code ('cz', 'en', 'en-utf8', 'de',...) from given $lang_file or from default
      */
     public static function getLang($lang_file) {
-        $lang_code = substr($lang_file.'_', 0, strpos($lang_file,'_'));
+        $lang_code = substr($lang_file, 0, strpos($lang_file.'_','_'));
         return isset(self::$LANGS[$lang_code]) ? $lang_code : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
     }
 
