@@ -6890,7 +6890,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             return $img_short;
         }
         if ($info == 'im') {
-            return "<img src=\"$img_short\" $param2 border=0". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+            return "<img src=\"$img_short\" $param2 border=0 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
         }
 
         $a = @getimagesize(str_replace('&amp;', '&', $img_url));
@@ -6907,10 +6907,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
             //case 'im':      quick version - img without width and height - see above
-            case 'imgb':    $param2 .= ' border="0"';  // no break!!!
+            case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                return "<img src=\"$img_short\" ". $a[3] ." $alt $param2 />";
+                return "<img src=\"$img_short\" loading=lazy ". $a[3] ." $alt $param2 />";
         }
         return '';
     }
