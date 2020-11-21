@@ -883,12 +883,19 @@ class AA_Module_Site extends AA_Module {
         }
         FrmTabEnd();
 
-        echo "<form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
-        FrmTabCaption();
+        $form_buttons= ['submit',
+                        "cancel"=> [
+                            'value'=>_m('Show History'),
+                            "url"  =>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]")
+                        ]
+        ];
+
+        echo "<br><form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
+        FrmTabCaption('',$form_buttons);
         ModW_HiddenRSpotId();
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
-        FrmTabEnd(['submit', "cancel"=> ['value'=>_m('Show History'), "url"=>\AA\Util\ChangesMonitor::getHistoryUrl("S.$spot_data[id]")]]);
+        FrmTabEnd($form_buttons);
         echo "</form>";
     }
 
