@@ -66,9 +66,10 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     if ($_POST['testall']) {
         $optimizer = AA_Serializable::factory($optimize_class);
         if ($optimizer->hasAction('test')) {
-            $testresult[$optimize_class] = $optimizer->test();
+            if ( !($testresult[$optimize_class] = $optimizer->test())) {
+                $Msg .= $optimizer->report();
+            }
         }
-        $Msg .= $optimizer->report();
     }
 
     $addclass = isset($testresult[$optimize_class]) ? ($testresult[$optimize_class] ? 'class=okmsg' : 'class=err') : '';
