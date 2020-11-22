@@ -37,12 +37,13 @@ if (!IsSuperadmin()) {
 set_time_limit(max(300,ini_get('max_execution_time')));   // 300 seconds (at least)
 
 $Msg = '';
+$testresult = [];
 
 // php4 returns class names in lower case, so we need itin lower case
 if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
     /** @var AA_Optimize $optimizer */
     $optimizer = AA_Serializable::factory($_GET['test']);
-    $optimizer->test();
+    $testresult[$_GET['test']] = $optimizer->test();
     $Msg .= $optimizer->report();
 }
 
@@ -50,6 +51,7 @@ if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0
     $optimizer = AA_Serializable::factory($_GET['repair']);
     $optimizer->repair();
     $Msg .= $optimizer->report();
+    $testresult[$_GET['repair']] = $optimizer->test();
 }
 
 $optimize_names        = [];
@@ -60,6 +62,16 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     $optimize_names[]        = $optimize_class::name();
     $description             = $optimize_class::description();
     $actions                 = $optimize_class::actions();
+
+    if ($_POST['testall']) {
+        $optimizer = AA_Serializable::factory($optimize_class);
+        if ($optimizer->hasAction('test')) {
+            $testresult[$optimize_class] = $optimizer->test();
+        }
+        $Msg .= $optimizer->report();
+    }
+
+    $addclass = isset($testresult[$optimize_class]) ? ($testresult[$optimize_class] ? 'class=okmsg' : 'class=err') : '';
 
     $row = "
     <div>
@@ -73,7 +85,7 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
 
     $optimize_descriptions[] = $row ."
       </div>
-      <div>$description</div>
+      <div $addclass>$description</div>
     </div>";
 }
 
@@ -82,7 +94,8 @@ $apage->setTitle(_m("Admin - Optimize a Repair ActionApps"));
 $apage->printHead($err, $Msg);
 
 //$form_buttons = array ("submit");
-$form_buttons   = [];
+$form_buttons = ["testall" => ["type"=>"submit", "value"=>_m("Test All")]];
+
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
 echo getFrmTabCaption(_m('Optimalizations'), $form_buttons, 'class="aa-table"');

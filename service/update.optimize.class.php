@@ -43,6 +43,14 @@ class AA_Optimize implements \AA\Util\NamedInterface {
     /** implemented actions within this class */
     function actions()      { return ['test','repair']; }
 
+    /** is action present in this class
+     * @param string $action
+     * @return bool
+     */
+    public function hasAction(string $action) : bool {
+        return in_array( $action, $this->actions());
+    }
+
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
     function isType($type)  { return in_array($type, []); }
 
