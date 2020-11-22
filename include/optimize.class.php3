@@ -625,7 +625,7 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
         $db = getDb();
         foreach ( $db->table_names() as $table ) {
             $table_name = $table['table_name'];
-            $db->query("SHOW CREATE TABLE $table_name" );
+            $db->query("SHOW CREATE TABLE `$table_name`" );
             if (!$db->next_record()) {
                 continue;
             }
