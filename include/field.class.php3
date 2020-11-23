@@ -174,7 +174,7 @@ class AA_Field implements ArrayAccess {
      * @param bool  $insert
      * @return AA_Value|null
      */
-    function readValueFromOldtypeForm(array $oldcontent4id, bool $insert) {
+    function readValueFromOldtypeForm($oldcontent4id, $insert) {
 
         $fid = $this->getId();
         // "v" prefix - database field var
