@@ -356,6 +356,10 @@ if (!$my_item_id) {
 }
 if ($debugfill) huhl("Debugfill insert=",$insert);
 
+
+if (!is_array($oldcontent4id)) {
+    $oldcontent4id = [];
+}
 // Fills also global variable $oldcontent4id (which is NOT! DB quoted)
 // (so $oldcontent4id is incompatible with $content4id - should be fixed
 // by using ItemContent object in near future)

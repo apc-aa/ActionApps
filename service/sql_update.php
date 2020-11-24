@@ -93,11 +93,16 @@ if ( !constant('ACCESS_CODE') OR (strlen(constant('ACCESS_CODE'))<10) ) {
     exit;
 }
 
-if (!is_callable('myspecialchars')) {
-    function myspecialchars( $var, $double_encode=true) {
-        return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1', $double_encode);
-    }
-}
+// need config.php3 to set db access, and phplib, and probably other stuff
+require_once __DIR__."/../include/config.php3";
+require_once __DIR__."/../include/locsess.php3";   // DB_AA definition
+require_once __DIR__."/../include/util.php3";
+require_once __DIR__."/../include/zids.php3";   // qquote, is_long_id, ...
+require_once __DIR__."/../include/formutil.php3";   // GetHtmlTable
+// do not reorder those requires because of metabase and varset dependency
+require_once __DIR__."/../include/metabase.class.php3";
+require_once __DIR__."/../include/varset.php3";
+
 
 if (!$_GET['silent']) {
     echo '<form name="f" action="' .$_SERVER['PHP_SELF'] .'">
@@ -119,122 +124,6 @@ if ( (strlen($_GET['acccode'])<10) OR ($_GET['acccode']!=constant('ACCESS_CODE')
     exit;
 }
 
-// need config.php3 to set db access, and phplib, and probably other stuff
-require_once __DIR__."/../include/config.php3";
-require_once __DIR__."/../include/locsess.php3";   // DB_AA definition
-
-/** Helper functions
- *  We are implementing all the functions here again, altrough you will be able
- *  to find them implemented in other parts of AA. The reason is, that
- *  we we want this script standalone - without any unnecessary dependencies
- */
-
-if (!is_callable('getDB')) {
-    $spareDBs = [];
-
-    /** getDB function */
-    function getDB() {
-        global $spareDBs;
-        if (!($db = array_pop($spareDBs))) {
-            $db = new DB_AA(['type' => DB_TYPE, 'host' => DB_HOST, 'database' => DB_NAME, 'user' => DB_USER, 'password' => DB_PASSWORD]);
-        }
-        return $db;
-    }
-
-    /** freeDB function */
-    function freeDB($db) {
-        global $spareDBs;
-        array_push($spareDBs,$db);
-    }
-}
-
-
-if (!is_callable('_m')) {
-    function _m($id, $params = 0) {
-        $retval = $id;
-        if (is_array($params)) {
-            $foo = "#$&*-";
-            $retval = str_replace ('\%', $foo, $retval);
-            for ($i=0, $ino=count($params); $i<$ino; ++$i) {
-                $retval = str_replace ("%".($i+1), $params[$i], $retval);
-            }
-            $retval = str_replace ($foo, "%", $retval);
-        }
-        return $retval;
-    }
-}
-
-
-/** GetTable2Array function
- *  function converts table from SQL query to array
- * @param $SQL
- * @param $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
- * @param $values - return array's val - 'aa_all' |
- *                                 'aa_mark' |
- *                                 'aa_fields' |
- *                                 <database_column> |
- *                                 'unpack:<database_column>' |
- *                                 true
- */
-if (!is_callable('GetTable2Array')) {
-    function GetTable2Array($SQL, $key="id", $values='aa_all') {
-        $db = getDB();
-        $db->query($SQL);
-        while ($db->next_record()) {
-            if ($values == 'aa_all') {
-                $val = $db->record();
-            } elseif ($values == 'aa_mark') {
-                $val = true;
-            } elseif (substr($values,0,7) == 'unpack:') {
-                $val = unpack_id($db->f(substr($values,7)));
-            } elseif (is_string($values) AND isset( $db->record($values) )) {
-                $val = $db->record($values);
-            } else {  // true or 'aa_fields'
-                $val = $db->record();
-            }
-
-            if ( $key == 'aa_first' ) {
-                freeDB($db);
-                return $val;
-            } elseif ( ($key == "NoCoLuMn") OR !$key ) {
-                $arr[] = $val;
-            } elseif ( substr($key,0,7) == 'unpack:' ) {
-                $arr[unpack_id($db->f(substr($key,7)))] = $val;
-            } else {
-                $arr[$db->f($key)] = $val;
-            }
-        }
-        freeDB($db);
-        return isset($arr) ? $arr : false;
-    }
-}
-
-if (!is_callable('unpack_id')) {
-    function unpack_id($packed_id){
-        if ((string)$packed_id == "0") {
-            return "0";
-        }
-        $foo = bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-        return (string)$foo;
-    }
-}
-
-if (!is_callable('q_pack_id')) {
-    function q_pack_id($unpacked_id){
-        return quote(((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id))));
-    }
-}
-
-if (!is_callable('quote')) {
-    function quote($str) {
-      return addslashes($str);
-    }
-}
-
-
-// do not reorder those requires because of metabase and varset dependency
-require_once __DIR__."/metabase.class.php3";
-require_once __DIR__."/varset.php3";
 require_once __DIR__."/update.optimize.class.php";
 
 class AA_SQL_Updater {
