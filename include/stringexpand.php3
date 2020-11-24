@@ -4332,7 +4332,8 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
             if (!empty($itemcontent) AND !$itemcontent->isEmpty() AND ($slice = AA_Slice::getModule($itemcontent->getSliceId()))) {
 
                 // Use right language (from slice settings) - languages are used for button texts, ...
-                mgettext_bind(AA::$lang, 'output');
+                //mgettext_bind($slice->getLang(), 'output');
+                mgettext_bind(get_mgettext_lang(), 'output');    // the lang itself should be set in AA::$lang and AA::$encoding (maybe from current site language)
 
                 if ( !($field = $slice->getField($field_id)) ) {
                     return '';
@@ -7236,7 +7237,7 @@ class AA_Stringexpand_Serverload extends AA_Stringexpand_Nevercache {
 
 
 /** @return string - random string of given length
- *  (for more advanced version see default_fnc_rnd)
+ *  (for more advanced version see AA_Generator_Rnd)
  *  Usage: {randomstring:5}
  */
 class AA_Stringexpand_Randomstring extends AA_Stringexpand_Nevercache {

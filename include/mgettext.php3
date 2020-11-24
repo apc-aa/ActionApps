@@ -101,14 +101,16 @@ function mgettext_bind($lang, $section, $cache=false) {
  *   @param string $id       Text to be translated. Escape % by backslash (\%).
  *   @param array $params    You may use %1,%2,... in $id and supply an array of params,
  *                           which are substituted for %i, e.g.
- *                           _m("Hello %1, how are you?",array($username))
+ *                           _m("Hello %1, how are you?", [$username])
  *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
  *                 returns $id, i.e. the English version
  */
 function _m($id, $params = 0) {
     global $_m;
 
-    //huhl($id, $_m[$id], $_m);
+    //static $count = 0;
+    //$arr = ['<hr>', ++$count, $id, $_m[$id], $GLOBALS['mgettext_domain']];
+    //array_walk($arr, function ($v) { echo "<br>".$v;});
 
     $retval = $_m[$id];
     if (!$retval) {
