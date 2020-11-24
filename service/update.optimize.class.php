@@ -306,8 +306,8 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
             // backup table and use the new one
             $this->message(_m('backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1', [$tablename]));
             $this->query("DROP TABLE IF EXISTS `bck_$tablename`");
-            $this->query("ALTER TABLE `$tablename` RENAME `bck_$tablename");
-            $this->query("ALTER TABLE `tmp_$tablename` RENAME `$tablename");
+            $this->query("ALTER TABLE `$tablename` RENAME `bck_$tablename`");
+            $this->query("ALTER TABLE `tmp_$tablename` RENAME `$tablename`");
             $this->message(_m('%1 done.', [$tablename]));
         }
         return true;
