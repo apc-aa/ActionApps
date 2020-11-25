@@ -200,7 +200,7 @@ class AA_Searchbar extends AA_Storable {
         if ( !$srchbr_akce ) {     // no searchbar action
             return;
         }
-        list( $akce, $answer, $confirm ) = ParamExplode($srchbr_akce);
+        [ $akce, $answer, $confirm ] = ParamExplode($srchbr_akce);
 
         switch ( $akce ) {
             case 'bookmark':    // bookmark as user bookmark (just for the user)
@@ -312,7 +312,7 @@ class AA_Searchbar extends AA_Storable {
     function setFromBookmark($key) {
         if ( $this->bookmarks->is_defined($key) ) {
             $this->resetSearchAndOrder();
-            $state = $this->bookmarks->get($key);
+            $state = $this->bookmarks->getState($key);
             $this->setFromState($state);
             $this->bookmarks->setLastUsed($key);
         }
@@ -585,7 +585,7 @@ class AA_Searchbar extends AA_Storable {
      */
     function print_order_bar($bar) {
         $order_fields = $this->fields->getOrderArray();
-        list($dir, $fld) = ( isset($this->order_row[$bar]) AND is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
+        [$dir, $fld] = ( isset($this->order_row[$bar]) AND is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
 
         $searchtext  = _m('Order');
         $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">". GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
@@ -704,8 +704,8 @@ class AA_Bookmarks {
      * @param string $param key
      * @return array
      */
-    function get($key) : array {
-        return $this->is_defined($key) ? $this->bookmarks[$key]['state'] : [];
+    function getState($key) : array {
+        return ($this->is_defined($key) AND is_array($this->bookmarks[$key]['state'])) ? $this->bookmarks[$key]['state'] : [];
     }
 
     /** getKeeyName function
