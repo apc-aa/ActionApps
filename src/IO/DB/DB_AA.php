@@ -318,7 +318,20 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
                 $where[] = "$name LIKE " . qquote($value . '%');
                 continue;
             } elseif (($type == 's<>') or ($type == 's!=')) {
-                $where[] = "$name <> " . qquote($value);
+                if (is_array($value)) {
+                    switch (count($value)) {
+                        case 0:
+                            // no condition
+                            break;
+                        case 1:
+                            $where[] = "$name <> " . qquote(reset($value));
+                            break;
+                        default:
+                            $where[] = "$name NOT IN (" . join(',', array_map('qquote', $value)) . ")";
+                    }
+                } else {
+                    $where[] = "$name <> " . qquote($value);
+                }
                 continue;
             } elseif (($type == 'l<>') or ($type == 'l!=')) {
                 $where[] = "$name <> " . xpack_id($value);

@@ -152,7 +152,7 @@ class Files {
     static function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
-        $dest_file = Files::makeFile($dest_dir, Files::escape($filename ? $filename : basename($up_file['name'])));
+        $dest_file = Files::makeFile($dest_dir, Files::escape($filename ?: basename($up_file['name'])));
         if ($dest_file === false) {
             Files::lastErr(FILE_ERROR_NO_DESTINATION, _m('No destination file specified'));  // set error code
             return false;
