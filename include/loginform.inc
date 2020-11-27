@@ -72,7 +72,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 
  <br><br>
 
-<table>
+<table style="margin: 0px auto;">
   <tr align="center">
    <td><?php echo $login_msg; ?></td>
   </tr>
