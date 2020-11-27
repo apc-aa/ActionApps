@@ -368,7 +368,7 @@ class Action {
                 break;
             }
             case "string2id": {
-                // from the same string we create allways the same id. This is
+                // from the same string we create always the same id. This is
                 // true in case user provide param (which is strongly
                 // recommended or within the same slice (because used slice_id)
                 $string = $itemContent->GetValue($from) . get_if($this->params, $GLOBALS['slice_id']);

@@ -33,7 +33,7 @@ if ( $answer )    {
 
 $err = [];  // error array (just for initializing variable)
 
-// we allways sending link id - it prevent us of bug with 'Back' browser button
+// we always sending link id - it prevent us of bug with 'Back' browser button
 if ( $lid ) {
    $r_state['link_id'] = $lid;
 }

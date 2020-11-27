@@ -275,7 +275,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
 
     // status_code can be redefined in 'Mapping'
     // Use it only when 'Value' is used for status_code (we do not want to copy
-    // status_code field from source item (since it is allways '1')
+    // status_code field from source item (since it is always '1')
 
     if ( !(($map['status_code.....']['feedmap_flag'] == FEEDMAP_FLAG_VALUE) AND
           ((int)$new4id['status_code.....'][0]['value'] > 0)) ) {

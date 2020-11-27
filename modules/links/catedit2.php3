@@ -159,7 +159,7 @@ if ($cancel)
     go_url( StateUrl(self_base(). "index.php3"));
 
 
-// we allways sending cat id - it prevent us of bug with 'Back' browser button
+// we always sending cat id - it prevent us of bug with 'Back' browser button
 if ( $cid )
    $r_state['cat_id'] = $cid;
 

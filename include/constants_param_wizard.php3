@@ -855,11 +855,11 @@ $TRANS_ACTIONS["items"]['value'] = [
 
 $TRANS_ACTIONS["items"]["string2id"] = [
     "name"=>_m("Store as long id"),
-    "desc"=>_m("Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create allways the same id."),
+    "desc"=>_m("Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create always the same id."),
     "params"=> [
         [
             "name"=>_m("string to add"),
-              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate allways the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."),
+              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."),
               "example"=>"This string is up to you (any length)",
               "type"=>"STR"
         ]

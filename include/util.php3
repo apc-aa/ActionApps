@@ -222,7 +222,7 @@ function ParamImplode($param) {
 
 /** Converts float value into php form of float */
 function PhpFloat($value) {
-    // internaly uses PHP float allways with decimal point so we have to convert
+    // internaly uses PHP float always with decimal point so we have to convert
     // twice, since (float) typecasting is unfortunatelly LOCALE dependent. Grr
     return str_replace(',', '.',(float)str_replace(',', '.', trim($value)));
 }
@@ -1384,7 +1384,7 @@ function GetAAImage($filename, $alt, $width, $height, $add='', $add_path='') {
     if ( $width ) {
         $size = "width=\"$width\" height=\"$height\"";
     } else {
-        // this should not be used - the width should be allways provided
+        // this should not be used - the width should be always provided
         $im_size = @getimagesize($image_path);
         $size = $im_size[3];
     }

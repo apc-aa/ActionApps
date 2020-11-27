@@ -1,7 +1,7 @@
 <?php
 /**
  * Event class - this class invokes various event handlers based on input
- * event. Basicaly - AA allways should call event class instance, if any
+ * event. Basicaly - AA always should call event class instance, if any
  * event ocures (new item, item changed, ...). The event istance will look
  * into a table, if any handler waits for the event. If so, all matched
  * handlers are called.
@@ -62,7 +62,7 @@ class aahandler {
      */
     function matches( $type, $slice, $slice_type ) {
         if ( !(isset($this->conds) AND is_array($this->conds)) ) {
-            return true;   // no conditions are set for handler - do it allways
+            return true;   // no conditions are set for handler - do it always
         }
         foreach ( $this->conds as $condition => $value ) {
             if ( $$condition != $value ) {

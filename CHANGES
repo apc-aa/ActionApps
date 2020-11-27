@@ -652,7 +652,7 @@ The changes could be tracked on:
          - {mail:...} now supports attachments:
              {mail:1:test@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz:::::["https#://test.org/img1.png","https#://test.org/img2.png"]}
              {mail:1:test@ecn.cz:test mail:Hi, I am body of mail:utf-8:actionapps@ecn.cz:::::{@file............:json}}
-         - new {lang} - better than {xlang} - returns allways valid lang code
+         - new {lang} - better than {xlang} - returns always valid lang code
            - not only in sitemodule
          - new {tooltip:myinfoicon:<b>My tip</b><br>tip text} which creates
            popup tooltip. All the JS libraries are automaticaly loaded. You must
@@ -1951,7 +1951,7 @@ The changes could be tracked on:
            recompute the number of links or whatever
          - new possibility to use "min" and "max" functions in {aggregate:...}
          - new {string2id:<string>} which generates some id for specified
-           string. The ID is allways the same for the same string, which is
+           string. The ID is always the same for the same string, which is
            sometimes good for importing the data into AA - mailny when you need
            to make some hierarchy of the items
          - new possibility to change user password just by
@@ -2114,7 +2114,7 @@ The changes could be tracked on:
            so we use this
          - fix {if} - works well with floating-point numbers, it understands both
            decimal point as well as decimal comma.
-           {if} allways compares numerically.
+           {if} always compares numerically.
          - better permission handling with anonymous insert
 12-08-14 - new experimental {array} and {table} syntax
 (honzam)
@@ -3069,7 +3069,7 @@ The changes could be tracked on:
            the template slice, but also from current slice on "Admin"->"Fields"
            page - good for creating set of similar fields in the slice
          - now you can use _#this "alias" with all alias functions - it is
-           allways expanded before the function is invoked and is replaced
+           always expanded before the function is invoked and is replaced
            by {field_id........}, where field_id is the field for which is
            the alias defined. Use it like:
               vid=23&cmd[]=x-23-_#this for f_v, or
@@ -6404,7 +6404,7 @@ The new structure allows
            are not scanned recursively
          - bug fixed in perm_ldap.php3: ($flags && 1) changed to ($flags & 1)
            for bitwise AND
-00-03-20 - fulltext preview window go allways on top, now
+00-03-20 - fulltext preview window go always on top, now
          - categories and slices too are sorted in listboxes
            in se_catogory.php3
 00-03-17 - javascript in category setting supports NN 3.0 too

@@ -1791,7 +1791,7 @@ $_m["Store as long id"]
  = "";
 
 // include/constants_param_wizard.php3, row 1154
-$_m["Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create allways the same id."]
+$_m["Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create always the same id."]
  = "";
 
 // include/constants_param_wizard.php3, row 1156
@@ -1799,7 +1799,7 @@ $_m["string to add"]
  = "";
 
 // include/constants_param_wizard.php3, row 1157
-$_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate allways the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
+$_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
  = "";
 
 // include/constants_param_wizard.php3, row 1163

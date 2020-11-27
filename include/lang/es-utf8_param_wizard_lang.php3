@@ -1869,7 +1869,7 @@ $_m["Store as long id"]
  = "Almacene tan largo como el id";
 
 // include/constants_param_wizard.php3, row 1154
-$_m["Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create allways the same id."]
+$_m["Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create always the same id."]
  = "Crea un id largo desde la cadena. La cadena es combinada con el parámetro!! o con el identificador de canal slice_id (si el parámatro no se incluye. Desde la misma cadena (y el mismo parámetro) se crea siempre el mismo id.";
 
 // include/constants_param_wizard.php3, row 1156
@@ -1877,7 +1877,7 @@ $_m["string to add"]
  = "cadena a añadir";
 
 // include/constants_param_wizard.php3, row 1157
-$_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate allways the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
+$_m["this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."]
  = "Este parámetro será añadido a la cadena antes de la conversión (la razon es para abolir cadenas vacias y también para no generar siempre el mismo id para cadenas similares (desde diferentes importaciones). Si este parámetro no se especifica, el identificador del canal slice_id será utilizado.";
 
 // include/constants_param_wizard.php3, row 1163

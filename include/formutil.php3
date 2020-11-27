@@ -2858,7 +2858,7 @@ function FrmTabs( $tabs, $tabsId ) {
 
 /** GetHtmlTable function
  * Returns table based on config array
- * @param string[] $content
+ * @param array[] $content
  * @param string   $mode = td | th | key
  * @param string   $caption
  * @param bool     $clasic

@@ -108,27 +108,28 @@ function AafinderViewLink($view_id, $slice_id) {
     return $view->jumpLink($view_id." -  ".$view->f("name")).' ('. AA_Module::getModuleName($slice_id) .') &nbsp; '. ChangesMonitor::getHistoryLink("V.$view_id");
 }
 
-function query_search($where) {
-    $db = getDB();
-    $sql="SELECT distinct slice.name as slice_name, slice.id as slice_id, item.* from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE $where ORDER BY slice_name, short_id";
-    $db->query($sql);
+function query_search(array $where, string $phrase) {
+    $where[] = ['slice.id', 'item.slice_id', 'j'];
+    $where[] = ['content.item_id', 'item.id', 'j'];
 
-    $num_rows = $db->num_rows();
+    $arr = DB_AA::select([], 'SELECT distinct slice.name as slice_name, slice.id as slice_id, item.* from slice, item, content', $where, ['status_code','slice_name','short_id']);
 
-    $output = $num_rows." "._m('Show results with string')."  <b><i>$where</i></b><br>";
+    $output = count($arr)." "._m('Show results with string')."  <b><i>$phrase</i></b><br>";
 
     $items = [[_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
-    while ($db->next_record()) {
-        $slice_name = $db->f('slice_name');
-        $slice_id   = (string)bin2hex($db->f('slice_id'));
-        $short_id   = $db->f('short_id');
-        $long_id    = (string)bin2hex($db->f('id'));
+    foreach ($arr as $f) {
+        $slice_name = $f['slice_name'];
+        $slice_id   = (string)bin2hex($f['slice_id']);
+        $short_id   = $f['short_id'];
+        $long_id    = (string)bin2hex($f['id']);
 
-        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $db->f('status_code'), date('Y-m-d H:i',$db->f('post_date')), date('Y-m-d H:i',$db->f('last_edit')),$db->f('edited_by')];
+        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
 }
+
+
 
 function PrintItemInfo($item_id) {
     $zid = new zids($item_id);
@@ -343,7 +344,7 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
                 echo '<hr>';
             }
         } else {
-            print query_search("content.text = '". quote($_REQUEST['findtext'])."' AND content.field_id = 'seo.............'");
+            print query_search([["content.text", $_REQUEST['findtext']], ['content.field_id', 'seo.............']], $_REQUEST['findtext']);
         }
     }
 
@@ -430,16 +431,25 @@ if ($_GET['go_finditem'] && $_GET['finditem']) {
             echo '<hr>';
         }
     } else {
-        print query_search("content.text = '". quote($_GET['finditem'])."' AND content.field_id = 'seo.............'");
+        print query_search([["content.text", $_GET['finditem']], ['content.field_id', 'seo.............']], $_GET['finditem']);
     }
 }
 
 if ($_GET['go_finditem_edit'] && $_GET['finditem_edit'] && $_GET['finditem_edit_op']) {
     switch ($_GET['finditem_edit_op']) {
-        case 'LIKE': print query_search("content.text LIKE '%". addcslashes(quote($_GET['finditem_edit']))."%'");break;
-        case '=':    print query_search("content.text = '". quote($_GET['finditem_edit'])."'");break;
-        case 'item': print query_search("item.short_id = '". quote($_GET['finditem_edit'])."'");break;
-        case 'seo':  print query_search("content.text = '". quote($_GET['finditem_edit'])."' AND content.field_id = 'seo.............'");break;
+        case 'LIKE':
+            $qstring =  '%' . addcslashes(quote($_GET['finditem_edit']),'_%') . '%';
+            print query_search([['content.text', $qstring, 'LIKE']], "LIKE $qstring");
+            break;
+        case '=':
+            print query_search([['content.text', $_GET['finditem_edit']]], $_GET['finditem_edit']);
+            break;
+        case 'item':
+            print query_search([['item.short_id', $_GET['finditem_edit'], 'i']], $_GET['finditem_edit']);
+            break;
+        case 'seo':
+            print query_search([['content.text', $_GET['finditem_edit']], ['content.field_id', 'seo.............']], $_GET['finditem_edit']);
+            break;
     }
 }
 
