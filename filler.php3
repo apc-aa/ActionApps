@@ -237,19 +237,27 @@ function SendOkPage($txt, $new_ids = []) {
                 $ret['report'] = $txt['report'];
             }
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
-            foreach($new_ids as $long_id) {
-                $item = AA_Item::getItem(new zids($long_id, 'l'));
-                $text = AA::Stringexpander()->unalias($retcode, '', $item);
-                if ($text AND $item) {
-                    $slice = AA_Slice::getModule($item->getSliceID());
-                    if (!empty($slice)) {
-                        $charset = $slice->getCharset();
-                        if ($charset != 'utf-8') {
-                            $text = ConvertCharset::singleton()->Convert($text, $charset,'utf-8');
+
+            if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
+
+                 $ga = new PHPGangsta_GoogleAuthenticator();
+                 $secret = $ga->createSecret();
+                 $ret[reset($new_ids)] = 'Secret is: '.$secret .  $ga->getQRCodeGoogleUrl('Blog', $secret);
+            } else {
+                foreach ($new_ids as $long_id) {
+                    $item = AA_Item::getItem(new zids($long_id, 'l'));
+                    $text = AA::Stringexpander()->unalias($retcode, '', $item);
+                    if ($text and $item) {
+                        $slice = AA_Slice::getModule($item->getSliceID());
+                        if (!empty($slice)) {
+                            $charset = $slice->getCharset();
+                            if ($charset != 'utf-8') {
+                                $text = ConvertCharset::singleton()->Convert($text, $charset, 'utf-8');
+                            }
                         }
                     }
+                    $ret[$long_id] = $text;
                 }
-                $ret[$long_id] = $text;
             }
             $ret = json_encode($ret);
             if ($_REQUEST["ret_code_js"]) {
@@ -364,7 +372,7 @@ if (!is_array($oldcontent4id)) {
 // (so $oldcontent4id is incompatible with $content4id - should be fixed
 // by using ItemContent object in near future)
 ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
-list($fields, $prifields) = $slice->fields();
+[$fields, $prifields] = $slice->fields();
 
 if (!(isset($prifields) AND is_array($prifields))) {
     SendErrorPage(["fatal"=>_m("No fields defined for this slice")]);

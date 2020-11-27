@@ -40,7 +40,7 @@ class TfaWidget extends \AA\Widget\Widget
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
-        $widget = "\n<div id=\"ajaxv_$base_id\">";
+        $widget = "\n<div id=\"ajaxv_$base_id\" data-aa-alias=\"". myspecialchars(base64_encode('AA_2FA_QR')) ."\">";
         $widget .= "\n<div class=\"aa-2fa-changeform aa-widget aa-widget-2fa\" id=\"widget-$base_id\">";
 
         $input_name = $base_name . "[tfa][usr]";
