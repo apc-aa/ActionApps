@@ -957,7 +957,7 @@ class AA_Permsystem_Reader extends AA_Permsystem {
      * @return array|false|mixed|string
      */
     private function getSecret($user_id) {
-        return strlen($user_id) ? DB_AA::select1('SELECT content.text AS secret FROM content','secret', [['field_id',FIELDID_2FA_SECRET],['item_id',$user_id],'l']) : '';
+        return strlen($user_id) ? DB_AA::select1('SELECT content.text AS secret FROM content','secret', [['field_id',FIELDID_2FA_SECRET],['item_id',$user_id,'l']]) : '';
     }
 
     /** true, if the hash is in old format and needs to be updated with new hash */
@@ -1182,13 +1182,8 @@ class AA_Permsystem_Reader extends AA_Permsystem {
  * @return string[]
  */
 function getReaderSlices() {
-    $SQL = "SELECT module.id FROM slice, module
-             WHERE slice.type = 'ReaderManagement'
-               AND slice.id   = module.id
-               AND module.deleted < '1'";
-    return GetTable2Array($SQL, '', 'unpack:id');
+    return DB_AA::select('', 'SELECT LOWER(HEX(module.id)) AS unpackid FROM slice, module', [['slice.id','module.id','j'],['slice.type', 'ReaderManagement'],['module.deleted',1,'<']]);
 }
-
 
 /** GetAuthData function
  *  Fills content array for current loged user or specified user

@@ -49,18 +49,22 @@ class TfaWidget extends \AA\Widget\Widget
 
         $input_name = $base_name . "[tfa][pwd]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<div class=aa-2fa-password><input type=text id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" autocomplete=\"current-password\"></div>";
+        $widget .= "\n<div class=aa-2fa-password><input type=password id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" autocomplete=\"current-password\"></div>";
 
         $input_name = $base_name . "[tfa][otc]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<div class=aa-2fa-otc><input type=text id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('One time Code') . "\" inputmode=\"numeric\"  pattern=\"[0-9]*\"  autocomplete=\"one-time-code\"></div>";
+        $widget .= "\n<div class=aa-2fa-otc><input type=text id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('One time Code') . "\" inputmode=\"numeric\"  pattern=\"[0-9]*\" autocomplete=\"one-time-code\"></div>";
+
+        $hidden_name = $base_name . "[tfa][gen]";
+        $hidden_id = FormArray::formName2Id($hidden_name);
+        $widget .= "\n<input type=hidden id=\"$hidden_id\" name=\"$hidden_name\" value=0></div>";
 
         if ($help = $aa_property->getHelp()) {
             $widget .= "\n<div class=aa-help><small>$help</small></div>";
         }
         $widget .= "\n<div class=aa-2fa-buttons>";
-        $widget .= "\n<input type=\"button\" value=\"" . _m('Generate New Secret') . "\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
-        $widget .= "\n<input type=\"button\" value=\"" . _m('Get Secret') . "\" onclick=\"(arguments[0] || window.event).stopPropagation();DisplayInputBack('$base_id');\">";
+        $widget .= "\n<input type=\"button\" value=\"" . _m('Generate New Secret') . "\" onclick=\"document.getElementById('$hidden_id').value=1;AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
+        $widget .= "\n<input type=\"button\" value=\"" . _m('Get Secret') . "\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">";
         $widget .= "\n</div>";
         $widget .= "\n</div>";
         $widget .= "\n</div>";
@@ -79,7 +83,7 @@ class TfaWidget extends \AA\Widget\Widget
     {
         $flag = $data4field['flag'] & FLAG_HTML;
         if (is_array($data4field) AND isset($data4field['usr'])) {
-            return new AA_Value(ParamImplode(['AA_2FASECRET', $data4field['usr'], $data4field['pwd'], $data4field['otc']]), $flag);
+            return new AA_Value(ParamImplode([(($data4field['gen']==1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), $flag);
         }
         return new AA_Value('', $flag); // ? or something else ?
     }

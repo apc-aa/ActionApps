@@ -78,7 +78,7 @@ class AA_Field implements ArrayAccess {
      */
     public function isSafeStored() : bool {
         // the content_edit is not yet used - we plan to make able the field to be secured
-        return (($this->data['content_edit'] & FIELD_UNREADABLE) OR (AA_Fields::getFieldType($this->getId()) == 'secure'));     // @todo add also password
+        return (($this->data['content_edit'] & FIELD_UNREADABLE) OR (AA_Fields::getFieldType($this->getId()) == 'secret'));     // @todo add also password
                                                                                                                                 // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 

@@ -239,10 +239,15 @@ function SendOkPage($txt, $new_ids = []) {
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
 
             if ( $retcode == 'AA_2FA_QR') {   // very special case for 2FA secret
+                $secret = strlen($GLOBALS['auth']->auth['uid']) ? DB_AA::select1('SELECT content.text AS secret FROM content','secret', [['field_id',FIELDID_2FA_SECRET],['item_id',$GLOBALS['auth']->auth['uid'],'l']]) : '';
 
-                 $ga = new PHPGangsta_GoogleAuthenticator();
-                 $secret = $ga->createSecret();
-                 $ret[reset($new_ids)] = 'Secret is: '.$secret .  $ga->getQRCodeGoogleUrl('Blog', $secret);
+                $qr = '--';
+                if ($secret) {
+                    $ga = new PHPGangsta_GoogleAuthenticator();
+                    $qrCodeUrl = $ga->getQRCodeGoogleUrl($_SERVER['SERVER_NAME'], $secret);
+                    $qr = "<img src=\"$qrCodeUrl\">";
+                }
+                $ret[reset($new_ids)] = $qr;
             } else {
                 foreach ($new_ids as $long_id) {
                     $item = AA_Item::getItem(new zids($long_id, 'l'));

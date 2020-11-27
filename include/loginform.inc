@@ -34,27 +34,37 @@ HtmlPageBegin();
 echo '<title>ActionApps - '.ORG_NAME.'</title>';
 ?>
 </head>
-<body bgcolor="<?php echo COLOR_TABTITBG ?>" link="#D20000" vlink="#D20000">
-<center>
+<body bgcolor="<?php echo COLOR_TABTITBG ?>" link="#D20000" vlink="#D20000" style="text-align: center;">
 <h1><?php echo _m("Welcome!") ?></h1>
 
 <?php echo _m("Welcome! Please identify yourself with a username and a password:") ?>
-</center>
 <?php
    $qs= str_replace( ["&relogin=true", "relogin=true"],"", $this->url());
 ?>
 <form action="<?php echo $qs ?>" method=post>
-<center><table border="0" bgcolor="<?php echo COLOR_TABBG ?>" cellspacing=0 cellpadding=4>
+<table border="0" bgcolor="<?php echo COLOR_TABBG ?>" cellspacing=0 cellpadding=4 style="margin: 0px auto;">
+
  <tr valign="top" align="left">
   <td><?php echo _m("Username:") ?></td>
-  <td><input type="text" name="username"
-  value="<?php if (isset($this->auth["uname"])) { myspecialchars(print $this->auth["uname"]); }?>"
-  size="16" maxlength="32"><br><small><?php echo _m("Type your username or mail") ?></small></td>
+  <td>
+      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { myspecialchars(print $this->auth["uname"]); }?>" size="32" maxlength="60" autocomplete="username">
+      <br><small><?php echo _m("Type your username or mail") ?></small>
+  </td>
  </tr>
+
  <tr valign="top" align="left">
   <td><?php echo _m("Password:") ?></td>
-  <td><input type="password" name="password" size="16" maxlength="32"></td>
+  <td><input type="password" name="password" size="32" maxlength="255" autocomplete="current-password"></td>
  </tr>
+    <?php
+    if (AA_Auth::use2FA()) {
+        echo ' <tr valign="top" align="left">
+          <td>'. _m("One Time Code") .'</td>
+          <td><input type="text" name="code2fa" size="32" maxlength="255"  inputmode="numeric"  pattern="[0-9]*" autocomplete="one-time-code"></td>
+         </tr>';
+    }
+    ?>
+
  <tr>
   <td colspan="2" align="center"><input type="submit" name="submit" value="<?php echo _m("Login now") ?>"></td>
  </tr>
@@ -68,7 +78,6 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
   </tr>
 </table>
 
-</center>
 </form>
 <script>
   if (document.forms[0][0].value != '') {
