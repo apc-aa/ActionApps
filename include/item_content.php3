@@ -1045,6 +1045,8 @@ class ItemContent extends AA_Content {
                                   break;
             case 'insert':        $id = get_if($this->getItemID(), new_id());
                                   break;
+
+            /** @noinspection PhpMissingBreakStatementInspection */
             case 'insert_if_new': if (!$this->getItemID()) {
                                       ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
                                       if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
@@ -1094,7 +1096,12 @@ class ItemContent extends AA_Content {
 
         switch ($mode) {
         case 'overwrite':
-            DB_AA::delete('content', [['item_id', $id, 'l']]);
+            // delete content for all the fields but not the safe fields
+            $delete_conds = [['item_id', $id, 'l']];
+            if ( count($safe_fields = $fields->getSafeFieldsArray()) ) {
+                $delete_conds[] = ['field_id', $safe_fields, 's<>'];
+            }
+            DB_AA::delete('content', $delete_conds);
             break;
         case 'update':
             $this->_clean_updated_fields($id, $fields);
@@ -1378,7 +1385,8 @@ class ItemContent extends AA_Content {
     function _clean_updated_fields($id, $fields) {
         $in  = [];
         foreach ($this->content as $fid => $cont) {
-            if (!$fields->getProperty($fid, 'in_item_tbl')) {
+            $fld = $fields->getField($fid);
+            if ($fld AND !$fld->getProperty('in_item_tbl') AND !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
                 // deal with translations. if only translated values are present, then delete just the specific translation
                 // however - if also basic 0-1000000 indexes are present, clear all the field content
                 $keys = (is_array($cont) AND $cont) ? array_keys($cont) : [0]; // sometimes we want delete field so no AA_Value is_a passed (delete file...)
@@ -1433,7 +1441,7 @@ class ItemContent extends AA_Content {
             if ( !is_a($inserter,'AA_Inserter_Nul')) {
                 // update content table or fill item_varset
                 $parameters = [];
-                $thumbnails = [];
+                $thumbnails = [];    // probably for preventing infinite loop ? HM
 
                 foreach ($cont as $numkey => $v) {
 
@@ -1453,7 +1461,7 @@ class ItemContent extends AA_Content {
 
                         if (!$stop) {
                             $parameters["order"]   = $numkey;
-                            $parameters["fields"]  = $aa_fields->getRecordArray();
+                            $parameters["fields"]  = $aa_fields;
                             $parameters["context"] = $context;
                             $thumbnails = $inserter->execute($field_writer, $id, $v, $parameters);
                         }

@@ -31,6 +31,8 @@
 // is used.
 //
 
+use AA\IO\DB\DB_AA;
+
 define("MAX_GROUPS_DEEP", 16);   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
 define("MAX_ENTRIES_SHOWN",10);   // Maximum number of shown users in search for users/groups
 
@@ -469,11 +471,14 @@ class AA_Perm {
 
 
     /**
-     *
+     * @param string $username
+     * @param string $password
+     * @param string $code2fa
+     * @return string|false
      */
-    public function authenticateUsername($username, $password) {
+    public function authenticateUsername($username, $password, $code2fa='') {
         foreach ($this->perm_systems as $perm_sys) {
-            if ($user_id = $perm_sys->authenticateUsername($username, $password)) {
+            if ($user_id = $perm_sys->authenticateUsername($username, $password, $code2fa)) {
                 return $user_id;
             }
         }
@@ -840,7 +845,7 @@ class AA_Permsystem {
      *  (it MUST be clear, which perm system is used just from the format of UID)
      */
     function userIdFormatMatches($uid)                          {}
-    function authenticateUsername($username, $password)         {}
+    public function authenticateUsername($username, $password, $code2fa = '')         {}
     function isUsernameFree($username)                          {}
     function findUsernames($pattern)                            {}
     function findUserByLogin($user_login)                       {}
@@ -914,11 +919,12 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     /** AuthenticateReaderUsername function
      *  Search all Reader slices for $username and check if tha password is correct
      *  Returns ID of the user (item ID of the user in Reader slice, in this case)
-     * @param $username
-     * @param $password
-     * @return bool|mixed
+     * @param        $username
+     * @param        $password
+     * @param string $code2fa
+     * @return false|string
      */
-    function authenticateUsername($username, $password) {
+    public function authenticateUsername($username, $password, $code2fa = '') {
         if ( !$username ) {
             return false;
         }
@@ -927,13 +933,31 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $user_info = GetAuthData( $user_id );
 
         if ( !$user_info->isEmpty() AND AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
+            $secret = $this->getSecret($user_id);
+            if ($secret) {
+                $ga = new PHPGangsta_GoogleAuthenticator();
+                if (!$ga->verifyCode($secret, $code2fa, 2)) {        // 2 = 2*30sec clock tolerance
+                    return false;
+                }
+            }
             if ($this->needsRehashPassword($pwdhash)) {
                 $this->rehashPassword($user_id, $password);
             }
+
             // user id is the id of the item in the Reader Management slice
             return $user_id;
         }
         return false;       
+    }
+
+    /** Do not call this function!!!
+     *  Must be called only during authenticateUsername()
+     *  Be sure, the user_id is from the right slice
+     * @param string $user_id
+     * @return array|false|mixed|string
+     */
+    private function getSecret($user_id) {
+        return strlen($user_id) ? DB_AA::select1('SELECT content.text AS secret FROM content','secret', [['field_id',FIELDID_2FA_SECRET],['item_id',$user_id],'l']) : '';
     }
 
     /** true, if the hash is in old format and needs to be updated with new hash */

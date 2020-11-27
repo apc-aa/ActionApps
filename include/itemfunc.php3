@@ -302,7 +302,7 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
         DB_AA::delete('content', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -373,8 +373,10 @@ abstract class AA_Inserter extends AA_Serializable implements \AA\Util\NamedInte
             return;
         }
 
+        $delete = $this->field->isSafeStored();  // safe stored fields are not ereased
+
         // field in content table (function defined in util.php since we need it for display count
-        StoreToContent($item_id, $this->field->getId(), $this->field->getProperty("text_stored"), $value, $additional);
+        StoreToContent($item_id, $this->field->getId(), $this->field->getProperty("text_stored"), $value, $additional, $delete);
     }
 }
 
@@ -493,7 +495,7 @@ class AA_Inserter_Uid extends AA_Inserter {
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -514,7 +516,7 @@ class AA_Inserter_Log extends AA_Inserter {
         parent::execute($fieldwriter, $item_id, ['value' => $val], $additional);
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -531,7 +533,7 @@ class AA_Inserter_Now extends AA_Inserter {
         parent::execute($fieldwriter, $item_id, ["value"=>time()], $additional);
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -566,7 +568,7 @@ class AA_Inserter_Co2 extends AA_Inserter {
         ];
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -589,7 +591,7 @@ class AA_Inserter_Com extends AA_Inserter {
         ];
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -614,7 +616,7 @@ class AA_Inserter_Seo extends AA_Inserter {
         ];
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -639,12 +641,13 @@ class AA_Inserter_Seq extends AA_Inserter {
 // in $additional are fields
 class AA_Inserter_Fil extends AA_Inserter {
 
-   protected $type;                   // see getClassProperties
-   protected $width;                  // see getClassProperties
-   protected $height;                 // see getClassProperties
-   protected $otherfield;             // see getClassProperties
-   protected $replacemethod;          // see getClassProperties
-   protected $exact;                  // see getClassProperties
+    protected $type;                   // see getClassProperties
+    protected $width;                  // see getClassProperties
+    protected $height;                 // see getClassProperties
+    protected $otherfield;             // see getClassProperties
+    protected $replacemethod;          // see getClassProperties
+    protected $exact;                  // see getClassProperties
+    protected $nametemplate;           // see getClassProperties
 
     public function name(): string        { return _m("File = uploaded file");  }             // see NamedInterface
     public function description(): string { return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');  }      // see NamedInterface
@@ -657,7 +660,8 @@ class AA_Inserter_Fil extends AA_Inserter {
             'height'        => new AA_Property( 'height',       _m("Maximum image height"),'int',  false, true, 'int',  false, _m("The image will be resampled to be within these limits, while retaining aspect ratio."), '', '600'),
             'otherfield'    => new AA_Property( 'otherfield',   _m("Other fields"),        'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##"), '', 'image..........2'),
             'replacemethod' => new AA_Property( 'replacemethod',_m("Upload policy"),       'text', false, true, 'text', false, _m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."), '', 'new'),
-            'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and croped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1')
+            'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and croped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1'),
+            'nametemplate'  => new AA_Property( 'nametemplate', _m("Filename template"),   'text', false, true, 'text', false, _m("Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item is not exist in time of file write). They will work on UPDATE."), '', 'file-_#SITEM_ID-_#name._#ext'),
         ];
     }
 
@@ -668,6 +672,7 @@ class AA_Inserter_Fil extends AA_Inserter {
         $fid         = $this->field->getId();
 
         if (is_array($additional)) {
+            /** @var AA_Fields $fields */
             $fields  = $additional["fields"];
             $order   = $additional["order"];
             $context = $additional["context"];
@@ -681,7 +686,7 @@ class AA_Inserter_Fil extends AA_Inserter {
                 $value['value'] = '';
             }
         } else {
-            // old vedsion of input form
+            // old version of input form
             $up_file = $_FILES["v".unpack_id($fid)."x"];
         }
 
@@ -700,7 +705,18 @@ class AA_Inserter_Fil extends AA_Inserter {
                 return [];
             }
 
-            $dest_file = Files::uploadFile($up_file, Files::destinationDir($slice), $this->type, $this->replacemethod);
+            if ( strlen($this->nametemplate) ) {
+                $template = str_replace(['_#name', '_#ext', '_#full'], [pathinfo($up_file['name'],PATHINFO_FILENAME), pathinfo($up_file['name'],PATHINFO_EXTENSION), pathinfo($up_file['name'],PATHINFO_BASENAME)], $this->nametemplate);
+                if ($item OR  ($item_id AND ($item = AA_Items::getItem(new zids($item_id))))) {
+                    $filename = AA::Stringexpander()->unalias($template,'',$item);
+                } else {
+                    $filename = AA::Stringexpander()->unalias($template);
+                }
+            } else {
+                $filename = null;
+            }
+
+            $dest_file = Files::uploadFile($up_file, Files::destinationDir($slice), $this->type, $this->replacemethod, $filename);
 
             if ($dest_file === false) {   // error
                 $err[$fid] = Files::lastErrMsg();
@@ -725,8 +741,7 @@ class AA_Inserter_Fil extends AA_Inserter {
 
                 foreach ($thumb_arr as $thumb) {
                     //copy thumbnail
-                    $f              = $fields[$thumb];       // Array from fields
-                    $fncpar         = ParseFnc($f["input_insert_func"]);
+                    $fncpar         = ParseFnc($fields->getProperty($thumb,'input_insert_func'));
                     $thumb_params   = explode(":",$fncpar['param']);  // (type, width, height)
 
                     $dest_file_tmb  = Files::generateUnusedFilename($dest_file, '_thumb');  // xxx_thumb1.jpg
@@ -805,33 +820,42 @@ class AA_Inserter_2fa extends AA_Inserter {
     /** getClassProperties function of AA_Serializable  */
     static function getClassProperties()  {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Pasword to be applied for crypting this field value. Coud contain AA Expression.'), '', 'SomeSecret784!*')
+            'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Pasword to be applied for crypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*')
         ];
     }
 
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
-        $val =
-        list ($aa_const, $password) = ParamExplode($value['value']);
+        [$aa_const, $username, $password, $code2fa] = ParamExplode($value['value']);
 
-        if ($aa_const == 'AA_PASSWD') {
-            if ($this->bck_field AND ($slice = AA_Slice::getModule($fieldwriter->getSliceId())) AND $slice->isField($this->bck_field)) {
-                // $password is_a decrypted here
-                $backup = $this->crypt_phrase ? StrExpand('AA_Stringexpand_Encrypt', [$password, $this->crypt_phrase]) : $password;
-                // store backup value to specified field
-                $this->_clear_field($item_id, $this->bck_field);
-                AA_Inserter::factoryByField($slice->getField($this->bck_field))->execute($fieldwriter, $item_id, ['value'=> $backup]);
+        if ($aa_const == 'AA_2FASECRET') {
+            global $auth;
+            if (!strlen($username) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->auth['uid'])) {
+                return '';
             }
-            $value['value'] = AA_Perm::cryptPwd($password);
-        } elseif ($aa_const == 'AA_PASSWD_CRYPTED') {
-            // this is the only case if you are updating the item and you want to left the password the same
-            $value['value'] = $password;
-        } else {
-            $value['value'] = AA_Perm::cryptPwd($value['value']);
+            $ga = new PHPGangsta_GoogleAuthenticator();
+            $secret = $ga->createSecret();
+
+            $this->crypt_phrase = trim($this->crypt_phrase);
+
+            if (strlen($this->crypt_phrase)) {
+                if (is_long_id($uid) AND ($item = AA_Items::getItem(new zids($uid)))) {
+                    $phrase = AA::Stringexpander()->unalias($this->crypt_phrase,'',$item);
+                } else {
+                    $phrase = AA::Stringexpander()->unalias($this->crypt_phrase);
+                }
+                if ($phrase = trim($phrase)) {
+                    $secret = StrExpand('AA_Stringexpand_Encrypt', [$secret, $phrase]);
+                }
+            }
+
+            // $this->_clear_field($item_id, $this->field->getId());  // I think it is not necessary - safeFields will be deleted in execute, others are already deleted
+            $value['value'] = $secret;
+            parent::execute($fieldwriter, $item_id, $value, $additional);
         }
-        parent::execute($fieldwriter, $item_id, $value, $additional);
+        // nothing stored. The field should be safefield, so not cleared
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {
@@ -857,7 +881,7 @@ class AA_Inserter_Nul extends AA_Inserter {
     public function execute($fieldwriter, $item_id, $value, $additional= []) {
     }
 
-    /** Returns true, if the content of this field is allways generated (so it is OK to have this field unfilled)
+    /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
     public function isContentSelfGenerated() {

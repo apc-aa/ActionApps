@@ -358,6 +358,7 @@ define ("FIELDID_MAIL_CONFIRMED","switch..........");
 define ("FIELDID_ACCESS_CODE",   "text...........3");
 define ("FIELDID_HOWOFTEN",      "alerts1");
 define ("FIELDID_FILTERS",       "alerts2");
+define ("FIELDID_2FA_SECRET",    "secret..........");
 
 /** field id for slice-defined fields  */
 define ("FIELDID_DYNAMIC_ID",    "source..........");
@@ -442,6 +443,11 @@ define( "STATE_UNFEEDABLE",            1 );
 define( "STATE_FEEDNOCHANGE",          2 );
 define( "STATE_FEEDABLE_UPDATE",       3);
 define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
+
+/** bites of content_edit field of field table */
+define( "FIELD_UNREADABLE",            1 );
+// define( "FIELD_..",                 2 );
+// define( "FIELD_..",                 4 );
 
 /** relation table flags */
 define( "REL_FLAG_MODULE_DEPEND", 1 );  // specifies dependency between site modue and used slices

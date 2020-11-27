@@ -526,11 +526,12 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
 
     /** authenticateUsername function
      *  Try to authenticate user from LDAP
-     *  @param $username
-     *  @param $password
-     *  @return false|string - uid if user is authentificied, else false.
+     * @param        $username
+     * @param        $password
+     * @param string $code2fa
+     * @return false|string - uid if user is authentificied, else false.
      */
-    function authenticateUsername($username, $password) {
+    public function authenticateUsername($username, $password, $code2fa = '') {
         if (!$username or !$password) {         // no password => anonymous in LDAP
             return false;
         }

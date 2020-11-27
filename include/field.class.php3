@@ -73,6 +73,15 @@ class AA_Field implements ArrayAccess {
         return $this->data['in_item_tbl'] ? 'item' : 'content';
     }
 
+    /**
+     * @return bool is this field protected for reading to ItemContent and for writing to it?
+     */
+    public function isSafeStored() : bool {
+        // the content_edit is not yet used - we plan to make able the field to be secured
+        return (($this->data['content_edit'] & FIELD_UNREADABLE) OR (AA_Fields::getFieldType($this->getId()) == 'secure'));     // @todo add also password
+                                                                                                                                // @todo mark all secure and password fields as FIELD_UNREADABLE
+    }
+
     /** getProperty function
      * @param string $property
      * @return mixed - field data
@@ -727,6 +736,17 @@ class AA_Fields implements Iterator, Countable {
         }
         $no = ( ($no==-1) ? '.' : (string)$no);
         return AA_Fields::createFieldId($field_type, $no);
+    }
+
+    public function getSafeFieldsArray() {
+        $this->load();
+        $ret = [];
+        foreach ( $this->fields as $fid => $fld ) {
+            if ($fld->isSafeStored()) {
+                $ret[] = $fid;
+            }
+        }
+        return $ret;
     }
 
     /** getRecordArray function

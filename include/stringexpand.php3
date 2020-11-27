@@ -3863,7 +3863,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
 /** Numeric comparison with the operator specified by parameter You can as
  *  in {ifeq} use multiple conditions - the first matching is returned, then
  *  Example: {if:{_#IMGCOUNT}:>:10:big:6:medium:small}
- *  Comparison is allways numeric (also for security reasons)
+ *  Comparison is always numeric (also for security reasons)
  */
 class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters (maybe we can?) */
@@ -7344,7 +7344,7 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
     /**
      * @param string $text
      * @param string $key
-     * @param null $output_type - no longer used - previously used 'url' to encode result in url-friendly base64_url, now it is allways
+     * @param null $output_type - no longer used - previously used 'url' to encode result in url-friendly base64_url, now it is always
      * @return string|void
      */
     function expand($text='', $key='', $output_type=null) {
@@ -7444,7 +7444,7 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
      * @return string
      */
     function expand($key='', $username='', $password='', $lifetime='', $add_validity='') {
-        if (!strlen($key) OR !strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password))) {
+        if (!strlen($key) OR !strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, ''))) {
             return '';
         }
 
@@ -7513,6 +7513,42 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
     }
 }
 
+/**  */
+class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
+    /**
+     * @param string $text
+     * @return string|void
+     */
+    function expand($username='', $password='', $code2fa='') {
+        global $auth;
+        if (!strlen($username) OR !strlen($password) OR !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) OR ($uid != $auth->auth['uid'])) {
+            return '';
+        }
+        $ga = new PHPGangsta_GoogleAuthenticator();
+        $secret = $ga->createSecret();
+
+
+
+
+
+
+
+        $qrCodeUrl = $ga->getQRCodeGoogleUrl('Blog', $secret);
+        echo "Google Charts URL for the QR-Code: ".$qrCodeUrl."\n\n";
+
+        $oneCode = $ga->getCode($secret);
+        echo "Checking Code '$oneCode' and Secret '$secret':\n";
+
+        $checkResult = $ga->verifyCode($secret, $oneCode, 2);    // 2 = 2*30sec clock tolerance
+        if ($checkResult) {
+            echo 'OK';
+        } else {
+            echo 'FAILED';
+        }
+
+    }
+
+}
 
 /** computes MD5 hash */
 class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
@@ -8832,7 +8868,7 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
     }
 }
 
-/** better than {xlang} - returns allways valid lang code - not only in sitemodule */
+/** better than {xlang} - returns always valid lang code - not only in sitemodule */
 class AA_Stringexpand_Aalang extends AA_Stringexpand_Nevercache {
 
     /** expand function */

@@ -27,7 +27,7 @@
 */
 
 require_once __DIR__."/locsess.php3";
-require_once __DIR__."/perm_core.php3"; // allways included!
+require_once __DIR__."/perm_core.php3"; // always included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
@@ -93,7 +93,7 @@ class AA_Auth extends Auth {
     }
 
     protected function _validatelogin($username, $password) {
-        $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password)) ? $username : '';
+        $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password, '')) ? $username : '';
         AA_Log::write('LOGIN', AA_Log::context($uid), $username);
         return $uid;
     }

@@ -95,7 +95,7 @@ if ( $update ) {
     }
 }
 
-if ( $slice_id!="" ) {  // set variables from database - allways
+if ( $slice_id!="" ) {  // set variables from database - always
 /*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */

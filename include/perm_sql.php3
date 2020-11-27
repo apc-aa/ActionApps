@@ -300,11 +300,12 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     }
 
     /** authenticateUsername function
-     * @param $username
-     * @param $password
+     * @param        $username
+     * @param        $password
+     * @param string $code2fa
      * @return false|string uid if user is authenticated, else false.
      */
-    function authenticateUsername($username, $password) {
+    public function authenticateUsername($username, $password, $code2fa = '') {
         if ($user = DB_AA::select1('SELECT id, password FROM `users`', '', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
             return AA_Perm::comparePwds($password, $user['password']) ? $user['id'] : false;
         }
