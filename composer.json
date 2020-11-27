@@ -27,7 +27,7 @@
     "ext-dom": "*",
     "ext-xsl": "*",
     "ext-simplexml": "*",
-    "ext-xml": "*",
+    "ext-xml": "*"
   },
   "suggest": {
     "ext-ldap": "*",
