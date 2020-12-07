@@ -304,7 +304,7 @@ class Cvarset {
      *  Private function: executes qiven query)
      * @param $SQL
      * @param $nohalt     'nohalt' - do not halt on database error
-     * @return bool|int   0|false on error
+     * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
     function _doQuery($SQL, $nohalt=null) {
         if ($this->just_print) {
@@ -316,6 +316,9 @@ class Cvarset {
             $retval = $this->last_used_db->query_nohalt($SQL);
         } else {
             $retval = $this->last_used_db->query($SQL);
+        }
+        if ($retval AND mb_stripos(' '.$SQL, 'INSERT')) {
+            $retval = $this->last_used_db->last_insert_id() ?: PHP_INT_MAX;
         }
         freeDB($this->last_used_db);
         return $retval;
@@ -373,7 +376,7 @@ class Cvarset {
     /** doInsert function
      * @param $tablename
      * @param $nohalt     'nohalt' - do not halt on database error
-     * @return bool|int   0|false on error
+     * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
     function doInsert($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);

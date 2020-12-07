@@ -190,7 +190,7 @@ class AA_Responder_Get_Widget extends AA_Responder {
         $lang         = $this->lang ? AA_Langs::getLang(AA_Langs::getLangCode2Name($this->lang).'-utf8') : $slice->getLang();
         mgettext_bind($lang, 'output');
         AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
-        AA::$langnum  = [AA_Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
+        AA::$langnum  = [AA_Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
         AA::setEncoding(AA_Langs::getCharset($lang));
 
         $field = $slice->getField($this->field_id);

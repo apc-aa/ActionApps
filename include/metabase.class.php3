@@ -745,7 +745,7 @@ class AA_Metabase {
     }
 
     /** The best (most safe) low-level approach to update data in the AA table - the data are checked before storing against database schema
-     *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
+     *  - the packed data are packed automatically, the integer data are typecasted to numbers, ...
      *  For now, the table keys must be provided - we are not able to update multiple records. Could be changed in future
      *  usage: AA::Metabase()->doUpdate(...);
      * @param  string   $tablename table, where to store data
@@ -760,12 +760,12 @@ class AA_Metabase {
     }
 
     /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
-     *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
+     *  - the packed data are packed automatically, the integer data are typecasted to numbers, ...
      * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param  string   $tablename - table, where to store data
      * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
      * @param  string   $nohalt  'nohalt' - do not halt on database error
-     * @return bool|int   0|false on error
+     * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
     function doInsert($tablename, $data, $nohalt=null) {
         if ($varset = $this->getVarset4Data($tablename, $data)) {
@@ -834,7 +834,6 @@ class AA_Metabase {
         $varset = new Cvarset();
 
         foreach ($cols as $colname => $coldef) {
-
             if (isset($data[$colname])) {
                 $value = $data[$colname];
                 $iskey = $coldef->isKey();

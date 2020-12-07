@@ -262,8 +262,7 @@ function updateFieldsMapping($l_slice_id, $r_slice_id, $field_refs, $fields) {
                     $db->query($SQL);
                 }
             } else {
-                $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
-                       '".FEEDMAP_FLAG_EXTMAP ."','','".quote($new_name)."')";
+                $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id','".FEEDMAP_FLAG_EXTMAP ."','','".quote($new_name)."')";
                 if ($debugfeed >= 8) print("\n<br>$SQL");
                 $db->query($SQL);
             }

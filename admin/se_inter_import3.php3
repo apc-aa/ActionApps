@@ -30,6 +30,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
@@ -39,37 +41,39 @@ if (!IfSlPerm(PS_FEEDING)) {
 require_once __DIR__."/../include/varset.php3";
 require_once __DIR__."/../include/csn_util.php3";
 
-$aa_rss = unserialize(stripslashes($aa));
+$inputs = new AA\Util\InputVars();
+$aa               = $inputs->ps('aa');
+$f_slices         = $inputs->pa('f_slices');
+$remote_node_name = $inputs->ps('remote_node_name');
+$exact_copy       = $inputs->pb('exact_copy');
 
-$l_categs = GetGroupConstants($slice_id);        // get all categories belong to local slice
+$aa_rss    = unserialize($inputs->ps('aa'));
+
+$l_categs = GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
 
 $catVS = new Cvarset();
 foreach ($f_slices as $f_slice) {
     $channel = $aa_rss['channels'][$f_slice];
 
     $remote_slice_id = $f_slice;
-    $db->query("SELECT feed_id FROM external_feeds
-                 WHERE slice_id='".q_pack_id($slice_id)."'
-                   AND remote_slice_id='".q_pack_id($remote_slice_id)."'");
-    if ($db->next_record()) {       // feed from $remote_slice_id to $slice_id is already contained in the table
+    if (DB_AA::test('external_feeds', [['slice_id', AA::$module_id, 'l'], ['remote_slice_id', $remote_slice_id, 'l']])) {
+        // feed from $remote_slice_id to $slice_id is already contained in the table
         $msg = rawurlencode(MsgOk(_m("The import was already created")));
         continue;
     }
 
-    $catVS->clear();
-    $catVS->add("slice_id",         "unpacked", $slice_id);
-    $catVS->add("remote_slice_id",  "unpacked", $remote_slice_id);
-    $catVS->add("remote_slice_name","quoted",   $channel['title']);
-    $catVS->add("user_id",          "text",     $auth->auth['uname']);
-    $catVS->add("node_name",        "quoted",   $remote_node_name);
-    $catVS->add("newest_item",      "quoted",   unixstamp_to_iso8601(time()));
-    $catVS->add("feed_mode",        "quoted",   ($exact_copy ? 'exact' : ''));
+    $data = ['slice_id'          => AA::$module_id,
+             'remote_slice_id'   => $remote_slice_id,
+             'remote_slice_name' => $channel['title'],
+             'user_id'           => $auth->auth['uname'],
+             'node_name'         => $remote_node_name,
+             'newest_item'       => unixstamp_to_iso8601(time()),
+             'feed_mode'         => ($exact_copy ? 'exact' : '')
+    ];
 
-    if ( !$catVS->doINSERT('external_feeds')) {
+    if ( !($feed_id = AA::Metabase()->doInsert('external_feeds', $data)) ) {
         $err["DB"] .= MsgErr("Can't add external import");
     }
-
-    $feed_id = $db->last_insert_id();
 
     // insert categories
     foreach ( $channel['categories'] as $cat_id => $v ) {
@@ -83,7 +87,7 @@ foreach ($f_slices as $f_slice) {
         $catVS->add("target_category_id","unpacked", MapDefaultCategory($l_categs,$cat['value'],$cat['catparent']));       // default category
         $catVS->add("approved",          "number",   0);
 
-        if ( !$catVS->doINSERT('ef_categories')) {
+        if ( !$catVS->doTrueReplace('ef_categories')) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
@@ -94,9 +98,10 @@ foreach ($f_slices as $f_slice) {
         $catVS->clear();
         $catVS->add("from_slice_id",  "unpacked", $remote_slice_id );
         $catVS->add("from_field_id",  "packed",   $field_id );
-        $catVS->add("to_slice_id",    "unpacked", $slice_id);
+        $catVS->add("to_slice_id",    "unpacked", AA::$module_id);
         $catVS->add("to_field_id",    "packed",   $field_id );
         $catVS->add("flag",           "number",   FEEDMAP_FLAG_EXTMAP);
+        $catVS->add("value",          "text",     '');
         $catVS->add("from_field_name","text",     $aa_rss['fields'][$field_id]['name']);
 
         if ( !$catVS->doINSERT('feedmap')) {
