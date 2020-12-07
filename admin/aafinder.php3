@@ -213,6 +213,21 @@ $apage->printHead($err, $Msg);
 is_object( $db ) || ($db = getDB());
 
 if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
+
+    if ($_GET['findinseo']) {
+        if ( in_array(guesstype(trim($_REQUEST['findtext'])), ['s','l']) ) {
+            PrintItemInfo(trim($_REQUEST['findtext']));
+        } elseif (preg_match_all("/([0-9a-f]{32})/", $_REQUEST['findtext'], $ids)) {
+            $ids = array_unique($ids[0]);
+            foreach ($ids as $id) {
+                PrintItemInfo($id);
+                echo '<hr>';
+            }
+        } else {
+            print query_search([["content.text", $_REQUEST['findtext']], ['content.field_id', 'seo.............']], $_REQUEST['findtext']);
+        }
+    }
+
     if ($_GET['findinview']) {
         $fields = [
             'id',
@@ -332,20 +347,6 @@ if (strlen($_REQUEST['findtext'])) {   // POSTed in AA navbar
             echo $db->f("name")." ".AafinderFieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
         }
         echo '<br><br>';
-    }
-
-    if ($_GET['findinseo']) {
-        if ( in_array(guesstype(trim($_REQUEST['findtext'])), ['s','l']) ) {
-            PrintItemInfo(trim($_REQUEST['findtext']));
-        } elseif (preg_match_all("/([0-9a-f]{32})/", $_REQUEST['findtext'], $ids)) {
-            $ids = array_unique($ids[0]);
-            foreach ($ids as $id) {
-                PrintItemInfo($id);
-                echo '<hr>';
-            }
-        } else {
-            print query_search([["content.text", $_REQUEST['findtext']], ['content.field_id', 'seo.............']], $_REQUEST['findtext']);
-        }
     }
 
     if ($_GET['findinspot']) {
