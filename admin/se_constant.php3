@@ -77,16 +77,16 @@ if ( $group_id ) {
  * @param null|array $using_slices_arr
  */
 function ShowConstant($id, $name, $value, $cid, $pri, ?array $using_slices_arr=null) {
-    $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
-
     $count = '';
     if (is_array($using_slices_arr) AND count($using_slices_arr)) {
         $count = 0;
         foreach ($using_slices_arr as $arr) {
-            $set = new AA_Set([unpack_id($arr['psid'])], new AA_Condition($arr['fid'], '==', $value), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+            $set = new AA_Set([$arr['unpackid']], new AA_Condition($arr['fid'], '==', $value), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
             $count += count($set->query());
         }
     }
+
+    $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
 
     echo "
     <tr>
