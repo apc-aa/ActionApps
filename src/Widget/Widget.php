@@ -93,6 +93,7 @@ class Widget extends AA_Object implements NamedInterface {
         return (substr($constgroup = $this->getProperty('const'), 0, 7) == "#sLiCe-") ? substr($constgroup, 7) : '';
     }
 
+
     /** returns array(ids => formated text) for the current widget based on
      *  the widget settings
      * @param $content        AA_Content
@@ -103,7 +104,7 @@ class Widget extends AA_Object implements NamedInterface {
      */
     public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm = '', $ignore_filters = false) {
 
-        $values_array = $this->getProperty('const_arr');  // is asociative!
+        $values_array = $this->getProperty('const_arr');  // is associative!
         if (!empty($values_array)) {          // values assigned directly
             return $values_array;               //  = array();
         }
@@ -171,6 +172,17 @@ class Widget extends AA_Object implements NamedInterface {
         return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
     }
 
+
+    /**  if the slice is translated, then translate also widget options presentation
+     * @return string slice with constants | ""
+     */
+    // private function possiblyTranslateOptions($options) {
+    //     $this->
+    //     $this->translations = AA_Slice::getModule(unpack_id($field_arr["slice_id"]))->getTranslations();
+    //
+    //
+    // }
+
     /** returns $ret_val if given $option is selected for current field
      *  This method is rewritten if_selected() method form formutil.php3
      */
@@ -218,7 +230,7 @@ class Widget extends AA_Object implements NamedInterface {
 
         $ret = [];
 
-        // It never refills the array (and we relly on this fact in the code)
+        // It never refills the array (and we rely on this fact in the code)
         if (!is_array($this->_const_arr)) {  // already filled
             // not filled, yet - so fill it
             // Fills array used for list selection. Fill it from constant group or slice.
@@ -566,7 +578,7 @@ class Widget extends AA_Object implements NamedInterface {
                     $ret[$pid] = new AA_Property($pid, _m("Row count"), 'int', false, true, 'int', false, '', '', 10);
                     break;
                 case 'slice_field':
-                    $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........');
+                    $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box. if not specified, in select box are displayed headlines or constant name for constants. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........');
                     break;
                 case 'use_name':
                     $ret[$pid] = new AA_Property($pid, _m("Use name"), 'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0');
