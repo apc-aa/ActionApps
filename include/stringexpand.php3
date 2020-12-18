@@ -4410,6 +4410,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Edit {
  *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
  *  {ajax:{_#ITEM_ID_}:category........}
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
+ *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK<button _#AA_AJAX_>Change it</button>}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
  *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh(this)}   // updates the first element with data-aa-url in DOM up
  *  {ajax::number..........::_#ANSWER__::sel:{"const_arr":{"0":"no","1":"yes"}}}
@@ -4450,6 +4451,18 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                 if (StrExpand('AA_Stringexpand_Var', ['AA_FLAG_NOEDIT']) == 1) { // the way, how to disable editing
                     $ret = $repre_value;
                 } else {
+
+                    // all this code is for class we put on the ajax container in order we can style it
+                    $slice  = AA_Slice::getModule($item->getSliceID());
+                    $field  = $slice->getField($field_id);
+
+                    $container_class = ' aa-ajax-fld-'.AA_Fields::getVarFromFieldId($field_id);
+                    if ($widget = $field ? $field->getWidget($widget_type, json2asoc($widget_properties)) : null) {
+                        if ($class_type = AA_Components::getClassType('Widget',get_class($widget))) {
+                            $container_class .= ' aa-ajax-widget-'.$class_type;
+                        }
+                    }
+
                     $widget_properties = str_replace(["'", '"',"\r\n", "\r", "\n"], ["\'", "&quot;", " ", " ", " "], $widget_properties);
                     $iid         = $item->getItemID();
                     $input_name  = FormArray::getName4Form($field_id, $item);
@@ -4459,9 +4472,9 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\"";
                     if (strpos($repre_value, '_#AA_AJAX_')!==false) {
                         $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
-                        $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\">";
+                        $ret .= "<div class=\"ajax_container $container_class\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\">";
                     } else {
-                        $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\" $ajax_on>";
+                        $ret .= "<div class=\"ajax_container $container_class\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\" $ajax_on>";
                     }
 
                     //$ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
@@ -4737,12 +4750,10 @@ class AA_Stringexpand_Site extends AA_Stringexpand {
      * @return string
      */
     function expand($site_ids='', $property='') {
-        $arr = '';
-        if ($property == 'modules') {
-            $where = sqlin( 'source_id', array_map("pack_id", explode_ids($site_ids)) );
-            $arr   = GetTable2Array("SELECT destination_id FROM relation WHERE $where AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
+        if ($property == 'modules' AND ($site_ids_arr = explode_ids($site_ids))) {
+            return join('-' , AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $site_ids_arr, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']])));
         }
-        return is_array($arr) ? join('-' , array_values(array_unique($arr))) : '';
+        return '';
     }
 }
 
@@ -6860,8 +6871,9 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *
  *  Usage:
  *     {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}  // this is the quickest - exact size (zc=1), no need to size check => im
+ *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - create lazy loaded <picture> with quick WEBP picture alternative form current browsers
  *     <img src="{img:{img_url.........}:w=150&h=150}">  /"
- *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"
+ *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"        // iar - ignore aspect ratio - deform the image to exact size
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
  *
@@ -6887,11 +6899,20 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         }
         [$img_url,$img_short] = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
 
-        if (empty($info) OR ($info == 'url') OR empty($img_url)) {
+        if (empty($img_url)) {
             return $img_short;
         }
-        if ($info == 'im') {
-            return "<img src=\"$img_short\" $param2 border=0 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+
+        switch ( $info ) {
+            case '':
+            case 'url':
+                return $img_short;
+            case 'im':      //  quick version - img without width and height
+                return "<img src=\"$img_short\" $param2 border=0 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+            case 'picture':
+                $thumb_params_arr = [];
+                parse_str($phpthumb_params, $thumb_params_arr);
+                return self::getPicture($img_short, (int)$thumb_params_arr['w'], (int)$thumb_params_arr['h'], $param1, $param2);
         }
 
         $a = @getimagesize(str_replace('&amp;', '&', $img_url));
@@ -6903,11 +6924,14 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         switch ( $info ) {
             case 'width':   return $a[0];
             case 'height':  return $a[1];
-            case 'imgtype': return $a[2]; // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
+            case 'imgtype': return $a[2]; // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM,   17 = ICO, 18 = WEBP
             case 'mime':    return image_type_to_mime_type($a[2]);
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
-            //case 'im':      quick version - img without width and height - see above
+            //case 'im':      - see above
+            //case 'picture': - see above
+            //case 'url':     - see above
+            //case '':        - see above
             case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
@@ -6916,12 +6940,31 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return '';
     }
 
+    protected static function getPicture(string $src, int $w, int $h, string $title='', string $add='') {
+        if (!$w OR !$h) {
+            warn('width (w) or height (h) parameter is not provided in params - you should use something like w=150&h=150&zc=1');
+            return '';
+        }
+
+        $title = safe(strip_tags($title));
+        $alt_title = $title ? " title=\"$title\" alt=\"$title\"" : '';
+        $webp_src = $src. '&amp;f=webp';
+
+        $ret =  "<picture class=aa-picture>";
+        $ret .= "\n  <source srcset=\"$webp_src\" type=image/webp>";
+        $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";
+        $ret .= "\n</picture>";
+        
+        return $ret;
+    }
+
+
     /**
      * @param $image
      * @param $phpthumb_params
      * @return array
      */
-    function _getUrl($image, $phpthumb_params) {
+    protected static function _getUrl($image, $phpthumb_params) {
         if (empty($phpthumb_params)) {
             return [$image,$image];
         }
