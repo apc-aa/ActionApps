@@ -296,8 +296,8 @@ class AA_Content {
 
     /** setAaValue function
      *  Special function - fills field from AA_Value object
-     * @param $field_id
-     * @param $value       AA_Value
+     * @param $field_id string
+     * @param $value AA_Value
      */
     function setAaValue($field_id, $value) {
         if (is_object($value)) {
@@ -436,19 +436,24 @@ class AA_Content {
         return empty($this->content[$field_id]) ? [] : array_column($this->content[$field_id],'value');
     }
 
-    function diff($object2compare) {
+    /** computes difference between two AA_Contents
+     * @param $object2compare AA_Content
+     * @return array
+     */
+    function diff($object2compare): array {
         $changes = [];
+        $item_id = $this->getId();
         foreach ($this->content as $fid => $a) {
             $b = $object2compare->getValuesArray($fid);
             if ($this->getValuesArray($fid) != $b) {
-                $changes[] = new ChangeProposal($this->getId(), $fid, $b);
+                $changes[] = new ChangeProposal($item_id, $fid, $b);
             }
         }
         // search for values not present in current object
         $b_fields = $object2compare->getFields();
         foreach ($b_fields as $fid) {
-            if (!$this->isField($fid)) {
-                $changes[] = new ChangeProposal($this->getId(), $fid, $object2compare->getValuesArray($fid));
+            if (empty($this->content[$fid])) {
+                $changes[] = new ChangeProposal($item_id, $fid, $object2compare->getValuesArray($fid));
             }
         }
         return $changes;
@@ -496,7 +501,7 @@ class ItemContent extends AA_Content {
 
     /** ItemContent function
      *  Constructor which takes content for ID or item_id (unpacked).
-     * @param $content4id
+     * @param $content4id  array|string  content4id array or item id
      */
     function __construct($content4id = "") {
         if ($content4id) {
@@ -511,8 +516,8 @@ class ItemContent extends AA_Content {
     /** isField function
      *  Returns true, if the passed field id looks like field id
      * @param $field_id
-     * @todo - look directly into module, if the field is really field
-     *          in specific slice/module
+     * @todo - look directly into module, if the field is really field in specific slice/module
+     * @todo - this function is not compatible to AA_Content->isField() - one of them should be renamed
      * @return bool
      */
     function isField($field_id) {
