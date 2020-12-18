@@ -10,6 +10,7 @@ namespace AA\IO\Grabber;
 
 use AA\FormArray;
 use AA\Widget\Widget;
+use AA_Fields;
 use AA_Item;
 use AA_Slice;
 use ItemContent;
@@ -234,7 +235,7 @@ class Form extends \AA\IO\Grabber\AbstractGrabber {
 
             foreach ($item_fields as $dirty_field_id => $val_array) {
                 // create full_text......1 from full_text______1
-                $field_id = FormArray::getFieldIdFromVar($dirty_field_id);
+                $field_id = AA_Fields::getFieldIdFromVar($dirty_field_id);
 
                 // get the content of the field (values and flags)
                 $aa_value = Widget::getValue($val_array);

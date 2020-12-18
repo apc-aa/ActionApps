@@ -184,7 +184,23 @@ class AA_Responder_Get_Widget extends AA_Responder {
 
         $item         = AA_Item::getItem(new zids($this->item_id));
         $iid          = $item->getItemID();
-        $slice        = AA_Slice::getModule($item->getSliceID());
+        $slice_id     = $item->getSliceID();
+        $slice        = AA_Slice::getModule($slice_id);
+
+        // we need to fill AA::$site_id in order we can use translations for example
+        $site_ids     = AA_Module::belongsToSites($slice_id);
+        switch (count($site_ids)) {  // the slice belongs to more than one site module - try to guess which one from url
+            case 0:
+                AA::$site_id = AA_Module_Site::getIdFromUrl();
+                break;
+            case '1':
+                AA::$site_id = reset($site_ids);
+                break;
+            default:
+                if (!(AA::$site_id = AA_Module_Site::getIdFromUrl())) {  // if possible, set it from URL
+                    AA::$site_id = reset($site_ids);                     // if not, get the first site
+                }
+        }
 
         // Use right language (from slice settings) - languages are used for button texts, ...
         $lang         = $this->lang ? AA_Langs::getLang(AA_Langs::getLangCode2Name($this->lang).'-utf8') : $slice->getLang();

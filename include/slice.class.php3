@@ -318,14 +318,22 @@ class AA_Module {
 
     /**
      * @param array $module_ids
-     * @return array - clean list of active (not deleted) modules
+     * @return array - clean list of active (not deleted) unique modules
      */
     public static function filterActive( array $module_ids) {
         static $active_modules = null;
         if ( is_null($active_modules)) {
-            $active_modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['deleted', 0, 'i']]);
+            $active_modules = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM module', [['deleted', 0, 'i']], ['created_at-']);
         }
-        return array_intersect($module_ids, $active_modules);
+        return array_intersect($active_modules, $module_ids);    // do not change the order - this way it is always unique
+    }
+
+    /** find all sites, where the module belongs
+     * @param string $module_id
+     * @return array
+     */
+    public static function belongsToSites(string $module_id): array {
+        return AA_Module::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`source_id`)) AS unpackid FROM relation', [['destination_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
     }
 }
 
@@ -793,6 +801,21 @@ class AA_Module_Site extends AA_Module {
 
     protected $_related_slices = null;
     protected $_related_views  = null;
+
+
+    /** get current site id
+     *  @return string|false site_id
+     */
+    public static function getIdFromUrl() {
+        $host2  = (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : 'www.'.$host;
+        $domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
+        return DB_AA::select1("SELECT LOWER(HEX(id)) AS unpackid FROM `module`", 'unpackid', [
+            ['type','W'],
+            ['deleted','0','i'],
+            ['slice_url', $domain_arr]
+        ]);
+    }
+
 
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang() {

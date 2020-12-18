@@ -158,7 +158,7 @@ class ChangesMonitor {
         return $ret;
     }
 
-    /** get array of chnge ids with time and user - [id=>[time,user]]
+    /** get array of change ids with time and user - [id=>[time,user]]
      * @param $resource_id
      * @return array
      */

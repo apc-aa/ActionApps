@@ -98,17 +98,7 @@ require_once __DIR__."/../../modules/site/router.class.php";
 
 $err = [];          // error array (Init - just for initializing variable
 
-if (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) {
-    $host2      = substr($host,4);
-} else {
-    $host2      = 'www.'.$host;
-}
-$domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
-AA::$site_id  = $_REQUEST['site_id'] ?: unpack_id(DB_AA::select1("SELECT id FROM `module`", 'id', [
-    ['type','W'],
-    ['deleted','0','i'],
-    ['slice_url', $domain_arr]
-]));
+AA::$site_id  = $_REQUEST['site_id'] ?: AA_Module_Site::getIdFromUrl();
 
 if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
     Die404();

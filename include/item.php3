@@ -67,6 +67,7 @@ function GetAliases4Type( $type, $additional="" ) {
         case 'const':
             //  Standard aliases
             $aliases["_#NAME###_"] = GetAliasDef( "f_1", "const_name",        _m("Constant name"));
+            $aliases["_#TR_NAME_"] = GetAliasDef( "f__:x{tr:{_#NAME###_}}", "const_name",        _m("Translated constant name"));
             $aliases["_#VALUE##_"] = GetAliasDef( "f_1", "const_value",       _m("Constant value"));
             $aliases["_#PRIORITY"] = GetAliasDef( "f_1", "const_pri",         _m("Constant priority"));
             $aliases["_#GROUP##_"] = GetAliasDef( "f_1", "const_group",       _m("Constant group id"));
@@ -258,7 +259,7 @@ function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $
  * @param $sort
  * @todo Teach itemview to return array (instead of whole listing) and convert
  *        those functions (GetFormatedConstants() and GetFormatedItems())
- *        to itemviwew
+ *        to itemview
  * @return array
  */
 function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort) {
@@ -274,8 +275,9 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     }
 
     $content = GetConstantContent($zids);
-    $item    = new AA_Item();
-    $format  = $format ? $format : 'const_name';
+    $aliases = GetAliases4Type('const');
+    $item    = new AA_Item('',$aliases);
+    $format  = $format ?: 'const_name';
     $ret     = [];
     for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
         $iid = $zids->short_or_longids($i);
@@ -375,13 +377,12 @@ class AA_Item {
 
     /** set_field_value function
      *  sets for defined field it's new value
-     * @param $field
-     * @param $value
+     * @param $field string
+     * @param $value AA_Value
      */
     function setAaValue($field, $value) {
         $this->content4id->setAaValue($field, $value);
     }
-
 
     /** getval function
      * shortcut for AA_Content->getValue()

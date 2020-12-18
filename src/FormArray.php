@@ -7,6 +7,7 @@
  */
 
 namespace AA;
+use AA_Fields;
 use AA_Item;
 use AA_Items;
 use AA_Slice;
@@ -60,7 +61,7 @@ class FormArray
      */
     static public function getName4Form($property_id, $content, $item_index = 1)
     {
-        $form_field_id = self::getVarFromFieldId($property_id);   // post_date......1  ==>  post_date______1
+        $form_field_id = AA_Fields::getVarFromFieldId($property_id);   // post_date......1  ==>  post_date______1
 
         $oid = $content->getId();
         if ($oid) {
@@ -80,29 +81,13 @@ class FormArray
         return str_replace([']', '['], ['', '-'], $name);
     }
 
-    /** Converts real field id into field id as used in the AA form, like:
-     *  post_date......1  ==>  post_date______1
-     */
-    static public function getVarFromFieldId($field_id)
-    {
-        return str_replace('.', '_', $field_id);
-    }
-
-    /** Converts field id as used in the AA form to real field id, like:
-     *  post_date______1  ==>  post_date......1
-     */
-    static public function getFieldIdFromVar($dirty_field_id)
-    {
-        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
-    }
-
     /** returns array(item_id,field_id) from name of variable used on AA form */
     static public function parseId4Form($input_name)
     {
         // aa[u<item_id>][<field_id>][]
         $parsed = explode(']', $input_name);
         $item_id = substr($parsed[0], 4);
-        $field_id = self::getFieldIdFromVar(substr($parsed[1], 1));
+        $field_id = AA_Fields::getFieldIdFromVar(substr($parsed[1], 1));
         return [$item_id, $field_id];
     }
 
