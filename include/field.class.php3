@@ -411,6 +411,15 @@ class AA_Field implements ArrayAccess {
         return $new;
     }
 
+    private function linkToField(string $text, string $field_id, string $fragment='', array $class=[]) {
+        $url = StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($field_id)));
+        if ($fragment) {
+            $url .= '#alias'.$fragment;
+        }
+        $classtxt = join(' ',$class);
+        return "<a href=\"$url\" $classtxt>$text</a>";
+    }
+
     /** prints admin row for the field in AA UI
      * @param bool $analyze
      */
@@ -439,13 +448,16 @@ class AA_Field implements ArrayAccess {
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-        echo "<td><a href=\"". StateUrl(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
+        echo "<td>".$this->linkToField( _m("Edit"), $id)."</td>";
         if ( $type=="in_item_tbl" ) {
             echo "<td>". _m("Delete") ."</td>";
         } else {
             echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
         }
-        $alias_list = join(array_map(function($a) { return (substr($a,0,2)=='X#') ? "<span class=disabled>$a</span>" : $a; }, $aliases),' ');
+        $alias_list = join(array_map(
+            function($a) use ($id) {
+                return $this->linkToField($a, $id, substr($a,2), (substr($a,0,2)=='X#') ? ['disabled'] : []);
+            }, $aliases),' ');
         echo "<td class=\"tabhlp\">$alias_list</td>";
         echo "</tr>\n";
 
@@ -924,6 +936,20 @@ class AA_Fields implements Iterator, Countable {
      */
     static function getFieldNo($id) {
         return (string)substr(strrchr($id,'.'), 1);
+    }
+
+    /** Converts real field id into field id as used in the AA form, like:
+     *  post_date......1  ==>  post_date______1
+     */
+    public static function getVarFromFieldId($field_id) {
+        return str_replace('.', '_', $field_id);
+    }
+
+    /** Converts field id as used in the AA form to real field id, like:
+     *  post_date______1  ==>  post_date......1
+     */
+    public static function getFieldIdFromVar($dirty_field_id) {
+        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
     }
 
     /** getFields4Select function

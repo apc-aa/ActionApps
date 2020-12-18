@@ -264,11 +264,8 @@ function add_vars($query_string="", $where='GLOBALS') {
         $varstring = substr($varstring,0,$pos);
     }
 
-    // parse_str function is quite unusable, if used with magic_quotes_gpc ON
-    // - it adds slashes not only to values, but ALSO to ARRAY KEYS!
-    // we have to call magic_strip() to repair it
     parse_str($varstring, $aa_query_arr);
-    // we also need PHP to think a['key'] is the same as a[key], that's why we
+    // we need PHP to think a['key'] is the same as a[key], that's why we
     // call NormalizeArrayIndex()
 
     // we do not want to replace sess variable, since we use it for sessions

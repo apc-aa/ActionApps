@@ -1083,6 +1083,7 @@ class AA_Components {
 
     /** get 'cod' from AA\Widget\CodWidget
      *  called as:  AA_Components::getClassType('Widget',get_called_class());
+     *              AA_Components::getClassType('Widget',get_class($widget))
      * @param string $mask class start like
      * @param string $classname - probably from get_called_class()
      * @return string

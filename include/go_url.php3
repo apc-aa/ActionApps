@@ -34,10 +34,10 @@
  *  - it is better to use get_url() function and then escape the url before
  *  printing
  * @param $url
- * @param $params
+ * @param  array|string $params
  * @return string
  */
-function con_url($url, $params='') {
+function con_url($url, $params=[]) {
     return htmlspecialchars(get_url($url, $params), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
@@ -89,17 +89,17 @@ function StateHidden() {
 
 
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
- *  using apropriate ? or &.
+ *  using appropriate ? or &.
  * @param string $url
  * @param array|string $params
  * @return string
  */
-function get_url($url, $params='') {
+function get_url($url, $params=[]) {
     if (empty($params)) {
         return $url;
     }
 
-    // be carefull - sometimes we pass url with aliases (like oedit.php3?oid=_#AA_ID___...)
+    // be careful - sometimes we pass url with aliases (like oedit.php3?oid=_#AA_ID___...)
     $param_string = HttpGetParameters($params);
     if (($pos = strpos($url, '?')) !== false)  { return substr_replace($url, "?$param_string&", $pos, 1); }
     if (($pos = strpos($url, '&')) !== false)  { return substr_replace($url, "&$param_string&", $pos, 1); }

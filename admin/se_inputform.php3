@@ -483,9 +483,10 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_help    = $alias_name. "_help";
     $alias_disable = $alias_name. "_disable";
     $alias_value   = $$alias_name;
+    $alias_id_att  = strlen($alias_value) ? "id=\"alias$alias_value\"" : '';
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
     $disbled_chb   = FrmChBoxEasyCode($alias_disable, $$alias_disable, '', 1);
-    $aname_row     = "_#<input name=\"$alias_name\" type=text size=16 maxlength=8 value=\"$alias_value\" pattern='[A-Z0-9_#]{8}'> <label>"._m('Disabled')."$disbled_chb</label>";
+    $aname_row     = "_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern='[A-Z0-9_#]{8}'> <label>"._m('Disabled')."$disbled_chb</label>";
 
     FrmStaticText(_m("Alias")." $iAlias", $aname_row,"&nbsp; &nbsp; &nbsp; ". _m("8 UPPERCASE letters or _"),"", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
