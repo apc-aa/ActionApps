@@ -43,10 +43,10 @@ class TagWidget extends \AA\Widget\Widget
      */
     static function getClassProperties()
     {
-        return \AA\Widget\Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new']);
+        return \AA\Widget\Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new', 'filter_conds_rw']);
     }
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
@@ -133,7 +133,7 @@ class TagWidget extends \AA\Widget\Widget
               // AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '');
 
               // when called by Ajax, the requireLibs() in called in responder is not enough for some reason
-              // maybe we can chenge it to async / await / Promises 
+              // maybe we can change it to async / await / Promises 
               AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values);}, '".\AA_Requires::getUrl4Lib('select2@4')."');
             </script>";
 
