@@ -67,7 +67,7 @@ function GetAliases4Type( $type, $additional="" ) {
         case 'const':
             //  Standard aliases
             $aliases["_#NAME###_"] = GetAliasDef( "f_1", "const_name",        _m("Constant name"));
-            $aliases["_#TR_NAME_"] = GetAliasDef( "f__:x{tr:{_#NAME###_}}", "const_name",        _m("Translated constant name"));
+            $aliases["_#TR_NAME_"] = GetAliasDef( "f__:{tr:{_#NAME###_}}", "const_name",        _m("Translated constant name"));
             $aliases["_#VALUE##_"] = GetAliasDef( "f_1", "const_value",       _m("Constant value"));
             $aliases["_#PRIORITY"] = GetAliasDef( "f_1", "const_pri",         _m("Constant priority"));
             $aliases["_#GROUP##_"] = GetAliasDef( "f_1", "const_group",       _m("Constant group id"));
@@ -202,7 +202,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
     return $safe ? con_url('itemedit.php3',$param) : get_url('itemedit.php3',$param);
 }
 
-/** GetFormatedItems function
+/** GetFormattedItems function
  *  Fills array - [unpacked_item_id] => unaliased string (headline) for item_id
  * @param $zids - items
  * @param $format - normal AA alias string like {headline.......1} or more complicated
@@ -210,7 +210,7 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
  * @param $tagprefix - array as defined in itemfunc.php3
  * @return array
  */
-function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null) {
     $ret  = [];
     if ( $zids->count() <= 0 ) {
         return $ret;

@@ -167,7 +167,7 @@ class Widget extends AA_Object implements NamedInterface {
                 // $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
                 $set->addCondition(new AA_Condition('all_fields', 'LIKE', "\"$searchterm\""));
             }
-            return GetFormatedItems($set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
+            return GetFormattedItems($set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
         }
         return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
     }

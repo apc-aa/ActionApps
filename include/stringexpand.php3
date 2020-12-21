@@ -4472,6 +4472,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\"";
                     if (strpos($repre_value, '_#AA_AJAX_')!==false) {
                         $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
+                        $show_alias  = str_replace('_#AA_AJAX_', $ajax_on, $show_alias);
                         $ret .= "<div class=\"ajax_container $container_class\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\">";
                     } else {
                         $ret .= "<div class=\"ajax_container $container_class\" id=\"ajaxc_$input_id\" style=\"display:inline-block;width:100%\" $ajax_on>";
@@ -5082,7 +5083,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
 
         $set     = new AA_Set($dictionaries, $conds, $sort);
-        $kw_item = GetFormatedItems($set->query(), $format);
+        $kw_item = GetFormattedItems($set->query(), $format);
 
         foreach ( $kw_item as $kw_string ) {
             [$keywords, $link] = explode('_AA_DeLiM_', $kw_string,2);

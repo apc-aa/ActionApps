@@ -736,7 +736,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             }
         }
 
-        // save it (without possibel new fields 'id' and 'slice_id' - see below)
+        // save it (without possible new fields 'id' and 'slice_id' - see below)
         $real_item_fields2get = $item_fields;
 
         // we need item id for $content index
@@ -836,7 +836,9 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
     // construct WHERE query to content table
-    $new_sel_in = sqlin('item_id', $long_ids, true);
+    $new_sel_in    = sqlin('item_id', $long_ids, true);
+
+    $restrict_cond = '';
 
     if ( is_array( $fields2get ) ) {
         switch ( count($content_fields) ) {
@@ -865,6 +867,12 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         while ( $db->next_record() ) {
 
             $row       = $db->record();
+
+            // secret.........* fields should not be part of the $content array
+            if (strpos($row['field_id'],'secret')===0) {
+                continue;
+            }
+
             $unpack_id = unpack_id($row['item_id']);
 
             if ( $unpermitted[$unpack_id] ) {
@@ -876,7 +884,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             if ( ($row['flag'] & FLAG_TEXT_STORED) OR (strlen($row['text'])>0)) {
                 if (is_array($content[$unpack_id][$row['field_id']][0]) AND ($content[$unpack_id][$row['field_id']][0]['value'] == $row['text'])) {
                     // ignore content duplicates (there could be more that two values for field
-                    // with the same number (=NULL) - the ones which cames from "add value to field" operation)
+                    // with the same number (=NULL) - the ones which comes from "add value to field" operation)
                     continue;
                 }
                 if ($row['number'] > 999999) {  // translations

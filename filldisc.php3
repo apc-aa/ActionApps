@@ -141,7 +141,7 @@ if ($ip_banned_slice_id) {
 
         $format  = "{@keywords........:_AA_DeLiM_}";
         $set     = new AA_Set($ip_banned_slice_id, new AA_Condition('keywords........', 'NOTNULL', '1'));
-        $kw_item = GetFormatedItems($set->query(), $format);
+        $kw_item = GetFormattedItems($set->query(), $format);
 
         $teststring = join('_AA~#^', [$_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']]);
         foreach ( $kw_item as $kw_id => $kw_string ) {
