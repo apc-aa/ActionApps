@@ -281,7 +281,11 @@ class Action {
     function transform($itemContent, $from, $globalParams, &$fvalues ) {
         switch ( $this->action) {
             case "store": {
-                $fvalues[]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
+                $ind = 0;
+                if (strlen($this->params)==2) {  // cz | en | de | ..
+                  $ind = AA_Langs::getLangName2Num(strtolower($this->params));
+                }
+                $fvalues[$ind]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
                 break;
             }
             case "pack_id": {
@@ -343,9 +347,19 @@ class Action {
                 break;
             }
             case "storeparsemulti": {
-                $items = explode ($this->params,trim($itemContent->GetValue($from)));
-                foreach ( $items as $save ) {
-                    $fvalues[]['value'] = trim($save);
+                $delimiter = $this->params;
+                $langs     = [];
+                if (strpos($this->params,'##')) {
+                   $langs     = explode('##',$this->params);
+                   $delimiter = array_shift($langs);
+                }
+                $items = explode($delimiter,trim($itemContent->GetValue($from)));
+                foreach ( $items as $k => $save ) {
+                    $ind = $k;
+                    if ($langs[$k] and strlen($langs[$k])==2) {  // cz | en | de | ..
+                        $ind = AA_Langs::getLangName2Num(strtolower($langs[$k]));
+                    }
+                    $fvalues[$ind]['value'] = trim($save);
                 }
                 break;
             }

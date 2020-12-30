@@ -818,7 +818,15 @@ $FIELD_FUNCTIONS = [
 $TRANS_ACTIONS["name"] = _m("Transformation action");
 $TRANS_ACTIONS["items"]["store"] = [
     "name"=>_m("Store"),
-    "desc"=>_m("Simply store a value from the input field")
+    "desc"=>_m("Simply store a value from the input field"),
+    "params"=> [
+        [
+            "name"=>_m("lang (optional)"),
+            "desc"=>_m("two letters - cz | en | es | de. If provided the value wil be stored to specified language (the field must use translations)"),
+            "example"=>"es",
+            "type"=>"STR"
+        ]
+    ]
 ];
 
 $TRANS_ACTIONS["items"]["removestring"] = [
@@ -871,11 +879,11 @@ $TRANS_ACTIONS["items"]["storeparsemulti"] = [
     "desc"=>_m("Split input field by string parameter and store the result as multi-value.") ,
     "params"=> [
         [
-            "name"=>_m("string parameter"),
-              "desc"=>_m("string which separates the values of the input field"),
-              "type"=>"STR",
-              "example"=>":"
-        ]
+            "name"=>_m("delimiter (+ possible languages)"),
+            "desc"=>_m("string delimeter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields"),
+            "type"=>"STR",
+            "example"=>"|"
+        ],
     ]
 ];
 $TRANS_ACTIONS["items"]["default"] = [
