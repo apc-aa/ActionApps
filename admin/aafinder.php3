@@ -148,6 +148,13 @@ function PrintItemInfo($item_id) {
     $long_id = $zid->longids(0);
     if ($long_id) {
         if ($res = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
+            $res[0]['id']            = unpack_id($res[0]['id']);
+            $res[0]['slice_id']      = unpack_id($res[0]['slice_id']);
+            $res[0]['post_date']    .= '<br>'.date('j.n.Y H:i:s', $res[0]['post_date']);
+            $res[0]['publish_date'] .= '<br>'.date('j.n.Y H:i:s', $res[0]['publish_date']);
+            $res[0]['expiry_date']  .= '<br>'.date('j.n.Y H:i:s', $res[0]['expiry_date']);
+            $res[0]['last_edit']    .= '<br>'.date('j.n.Y H:i:s', $res[0]['last_edit']);
+            $res[0]['moved2active'] .= '<br>'.date('j.n.Y H:i:s', $res[0]['moved2active']);
             echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
         }
 
