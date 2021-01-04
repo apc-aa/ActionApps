@@ -112,18 +112,17 @@ function query_search(array $where, string $phrase) {
     $where[] = ['slice.id', 'item.slice_id', 'j'];
     $where[] = ['content.item_id', 'item.id', 'j'];
 
-    $arr = DB_AA::select([], 'SELECT distinct slice.name as slice_name, slice.id as slice_id, item.* from slice, item, content', $where, ['status_code','slice_name','short_id']);
+    $arr = DB_AA::select([], 'SELECT distinct slice.name as slice_name, LOWER(HEX(slice.id)) as slice_id, LOWER(HEX(item.id)) as iid, item.short_id, item.status_code, item.post_date, item.last_edit, item.edited_by from slice, item, content', $where, ['status_code','slice_name','short_id']);
 
     $output = count($arr)." "._m('Show results with string')."  <b><i>$phrase</i></b><br>";
 
     $items = [[_m('Edit'), _m('Slice'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $slice_name = $f['slice_name'];
-        $slice_id   = (string)bin2hex($f['slice_id']);
-        $short_id   = $f['short_id'];
-        $long_id    = (string)bin2hex($f['id']);
+        $slice_id   = $f['slice_id'];
+        $slice_name = AA_Slice::getModuleName($slice_id);
+        $long_id    = $f['iid'];
 
-        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $short_id, $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
+        $items[]    = ["<a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id\">"._m('Edit')."</a>", $slice_name, $f['short_id'], $f['status_code'], date('Y-m-d H:i',$f['post_date']), date('Y-m-d H:i',$f['last_edit']),$f['edited_by']];
     }
 
     return $output. GetHtmlTable($items, 'th'). '<br><br>';
