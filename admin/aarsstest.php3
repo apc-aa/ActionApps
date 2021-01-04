@@ -49,7 +49,7 @@ function showFeedActions($feed_id) {
                tv_field_value($feed_id,'time','newest_item').
                tv_field_value($feed_id,'debugfeed','debug');
     $out  = "<a href=\"javascript:OpenWindowTop($url)\" title=\"downloads remote items from the feed and possibly store it to the desired slice (if 'write' checkbox is checked\">"._m('feed')."</a>&nbsp;";
-    $out .= "<a href=\"javascript:OpenWindowTop('http://feedvalidator.org/check.cgi?url='+escape($url+'&display=1'))\" title=\"checks the validity of the feed by feedvalidator.org\">"._m('validate')."</a>&nbsp;";
+    $out .= "<a href=\"javascript:OpenWindowTop('https://validator.w3.org/feed/check.cgi?url='+escape($url+'&display=1'))\" title=\"checks the validity of the feed by feedvalidator.org\">"._m('validate')."</a>&nbsp;";
     $out .= "<a href=\"javascript:OpenWindowTop($url+'&display=1')\" title=\"displays the source data in new window\">"._m('show')."</a>";
     return $out;
 }
