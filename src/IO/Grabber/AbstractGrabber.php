@@ -36,8 +36,6 @@ use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber - Base class, which is used as abstraction for data input
  *  From this class we derive concrete data grabbers, like RSS, AARSS, CSV, ...
- *
- * @todo this class should be abstract after we switch to PHP5
  */
 abstract class AbstractGrabber implements \AA\Util\NamedInterface {
     protected $_messages = [];

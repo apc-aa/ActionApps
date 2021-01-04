@@ -258,7 +258,7 @@ function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd=null, $
  * @param $conds
  * @param $sort
  * @todo Teach itemview to return array (instead of whole listing) and convert
- *        those functions (GetFormatedConstants() and GetFormatedItems())
+ *        those functions (GetFormattedConstants() and GetFormattedItems())
  *        to itemview
  * @return array
  */

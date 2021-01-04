@@ -315,27 +315,32 @@ class Widget extends AA_Object implements NamedInterface {
     }
 
     /**
-     * Prints html tag <input type="radio" or ceckboxes .. to 2-column table
+     * Prints html tag <input type="radio" or checkboxes .. to 2-column table
      * - for use internal use of removed inputMultiChBox and FrmInputRadio
+     * @param string[] $records
+     * @param int      $ncols
+     * @param bool     $move_right
+     * @param string   $class
+     * @return string
      */
-    public function getInMatrix($records, $ncols, $move_right, $class = '') {
-        if (is_array($records)) {
-            if (!$ncols) {
-                return implode('', $records);
-            }
-            $nrows = ceil(count($records) / $ncols);
-            $class = $class ? "class=\"$class\"" : '';
-            $ret = "<table border=0 cellspacing=0 $class>";
-            for ($irow = 0; $irow < $nrows; ++$irow) {
-                $ret .= '<tr>';
-                for ($icol = 0; $icol < $ncols; ++$icol) {
-                    $pos = ($move_right ? $ncols * $irow + $icol : $nrows * $icol + $irow);
-                    $ret .= '<td>' . get_if($records[$pos], "&nbsp;") . '</td>';
-                }
-                $ret .= '</tr>';
-            }
-            $ret .= '</table>';
+    public function getInMatrix(array $records, $ncols, $move_right, $class = ''): string {
+
+        $ncols = (int)$ncols;
+        if (!$ncols) {
+            return implode('', $records);
         }
+        $nrows = ceil(count($records) / $ncols);
+        $class = $class ? "class=\"$class\"" : '';
+        $ret = "<table border=0 cellspacing=0 $class>";
+        for ($irow = 0; $irow < $nrows; ++$irow) {
+            $ret .= '<tr>';
+            for ($icol = 0; $icol < $ncols; ++$icol) {
+                $pos = ($move_right ? $ncols * $irow + $icol : $nrows * $icol + $irow);
+                $ret .= '<td>' . get_if($records[$pos], "&nbsp;") . '</td>';
+            }
+            $ret .= '</tr>';
+        }
+        $ret .= '</table>';
         return $ret;
     }
 

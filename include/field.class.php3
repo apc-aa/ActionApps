@@ -430,7 +430,7 @@ class AA_Field implements ArrayAccess {
         $pri         = $this->getProperty('input_pri');
         $required    = $this->required();
         $show        = $this->getProperty('input_show');
-        $aliases     = [$this->getProperty('alias1'),$this->getProperty('alias2'),$this->getProperty('alias3')];
+        $aliases     = array_filter([$this->getProperty('alias1'),$this->getProperty('alias2'),$this->getProperty('alias3')]);
         $separate    = (strpos($this->getProperty('input_before'),'{formbreak') !== false);
         $text_stored = $this->getProperty('text_stored');
         $type        = $this->getProperty('in_item_tbl') ? "in_item_tbl" : "";
@@ -454,6 +454,7 @@ class AA_Field implements ArrayAccess {
         } else {
             echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
         }
+
         $alias_list = join(array_map(
             function($a) use ($id) {
                 return $this->linkToField($a, $id, substr($a,2), (substr($a,0,2)=='X#') ? ['disabled'] : []);

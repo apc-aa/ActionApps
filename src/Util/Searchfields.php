@@ -13,9 +13,7 @@ class Searchfields implements \Iterator, \ArrayAccess, \Countable {
 
     protected $fields = [];
 
-    /**  Valid searchfield properties
-     * @todo convert to class constants after php >=5.6
-     */
+    /**  Valid searchfield properties  */
     private static function FLDPROPS() {
         return  ['name', 'field', 'operators', 'table', 'search_pri', 'order_pri', 'opt_group'];
     }

@@ -745,7 +745,7 @@ class AA_Metabase {
     }
 
     /** The best (most safe) low-level approach to update data in the AA table - the data are checked before storing against database schema
-     *  - the packed data are packed automatically, the integer data are typecasted to numbers, ...
+     *  - the packed data are packed automatically, the integer data are typecast to numbers, ...
      *  For now, the table keys must be provided - we are not able to update multiple records. Could be changed in future
      *  usage: AA::Metabase()->doUpdate(...);
      * @param  string   $tablename table, where to store data
@@ -760,7 +760,7 @@ class AA_Metabase {
     }
 
     /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
-     *  - the packed data are packed automatically, the integer data are typecasted to numbers, ...
+     *  - the packed data are packed automatically, the integer data are typecast to numbers, ...
      * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param  string   $tablename - table, where to store data
      * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
@@ -775,7 +775,7 @@ class AA_Metabase {
     }
 
     /** The best (most safe) low-level approach to store data in the AA table - the data are checked before storing against database schema
-     *  - the packed data are packesd automaticaly, the integer data are typecasted to numbers, ...
+     *  - the packed data are packed automatically, the integer data are typecast to numbers, ...
      * @usage AA::Metabase()->doReplace('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param  string   $tablename - table, where to store data
      * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
@@ -790,8 +790,8 @@ class AA_Metabase {
     }
 
     /** The same as doInsert, but for multiple similar inserts
-     * @usage AA::Metabase()->doInsert('log', [['time'=>time(),'user'=>$uid1, 'type'=>$event, 'selector'=>$selector, 'params'=>$params],
-     *                                         ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
+     * @usage AA::Metabase()->doInsertMulti('log', [['time'=>time(),'user'=>$uid1, 'type'=>$event, 'selector'=>$selector, 'params'=>$params],
+     *                                              ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
      * @see AA_Metabase::doInsert()
      * @param  string   $tablename table, where to store data
      * @param  string[] $data[][]  data rows - all data unpacked. The values are converted to correct ones

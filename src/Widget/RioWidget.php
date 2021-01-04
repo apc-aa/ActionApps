@@ -70,7 +70,7 @@ class RioWidget extends \AA\Widget\Widget
         $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
             $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id . $i, "$widget_add $required");
-            // $required     = ''; // fotr radio it could be in all options
+            // $required     = ''; // for radio it could be in all options
         }
 
         $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-rio') . $widget_add2;
