@@ -40,7 +40,7 @@ define("MAX_ENTRIES_SHOWN",10);   // Maximum number of shown users in search for
 //---------- Slice -----------------
 // author        - possibly letters 'abcdefg'
 define("PS_EDIT_SELF_ITEMS",      "a");   // slice | change self-written items
-define("PS_EDIT_SELF_USER_DATA",  "b");   // slice | change data for current userself-written items
+define("PS_EDIT_SELF_USER_DATA",  "b");   // slice | change data for current user self-written items
 // editor        - possibly letters 'hijklmnopqrs'
 define("PS_ITEMS2ACT",            "h");   // slice | move item to approved bin
 define("PS_ITEMS2HOLD",           "i");   // slice | move item to holding bin
@@ -50,7 +50,7 @@ define("PS_DELETE_ITEMS",         "l");   // slice | delete items
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
 define("PS_EDIT",                 "A");   // slice | set slice properties
 define("PS_CATEGORYxxx",          "B");   // slice | change slice categories - now free (not used - you can rename it - honza 2009-11-3)
-define("PS_FIELDS",               "C");   // slice | edit fields defauts
+define("PS_FIELDS",               "C");   // slice | edit fields defaults
 define("PS_BOOKMARK",             "D");   // slice | change search form settings
 define("PS_USERS",                "E");   // slice | manage users (change perms
                                           //         to slice, set profile)
@@ -65,7 +65,7 @@ define("PS_FORMS",                "K");   // slice | edit forms
 define("PS_ADD",                  "Q");   // aa    | add slice
 define("PS_NEW_USER",             "R");   // aa    | create new user
 define("PS_MANAGE_ALL_SLICES",    "S");   // aa    | edit all slices (this
-                                          //         permission is useable, when
+                                          //         permission is usable, when
                                           //         you want credit some rights
 define("PS_HISTORY",              "T");   // slice | access history log
 
@@ -88,7 +88,7 @@ define("PS_MODP_EDIT_DESIGN",     "B");   // slice | change polls design
 define("PS_LINKS_INHERIT",        "a");   // slice | user have also the rights to subcategories
 // editor        - possibly letters 'hijklmnopqrs'
 define("PS_LINKS_CHECK_LINK",     "h");   // slice | check link
-define("PS_LINKS_HIGHLIGHT_LINK", "i");   // slice | highlight/dehighlight link
+define("PS_LINKS_HIGHLIGHT_LINK", "i");   // slice | highlight/de-highlight link
 define("PS_LINKS_DELETE_LINK",    "j");   // slice | move link to trash bin
 define("PS_LINKS_EDIT_CATEGORY",  "k");   // slice |
 define("PS_LINKS_EDIT_LINKS",     "l");   // slice | edit links
@@ -707,14 +707,8 @@ class AA_Perm {
             // passwords in SQL perms in AA 2.x was 30 characers long (in user table),
             // so we have to compare it with shortened hash
             $ret = ($hash === substr(crypt($password, $hash),0,30));
-        } elseif (function_exists('password_verify')) { // php 5.5
-            $ret = password_verify($password, $hash);
         } else {
-            // remove for php >= 5.5
-
-            // looks ugly for the first_child look, but it is really how the crypt
-            // with salt works - see php documentation
-            $ret = ($hash === crypt($password, $hash));
+            $ret = password_verify($password, $hash);
         }
 
         // now we have tested the "current" password hash on this system - the result is in $ret

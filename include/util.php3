@@ -1855,16 +1855,6 @@ function IsSigInt($var) {
     return (strlen($var) AND is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
 }
 
-/** Defines array_column() for PHP version < 5.5
-  * @todo remove after the switch to 5.5
-  */
-if(!function_exists("array_column")) {
-    function array_column($array,$column_name) {
-        return array_map(function($element) use($column_name) {return $element[$column_name];}, $array);
-    }
-}
-
-
 /** RestoreVariables to global context - kind of @deprecated */
 function RestoreVariables(array $r_state_vars) {
     foreach ($r_state_vars as $k => $v) {
