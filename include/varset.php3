@@ -44,10 +44,10 @@ class Cvariable {
 
     /** Cvariable function
      *  constructor
-     * @param $name
-     * @param $type
-     * @param $value
-     * @param $iskey
+     * @param string $name
+     * @param string $type - integer | number | unpacked | quoted | null | float | date | text
+     * @param string $value
+     * @param bool $iskey
      */
     function __construct($name, $type, $value, $iskey=false) {
         $this->name  = $name;
@@ -173,8 +173,8 @@ class Cvarset {
 
     /** add function
      *  add variable to varset
-     * @param        $varname
-     * @param string $type
+     * @param string $varname
+     * @param string $type - integer | number | unpacked | quoted | null | float | date | text
      * @param string $value
      * @param bool   $iskey
      */
@@ -184,22 +184,20 @@ class Cvarset {
 
     /** addglobals function
      *  add global variables to varset (names in $arr)
-     * @param $arr
-     * @param $type
+     * @param string[] $arr
+     * @param string   $type
      */
-    function addglobals($arr, $type="quoted") {
-        if ( isset($arr) AND is_array($arr) ) {
-            foreach ( $arr as $varname ) {
-                $this->vars[$varname]= new Cvariable($varname, $type, $GLOBALS[$varname]);
-            }
+    function addglobals(array $arr, $type="quoted") {
+        foreach ( $arr as $varname ) {
+            $this->vars[$varname]= new Cvariable($varname, $type, $GLOBALS[$varname]);
         }
     }
 
     /** addkey function
      *  add key variable to varset (see Cvariable)
-     * @param $varname
-     * @param $type
-     * @param $value
+     * @param string $varname
+     * @param string $type - integer | number | unpacked | quoted | null | float | date | text
+     * @param string $value
      */
     function addkey($varname, $type="text", $value="") {
         $this->vars[$varname] = new Cvariable($varname, $type, $value, true);
@@ -207,7 +205,7 @@ class Cvarset {
 
     /** remove function
      *  remove variable from varset
-     * @param $varname
+     * @param string $varname
      */
     function remove($varname) {
         unset ($this->vars[$varname]);
@@ -215,9 +213,9 @@ class Cvarset {
 
     /** set function
      *  set variable value
-     * @param $varname
-     * @param $value
-     * @param $type
+     * @param string $varname
+     * @param string $value
+     * @param string $type - integer | number | unpacked | quoted | null | float | date | text
      */
     function set($varname, $value, $type="") {
         if ( $type=="" ) {
@@ -227,29 +225,17 @@ class Cvarset {
         $this->add($varname, $type, $value);   // it must be assigned this way, because $v is just copy
     }
 
-    /** ifnoset function
-     *  if undefined - set
-     * @param $varname
-     * @param $value
-     * @param $type
-     */
-    function ifnoset($varname, $value, $type="") {
-        if ( !$this->get($varname) ) {
-            $this->add($varname, ($type ? $type : "quoted"), $value);
-        }
-    }
-
     /** value function
      *  return variable value
-     * @param $varname
-     * @return
+     * @param string $varname
      */
     function value($varname){
         $v = $this->vars["$varname"];
         return $v->value;
     }
 
-    function getArray() {
+    /** get key=>value array of variables and values */
+    function getArray() : array {
         $ret = [];
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
@@ -261,7 +247,7 @@ class Cvarset {
 
     /** setFromArray function
      *  set variables values due to array
-     * @param $arr
+     * @param array $arr
      */
     function setFromArray($arr) {
         foreach ( $this->vars as $varname => $variable ) {
@@ -284,19 +270,15 @@ class Cvarset {
 
     /** addArray function
      *  Add text and number variables from arrays to varset
-     * @param $text_fields
-     * @param $num_fields
+     * @param string[] $text_fields
+     * @param string[] $num_fields
      */
-    function addArray($text_fields, $num_fields="") {
-        if (is_array($text_fields)) {
-            foreach ($text_fields as $name) {
-                $this->add($name, "text");
-            }
+    function addArray(array $text_fields, array $num_fields=[]) {
+        foreach ($text_fields as $name) {
+            $this->add($name, "text");
         }
-        if (is_array($num_fields)) {
-            foreach ( $num_fields as $name) {
-                $this->add($name, "number");
-            }
+        foreach ( $num_fields as $name) {
+            $this->add($name, "number");
         }
     }
 

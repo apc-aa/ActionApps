@@ -393,22 +393,6 @@ define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
 
 define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
 
-$FIELD_FIELDS_TEXT = [
-    "id", "type", "slice_id", "name",
-  "input_help", "input_morehlp", "input_default",
-  "input_show_func", "content_id", "search_type", "search_help",
-  "search_before", "search_more_help", "alias1", "alias1_func", "alias1_help",
-  "alias2", "alias2_func", "alias2_help", "alias3","alias3_func", "alias3_help",
-  "input_before", "aditional", "input_validate", "input_insert_func", "in_item_tbl"
-];
-
-$FIELD_FIELDS_NUM = [
-    "input_pri", "required", "feed", "multiple",
-  "search_pri", "search_show", "search_ft_show", "search_ft_default",
-  "content_edit", "html_default", "html_show", "input_show", "text_stored"
-];
-
-
 function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
     return [
         'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),

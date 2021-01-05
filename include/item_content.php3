@@ -674,7 +674,7 @@ class ItemContent extends AA_Content {
     }
 
     /** is_set function
-     * @todo  rename to more standard isSet after switch to PHP vesion 7
+     * @todo  rename to more standard isSet after switch to PHP version 7
      * @param $field_id
      * @return bool
      */
@@ -745,20 +745,20 @@ class ItemContent extends AA_Content {
 
     /** getStatusCode function
      */
-    function getStatusCode() {
-        return $this->getValue("status_code.....");
+    function getStatusCode(): int {
+        return (int)$this->getValue("status_code.....");
     }
 
     /** getPublishDate function
      */
-    function getPublishDate() {
-        return $this->getValue("publish_date....");
+    function getPublishDate(): int {
+        return (int)$this->getValue("publish_date....");
     }
 
     /** getExpiryDate function
      */
-    function getExpiryDate() {
-        return $this->getValue("expiry_date.....");
+    function getExpiryDate(): int {
+        return (int)$this->getValue("expiry_date.....");
     }
 
     /** setValue function
@@ -999,16 +999,14 @@ class ItemContent extends AA_Content {
      *                      ($this->getItemID()) is not in the database.
      *                      Otherwise it is skiped (not stored)
      * @param array  $flags additional item processing flags.:
-     *                  $flags[0] - invalidatecache - should we invalidate
-     *                                                 the cache for the slice?
-     *
-     *                  $flags[1] - feed            - procces feeding (as in in
-     *                                                the slice setting)?
+     *                  $flags[0] - invalidatecache - should we invalidate the cache for the slice?
+     *                  $flags[1] - feed            - process feeding (as in in the slice setting)?
      *                  $flags[2] - throw_events    - issue update/insert event?
-     * @param string $context special parameter used for thumbnails
+     *                  $flags[3] - allow_last_edit - issue update/insert event?
+     * @param string $context special parameter used for thumbnails - ''|feed
      * @return bool|mixed|string
      */
-    function storeItem( $mode, $flags = [], $context='direct' ) {
+    function storeItem( $mode, $flags = [], $context='' ) {
         global $event;
 
         if (! ($slice_id     = $this->getSliceID()))            {return false;}
@@ -1071,9 +1069,11 @@ class ItemContent extends AA_Content {
                                   break;
         }
 
-        $invalidatecache = isset($flags[0]) ? $flags[0] : !$silent;
-        $feed            = isset($flags[1]) ? $flags[1] : !$silent;
-        $throw_events    = isset($flags[2]) ? $flags[2] : !$silent;
+        $invalidatecache         = isset($flags[0]) ? $flags[0] : !$silent;
+        $feed                    = isset($flags[1]) ? $flags[1] : !$silent;
+        $throw_events            = isset($flags[2]) ? $flags[2] : !$silent;
+        $allow_edit              = [];
+        $allow_edit['last_edit'] = ($flags[3] AND $silent);
 
         if (!$id) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", [$slice->getName(), $id]));  // set error code
@@ -1082,7 +1082,7 @@ class ItemContent extends AA_Content {
         }
 
         // do not store item, if status_code==SC_NO_BIN
-        if ((int)$this->getStatusCode() == SC_NO_BIN) {
+        if ($this->getStatusCode() == SC_NO_BIN) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Status code"));
             return false;
         }
@@ -1100,28 +1100,32 @@ class ItemContent extends AA_Content {
         }
 
         switch ($mode) {
-        case 'overwrite':
-            // delete content for all the fields but not the safe fields
-            $delete_conds = [['item_id', $id, 'l']];
-            if ( count($safe_fields = $fields->getSafeFieldsArray()) ) {
-                $delete_conds[] = ['field_id', $safe_fields, 's<>'];
-            }
-            DB_AA::delete('content', $delete_conds);
-            break;
-        case 'update':
-            $this->_clean_updated_fields($id, $fields);
-            break;
-        case 'insert':
-            // reset hit counter fields for new items
-            foreach ($fields as $fid => $foo) {
-                if (substr($fid, 0, 4) == 'hit_' ) {
+            case 'overwrite':
+                // delete content for all the fields but not the safe fields
+                $delete_conds = [['item_id', $id, 'l']];
+                if ( count($safe_fields = $fields->getSafeFieldsArray()) ) {
+                    $delete_conds[] = ['field_id', $safe_fields, 's<>'];
+                }
+                DB_AA::delete('content', $delete_conds);
+                break;
+            case 'update':
+                $this->_clean_updated_fields($id, $fields);
+                break;
+            case 'insert':
+                // reset hit counter fields for new items
+                $hitfieds = array_filter($fields->getPriorityArray(), function($fid) { return (substr($fid, 0, 4) == 'hit_' ); });
+                foreach ($hitfieds as $fid ) {
                     $this->setValue($fid, 0);
                 }
-            }
-            break;
+
+                // we store the skeleton item to the item table to get short_id in order we can use _#SITEM_ID in computed fields (filename change aliases)
+                // Most of the fields will be rewritten later (see below)
+                AA::Metabase()->doInsert('item', ['id'=>$id,'slice_id'=>$slice_id, 'status_code'=>$this->getStatusCode(), 'externally_fed'=>'']);
+                $this->setValue('short_id........',  DB_AA::select1("SELECT short_id FROM `item`", 'short_id', [['id',$id,'l']]));
+                break;
         }
         // else 'add' do not clear the current content - the values are added
-        // in paralel to curent values (stored as multivalues for all fields
+        // in parallel to current values (stored as multivalues for all fields
         // stored in content table)
 
         // and NOW - store the fields and prepare item_varset
@@ -1141,7 +1145,11 @@ class ItemContent extends AA_Content {
         switch ($mode) {
             case 'update':
             case 'add':
-                if (!$silent) {
+                if ($silent) {
+                    if ($allow_edit['last_edit'] AND $this->getValue('last_edit')) {
+                        $item_varset->add("last_edit", "date", (int)$this->getValue('last_edit'));
+                    }
+                } else {
                     $item_varset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
                     $item_varset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
                 }
@@ -1163,22 +1171,21 @@ class ItemContent extends AA_Content {
                     $item_varset->set('status_code', 1);
                 }
                 if ($item_varset->get('publish_date') < 1) {
-                    $item_varset->set('publish_date', now());
+                    $item_varset->set('publish_date', AA_Generator::factoryByString('now')->generate()->getValue());
                 }
                 if ($item_varset->get('expiry_date') < 1) {
-                    $item_varset->set('expiry_date', 1861916400);   // sometimes in 2029
+                    $item_varset->set('expiry_date', AA_Generator::factoryByString('never')->generate()->getValue());
                 }
                 $item_varset->set('display_count', (int)$this->getValue('display_count...'));
                 $item_varset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
                 $item_varset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
                 $item_varset->set('externally_fed', (int)$this->getValue('externally_fed..'));
-                $item_varset->doInsert('item');
+                $item_varset->doUpdate('item');  // already inserted above
         }
         if ($invalidatecache) {
             // invalidate old cached values
             AA::Pagecache()->invalidateFor($slice_id);
         }
-
 
         // get the content back from database
         $itemContent = new ItemContent();
@@ -1199,7 +1206,7 @@ class ItemContent extends AA_Content {
 
         // maybe we can delete this condition - we just know we need to invalidate old contents for recomputing items in ITEM_NEW task
         if ($throw_events) {
-            //AA_Items::invalidate();      // this deletes also chached items in Saver, which you do not want - that's why it is commented out
+            //AA_Items::invalidate();      // this deletes also cached items in Saver, which you do not want - that's why it is commented out
             AA::Contentcache()->clear_soft();  // do not delete {define:..} used by {var:..} - sometimes used by {newitem}
         }
         // renew content if the item in the cache - we will use it in Planned tasks, ... where we do not know slice password...
@@ -1429,10 +1436,10 @@ class ItemContent extends AA_Content {
      *  or in returned item_varset
      * @param $id
      * @param AA_Fields $aa_fields
-     * @param $context
+     * @param $context special parameter used for thumbnails - ''|feed
      * @return Cvarset
      */
-    function _store_fields($id, $aa_fields, $context='direct') {
+    function _store_fields($id, $aa_fields, $context='') {
         $field_writer = new AA_Field_Writer($this->getSliceID());
         $stop         = false;
 

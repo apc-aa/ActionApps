@@ -129,7 +129,7 @@ if ($update) {
                 // copy fields
                 // use the same setting for new field as template in AA_Core_Fields..
                 $varset->clear();
-                $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
+                $varset->addArray( AA_Fields::FIELDS_TEXT, AA_Fields::FIELDS_NUM );
                 $varset->setFromArray($field_setting);   // from template for this field
 
                 // in AA_Core_Fields.. are fields identified by 'switch' or 'text'

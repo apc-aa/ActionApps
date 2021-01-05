@@ -958,10 +958,10 @@ function IsEditable($fieldcontent, $field, $profile) {
  * @param $invalidatecache
  * @param $feed
  * @param array $oldcontent4id if not sent, StoreItem finds it
- * @param $context
+ * @param $context special parameter used for thumbnails - ''|feed
  * @return true on success, false otherwise
  */
-function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='direct' ) {
+function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='' ) {
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);

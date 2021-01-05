@@ -410,7 +410,7 @@ class AA_Set extends AA_Object {
      *  @param $restrict_zids - zids
      *  @return zids
      */
-    function query($restrict_zids=null, $limit=null) {
+    public function query($restrict_zids=null, $limit=null): zids {
         return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
     }
 
@@ -1328,7 +1328,7 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *                                   selected items (then set the number to 1)
  * @return zids from SQL query;
  */
-function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=false, $group_limit=null ) {
+function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=false, $group_limit=null ): zids {
     global $QueryIDsCount;
     $db = getDB();
 
@@ -1429,7 +1429,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 *                                     // view parameter instead)
 *   </pre>
 */
-function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=null, $defaultCondsOperator = "LIKE", $limit=null ) {
+function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=null, $defaultCondsOperator = "LIKE", $limit=null ): zids {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
@@ -1525,14 +1525,14 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         //   headline........@relation.......1
                         //   - search in headline field of all related items
                         //     (relation.......1 field pointed to related items)
-                        list($cf, $rel_fld) = explode('@',$fid);
+                        [$cf, $rel_fld] = explode('@',$fid);
 
                         $field = $fields->getField($rel_fld);
                         if (!is_object($field)) {
                             if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not field.<br>";
                             continue;            // bad field_id or not defined condition - skip
                         }
-                        list($rel_f_type, $rel_f_slice) = $field->getRelation();
+                        [$rel_f_type, $rel_f_slice] = $field->getRelation();
                         if ($rel_f_type != 'relation') {
                             if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>";
                             continue;            // bad field_id or not defined condition - skip
@@ -1580,8 +1580,8 @@ function QueryZids($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         //   - search in headline field of all related items
                         //     (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2ab2 pointed to current item)
                         //   - the + after <remote_slice_id> - 7735375488a65e7735375488a65eab2ab2+ means we want also non ACTIVE items take in the account
-                        list($cond_fld_id, $rel_combi) = explode('@',$fid);
-                        list($rel_slice_id, $rel_fld_id)   = explode('/',$rel_combi);
+                        [$cond_fld_id, $rel_combi] = explode('@',$fid);
+                        [$rel_slice_id, $rel_fld_id]   = explode('/',$rel_combi);
                         $rel_bins = AA_BIN_ACTIVE;
                         if (substr($rel_slice_id, -1) == '+')  {
                              $rel_bins = AA_BIN_ALL;

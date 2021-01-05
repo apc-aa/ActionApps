@@ -27,8 +27,7 @@
 
 use AA\IO\DB\DB_AA;
 
-/** @todo this class should be abstract after we switch to PHP5 */
-class AA_Optimize implements \AA\Util\NamedInterface {
+abstract class AA_Optimize implements \AA\Util\NamedInterface {
     protected $messages = [];
     protected $db;
 

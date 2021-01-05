@@ -321,7 +321,7 @@ if ( $add || $update ) {
             $fields = DB_AA::select([], 'SELECT * FROM field', [['slice_id', $set_template_id, 'l']]);
             foreach ($fields as $field) {
                 $varset->clear();
-                $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
+                $varset->addArray( AA_Fields::FIELDS_TEXT, AA_Fields::FIELDS_NUM );
                 $varset->setFromArray($field);
                 $varset->set("slice_id", $slice_id, "unpacked" );
                 if ( !$varset->doINSERT('field')) {

@@ -58,7 +58,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
         $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
         $transformator  = new AA_Transformator;
-        $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent);
+        $updated_items  = $transformator->transform($zids, $field_id, $transformation, $silent, ($silent AND ($field_id=='last_edit.......') AND IsSuperadmin()));
     }
 
     $Msg     = MsgOk(_m("Items selected: %1, Items sucessfully updated: %2", [$zids->count(), $updated_items]));

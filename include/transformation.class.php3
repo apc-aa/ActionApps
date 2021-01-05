@@ -889,8 +889,14 @@ class AA_Transformator {
 
     /** You do not check permissions here - you must already know, you have
      *  perms for the change
-    */
-    function transform($zids, $field_id, $transformation, $silent=true) {
+     * @param zids   $zids
+     * @param string $field_id
+     * @param        $transformation
+     * @param bool   $silent
+     * @param bool   $allow_last_edit just in special cases of silent bulk change
+     * @return int
+     */
+    function transform($zids, $field_id, $transformation, $silent=true, $allow_last_edit=false): int {
 
         $updated_items     = 0;         // number of updated items
         $slices2invalidate = [];
@@ -909,7 +915,7 @@ class AA_Transformator {
                 continue;
             }
 
-            // transform retuns AA_Value
+            // transform returns AA_Value
             $field_content = $transformation->transform($field_id, $itemcontent, $silent);
             if ( !is_a($field_content, 'AA_Value') ) {
                 if ($field_content === true) {  // for recompute - all is already sucessfully done
@@ -925,7 +931,7 @@ class AA_Transformator {
             $newitemcontent->setItemID($item_id);
             $newitemcontent->setSliceID($sli_id);
 
-            if ($newitemcontent->storeItem( $silent ? 'update_silent' : 'update', [false, false, false])) {    // not invalidatecache, not feed, no events
+            if ($newitemcontent->storeItem( $silent ? 'update_silent' : 'update', [false, false, false, $allow_last_edit])) {    // not invalidatecache, not feed, no events
                 $updated_items++;
             }
             $slices2invalidate[$sli_id] = $sli_id;
