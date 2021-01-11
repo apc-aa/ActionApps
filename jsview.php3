@@ -98,6 +98,8 @@ if ($convertto) {
     $view_param['convertto']   = $convertto;
 }
 
+AA::$headers['type']  = 'application/javascript';
+
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
