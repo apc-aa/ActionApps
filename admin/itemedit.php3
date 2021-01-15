@@ -189,7 +189,8 @@ unset($content4id);
 
 $slice = AA_Slice::getModule($slice_id);
 
-//ValidateContent4Id($err, $slice, $action, $id);
+// we need it for setting default fields - without it it is not filled
+ValidateContent4Id($err, $slice, $action, $id);
 
 // Are we editing dynamic slice setting fields?
 $slice_fields = ($id == $slice->getId());
