@@ -140,6 +140,12 @@ class TxtWidget extends \AA\Widget\Widget
             // arr this textarea to the list for CKEditor creation or CodeMirror
             $this->ids_4_editor[] = '#'.$input_id;
             // $attrs['class'] = 'ckeditor';
+
+            // we do not mark base textarea as required for CodeMirror, since it causes "An invalid form control with name='' is not focusable."
+            if ($showcodeeditor) {
+                $required = '';
+            }
+
         } elseif (!$no_htmleditor_link) {
             $htmlareaedit = " &nbsp; <a href=\"javascript:;\" class=\"aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in HTMLArea") . "</a>"; // used for HTMLArea
             // conversions menu
@@ -159,7 +165,7 @@ class TxtWidget extends \AA\Widget\Widget
             $translate = '';
 
             // the AA_Translate do not work on CKEditor nor CodeMirror, yet
-            // @todo meke AA_Translate work on CKEditor and CodeMirror
+            // @todo make AA_Translate work on CKEditor and CodeMirror
             if (!$showhtmlarea AND !$showcodeeditor AND ($langcode != $base['langcode'])) {
                 $translate =  "<span class=\"aa-langtrans-tbtn\" onclick=\"AA_Translate('$input_id', document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode');\">" . _m("translate from") . ' ' . AA_Langs::getLangCode2Name($base['langcode']) . "</span>";
             }
