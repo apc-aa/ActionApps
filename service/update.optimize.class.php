@@ -299,7 +299,9 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
             $matches = array_intersect($tmp_columns, $old_columns);
             if ( count($matches) > 1 ) {
                 $field_list = '`'. join('`, `', $matches) .'`';
-                $this->query("INSERT INTO `tmp_$tablename` ($field_list) SELECT $field_list FROM `$tablename`");
+                // there was longer "type" column in old AA (contains "history"). Now we use just 'h', so we ignore the error for insert
+                $ignore = ($tablename == 'change') ? 'IGNORE' : '';
+                $this->query("INSERT $ignore INTO `tmp_$tablename` ($field_list) SELECT $field_list FROM `$tablename`");
             }
 
             // backup table and use the new one
