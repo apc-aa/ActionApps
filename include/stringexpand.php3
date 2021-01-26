@@ -7826,6 +7826,8 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
             case 'RT':        AA::$headers['RT']          = 'Report-To: '.$parameter;                break;
             case 'NEL':       AA::$headers['NEL']         = 'NEL: '.$parameter;                      break;
             case 'XSS':       AA::$headers['XSS']         = 'X-Xss-Protection: '.$parameter;         break;
+            case 'XCTO':      AA::$headers['XCTO']        = 'X-Content-Type-Options: '.$parameter;   break;
+            case 'RP':        AA::$headers['RP']          = 'Referrer-Policy: '.$parameter;          break;
         }
         return '';
     }
