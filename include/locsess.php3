@@ -375,6 +375,12 @@ class AA {
         if (isset(AA::$headers['XSS'])) {
             $ret['XSS'] = AA::$headers['XSS'];
         }
+        if (isset(AA::$headers['XCTO'])) {
+            $ret['XCTO'] = AA::$headers['XCTO'];
+        }
+        if (isset(AA::$headers['RP'])) {
+            $ret['RP'] = AA::$headers['RP'];
+        }
         return $ret;
     }
 
