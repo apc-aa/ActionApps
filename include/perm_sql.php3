@@ -397,9 +397,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function getMembership($id, $flags = 0) {
 
-        if (!ctype_digit((string)$id)) {
-            return [];
-        }
+        // groups now can contain also Readers
+        // if (!ctype_digit((string)$id)) { return []; }
 
         $all_groups  = [];
         $last_groups = [$id];
@@ -410,7 +409,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             if ($deep_counter++ > MAX_GROUPS_DEEP) {
                 break;
             }
-            $groupids = DB_AA::select('groupid', "SELECT groupid FROM `membership`", [['memberid', $last_groups, 'i']]);
+            $groupids = DB_AA::select('groupid', "SELECT groupid FROM `membership`", [['memberid', $last_groups]]);
 
             $last_groups = [];  //get deeper groups to last_groups and groups
             foreach ($groupids as $gid) {
