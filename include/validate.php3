@@ -151,9 +151,10 @@ class AA_Validate extends AA_Serializable {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool { return true; }
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool { return true; }
 
     /** checks if the variable is empty
      * @param $var
@@ -212,9 +213,10 @@ class AA_Validate_Signed extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!IsSigInt($var)) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'");
         }
@@ -305,9 +307,10 @@ class AA_Validate_Regexp extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
         }
@@ -385,9 +388,10 @@ class AA_Validate_Id extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if (!is_long_id($var)) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'));
         }
@@ -416,9 +420,10 @@ class AA_Validate_Float extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( !is_float($var) ) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'));
         }
@@ -446,9 +451,10 @@ class AA_Validate_Enum extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'));
     }
 }
@@ -459,9 +465,10 @@ class AA_Validate_Login extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         $len = strlen($var);
         if ( $len<3 ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'));
@@ -486,9 +493,10 @@ class AA_Validate_Pwd extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         $len = strlen($var);
         if ( $len<5 ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'));
@@ -537,11 +545,12 @@ class AA_Validate_Unique extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
-
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         switch ($this->scope) {  // for older approach - presented in field setting
+            case '':
             case '0': $this->scope = 'username';  break;
             case '1': $this->scope = 'slice';     break;
             case '2': $this->scope = 'allslices'; break;
@@ -553,17 +562,22 @@ class AA_Validate_Unique extends AA_Validate {
             }
             return true;
         }
+
+        $field_to_check = $this->field_id ?: $var_id;
+        if (!$field_to_check) {
+            return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'));
+        }
         $tables = ['content', 'item'];
         $conds  = [['content.item_id', 'item.id', 'j'], ['item.status_code',1]];  // only approved items
         if ( $this->scope == 'slice') {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
-            if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($this->field_id) ) {
+            if ( !$slice_id OR !($slice = AA_Slice::getModule($slice_id)) OR !$slice->getField($field_to_check) ) {
                 return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'));
             }
             $conds[] = ['item.slice_id', $slice_id, 'l'];
         }
-        $conds[] = ['content.field_id', $this->field_id];
+        $conds[] = ['content.field_id', $field_to_check];
         $conds[] = ['content.text', $var];
 
         $iid = $this->item_id ?: ($content_context ? $content_context->getId() : '');
@@ -600,7 +614,7 @@ class AA_Validate_Eunique extends AA_Validate {
     static function getClassProperties()  {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | <b>allslices</b>"), '', 'slice'),  // or 0 | 1 | 2 for field setting
             'item_id'  => new AA_Property( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
         ];
     }
@@ -608,14 +622,18 @@ class AA_Validate_Eunique extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( !AA_Validate::doValidate($var, 'email') ) {
             return false;
         }
-        $validator = new AA_Validate_Unique(['field_id' => $this->field_id, 'scope' => $this->scope, 'item_id' => $this->item_id]);
-        return $validator->validate($var, $content_context);
+
+        // here we use default username if the this fields is username (field is headline........) OR allslices if not (in old ParamWizard we use "Slice only" boolean)
+        $scope =  $this->scope ?: (($var_id == FIELDID_USERNAME) ? 'username' : 'allslices');
+        $validator = new AA_Validate_Unique(['field_id' => $this->field_id, 'scope' => $scope, 'item_id' => $this->item_id]);
+        return $validator->validate($var, $content_context, $var_id);
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
@@ -640,9 +658,10 @@ class AA_Validate_Text extends AA_Validate {
     /** validate function
      * @param string          $var
      * @param AA_Content|null $content_context
+     * @param string          $var_id
      * @return bool
      */
-    public function validate(string &$var, AA_Content $content_context = null): bool {
+    public function validate(string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
         if ( ($this->maxlength > 0) AND (strlen($var) > $this->maxlength) ) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'));
         }

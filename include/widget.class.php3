@@ -307,7 +307,7 @@ class AA_Property extends AA_Storable {
                 continue;
             }
             $empty = false;
-            if (!($valid = $validator->validate($v, $context_content))) {
+            if (!($valid = $validator->validate($v, $context_content, $this->getId()))) {
                 break;
             }
         }
