@@ -562,7 +562,7 @@ class ItemContent extends AA_Content {
      * @param AA_Profile $profile
      * @return bool
      */
-    function setFieldsFromForm($oldcontent4id, $insert, $fields, $profile) {
+    function setFieldsFromForm($oldcontent4id, bool $insert, $fields, $profile): bool {
         
         // check, if any data was send to the server (GET is not possible there, I think)
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -581,7 +581,7 @@ class ItemContent extends AA_Content {
         foreach ($fields as $pri_field_id => $field) {
 
             // to content array add just displayed fields (see ShowForm())
-            if (!IsEditable($oldcontent4id[$pri_field_id], $field->getRecord(), $profile) AND !$insert) {
+            if (!IsEditable($oldcontent4id[$pri_field_id], $field, $profile) AND !$insert) {
                 continue;
             }
 
@@ -630,7 +630,7 @@ class ItemContent extends AA_Content {
      * @param bool $insert
      * @return bool
      */
-    function setFromForm($slice, $id, $oldcontent4id=[], $insert=true, $slice_fields=false) {
+    function setFromForm($slice, $id, $oldcontent4id=[], bool $insert=true, $slice_fields=false): bool {
         global $auth;
 
         $fields  = $slice->getFields($slice_fields);
@@ -722,6 +722,7 @@ class ItemContent extends AA_Content {
     }
 
     /** getItemID function
+     * @return string longID
      */
     function getItemID() {
         return strlen($id = $this->getValue('unpacked_id.....')) ? $id : unpack_id($this->getValue('id..............'));
@@ -1532,7 +1533,7 @@ class ItemContent extends AA_Content {
 }
 
 /** itemIsDuplicate function
- *  Figure out if item alreaady imported into this slice
+ *  Figure out if item already imported into this slice
  * Id's are unpacked
  * Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
  * @param $item_id
@@ -1543,7 +1544,7 @@ function itemIsDuplicate($item_id) {
 }
 
 /** field_content is AA_Value object
- *  $field_content could be AA_Value or scallar or array()
+ *  $field_content could be AA_Value or scalar or array()
  * @param string $item_id long item id
  * @param string $field_id field id
  * @param string|AA_Value $field_content

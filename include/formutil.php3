@@ -356,7 +356,7 @@ class inputform {
             // ----- collect all field_* parameters in order we can call display function
 
             // field_mode - how to display the field
-            $field_mode  = !IsEditable($content4id->getValues($fid), $field->getRecord(), $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
+            $field_mode  = !IsEditable($content4id->getValues($fid), $field, $profile) ? 'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
 
             if ( $edit ) {
                 $fval = $content4id->getAaValue($fid);
@@ -380,10 +380,12 @@ class inputform {
             $ret .= $aainput->get($item, $slice->getId());
             unset($aainput);
         }
-        // no longer used - we use standard HTML5 validation, now;
+        // no longer used - we use standard HTML5 validation, now;    get_js_validation() already removed 2021-01-26 HM
         // $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
         // we need to know, if the file upload is used to use multipart form encoding
-        $this->show_func_used = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        if (!is_array($this->show_func_used)) {       // not already computed
+            $this->show_func_used = $slice->get_show_func_used($content4id->getItemID(), $shown_fields, $slice_fields);
+        }
         return $ret;
     }
 

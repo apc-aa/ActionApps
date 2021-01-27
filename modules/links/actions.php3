@@ -607,5 +607,8 @@ function Links_GetAsociationId($lid, $cid) {
     if ( !$lid OR !$cid ) {
         return false;
     }
-    return DB_AA::select1('SELECT a_id FROM links_link_cat', 'a_id', [['category_id',$cid, 'i'], ['what_id',$lid, 'i']]);
+    return DB_AA::select1('SELECT a_id FROM links_link_cat', 'a_id', [
+        ['category_id', $cid, 'i'],
+        ['what_id', $lid, 'i']
+    ]);
 }

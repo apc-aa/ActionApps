@@ -252,7 +252,7 @@ foreach ($g_modules as $k => $v) {
     }
 }
   // lookup fields
-if ( !($fld = DB_AA::select1('SELECT * FROM field', '', [['slice_id', $slice_id, 'l'], ['id',$fid]]))) {
+if ( !($fld = DB_AA::select1('SELECT * FROM field', '', [['slice_id', $slice_id, 'l'], ['id', $fid]]))) {
     $Msg = MsgErr(_m("No fields defined for this slice"));
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }

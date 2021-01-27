@@ -141,12 +141,12 @@ class AA_Toexecute {
 
     /** returns scheduled time or false */
     static function scheduledTime($selector) {
-        return DB_AA::select1("SELECT execute_after FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'execute_after');
+        return DB_AA::select1("SELECT execute_after FROM toexecute WHERE selector='" . quote($selector) . "' AND priority > 0", 'execute_after');
     }
 
     /** returns id of scheduled task */
     static function scheduledTaskId($selector) {
-        return DB_AA::select1("SELECT id FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'id');
+        return DB_AA::select1("SELECT id FROM toexecute WHERE selector='" . quote($selector) . "' AND priority > 0", 'id');
     }
 
     /** User task queue - we use it for spliting one long task (which would take

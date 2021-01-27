@@ -183,57 +183,61 @@ class AA_Field implements ArrayAccess {
      * @param bool  $insert
      * @return AA_Value|null
      */
-    function readValueFromOldtypeForm($oldcontent4id, $insert) {
+    function readValueFromOldtypeForm($oldcontent4id, bool $insert) {
 
         $fid = $this->getId();
         // "v" prefix - database field var
         $varname     = 'v'. unpack_id($fid);
         $htmlvarname = $varname."html";
-        // GLOBAL - used for default field value set by ValidateContent4Id()
-        $var = isset($_REQUEST[$varname]) ? $_REQUEST[$varname] : $GLOBALS[$varname];
-        $ret = null;
 
+        // GLOBAL - wes used for default field value set by ValidateContent4Id()
+        // $var = isset($_REQUEST[$varname]) ? $_REQUEST[$varname] : $GLOBALS[$varname];
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
         [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
 
-        if ( $validate_type == 'date' ) {
-            $datectrl  = new datectrl($varname);
-            if ($datectrl->isUpdatable()) {
-                $datectrl->update();                   // updates datectrl
-                $ret = new AA_Value($datectrl->get_date(), FLAG_HTML);
-            } else {
-                // hiden date field ('hid' widget)
-                $ret = new AA_Value($var, FLAG_HTML);
-            }
-        } elseif ($insert_type == 'boo') {
-            // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
-            $ret = new AA_Value(($var ? 1 : 0), FLAG_HTML);
-        } elseif ($insert_type == 'pwd') {
-            $change_var   = $_REQUEST[$varname.'a'];
-            $retype_var   = $_REQUEST[$varname.'b'];
-            $delete_var   = $_REQUEST[$varname.'d'];
+        if ($insert_type == 'pwd') {
+            $change_var = $_REQUEST[$varname . 'a'];
+            $retype_var = $_REQUEST[$varname . 'b'];
+            $delete_var = $_REQUEST[$varname . 'd'];
 
             if ($change_var && ($change_var == $retype_var)) {
-                $var = ParamImplode(['AA_PASSWD',$change_var]);
+                $var = ParamImplode(['AA_PASSWD', $change_var]);
             } elseif ($delete_var) {
                 $var = '';
             } elseif (!$insert) {
                 // store the original password to use it in
                 // insert_fnc_pwd when it is not changed
                 // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
-                $var = ParamImplode(['AA_PASSWD_CRYPTED',$oldcontent4id[$fid][0]['value']]);
+                $var = ParamImplode(['AA_PASSWD_CRYPTED', $oldcontent4id[$fid][0]['value']]);
             } else {
                 return null;
             }
-            $ret = new AA_Value($var, FLAG_HTML);
-        } else {
-            if (!is_array($var)) {
-                $var = [0 => $var];
+            return new AA_Value($var, FLAG_HTML);
+        } elseif ($validate_type == 'date') {
+            $datectrl = new datectrl($varname);
+            if ($datectrl->isUpdatable()) {
+                $datectrl->update();                   // updates datectrl
+                return new AA_Value($datectrl->get_date(), FLAG_HTML);
+            } elseif (isset($_REQUEST[$varname])) {
+                // hiden date field ('hid' widget)
+                return new AA_Value($_REQUEST[$varname], FLAG_HTML);
             }
-            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
-            $ret = new AA_Value($var, $flag);
+            return null;
+        } elseif (isset($_REQUEST[$varname])) {
+            $var = $_REQUEST[$varname];
+            if ($insert_type == 'boo') {
+                // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
+                return new AA_Value(($var ? 1 : 0), FLAG_HTML);
+            } else {
+                if (!is_array($var)) {
+                    $var = [0 => $var];
+                }
+                $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
+                return new AA_Value($var, $flag);
+            }
         }
-        return $ret;
+
+        return null;
     }
 
     /** getAliases function
@@ -463,29 +467,29 @@ class AA_Field implements ArrayAccess {
         echo "</tr>\n";
 
         if ($analyze AND ($type!='in_item_tbl')) {
-            $items       = DB_AA::select1('SELECT count(*) as cnt FROM item','cnt', [['item.slice_id',$slice_id, 'l']]);
-            $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item','', [
-                ['content.item_id','item.id', 'j'],
-                ['item.slice_id',$slice_id, 'l'],
-                ['field_id',$id]
+            $items       = DB_AA::select1('SELECT count(*) as cnt FROM item', 'cnt', [['item.slice_id', $slice_id, 'l']]);
+            $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item', '', [
+                ['content.item_id', 'item.id', 'j'],
+                ['item.slice_id', $slice_id, 'l'],
+                ['field_id', $id]
             ]);
-            $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content, item' ,'cnt', [
-                ['content.item_id','item.id', 'j'],
-                ['item.slice_id',$slice_id, 'l'],
-                ['field_id',$id],
-                ['(content.flag & 64)',64,'i']
+            $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content, item', 'cnt', [
+                ['content.item_id', 'item.id', 'j'],
+                ['item.slice_id', $slice_id, 'l'],
+                ['field_id', $id],
+                ['(content.flag & 64)', 64, 'i']
             ]);
-            $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
-                ['content.item_id','item.id', 'j'],
-                ['item.slice_id',$slice_id, 'l'],
-                ['field_id',$id],
-                ['(content.flag & 64)',0,'i']
+            $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content, item', 'cnt', [
+                ['content.item_id', 'item.id', 'j'],
+                ['item.slice_id', $slice_id, 'l'],
+                ['field_id', $id],
+                ['(content.flag & 64)', 0, 'i']
             ]);
-            $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content, item','cnt', [
-                ['content.item_id','item.id', 'j'],
-                ['item.slice_id',$slice_id, 'l'],
-                ['field_id',$id],
-                ['text','']
+            $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content, item', 'cnt', [
+                ['content.item_id', 'item.id', 'j'],
+                ['item.slice_id', $slice_id, 'l'],
+                ['field_id', $id],
+                ['text', '']
             ]);
             $empty_text    = (($items_field['cnt']==$empty) AND ($items>0)) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>":"Empty fields";
 
@@ -793,7 +797,7 @@ class AA_Fields implements Iterator, Countable {
     }
 
     /** getNameArray function */
-    function getNameArray() {
+    function getNameArray(): array {
         $this->load();
         $ret = [];
         foreach ( $this->fields as $fid => $fld ) { // in priority order

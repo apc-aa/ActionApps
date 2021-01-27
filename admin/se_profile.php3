@@ -72,10 +72,10 @@ if ( $set_as ) {
 // prepare forms ---------------------------------------------------------------
 
 // get current profiles
-$rules = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid') ORDER BY property, selector");
+$rules = DB_AA::select([], "SELECT * FROM profile", [['slice_id', $slice_id, 'l'], ['uid', $uid]], ['property', 'selector']);
 
 // get fields for this slice
-$lookup_fields = AA_Slice::getModule($slice_id)->fields('name');
+$lookup_fields = AA_Slice::getModule($slice_id)->getFields()->getNameArray();
 
 // set property names array
 $PROPERTY_TYPES = [

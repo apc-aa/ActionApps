@@ -281,7 +281,7 @@ if ($fview || $iview) {
         $iview_info = AA_Views::getViewNumeric($iview);
         if ($iview_info AND ($iview_info->f('deleted')<1)) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
-            $slice_info['gb_direction']    = $VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
+            $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
             $slice_info['category_format'] = $iview_info->f('group_title');
             $slice_info['category_bottom'] = $iview_info->f('group_bottom');
             $slice_info['compact_top']     = $iview_info->f('before');

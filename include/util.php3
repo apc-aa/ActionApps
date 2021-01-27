@@ -584,12 +584,9 @@ function GetModuleInfo($module_id, $type) {
         return false;
     }
 
-
-    $p_module_id = q_pack_id($module_id);
-
-    $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
-
-    $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    // $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
+    // $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    $ret = DB_AA::select1("SELECT * FROM " .$MODULES[$type]['table'], [], [['id', $module_id, 'l']]);
 
     if ( $ret AND $ret['reading_password'] ) {
         // do it more secure and do not store it plain
@@ -1514,7 +1511,7 @@ class AA_Contentcache {
     //}
 
 
-    /** sometimes it is quicker to not count the key automaticaly (in case of object call)
+    /** sometimes it is quicker to not count the key automatically (in case of object call)
      * @param $key
      * @param $function
      * @param $params

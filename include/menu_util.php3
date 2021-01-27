@@ -233,12 +233,11 @@ function PrintModuleSelection() {
  * @param bool $showSub -- show the submenu (left navigation bar) ?
  */
 function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
-    global $slice_id, $useOnLoad, $auth;
+    global $slice_id, $auth;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
     // load the main AA menu (see menu.php3)
-
 
     if ($menu_require = AA_Module::getModuleInfo('menu', AA::$module_id)) {
 
@@ -261,7 +260,6 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
     $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
 
     echo '
-<body'. ($useOnLoad ? ' OnLoad="InitPage()"' : ''). ' bgcolor="'. COLOR_BACKGROUND .'">
   <table border="0" cellspacing="0" cellpadding="0" width="100%">
     <tr>
 ';
@@ -299,7 +297,7 @@ function showMenu($activeMain, $activeSubmenu = "", $showMain = true, $showSub =
         $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3'));
 
         // @todo change it to method=get (+ hiden fields or so) in ordef the Backe button in browser works there better
-        $search_out = IsSuperadmin() ? "<form name=aaserchform method=post action=".get_admin_url('aafinder.php3?findinseo=1&findinview=1&findinslice=1&findinfield=1&findinspot=1&go_findtext=1')."><input type=search name=findtext value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"></form>"  : '';
+        $search_out = IsSuperadmin() ? "<form name=aaserchform method=post action=\"".get_admin_url('aafinder.php3?findinseo=1&findinview=1&findinslice=1&findinfield=1&findinspot=1&go_findtext=1')."\"><input type=search name=findtext value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"></form>"  : '';
 
         echo '
         <td colspan="2" id="aa_top">

@@ -72,20 +72,20 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
 
 
     /**
-     *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', array(array('id',$long_id, 'l'))));
+     *  used as: $sdata = DB_AA::select1('SELECT * FROM `slice`', '', [['id',$long_id, 'l']]));
      *           $chid  = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
-     *                    DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, array('last_edit-'))
+     *                    DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, ['last_edit-'])
      *                    DB_AA::select1("SELECT count(*) as cnt FROM content, item", 'cnt', [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
-     * @param string $query
-     * @param bool   $column
-     * @param null   $where
-     * @param null   $order
+     * @param string       $query
+     * @param string|array $column
+     * @param array        $where
+     * @param array        $order
      * @return array|false|mixed
      */
-    static function select1($query, $column = false, $where = null, $order = null) {
+    public static function select1($query, $column = '', $where = [], $order = []) {
         $db = getDB();
-        $query .= is_array($where) ? ' ' . DB_AA::makeWhere($where) : '';
-        $query .= is_array($order) ? ' ' . DB_AA::makeOrder($order) : '';
+        $query .= $where ? ' ' . DB_AA::makeWhere($where) : '';
+        $query .= $order ? ' ' . DB_AA::makeOrder($order) : '';
 
         AA::$debug & 8 && AA::$dbg->log("$query LIMIT 1");
 
@@ -94,9 +94,11 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
         if ($db->next_record()) {
             if (!is_array($column)) {
                 $ret = $db->record($column);    // empty($column) ? $db->record() : $db->record($column);   -- it is done automatically with record()
+            } elseif (!$column) {
+                $ret = $db->record();
             } else {
                 $key = key($column);
-                $val = empty($column) ? $db->record() : array_intersect_key($db->record(), array_flip($column));
+                $val = array_intersect_key($db->record(), array_flip($column));
                 $ret = ctype_digit((string)$key) ? $val : [$db->record($key) => $val];
             }
         }
@@ -231,10 +233,13 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
             ]));
     }
 
-    /** used as: DB_AA::update('slice', array(array('javascript',$_POST['javascript'])), array(array('id', $slice_id, 'l')));  */
-    static function update($table, $varlist, $where) {
+    /** creates cols string for INSERT or UPDATE
+     * @param string[] $varlist
+     * @return string
+     */
+    protected static function makeCols(array $varlist): string {
         $delim = '';
-        $cols = '';
+        $cols  = '';
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, type, value)
             [$name, $value, $type] = $vardef;
@@ -254,11 +259,39 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
             $cols .= "$delim $name = $part";
             $delim = " ,";
         }
-        $wh = DB_AA::makeWhere($where);
-        $ret = false;
+        return $cols;
+    }
+
+    /** used as: DB_AA::update('slice', [['javascript', $_POST['javascript']]], [['id', $slice_id, 'l']]);
+     * @param string $table
+     * @param array $varlist
+     * @param array $where
+     * @return false|void
+     */
+    static function update(string $table, array $varlist, array $where) {
+        $cols = DB_AA::makeCols($varlist);
+        $wh   = DB_AA::makeWhere($where);
+        $ret  = false;
         if ($cols and $wh) {
             $db = getDB();
             $db->query("UPDATE `$table` SET $cols $wh");
+            $ret = $db->affected_rows();
+            freeDB($db);
+        }
+        return $ret;
+    }
+
+    /** used as: DB_AA::insert('slice', [['javascript', $_POST['javascript']]]);
+     * @param string $table
+     * @param array  $varlist
+     * @return false|int
+     */
+    static function insert(string $table, array $varlist) {
+        $cols = DB_AA::makeCols($varlist);
+        $ret  = false;
+        if ($cols) {
+            $db = getDB();
+            $db->query("INSERT `$table` SET $cols");
             $ret = $db->affected_rows();
             freeDB($db);
         }
@@ -502,7 +535,9 @@ class DB_AA extends \AA\IO\DB\AbstractDB {
 
     function ping() { $this->dbase->ping(); }
 
-    /* public: evaluate the result (size, width) */
+    /** public: evaluate the result (size, width)
+     * @return int
+     */
     function affected_rows() { return $this->dbase->affected_rows(); }
 
     function num_rows() { return $this->dbase->unlock(); }

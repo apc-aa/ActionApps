@@ -130,7 +130,7 @@ $VALIDATE_TYPES["items"]["unique"] = [
     "params"=> [
         [
             "name"=>_m("Field ID"),
-              "desc"=>_m("Field in which to look for matching values."),
+              "desc"=>_m("Field in which to look for matching values (default is current field)."),
               "type"=>"STRID",
               "example"=>"undefined......."
         ],
@@ -138,7 +138,7 @@ $VALIDATE_TYPES["items"]["unique"] = [
             "name"=>_m("Scope"),
               "desc"=>_m("<b>1</b> = This slice only.
                 <b>2</b> = All slices.<br>
-                <b>0</b> = Username, special: Checks uniqueness in reader management
+                <b>0</b> = (default) Username, special: Checks uniqueness in reader management
                 slices and in the permission system. Always uses field ID %1",
                 [FIELDID_USERNAME]),
               "type"=>"INT",
@@ -170,7 +170,7 @@ $VALIDATE_TYPES["items"]["e-unique"] = [
     "params"=> [
         [
             "name"=>_m("Field ID"),
-              "desc"=>_m("Field in which to look for matching values."),
+              "desc"=>_m("Field in which to look for matching values (default is current field)."),
               "type"=>"STRID",
               "example"=>"undefined......."
         ],

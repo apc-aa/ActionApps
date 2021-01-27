@@ -246,6 +246,7 @@ class DB_MySQL extends AbstractDB {
     }
 
     /* public: evaluate the result (size, width) */
+    /**  @return int   */
     function affected_rows() {
         return @mysqli_affected_rows($this->Link_ID);
     }

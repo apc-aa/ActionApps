@@ -340,14 +340,13 @@ class AA_Module {
 class AA_Slice extends AA_Module {
     protected $name;                   // The name of the slice
     protected $fields;                 // 2 member array( $fields, $prifields)
-    protected $dynamic_fields;         // 2 member array( $fields, $prifields)
+    protected $dynamic_fields;         // 2 member array( $fields, $prifields) == slice_fields
     protected $dynamic_setting = null; // dynamic slice setting fields stored in content table
 
     const SETTING_CLASS = 'AA_Modulesettings_Slice';
     const SETTING_TABLE = 'slice';
 
     // computed values form slice fields
-    var $js_validation;  // javascript form validation code
     var $show_func_used; // used show functions in the input form
     /** AA_Slice function
      * @param $module_id
@@ -626,13 +625,6 @@ class AA_Slice extends AA_Module {
         return $filename;
     }
 
-    /** views function
-     *  Get all the views for this slice
-     */
-    function views() {
-        return AA_Views::getSliceViews($this->module_id);
-    }
-
     /** get_format_strings function
      *  Returns array of admin format strings as used in manager class
      */
@@ -667,30 +659,6 @@ class AA_Slice extends AA_Module {
         return $this->fields->getAliases($additional_aliases, $type);
     }
 
-    /** get_js_validation function
-     *  Returns javascript code for inputform validation
-     * @param $action
-     * @param $id
-     * @param $shown_fields
-     * @param $slice_fields
-     */
-    function get_js_validation($action, $id=0, $shown_fields=false, $slice_fields=false) {
-        $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
-        return $this->js_validation;
-    }
-
-    /** get_show_func_used function
-     *  Returns array of inputform function used the in inputform
-     * @param $action
-     * @param $id
-     * @param $shown_fields
-     * @param $slice_fields
-     */
-    function get_show_func_used($action, $id=0, $shown_fields=false, $slice_fields=false) {
-        $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
-        return $this->show_func_used;
-    }
-
     /**
      * @return int
      */
@@ -700,29 +668,23 @@ class AA_Slice extends AA_Module {
         return ($bin2fill < 1) ? SC_NO_BIN : $bin2fill;
     }
 
-    /** _compute_field_stats function
-     *  Computes js_validation code and show_func_used
-     * @param $action - 'update' | 'edit'
-     * @param $id - id of item to edit
-     * @param $shown_fields - array of field ids which we will use in the output
-     *                  (inputform)(we have to count with them).
-     *                  If false, then we use all the fields
-     * @param $slice_fields
-     * @return string|void
+    /** get_show_func_used function
+     *  Returns array of inputform function used the in inputform
+     * @param string $id         - longID of item to edit
+     * @param array $shown_fields - array of field ids which we will use in the output
+     *                           (inputform)(we have to count with them).
+     *                           If false, then we use all the fields
+     * @param bool $slice_fields
+     * @return array
      */
-    function _compute_field_stats($action, $id=0, $shown_fields=false, $slice_fields=false) {
-        if (isset($this->js_validation)) {
-            return;                                // already computed
-        }
+    public function get_show_func_used($id, array $shown_fields, $slice_fields=false): array {
+        $show_func_used = [];
 
         global $auth;
         $profile = AA_Profile::getProfile($auth->auth["uid"], $this->getId()); // current user settings
 
         // get slice fields and its priorities in inputform
-        [ $fields, $prifields] = $this->fields(null, $slice_fields);
-        if (!is_array($prifields)) {
-            return '';
-        }
+        $fields      = $this->getFields($slice_fields);
 
         // it is needed to call IsEditable() function and GetContentFromForm()
         if ( $id ) {
@@ -730,61 +692,24 @@ class AA_Slice extends AA_Module {
             $oldcontent4id = $oldcontent[$id];   // shortcut
         }
 
-        $js_proove_fields = 'true';
-        foreach ( $prifields as $pri_field_id ) {
-
-            $f = $fields[$pri_field_id];
+        foreach ($fields as $pri_field_id => $field) {
 
             //  'status_code.....' is not in condition - could be set from defaults
             if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
                 continue;   // filed by AA - it could not be filled here
             }
-            $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
-
-            [$validate] = explode(":", $f["input_validate"]);
-            if ($validate == 'e-unique') {
-                $validate = "email";
-            }
-
-            $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile);
-            if (is_array($shown_fields) AND !$shown_fields[$pri_field_id]) {
-                $editable = false;
-            }
-
-            $js_proove_password_filled = ($action != "edit") && $f["required"] && !$oldcontent4id[$pri_field_id][0]['value'];
 
             // prepare javascript function for validation of the form
-            if ( $editable ) {
+            if ( $shown_fields[$pri_field_id] AND IsEditable($oldcontent4id[$pri_field_id], $field, $profile) ) {
 
                 // fill show_func_used array - used on several places
-                // to destinguish, which javascripts we should include and
+                // to distinguish, which javascripts we should include and
                 // if we have to use form multipart or not
-                [$show_func] = explode(":", $f["input_show_func"], 2);
-                $this->show_func_used[$show_func] = true;
-                if ($show_func == 'fil') {
-                    continue;
-                }
-
-                switch( $validate ) {
-                    case 'text':
-                    case 'url':
-                    case 'email':
-                    case 'number':
-                    case 'id':
-                    case 'pwd':
-                        $js_proove_fields .= "\n && validate (myform, '$varname', '$validate', "
-                            .($f["required"] ? "1" : "0").", "
-                            .($js_proove_password_filled ? "1" : "0").")";
-                    break;
-                }
+                [$show_func] = explode(":", $field->getProperty("input_show_func"), 2);
+                $show_func_used[$show_func] = true;
             }
         }
-
-        $this->js_validation = get_javascript_field_validation(). "\n
-            function proove_fields () {
-                var myform = document.inputform;
-                return $js_proove_fields;
-            }\n";
+        return $show_func_used;
     }
 }
 
@@ -810,8 +735,8 @@ class AA_Module_Site extends AA_Module {
         $host2  = (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : 'www.'.$host;
         $domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
         return DB_AA::select1("SELECT LOWER(HEX(id)) AS unpackid FROM `module`", 'unpackid', [
-            ['type','W'],
-            ['deleted','0','i'],
+            ['type', 'W'],
+            ['deleted', '0', 'i'],
             ['slice_url', $domain_arr]
         ]);
     }
@@ -862,7 +787,10 @@ class AA_Module_Site extends AA_Module {
         $tree = null;
         if ($structre = $this->getProperty('structure')) {
             $tree = unserialize($structre);
-        } elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', [['site_id', $this->module_id, 'l'], ['spot_id','1']])) {  // false if not found
+        } elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', [
+            ['site_id', $this->module_id, 'l'],
+            ['spot_id', '1']
+        ])) {  // false if not found
             // get information about start spot (=start of the tree)
             $tree = new sitetree($spotrow);
         }
@@ -896,7 +824,10 @@ class AA_Module_Site extends AA_Module {
 
 
     public function showSpot($tree, $spot_id) {
-        $spot_data = DB_AA::select1('SELECT id, content FROM site_spot','', [['site_id', $this->module_id, 'l'], ['spot_id',$spot_id,'i']]);
+        $spot_data = DB_AA::select1('SELECT id, content FROM site_spot', '', [
+            ['site_id', $this->module_id, 'l'],
+            ['spot_id', $spot_id, 'i']
+        ]);
         FrmTabCaption();
         FrmStaticText(_m('Spot ID'), "[$spot_id] - " . _m('You can include this spot code in another spot by using {sitespot:%1}', [$spot_id]));
 

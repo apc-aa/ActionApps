@@ -192,13 +192,16 @@ class AA_Generator_Rnd extends AA_Generator {
         do {
             $randstring = gensalt($len);
             if ($slice_only) {
-                $rec = DB_AA::select1('SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id','', [
-                    ['item.slice_id',$slice_id, 'l'],
-                    ['field_id',$field_id],
-                    ['text',$randstring]
+                $rec = DB_AA::select1('SELECT item_id FROM content INNER JOIN item ON content.item_id = item.id', '', [
+                    ['item.slice_id', $slice_id, 'l'],
+                    ['field_id', $field_id],
+                    ['text', $randstring]
                 ]);
             } else {
-                $rec = DB_AA::select1('SELECT item_id FROM content','', [['field_id',$field_id], ['text',$randstring]]);
+                $rec = DB_AA::select1('SELECT item_id FROM content', '', [
+                    ['field_id', $field_id],
+                    ['text', $randstring]
+                ]);
             }
         } while ($rec);
         return new AA_Value($randstring);
@@ -928,16 +931,16 @@ class AA_Field_Writer {
 // -----------------------------------------------------------------------------
 /** IsEditable function
  * @param $fieldcontent
- * @param $field
- * @param $profile
+ * @param AA_Field $field
+ * @param AA_Profile $profile
  * @return bool
  */
-function IsEditable($fieldcontent, $field, $profile) {
+function IsEditable($fieldcontent, $field, $profile): bool {
     return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
-        AND $field["input_show"]
-        AND !$profile->getProperty('hide',$field['id'])
-        AND !$profile->getProperty('hide&fill',$field['id'])
-        AND !$profile->getProperty('fill',$field['id']));
+        AND $field->getProperty("input_show")
+        AND !$profile->getProperty('hide',$field->getId())
+        AND !$profile->getProperty('hide&fill',$field->getId())
+        AND !$profile->getProperty('fill',$field->getId()));
 }
 
 // -----------------------------------------------------------------------------
@@ -1026,6 +1029,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
     }
 
     foreach ($fields as $pri_field_id => $field) {
+
         $f = $field->getRecord();
 
         //  'status_code.....' is not in condition - could be set from defaults
@@ -1042,8 +1046,8 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 || $profile->getProperty('hide',$pri_field_id)
                 || ($action == "insert" && $notshown[$varname]);
 
-        list($validate_type) = explode(":", $f["input_validate"], 2);
-        list($insert_type)   = explode(":", $f["input_insert_func"], 2);
+        [$validate_type] = explode(":", $f["input_validate"], 2);
+        [$insert_type]   = explode(":", $f["input_insert_func"], 2);
 
         if ($setdefault) {
             $default = $field->getDefault();
@@ -1059,7 +1063,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             $default_val  = addslashes($default->getValue());
         }
 
-        $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
+        $editable = IsEditable($oldcontent4id[$pri_field_id], $field, $profile) && !$notshown[$varname];
 
         // Run the "validation" which changes field values
         if ($editable && ($action == "insert" || $action == "update")) {
@@ -1106,7 +1110,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                 case 'e-unique':
                 case 'unique':
 
-                    // fill field with curent field, if not filled and
+                    // fill field with current field, if not filled and
                     // add $id, so we do not find the currently edited item when
                     // we are looking for uniqueness
 

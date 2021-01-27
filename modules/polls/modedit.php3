@@ -168,9 +168,9 @@ $p_source_id = q_pack_id( $source_id );
 list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields($source_id);
 
 // load module specific data
-list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = array_values(DB_AA::select1("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls",'', [
-    ['module_id',$source_id,'l'],
-    ['status_code',0]
+list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = array_values(DB_AA::select1("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", '', [
+    ['module_id', $source_id, 'l'],
+    ['status_code', 0]
 ]));
 
 if ( $template['P'] ) {           // set new name for new module

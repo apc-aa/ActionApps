@@ -95,7 +95,7 @@ if ( $update ) {
         $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
         $varset->add("fulltext_remove", "quoted", $fulltext_remove);
 
-        $discus_flag = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', [['id',$slice_id,'l']]);
+        $discus_flag = DB_AA::select1('SELECT `flag` FROM `slice`', 'flag', [['id', $slice_id, 'l']]);
         $discus_flag &= ~ (DISCUS_HTML_FORMAT | DISCUS_ADD_DISABLED); // clear the bits
         $discus_flag |= $discus_htmlf ? DISCUS_HTML_FORMAT : 0;
         $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;

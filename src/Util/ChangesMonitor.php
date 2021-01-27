@@ -147,7 +147,10 @@ class ChangesMonitor {
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChanged($resource_id) {
 
-        $chid = DB_AA::select1("SELECT id FROM `change`", 'id', [['resource_id', $resource_id], ['type', 'h']], ['time-']);  // false if not found
+        $chid = DB_AA::select1("SELECT id FROM `change`", 'id', [
+            ['resource_id', $resource_id],
+            ['type', 'h']
+        ], ['time-']);  // false if not found
         $ret = '';
         if ($chid) {
             $changes_arr = $this->getProposalByID($chid);

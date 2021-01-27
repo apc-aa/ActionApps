@@ -260,7 +260,7 @@ class AA_Hitcounter_Stats implements \AA\Util\LaterInterface {
             shuffle($item_ids);
             $field = DB_AA::select1('SELECT `id`,`text_stored` FROM `field`', '', [
                 ['slice_id', $this->slice_id, 'l'],
-                ['id',$this->field_id]
+                ['id', $this->field_id]
             ]);
 
             foreach ($item_ids as $id) {

@@ -23,7 +23,7 @@ $_m["Do you want to check for uniqueness this slice only \n"
 
 $_m["<b>1</b> = This slice only. \n"
    ."                <b>2</b> = All slices.<br>\n"
-   ."                <b>0</b> = Username, special: Checks uniqueness in reader management\n"
+   ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"]
  = "<b>1</b> = Sólo este canal. \n"
    ."<b>2</b> = Todos los canales.<br>\n"
@@ -389,7 +389,7 @@ $_m["Field ID"]
  = "ID campo";
 
 // include/constants_param_wizard.php3, row 206, 236
-$_m["Field in which to look for matching values."]
+$_m["Field in which to look for matching values (default is current field)."]
  = "Campo en el que buscar valores que coincidan.";
 
 // include/constants_param_wizard.php3, row 209
@@ -399,7 +399,7 @@ $_m["Scope"]
 // include/constants_param_wizard.php3, row 213
 $_m["<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
-   ."                <b>0</b> = Username, special: Checks uniqueness in reader management\n"
+   ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"]
  = "<b>1</b> = Este canal solamente.\n"
    ."                <b>2</b> = Todos los canales.<br>\n"

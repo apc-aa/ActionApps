@@ -207,7 +207,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed) {
            $new_slice_ids;
     if ($only_data) { // import slice items ?
         $slice = AA_Slice::getModule($slice_id);
-        if (!$slice OR !count($slice->fields('pri'))) {
+        if (!$slice OR !$slice->getFields()->count()) {
             $data_import_failure[] = $id." No fields for slice_id=$slice_id";
             return false;
         }

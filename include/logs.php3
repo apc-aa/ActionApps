@@ -161,7 +161,7 @@ class AA_Log {
         if ($selector != "") {
             $conds[] = ['selector',$selector];
         }
-        return DB_AA::select1('SELECT * FROM log','', $conds, ['id-']);
+        return DB_AA::select1('SELECT * FROM log', '', $conds, ['id-']);
     }
 
 }

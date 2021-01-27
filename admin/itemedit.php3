@@ -190,7 +190,7 @@ unset($content4id);
 $slice = AA_Slice::getModule($slice_id);
 
 // we need it for setting default fields - without it it is not filled
-ValidateContent4Id($err, $slice, $action, $id);
+// ValidateContent4Id($err, $slice, $action, $id);
 
 // Are we editing dynamic slice setting fields?
 $slice_fields = ($id == $slice->getId());
@@ -214,11 +214,9 @@ if ( ($insert || $update) AND count($fields) ) {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
-            $oldcontent    = $slice->get_dynamic_setting_content(true);
-            $oldcontent4id = $oldcontent->getContent();   // shortcut
+            $oldcontent4id = $slice->get_dynamic_setting_content(true)->getContent();   // shortcut
         } else {
-            $oldcontent = GetItemContent($id);
-            $oldcontent4id = $oldcontent[$id];   // shortcut
+            $oldcontent4id = GetItemContent($id)[$id];   // shortcut
         }
     }
 

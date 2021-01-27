@@ -80,7 +80,7 @@ FrmTabSeparator(_m("Available fields and triggers"), [
     "cancel" => ["url" => "se_fields.php3"]
 ]);
 
-$fields = AA_Slice::getModule($slice_id)->fields('pri');
+$fields = AA_Slice::getModule($slice_id)->getFields()->getPriorityArray();
 
 echo '
 <tr><td valign="top"><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABBG.'">

@@ -77,7 +77,7 @@ function get_bin_names() {
 function new_collection_id() {
     do {
         $new_id = gensalt(5);
-    } while ( DB_AA::select1('SELECT id FROM `alerts_collection`', 'id',  [['id',$new_id]]) );
+    } while ( DB_AA::select1('SELECT id FROM `alerts_collection`', 'id', [['id', $new_id]]) );
     return $new_id;
 }
 

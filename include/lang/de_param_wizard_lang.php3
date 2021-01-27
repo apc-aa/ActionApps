@@ -338,7 +338,7 @@ $_m["Field ID"]
  = "";
 
 // include/constants_param_wizard.php3, row 206, 236
-$_m["Field in which to look for matching values."]
+$_m["Field in which to look for matching values (default is current field)."]
  = "";
 
 // include/constants_param_wizard.php3, row 209
@@ -348,7 +348,7 @@ $_m["Scope"]
 // include/constants_param_wizard.php3, row 213
 $_m["<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
-   ."                <b>0</b> = Username, special: Checks uniqueness in reader management\n"
+   ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"]
  = "";
 

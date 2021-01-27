@@ -68,7 +68,7 @@ class AA_Cacheentry {
 
         header("Last-Modified: ".gmdate("D, d M Y H:i:s", $lastModified)." GMT");   // set last-modified header
         header("Etag: $etag");                                                      // set etag-header
-        // maybe we do not have to chache all pages
+        // maybe we do not have to cache all pages
         header("Cache-Control: $cacheability");                                     // make sure caching is turned on
         // maybe we can add max-age=60   (minute helps a lot on big loads (catches 99%), but is nothing for reader)
 

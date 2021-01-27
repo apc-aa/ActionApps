@@ -25,7 +25,7 @@ function GetLinkInfo( $lid ) {
  * @return string
  */
 function GetCategoryPath( $cid ) {
-    $ret = DB_AA::select1('SELECT path FROM `links_categories`','path', [['id', $cid, 'i']]);
+    $ret = DB_AA::select1('SELECT path FROM `links_categories`', 'path', [['id', $cid, 'i']]);
     return $ret ?: '';
 }
 
@@ -77,7 +77,7 @@ function Links_GetBaseCategoryColumn( $lid, $col ) {
  * @return string
  */
 function Links_GetCategoryColumn( $cid, $col ) {
-    return DB_AA::select1("SELECT $col as retcol FROM links_categories", 'retcol', [['id',$cid,'i']]);
+    return DB_AA::select1("SELECT $col as retcol FROM links_categories", 'retcol', [['id', $cid, 'i']]);
 }
 
 /** Get base path from link id

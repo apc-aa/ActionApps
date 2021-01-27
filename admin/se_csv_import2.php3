@@ -33,6 +33,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/../include/init_page.php3";
 require_once __DIR__."/../include/util.php3";
 require_once __DIR__."/../include/import_util.php3";
@@ -306,13 +308,8 @@ class AA_Csv_Importer {
 
         $slice = AA_Slice::getModule($this->slice_id);
 
-        [$slice_fields, $prifields] =  $slice->fields();
-
-        foreach ( $prifields as $v ) {
-            if ($v != "slice_id........") {
-                $outFields[$v] = $slice_fields[$v]['name'];
-            }
-        }
+        $outFields = $slice->getFields()->getNameArray();
+        unset($outFields['slice_id........']);
 
         //create list of actions, : todo : possible loading from a file
         $actionList = getActions();
@@ -439,9 +436,10 @@ class AA_Csv_Importer {
 
 if ( $load ) {
     // should be rewritten to true object storing functions
-    $SQL      = "SELECT value FROM object_text WHERE object_id = '$load_id' AND property='importer'";
-    $ret      = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-    $importer = unserialize($ret['value']);
+    // $SQL      = "SELECT value FROM object_text WHERE object_id = '$load_id' AND property='importer'";
+    // $ret      = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    // $importer = unserialize($ret['value']);
+    $importer = DB_AA::select1("SELECT LOWER(HEX(`value`)) as val FROM object_text", 'val', [['object_id', $load_id],['property', 'importer']]);
     $importer->setFilename($_REQUEST['fileName']);
 } else {
     $importer = new AA_Csv_Importer();

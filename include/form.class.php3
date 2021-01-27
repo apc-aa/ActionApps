@@ -37,7 +37,7 @@ use AA\Widget\HidWidget;
 
 
 class AA_Formrow extends AA_Storable {
-    function getRowProperty() {}
+    function getRowProperty(): AA_Property {}
 
     /**
      * @return AA\Widget\Widget
@@ -94,7 +94,7 @@ class AA_Formrow_Full extends AA_Formrow {
         $this->widget         = $widget;
     }
 
-    function getRowProperty() { return $this->property; }
+    function getRowProperty(): AA_Property { return $this->property; }
 
     function getWidget()      { return $this->widget; }
 
@@ -117,7 +117,7 @@ class AA_Formrow_Field extends AA_Formrow {
         $this->slice_id       = $slice_id;
     }
 
-    function getRowProperty() {
+    function getRowProperty(): AA_Property {
         $field  = $this->_getField();
         $widget = $field->getWidget();
         return $field->getAaProperty(['multiple'=>$widget->multiple()]);

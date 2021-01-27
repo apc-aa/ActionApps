@@ -79,7 +79,7 @@ class AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
-        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id',$slobj->getId(), 'l']]);
+        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
             MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
@@ -122,12 +122,12 @@ class AA_Slice_Exporter {
 
     /** exportOneSliceViews function
      *  Export each view
-     * @param $slobj
-     * @param $temp_file
+     * @param AA_Slice $slobj
+     * @param          $temp_file
      * @return void - writes to file
      */
-    function exportOneSliceViews($slobj, $temp_file) {
-        if (!($views_data = $slobj->views())) {
+    function exportOneSliceViews(AA_Slice $slobj, $temp_file) {
+        if (!($views_data = AA_Views::getSliceViews($slobj->getId()))) {
             return;
         }
         foreach ($views_data as $k => $v) {
@@ -360,7 +360,7 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
      */
     function exportOneSliceStruct($slobj, $new_slice_id, $temp_file) {
 
-        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id',$slobj->getId(), 'l']]);
+        $slice = DB_AA::select1('SELECT * FROM `slice`', '', [['id', $slobj->getId(), 'l']]);
         if (!$slice) {
             MsgPage(StateUrl(self_base())."index.php3", "ERROR - slice ".$slobj->getId() ." not found");
             exit;
@@ -397,11 +397,11 @@ class AA_Slice_Documentator extends AA_Slice_Exporter {
 
     /** exportOneSliceViews function
      *  Export each view
-     * @param $slobj
-     * @param $temp_file
+     * @param AA_Slice $slobj
+     * @param          $temp_file
      * Writes to file
      */
-    function exportOneSliceViews($slobj, $temp_file) {}
+    function exportOneSliceViews(AA_Slice $slobj, $temp_file) {}
 
     function exportOneSliceData($slobj, $temp_file)  {}
 

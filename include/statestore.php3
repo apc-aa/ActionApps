@@ -535,7 +535,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     }
 
     static function loadProperty($id, $property) {
-        return DB_AA::select1('SELECT value FROM `object_text`', 'value', [['object_id',$id], ['property',$property]]);
+        return DB_AA::select1('SELECT value FROM `object_text`', 'value', [['object_id', $id], ['property', $property]]);
     }
 
     /** called as AA_Object::loadProperties($ids, 'name')

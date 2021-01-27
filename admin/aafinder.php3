@@ -165,12 +165,12 @@ function PrintItemInfo($item_id) {
             echo GetHtmlTable($res, 'key', _m('Log'));
         }
 
-        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', [['id',$long_id, 'l']])) {
+        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', [['id', $long_id, 'l']])) {
             echo '<h3>'. _m('Slice') .'</h3><pre>';
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";
         }
-        if ($sdata = DB_AA::select1('SELECT * FROM module', '', [['id',$long_id, 'l']])) {
+        if ($sdata = DB_AA::select1('SELECT * FROM module', '', [['id', $long_id, 'l']])) {
             echo '<h3>'. _m('Module') .'</h3><pre>';
             echo AafinderSliceLink($long_id). "<br>";
             echo "</pre>";

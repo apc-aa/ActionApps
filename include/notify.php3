@@ -30,16 +30,17 @@
 // utility for notifying people of events by email
 //
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/item.php3";
 require_once __DIR__."/view.php3";
 require_once __DIR__."/mail.php3";
 
 /** email_notify function
  *  notify users of an event
- * @param $slice_id
- * @param $event
- * @param $item_id
- * @param $extra
+ * @param string $slice_id
+ * @param int    $event
+ * @param string $item_id
  */
 function email_notify($slice_id, $event, $item_id) {
     $p_slice_id = q_pack_id($slice_id);
@@ -53,8 +54,9 @@ function email_notify($slice_id, $event, $item_id) {
         case 4: $prefix = 'notify_active_item_edit';  break;
     }
 
-    $SQL    = "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice WHERE id = '$p_slice_id'";
-    $notify = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    // $SQL    = "SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice WHERE id = '$p_slice_id'";
+    // $notify = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    $notify = DB_AA::select1("SELECT ${prefix}_s as s, ${prefix}_b as b FROM slice", [], [['id', $slice_id, 'l']]);
 
     $SQL    = "SELECT uid FROM email_notify WHERE slice_id = '$p_slice_id' AND function = '$event'";
     $emails = GetTable2Array($SQL, '', 'uid');
@@ -62,7 +64,7 @@ function email_notify($slice_id, $event, $item_id) {
     if ( $notify AND $emails) {
 
         // ignore reading password
-        $item = AA_Items::getItem($item_id, $slice->getProperty('reading_password'));
+        $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
 
         if ($item) {
             $body = $item->unalias($notify['b']);

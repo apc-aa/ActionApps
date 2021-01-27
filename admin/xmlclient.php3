@@ -1,5 +1,7 @@
 <?php
 
+use AA\IO\DB\DB_AA;
+
 /** Cross-Server Networking - client module
  *
  * @params feed_id    - id of APC RSS Feed to proceed
@@ -117,8 +119,9 @@ class AA_Feed {
      * @param $url = null
      */
     function loadRSSFeed($id, $url=null) {
-        $SQL = "SELECT feed_id, server_url, name, slice_id FROM rssfeeds WHERE feed_id='$id'";
-        $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        //$SQL = "SELECT feed_id, server_url, name, slice_id FROM rssfeeds WHERE feed_id='$id'";
+        //$feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        $feeddata                    = DB_AA::select1("SELECT `feed_id`, `server_url`, `name`, `slice_id` FROM rssfeeds", [], [['feed_id', $id]]);
         $feeddata['feed_type']       = FEEDTYPE_RSS;
         // fictive remote slice id, but always the same for the same url
         $feeddata['remote_slice_id'] = pack_id(attr2id($feeddata['server_url']));
@@ -136,9 +139,10 @@ class AA_Feed {
      * @param $time = null
      */
     function loadAAFeed($id, $time=null) {
-        $SQL = "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
-                  FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
-        $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        // $SQL = "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
+        //           FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
+        // $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        $feeddata                    = DB_AA::select1("SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode FROM nodes, external_feeds", [], [['nodes.name', 'external_feeds.node_name', 'j'],['feed_id', $id]]);
         $feeddata['feed_type']       = ($feeddata['feed_mode'] == 'exact') ? FEEDTYPE_EXACT : FEEDTYPE_APC;
 
         $this->grabber               = new AA\IO\Grabber\AARSS($id, $feeddata, $this->fire);

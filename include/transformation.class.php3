@@ -63,9 +63,9 @@ abstract class AA_Transformation implements \AA\Util\NamedInterface {
      *  is used for which class (child of AA_Transformation). It also contain
      *  $input_id, so we are able to have more than one instance of the class
      *  in one form
-     * @param $name
-     * @param $input_id
-     * @param $classname
+     * @param string $name
+     * @param string $input_id
+     * @param string $classname
      * @return string
      */
     function _getVarname($name, $input_id, $classname) {

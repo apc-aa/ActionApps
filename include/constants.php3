@@ -363,13 +363,6 @@ define ("FIELDID_2FA_SECRET",    "secret..........");
 /** field id for slice-defined fields  */
 define ("FIELDID_DYNAMIC_ID",    "source..........");
 
-
-/** Translate sort codes from views to slice
- *  (we use numbers in views from historical reason)
- *  '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
- */
-$VIEW_SORT_DIRECTIONS = [0 => 'a', 1 => 'd', 2 => '1', 3 => '9'];
-
 /** Number of items in editor window */
 define("EDIT_ITEM_COUNT", 20);
 

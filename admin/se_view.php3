@@ -316,17 +316,17 @@ if ( !$update ) {  // set variables from database
     $vw_data = [];
     if ( $view_id ) {
         // edit specified view data
-        $vw_data = DB_AA::select1('SELECT * FROM view','', [['id',$view_id,'i']]);
+        $vw_data = DB_AA::select1('SELECT * FROM view', '', [['id', $view_id, 'i']]);
     } elseif ( $new_templ AND $view_view) {
         // new view from template
-        $vw_data = DB_AA::select1('SELECT * FROM view','', [['id',$view_view,'i']]);
+        $vw_data = DB_AA::select1('SELECT * FROM view', '', [['id', $view_view, 'i']]);
     } elseif ( $view_type == 'inputform') {
         // new view - inputform
         $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
     } elseif ( $view_type ) {
         // new view - get default values from view table -
         //            take first view of the same type
-        $vw_data = DB_AA::select1('SELECT * FROM view','', [['type',$view_type]], ['id']);
+        $vw_data = DB_AA::select1('SELECT * FROM view', '', [['type', $view_type]], ['id']);
     } else {        // error - someone swith the slice or so
         go_url($back_url);
     }

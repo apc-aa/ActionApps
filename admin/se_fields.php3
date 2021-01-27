@@ -123,7 +123,7 @@ if ($update) {
                 list($field_slice, $field_type) = explode('-',$ftype,2);
                 $field_setting = DB_AA::select1("SELECT * FROM field", '', [
                     ['slice_id', $field_slice, 'l'],
-                    ['id',$field_type]
+                    ['id', $field_type]
                 ]);
 
                 // copy fields

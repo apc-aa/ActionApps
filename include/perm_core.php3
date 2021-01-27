@@ -444,7 +444,7 @@ require_once __DIR__."/item_content.php3";  // for ItemContent class
 /** main AA permissions */
 class AA_Perm {
 
-    /** @var array AA_Permsystem */
+    /** @var AA_Permsystem[] */
     private $perm_systems;
 
     /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
@@ -462,6 +462,7 @@ class AA_Perm {
      * @param string[] $rm_slices Reader slices array
      */
     function restrictPermsTo(array $rm_slices) {
+        /** @var AA_Permsystem_Reader $ps_rm */
         $ps_rm = $this->perm_systems['AA_Permsystem_Reader'];
         // restrict to slices
         $ps_rm->restrictSlices($rm_slices);
@@ -621,7 +622,7 @@ class AA_Perm {
     function getMembership($uid, $flags = 0) {
         $groups = [];
         foreach ($this->perm_systems as $perm_sys) {
-            $groups = array_merge($groups, $perm_sys->getMembership($uid, $flags));
+             $groups = array_merge($groups, $perm_sys->getMembership($uid, $flags));
         }
         return $groups;
     }
@@ -933,15 +934,17 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $user_info = GetAuthData( $user_id );
 
         if ( !$user_info->isEmpty() AND AA_Perm::comparePwds($password, $pwdhash = $user_info->getValue(FIELDID_PASSWORD), true) ) {
+            // Maintenance now - the username / pwd is correct
+            if ($this->needsRehashPassword($pwdhash)) {
+                $this->rehashPassword($user_id, $password);
+            }
+
             $secret = $this->getSecret($user_id);
             if ($secret) {
                 $ga = new PHPGangsta_GoogleAuthenticator();
                 if (!$ga->verifyCode($secret, $code2fa, 2)) {        // 2 = 2*30sec clock tolerance
                     return false;
                 }
-            }
-            if ($this->needsRehashPassword($pwdhash)) {
-                $this->rehashPassword($user_id, $password);
             }
 
             // user id is the id of the item in the Reader Management slice
@@ -962,7 +965,8 @@ class AA_Permsystem_Reader extends AA_Permsystem {
 
     /** true, if the hash is in old format and needs to be updated with new hash */
     protected function needsRehashPassword($hash) {
-        return ( ($hash{0} !== '$') OR (substr($hash,0,3)=='$1$') );
+        return password_needs_rehash($hash, PASSWORD_DEFAULT);
+        // return ( ($hash{0} !== '$') OR (substr($hash,0,3)=='$1$') );
     }
 
     /** updates user password - should be called after succesfull authentication and if we needsRehashPassword() */
@@ -1186,7 +1190,7 @@ function getReaderSlices() {
 }
 
 /** GetAuthData function
- *  Fills content array for current loged user or specified user
+ *  Fills content array for current logged user or specified user
  * @param $user_id
  * @return ItemContent
  */

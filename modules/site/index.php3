@@ -113,7 +113,10 @@ if ($addcond) {
     $varset     = new CVarset();
     $varset->add("content", "quoted", $content);
 
-    $db_id = DB_AA::select1('SELECT `id` FROM `site_spot`', 'id', [['site_id',$module_id,'l'], ['spot_id',$r_spot_id]]);
+    $db_id = DB_AA::select1('SELECT `id` FROM `site_spot`', 'id', [
+        ['site_id', $module_id, 'l'],
+        ['spot_id', $r_spot_id]
+    ]);
     if ($db_id) {
         $varset->addkey("id", "number", $db_id);
         $varset->doUpdate('site_spot', null, "S.$db_id");

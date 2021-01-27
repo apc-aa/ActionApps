@@ -377,13 +377,6 @@ if (!is_array($oldcontent4id)) {
 // (so $oldcontent4id is incompatible with $content4id - should be fixed
 // by using ItemContent object in near future)
 ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
-[$fields, $prifields] = $slice->fields();
-
-if (!(isset($prifields) AND is_array($prifields))) {
-    SendErrorPage(["fatal"=>_m("No fields defined for this slice")]);
-}
-
-if ($debugfill) huhl("Debugfill err_valid=",$err_valid);
 
 if (count($err_valid) > 1) {
     unset($err_valid["Init"]);
@@ -457,17 +450,15 @@ if ($insert) {
         break;
     case ANONYMOUS_EDIT_PASSWORD:
         $permok = false;
-        foreach ($fields as $fid => $foo) {
-            if (substr ($fid,0,14) == "password......") {
-              $password = $content4id[$fid][0]['value'];
-              $old_password = $oldcontent4id[$fid][0]['value'];
+        $pwdfield = $slice->getFields()->getCategoryFieldId('password');
+        if ($pwdfield) {
+              $password = $content4id[$pwdfield][0]['value'];
+              $old_password = $oldcontent4id[$pwdfield][0]['value'];
               $permok = (
                            // Old check, based on text_password flag
                   ($text_password ? ($password == $old_password) : AA_Perm::comparePwds($password, $old_password))
                   // Heuristic based on if old looks encrypted
                   || ( !in_array(substr($old_password,0,2), ['xx','$2']) && ($old_password == $password)));
-                break;
-            }
         }
         break;
     }

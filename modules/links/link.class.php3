@@ -700,9 +700,8 @@ class linkobj {
         $this->assignments = new assignmentset($lid);
 
         // store link data
-        $this->data     = GetTable2Array("SELECT * FROM links_links
-                                           WHERE id='$lid'",
-                                         'aa_first', 'aa_fields');
+        // $this->data     = GetTable2Array("SELECT * FROM links_links WHERE id='$lid'",'aa_first', 'aa_fields');
+        $this->data     = DB_AA::select1("SELECT * FROM links_links", [], [['id', $lid]]);
 
         // rename 'name' to 'aa_name' (see above $LINK_DATA_FIELDS definition)
         $this->data['aa_name'] = $this->data['name'];

@@ -13,7 +13,7 @@
 * @version $Id$
 * @author Honza Malik <honza.malik@ecn.cz>
 * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-* @deprecated Then link on the page should be already the final one
+* @deprecated The link on the page should be already the final one
 */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -34,20 +34,9 @@ along with this program (LICENSE); if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// ----- input variables normalization - start --------------------------------
-
-// This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, that
-//  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
-//  2) the variables are imported in global scope and is quoted
-// We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value)   { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
-
-foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
-}
-// ----- input variables normalization - end ----------------------------------
-
+// ----- input variables normalization --------------------------------
+$sh_itm = (string)$_REQUEST['sh_itm'];
+$url    = (string)$_REQUEST['url'];
 
 /** APC-AA configuration file */
 require_once __DIR__."/./include/config.php3";
@@ -55,6 +44,9 @@ require_once __DIR__."/./include/config.php3";
 require_once __DIR__."/include/util.php3";
 /** Main include file for using session management function on a page */
 require_once __DIR__."/include/locsess.php3";
+
+use AA\IO\DB\DB_AA;
+
 
 if ( !$sh_itm ) {
     exit;
@@ -72,6 +64,10 @@ $SQL = "SELECT source_id, slice_url FROM slice, relation, item
         AND relation.flag = '" . REL_FLAG_FEED . "'";  // feed bit
 
 $db->query($SQL);
+
+
+
+
 if ($db->next_record()) {
     $item = unpack_id($db->f('source_id'));
     $slice_url = ($db->f('slice_url'));

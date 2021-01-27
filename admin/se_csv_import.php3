@@ -219,30 +219,27 @@ if ($preview) { // file preview
 
     <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Source of CSV data") ?></b></td></tr>
     <tr><td>
-        <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-        <tr>
-        <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "file") echo "CHECKED"; ?> NAME="dataType" value="file"></td>
-        <td class="tabtxt" >file</td>
-        <td class="tabtxt" ><input type="file" NAME="upfile" value="<?php echo $upfile_name ?>"></td>
-    </tr>
-    <tr>
-        <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "url") echo "CHECKED"; ?> NAME="dataType" value="url"></td>
-        <td class="tabtxt" >URL</td>
-        <td class="tabtxt" ><input type="text" NAME="url" value="<?php echo isset($url) ? $url : 'http://' ?>" size="100"></td>
-        </tr>
-    <tr>
-            <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "text") echo "CHECKED"; ?> NAME="dataType" value="text"></td>
-        <td class="tabtxt">text</td>
-        <td class="tabtxt"><textarea NAME="text" rows="5" cols="30"><?php echo $text ?></textarea></td>
-        </tr>
-        </table>
-    </td></tr>
+            <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+                <tr>
+                    <td><label><input type="radio" <?php if ($dataType == "file") echo "checked"; ?> name="dataType" value="file">&nbsp;file</label></td>
+                    <td><input type="file" name="upfile" value="<?php echo $upfile_name ?>"></td>
+                </tr>
+                <tr>
+                    <td><label><input type="radio" <?php if ($dataType == "url") echo "checked"; ?> name="dataType" value="url">&nbsp;URL</label></td>
+                    <td><input type="text" name="url" value="<?php echo $url ?>" placeholder="https://" style="width: 98%;"></td>
+                </tr>
+                <tr>
+                    <td><label><input type="radio" <?php if ($dataType == "text") echo "checked"; ?> name="dataType" value="text">&nbsp;text</label></td>
+                    <td><textarea name="text" rows="5"><?php echo $text ?></textarea></td>
+                </tr>
+            </table>
+        </td></tr>
     <tr><td align="center">
-        <input type="hidden" name="previous_upload" value="<?php echo $dest_file ?>">
-        <input type="hidden" name="slice_id" value="<?php echo $slice_id ?>">
-        <input type="submit" name="preview" value="<?php echo _m("Preview")?>">
-        <input type="submit" name="upload" value="<?php echo _m("Next") ?>" align="center">&nbsp;&nbsp;
-    </td></tr>
+            <input type="hidden" name="previous_upload" value="<?php echo $dest_file ?>">
+            <input type="hidden" name="slice_id" value="<?php echo $slice_id ?>">
+            <input type="submit" name="preview" value="<?php echo _m("Preview")?>">
+            <input type="submit" name="upload" value="<?php echo _m("Next") ?>" align="center">&nbsp;&nbsp;
+        </td></tr>
   </table>
 
 <?php

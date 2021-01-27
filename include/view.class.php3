@@ -27,6 +27,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 /** Classes for manipulating views,
  * viewobj has static info about views, not anything dependent on parameters
  *
@@ -40,8 +42,14 @@
  */
 
 class AA_View {
-    var $id;
-    var $fields; // Array of fields
+    protected $id;
+    protected $fields; // Array of fields
+
+    /** Translate sort codes from views to slice
+     *  (we use numbers in views from historical reason)
+     *  '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
+     */
+    public const VIEW_SORT_DIRECTIONS = [0 => 'a', 1 => 'd', 2 => '1', 3 => '9'];
 
     /** view function
      * @param $id
@@ -55,17 +63,14 @@ class AA_View {
     }
 
     /** load function
-     * @param $force
+     * @param bool $force
      * @return bool
      */
-    function load( $force=false ) {
+    function load( $force=false ): bool {
         if (!isset($this->fields) OR $force) {
-            $SQL = "SELECT view.*, module.deleted, module.lang_file FROM view, module
-                     WHERE module.id=view.slice_id AND view.id='".$this->id."'";
-            $this->fields = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-            return $this->fields ? true : false;
+            $this->fields = DB_AA::select1('SELECT view.*, module.deleted, module.lang_file FROM view, module', [], [['module.id', 'view.slice_id', 'j'],['view.id', $this->id]]);
         }
-        return true;
+        return $this->fields ? true : false;
     }
 
     /** Checks, if view exists and the slice is not deleted */
@@ -200,10 +205,6 @@ class AA_View {
      * @return array|bool
      */
     public function getSort($param_sort=null) {
-        global $VIEW_SORT_DIRECTIONS;
-        // translate sort codes (we use numbers in views from historical reason)
-        // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
-
         $sort = false;
         // grouping
 
@@ -212,7 +213,7 @@ class AA_View {
             $sort = String2Sort('100000'.$param_sort['group_by']);
         } else {
             if ($this->f('group_by1')) {
-                $sort[] = [$this->f('group_by1') => $VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
+                $sort[] = [$this->f('group_by1') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
             }
         }
 
@@ -225,10 +226,10 @@ class AA_View {
             }
         } else {
             if ($this->f('order1')) {
-                $sort[] = [$this->f('order1') => $VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]];
+                $sort[] = [$this->f('order1') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('o1_direction')]];
             }
             if ($this->f('order2')) {
-                $sort[] = [$this->f('order2') => $VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]];
+                $sort[] = [$this->f('order2') => AA_View::VIEW_SORT_DIRECTIONS[$this->f('o2_direction')]];
             }
         }
 
@@ -318,7 +319,7 @@ class AA_View {
     }
 }
 
-/** usualy called as $view = AA_Views::getView($vid);
+/** usually called as $view = AA_Views::getView($vid);
  * @method  static AA_Views singleton()
  */
 class AA_Views {

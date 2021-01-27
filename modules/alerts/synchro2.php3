@@ -98,8 +98,8 @@ function add_fields_2_slice($collectionid, $slice_id) {
 
     // find current Alerts Name
     $alerts_name = DB_AA::select1('SELECT module.name FROM alerts_collection, module', 'name', [
-        ['alerts_collection.module_id','module.id','j'],
-        ['alerts_collection.id',$collectionid]
+        ['alerts_collection.module_id', 'module.id', 'j'],
+        ['alerts_collection.id', $collectionid]
     ]);
 
     // find filters to fill into the Filters constant group
@@ -126,7 +126,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         $varset->addkey("id",       "text", $field_id);
 
         // don't add fields twice
-        $field_info = DB_AA::select1('SELECT * FROM field','', [['slice_id',$slice_id,'l'], ['id', $field_id]]);
+        $field_info = DB_AA::select1('SELECT * FROM field', '', [['slice_id', $slice_id, 'l'], ['id', $field_id]]);
 
         if (! is_array($field_info) ) {
             $nadded ++;
@@ -140,7 +140,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         }
         if ($fprop ["constants"]) {
             if (is_array($field_info)) {
-                list(,$groupname) = explode(":", $field_info["input_show_func"]);
+                [,$groupname] = explode(":", $field_info["input_show_func"]);
                 refresh_constant_group($groupname, $fprop["constants"]["items"]);
                 $fprop["input_show_func"] = $field_info["input_show_func"];
             } else {

@@ -28,6 +28,8 @@
 
 // (c) Jakub Adamek, Econnect, December 2002
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__."/item.php3";
 require_once __DIR__."/item_content.php3";
 require_once __DIR__."/stringexpand.php3";
@@ -81,7 +83,8 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
 
     /** static getTemplate */
     static function getTemplate($mail_id) {
-        return GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+        // return GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+        return DB_AA::select1("SELECT * FROM email", [], [['id', $mail_id]]);
     }
 
     /** used in AA_Log after toexecute */
@@ -251,7 +254,7 @@ class AA_Mail extends htmlMimeMail implements \AA\Util\LaterInterface {
      *  @see \AA\Util\LaterInterface
      */
     public function toexecutelater($params= []) {
-        list($to) = $params;
+        [$to] = $params;
         return $this->send($to);
     }
 
@@ -374,9 +377,9 @@ function html2text($html, $encoding='utf-8') {
     reset($html_ahrefs[0]);
     $matches = [];
     // Take the first part before any <a href>
-    list(, $html) = each ($html_parts);
+    [, $html] = each ($html_parts);
     while (list(, $html_part) = each($html_parts)) {
-        list(, $html_ahref) = each($html_ahrefs[0]);
+        [, $html_ahref] = each($html_ahrefs[0]);
         preg_match ( "'$ahref(.*)</[ \t]*a[ \t]*>(.*)'si", $html_ahref. $html_part , $matches);
         if ( $matches[1] == $matches[2] ) {
             $html .= $matches[1]. $matches[3];

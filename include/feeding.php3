@@ -120,7 +120,7 @@ function IsItemFed($item_id, $destination) {
     $base_id       = GetBaseItem($item_id);  // Trace back to the original id
 
     // if item comes from $destination slice (i.e. $destination slice contains base record)
-    if ( $p_destination == DB_AA::select1('SELECT slice_id FROM `item`', 'slice_id', [['id',$base_id, 'l']]) ) {
+    if ( $p_destination == DB_AA::select1('SELECT slice_id FROM `item`', 'slice_id', [['id', $base_id, 'l']]) ) {
         return true;
     }
 
@@ -219,7 +219,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     $catfieldid  = $fields->getCategoryFieldId();
 
     if ( $catfieldid AND ( (string)$tocategory != "0" ) ) {
-        $destinationcat = DB_AA::select1('SELECT value FROM constant', 'value', [['id',$tocategory, 'l']]);
+        $destinationcat = DB_AA::select1('SELECT value FROM constant', 'value', [['id', $tocategory, 'l']]);
     }
 
     $id          = new_id();
@@ -465,7 +465,10 @@ function FeedItem($item_id) {
     $cat_field = $slice->getFields()->getCategoryFieldId();
 
     if ($cat_group AND $cat_field) {
-        $p_cat_id = DB_AA::select1('SELECT id FROM `constant`', 'id', [['group_id', $cat_group], ['value', $content4id[$cat_field][0]['value']]]);
+        $p_cat_id = DB_AA::select1('SELECT id FROM `constant`', 'id', [
+            ['group_id', $cat_group],
+            ['value', $content4id[$cat_field][0]['value']]
+        ]);
         if ( $p_cat_id ) {
             $cat_id = unpack_id($p_cat_id);
         }
