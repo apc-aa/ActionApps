@@ -406,8 +406,8 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
         }
         switch ($property) {
             case 'logintime':  return DB_AA::select1("SELECT time FROM `log`", 'time', [
-                ['type','LOGIN'],
-                ['params',str_replace(':',':#',$user).':%','LIKE']
+                ['type', 'LOGIN'],
+                ['params', str_replace(':', ':#', $user) . ':%', 'LIKE']
             ], ['time-']) ?: '';
             case 'logintimes': return join('-',DB_AA::select('time', "SELECT time FROM `log`", [
                 ['type','LOGIN'],
@@ -1322,8 +1322,8 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         $switches    = str_replace(['[+]','[-]'], [$plusimg, $minusimg], [$switch_state_1, $switch_state_2]);
         $switches_js = str_replace(["'", '"', "\n", "\r"], ["\'", "\'", ' ', ' '], $switches);
 
-        // automaticaly add conversion to utf-8 for AA view.php3 calls
-        // -- removed - view.php now check for AJAX call automaticaly
+        // automatically add conversion to utf-8 for AA view.php3 calls
+        // -- removed - view.php now check for AJAX call automatically
         //if ((strpos($url,'/view.php3?') !== false) AND (strpos($url,'convert')===false)) {
         //    $url = get_url($url,array('convertto' => 'utf-8'));
         //}
@@ -1372,9 +1372,6 @@ EOT;
         return $ret;
     }
 }
-
-
-
 
 /**
  * @param $exp
@@ -1483,8 +1480,7 @@ function parseLoop($out, $item) {
     //        Odd HTML is: {@fieldlist(_#CSV_FMTD):,:_#1}, where
     //        _#CSV_FMTD is defined as f_t and with parameter: {alias:{loop............}:f_t::csv}.
     if ( $field == 'fieldlist' ) {
-        $item_slice  = AA_Slice::getModule($item->getSliceID());
-        $val = $item_slice->fields('pri');
+        $val = AA_Slice::getModule($item->getSliceID())->getFields()->getPriorityArray();
     } else {
         $val = $itemcontent->getValuesArray($field);
     }
@@ -1778,7 +1774,8 @@ class AA_Stringexpand_Specialstring extends AA_Stringexpand {
 
 
 /** {intersect:<ids>:<ids>}
- *  @returns string - set of intersect of two set of ids (dash separated)
+ * @returns string - set of intersect of two set of ids (dash separated).
+ *                   The order of the return strings is stable - it follows the first set - $set1
  */
 class AA_Stringexpand_Intersect extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -5552,7 +5549,7 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
      * @return int
      */
     function expand($slice_id='') {
-        $dc = DB_AA::select1('SELECT sum(disc_count) AS total FROM `item`', 'total', [['slice_id', $slice_id,'l']]);
+        $dc = DB_AA::select1('SELECT sum(disc_count) AS total FROM `item`', 'total', [['slice_id', $slice_id, 'l']]);
         return $dc ?: 0;
     }
 }
@@ -5893,7 +5890,7 @@ class AA_Req {
     /**
      * @return string
      */
-    function getCode()          { return ''; }
+    function getCode(): string  { return ''; }
 
     /** getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
@@ -5968,7 +5965,10 @@ class AA_Req_Lib extends AA_Req {
     /**
      * @return string
      */
-    function getCode() {
+    function getCode(): string {
+        if (!$this->url) {
+            return '';
+        }
         $defer = '';
         $type  = '';
         if ($this->loadtype) {
@@ -6062,7 +6062,7 @@ class AA_Req_Css extends AA_Req_Lib {
     /**
      * @return string
      */
-    function getCode() {
+    function getCode(): string {
         return "<link rel=stylesheet type=\"text/css\"" .$this->getIntegrity(). " href=\"{$this->url}\"" .($this->loadtype ? " media=\"{$this->loadtype}\">" : '>');
     }
 
@@ -6100,7 +6100,7 @@ class AA_Req_Htm extends AA_Req {
     /**
      * @return mixed|string
      */
-    function getCode() {
+    function getCode(): string {
         return call_user_func($this->funct);
     }
 
@@ -6145,8 +6145,8 @@ class AA_Req_Run extends AA_Req {
     /**
      * @return string
      */
-    function getCode() {
-        return "<script> {$this->script} </script>";
+    function getCode(): string {
+        return strlen($this->script) ? "<script> {$this->script} </script>" : '';
     }
 
     /**  getExternal and getScript is conterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
@@ -6169,7 +6169,7 @@ class AA_Req_Headcode extends AA_Req_Run {
     /**
      * @return string
      */
-    function getCode() {
+    function getCode(): string {
         return $this->script;
     }
 }
@@ -6203,7 +6203,7 @@ class AA_Req_Load extends AA_Req_Run {
     /**
      * @return string
      */
-    function getCode() {
+    function getCode(): string {
         return "<script> document.addEventListener('DOMContentLoaded', function() { {$this->script} }); </script>";
     }
 
@@ -7891,7 +7891,10 @@ class AA_Password_Manager_Reader {
             "_#PWD_URLP" => GetAliasDef( "f_t:$pwd_param", "", _m('Password change url parameter')),
         ];
 
-        if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', [['owner_module_id',$slice_id, 'l'], ['type','password change']])) {
+        if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', [
+            ['owner_module_id', $slice_id, 'l'],
+            ['type', 'password change']
+        ])) {
             $slice     = AA_Slice::getModule($slice_id);
             $user_item = new AA_Item($user_info, $slice->aliases( $add_alias ));
             AA_Mail::sendTemplate($template_id, [$email], $user_item, false);
@@ -7954,7 +7957,9 @@ class AA_Password_Manager_Reader {
             return self::bad(_m("The password must be at least 6 characters long."));  // @todo get messages from somewhere
         }
 
-        if (UpdateField($user, 'password........', new AA_Value(ParamImplode(['AA_PASSWD',$pwd1])))) {
+        if (UpdateField($user, FIELDID_PASSWORD, new AA_Value(ParamImplode(['AA_PASSWD',$pwd1])))) {
+            // if we are updating password, we know, the user is verified (the Change pwd feature can be used for confirmation of user, if the initial validation mail is lost)
+            UpdateField($user, FIELDID_MAIL_CONFIRMED, new AA_Value('1'));
             return self::ok(_m("Password changed."));
         }
         return self::ok(_m("An error occurred during password change - please contact: %1.", [$from_email]));
@@ -8012,12 +8017,12 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
         }
         $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
 
-        if (isset($_POST['aapwd3'])) {    // CHange Password
+        if (isset($_POST['aapwd3'])) {    // Change Password
             return AA_Password_Manager_Reader::changePassword($_POST['aapwd3'], $_POST['aapwd3b'], $_POST['aakey'], $_POST['aauser'],$from_email);
         } elseif (isset($_GET['aapwd2'])) {
             [$key, $user] = explode('-',$_GET['aapwd2']);
             return AA_Password_Manager_Reader::getChangeForm($key, $user);
-        } elseif (isset($_REQUEST['aapwd1'])) {        // CHeck User
+        } elseif (isset($_REQUEST['aapwd1'])) {        // Check User
             return AA_Password_Manager_Reader::askForMail($_REQUEST['aapwd1'], $reader_slice_id, $from_email);
         }
 
