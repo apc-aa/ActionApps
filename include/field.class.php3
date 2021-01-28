@@ -195,6 +195,8 @@ class AA_Field implements ArrayAccess {
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
         [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
 
+        $var = $_REQUEST[$varname];
+
         if ($insert_type == 'pwd') {
             $change_var = $_REQUEST[$varname . 'a'];
             $retype_var = $_REQUEST[$varname . 'b'];
@@ -218,23 +220,20 @@ class AA_Field implements ArrayAccess {
             if ($datectrl->isUpdatable()) {
                 $datectrl->update();                   // updates datectrl
                 return new AA_Value($datectrl->get_date(), FLAG_HTML);
-            } elseif (isset($_REQUEST[$varname])) {
-                // hiden date field ('hid' widget)
+            } elseif (isset($var)) {
+                // hidden date field ('hid' widget)
                 return new AA_Value($_REQUEST[$varname], FLAG_HTML);
             }
             return null;
-        } elseif (isset($_REQUEST[$varname])) {
-            $var = $_REQUEST[$varname];
-            if ($insert_type == 'boo') {
-                // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
-                return new AA_Value(($var ? 1 : 0), FLAG_HTML);
-            } else {
-                if (!is_array($var)) {
-                    $var = [0 => $var];
-                }
-                $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
-                return new AA_Value($var, $flag);
+        } elseif ($insert_type == 'boo') {
+            // $ret = $this->content[$fid] = new AA_Value(($var ? 1 : 0), FLAG_HTML);  // replaced by the line below - I think it is mistake: $this->content[$fid]
+            return new AA_Value(($var ? 1 : 0), FLAG_HTML);
+        } elseif( isset($var) ) {
+            if (!is_array($var)) {
+                $var = [0 => $var];
             }
+            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
+            return new AA_Value($var, $flag);
         }
 
         return null;
