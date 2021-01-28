@@ -77,7 +77,6 @@ store_vars();
 // Store variables, set $GLOBALS[post2shtml_id] or generate Location header
 function store_vars() {
     global $shtml_page;
-    if ($GLOBALS['debugfill']) huhl("post2html:store_vars:$shtml_page:");
 
     $vars = [
         "post"   => &$_POST,

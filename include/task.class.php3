@@ -107,10 +107,10 @@ class AA_Plannedtask extends AA_Object implements \AA\Util\LaterInterface {
     /** The possibility, how to implement internal aliases for Admin interface
      *  Such aliases then could be called as {internal:AA_Planedtask:lastrun:...},
      *  where AA_Planedtask is AA class, which has internal_expand() method.
-     *  Such function should never leak potentionaly sensitive data, since
-     *  anyone could call it (althrough we will try to do it callable just form
+     *  Such function should never leak potentially sensitive data, since
+     *  anyone could call it (although we will try to do it callable just form
      *  internal AA admin interface). It should not be called outside and
-     *  results are not guarranted.
+     *  results are not guaranteed.
      */
     static function internal_expand($content, $info) {
         // $params  = func_get_args();

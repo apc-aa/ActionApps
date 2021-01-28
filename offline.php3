@@ -155,13 +155,13 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     return WDDX_OK;
 }
 
-function SendErrorPage($txt) {
+function SendErrorPageOffline($txt) {
     HtmlPageBegin();
     echo "</head><body>".$txt."</body></html>";
     exit;
 }
 
-function SendOkPage($txt) {
+function SendOkPageOffline($txt) {
     HtmlPageBegin();
     echo "</head><body>".$txt."</body></html>";
     exit;
@@ -172,7 +172,7 @@ $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 if ( !$slice_id ) {
-    SendErrorPage(_m("Slice ID not defined"));
+    SendErrorPageOffline(_m("Slice ID not defined"));
 }
 
 $error = "";
@@ -201,11 +201,11 @@ if ( (strlen($offline_data) > 4) AND (substr($offline_data,0,4) == 'ket') ) {
 }
 
 if ( !$slice ) {
-    SendErrorPage(_m("Bad slice ID"));
+    SendErrorPageOffline(_m("Bad slice ID"));
 }
 
 if ( $slice->getProperty("permit_offline_fill") < 1 ) {
-    SendErrorPage(_m("You don't have permission to fill this slice off-line"));
+    SendErrorPageOffline(_m("You don't have permission to fill this slice off-line"));
 } else {
     $bin2fill = $slice->getProperty("permit_offline_fill");
 }
@@ -239,9 +239,9 @@ foreach ($packets as $packet) {;
 }
 
 if ( $error ) {
-  SendErrorPage( $error );
+  SendErrorPageOffline( $error );
 } else {
-  SendOkPage( "$ok<br>". _m("Now you can dalete local file. "). " <a href='$del_url'>"._m(" Delete ")."</a>");
+  SendOkPageOffline( "$ok<br>". _m("Now you can dalete local file. "). " <a href='$del_url'>"._m(" Delete ")."</a>");
 }
 
 

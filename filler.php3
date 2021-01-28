@@ -60,8 +60,6 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 
-$debugfill= $_REQUEST['debugfill'];
-
 // ----- input variables normalization - start --------------------------------
 
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
@@ -130,7 +128,6 @@ function UseShowResult($txt,$url) {
     $_POST["oldcontent4id"] = StripslashesArray($GLOBALS["content4id"]);
     if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
     $GLOBALS["shtml_page"] = $url;
-    if ($GLOBALS['debugfill']) huhl("Filler:UseShowResult");
     require_once __DIR__."/post2shtml.php3"; // Beware this doesn't just define functions!
     exit;
 }
@@ -140,9 +137,9 @@ function UseShowResult($txt,$url) {
  * If the err_url parameter is passed, redirects to the specified URL,
  * and passes $txt as the URL parameter named "result".
  * else generates an error page with the $txt message.
- * @param string $txt error message to print
+ * @param string[] $txt error message to print
  */
-function SendErrorPage($txt) {
+function SendErrorPage(array $txt) {
     // $wap variable is set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
@@ -157,24 +154,14 @@ function SendErrorPage($txt) {
         exit;
     }
     if ( !$_REQUEST["err_url"] ) {
-        if ($GLOBALS['debugfill']) {
-            huhl("SendErrorPage with no url and txt=", $txt, " err_url=", $_REQUEST["err_url"]);
-        }
         HtmlPageBegin();
         echo "</head><body>";
-        if (is_array($txt)) {
-            PrintArray($txt);
-        } else {
-            echo $txt;
-        }
+        PrintArray($txt);
         echo "</body></html>";
     } else {
         if (!$_REQUEST["use_post2shtml"]) {
-            $posturl = get_url($_REQUEST["err_url"], "result=".substr(serialize($txt),0,1000));
-            if ($GLOBALS['debugfill']) huhl("Going to post2shtml posturl=",$posturl);
-            go_url($posturl);
+            go_url($_REQUEST["err_url"], ['result'=>substr(serialize($txt),0,1000)]);
         } else {
-            if ($GLOBALS['debugfill']) huhl("Show result with url=",$_REQUEST["err_url"], " txt=",$txt);
             UseShowResult($txt,$_REQUEST["err_url"]);
         }
     }
@@ -186,9 +173,6 @@ function SendErrorPage($txt) {
  * redirects to the specified URL, else returns to the calling page.
  */
 function SendOkPage($txt, $new_ids = []) {
-
-
-    global $debugfill;
     // $wap variable if set in filler-wap.php
     if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
@@ -202,7 +186,6 @@ function SendOkPage($txt, $new_ids = []) {
         ';
         exit;
     }
-    if ($debugfill) huhl("Filler:SendOkPage:",$txt);
 
     // we can use something like:
     //    ok_url = "/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
@@ -285,7 +268,6 @@ function SendOkPage($txt, $new_ids = []) {
 }
 
 
-
 bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
 // trap field for spammer bots
@@ -330,9 +312,14 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     //}
 
     $grabber = new AA\IO\Grabber\Form();
-    $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
-    $saver->run();
-    SendOkPage( ["report" => $saver->report()], $saver->changedIds());
+    $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber', '', ($_REQUEST["err_url"] ? 'STRICT' : 'LOG'));
+    [$ok,$err] = $saver->run();
+
+    if ($err and $_REQUEST["err_url"]) {
+        SendErrorPage( ["report" => $saver->report()] );
+    } else {
+        SendOkPage( ["report" => $saver->report()], $saver->changedIds());
+    }
     exit;
 }
 
@@ -342,11 +329,7 @@ foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
 }
 
-//$debugfill=1;
-if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
-
 // init used objects
-//if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
 if ( !$slice_id ) {
     SendErrorPage(["fatal"=>_m("Slice ID not defined")]);
 }
@@ -367,8 +350,6 @@ if (!$my_item_id) {
     // $insert = ! $db->next_record();
     $insert = ! DB_AA::test('item', [['id', $my_item_id, 'l']]);
 }
-if ($debugfill) huhl("Debugfill insert=",$insert);
-
 
 if (!is_array($oldcontent4id)) {
     $oldcontent4id = [];
@@ -383,7 +364,6 @@ if (count($err_valid) > 1) {
     $zids = new zids(null, 'l');
     foreach ( $err_valid as $field_zid => $msg) {
         $zids->add(substr($field_zid,1));  // remove first 'v' in the name
-        if ($debugfill) huhl("Debugfill $zids=",$zids, '-', $zids->longids(0));
         $result["validate"][pack_id($zids->longids(0))] = $msg;    // do we need to have it packed?  Honza 2019-12-12
     }
 }
@@ -431,8 +411,7 @@ $content4id["status_code....."][0]['value'] = max($bin2fill,$content4id["status_
 if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
 } elseif (!is_array($result)) {
-  if ($debugfill) huhl("Perms=",$slice->getProperty("permit_anonymous_edit"));
-    // Proove we are permitted to update this item.
+    // Prove we are permitted to update this item.
     switch ($slice->getProperty("permit_anonymous_edit")) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
     case ANONYMOUS_EDIT_ALL:         $permok = true; break;
@@ -468,22 +447,15 @@ if ($insert) {
     }
 }
 
-if ($debugfill) huhl("result=",$result);
-
 // See doc/anonym.html for structure of $result, which is intended
 // for fillform.php3 to interpret and display
 
-// if ($debugfill) exit;
-
-if ($debugfill) huhl("Going to Store Item");
-if ($debugfill) huhl("content4id=",$content4id);
+// Going to Store Item
 if (is_array($result)) {
     SendErrorPage( $result );
 } elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $insert, true, true )) { // insert, invalidatecache, feed
-    if ($debugfill) huhl("Filler: sending error");
     SendErrorPage( ["store" => _m("Some error in store item.")]);
 } else {
-    if ($debugfill) huhl("Filler: Sending ok");
     SendOkPage( ["success" => $insert ? "insert" : "update"], [$my_item_id]);
 }
 

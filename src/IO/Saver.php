@@ -46,6 +46,8 @@ class Saver implements AA\Util\LaterInterface {
     protected $slice_id;
     /** id of destination slice */
     protected $store_mode;
+    /** how to deal with errors LOG | STRICT */
+    protected $error_mode;
     /** store-policy - how to store - by_grabber | update | update_silent | update/insert | add | overwrite | insert_as_new | insert_new | insert | insert_if_new */
     protected $id_mode;
     /** id-policy    - how to construct id - old | new | combined */
@@ -66,13 +68,15 @@ class Saver implements AA\Util\LaterInterface {
      * @param string                         $slice_id
      * @param string                         $store_mode
      * @param string                         $id_mode
+     * @param string                         $error_mode
      */
-    function __construct($grabber, $transformations = null, $slice_id = null, $store_mode = 'overwrite', $id_mode = 'old') {
-        $this->grabber = $grabber;
+    function __construct($grabber, $transformations = null, $slice_id = null, $store_mode = '', $id_mode = '', $error_mode = '') {
+        $this->grabber         = $grabber;
         $this->transformations = is_array($transformations) ? $transformations : [];
-        $this->slice_id = $slice_id;
-        $this->store_mode = $store_mode;
-        $this->id_mode = $id_mode;
+        $this->slice_id        = $slice_id;
+        $this->store_mode      = $store_mode ?: 'overwrite';
+        $this->id_mode         = $id_mode ?: 'old';
+        $this->error_mode      = $error_mode ?: 'LOG';
     }
 
     /** resets item / slice counters */
@@ -195,7 +199,7 @@ class Saver implements AA\Util\LaterInterface {
             AA::$slice_id = $content4id->getSliceID();   // pass validator the current slice of added item for slice unique
 
             if (($store_mode == 'overwrite') OR (substr($store_mode, 0, 6) == 'insert')) {
-                if (!$content4id->complete4Insert()) {
+                if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
                     $this->message("AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
                     continue;
