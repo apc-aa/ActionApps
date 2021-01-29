@@ -46,10 +46,10 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
     const MAX_INDEX = 1000000;
 
     /** array of the values */
-    var $val;
+    protected $val;
 
     /** holds the flag - common for all the values */
-    var $flag;
+    protected $flag;
 
     /** AA_Value function
      * @param $value
@@ -763,8 +763,9 @@ class ItemContent extends AA_Content {
     }
 
     /** setValue function
-     * @param $field_id
-     * @param $val
+     * @param string $field_id
+     * @param string $val
+     * @param int    $num
      */
     function setValue($field_id,$val,$num=0) {
         $this->content[$field_id][$num]['value'] = $val;

@@ -175,7 +175,14 @@ class AA_Field implements ArrayAccess {
 
         // all default should have fnc:param format
         $val = ($generator = AA_Generator::factoryByString($this->data['input_default'])) ? $generator->generate() : new AA_Value();
-        return $val->setFlag(($this->data['html_default']>0) ? FLAG_HTML : 0);
+        return $val->setFlag($this->getDefaultFormatterFlag());
+    }
+
+    /**
+     * @return int
+     */
+    function getDefaultFormatterFlag(): int {
+        return ($this->data['html_default']>0) ? AA_Formatters::RAW : AA_Formatters::TEXT2HTML;    // RAW = 1 = FLAG_HTML
     }
 
     /**
@@ -232,7 +239,7 @@ class AA_Field implements ArrayAccess {
             if (!is_array($var)) {
                 $var = [0 => $var];
             }
-            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : ($this->getProperty('html_default') > 0 ? FLAG_HTML : 0);
+            $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : $this->getDefaultFormatterFlag();
             return new AA_Value($var, $flag);
         }
 
@@ -322,7 +329,7 @@ class AA_Field implements ArrayAccess {
                                 isset($widget_properties['input_morehlp']) ? $widget_properties['input_morehlp'] : $this->getProperty('input_morehlp'),
                                 null,               // $example;
                                 isset($widget_properties['show_formatters']) ? (int)$widget_properties['show_formatters'] : ($this->getProperty('html_show') ? AA_Formatters::STANDARD_FORMATTERS : 0),
-                                isset($widget_properties['default_formatter']) ? (int)$widget_properties['default_formatter'] : ($this->getProperty('html_default') ? AA_Formatters::RAW : AA_Formatters::TEXT2HTML),
+                                isset($widget_properties['default_formatter']) ? (int)$widget_properties['default_formatter'] : $this->getDefaultFormatterFlag(),
                                 null,               // perms
                                 isset($widget_properties['default']) ? $widget_properties['default'] : $this->getDefault(),
                                 $translations

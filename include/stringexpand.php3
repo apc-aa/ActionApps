@@ -8879,7 +8879,7 @@ class AA_Stringexpand_Partdiv extends AA_Stringexpand {
 
 /** Translation
  *  usage: {tr:Send}
- *          {tr:found _#1 items:5} - you can use parameters _#1, _#2...
+ *         {tr:found _#1 items:5} - you can use parameters _#1, _#2...
  */
 class AA_Stringexpand_Tr extends AA_Stringexpand {
 
@@ -8891,19 +8891,22 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
         $text = array_shift($arg_list);
         if (!is_null($text) AND strlen($text)) {
             if ($site = AA_Module_Site::getModule(AA::$site_id)) {
-                if ($translate_slice = $site->getProperty('translate_slice')) {
-                    $set  = new AA_Set([$translate_slice], new AA_Condition('headline........', '==', $text));
+                if ($translate_slice_id = $site->getProperty('translate_slice')) {
+                    $set  = new AA_Set([$translate_slice_id], new AA_Condition('headline........', '==', $text));
                     $zids = $set->query();
 
                     if ($zids->count()) {
                         return AA_Items::getItem($zids[0])->f_2('headline........');
                     }
                     // if not present - translate to default language of the slice
-                    $translations = AA_Slice::getModuleProperty($translate_slice,'translations');
+
+                    $translate_slice = AA_Slice::getModule($translate_slice_id);
+                    $translations    = $translate_slice->getProperty('translations');
+                    $html_flag       = $translate_slice->getField('headline........')->getDefaultFormatterFlag(); // get the flag
 
                     $ic = new ItemContent();
-                    $ic->setValue('headline........', $text, AA_Langs::getLangName2Num($translations[0]));
-                    $ic->setSliceID($translate_slice);
+                    $ic->setAaValue('headline........', new AA_Value([AA_Langs::getLangName2Num($translations[0]) => $text], $html_flag));
+                    $ic->setSliceID($translate_slice_id);
                     //$ic->complete4Insert();
 
                     $ic->storeItem('insert');     // invalidatecache, feed
