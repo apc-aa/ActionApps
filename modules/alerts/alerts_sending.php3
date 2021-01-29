@@ -59,7 +59,7 @@ class AA_Collection {
     function _get( $property ) {
         if ( is_null($this->reader_slice_id) ) {
             //$data = GetTable2Array('SELECT * FROM alerts_collection WHERE id = \''. $this->id .'\'', 'aa_first', 'aa_fields');
-            $data = DB_AA::select1('SELECT * FROM alerts_collection'. [], [['id', $this->id]]);
+            $data = DB_AA::select1('SELECT * FROM alerts_collection', [], [['id', $this->id]]);
             $this->reader_slice_id  = unpack_id($data['slice_id']);
             $this->alerts_module_id = unpack_id($data['module_id']);
             $this->email_id_welcome = $data['emailid_welcome'];
