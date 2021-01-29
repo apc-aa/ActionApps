@@ -407,11 +407,12 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
         switch ($property) {
             case 'logintime':  return DB_AA::select1("SELECT time FROM `log`", 'time', [
                 ['type', 'LOGIN'],
-                ['params', str_replace(':', ':#', $user) . ':%', 'LIKE']
+                ['params', $user]
+//                ['params', str_replace(':', ':#', $user) . ':%', 'LIKE']
             ], ['time-']) ?: '';
             case 'logintimes': return join('-',DB_AA::select('time', "SELECT time FROM `log`", [
                 ['type','LOGIN'],
-                ['params',str_replace(':',':#',$user).':%','LIKE']
+                ['params',$user]
             ], ['time-']));
         }
         return perm_username( $user );
