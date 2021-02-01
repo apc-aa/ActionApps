@@ -1096,6 +1096,7 @@ class ItemContent extends AA_Content {
                 $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
             }
         } else {
+            $oldItemContent = new ItemContent();
             if ($throw_events) {
                 $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', $this);
             }
@@ -1218,6 +1219,12 @@ class ItemContent extends AA_Content {
             FeedItem($id);
         }
 
+        if (($mode != 'insert') AND count($diff = $itemContent->diff($oldItemContent))) {
+            ChangesMonitor::singleton()->addHistory($diff);
+        }
+        AA_Log::write( ($mode=='insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
+
+        // events are after ChangeMonitor - sometimes we use {chenged:} in the events
         if ($throw_events) {
             if ($mode == 'insert') {
                 AA_Plannedtask::executeForEvent($slice_id, 'ITEM_NEW', $id);
@@ -1227,10 +1234,6 @@ class ItemContent extends AA_Content {
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
-        if (($mode != 'insert') AND count($diff = $itemContent->diff($oldItemContent))) {
-            ChangesMonitor::singleton()->addHistory($diff);
-        }
-        AA_Log::write( ($mode=='insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
 
         return $id;
     } // end of storeItem()
