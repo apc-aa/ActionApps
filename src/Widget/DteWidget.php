@@ -88,7 +88,7 @@ class DteWidget extends \AA\Widget\Widget
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
-    /** Alternative to clasical selectboxbased widget using HTML5 input type=date
+    /** Alternative to classical selectbox-based widget using HTML5 input type=date
      *  @param \AA_Property $aa_property
      *  @param \AA_Content  $content
      *  @param string       $type  normal|live|ajax
@@ -113,15 +113,13 @@ class DteWidget extends \AA\Widget\Widget
         if ($end_year  = $this->getProperty('end_year', 0)) {
             $attrs['max'] = $from_now ? ((date('Y') + $end_year) . '-12-31') : ( is_numeric($end_year) ? "$end_year-12-31" : date('Y-m-d', strtotime($end_year)));
         }
-        //$display_time = $this->getProperty('show_time', 0);
+        // $display_time = $this->getProperty('show_time', 0);
 
         $required = $aa_property->isRequired() ? ' required' : '';
 
         $attrs['pattern']     = '[0-9]{4}-[0-9]{2}-[0-9]{2}';
         $attrs['placeholder'] = 'yyyy-mm-dd';
         //$attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
-
-        $attr_string = join(' ', array_map(function ($k, $v) { return "$k=\"$v\""; }, array_keys($attrs), $attrs));
 
         $value = $content->getAaValue($aa_property->getId());
         if ($value->isEmpty()) {
@@ -131,10 +129,24 @@ class DteWidget extends \AA\Widget\Widget
         $count = max($value->count(), 1);
         for ($i = 0; $i < $count; ++$i) {
             $input_name = $base_name_add . "[i][$i]";
-            $input_id = FormArray::formName2Id($input_name);
-            $val_attr = ($val = $value->getValue($i)) ? date('Y-m-d',$val) : '';
-            $widget .= $delim . "\n<input $attr_string name=\"$input_name\" value=\"$val_attr\" id=\"$input_id\"$widget_add{$required}>";
-            $delim = '<br>';
+            $input_id   = FormArray::formName2Id($input_name);
+            $val_attr   = ($val = $value->getValue($i)) ? date('Y-m-d',$val) : '';
+
+            $curr_attrs = $attrs;
+
+            // move the boundaries if the current value is outside
+            if ($val_attr) {
+                if (isset($curr_attrs['max']) and (strtotime($curr_attrs['max']) < strtotime($val_attr))) {
+                    $curr_attrs['max'] = $val_attr;
+                }
+                if (isset($curr_attrs['min']) and (strtotime($curr_attrs['min']) > strtotime($val_attr))) {
+                    $curr_attrs['min'] = $val_attr;
+                }
+            }
+            $attr_string = join(' ', array_map(function ($k, $v) { return "$k=\"$v\""; }, array_keys($attrs), $curr_attrs));
+
+            $widget    .= $delim . "\n<input $attr_string name=\"$input_name\" value=\"$val_attr\" id=\"$input_id\"$widget_add{$required}>";
+            $delim      = '<br>';
         }
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];

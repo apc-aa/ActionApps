@@ -89,13 +89,15 @@ function GetMiscTableView($viewID) {
        cron
     */
     if ($viewID == "cron") {
-        $url = "http://apc-aa.sourceforge.net/faq/#cron";
+        $doc_url = "https://apc-aa.sourceforge.net/faq/#cron";
+        $run_url = get_aa_url('cron.php3','',false);
         return  [
         "table" => "cron",
         "type" => "browse",
         "mainmenu" => "aaadmin",
         "submenu" => "te_cron",
-        "help" => _m("For help see FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
+        "help" => _m("For help see FAQ: ")."<a href=\"$doc_url\">$doc_url</a><br>".
+                  _m("To run cron manualy now: ")."<a href=\"$run_url\">$run_url</a>",
         "readonly" => false,
         "addrecord" => true,
         "cond" => IsSuperadmin(),
@@ -151,12 +153,12 @@ function GetMiscTableView($viewID) {
        searchlog
     */
     if ($viewID == "searchlog") {
-        $url = 'https://actionapps.org/faq/detail.shtml?x=1767';
+        $doc_url = 'https://actionapps.org/faq/detail.shtml?x=1767';
         return  [
         "table"     => "searchlog",
         "type"      => "browse",
         "mainmenu"  => "aaadmin",
-        "help"      => _m("See searchlog=1 parameter for slice.php3 in FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
+        "help"      => _m("See searchlog=1 parameter for slice.php3 in FAQ: ")."<a target=\"_blank\" href=\"$doc_url\">$doc_url</a>",
         "submenu"   => "te_searchlog",
         "readonly"  => false,
         "addrecord" => false,
