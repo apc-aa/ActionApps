@@ -105,18 +105,18 @@ class AA_Toexecute {
      * @return bool|mixed|string
      * @example: we need to recount all links in allcategories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
-     *           be dubled in the queue (we call cancel_all() method for it)
+     *           be doubled in the queue (we call cancel_all() method for it)
      */
     function later( $object, $params= [], $selector='', $priority=100, $time=null ) {
         global $auth;
         $varset = new Cvarset([
             ['created'       , time()],
-                                     ['execute_after' , ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-                                     ['aa_user'       , $auth->auth['uid']],
-                                     ['priority'      , $priority],
-                                     ['selector'      , ($selector ?: get_class($object))],
-                                     ['object'        , serialize($object)],
-                                     ['params'        , serialize($params)]
+            ['execute_after' , ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
+            ['aa_user'       , $auth->auth['uid']],
+            ['priority'      , $priority],
+            ['selector'      , ($selector ?: get_class($object))],
+            ['object'        , serialize($object)],
+            ['params'        , serialize($params)]
         ]);
 
          // store the task in the queue (toexecute table)
@@ -132,7 +132,7 @@ class AA_Toexecute {
      *  (from previous time). The task is considered as planed, if the SELECTORs
      *  are the same
      */
-    function laterOnce( &$object, $params, $selector, $priority=100, $time=null ) {
+    function laterOnce( $object, $params, $selector, $priority=100, $time=null ) {
         if ( !self::scheduledTime($selector)) {
         //if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
             $this->later($object, $params, $selector, $priority, $time);
@@ -141,12 +141,12 @@ class AA_Toexecute {
 
     /** returns scheduled time or false */
     static function scheduledTime($selector) {
-        return DB_AA::select1("SELECT execute_after FROM toexecute WHERE selector='" . quote($selector) . "' AND priority > 0", 'execute_after');
+        return DB_AA::select1("SELECT execute_after FROM toexecute", 'execute_after', [['selector',$selector], ['priority',0,'>']]);
     }
 
     /** returns id of scheduled task */
     static function scheduledTaskId($selector) {
-        return DB_AA::select1("SELECT id FROM toexecute WHERE selector='" . quote($selector) . "' AND priority > 0", 'id');
+        return DB_AA::select1("SELECT id FROM toexecute", 'id', [['selector',$selector], ['priority',0,'>']]);
     }
 
     /** User task queue - we use it for spliting one long task (which would take
@@ -189,9 +189,8 @@ class AA_Toexecute {
         // If the priority is 0, we consider this task as unpossible to execute,
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
-        $SQL = "SELECT * FROM `toexecute` WHERE execute_after < ".time()." AND priority > 0 ORDER by priority DESC";
 
-        while ($task = DB_AA::select1($SQL)) {
+        while ($task = DB_AA::select1('SELECT * FROM `toexecute`', '', [['execute_after', time(), '<'], ['priority',0,'>']], ['priority-'])) {
             ++$started;
             if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
                 ++$count;

@@ -438,13 +438,14 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Defines named expression. You can use it for creatin on-line alieases, you
+/** Defines named expression. You can use it for creating on-line aliases, you
  *  can use it for passing parameters between views, ...
  *  The {define:name:expr} must be processed before the {var:name} is processed
  *  when the page is generated
- *  You can use parameters with {var:name:param1:param2:...:...}
- *  the expression then will use _#1, _#2, ... for each parameter, just like:
- *  {define:username:My name is#: _#1} and usage {var:username:Joseph}
+ *  // Not implemented:
+ *  //   You can use parameters with {var:name:param1:param2:...:...}
+ *  //   the expression then will use _#1, _#2, ... for each parameter, just like:*
+ *  //   {define:username:My name is#: _#1} and usage {var:username:Joseph}
  *  stored already in the pagecache
  *  @param $parameters - field id and other modifiers to the field
  */
@@ -472,7 +473,7 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
  *  Could be also used for defining and printing the variable
  *  @usage  {var:myvar}           - prints variable defined by {define:myvar:some text} or {var:myvar:some text}
  *  @usage  {var:myvar:some text} - the same as {define:myvar:some text} but the content is printed
- *  @usage  {ifset:{var:my-items:{ids:535343732367227239}:{({foreach:{var:my-items}:...)}} - expression, where we define the variable and the content we directly use
+ *  @usage  {ifset:{var:my-items:{ids:535343732367227239}}:{({foreach:{var:my-items}:...)}} - expression, where we define the variable and the content we directly use
  *  @see AA_Stringexpand_Define for more info
  *  @param $parameters - field id and other modifiers to the field
  */

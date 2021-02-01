@@ -9,6 +9,7 @@
 namespace AA\Util;
 
 use AA\IO\DB\DB_AA;
+use AA_GeneralizedArray;
 
 class ChangesMonitor {
 
@@ -190,30 +191,30 @@ class ChangesMonitor {
     }
 
     /** getProposals function
-     * @return \all proposals for given resource (like item_id)
+     * @return AA_GeneralizedArray proposals for given resource (like item_id)
      *  return value is array ordered by time of proposal
      * @param $resource_ids
      */
-    function getProposals($resource_ids) {
+    function getProposals(array $resource_ids) {
         return $this->_get($resource_ids, 'p');
     }
 
     /** getHistory function
      * @param $resource_ids
-     * @return \all
+     * @return AA_GeneralizedArray
      */
-    function getHistory($resource_ids) {
+    function getHistory(array $resource_ids) {
         return $this->_get($resource_ids, 'h');
     }
 
     /** _get function
-     * @return \all proposals for given resource (like item_id)
+     * @return AA_GeneralizedArray all proposals for given resource (like item_id)
      *  return value is array ordered by time of proposal
      * @param $resource_ids
      * @param $type
      */
     function _get($resource_ids, $type) {
-        $garr = new \AA_GeneralizedArray();
+        $garr = new AA_GeneralizedArray();
         if (!is_array($resource_ids) OR (count($resource_ids) < 1)) {
             return [];
         }
@@ -269,10 +270,10 @@ class ChangesMonitor {
 
     /** getProposalByID function
      * @param $change_id
-     * @return \AA_GeneralizedArray|array
+     * @return AA_GeneralizedArray|array
      */
     function getProposalByID($change_id) {
-        $garr = new \AA_GeneralizedArray();
+        $garr = new AA_GeneralizedArray();
         if (!$change_id) {
             return $garr;
         }

@@ -1762,12 +1762,13 @@ class CookieManager {
 
 class AA_GeneralizedArray {
     var $arr;
+
     /** AA_GeneralizedArray function
-     *
      */
     function __construct() {
         $this->arr = [];
     }
+
     /** add function
      * @param $value
      * @param $coordinates
@@ -1802,8 +1803,8 @@ class AA_GeneralizedArray {
         $ret = $arr;   // do not return reference
         return $ret;
     }
+
     /** getArray function
-     *
      */
     function getArray() {
         return $this->arr;
