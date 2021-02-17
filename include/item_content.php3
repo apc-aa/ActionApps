@@ -437,13 +437,17 @@ class AA_Content {
     }
 
     /** computes difference between two AA_Contents
-     * @param $object2compare AA_Content
+     * @param            $object2compare AA_Content
+     * @param array      $ignore
      * @return array
      */
-    function diff($object2compare): array {
+    function diff($object2compare, array $ignore=[]): array {
         $changes = [];
         $item_id = $this->getId();
         foreach ($this->content as $fid => $a) {
+            if (in_array($fid, $ignore)) {
+                continue;
+            }
             $b = $object2compare->getValuesArray($fid);
             if ($this->getValuesArray($fid) != $b) {
                 $changes[] = new ChangeProposal($item_id, $fid, $b);
@@ -452,7 +456,7 @@ class AA_Content {
         // search for values not present in current object
         $b_fields = $object2compare->getFields();
         foreach ($b_fields as $fid) {
-            if (empty($this->content[$fid])) {
+            if (empty($this->content[$fid]) AND !in_array($fid, $ignore)) {
                 $changes[] = new ChangeProposal($item_id, $fid, $object2compare->getValuesArray($fid));
             }
         }
@@ -1219,7 +1223,8 @@ class ItemContent extends AA_Content {
             FeedItem($id);
         }
 
-        if (($mode != 'insert') AND count($diff = $itemContent->diff($oldItemContent))) {
+        // ignore last_edit change (there was quite a lot of such changes, where the only change was in this field (in import....))
+        if (($mode != 'insert') AND count($diff = $itemContent->diff($oldItemContent, ['last_edit.......']))) {
             ChangesMonitor::singleton()->addHistory($diff);
         }
         AA_Log::write( ($mode=='insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
@@ -1239,12 +1244,12 @@ class ItemContent extends AA_Content {
     } // end of storeItem()
 
     /** updateComputedFields function
-     * @param AA_Fields  $fields
-     * @param string     $mode
-     * @param array|null $restict_fields
+     * @param AA_Fields|null $fields
+     * @param string         $mode
+     * @param array          $restict_fields
      * @return bool
      */
-    function updateComputedFields($fields = null, $mode = 'update', $restict_fields = null) {
+    function updateComputedFields(?AA_Fields $fields = null, string $mode = 'update', array $restict_fields = []): bool {
 
         if (!($id = $this->getItemID()) OR $this->isEmpty()) {  // the recomputed item is already deleted, probably
             return false;
@@ -1265,16 +1270,15 @@ class ItemContent extends AA_Content {
         }
 
         foreach ($fields as $fid => $field) {
-            $f = $field->getRecord();
 
-            if (is_array($restict_fields) AND count($restict_fields) AND !in_array($fid, $restict_fields)) {
+            if ( count($restict_fields) AND !in_array($fid, $restict_fields)) {
                 // we can restrict the recomputed fields in {recompute}
                 // so - skip not recomputed fields
                 continue;
             }
 
             // input insert function parameters of field
-            $fnc = ParseFnc($f["input_insert_func"]);
+            $fnc = ParseFnc($field->getProperty("input_insert_func"));
 
             if (!$fnc) {
                 continue;
@@ -1289,10 +1293,10 @@ class ItemContent extends AA_Content {
 
                     // seo field is not filled or we "Insert as new" and teh seo is already used (probably we forgot to delete the value)
                     if (!strlen($this->getValue($fid)) OR (($mode=='insert') AND strlen(str_replace([$this->getItemID(), '-'], ['',''], StrExpand('AA_Stringexpand_Seo2ids', ['all', $this->getValue($fid)], ['item'=>GetItemFromContent($this)]))))) {
-                        $expand_string = '{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}';
+                        $expand_string = '{seoname:{expand:'.$seo_alias.'}:all'.$seo_charset.'}';
                     } else {
                         continue 2;  // next field
-                    }
+                    } 
                  // $expand_string    = ($mode=='insert') ? '{seoname:{ifset:{@'.$fid.':| /}:_#1:{'.$seo_alias.'}}:all'.$seo_charset.'}' : '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
                  // $expand_string    = '{ifset:{@'.$fid.':| /}:_#1:{seoname:{'.$seo_alias.'}:all'.$seo_charset.'}}';
                     $expand_delimiter = '| /';     // just some unprobabale string from the line above
@@ -1324,7 +1328,7 @@ class ItemContent extends AA_Content {
 
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);
-            $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value, $f['html_default']>0 ? FLAG_HTML : 0);
+            $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value, $field->getProperty('html_default')>0 ? FLAG_HTML : 0);
 
             // set this value also to $item in order we can count with it
             // in next computed field
