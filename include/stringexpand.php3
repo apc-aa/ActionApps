@@ -4018,7 +4018,7 @@ class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param $haystack
-     * @param $needle
+     * @param $needle                                                                                                                                       
      * @param $text
      * @param $else_text
      * @return mixed
@@ -4047,13 +4047,14 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
 
     /** Compare function
      * @param $test_string string - test string
-     * @param $test string - test type - one of longid|shortid|...   (we have just two, at this moment, but there will be more...)
+     * @param $test string - test type - one of longid|shortid|mail...   (we have just those, at this moment, but there will be more...)
      * @return bool     - if the string is of type $b
      */
     public function typeCompare($test_string, $test) {
         switch ($test) {
             case 'longid' : return is_long_id($test_string);
             case 'shortid': return is_short_id($test_string) AND ($test_string > 0);  // maybe we should update the is_short_id test
+            case 'mail':    return (bool)filter_var($test_string, FILTER_VALIDATE_EMAIL);
         }
         return false;
     }
