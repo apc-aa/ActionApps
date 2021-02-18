@@ -312,7 +312,7 @@ class AA_Property extends AA_Storable {
             }
         }
         if ($empty AND $this->isRequired()) {
-            return [VALIDATE_ERROR_NOT_FILLED, _m("Not filled")];
+            return [VALIDATE_ERROR_NOT_FILLED, _m("Not filled (%1)", [$this->getId()])];
         }
         return $valid ? [] : [get_class($validator)::lastErr(), get_class($validator)::lastErrMsg()];
     }
