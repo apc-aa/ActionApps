@@ -149,15 +149,23 @@ function PrintItemInfo($item_id) {
         if ($res = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
             $res[0]['id']            = unpack_id($res[0]['id']);
             $res[0]['slice_id']      = unpack_id($res[0]['slice_id']);
-            $res[0]['post_date']    .= '<br>'.date('j.n.Y H:i:s', $res[0]['post_date']);
-            $res[0]['publish_date'] .= '<br>'.date('j.n.Y H:i:s', $res[0]['publish_date']);
-            $res[0]['expiry_date']  .= '<br>'.date('j.n.Y H:i:s', $res[0]['expiry_date']);
-            $res[0]['last_edit']    .= '<br>'.date('j.n.Y H:i:s', $res[0]['last_edit']);
-            $res[0]['moved2active'] .= '<br>'.date('j.n.Y H:i:s', $res[0]['moved2active']);
+            $res[0]['post_date']    .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['post_date']) .'</small>)';
+            $res[0]['publish_date'] .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['publish_date']) .'</small>)';
+            $res[0]['expiry_date']  .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['expiry_date']) .'</small>)';
+            $res[0]['last_edit']    .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['last_edit']) .'</small>)';
+            $res[0]['moved2active'] .= '<br><small>('.date('j.n.Y H:i:s', $res[0]['moved2active']) .'</small>)';
             echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
         }
 
-        if ($res = DB_AA::select([], 'SELECT * FROM `content`', [['item_id',$long_id, 'l']])) {
+        $slice = AA_Slice::getModule($sid);
+
+        if ($res = DB_AA::select([], 'SELECT "" as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`', [['item_id',$long_id, 'l']])) {
+            array_walk($res, function (&$v, $k) use ($slice) {
+                $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
+                if (is_long_id($v['text']) and ($hdln = AA::Stringexpander()->unalias("{item:$v[text]:_#HEADLINE}"))) {
+                    $v['text'] .= "<br><small>($hdln)</small>";
+                }
+            });
             echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
         }
 
