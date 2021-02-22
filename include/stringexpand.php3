@@ -1354,6 +1354,9 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
      * @return string
      */
     function expand($url='', $placeholder='') {
+        if (!strlen($url)) {
+            return '';
+        }
         $uniqid = gensalt(8); // gensalt is shorter than mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $ret    = "<div class=aa-lazydiv id=lazy_$uniqid data-aa-url=\"$url\">$placeholder</div>\n";
 
