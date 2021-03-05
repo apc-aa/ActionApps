@@ -5576,12 +5576,6 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
      * @return if|mixed
      */
     function expand($pattern='', $subject='') {
-        // preg functions with pattern like '/pattern/e' allowed PHP code execution.
-        // On the other hand - it worked only for preg_replace and it was removed in php 7.0
-        // @todo remove the check for php >=7.0
-        if (strpos($pattern,'e', strpos($pattern, $pattern{0}, 1))) {
-            return _m('PHP patterns in Preg_Match are not allowed');
-        }
         preg_match($pattern, $subject, $matches);
         return $matches[0];
     }
