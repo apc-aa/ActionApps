@@ -667,7 +667,8 @@ class AA_Showview {
                 AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
                 if ( isset($zids) AND ($zids->count() > 0) ) {
                     $slice = AA_Slice::getModule($slice_id);
-                    $zids  = QueryZids([], '', '', $slice->isExpiredContentAllowed() ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE, 0, $zids);
+                    $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
+                    $zids  = QueryZids([], '', '', $bins, 0, $zids);
                     AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
                     if ( $zids->count() > 0 ) {
                         //mlx stuff
