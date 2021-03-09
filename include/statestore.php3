@@ -912,7 +912,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
               <td style="white-space:nowrap;">'.
                    a_href($links['Edit'], _m('Edit'), 'aa-button-edit').' '.
                    a_href($links['Delete'], _m('Delete'), 'aa-button-delete', ['onclick'=>"return confirm('". _m("Do you really want to delete this object?"). "')"]).' '.
-                   a_href($links['Run'], _m('Export'), 'aa-button-show').
+//                   a_href($links['Run'], _m('Export'), 'aa-button-show').
              '</td>          
               <td>'.join("</td>\n<td>", array_keys($aliases)).'</td>
             </tr>
@@ -939,7 +939,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         $links  = [
                    'Edit'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url]),
                    'Delete'=>get_admin_url('oedit.php3', ['module_id=_#AA_OWNER', 'oid=_#AA_ID___', 'otype' => $object_class, 'ret_url' => $manager_url, 'delete' => '1']),
-                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
+//                   'Run'=>get_aa_url('export.php', ['id=_#AA_ID___'], false)
         ];
 
         $manager_settings = [
