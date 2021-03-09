@@ -11,7 +11,7 @@ use AA\FormArray;
 use AA_Value;
 
 /** Password and Change password widget */
-class PwdWidget extends \AA\Widget\Widget
+class PwdWidget extends Widget
 {
 
     /** - static member functions
@@ -46,13 +46,14 @@ class PwdWidget extends \AA\Widget\Widget
             $input_name = $base_name . "[pwd][old]";
             $input_id = FormArray::formName2Id($input_name);
             $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\">";
+//            $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\" required  checkValidity=\"function () {alert('no'); this.setCustomValidity('jaj'); return false;}\">";
         }
         $input_name = $base_name . "[pwd][new1]";
         $input_id = FormArray::formName2Id($input_name);
         $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" $required>";
         $input_name = $base_name . "[pwd][new2]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required>";
+//        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required checkValidity=\"function () {return false;}\">";
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
@@ -75,10 +76,10 @@ class PwdWidget extends \AA\Widget\Widget
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
+     * @return array
      */
-    static function getClassProperties()
-    {
-        return \AA\Widget\Widget::propertiesShop(['width', 'change_label', 'retype_label', 'delete_label', 'change_hint', 'retype_hint']);
+    static function getClassProperties(): array {
+        return Widget::propertiesShop(['width', 'change_label', 'retype_label', 'delete_label', 'change_hint', 'retype_hint']);
     }
 
     /**
