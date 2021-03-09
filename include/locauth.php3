@@ -109,7 +109,7 @@ class AA_Auth extends Auth {
             ['content.item_id', 'item.id', 'j'],
             ['item.slice_id', $readerslices, 'l'],
             ['content.field_id', FIELDID_2FA_SECRET],
-            ['content.text', 'FILLED'],
+            ['content.text', '', 'FILLED'],
         ]);
     }
 
