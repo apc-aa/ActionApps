@@ -194,10 +194,12 @@ class AA_Field implements ArrayAccess {
 
         $fid = $this->getId();
         // "v" prefix - database field var
-        $varname     = 'v'. unpack_id($fid);
-        $htmlvarname = $varname."html";
+        $varname          = 'v'. unpack_id($fid);
+        $htmlvarname      = $varname.'html';
+        $presence_varname = $varname.'p';
 
-        // GLOBAL - wes used for default field value set by ValidateContent4Id()
+
+        // GLOBAL - was used for default field value set by ValidateContent4Id()
         // $var = isset($_REQUEST[$varname]) ? $_REQUEST[$varname] : $GLOBALS[$varname];
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
         [$insert_type]   = explode(":", $this->getProperty('input_insert_func'), 2);
@@ -241,8 +243,9 @@ class AA_Field implements ArrayAccess {
             }
             $flag = $this->getProperty('html_show') ? ($_REQUEST[$htmlvarname]=="h" ? FLAG_HTML : 0) : $this->getDefaultFormatterFlag();
             return new AA_Value($var, $flag);
+        } elseif( $_REQUEST[$presence_varname]=='P' ) {           //  elseif (in_array($input_type, ['mse','wi2','iso','hco'])) {  // uses listbox - no value means reset content - never used
+            return new AA_Value('', $this->getDefaultFormatterFlag());
         }
-
         return null;
     }
 
@@ -473,25 +476,25 @@ class AA_Field implements ArrayAccess {
         echo "</tr>\n";
 
         if ($analyze AND ($type!='in_item_tbl')) {
-            $items       = DB_AA::select1('SELECT count(*) as cnt FROM item', 'cnt', [['item.slice_id', $slice_id, 'l']]);
-            $items_field = DB_AA::select1('SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item', '', [
+            $items       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM item', [['item.slice_id', $slice_id, 'l']]);
+            $items_field = DB_AA::select1('', 'SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
                 ['item.slice_id', $slice_id, 'l'],
                 ['field_id', $id]
             ]);
-            $text_rows   = DB_AA::select1('SELECT count(*) as cnt FROM content, item', 'cnt', [
+            $text_rows   = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
                 ['item.slice_id', $slice_id, 'l'],
                 ['field_id', $id],
                 ['(content.flag & 64)', 64, 'i']
             ]);
-            $num_rows    = DB_AA::select1('SELECT count(*) as cnt FROM content, item', 'cnt', [
+            $num_rows    = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
                 ['item.slice_id', $slice_id, 'l'],
                 ['field_id', $id],
                 ['(content.flag & 64)', 0, 'i']
             ]);
-            $empty       = DB_AA::select1('SELECT count(*) as cnt FROM content, item', 'cnt', [
+            $empty       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
                 ['content.item_id', 'item.id', 'j'],
                 ['item.slice_id', $slice_id, 'l'],
                 ['field_id', $id],
@@ -650,7 +653,7 @@ class AA_Fields implements Iterator, Countable {
             $zids = $set->query();
             $this->fields[$fid] = $zids->count() ? new AA_Field_Slicedef($zids->zid(0), $this->master_id) : '';
         } else {
-            $data = DB_AA::select1('SELECT * FROM `field`', '', [['slice_id', $this->master_id, 'l'], ['id', $fid]]);
+            $data = DB_AA::select1('', 'SELECT * FROM `field`', [['slice_id', $this->master_id, 'l'], ['id', $fid]]);
             $this->fields[$fid] = $data ? new AA_Field($data) : '';
         }
     }

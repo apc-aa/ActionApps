@@ -29,6 +29,7 @@
  *
 */
 
+use AA\Cache\CacheStr2find;
 use AA\Widget\Widget;
 
 
@@ -46,7 +47,6 @@ require_once __DIR__."/perm_" . PERM_LIB . ".php3";
 
 define('AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
 define('AA_WIDTHTOR_SHORT', '<option value="wIdThTor">&nbsp;</option>');
-define('AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
 
 // Deprecated GYR tagged ids - it adds letter before item id in related item, which is not practical for joined tables, ...
     // Easy to redefine this functionality by changing the array below
@@ -881,7 +881,7 @@ class AA_Inputfield {
                                 $this->inputWidget($item, $slice_id);          // standard
                             }
                             break;
-                //case 'mfl': list($actions, $rows, $max_characters, $width) = $this->param;
+                // case 'mfl': [$actions, $rows, $max_characters, $width] = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
                 //            $this->varname_modify('[]');         // use slightly modified varname
                 //
@@ -905,13 +905,13 @@ class AA_Inputfield {
                             $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
                             $this->inputSelect($usevalue);
                             break;
-//                case 'rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr) = $this->param;
+//                case 'rio': [,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr] = $this->param;
 //                            if ( !is_null($item) ) {
 //                                $conds_str = $item->unalias($conds_str);
 //                            }
 //                            $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr);
 //                            break;
-                //case 'mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height) = $this->param;
+                //case 'mch': [,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, ,$height] = $this->param;
                 //            if ( !is_null($item) ) {
                 //                $conds_str = $item->unalias($conds_str);
                 //            }
@@ -1498,7 +1498,7 @@ class AA_Inputfield {
      * @param null $height
      */
     function printInMatrix_Frm($records, $ncols, $move_right, $height=null) {
-        //list($name,$val,$add) = $this->prepareVars('multi');
+        //[$name,$val,$add] = $this->prepareVars('multi');
         $ret = '';
         $this->field_name('plus');
 
@@ -1616,6 +1616,7 @@ class AA_Inputfield {
         //     $ret .= AA_WIDTHTOR;
         // }
         $ret .= "</select>";
+        //$ret .= $this->presentFieldIndicator($name); // not necessary - the value is sent either way
         $this->echovar( $ret );
         $this->helps('plus');
     }
@@ -1663,6 +1664,7 @@ class AA_Inputfield {
         $ret       ="<select name=\"$name\" size=\"$rows\" multiple $triggers>";
         $ret      .= $this->get_options( $this->const_arr, false, false, 'all', false, true);
         $ret .= "</select>";
+        $ret .= $this->presentFieldIndicator($name);
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
         if ($movebuttons) {
@@ -1723,7 +1725,7 @@ class AA_Inputfield {
      * @param $condsrw
      */
     //function inputRelation2($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
-    //    list($name,$val,$add) = $this->prepareVars('multi');
+    //    [$name,$val,$add] = $this->prepareVars('multi');
     //    $rows                 = get_if($rows, 6);
     //    if ( $whichitems < 1 ) {
     //        $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
@@ -1852,6 +1854,8 @@ class AA_Inputfield {
             }
         $out .= "\n  <option value=\"wIdThTor\">$widthTxt";
         $out .= "</select>";
+
+
         $this->echovar($out);
         $this->echoo("</td></tr></table>\n");
         $this->echoo(getFrmJavascript("
@@ -2057,7 +2061,10 @@ class AA_Inputfield {
         }
 
         $out .= get_if( $this->get_options( $selected_values, false, false, 'selected', false, true), '' );
-        $out  .= '</select>';
+        $out .= '</select>';
+        $out .= $this->presentFieldIndicator($name);
+
+
         $this->echovar( $out, 'selected' );
 
         $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
@@ -2151,6 +2158,17 @@ class AA_Inputfield {
         $this->helps('plus');
     }
     //END// Local URL Picker | Omar/Jaime | 11-06-2005
+
+    /** Hidden fied added to inputs, which sends no POST variable if unfilled
+     *  (so we do not know the widget for the field was shown)
+     * @param string $name
+     * @return string
+     */
+    protected function presentFieldIndicator(string $name): string
+    {
+        $present_hidden_flag_name = str_replace(['[',']'], '', $name) . 'p';
+        return "<input type=hidden name=\"$present_hidden_flag_name\" value=P>";
+    }
 
 }
 
