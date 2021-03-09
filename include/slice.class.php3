@@ -181,7 +181,7 @@ class AA_Module {
 
     protected function _getModuleTableProperty($prop) {
         if (is_null($this->module_setting)) {
-            $this->module_setting = DB_AA::select1('SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', '', [['id',$this->module_id, 'l']]);
+            $this->module_setting = DB_AA::select1('', 'SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM `module`', [['id', $this->module_id, 'l']]);
             if (!is_array($this->module_setting)) {
                 $this->module_setting = [];
             }
@@ -195,7 +195,7 @@ class AA_Module {
 
     protected function _getSpecificTableProperty($prop) {
         if (is_null($this->table_setting)) {
-            $this->table_setting = DB_AA::select1('SELECT * FROM `'.static::SETTING_TABLE.'`', '', [['id',$this->module_id, 'l']]);
+            $this->table_setting = DB_AA::select1('', 'SELECT * FROM `' . static::SETTING_TABLE . '`', [['id', $this->module_id, 'l']]);
             if (!is_array($this->table_setting)) {
                 $this->table_setting = [];
             } else {
@@ -448,12 +448,12 @@ class AA_Slice extends AA_Module {
         $ret = ['folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0];
 
         $ret = array_merge($ret, DB_AA::select(['fldr'=>'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item ". DB_AA::makeWhere([['slice_id', $this->module_id, 'l']]). ' GROUP BY status_code'));
-        $ret['expired'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', [
+        $ret['expired'] = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['expiry_date', $now, '<=']
         ]);
-        $ret['pending'] = DB_AA::select1("SELECT count(*) as cnt FROM item ", 'cnt', [
+        $ret['pending'] = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['publish_date', $now, '>'],
@@ -464,7 +464,7 @@ class AA_Slice extends AA_Module {
         return $ret;
     }
 
-    /** AA_Slice::_deleteModules() function - called automaticaly form AA_Module::deleteModules()
+    /** AA_Slice::_deleteModules() function - called automatically form AA_Module::deleteModules()
      * @param $module_id
      * @return bool
      */
@@ -734,7 +734,7 @@ class AA_Module_Site extends AA_Module {
     public static function getIdFromUrl() {
         $host2  = (strpos($host = $_SERVER['HTTP_HOST'], 'www.')===0) ? substr($host,4) : 'www.'.$host;
         $domain_arr = ["http://$host/", "https://$host/","http://$host", "https://$host","http://$host2/", "https://$host2/","http://$host2", "https://$host2"];
-        return DB_AA::select1("SELECT LOWER(HEX(id)) AS unpackid FROM `module`", 'unpackid', [
+        return DB_AA::select1('unpackid', "SELECT LOWER(HEX(id)) AS unpackid FROM `module`", [
             ['type', 'W'],
             ['deleted', '0', 'i'],
             ['slice_url', $domain_arr]
@@ -787,7 +787,7 @@ class AA_Module_Site extends AA_Module {
         $tree = null;
         if ($structre = $this->getProperty('structure')) {
             $tree = unserialize($structre);
-        } elseif ($spotrow = DB_AA::select1("SELECT * FROM site_spot", '', [
+        } elseif ($spotrow = DB_AA::select1('', "SELECT * FROM site_spot", [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', '1']
         ])) {  // false if not found
@@ -824,7 +824,7 @@ class AA_Module_Site extends AA_Module {
 
 
     public function showSpot($tree, $spot_id) {
-        $spot_data = DB_AA::select1('SELECT id, content FROM site_spot', '', [
+        $spot_data = DB_AA::select1('', 'SELECT id, content FROM site_spot', [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', $spot_id, 'i']
         ]);
@@ -897,7 +897,7 @@ class AA_Module_Site extends AA_Module {
     function findViewId($vid) {
         if (is_null($this->_related_views)) {
             // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
-            $this->_related_views = DB_AA::select(['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', $this->getRelatedSlices(), 'l'], ['field3', 'FILLED']], 'id');
+            $this->_related_views = DB_AA::select(['field3'=>'id'], 'SELECT id, field3 FROM view', [['slice_id', $this->getRelatedSlices(), 'l'], ['field3', '', 'FILLED']], 'id');
         }
         return $this->_related_views[$vid] ?: 0;
     }
@@ -996,17 +996,20 @@ class AA_Modulesettings_Slice extends AA_Object {
 
     /** check, if the $prop is the property of this object */
     static function isProperty($prop) {
-        return in_array($prop, ['translations', 'autofields', 'fieldslice']);
+        return in_array($prop, ['translations', 'autofields', 'fieldslice', 'historylog']);
     }
 
     /** allows storing object in database
      *  AA_Object's method
+     * @return array
      */
-    static function getClassProperties() {
+    static function getClassProperties(): array {
         return [ //                        id             name                            type     multi  persist validator, required, help, morehelp, example
             'translations' => new AA_Property( 'translations', _m("Languages for translation"), 'string', true, true, new AA_Validate_Regexp(['pattern'=>'/^[a-z]{2}$/', 'maxlength'=>2]), false, _m('specify language codes in which you want translate content - small caps, two letters - like: en, es, de, ...')),
             'autofields'   => new AA_Property( 'autofields',   _m("Automatic field creation"),  'bool',  false, true, 'bool', false, _m('If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template.')),
-            'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.'))
+            'fieldslice'   => new AA_Property( 'fieldslice',   _m("Fields defined by another slice"), 'string',  false, true, 'id', false, _m('You can use special slice for additional fields definition. There you can write slice ID, which define the fields.<br>Could be used for data slice, which stores values for user created forms.')),
+            'historylog'   => new AA_Property( 'historylog',   _m("Store item history for N days"), 'string',  false, true, '', false, _m('ALL - do not delele history log (default)<br>0 - do not sote item history<br><em>number</em> - days after which will be history of items deleted'))
+             // do not forget to add new property to  isProperty!
         ];
     }
 }
@@ -1029,8 +1032,9 @@ class AA_Modulesettings_Site extends AA_Object {
 
     /** allows storing object in database
      *  AA_Object's method
+     * @return array
      */
-    static function getClassProperties() {
+    static function getClassProperties(): array {
         return [ //                             id             name                                                type     multi  persist validator, required, help, morehelp, example
             'translate_slice' => new AA_Property( 'translate_slice',  _m("Slice with translations"),                'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
             'add_aliases'     => new AA_Property( 'add_aliases',      _m("Additional aliases"),                     'string', true,  true, ['enum',   AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
