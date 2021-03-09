@@ -33,6 +33,7 @@
 
 // Code by Mitra based on code in existing other files
 
+use AA\Cache\CacheStr2find;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Util\ChangesMonitor;
@@ -77,8 +78,9 @@ class AA_Aliasfunc extends AA_Object {
 
     /** allows storing form in database
      *  AA_Object's method
+     * @return array
      */
-    static function getClassProperties() {
+    static function getClassProperties(): array {
         return [          //           id       name       type        multi   persist validator, required, help, morehelp, example
             'alias'  => new AA_Property( 'alias',  _m("Alias"),          'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
             'code'   => new AA_Property( 'code',   _m("Code"),           'text',   false, true, '', false,  _m('Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables'),'', '&lt;div class=mybox style="color:_#P2"&gt;_#P1&lt;/div&gt;'),
@@ -405,7 +407,7 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
             return '';
         }
         switch ($property) {
-            case 'logintime':  return DB_AA::select1("SELECT time FROM `log`", 'time', [
+            case 'logintime':  return DB_AA::select1('time', "SELECT time FROM `log`", [
                 ['type', 'LOGIN'],
                 ['params', $user]
 //                ['params', str_replace(':', ':#', $user) . ':%', 'LIKE']
@@ -830,7 +832,7 @@ class AA_Stringexpand_Lastedit extends AA_Stringexpand {
     function expand($format='', $slice_id='') {
         $format = $format ?: 'j.n.Y';
         $where = is_long_id($slice_id) ? [['slice_id', $slice_id, 'l']] : null;
-        return date($format, DB_AA::select1("SELECT last_edit FROM `item`", 'last_edit', $where, ['last_edit-']) ?: 0);
+        return date($format, DB_AA::select1('last_edit', "SELECT last_edit FROM `item`", $where, ['last_edit-']) ?: 0);
     }
 }
 
@@ -3171,7 +3173,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
 
 /** returns ids of items based on conds d-...
  *  {ids:<slices>:[<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]]}
- *  {ids:6a435236626262738348478463536272:d-category.......1-BEGIN-Bio-switch.........1-=-1:headine........-}
+ *  {ids:6a435236626262738348478463536272:d-category.......1-BEGIN-Bio-switch.........1-==-1:headine........-}
  *  returns dash separated long ids of items in selected slice where category
  *  begins with Bio and switch is 1 ordered by headline - descending
  */
@@ -5520,8 +5522,14 @@ class AA_Unalias_Callback {
 /**
  *  Usage: StrExpand('AA_Stringexpand_Date', array($format,$timestamp));
  *          StrExpand($outcmd, array($format,$timestamp), array('item'=>$this->item, 'itemview'=> $this->itemview))
+ * @param string $class_name
+ * @param array $params
+ * @param array $context_arr
+ * @param bool  $allow_quote_colons
+ * @param bool  $ignore_cache
+ * @return string
  */
-function StrExpand($class_name, $params= [], $context_arr= [], $allow_quote_colons=false, $ignore_cache=false) {
+function StrExpand($class_name, $params= [], $context_arr= [], $allow_quote_colons=false, $ignore_cache=false): string {
     /** @var AA_Stringexpand $stringexpand */
     $stringexpand = new $class_name($context_arr);
     if ( $stringexpand->doCache() AND !$ignore_cache) {
@@ -5555,7 +5563,7 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
      * @return int
      */
     function expand($slice_id='') {
-        $dc = DB_AA::select1('SELECT sum(disc_count) AS total FROM `item`', 'total', [['slice_id', $slice_id, 'l']]);
+        $dc = DB_AA::select1('total', 'SELECT sum(disc_count) AS total FROM `item`', [['slice_id', $slice_id, 'l']]);
         return $dc ?: 0;
     }
 }
@@ -5653,7 +5661,7 @@ class AA_Stringexpander {
 
 
     /** replaces inline aliasses {(....)} with {var:...} references (which will be later expanded into {...}) and defines appropriate contentcache entries
-     *  this alows to write expressions like
+     *  this allows to write expressions like
      *    {item:6625:{(some text {headline........}...etc.)}}
      */
     static function ApplyInlineAlias($text) {
@@ -7759,7 +7767,7 @@ class AA_Stringexpand_Redirect extends AA_Stringexpand {
  */
 class AA_Stringexpand_Changed extends AA_Stringexpand {
     /**
-     * @param null $item_id
+     * @param string $item_id
      * @return string|void
      */
     function expand($item_id=null) {
@@ -7772,14 +7780,38 @@ class AA_Stringexpand_Changed extends AA_Stringexpand {
  */
 class AA_Stringexpand_Changedate extends AA_Stringexpand {
     /**
-     * @param null $item_id
-     * @param null $field_id
-     * @param null $format
-     * @return string|void
+     * @param string $item_id
+     * @param string $field_id
+     * @param string $format
+     * @return string
      */
-    function expand($item_id=null, $field_id=null, $format=null) {
+    function expand($item_id=null, $field_id=null, $format=null): string {
         $time = ((guesstype($item_id) != 'l') OR !$field_id) ? '0' : (string)ChangesMonitor::singleton()->lastChangeDate($item_id,$field_id);
         return StrExpand('AA_Stringexpand_Date', [$format, $time, '--']);
+    }
+}
+
+/**
+ * Class AA_Stringexpand_History
+ */
+class AA_Stringexpand_History extends AA_Stringexpand {
+    /**
+     * @param string $item_id   item to get history record
+     * @param string $field_id  field in item to get history record
+     * @param string $time      timestamp (positive value) - get the value for that time,
+     *                          -x (negative value) - the x-th last value (-1 is default - last value before current)
+     *                          string - like "|" - all values delimited by |
+     * @return string
+     */
+    function expand($item_id=null, $field_id=null, $time=null): string {
+        if (strlen($time) and !IsSigInt($time)) {
+            $delimiter = $time;
+            return ChangesMonitor::singleton()->changesAll($item_id, $field_id, $delimiter);
+        }
+        if ((int)$time < 0) {
+            return ChangesMonitor::singleton()->changeByStep($item_id, $field_id, (int)$time);
+        }
+        return ''; // @todo timestamp based value
     }
 }
 
@@ -7891,7 +7923,7 @@ class AA_Password_Manager_Reader {
             "_#PWD_URLP" => GetAliasDef( "f_t:$pwd_param", "", _m('Password change url parameter')),
         ];
 
-        if ($template_id = DB_AA::select1('SELECT id FROM `email`', 'id', [
+        if ($template_id = DB_AA::select1('id', 'SELECT id FROM `email`', [
             ['owner_module_id', $slice_id, 'l'],
             ['type', 'password change']
         ])) {
